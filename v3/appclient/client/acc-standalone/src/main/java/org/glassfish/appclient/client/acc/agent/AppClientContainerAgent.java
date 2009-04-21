@@ -323,15 +323,19 @@ public class AppClientContainerAgent {
             final AppclientCommandArguments appClientCommandArgs) {
 
         ClientCredential cc = builder.getClientCredential();
+        String user = (cc != null ? cc.getUserName() : null);
+        char[] pw = (cc != null && cc.getPassword() != null ?
+            cc.getPassword().get() : null);
         if (cc == null) {
             cc = new ClientCredential();
         }
+
         /*
          * user on command line?
          */
-        String user;
-        if ((user = appClientCommandArgs.getUser()) != null) {
-            cc.setUserName(user);
+        String commandLineUser;
+        if ((commandLineUser = appClientCommandArgs.getUser()) != null) {
+            user = commandLineUser;
         }
 
         /*
@@ -339,11 +343,11 @@ public class AppClientContainerAgent {
          * class takes care of reading the password from the file and/or
          * handling the -password option.
          */
-        char[] pw;
-        if ((pw = appClientCommandArgs.getPassword()) != null) {
-            cc.setPassword(new XML.Password(appClientCommandArgs.getPassword()));
+        char[] commandLinePW;
+        if ((commandLinePW = appClientCommandArgs.getPassword()) != null) {
+            pw = commandLinePW;
         }
-        builder.clientCredentials(cc.getUserName(), cc.getPassword().get());
+        builder.clientCredentials(user, pw);
     }
 
     private static AppClientContainer createContainer(
