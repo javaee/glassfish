@@ -156,7 +156,7 @@
         <!-- ejb timer package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-ejb-timer</artifactId>
+            <artifactId>glassfish-ejb</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
