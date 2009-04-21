@@ -43,10 +43,10 @@
         <artifactId>packages</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>glassfish-ejb</artifactId>
-    <name>Glassfish EJB Container Package</name>
+    <artifactId>glassfish-ejb-timer</artifactId>
+    <name>Glassfish EJB Package</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish EJB Container  package</description>
+    <description>This pom describes how to assemble the GlassFish EJB package</description>
 
     <build>
         <plugins>
@@ -70,18 +70,23 @@
         <!--
           modules to be included in this bundle
         -->       
-	<dependency>
+ 	<dependency>
             <groupId>org.glassfish.ejb</groupId>
-            <artifactId>gf-ejb-connector</artifactId>
+            <artifactId>ejb-timer-databases</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>ejb.security</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>ejb-container</artifactId>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-iiop</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-    	<!-- now, listing package dependencies so that their content
+        </dependency> 
+         <!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
@@ -221,6 +226,30 @@
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency>	
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-ejb-lite</artifactId>
+           <version>${project.version}</version>
+	   <type>zip</type>
+       </dependency> 
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-common-full</artifactId>
+           <version>${project.version}</version>
+	   <type>zip</type>
+       </dependency> 
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-jts</artifactId>
+           <version>${project.version}</version>
+	   <type>zip</type>
+       </dependency> 
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-jms</artifactId>
+           <version>${project.version}</version>
+	   <type>zip</type>
+       </dependency>
     </dependencies>
 
     <profiles>

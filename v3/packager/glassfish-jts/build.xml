@@ -148,7 +148,7 @@ own identifying information: Portions Copyright [yyyy]
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-ejb">	
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-ejb-lite">	
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>

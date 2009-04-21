@@ -248,7 +248,7 @@
        </dependency>	
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-ejb</artifactId>
+           <artifactId>glassfish-ejb-lite</artifactId>
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency> 
@@ -272,7 +272,7 @@
        </dependency>
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-ejb-timer</artifactId>
+           <artifactId>glassfish-ejb</artifactId>
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency>

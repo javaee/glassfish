@@ -81,11 +81,11 @@
 	<module>glassfish-gui</module>
 	<module>glassfish-web-gui</module>
 	<module>glassfish-jdbc-gui</module>
-	<module>glassfish-ejb</module>
+	<module>glassfish-ejb-lite</module>
 	<module>glassfish-common-full</module>
 	<module>glassfish-jts</module>
 	<module>glassfish-jms</module>
-	<module>glassfish-ejb-timer</module>
+	<module>glassfish-ejb</module>
 	<module>glassfish-cmp</module>
 	<module>metro</module>	
 	<module>glassfish-appclient</module>

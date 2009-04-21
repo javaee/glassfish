@@ -19,11 +19,11 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish ejb container package creation" default="create.package" basedir=".">
+<project name="glassfish ejb timer package creation" default="create.package" basedir=".">
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-	 <property name="package.name" value="glassfish-ejb"/> 
+<property name="package.name" value="glassfish-ejb"/> 
 
         
 	<graphDef id="all-modules" tolerateBrokenPOMs="true">
@@ -48,6 +48,10 @@ own identifying information: Portions Copyright [yyyy]
 						<subtract>
 						<subtract>
 						<subtract>
+							<subtract>
+							<subtract>
+							<subtract>
+							<subtract>
 							<subtract>
 							<subtract>
 							<subtract>
@@ -146,7 +150,22 @@ own identifying information: Portions Copyright [yyyy]
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>
-			    
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-ejb-lite">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common-full">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jts">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jms">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			 </subtract>
 		</scope>					 
        </graphDef>
 
@@ -159,7 +178,7 @@ own identifying information: Portions Copyright [yyyy]
 	       <antcall target="pack.compression" />
        </if>
 
-       <antcall target="create-zip-artifact"/>  
+       <antcall target="create-zip-artifact"/>  	
    </target>
 </project>
 
