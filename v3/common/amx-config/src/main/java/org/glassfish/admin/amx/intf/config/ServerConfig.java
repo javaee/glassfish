@@ -39,6 +39,7 @@ package org.glassfish.admin.amx.intf.config;
 
 
 import java.util.Map;
+import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
 	Base interface for server configuration for the &lt;server&gt; element.
@@ -74,7 +75,11 @@ public interface ServerConfig
         
     /** Key for the system property that would be used to assign port value for the secure iiop listener named JMX_SYSTEM_CONNECTOR**/
         public static final String  JMS_PROVIDER_PORT_KEY   = PropertiesAccess.PROPERTY_PREFIX +"JMS_PROVIDER_PORT";
-        
+
+    /** cross-boundary: declared as generic AMXProxy, client must us as(NetworkConfig.class) */
+    public AMXProxy getNetworkConfig();
+    
+    
 	/**
 		Get the name of the config element referenced by this server.
         @since Glassfish V3
