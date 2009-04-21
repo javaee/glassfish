@@ -23,27 +23,162 @@ own identifying information: Portions Copyright [yyyy]
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-	   <mkdir dir="target/stage/${install.dir.name}"/>
+<property name="package.name" value="glassfish-ejb-timer"/> 
 
-	<resolveArtifact artifactId="ejb-timer-databases" todir="target/fragments" />
+        
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+		<scope level="compile,runtime">
+			<subtract>
+			    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+					<subtract>
+					<subtract>
+					<subtract>
+						<subtract>
+						<subtract>
+						<subtract>
+						<subtract>
+						<subtract>
+							<subtract>
+							<subtract>
+							<subtract>
+							<subtract>
+							<subtract>
+							<subtract>
+							<subtract>
+						
+				    <fullGraph/>
+			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
+	                                 <scope level="compile,runtime"/>
+	                             </subGraph>
+	
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-hk2">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba-omgapi">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-registration">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-management">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-amx">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jca">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jpa">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-codegen">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jta">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jsf">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web-management">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jdbc-management">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jdbc">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-gui">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web-gui">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jdbc-gui">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-ejb">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common-full">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jts">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jms">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			 </subtract>
+		</scope>					 
+       </graphDef>
 
-	<unzip dest="target/stage/${install.dir.name}">
-                <patternset>
-                    <exclude name="META-INF/**"/>
-                </patternset>
-                <fileset dir="target/fragments" includes="*"/>
-        </unzip>
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
 
-
-        <resolveArtifact artifactId="ejb.security" tofile="target/stage/${install.dir.name}/glassfish/modules/ejb.security.jar" />
-
-        <if test="${compression}">
+  
+       <if test="${compression}">
 	       <antcall target="pack.compression" />
-	</if>
+       </if>
 
-       <zip file="target/glassfish-ejb-timer.zip" basedir="target/stage"/>
-           
-       <attachArtifact file="target/glassfish-ejb-timer.zip"/>
+       <antcall target="create-zip-artifact"/>  	
    </target>
 </project>
 
