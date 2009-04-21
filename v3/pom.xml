@@ -92,7 +92,7 @@
         <activation-api.version>1.1.1</activation-api.version>
         <transaction-api.version>1.1-rev-1</transaction-api.version>
         <mail-api.version>1.4</mail-api.version>
-        <mail.version>1.4.1</mail.version>
+        <mail.version>1.4.2</mail.version>
         <ejb-api.version>3.0</ejb-api.version>
         <persistence-api.version>1.0-rev-1</persistence-api.version>
         <connector-api.version>1.6-alpha-1</connector-api.version>

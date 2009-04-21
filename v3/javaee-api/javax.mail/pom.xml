@@ -57,7 +57,7 @@
     <description>Java EE Mail API Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.api</groupId>
+            <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>${mail.version}</version>
             <optional>true</optional>
