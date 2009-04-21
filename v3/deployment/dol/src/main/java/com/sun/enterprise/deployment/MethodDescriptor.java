@@ -697,7 +697,7 @@ public final class MethodDescriptor extends Descriptor {
      * 
      * @return the mapping with the java primitive type identifier as keys
      */
-    public static Map getJavaPrimitiveTypes() {
+    public synchronized static Map getJavaPrimitiveTypes() {
         if (javaPrimitivesTypes==null) {
             javaPrimitivesTypes = new Hashtable();
             javaPrimitivesTypes.put("char", "C");
