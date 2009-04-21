@@ -451,33 +451,6 @@ function checkType(theButton, typeId, extensionId, msg){
 // End of Deployment code
 
 //===========================================================================
-/** 
-  *  Start support for On Line Help 
-  */
-
-function doHelp(url) {
-    var helpLink = url.href;
-    var frame = findFrame("main");
-    form = frame.document.forms[0];
-    if (!form) {
-        var frame = findFrame("home");
-        form = frame.document.forms[0];
-        if (!form) {
-            return null;
-        }
-    }
-    hid = getField(form, "helpKey");
-    if (hid != null && hid.value != "") {
-        helpLink = helpLink.replace("CONTEXT_HELP.html", hid.value);
-    }
-    openInHelpWindow(helpLink);
-}
-
-
-function openInHelpWindow(url) {
-    win = window.open(url, "HelpWindow" , "width=800, height=530, resizable"); 
-    win.focus();
-}
 
 function findFrameRecursive( winOrFrame, frameName ) {
     // 1. CHECK THIS FRAME (winOrFrame)
@@ -831,7 +804,7 @@ admingui.nav = {
     matchURL: function(node, url) {
         var result = null;
         if ((node.nodeType == 1) && (node.nodeName == "A") && 
-            (node.href == url) & (node.id.indexOf("link") > -1)) { //indexOf(url) > -1)) {
+            (node.href == url) & (node.id.indexOf("link") > -1)) { //indexOf(url) > -1)) 
             result = node;
         }
         return result;
@@ -996,6 +969,30 @@ admingui.nav = {
     }
 };
 
+admingui.help = {
+    launchHelp: function(url) {
+	var helpLink = url.href;
+	var helpKeys = admingui.util.findNodes(document,
+	    function(node, name) {
+		if ((typeof(node.name) === "undefined") || (node.name == null)) {
+		    return false;
+		}
+		var pos = node.name.lastIndexOf(':');
+		var shortName = (pos > -1) ? node.name.substring(pos+1) : node.name;
+		return (shortName == name);
+	    },
+	    "helpKey");
+	if (!(helpKeys === null)) {
+	    helpLink = helpLink.replace("CONTEXT_HELP.html", helpKeys[0].value);
+	}
+	admingui.help.openHelpWindow(helpLink);
+    },
+
+    openHelpWindow: function (url) {
+	win = window.open(url, "HelpWindow" , "width=800, height=530, resizable"); 
+	win.focus();
+    }
+};
 
 //============================================================
 /**
