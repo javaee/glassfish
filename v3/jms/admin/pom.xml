@@ -113,6 +113,21 @@
             <artifactId>admin-cli</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+	     <groupId>org.glassfish.connectors</groupId>
+	     <artifactId>connectors-internal-api</artifactId>
+	     <version>${project.version}</version>
+        </dependency>
+	<dependency>
+              <groupId>org.glassfish.jms</groupId>
+              <artifactId>jms-core</artifactId>
+              <version>${project.version}</version>
+	 </dependency>	
+         <dependency>
+              <groupId>org.glassfish.connectors</groupId>
+              <artifactId>connectors-runtime</artifactId>
+              <version>3.0-SNAPSHOT</version>
+         </dependency>
     </dependencies>
 </project>
 
