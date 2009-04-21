@@ -241,7 +241,7 @@ public class JPAApplication implements ApplicationContainer {
                 integrationPropertiesWithoutJava2DB;
 
         EntityManagerFactory emf = provider.createContainerEntityManagerFactory(
-                pInfo,/*overrides */ baseIntegrationProperties);
+                pInfo, overrides);
         logger.logp(Level.FINE, "JPAApplication", "loadPU", // NOI18N
                     "emf = {0}", emf); // NOI18N
 

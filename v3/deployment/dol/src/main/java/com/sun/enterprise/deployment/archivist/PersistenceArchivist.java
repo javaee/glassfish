@@ -47,7 +47,8 @@ public class PersistenceArchivist extends ExtensionsArchivist {
     public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
             throws IOException, SAXParseException {
 
-        return readPersistenceDeploymentDescriptor(main, archive, "", descriptor);
+        readPersistenceDeploymentDescriptor(main, archive, "", descriptor);
+        return null;  // return null so that the descritor does not get added twice to extensions
     }
 
     protected PersistenceUnitsDescriptor readPersistenceDeploymentDescriptor(Archivist main,
