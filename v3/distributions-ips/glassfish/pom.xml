@@ -185,14 +185,6 @@
             <type>zip</type>
         </dependency>    
 
-        <!--orb iiop package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-orb-iiop</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency> 
-
         <!-- metro package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
