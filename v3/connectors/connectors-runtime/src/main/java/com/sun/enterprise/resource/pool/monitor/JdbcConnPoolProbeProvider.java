@@ -35,7 +35,7 @@
 */
 package com.sun.enterprise.resource.pool.monitor;
 
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.ProbeParam;
 import org.glassfish.probe.provider.annotations.Probe;
 import org.glassfish.probe.provider.annotations.ProbeProvider;
 
@@ -45,7 +45,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
  * 
  * @author shalini
  */
-@ProbeProvider(providerName="jdbc-connection-pool", moduleName="jdbc-connection-pool")
+@ProbeProvider(providerName="glassfish", moduleName="jdbc-connection-pool")
 public class JdbcConnPoolProbeProvider {
 
     /**
