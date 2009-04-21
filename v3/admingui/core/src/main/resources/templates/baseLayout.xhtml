@@ -229,7 +229,7 @@
 
     // Collapse panels if necessary
     YAHOO.util.Event.onDOMReady(function (ev) {
-	var layout = getLayout('gfLayout');
+	var layout = scales.getLayout('gfLayout');
 	var lu = layout.getUnitByPosition('left');
 	lu.on('collapse', function(ev) {
 	    admingui.util.setPreference("layout", "hideLeft", "true", "hideLeft");
