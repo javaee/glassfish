@@ -307,7 +307,9 @@
 <!-- XXX temporary commented out due to issue 7919
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
 -->
+<!-- XXX temporary commented out due to issue 7424
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
+-->
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerStateDynamicReconfig" target="all"/>
