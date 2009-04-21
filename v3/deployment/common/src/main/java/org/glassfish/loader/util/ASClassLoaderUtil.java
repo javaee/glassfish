@@ -121,6 +121,10 @@ public class ASClassLoaderUtil {
 
     private static void addDeployParamLibrariesForModule(StringBuilder sb, 
         String moduleId, String deploymentLibs, Habitat habitat) {
+        if (moduleId.indexOf("#") != -1) {
+            moduleId = moduleId.substring(0, moduleId.indexOf("#"));
+        }
+  
         if (deploymentLibs == null) {
             ApplicationInfo appInfo = 
                 habitat.getComponent(ApplicationRegistry.class).get(moduleId);

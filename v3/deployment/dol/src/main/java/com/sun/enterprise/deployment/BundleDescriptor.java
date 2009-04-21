@@ -510,10 +510,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
             return moduleID;
         }
         if (application != null && !application.isVirtual()) {
-            if (application.getModuleID() == null) {
-                return getDisplayName();
-            }
-            return application.getModuleID() + "#" + moduleID;
+            return application.getRegistrationName() + "#" + moduleID;
         } else {
             return moduleID;
         }
