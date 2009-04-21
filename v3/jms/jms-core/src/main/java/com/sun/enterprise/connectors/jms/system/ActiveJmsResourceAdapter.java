@@ -36,71 +36,58 @@
 
 package com.sun.enterprise.connectors.jms.system;
 
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.*;
+import com.sun.appserv.server.util.Version;
+import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
+
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.enterprise.connectors.jms.inflow.*;
+import com.sun.enterprise.connectors.util.SetMethodAction;
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.connectors.inbound.ActiveInboundResourceAdapterImpl;
+import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
+
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.i18n.StringManager;
+
+import java.rmi.Naming;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.rmi.Naming;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.BootstrapContext;
+import java.security.PrivilegedActionException;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.ResourceAdapterInternalException;
-
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.appserv.server.util.Version;
-import com.sun.enterprise.config.serverbeans.AdminObjectResource;
-import com.sun.enterprise.config.serverbeans.AdminService;
-import com.sun.enterprise.config.serverbeans.AvailabilityService;
-import com.sun.enterprise.config.serverbeans.Clusters;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.JavaConfig;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.JmsAvailability;
-import com.sun.enterprise.config.serverbeans.JmsHost;
-import com.sun.enterprise.config.serverbeans.JmsService;
-import com.sun.enterprise.config.serverbeans.JmxConnector;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
-import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.connectors.inbound.ActiveInboundResourceAdapterImpl;
-import com.sun.enterprise.connectors.jms.inflow.MdbContainerProps;
-import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
-import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
-import com.sun.enterprise.connectors.util.SetMethodAction;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.i18n.StringManager;
-import org.glassfish.api.admin.config.Property;
-import com.sun.logging.LogDomains;
-import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.internal.api.Globals;
+import javax.resource.spi.BootstrapContext;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.server.ServerEnvironmentImpl;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
+
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * Represents an active JMS resource adapter. This does
@@ -270,6 +257,12 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     @Inject
     private JmsService jmsService;
 
+    @Inject
+    private ConnectorRuntime connectorRuntime;
+
+    @Inject
+    private GlassfishNamingManager nm;
+
     /**
      * Constructor for an active Jms Adapter.
      *
@@ -289,7 +282,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
      * @throws ConnectorRuntimeException in case of an exception.
      */
     protected void loadRAConfiguration() throws ConnectorRuntimeException{
-        if (ConnectorRuntime.getRuntime().getEnvironment()
+        if (connectorRuntime.getEnvironment()
                                        == ConnectorRuntime.SERVER) {
             // Check whether MQ has started up or not.
             try {
@@ -1438,7 +1431,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     private void rebindDescriptor() throws ConnectorRuntimeException {
         try {
             String descriptorJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForDescriptor(super.getModuleName());
-            GlassfishNamingManager nm = ConnectorRuntime.  getRuntime().getNamingManager();
+            //GlassfishNamingManager nm = connectorRuntime.getNamingManager();
             nm.publishObject(descriptorJNDIName, super.getDescriptor(), true);
         //com.sun.enterprise.Switch.getSwitch().getNamingManager().        publishObject( descriptorJNDIName, super.getDescriptor(), true);
     } catch (javax.naming.NamingException ne) {
