@@ -44,7 +44,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
 /**
  * Provider interface for JSP related probes.
  */
-@ProbeProvider(providerName="jsp", moduleName="web")
+@ProbeProvider(providerName="glassfish", moduleName="web")
 public class JspProbeProvider {
 
     @Probe(name="jspLoadedEvent")

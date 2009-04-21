@@ -45,7 +45,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
 /**
  * Provider interface for servlet related probes.
  */
-@ProbeProvider(providerName="servlet", moduleName="web")
+@ProbeProvider(providerName="glassfish", moduleName="web")
 public class ServletProbeProvider {
 
     /**

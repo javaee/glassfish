@@ -46,7 +46,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
 /**
  * Provider interface for HTTP request/response related probes.
  */
-@ProbeProvider(providerName="request", moduleName="web")
+@ProbeProvider(providerName="glassfish", moduleName="web")
 public class RequestProbeProvider {
 
     @Probe(name="requestStartEvent")
