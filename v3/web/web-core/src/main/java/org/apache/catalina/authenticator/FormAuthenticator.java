@@ -556,17 +556,4 @@ public class FormAuthenticator
         return (sb.toString());
     }
 
-
-    /**
-     * Saves the given request URI in the given session
-     */
-    private void saveRequest(String requestURI, String method,
-                             Session session) {
-
-        SavedRequest saved = new SavedRequest();
-        saved.setMethod(method);
-        saved.setRequestURI(requestURI);
-        session.setNote(Constants.FORM_REQUEST_NOTE, saved);
-    }
-
 }
