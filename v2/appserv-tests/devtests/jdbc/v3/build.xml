@@ -37,6 +37,7 @@
 	<antcall target="contauth"/>
 	<antcall target="autocommit"/>
 	<antcall target="maxconnectionusage"/>
+        <antcall target="multipleusercredentials"/>
 	<antcall target="statementtimeout"/>
 	<antcall target="connleaktracing"/>
 	<antcall target="conncreationretry"/>
@@ -55,6 +56,7 @@
 	<antcall target="contauth"/>
 	<antcall target="autocommit"/>
 	<antcall target="maxconnectionusage"/>
+        <antcall target="multipleusercredentials"/>
 	<antcall target="statementtimeout"/>
 	<antcall target="connleaktracing"/>
 	<antcall target="conncreationretry"/>
@@ -80,6 +82,12 @@
 	<record name="maxconnectionusage/maxconnectionusage.output" action="stop"/>
     </target>
                                    
+    <target name="multipleusercredentials">
+	<record name="multipleusercredentials/multipleusercredentials.output" action="start"/>
+	<ant dir="multipleusercredentials" target="all"/>
+	<record name="multipleusercredentials/multipleusercredentials.output" action="stop"/>
+    </target>
+    
     <target name="statementtimeout">
 	<record name="statementtimeout/statementtimeout.output" action="start"/>
 	<ant dir="statementtimeout" target="all"/>
