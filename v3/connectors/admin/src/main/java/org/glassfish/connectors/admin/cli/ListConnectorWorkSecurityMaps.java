@@ -58,13 +58,13 @@ import java.util.logging.Logger;
  * List Connector Work Security Maps
  *
  */
-@Service(name="list-connector-work-security-map")
+@Service(name="list-connector-work-security-maps")
 @Scoped(PerLookup.class)
-@I18n("list.connector.work.security.map")
-public class ListConnectorWorkSecurityMap implements AdminCommand {
+@I18n("list.connector.work.security.maps")
+public class ListConnectorWorkSecurityMaps implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(ListConnectorWorkSecurityMap.class);
+            new LocalStringManagerImpl(ListConnectorWorkSecurityMaps.class);
 
     @Param(name="securitymap")
     String securityMap;
@@ -96,14 +96,14 @@ public class ListConnectorWorkSecurityMap implements AdminCommand {
                     List<GroupMap> groupList = wsm.getGroupMap();
 
                     report.setMessage(localStrings.getLocalString(
-                        "list.connector.work.security.map.workSecurityMap",
+                        "list.connector.work.security.maps.workSecurityMap",
                         "Work security map {0} for resource adapter {1}", securityMap, raName));
                     
                     for (PrincipalMap map : principalList) {
                         final ActionReport.MessagePart part =
                             report.getTopMessagePart().addChild();
                             part.setMessage(localStrings.getLocalString(
-                        "list.connector.work.security.map.eisAndMappedPrincipal",
+                        "list.connector.work.security.maps.eisAndMappedPrincipal",
                         "eis principal={0}, mapped principal={1}",
                                     map.getEisPrincipal(), map.getMappedPrincipal()));
                     }
@@ -112,7 +112,7 @@ public class ListConnectorWorkSecurityMap implements AdminCommand {
                         final ActionReport.MessagePart part =
                             report.getTopMessagePart().addChild();
                             part.setMessage(localStrings.getLocalString(
-                        "list.connector.work.security.map.eisAndMappedGroup",
+                        "list.connector.work.security.maps.eisAndMappedGroup",
                         "eis group={0}, mapped group={1}",
                                     map.getEisGroup(), map.getMappedGroup()));
                     }
@@ -123,15 +123,15 @@ public class ListConnectorWorkSecurityMap implements AdminCommand {
 
             if (!foundWSM) {
                  report.setMessage(localStrings.getLocalString(
-                        "list.connector.work.security.map.workSecurityMapNotFound",
+                        "list.connector.work.security.maps.workSecurityMapNotFound",
                         "Work security map {0} for resource adapter {1} not found", securityMap, raName));
             }
 
         } catch (Exception e) {
             Logger.getLogger(DeleteConnectorWorkSecurityMap.class.getName()).log(Level.SEVERE,
-                    "list-connector-work-security-map failed", e);
+                    "list-connector-work-security-maps failed", e);
             report.setMessage(localStrings.getLocalString("" +
-                    "list.connector.work.security.map.fail",
+                    "list.connector.work.security.maps.fail",
                     "Unable to list connector work security map {0} for resource adapter {1}", securityMap, raName) + " " +
                     e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
