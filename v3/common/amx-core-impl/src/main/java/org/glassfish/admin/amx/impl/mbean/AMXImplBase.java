@@ -501,7 +501,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         final Method m	= findGetter( name );
         if ( m != null )
         {
-            //debug( "getAttributeInternal: found getter method for: " + name );
+            //cdebug( "getAttributeInternal: found getter method for: " + name );
             result	= getAttributeByMethod( name, m );
             //debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
         }
@@ -1070,7 +1070,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		Object	result	= null;
 		boolean	unimplemented	= false;
         final int numArgs = args != null ? args.length : 0;
-        cdebug("invoke: " + operationName + ", num args = " + numArgs );
+        //cdebug("invoke: " + operationName + ", num args = " + numArgs );
 		
 		try
 		{

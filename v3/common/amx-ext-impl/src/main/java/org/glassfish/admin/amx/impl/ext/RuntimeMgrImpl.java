@@ -48,8 +48,9 @@ import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.intf.config.ConfigConfig;
 import org.glassfish.admin.amx.intf.config.ConfigsConfig;
 import org.glassfish.admin.amx.intf.config.DomainConfig;
-import org.glassfish.admin.amx.intf.config.HttpListenerConfig;
-import org.glassfish.admin.amx.intf.config.HttpServiceConfig;
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
+import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
+import org.glassfish.admin.amx.intf.config.grizzly.Protocols;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.api.Globals;
@@ -111,36 +112,44 @@ public final class RuntimeMgrImpl extends AMXImplBase
         executeREST( "stop-domain" );
     }
 
-    private HttpListenerConfig getAdminHttpListener()
+    private Protocol getProtocol()
     {
         final DomainConfig dc = getDomainRootProxy().child(DomainConfig.class);
         
         final ConfigsConfig configs = dc.getConfigs();
+        final ConfigConfig  config = configs.getConfig().get("server-config");
         
-        final ConfigConfig  serverConfig = configs.getConfig().get("server-config");
+        final NetworkConfig network = config.getNetworkConfig().as(NetworkConfig.class);
+        final ObjectName[] children = network.getChildren();
+        for( final ObjectName o : children )
+        {
+            cdebug( "CHILD: " + o );
+        }
         
-        final HttpServiceConfig httpService = serverConfig.getHttpService();
-        final Map<String,HttpListenerConfig> listeners = httpService.getHttpListener();
-        final HttpListenerConfig listener = listeners.get("admin-listener");
+        final Protocols protocols = network.getProtocols();
+        cdebug( "Got Protocols: " + protocols );
+        final Map<String,Protocol> protocolMap = protocols.getProtocol();
+
+        final Protocol protocol = protocolMap.get("admin-listener");
         
-        cdebug( "Got HttpListenerConfig: " + listener );
+        cdebug( "Got Protocol: " + protocol );
         
-        return listener;
+        return protocol;
     }
 
     private int getRESTPort()
     {
-        return getAdminHttpListener().resolveInteger("Port");
+        return getProtocol().resolveInteger("Port");
     }
 
     private String get_asadmin()
     {
-        return getAdminHttpListener().resolveAttribute("DefaultVirtualServer");
+        return getProtocol().resolveAttribute("DefaultVirtualServer");
     }
 
     public String getRESTBaseURL()
     {
-        final String scheme = getAdminHttpListener().resolveBoolean("SecurityEnabled") ? "https" : "http";
+        final String scheme = getProtocol().resolveBoolean("SecurityEnabled") ? "https" : "http";
         final String host = "localhost";
         
         return scheme + "://" + host + ":" + getRESTPort() + "/" + get_asadmin() + "/";

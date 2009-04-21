@@ -691,7 +691,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
    	{
    		try
    		{
+        //System.out.println( "invoking: " + method.getName()  );
    			final Object result = _invoke( myProxy, method, args );
+        
+       // System.out.println( "invoke: " + method.getName() + ", result = " + result );
    			
 	   		assert( result == null ||
 	   			ClassUtil.IsPrimitiveClass( method.getReturnType() ) ||
@@ -701,6 +704,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	   				"interfaces: " + toString( result.getClass().getInterfaces() ) +
 	   				", ObjectName = " + getObjectName();
 	   				
+        //System.out.println( "invoke: " + method.getName() + ", return result = " + result );
 	   	    return result;
    		}
    		catch( IOException e )
@@ -762,9 +766,11 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         
         // compatibility and convenience
         final Class<?> returnType = method.getReturnType();
+//System.out.println( "_invoke: returnType: " + returnType.getName() );
         if ( result != null &&
             result instanceof ObjectName[] )
         {
+//System.out.println( "_invoke: trying to make ObjectName[] into proxies " );
             final ObjectName[] items = (ObjectName[])result;
             
             Class<? extends AMXProxy>  proxyClass = AMXProxy.class;
@@ -792,6 +798,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     		debug( AMXDebug.methodString( methodName, args ) + " => " + toString( result ) );
 		}
 		
+//System.out.println( "_invoke: done:  result class is " + result.getClass().getName() );
    		return( result );
    	}
 

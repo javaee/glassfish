@@ -201,7 +201,7 @@ public class AMXConfigImpl extends AMXImplBase
 		mConfigBean	= configBean;
         
         // eager initialization, it will be needed momentarily
-        ConfigBeanJMXSupportRegistry.getInstance( configBean.getProxyType() );
+        getConfigBeanJMXSupport();
 	}
     
 	public void	delegateFailed( Throwable t ) {}
@@ -1104,8 +1104,34 @@ public class AMXConfigImpl extends AMXImplBase
             throw new IllegalArgumentException();
         }
    }
-
-      
+    
+        private Object
+    invokeDuckMethod(
+        final ConfigBeanJMXSupport.DuckTypedInfo  info,
+		Object[]	         args )
+        throws MBeanException
+    {
+        try
+        {
+            cdebug( "invokeDuckMethod(): invoking: " + info.name() + " on " + info.method().getDeclaringClass() );
+            
+            if ( ! info.method().getDeclaringClass().isAssignableFrom( getConfigBeanProxy().getClass() ) )
+            {
+                throw new IllegalArgumentException( "invokeDuckMethod: " + getConfigBean().getProxyType() + " not asssignable to " + info.method().getDeclaringClass() );
+            }
+            
+            final Object result = info.method().invoke( getConfigBeanProxy(), args);
+            
+            cdebug( "invokeDuckMethod(): invoked: " + info.name() + ", got " + result );
+            
+            return result;
+        }
+        catch( final Exception e )
+        {
+            throw new MBeanException(e);
+        }
+    }
+    
     /**
         Automatically figure out get<abc>Factory(), 
         create<Abc>Config(), remove<Abc>Config().
@@ -1123,7 +1149,9 @@ public class AMXConfigImpl extends AMXImplBase
 	    
 	    Object  result  = null;
 	    debugMethod( operationName, args );
-	    
+        
+        ConfigBeanJMXSupport.DuckTypedInfo duckTypedInfo = null;
+        final ConfigBeanJMXSupport spt = getConfigBeanJMXSupport();
         if ( isGenericCreateConfig( operationName ) )
 	    {
 	        try
@@ -1146,17 +1174,10 @@ public class AMXConfigImpl extends AMXImplBase
 	            throw new MBeanException( e );
 	        }
 	    }
-// 	    else if ( isCreateConfig( operationName ) )
-// 	    {
-// 	        try
-// 	        {
-// 	            result  = createConfig( operationName, args, types);
-// 	        }
-// 	        catch( Exception e )
-// 	        {
-// 	            throw new MBeanException( e );
-// 	        }
-// 	    }
+        else if ( (duckTypedInfo = getConfigBeanJMXSupport().findDuckTyped(operationName, types)) != null )
+        {
+            result = invokeDuckMethod( duckTypedInfo, args );
+        }
 	    else
 	    {
 	        result  = super.invokeManually( operationName, args, types );
@@ -1179,6 +1200,11 @@ public class AMXConfigImpl extends AMXImplBase
 		    AMXConfigProxy.CONFIG_REMOVED_NOTIFICATION_TYPE,
 			AMXConfigProxy.CONFIG_OBJECT_NAME_KEY, configObjectName );
 	}
+    
+    private final ConfigBeanJMXSupport getConfigBeanJMXSupport()
+    {
+        return ConfigBeanJMXSupportRegistry.getInstance( getConfigBean().getProxyType() );
+    }
     
     
         private static final Map<String,String>
@@ -1204,7 +1230,7 @@ public class AMXConfigImpl extends AMXImplBase
         private Class<? extends ConfigBeanProxy>
     getConfigBeanProxyClassForContainedType( final String type )
     {
-        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( getConfigBean().getProxyType() );
+        final ConfigBeanJMXSupport spt = getConfigBeanJMXSupport();
         if ( spt == null )
         {
             throw new IllegalArgumentException( "Can't find ConfigBean @Configured class for AMX type " + type );

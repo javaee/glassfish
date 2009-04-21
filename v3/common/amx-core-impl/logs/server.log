@@ -68,3 +68,40 @@ false
 /work/v3/glassfish/domains/domain1
 Mar 26, 2009 5:33:07 PM com.sun.enterprise.admin.launcher.GFLauncherLogger info
 INFO: Successfully launched in 13 msec.
+Apr 21, 2009 4:40:37 PM com.sun.enterprise.admin.launcher.GFLauncherLogger info
+INFO: JVM invocation command line:
+/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/bin/java
+-cp
+/work/v3/glassfish/modules/glassfish.jar
+-XX:+UnlockDiagnosticVMOptions
+-XX:MaxPermSize=192m
+-XX:NewRatio=2
+-XX:+LogVMOutput
+-XX:LogFile=/work/v3/glassfish/domains/domain1/logs/jvm.log
+-Xmx512m
+-client
+-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver
+-Djavax.net.ssl.trustStore=/work/v3/glassfish/domains/domain1/config/cacerts.jks
+-Djavax.net.ssl.keyStore=/work/v3/glassfish/domains/domain1/config/keystore.jks
+-Djava.security.policy=/work/v3/glassfish/domains/domain1/config/server.policy
+-Dcom.sun.aas.instanceRoot=/work/v3/glassfish/domains/domain1
+-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory
+-Djava.security.auth.login.config=/work/v3/glassfish/domains/domain1/config/login.conf
+-Djava.endorsed.dirs=/work/v3/glassfish/lib/endorsed
+-Dcom.sun.aas.installRoot=/work/v3/glassfish
+-Djava.ext.dirs=/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/jre/lib/ext:/work/v3/glassfish/domains/domain1/lib/ext:/work/v3/glassfish/javadb/lib
+com.sun.enterprise.glassfish.bootstrap.ASMain
+-domainname
+domain1
+-instancename
+server
+-watchdog
+true
+-verbose
+true
+-debug
+false
+-domaindir
+/work/v3/glassfish/domains/domain1
+Apr 21, 2009 4:40:37 PM com.sun.enterprise.admin.launcher.GFLauncherLogger info
+INFO: Successfully launched in 13 msec.
