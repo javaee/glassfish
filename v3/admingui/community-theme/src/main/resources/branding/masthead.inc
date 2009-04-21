@@ -14,7 +14,7 @@
         <sun:hyperlink id="versionLink" toolTip="$resource{i18n.versionTooltip}" text="$resource{i18n.masthead.Version}" onClick="javascript: var versionWin = window.open('#{request.contextPath}/version.jsf','VersionWindow','scrollbars,resizable,width=700,height=500,top='+((screen.height - (screen.height/1.618)) - (500/2))+',left='+((screen.width-650)/2) ); versionWin.focus(); return false;" onKeyPress="javascript: return true;" />
     </facet>
     <!facet helpLink>
-        <sun:helpWindow id="helpLink" windowTitle="$resource{i18n.helpWindowTitle}" text="$resource{i18n.masthead.Help}" toolTip="$resource{i18n.helpWindowTooltip}" helpFile="CONTEXT_HELP.html" onClick="doHelp(this); return false; " onKeyPress="doHelp(this); return false; " />
+        <sun:helpWindow id="helpLink" windowTitle="$resource{i18n.helpWindowTitle}" text="$resource{i18n.masthead.Help}" toolTip="$resource{i18n.helpWindowTooltip}" helpFile="CONTEXT_HELP.html" onClick="admingui.help.launchHelp(this); return false;" />
     </facet>
     <!facet logoutLink>
         <sun:button id="logoutLink" rendered="#{!anonLogin}" toolTip="$resource{i18n.logoutTooltip}" target="_top" text="$resource{i18n.masthead.Logout}"
