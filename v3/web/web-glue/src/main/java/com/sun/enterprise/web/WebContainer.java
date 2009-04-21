@@ -584,6 +584,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             createHosts(httpService, aConfig.getSecurityService());
         }
 
+        loadDefaultWebModules();
+
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
         // start the embedded container
@@ -625,8 +627,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     public void event(Event event) {
         if (event.is(Deployment.ALL_APPLICATIONS_PROCESSED)) {
+            // TODO Amy
             // configure default web modules for virtual servers after all applications are processed
-            loadDefaultWebModules();
+            //loadDefaultWebModules();
         } else if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
             isShutdown = true;
         }
