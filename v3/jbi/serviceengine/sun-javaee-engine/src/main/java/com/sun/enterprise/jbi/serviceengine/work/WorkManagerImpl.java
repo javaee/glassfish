@@ -46,6 +46,7 @@ import com.sun.enterprise.jbi.serviceengine.config.ComponentConfiguration;
 import com.sun.enterprise.jbi.serviceengine.ServiceEngineException;
 import com.sun.logging.LogDomains;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
+import java.lang.reflect.Constructor;
 
 /**
  * Work Manager implementation for JBI Service Engine.
@@ -110,7 +111,7 @@ public class WorkManagerImpl implements WorkManager, Runnable {
      */
     public void startAcceptor() throws ServiceEngineException {
         //TODO :- until appserver threadpool is available, using corba se threadpool.
-        tpm = new ThreadPoolManagerImpl(null);
+        tpm = getThreadPoolManager();
 
         if (getPoolName() == null) { 
             // This will be default orb thread pool
@@ -146,6 +147,40 @@ public class WorkManagerImpl implements WorkManager, Runnable {
             se.printStackTrace();
         } finally {
             stop();
+        }
+    }
+
+        /**
+     * JDK 1.6.0_14 & JDK 1.6.0_16 has changes in SE thread pool api.
+     * Later we will be using appserver's thread pool.
+     * Using the workaround to check the constructor availability and act accordingly.
+     * @return thread pool manager
+     * @throws ServiceEngineException when unable to provide thread pool manager
+     */
+    private static ThreadPoolManager getThreadPoolManager() throws ServiceEngineException {
+        Constructor defaultConstructor;
+        Constructor threadGroupParamConstructor;
+        try {
+            defaultConstructor = ThreadPoolManagerImpl.class.getConstructor();
+            defaultConstructor.setAccessible(true);
+
+            return (ThreadPoolManager)defaultConstructor.newInstance();
+
+        } catch(NoSuchMethodException e) {
+            //do nothing. Second trial with a ThreadGroup parameter constructor will be done.
+        } catch(Exception e){
+            //do nothing.  Second trial with a ThreadGroup parameter constructor will be done.
+        }
+
+        try {
+            threadGroupParamConstructor = ThreadPoolManagerImpl.class.getConstructor(ThreadGroup.class);
+            threadGroupParamConstructor.setAccessible(true);
+
+            ThreadGroup tg = null;
+            return (ThreadPoolManager)threadGroupParamConstructor.newInstance(tg);
+
+        } catch(Exception e){
+            throw new ServiceEngineException("Service Engine unable to provide thread pool manager");
         }
     }
 }
