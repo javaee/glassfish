@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 public class TestServlet extends HttpServlet {
     private String aword = null;
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         aword = (String)config.getServletContext().getAttribute("myattr");
     }
 
