@@ -243,6 +243,11 @@
            <version>${project.version}</version>
         </dependency>
         <dependency>
+           <groupId>org.glassfish.web</groupId>
+           <artifactId>webbeans-integration</artifactId>
+           <version>${project.version}</version>
+        </dependency>
+        <dependency>
            <groupId>org.glassfish.persistence</groupId>
            <artifactId>eclipselink-wrapper</artifactId>
            <version>${project.version}</version>
