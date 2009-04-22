@@ -23,10 +23,7 @@
 package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
+import com.sun.enterprise.deployment.*;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
@@ -40,14 +37,8 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.naming.NamingException;
 import javax.persistence.spi.ClassTransformer;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -98,34 +89,24 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
     @Override public boolean prepare(DeploymentContext context) {
         boolean prepared = super.prepare(context);
 
-        Application application = context.getModuleMetaData(Application.class);
             if(prepared) {
+               Application application = context.getModuleMetaData(Application.class);
+               Set<BundleDescriptor> bundles = application.getBundleDescriptors();
 
-//                Set<BundleDescriptor> bundles = application.getBundleDescriptors();
-//
-//                // Iterate through all the bundles for the app and collect pu references in referencedPus
-//                Map <String, PersistenceUnitDescriptor> referencedPusMap = new HashMap<String, PersistenceUnitDescriptor>();
-//                for (BundleDescriptor bundle : bundles) {
-//                    Collection<? extends PersistenceUnitDescriptor> pusReferencedFromBundle = bundle.findReferencedPUs();
-//                    for(PersistenceUnitDescriptor pu : pusReferencedFromBundle) {
-//                        // we can have 'n' bundles referring to same pu. But we want to instantiate the pu only once
-//                        // Put the pus in a map from absolutepuroot +puName  to pu to filter out duplicates.
-//                        // absolutePuRoot is full path to puroot within an app
-//                        // TODO implement equals in PersistenceUnitDescriptor that takes into account absolutepuroot +puName so that we can directly add puds to a set
-//                        PersistenceUnitsDescriptor persistenceUnitsDescriptor = pu.getParent();
-//                        referencedPusMap.put(persistenceUnitsDescriptor.getAbsolutePuRoot() + pu.getName(), pu);
-//                    }
-//
-//                }
-//
-//                // EMFs get created here. JPAApplication maintains list of created EMFs so that they
-//                // can be closed at undeploy
-//                List<PersistenceUnitDescriptor> referencedPus = new ArrayList<PersistenceUnitDescriptor>();
-//                for (Map.Entry<String, PersistenceUnitDescriptor> entry : referencedPusMap.entrySet()) {
-//                    referencedPus.add(entry.getValue());
-//                }
-//
-                BundleDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
+                // Iterate through all the bundles for the app and collect pu references in referencedPus
+                List<PersistenceUnitDescriptor> referencedPus = new ArrayList<PersistenceUnitDescriptor>();
+                for (BundleDescriptor bundle : bundles) {
+                    Collection<? extends PersistenceUnitDescriptor> pusReferencedFromBundle = bundle.findReferencedPUs();
+                    for(PersistenceUnitDescriptor pud : pusReferencedFromBundle) {
+                        referencedPus.add(pud);
+                    }
+                }
+
+                RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
+                if (currentBundle == null) {
+                    // We are being called for an application
+                    currentBundle = application;
+                }
 
               // Initialize pus for only this bundle here to enable transformers to work properly. This is because classloader from deploymentcontext is for this bundle only
               // Retrieve them in load() and put them in corresponding JPAContainer instance and close them in corresponding stop()
@@ -133,13 +114,12 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
                 Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
                     for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
                         for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
-                            // TODO Need to optimize it further to only initialize those emfs that are actually referred. Check if this pud is actually referred from any component of this application
-                            pusToInitialize.add(pud);
+                            if(referencedPus.contains(pud)) {
+                                pusToInitialize.add(pud);
+                            }
                         }
                         JPAApplication jpaApp = new JPAApplication(pusToInitialize, new ProviderContainerContractInfoImpl(context, connectorRuntime));
                         context.addTransientAppMetaData(persistenceUnitsDescriptor.getAbsolutePuRoot(), jpaApp );
-                        // see if .loadPU can return a map from absolutepuroot + puname  to emf + java2db enabled or not
-                        // Store jpaApp in DeploymentContext to retrieve it during load
                     }
             }
 
@@ -151,17 +131,25 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
      */
     @Override
     public JPAApplication load(JPAContainer container, DeploymentContext context) {
-        // Return the JPAApplication stored in DeploymentContext during prepaare phase
-        BundleDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
+        JPAApplication jpaApp = null; //TODO Needs to be removed once prepare clean up is done
+        RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
+        if (currentBundle == null) {
+            // We are being called for an application
+            currentBundle = context.getModuleMetaData(Application.class);
+        }
 
         Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
         for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
-            JPAApplication jpaApp = context.getTransientAppMetaData(persistenceUnitsDescriptor.getAbsolutePuRoot(), JPAApplication.class);
+            //TODO PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persitence.xml except
+            // when the bundle is an application which can have multiple persitence.xml under jars in root of ear and lib.
+            // For that case we would only return JPAApplication corresponding to last persistence.xml here which would result in
+            // the emfs not being closed. Fix this post EA.
+            jpaApp = context.getTransientAppMetaData(persistenceUnitsDescriptor.getAbsolutePuRoot(), JPAApplication.class);
             if (jpaApp != null) {
                 jpaApp.doJava2DB(context);
             }
         }
-        return new JPAApplication(); //TODO Needs to be removed once prepare clean up is done
+        return jpaApp;
     }
 
 
