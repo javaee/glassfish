@@ -148,9 +148,6 @@
         <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
         <jvm-options>-XX:NewRatio=2</jvm-options>
       </java-config>
-      <thread-pools>
-        <thread-pool thread-pool-id="thread-pool-1"></thread-pool>
-      </thread-pools>
       <network-config>
         <protocols>
           <protocol name="http-listener-1">
@@ -172,6 +169,7 @@
         </protocols>
         <network-listeners>
           <thread-pool max-thread-pool-size="20" min-thread-pool-size="2" thread-pool-id="http-thread-pool" max-queue-size="4096"></thread-pool>
+          <thread-pool thread-pool-id="thread-pool-1"></thread-pool>
           <network-listener port="8080" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
           <network-listener port="8181" enabled="false" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
           <network-listener port="4848" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="http-thread-pool"></network-listener>

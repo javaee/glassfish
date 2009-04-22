@@ -38,20 +38,16 @@ package com.sun.enterprise.configapi.tests;
 
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.tests.utils.Utils;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.WriteableView;
-import org.junit.Ignore;
 
-import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,7 +55,6 @@ import java.util.Map;
  * Date: Mar 28, 2008
  * Time: 4:23:31 PM
  */
-@Ignore
 public class TransactionCallBackTest extends ConfigPersistence {
 
     Habitat habitat = Utils.getNewHabitat(this);
@@ -79,9 +74,7 @@ public class TransactionCallBackTest extends ConfigPersistence {
         return habitat;
     }
 
-    @Ignore
     public void doTest() throws TransactionFailure {
-/*
         ConfigBean serviceBean = (ConfigBean) ConfigBean.unwrap(habitat.getComponent(NetworkListeners.class));
         Map<String, String> configChanges = new HashMap<String, String>();
         configChanges.put("name", "funky-listener");
@@ -90,42 +83,26 @@ public class TransactionCallBackTest extends ConfigPersistence {
                 new ConfigSupport.TransactionCallBack<WriteableView>() {
                     @SuppressWarnings({"unchecked"})
                     public void performOn(WriteableView param) throws TransactionFailure {
+                        // if you know the type...
+                        NetworkListener listener = param.getProxy(NetworkListener.class);
+                        listener.setName("Aleksey");
+                        // if you don't know the type
+                        Method m;
                         try {
-                            // if you know the type...
-                            NetworkListener listener = param.getProxy(NetworkListener.class);
-                            Property prop = param.allocateProxy(Property.class);
-                            prop.setName("Julien");
-                            prop.setValue("Le petit Clown");
-                            listener.getProperty().add(prop);
-
-                            // if you don't know the type
-                            Method m;
-                            try {
-                                m = param.getProxyType().getMethod("getProperty");
-                            } catch (NoSuchMethodException e) {
-                                throw new TransactionFailure("Cannot find getProperty method", e);
-                            }
-                            Property prop2 = param.allocateProxy(Property.class);
-                            prop2.setName("Aleksey");
-                            prop2.setValue("Le petit blond");
-                            try {
-                                List<Property> list = (List<Property>) m.invoke(param.getProxy(param.getProxyType()));
-                                list.add(prop2);
-                            } catch (IllegalAccessException e) {
-                                throw new TransactionFailure("Cannot call getProperty method", e);
-                            } catch (InvocationTargetException e) {
-                                throw new TransactionFailure("Cannot call getProperty method", e);
-                            }
-                        } catch(PropertyVetoException e) {
-                            throw new TransactionFailure("Cannot add property to listener", e);
+                            m = param.getProxyType().getMethod("setAddress", String.class);
+                            m.invoke(param.getProxy(param.getProxyType()), "localhost");
+                        } catch (NoSuchMethodException e) {
+                            throw new TransactionFailure("Cannot find getProperty method", e);
+                        } catch (IllegalAccessException e) {
+                            throw new TransactionFailure("Cannot call getProperty method", e);
+                        } catch (InvocationTargetException e) {
+                            throw new TransactionFailure("Cannot call getProperty method", e);
                         }
-                        
                     }
                 });
-*/
     }
 
     public boolean assertResult(String s) {
-        return s.contains("Aleksey");
+        return s.contains("Aleksey") && s.contains("localhost");
     }    
 }
