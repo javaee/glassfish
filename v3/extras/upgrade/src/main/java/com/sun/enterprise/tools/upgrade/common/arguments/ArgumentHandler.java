@@ -37,7 +37,6 @@
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
 import java.util.Vector;
-import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.*;

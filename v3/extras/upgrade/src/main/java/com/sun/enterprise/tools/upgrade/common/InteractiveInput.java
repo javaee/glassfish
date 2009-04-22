@@ -42,8 +42,7 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.Map;
-
+import java.util.ArrayList;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
 
 /**
@@ -51,5 +50,6 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
  * @author Hans Hrasna
  */
 public interface InteractiveInput {
-    public void processArguments(Map<String,ArgumentHandler> inputMap);
+    //-public void processArguments(Map<String,ArgumentHandler> inputMap);
+    public void processArguments(ArrayList<ArgumentHandler> aList);
 }

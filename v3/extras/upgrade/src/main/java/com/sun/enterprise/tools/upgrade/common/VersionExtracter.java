@@ -52,15 +52,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.*;
 import java.util.logging.*;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.w3c.dom.Document;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -144,7 +136,6 @@ public class VersionExtracter {
     public String extractVersionFromConfigFile(String cfgFilename){
 		String verEdStr = null;
         String versionString = null;
-        String editionString = null;
 		File configFile = new File(cfgFilename);
 		if (!configFile.exists() || !configFile.isFile()){
 			return verEdStr;
@@ -155,7 +146,6 @@ public class VersionExtracter {
 
         try {
             String publicID = adminServerDoc.getDoctype().getPublicId();
-            //////-String systemID = adminServerDoc.getDoctype().getSystemId();
             String appservString = stringManager.getString(
 				"common.versionextracter.appserver.string");
 			int indx = publicID.indexOf(appservString);
@@ -165,31 +155,17 @@ public class VersionExtracter {
 				String [] s = tmpS.split(" ");
 				versionString = s[0];
 			}
-	
-			//- Make best guess of profile based upon config indicators.
-			if(editionString == null){
-				NodeList taggedElements = adminServerDoc.getDocumentElement().
-                        getElementsByTagName("web-container-availability");
-				if (taggedElements.getLength() == 0){
-						editionString = UpgradeConstants.DEVELOPER_PROFILE;
-				} else {
-					for(int lh =0; lh < taggedElements.getLength(); lh++){
-						Element element = (Element)taggedElements.item(lh);
-						String attr = element.getAttribute("persistence-type");
-						if (attr.equals("ha")){
-								editionString = UpgradeConstants.ENTERPRISE_PROFILE;
-						} else if (attr.equals("replicated")){
-							editionString = UpgradeConstants.CLUSTER_PROFILE;
-						}
-						if (editionString != null){
-							break;
-						}
-					}
-				}
-			}
-            verEdStr = formatVersionEditionStrings(versionString, editionString);
+
+            verEdStr = formatVersionEditionStrings(versionString, UpgradeConstants.ALL_PROFILE);
+
         }catch (Exception ex){
-            logger.log(Level.SEVERE, stringManager.getString("common.versionextracter.dtd_product_version_find_failured"),ex);
+            //- Very basic check that this contain V3 domain XML.
+            Element rootElement = adminServerDoc.getDocumentElement();
+            if (!"domain".equals(rootElement.getTagName())) {
+                logger.log(Level.SEVERE, stringManager.getString("common.versionextracter.dtd_product_version_find_failured"), ex);
+            } else {
+                verEdStr=formatVersionEditionStrings(UpgradeConstants.VERSION_3_0, UpgradeConstants.ALL_PROFILE);
+            }
         }
         return verEdStr;
     }

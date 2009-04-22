@@ -43,8 +43,7 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.Map;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.logging.*;
 
 import com.sun.enterprise.tools.upgrade.logging.*;
@@ -53,8 +52,6 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
-import com.sun.enterprise.tools.upgrade.common.CLIConstants;
-import com.sun.enterprise.tools.upgrade.common.Credentials;
 
 /**
  * Utility to evaluate the CLI input arguments when the
@@ -72,10 +69,9 @@ public class NopromptInput implements InteractiveInput{
 		sm = StringManager.getManager(NopromptInput.class);
 		this._log = LogService.getLogger(LogService.UPGRADE_LOGGER);
 	}
-	
-	public void processArguments(Map<String, ArgumentHandler> inputMap){
-		Collection<ArgumentHandler> values = inputMap.values();
-		for(ArgumentHandler v: values){
+
+    public void processArguments(ArrayList<ArgumentHandler> aList){
+		for(ArgumentHandler v: aList){
 			if (v.isValidParameter()){
 				v.exec();
 			} else {
@@ -91,19 +87,13 @@ public class NopromptInput implements InteractiveInput{
 				System.exit(1);
 			}
 		}
-		
+
 		if (!commonInfo.isUpgradeSupported()){
 			commonInfo.recover();
 			System.exit(1);
 		}
-		
-		//- verify user credentials
-		Credentials c = commonInfo.getSource().getDomainCredentials(); 
-		checkCredentials(c);
-		verifyUserAndPasswords(c.getAdminUserName(), c.getAdminPassword(), 
-			c.getMasterPassword());
 	}
-	
+/***
 	private void checkCredentials(Credentials tmpC){
 		if (tmpC.getAdminUserName() == null){
 			ARG_adminuser tmpA = new ARG_adminuser();
@@ -121,15 +111,5 @@ public class NopromptInput implements InteractiveInput{
 			tmpA.exec();
 		}
 	}
-	
-	private void verifyUserAndPasswords(String adminUser, String adminPassword,
-		String masterPassword) {
-		if(!UpgradeUtils.getUpgradeUtils(commonInfo).
-			validateUserDetails(adminUser,adminPassword,masterPassword)) {
-			_log.severe(sm.getString(
-				"enterprise.tools.upgrade.cli.NopromptInput.wrong_adminuser_or_adminpassword_or_masterpassword"));
-			commonInfo.recover();
-			System.exit(1);
-		}
-	}
+***/
 }

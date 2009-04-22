@@ -115,9 +115,4 @@ public interface DomainInfoObj {
 	 */
 	public String getVersionEdition();
 	
-	//------------------------------------
-	public String getJKSKeyStorePath();
-	public String getTrustedJKSKeyStorePath();
-	public String getSunACCFileName();
-	public String getServerPolicyFileName();
 }

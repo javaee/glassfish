@@ -46,15 +46,9 @@ package com.sun.enterprise.tools.upgrade.common;
  *
  * @author  prakash
  */
-import java.util.HashMap;
-import java.util.HashSet;
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.logging.*;
 
 public final class UpgradeConstants {
     
-    private static StringManager stringManager = StringManager.getManager(UpgradeConstants.class);
-
     public static final String VERSION_91 = "9.1";	
 	public static final String VERSION_91_01 = "9.1_01";	//as91_ur1
     public static final String VERSION_91_02 = "9.1_02";	//as91_ur2
@@ -65,6 +59,7 @@ public final class UpgradeConstants {
     public static final String DEVELOPER_PROFILE = "developer";
 	public static final String CLUSTER_PROFILE = "cluster";
     public static final String ENTERPRISE_PROFILE = "enterprise";
+    public static final String ALL_PROFILE = "All";
 
     //asupgrade related constants     
     public static final String ASUPGRADE = "asupgrade";
@@ -87,18 +82,6 @@ public final class UpgradeConstants {
     //operating system related constants    
     public static final String OS_NAME_IDENTIFIER = "os.name";
     public static final String OS_NAME_WINDOWS = "Windows";
-    
-    public static final HashMap supportMap = new HashMap();
-    static{
-        HashSet trgSet = new HashSet();
-        trgSet.add(VERSION_3_0);
-
-        //- prior product versions that can be upgraded to the target server
-        supportMap.put(VERSION_91,trgSet);
-        supportMap.put(VERSION_91_01,trgSet);
-        supportMap.put(VERSION_91_02,trgSet);
-        supportMap.put(VERSION_2_1,trgSet);
-    };
 
     /** Creates a new instance of UpgradeConstants */
     public UpgradeConstants() {

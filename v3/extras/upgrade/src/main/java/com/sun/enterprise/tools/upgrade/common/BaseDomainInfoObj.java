@@ -53,10 +53,6 @@ public abstract class BaseDomainInfoObj implements DomainInfoObj {
 	final String CONFIG_DOMAIN_XML_FILE =
 		UpgradeConstants.AS_CONFIG_DIRECTORY + "/" +
 		UpgradeConstants.DOMAIN_XML_FILE;
-	private static final String CERT_FILE_NAME = "keystore.jks";
-    private static final String TRUSTED_KEY_STORE = "cacerts.jks";
-	static final String SERVER_POLICY_FILE = "server.policy";
-    static final String SUN_ACC_XML_FILE = "sun-acc.xml";
 		
 	String installDir = null;  //- user provided path of the domain		
 	String domainRoot = null;  //- parent path of the domain
@@ -104,7 +100,6 @@ public abstract class BaseDomainInfoObj implements DomainInfoObj {
 		return domainName;
 	}
 	
-	//- public void setDomainRoot(String s){}
 	public String getDomainRoot(){
 		return domainRoot;
 	}
@@ -133,24 +128,7 @@ public abstract class BaseDomainInfoObj implements DomainInfoObj {
 	 */
 	public abstract String getVersionEdition();
 
-	//------------------------------------
-	public String getJKSKeyStorePath(){
-		return getDomainDir() + "/" + UpgradeConstants.AS_CONFIG_DIRECTORY +
-			"/" + CERT_FILE_NAME;
-	}
-	public String getTrustedJKSKeyStorePath(){
-		return getDomainDir() + "/" + UpgradeConstants.AS_CONFIG_DIRECTORY +
-			"/" + TRUSTED_KEY_STORE;
-	}
 	
-	public String getSunACCFileName(){
-		return getDomainDir() + "/" +
-			UpgradeConstants.AS_CONFIG_DIRECTORY + "/" + SUN_ACC_XML_FILE;
-	}
-	public String getServerPolicyFileName(){
-		return getDomainDir() + "/" +
-			UpgradeConstants.AS_CONFIG_DIRECTORY + "/" + SERVER_POLICY_FILE;
-	}
 	
 	//=======================================
 	protected String extractDomainRoot(String str){
@@ -179,6 +157,5 @@ public abstract class BaseDomainInfoObj implements DomainInfoObj {
 		String [] tmpS = versionEdition.split(s);
 		version = tmpS[0];
 		edition = tmpS[1];
-		///-edition = s;
 	}
 }

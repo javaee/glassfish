@@ -49,6 +49,8 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_help;
 import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
+import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 
 /**
  * Parse the arguments for the upgrade tool
@@ -70,6 +72,8 @@ public class ArgsParser {
 	public ArrayList<ArgumentHandler> parse(String [] args){
 		ArrayList<ArgumentHandler> aList = new ArrayList<ArgumentHandler>();
 		String tmpArg;
+        int srcIndx = 0;
+        int trgIndx = 0;
 		for(int i =0; i < args.length; i++){
 			//- System.out.println("lenght: " + args.length + "\ti: " + i);
 			tmpArg = args[i];
@@ -83,12 +87,26 @@ public class ArgsParser {
 				aList.add(aHandler);
 				// --passwordfile/-f creates credential ArgumentHandlers
 				aList.addAll(aHandler.getChildren());
+                if (aHandler instanceof ARG_target){
+                    trgIndx = aList.indexOf(aHandler);
+                }
+                if (aHandler instanceof ARG_source){
+                    srcIndx = aList.indexOf(aHandler);
+                }
 			} 
 			//-System.out.println("   tmpArg: " + tmpArg);
 		}
+
+        //- force the src location to preceed target location
+        //- so future processing will proceed properly.
+        if (srcIndx > trgIndx){
+            ArgumentHandler tmpA = aList.remove(srcIndx);
+            aList.add(trgIndx, tmpA);
+        }
 		return aList;
 	}
-	
+
+    
 	private ArgumentHandler getArgHandler(String cmd) {
 		ArgumentHandler aHandler = null;
 		Class clazz = null;

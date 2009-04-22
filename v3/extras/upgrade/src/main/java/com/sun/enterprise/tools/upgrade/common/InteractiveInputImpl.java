@@ -44,7 +44,8 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.util.Map;
-import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.logging.*;
 
 import com.sun.enterprise.tools.upgrade.logging.*;
@@ -64,19 +65,24 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
  * @author rebeccas
  */
 public class InteractiveInputImpl implements InteractiveInput{
-	private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
 	private Map<String, ArgumentHandler> inputMap;
 	private StringManager sm = StringManager.getManager(InteractiveInputImpl.class);
+    private StringManager smcli = StringManager.getManager(com.sun.enterprise.tools.upgrade.cli.CliLogMessageListener.class);
 	
 	/** Creates a new instance of InteractiveInputImpl */
 	public InteractiveInputImpl() {
 	}
-	
-	public void processArguments(Map<String, ArgumentHandler> inputMap){
-		this.inputMap = inputMap;
-		
+
+    ///-public void processArguments(Map<String, ArgumentHandler> inputMap){
+	public void processArguments(ArrayList<ArgumentHandler> aList){
+        int cnt = aList.size();
+		this.inputMap = new HashMap<String, ArgumentHandler>();
+		for (int i =0; i < cnt; i++){
+			ArgumentHandler tmpAh = aList.get(i);
+			inputMap.put(tmpAh.getCmd(), tmpAh);
+		}
+
 		try {
-			System.out.println(CLIConstants.CLI_USER_INSTRUCTIONS);
 			sourcePrompt();
 			targetPrompt();
 			if (!CommonInfoModel.getInstance().isUpgradeSupported()){
@@ -87,14 +93,9 @@ public class InteractiveInputImpl implements InteractiveInput{
 			masterPasswordPrompt();
 		}catch(Exception e) {
 			getLogger().log(Level.SEVERE,
-			sm.getString("enterprise.tools.upgrade.cli.unexpectedException"),
+			smcli.getString("enterprise.tools.upgrade.cli.unexpectedException"),
 			e);
-		}
-		
-		//- verify user credentials
-		Credentials c = commonInfo.getSource().getDomainCredentials(); 
-		verifyUserAndPasswords(c.getAdminUserName(), c.getAdminPassword(), 
-			c.getMasterPassword());		
+		}		
 	}
 	
 	/**
@@ -118,7 +119,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		if(tmpA == null) {
 			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.Source_input"));
+				smcli.getString("enterprise.tools.upgrade.cli.Source_input"));
 			
 			String source = getResponse();
 			tmpA = new ARG_source();
@@ -130,7 +131,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 			tmpA.exec();
 		} else {
 			getLogger().severe(
-				sm.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
+				smcli.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
 			inputMap.remove(CLIConstants.SOURCE_SHORT);
 			inputMap.remove(CLIConstants.SOURCE);
 			sourcePrompt();
@@ -144,18 +145,18 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		if(tmpA == null) {
 			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.Target_input"));
+				smcli.getString("enterprise.tools.upgrade.cli.Target_input"));
 			
 			String target = getResponse();
 			tmpA = new ARG_target();
 			tmpA.setRawParameters(target);
 			inputMap.put(CLIConstants.TARGET,tmpA);
 		}
-		
+
 		if (tmpA.isValidParameter()){
 			tmpA.exec();
 		} else {
-			getLogger().severe(sm.getString("" +
+			getLogger().severe(smcli.getString("" +
 				"enterprise.tools.upgrade.cli.not_valid_target_install"));
 			inputMap.remove(CLIConstants.TARGET_SHORT);
 			inputMap.remove(CLIConstants.TARGET);
@@ -170,7 +171,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		if(tmpA == null) {
 			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.adminuser_input"));
+				smcli.getString("enterprise.tools.upgrade.cli.adminuser_input"));
 			
 			String admiuser = getResponse();
 			tmpA = new ARG_adminuser();
@@ -185,11 +186,10 @@ public class InteractiveInputImpl implements InteractiveInput{
 		if (tmpA == null){
 			tmpA = inputMap.get(CLIConstants.ADMINPASSWORD);
 		}
-		//Getting source edition since target domain's profile will be based on this.
-		String sourceEdition = commonInfo.getSource().getEdition();
+		
 		if(tmpA == null) {
 			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
+				smcli.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
 			
 			String adminPassword =  new CliUtil().getPassword();
 			tmpA = new ARG_adminpassword();
@@ -206,7 +206,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		if(tmpA == null) {
 			System.out.print(
-				sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
+				smcli.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
 			String password =  new CliUtil().getPassword();
 			tmpA = new ARG_masterpassword();
 			tmpA.setRawParameters(password);
@@ -214,37 +214,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		tmpA.exec();
 	}
-	
-	private void verifyUserAndPasswords(String adminUser, String adminPassword,
-		String masterPassword) {
-		if(!UpgradeUtils.getUpgradeUtils(commonInfo).
-			validateUserDetails(adminUser,adminPassword,masterPassword)) {
-			getLogger().severe(sm.getString(
-				"enterprise.tools.upgrade.cli.wrong_adminuser_or_adminpassword_or_masterpassword"));
-			//- cleanup and try again
-			commonInfo.getSource().getDomainCredentials().setAdminUserName(null);
-			commonInfo.getSource().getDomainCredentials().setAdminPassword(null);
-			commonInfo.getSource().getDomainCredentials().setMasterPassword(null);
- 			inputMap.remove(CLIConstants.ADMINUSER);
-			inputMap.remove(CLIConstants.ADMINPASSWORD);
-			inputMap.remove(CLIConstants.MASTERPASSWORD);
-			inputMap.remove(CLIConstants.ADMINUSER_SHORT);
-			inputMap.remove(CLIConstants.ADMINPASSWORD_SHORT);
-			inputMap.remove(CLIConstants.MASTERPASSWORD_SHORT);
-			try{
-				adminPrompt();
-				adminPasswordPrompt();
-				masterPasswordPrompt();
-			}catch(Exception e) {
-				getLogger().log(Level.SEVERE,
-					sm.getString("enterprise.tools.upgrade.cli.unexpectedException"),
-					e);
-		}
-			verifyUserAndPasswords(commonInfo.getSource().getDomainCredentials().getAdminUserName(),
-			commonInfo.getSource().getDomainCredentials().getAdminPassword(), commonInfo.getSource().getDomainCredentials().getMasterPassword());
-		}
-	}
-	
+
 	private Logger getLogger() {
 		return LogService.getLogger(LogService.UPGRADE_LOGGER);
 	}

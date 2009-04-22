@@ -519,8 +519,8 @@ public class MainFrame extends JFrame implements LogMessageListener,
 		String userName = dataCollectionPanel.getAdminUserName();
 		String adminPasswd = dataCollectionPanel.getAdminPassword();
 		String masterPwd = dataCollectionPanel.getMasterPassword();	
-		if(UpgradeUtils.getUpgradeUtils(commonInfoModel).
-			validateUserDetails(userName,adminPasswd,masterPwd)){
+///		if(UpgradeUtils.getUpgradeUtils(commonInfoModel).
+///			validateUserDetails(userName,adminPasswd,masterPwd)){
 			ARG_adminuser u = new ARG_adminuser();
 			u.setRawParameters(userName);
 			u.exec();
@@ -530,13 +530,13 @@ public class MainFrame extends JFrame implements LogMessageListener,
 			ARG_masterpassword masterpswd = new ARG_masterpassword();
 			masterpswd.setRawParameters(masterPwd);
 			masterpswd.exec();
-		} else {
-			javax.swing.JOptionPane.showMessageDialog(this,
-				stringManager.getString("upgrade.gui.mainframe.invalidUserDetailsMsg"),
-				stringManager.getString("upgrade.gui.mainframe.invalidUserDetailsTitle"),
-				javax.swing.JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
+///		} else {
+///			javax.swing.JOptionPane.showMessageDialog(this,
+///				stringManager.getString("upgrade.gui.mainframe.invalidUserDetailsMsg"),
+///				stringManager.getString("upgrade.gui.mainframe.invalidUserDetailsTitle"),
+///				javax.swing.JOptionPane.ERROR_MESSAGE);
+///			return false;
+///		}
 		return true;
 	}
     

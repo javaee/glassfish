@@ -44,6 +44,10 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.io.File;
+import java.util.logging.*;
+
+import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 
 /**
@@ -51,10 +55,10 @@ import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
  * @author rebeccas
  */
 public class TargetAppSrvObj extends BaseDomainInfoObj{
-	private static final String TARGET_WSS_SERVER_CONFIG_XML = "wss-server-config-1.0.xml";
-    static final String DEFAULT_WEB_XML_FILE = "default-web.xml";
 	private String dtdFilename = null;
-    
+    private StringManager sm;
+    static Logger _logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
+
     //- Value indicates if an in-place upgrade of domains is supported by
     //- the traget appserver.  This value is specific to each product release
     //- and should be set accordingly V3 does not support in-place upgrade.
@@ -62,22 +66,40 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 	
 	/** Creates a new instance of TargetAppSrvObj */
 	public TargetAppSrvObj() {
-	}
+        sm = StringManager.getManager(TargetAppSrvObj.class);
+    }
 	
-	public boolean isValidPath(String s){
-		boolean flag = false;
-		File targetPathDir = new File(s);
-		if(targetPathDir.exists()) {
-			// check if this is an existing domain
-			File domainXML = new File(s + "/" +
-				super.CONFIG_DOMAIN_XML_FILE);
-			if(!domainXML.isFile() || !domainXML.exists()) {
-				flag = true;
-			}
-		}
-		return flag;
-	}
-	
+	public boolean isValidPath(String s) {
+        boolean flag = false;
+        File targetPathDir = new File(s);
+        if (targetPathDir.exists()) {
+            if (isInPlaceUpgradeAllowed()) {
+                // check if this is an existing domain
+                File domainXML = new File(s + "/" +
+                        super.CONFIG_DOMAIN_XML_FILE);
+                if (!domainXML.isFile() || !domainXML.exists()) {
+                    flag = true;
+                } else {
+                     _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.target.dir_domain_exist",
+                             targetPathDir.getAbsolutePath()));
+                }
+            } else {
+                File tmpPath = new File(targetPathDir,
+                        CommonInfoModel.getInstance().getSource().getDomainName());
+                if (!tmpPath.exists()) {
+                    flag = true;
+                } else {
+                    _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.target.dir_domain_exist",
+                            tmpPath.getAbsolutePath()));
+                }
+            }
+        } else {
+            _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.target.dir_does_not_exist",
+                    targetPathDir.getAbsolutePath()));
+        }
+        return flag;
+    }
+
 	public void setInstallDir(String s){ 
 		super.installDir = s;
 		if (s != null){
@@ -98,9 +120,9 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 		if (super.versionEdition == null){
 			VersionExtracter v = new VersionExtracter(super.domainRoot,
 				CommonInfoModel.getInstance());
-			super.version = v.getAsadminVersion();
-			super.edition = v.getTargetDefaultProfile();
-			super.versionEdition = v.formatVersionEditionStrings(
+            super.version = UpgradeConstants.VERSION_3_0;
+            super.edition = UpgradeConstants.ALL_PROFILE;
+            super.versionEdition = v.formatVersionEditionStrings(
 				super.version, super.edition);
 		}
 		return super.versionEdition;
@@ -108,6 +130,7 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 	
 	
 	//- target specific ---------------------
+
 	public String getDTDFilename(){
 		if (dtdFilename == null){
 			VersionExtracter v = new VersionExtracter(super.domainRoot,
@@ -116,18 +139,7 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 		}
 		return dtdFilename;
 	}
-	
-	public String getWssServerConfigXML(){
-		return getDomainDir() + "/" +
-			UpgradeConstants.AS_CONFIG_DIRECTORY
-			+ "/" + TARGET_WSS_SERVER_CONFIG_XML;
-	}
-	
-	public String getDefaultWebXMLFileName(){
-		return getDomainDir() + "/" +UpgradeConstants.AS_CONFIG_DIRECTORY + 
-			"/" + DEFAULT_WEB_XML_FILE;
-	}
-	
+
 	public String getInstallRootProperty(){
 		return System.getProperty(UpgradeConstants.AS_INSTALL_ROOT);
 	}

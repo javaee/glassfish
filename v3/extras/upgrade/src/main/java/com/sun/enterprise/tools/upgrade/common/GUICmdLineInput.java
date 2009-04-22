@@ -71,26 +71,17 @@ public class GUICmdLineInput implements InteractiveInput{
 		this._log = LogService.getLogger(LogService.UPGRADE_LOGGER);
 	}
 	public void collectMissingArguments(Map inputMap){}
-	
-	public Map<String, ArgumentHandler> parse(String [] args){
+
+	public ArrayList<ArgumentHandler> parse(String [] args){
 		ArgsParser ap = new ArgsParser();
 		ArrayList<ArgumentHandler> aList = ap.parse(args);
-		int cnt = aList.size();
-		HashMap<String, ArgumentHandler> inputMap = new HashMap<String, ArgumentHandler>();
-		for (int i =0; i < cnt; i++){
-			ArgumentHandler tmpAh = aList.get(i);
-			inputMap.put(tmpAh.getCmd(), tmpAh);
-			////-System.out.println("GUICmdLineInput:parse: "+tmpAh.getClass().getName());
-			_log.log(Level.FINE,tmpAh.getCmd() + " " + tmpAh.getRawParameter());
-		}
-		return inputMap;
+        return aList;
 	}
-	public void processArguments(Map<String, ArgumentHandler> inputMap){
-		Collection<ArgumentHandler> values = inputMap.values();
-		
+
+    public void processArguments(ArrayList<ArgumentHandler> aList){
 		//- set under laying values.  Skip invalid data.
 		//- GUI will handle.
-		for(ArgumentHandler v: values){
+		for(ArgumentHandler v: aList){
 			if (v.isValidParameter()){
 				v.exec();
 			}

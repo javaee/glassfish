@@ -36,12 +36,9 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.io.*;
-import java.util.*;
 import java.util.logging.*;
 import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.cluster.*;
 
 /**
  *
@@ -75,7 +72,6 @@ public class CommonInfoModel{
     /**
      * CommonInfoModel constructor
      */
-    //////- public CommonInfoModel(){
     private CommonInfoModel(){
     }
     
@@ -128,19 +124,12 @@ public class CommonInfoModel{
             } else {
                 throw new Exception(stringManager.getString("upgrade.common.inplace_upgrade_not_supported"));
             }
-		}
+		} else {
+            UpgradeUtils.getUpgradeUtils(this).cloneDomain(
+                sAppSrvObj.getInstallDir(), tAppSrvObj.getDomainDir());
+        }
 	}
 	
-	/**
-	 * The appropriate source domain.xml file.
-	 * It is in the backup area for an inplace upgrade.
-	 * It is the original file location for a side-by-side upgrade.
-	 */
-	 public String getSourceConfigXMLFile(){
-		 return (isInPlace())? sAppSrvObj.getBackupConfigXMLFile() :
-			 sAppSrvObj.getConfigXMLFile();
-	 }
-  
     public String getOSName() {
         return osName;
     }
@@ -168,30 +157,15 @@ public class CommonInfoModel{
     public boolean isUpgradeSupported(){
 		boolean flag = true;
         String sourceVersion = sAppSrvObj.getVersion();
-        String sourceEdition = sAppSrvObj.getEdition();
         String targetVersion = tAppSrvObj.getVersion();
-        String targetEdition = tAppSrvObj.getEdition();
-		
-        //Check if the Source version and edition supports this version upgrade.	
-        if(!((java.util.HashSet)UpgradeConstants.supportMap.get(
-                sourceVersion)).contains(targetVersion)) {			
-			logger.info(stringManager.getString(
+
+        if (!sourceVersion.equals(UpgradeConstants.VERSION_91) &&
+            !sourceVersion.equals(UpgradeConstants.VERSION_3_0)){
+            logger.info(stringManager.getString(
 			"upgrade.common.upgrade_not_supported",
-			sourceVersion, sourceEdition, targetVersion, targetEdition));
+			sourceVersion, sAppSrvObj.getEdition(), targetVersion, tAppSrvObj.getEdition()));
             flag = false;
-        } else {
-			if(UpgradeConstants.CLUSTER_PROFILE.equals(sourceEdition) &&
-				!targetEdition.equals(UpgradeConstants.ENTERPRISE_PROFILE)){
-				logger.log(Level.INFO, stringManager.getString(
-					"upgrade.common.cluster_profile_created"));
-			} else if (!sourceEdition.equals(targetEdition)){
-				logger.info(stringManager.getString(
-					"upgrade.common.upgrade_not_supported",
-					sourceVersion, sourceEdition,
-					targetVersion, targetEdition));
-				flag = false;
-			}
-		}
+        }
 		return flag;
     }
 	
@@ -201,15 +175,11 @@ public class CommonInfoModel{
     }
   
     public void recover() {
-        UpgradeUtils.getUpgradeUtils(this).recover();
+        if (isInPlace()){
+            UpgradeUtils.getUpgradeUtils(this).recover();
+        }
     }
- 
-    /**
-      * Method to build the ClusterInfo object required for processing clusters.
-      */	  
-    public void processDomainXmlForClusters() {
-        ClustersInfoManager.getClusterInfoManager().gatherClusterInfo(this);
-    }   
+   
 	
 	/**
 	 * Consolidate identification of "ee" (pre-as9.1) and "enterprise"

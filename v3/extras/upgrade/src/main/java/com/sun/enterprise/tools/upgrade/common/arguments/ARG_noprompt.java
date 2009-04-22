@@ -36,10 +36,6 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
-import com.sun.enterprise.tools.upgrade.common.ArgsParser;
-import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  *

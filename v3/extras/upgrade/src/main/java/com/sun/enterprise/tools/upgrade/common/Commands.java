@@ -43,13 +43,11 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.io.*;
-import java.util.ArrayList;
 
 import com.sun.enterprise.cli.framework.CLIMain;
 import com.sun.enterprise.cli.framework.InputsAndOutputs;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.logging.LogService;
 
 /**
  *
@@ -60,43 +58,6 @@ public class Commands {
     
     /** Creates a new instance of Commands */
     public Commands() {
-    }
-    
-    public static boolean deploy(String modulePath, CommonInfoModel commonInfo, ArrayList parameters) {
-		String trgDomainXMLfile = commonInfo.getTarget().getConfigXMLFile();
-		String adminPort = DomainsProcessor.getTargetDomainPort(trgDomainXMLfile);
-        String adminSecurity = DomainsProcessor.getTargetDomainSecurity(trgDomainXMLfile);
-		Credentials c = commonInfo.getSource().getDomainCredentials();
-		
-        ArrayList deployList = new ArrayList();
-        deployList.add("deploy");
-        deployList.add("--user");
-        deployList.add(c.getAdminUserName());
-        deployList.add("--passwordfile");
-        deployList.add("\"" + c.getPasswordFile()+ "\"");
-        deployList.add("--port");
-        deployList.add(adminPort);
-        deployList.add("--secure=" + adminSecurity);
-        if(parameters != null) {
-            for(int i=0; i< parameters.size(); i++){
-                deployList.add(parameters.get(i));
-            }
-        }
-        deployList.add("\"" + modulePath + "\"");
-        String[] deployArray = new String[1];
-        String[] deploy = (String[])deployList.toArray(deployArray);
-        
-        try {
-            return executeCommand(deploy);
-        } catch (CommandException ce) {
-            Throwable t = ce.getCause();
-			CommonInfoModel.getDefaultLogger().warning(
-				stringManager.getString("upgrade.common.general_exception")
-				+ " " + (t==null?ce.getMessage():t.getMessage()));
-        }
-        CommonInfoModel.getDefaultLogger().warning(
-			stringManager.getString("commands.errorDeployingMsg") + modulePath);
-        return false;
     }
     
     public static boolean startDomain(String domainName, CommonInfoModel commonInfo) {

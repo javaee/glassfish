@@ -37,8 +37,6 @@ package com.sun.enterprise.tools.upgrade.common.arguments;
 
 import java.io.File;
 
-import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
-
 /**
  *
  * @author Hans Hrasna 
@@ -52,18 +50,25 @@ public class ARG_target extends ArgumentHandler {
 	public void setRawParameters(String p){
 		rawParameters = p;
 		paramList.clear();
-		if (rawParameters != null &&
-			commonInfo.getTarget().isValidPath(rawParameters)){
-			//For backward compatibility if the target is the same as the install directory
-			//we use the setting of AS_DEF_DOMAINS_PATH as before for the domains root
-			if(!new File(rawParameters).equals(new File(
-				commonInfo.getTarget().getInstallRootProperty()))) {
-				paramList.add(rawParameters);
-				super._isValidParameter = true;
-			}
-		}
+        if (rawParameters != null) {
+            File tmpF = new File(rawParameters);
+            if (tmpF.exists()) {
+                //For backward compatibility if the target is the same as the install directory
+                //we use the setting of AS_DEF_DOMAINS_PATH as before for the domains root
+                if (!new File(rawParameters).equals(new File(
+                        commonInfo.getTarget().getInstallRootProperty()))) {
+                    paramList.add(rawParameters);
+                    super._isValidParameter = true;
+                }
+            }
+        }
 	}
-	
+
+	public boolean isValidParameter(){
+		//- some cmds may need to override this.
+        return commonInfo.getTarget().isValidPath(rawParameters);
+	}
+
 	public void exec(){
 		if (super._isValidParameter){
 			commonInfo.createUpgradeLogFile(rawParameters);
