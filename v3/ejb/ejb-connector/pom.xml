@@ -58,7 +58,24 @@
                 <role>lead</role>
             </roles>
         </developer>
-    </developers>    
+    </developers>
+    <build>
+            <resources>
+                <resource>
+                    <directory>src/main/java</directory>
+                    <includes>
+                        <include>**/*.properties</include>
+                        <include>**/*.xsd</include>
+                    </includes>
+                </resource>
+                <resource>
+                    <directory>src/main/resources</directory>
+                    <includes>
+                        <include>**/*.1</include>
+                    </includes>
+                </resource>
+              </resources>
+    </build>    
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -78,6 +95,23 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
+        </dependency>
+        <dependency>
+             <groupId>org.glassfish.core</groupId>
+             <artifactId>kernel</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+        </dependency>
+        <dependency>
+             <groupId>org.glassfish.tests</groupId>
+             <artifactId>utils</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+        </dependency>
+        <dependency>
+             <groupId>org.glassfish.ejb</groupId>
+             <artifactId>ejb-internal-api</artifactId>
+             <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
