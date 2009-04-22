@@ -751,9 +751,9 @@ public class EJBTimerService
                                 timerTask.cancel();
                             } 
                         }
-                    }
-                    if (nextTimerState.isPersistent()) {
-                        timerLocal_.remove(nextTimerId);
+                        if (nextTimerState.isPersistent()) {
+                            timerLocal_.remove(nextTimerId);
+                        }
                     }
                 } catch(Exception e) {
                     logger.log(Level.WARNING, "ejb.destroy_timer_error",

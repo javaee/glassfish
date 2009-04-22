@@ -2634,12 +2634,18 @@ public abstract class BaseContainer
                 || methodIntf.equals(MethodDescriptor.EJB_LOCALHOME));
         if (! isHomeIntf) {
             Method beanMethod = null;
-            try {
-                beanMethod = getEJBClass().getMethod(
-                    method.getName(), method.getParameterTypes());
-            } catch (NoSuchMethodException nsmEx) {
-                //TODO
+            if (!isEjbTimeout) {
+                try {
+                    beanMethod = getEJBClass().getMethod(
+                            method.getName(), method.getParameterTypes());
+                } catch (NoSuchMethodException nsmEx) {
+                    //TODO
+                }
+            } else {
+                // For a timeout it is the method
+                beanMethod = method;
             }
+
             if (beanMethod != null) {
                 MethodDescriptor md = new MethodDescriptor(beanMethod, MethodDescriptor.EJB_BEAN);
                 if (isEjbTimeout) {
