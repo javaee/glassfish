@@ -84,6 +84,9 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
         @Param(name="dest_name", primary=true)
         String destName;
 
+        @Param(optional=true)
+        String target= SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
         @Inject
         com.sun.appserv.connectors.internal.api.ConnectorRuntime connectorRuntime;
 
@@ -96,7 +99,6 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
         @Inject
         ServerContext serverContext;
 
-        String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
      public void execute(AdminCommandContext context) {
 
