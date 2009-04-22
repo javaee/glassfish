@@ -113,8 +113,7 @@ final class BooterNew implements BooterNewMBean
                 t.printStackTrace();
                 throw new RuntimeException(t);
             }
-            debug( "Got loader for AMXStartupServiceNewMBean: " + loader );
-            
+            //debug( "Got loader for AMXStartupServiceNewMBean: " + loader );
             //debug( "BooterNew.bootAMX: assuming that amx-impl loads through other means" );
         
             final ObjectName startupON = AMXStartupServiceNewMBean.OBJECT_NAME;

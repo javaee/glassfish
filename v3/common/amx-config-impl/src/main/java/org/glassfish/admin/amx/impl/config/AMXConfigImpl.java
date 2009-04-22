@@ -137,7 +137,7 @@ public class AMXConfigImpl extends AMXImplBase
             return newInfo;
         }
         
-        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(intf);
+        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(cb);
         final MBeanInfo info = spt.getMBeanInfo();
 
         final List<MBeanAttributeInfo> attrInfos = ListUtil.newListFromArray( info.getAttributes() );
@@ -1203,7 +1203,7 @@ public class AMXConfigImpl extends AMXImplBase
     
     private final ConfigBeanJMXSupport getConfigBeanJMXSupport()
     {
-        return ConfigBeanJMXSupportRegistry.getInstance( getConfigBean().getProxyType() );
+        return ConfigBeanJMXSupportRegistry.getInstance( getConfigBean() );
     }
     
     

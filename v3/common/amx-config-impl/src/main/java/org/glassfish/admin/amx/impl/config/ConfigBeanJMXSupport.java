@@ -35,6 +35,7 @@ import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DuckTyped;
@@ -49,8 +50,6 @@ public class ConfigBeanJMXSupport {
 
     /** bugs: these @Configured do not set @Attribute(key=true) */
     private static final Map<String, String> CONFIGURED_BUGS = Collections.unmodifiableMap(MapUtil.newMap(
-            "com.sun.enterprise.config.serverbeans.Config", "Name",
-            "com.sun.enterprise.config.serverbeans.Server", "Name",
             "com.sun.grizzly.config.dom.Protocol", "Name",
             "com.sun.grizzly.config.dom.Transport", "Name",
             "com.sun.grizzly.config.dom.ThreadPool", "ThreadPoolId"));
@@ -69,9 +68,37 @@ public class ConfigBeanJMXSupport {
     private final List<DuckTypedInfo> mDuckTypedInfos = new ArrayList<DuckTypedInfo>();
     private final NameHint mNameHint;
     private final MBeanInfo mMBeanInfo;
+    private final String   mKey;    // xml name
+    
+    private static String nameFromKey(final String key)
+    {
+        if ( key == null ) return null;
+        
+        if ( key.startsWith("@"))  return key.substring(1);
+        
+        if ( key.startsWith("<")) return key.substring(1, key.length() - 1);
+        
+        throw new IllegalArgumentException(key);
+    }
 
-    public ConfigBeanJMXSupport(final Class<? extends ConfigBeanProxy> intf) {
+    public ConfigBeanJMXSupport( final ConfigBean configBean )
+    {
+        this( configBean.getProxyType(), nameFromKey(configBean.model.key));
+        
+        //debug( "ConfigBeanJMXSupport: " + configBean.getProxyType().getName() + ": key=" +  configBean.model.key + ", keyedAs=" + configBean.model.keyedAs);
+        
+        //debug( toString() );
+    }
+    
+    /**
+        The 'key' should not be necessary as the annotations should supply that information.
+        But some are defective, without setting key=true.
+     */
+    ConfigBeanJMXSupport(
+        final Class<? extends ConfigBeanProxy> intf,
+        final String key ) {
         mIntf = intf;
+        mKey = key;
 
         findStuff(intf, mAttrInfos, mElemenInfos, mDuckTypedInfos);
 
@@ -79,14 +106,14 @@ public class ConfigBeanJMXSupport {
         sanityCheckMBeanInfo();
         mNameHint = findNameHint();
 
-        if (hasConfiguredBug()) {
+        if (hasConfiguredBug() && key == null) {
             ImplUtil.getLogger().warning("ConfigBeanJMXSupport (AMX): working around @Configured bug for " + mIntf.getName() +
                     ", using \"" + configuredBugKey() + "\" as the key attribute");
         }
 
         //ConfigModel model = Dom.unwrap(intf).getConfigModel();        
 
-        //System.out.println(toString());
+        //debug(toString());
     }
 
     private static Class<?> findDuck(final Class<?> intf) {
@@ -235,6 +262,9 @@ public class ConfigBeanJMXSupport {
 
     // if no key value can be found, consider it a singleton
     public boolean isSingleton() {
+        if ( mKey != null ) {
+            return false;
+        }
         if (hasConfiguredBug()) {
             return false;
         }
@@ -320,8 +350,10 @@ public class ConfigBeanJMXSupport {
             final List<AttributeMethodInfo> attrs,
             final List<ElementMethodInfo> elements,
             final List<DuckTypedInfo> duckTyped) {
+            
         for (final Method m : intf.getMethods()) {
             AttributeMethodInfo a;
+            //debug( "Method: " + m.getName() + " on " + m.getDeclaringClass() );
             if ((a = AttributeMethodInfo.get(m)) != null) {
                 attrs.add(a);
                 continue;
@@ -857,24 +889,24 @@ public class ConfigBeanJMXSupport {
     First element is the name hint, 2nd indicates its type
      */
     private NameHint findNameHint() {
-        String[] result = new String[2];
-        result[0] = null;
-        result[1] = null;
-
         if (isSingleton()) {
             return NameHint.NONE;
+        }
+        
+        if ( mKey != null )
+        {
+            return new NameHint(mKey);
         }
 
         final String configuredBugKey = configuredBugKey();
 
         for (final AttributeMethodInfo info : mAttrInfos) {
+            
             if (info.key()) {
-                //final MBeanAttributeInfo attrInfo = attributeToMBeanAttributeInfo( info );
-                //debug( "KEY VALUE in " + mIntf.getName() + " = " + info.getName() + " ==> " + hint );
-                //return new NameHint( xmlName( attrInfo, null) );
+                //debug( "findNameHint: mKey = " + mKey + ", info says " + info.xmlName() );
                 return new NameHint(info.xmlName());
-            } else if (configuredBugKey != null && info.attrName().equals(configuredBugKey)) {
-                //debug( "findNameHint:  " + configuredBugKey + " for " + mIntf.getName() );
+            } else if (configuredBugKey != null && info.attrName().equalsIgnoreCase(configuredBugKey)) {
+                //debug( "findNameHint: mKey = " + mKey + ", workaround says " + configuredBugKey );
                 return new NameHint(configuredBugKey);
             }
         }

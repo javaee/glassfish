@@ -38,6 +38,7 @@ package org.glassfish.admin.amx.impl.config;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
@@ -63,18 +64,31 @@ final class ConfigBeanJMXSupportRegistry
         ConfigBeanJMXSupport helper = INSTANCES.get(intf);
         if ( helper == null )
         {
-            helper = addInstance(intf);
+            // don't cache it, we can't be sure about its key
+            helper = new ConfigBeanJMXSupport(intf, null);
+        }
+        return helper;
+    }
+    
+        public static ConfigBeanJMXSupport
+    getInstance( final ConfigBean configBean )
+    {
+        ConfigBeanJMXSupport helper = INSTANCES.get( configBean.getProxyType() );
+        if ( helper == null )
+        {
+            helper = addInstance(configBean);
         }
         return helper;
     }
     
         private static synchronized ConfigBeanJMXSupport
-    addInstance( final Class<? extends ConfigBeanProxy> intf )
+    addInstance( final ConfigBean configBean )
     {
+        final Class<? extends ConfigBeanProxy> intf = configBean.getProxyType();
         ConfigBeanJMXSupport helper = INSTANCES.get(intf);
         if ( helper == null )
         {
-            helper = new ConfigBeanJMXSupport(intf);
+            helper = new ConfigBeanJMXSupport(configBean);
             INSTANCES.put( intf, helper );
         }
         return helper;

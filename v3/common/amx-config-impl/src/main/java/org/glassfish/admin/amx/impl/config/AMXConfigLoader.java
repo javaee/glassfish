@@ -582,14 +582,14 @@ public final class AMXConfigLoader extends MBeanImplBase
         private String
     getType(  final ConfigBean cb)
     {
-        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb.getProxyType() );
+        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb );
         return spt.getTypeString();
     }
     
         public static String
     getName(final ConfigBean cb)
     {
-        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb.getProxyType() );
+        final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance( cb );
         
         if ( spt.isSingleton() )
         {

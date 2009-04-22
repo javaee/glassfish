@@ -87,13 +87,8 @@ public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
         final String serverName = "das";
         ObjectName serverObjectName = getObjectNames().buildChildObjectName( J2EEServer.J2EE_TYPE, serverName );
         serverObjectName = registerChild( impl, serverObjectName );
-        ImplUtil.getLogger().info( "Registered J2EEDomain as " + getObjectName() + " with J2EEServer of " + serverObjectName);
+        //ImplUtil.getLogger().info( "Registered J2EEDomain as " + getObjectName() + " with J2EEServer of " + serverObjectName);
     }
-    /*
-v3:path=/J2EEDomain,type=J2EEDomain,name=v3
-v3:path=/J2EEDomain/J2EEServer[das],type=J2EEServer,name=das,j2eeType=J2EEServer,null=v3
-v3:path=/J2EEDomain/JVM,type=JVM,j2eeType=JVM,null=v3,J2EEServer=das
-*/
 }
 
 

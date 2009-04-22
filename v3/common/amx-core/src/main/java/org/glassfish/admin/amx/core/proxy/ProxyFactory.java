@@ -416,7 +416,7 @@ public final class ProxyFactory implements NotificationListener
 			
 				if ( instance == null )
 				{
-                    debug( "Creating new ProxyFactory for ConnectionSource / conn", connSource, conn );
+                    //debug( "Creating new ProxyFactory for ConnectionSource / conn", connSource, conn );
 					instance	= new ProxyFactory( connSource );
 					INSTANCES.put( conn, instance );
 				}
