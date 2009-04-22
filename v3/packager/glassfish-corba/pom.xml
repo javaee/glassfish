@@ -71,16 +71,6 @@
           modules to be included in this bundle
         -->       
         
-	<dependency>
-            <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-dynamicany</artifactId>
-            <version>${glassfish-corba.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-naming</artifactId>
-            <version>${glassfish-corba.version}</version>
-       </dependency>
        <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-newtimer</artifactId>
