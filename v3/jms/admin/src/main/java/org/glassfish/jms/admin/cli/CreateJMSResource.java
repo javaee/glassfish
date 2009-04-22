@@ -92,9 +92,10 @@ public class CreateJMSResource implements AdminCommand {
     private static final String TOPIC_CF = "javax.jms.TopicConnectionFactory";
     private static final String UNIFIED_CF = "javax.jms.ConnectionFactory";
     private static final String DEFAULT_JMS_ADAPTER = "jmsra";
+    private static final String DEFAULT_OPERAND="DEFAULT";
 
     //JMS destination resource properties
-    private static final String NAME = "jndi_name";
+    private static final String NAME = "Name";
     private static final String IMQ_DESTINATION_NAME = "imqDestinationName";
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSResource.class);
@@ -135,6 +136,7 @@ public class CreateJMSResource implements AdminCommand {
                 String raKey = getMappedName(key);
                 if (raKey == null) raKey = key;
                 props.put(raKey, (String) props.get(key));
+                props.remove(key);
             }
          }
 
@@ -177,10 +179,11 @@ public class CreateJMSResource implements AdminCommand {
       } else if (resourceType.equals(TOPIC) ||
                     resourceType.equals(QUEUE))
             {
-                Properties aoAttrList = null;
+                Properties aoAttrList = new Properties();
                 try{
                  //validate the provided properties and modify it if required.
-                    aoAttrList =  validateDestinationResourceProps(props, jndiName);
+                    Properties properties =  validateDestinationResourceProps(props, jndiName);
+                    aoAttrList.put("property", properties);
                 }catch (Exception e)
                 {
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -191,7 +194,7 @@ public class CreateJMSResource implements AdminCommand {
                  }
                 }
                 // create admin object
-                aoAttrList.setProperty(NAME,  jndiName);
+                aoAttrList.setProperty(DEFAULT_OPERAND,  jndiName);
                 aoAttrList.setProperty("restype",  resourceType);
                 aoAttrList.setProperty("raname",  DEFAULT_JMS_ADAPTER);
                 if(enabled!=null)
@@ -266,7 +269,7 @@ public class CreateJMSResource implements AdminCommand {
         Properties parameters = new Properties();
         //parameters.setProperty("restype", resourceType);
 
-        parameters.setProperty("poolname", jndiName);
+        parameters.setProperty(DEFAULT_OPERAND, jndiName);
         if(description != null)
             parameters.setProperty("description", description);
 
@@ -301,9 +304,9 @@ public class CreateJMSResource implements AdminCommand {
     private Properties populateConnectionResourceParameters()
     {
         Properties parameters = new Properties();
-        parameters.setProperty("jndi_name", jndiName);
+        parameters.setProperty(DEFAULT_OPERAND, jndiName);
         parameters.put("enabled", enabled);
-        parameters.setProperty("poolname", jndiName);
+        //parameters.setProperty("poolname", jndiName);
         if(description != null)
             parameters.setProperty("description", description);
 
