@@ -65,12 +65,6 @@
 		<class name="test.admin.AdminConsoleTests"/>
 	</classes>
   </test>
-
-  <test name="classloader_jsf">
-        <classes>
-                <class name="test.classloader.hellojsf.helloJSFTestNG"/>
-        </classes>
-  </test>
   <test name="web_jspservlet_war">
     <classes>
        <class name="test.web.jsp.hello.HelloJSPTestNG" />
