@@ -25,48 +25,48 @@ public class SlessEJB3 implements Sless3
 
     @ExcludeDefaultInterceptors
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-dc")
-    public void dc() {}
+    private void dc() {}
 
     @ExcludeClassInterceptors
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-ba")
-    public void ba() {}
+    protected void ba() {}
 
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-dcba")
-    public void dcba() {}
+    void dcba() {}
 
     @ExcludeClassInterceptors
     @Interceptors({InterceptorE.class, InterceptorF.class})
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-baef")
-    public void baef() {}
+    private void baef() {}
 
     @ExcludeDefaultInterceptors
     @ExcludeClassInterceptors
     @Interceptors({InterceptorE.class, InterceptorF.class})
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-ef")
-    public void ef() {}
+    private void ef() {}
 
     @ExcludeDefaultInterceptors
     @Interceptors({InterceptorE.class, InterceptorF.class})
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-dcef")
-    public void dcef() {}
+    private void dcef() {}
     
     @ExcludeDefaultInterceptors
     @ExcludeClassInterceptors
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-nothing")
-    public void nothing() {}
+    private void nothing() {}
 
     @Interceptors({InterceptorE.class, InterceptorF.class})    
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-dcbaef")
-    public void dcbaef() {}
+    private void dcbaef() {}
 
     // total ordering overridden in deployment descriptor
     @Interceptors({InterceptorE.class, InterceptorF.class})    
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-abcdef")
-    public void abcdef() {}
+    private void abcdef() {}
 
     // binding described in deployment descriptor
     @Schedule(second="*", minute="*", hour="*", info="SlessEJB3-dcf")
-    public void dcf() {}
+    private void dcf() {}
 
     // called only through interface
     @Interceptors({InterceptorA.class, InterceptorG.class})

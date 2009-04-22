@@ -35,7 +35,7 @@ public class SlessEJB4 implements Sless4
 
         // a little extra checking to make sure aroundTimeout is invoked...
         if( !aroundTimeoutCalled ) {
-            throw new EJBException("bean class aroundTimeout not called");
+            throw new EJBException("bean class aroundTimeout not called - may be correct - check the call stack");
         }
         aroundTimeoutCalled = false;
     }
