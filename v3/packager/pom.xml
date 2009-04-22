@@ -92,6 +92,7 @@
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
 	<module>jersey</module>	
+	<module>mq</module>
     </modules>
 
     <build>
