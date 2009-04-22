@@ -83,6 +83,8 @@ public class AppclientCommandArguments {
     private final static String PASSWORD = "password";
     private final static String PASSWORDFILE = "passwordfile";
     private final static String TARGETSERVER = "targetserver";
+    private final static String USAGE = "usage";
+    private final static String HELP = "help";
 
     /* names of options that take a value */
     private final static String[] valuedArgNames =
@@ -90,7 +92,7 @@ public class AppclientCommandArguments {
 
     /* names of options that take no value */
     private final static String[] unvaluedArgNames =
-            new String[] {TEXTAUTH, NOAPPINVOKE};
+            new String[] {TEXTAUTH, NOAPPINVOKE, USAGE, HELP};
 
     private static LocalStringManager localStrings = new LocalStringManagerImpl(AppClientCommand.class);;
 
@@ -157,6 +159,14 @@ public class AppclientCommandArguments {
 
     public boolean isNoappinvoke() {
         return unvaluedArgs.get(NOAPPINVOKE).get();
+    }
+
+    public boolean isUsage() {
+        return unvaluedArgs.get(USAGE).get();
+    }
+
+    public boolean isHelp() {
+        return unvaluedArgs.get(HELP).get();
     }
 
     public String getUser() {

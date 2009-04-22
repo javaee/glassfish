@@ -76,6 +76,10 @@ if (appcPath != "") {
     accArgs += ",appcpath=" + appcPath;
 }
 
+if (jvmMainArgs == "") {
+    accMainArgs = "-usage";
+    jvmMainArgs = "-jar " + accJar;
+}
 /*
  * The next statement emits a "set" command which assigns the java command to be
  * run to the env. variable "javaCmd."  The calling script then
@@ -97,7 +101,7 @@ function processArgs() {
     var accValuedOptions = ["-client", "-mainclass", "-name", "-xml",
         "-configxml", "-user", "-password", "-passwordfile",
         "-targetserver"];
-    var accNonvaluedOptions = ["-textauth", "noappinvoke"];
+    var accNonvaluedOptions = ["-textauth", "-noappinvoke", "-usage", "-help"];
     //var re = new RegExp("\"([^\"]+)\"|[^\"\\s]+)","g");
     var re = /"([^"]+)"|([^"\s]+)/g;
     

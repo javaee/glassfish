@@ -164,7 +164,9 @@ public class AppClientContainerAgent {
             AppclientCommandArguments appClientCommandArgs = AppclientCommandArguments
                     .newInstance(effectiveCommandLineArgs);
 
-
+            if (appClientCommandArgs.isUsage() | appClientCommandArgs.isHelp()) {
+                usage(0);
+            }
             /*
              * Process the agent arguments which include most of the appclient script
              * arguments.
@@ -535,9 +537,9 @@ public class AppClientContainerAgent {
         }
     }
 
-    private static void usage() {
+    private static void usage(final int exitStatus) {
         System.err.println(getUsage());
-	System.exit(1);
+        System.exit(exitStatus);
     }
 
     private static String getUsage() {
@@ -545,7 +547,11 @@ public class AppClientContainerAgent {
             AppClientContainerAgent.class,
             "main.usage",
             "appclient [ -client <appjar> | <classfile> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [app-args]"
-            );
+            )
+            + System.getProperty("line.separator")
+            + localStrings.getLocalString(AppClientContainerAgent.class,
+                "main.usage.1",
+                "  or  :\n\tappclient [ <valid JVM options and valid ACC options> ] [ -jar <appjar> | <appClass-name> ] [app args]");
     }
 
     private static void xmlMessage(String xmlFullName) throws UserError {
