@@ -647,7 +647,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         ensureConnected();
         String commandName = GET_CLIENT_STUBS_COMMAND;
         Map commandParams = new HashMap();
-        commandParams.put("appName", moduleID);
+        commandParams.put("appname", moduleID);
         commandParams.put("localDir", location);
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;

@@ -78,7 +78,7 @@ public class GetClientStubsCommand implements AdminCommand {
     private Applications apps;
 
     @Param(name = APPNAME, optional=false)
-    private String appName = null;
+    private String appname = null;
 
     @Param(primary=true)
     private String localDir;
@@ -89,7 +89,7 @@ public class GetClientStubsCommand implements AdminCommand {
 
         Application matchingApp = null;
         for (Application app : apps.getApplications()) {
-            if (app.getName().equals(appName)) {
+            if (app.getName().equals(appname)) {
                 matchingApp = app;
                 break;
             }
@@ -99,11 +99,11 @@ public class GetClientStubsCommand implements AdminCommand {
                 getClass(),
                 "get-client-stubs.noSuchApp",
                 "Application {0} was not found",
-                new Object[] {appName}));
+                new Object[] {appname}));
             return;
         }
         try {
-            DeployCommand.retrieveArtifacts(context, appName, localDir, downloadableArtifacts);
+            DeployCommand.retrieveArtifacts(context, appname, localDir, downloadableArtifacts);
         } catch (Exception e) {
             report.setFailureCause(e);
             report.failure(logger, localStrings.getLocalString(
