@@ -205,6 +205,12 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>securitycommon</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>amx-api</artifactId>
             <version>${project.version}</version>

@@ -43,17 +43,11 @@ own identifying information: Portions Copyright [yyyy]
                 <exclude name="admin-util*.zip"/>
                 <exclude name="realms*.zip"/>
                 <exclude name="backup*.zip"/>
-                <exclude name="amx-api*.zip"/>
+		<exclude name="amx-api*.zip"/>
+		<exclude name="securitycommon*.zip"/>
             </fileset>
         </unzip>
-        <!-- unzip dest="target/stage/${install.dir.name}">
-            <fileset dir="target/stage">
-                <include name="nucleus-base*.zip"/>
-            </fileset>
-            <patternset>
-                <include name="**/domains/**"/>
-            </patternset>
-        </unzip -->
+       
         <mkdir dir="../target"/>
         <copy todir="../target">
             <fileset dir="target/stage">
