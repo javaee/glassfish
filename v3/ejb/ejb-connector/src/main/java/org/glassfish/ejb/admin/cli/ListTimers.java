@@ -75,6 +75,7 @@ public class ListTimers implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        //TODO Required to be modified when cluster is supported.
         if (!target.equals(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)) {
             report.setMessage(localStrings.getLocalString("list.timers" +
                     ".invalid.target", "Invalid target specified as Operand"));
@@ -82,8 +83,6 @@ public class ListTimers implements AdminCommand {
         }
 
         try {
-            //TODO Required to be modified for getting instances name in
-            //cluster
             String[] timerList = timerService.listTimers
                     (new String[]{servers.getServer().get(0).getName()});
 
