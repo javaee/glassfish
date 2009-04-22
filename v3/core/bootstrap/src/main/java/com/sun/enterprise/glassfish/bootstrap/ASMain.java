@@ -74,7 +74,7 @@ public class ASMain {
                 new ASMainKnopflerFish(logger, args).run();
                 break;
             case HK2:
-                throw new RuntimeException("GlassFish does not run on the HK2 platform anynmore");
+                throw new RuntimeException("GlassFish does not run on the HK2 platform anymore");
             case Static:
                 new ASMainStatic(logger, args).run();
                 break;
