@@ -142,7 +142,7 @@
         </dependency>
        <dependency>
            <!-- base distribution image -->
-           <groupId>org.glassfish.distributions</groupId>
+           <groupId>org.glassfish.packager</groupId>
            <artifactId>nucleus-base</artifactId>
            <version>${project.version}</version>
            <type>zip</type>

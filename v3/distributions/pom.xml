@@ -63,8 +63,6 @@
     <name>Glassfish distribution images</name>
 
     <modules>
-    	<module>external</module>
-    	<module>nucleus-base</module>
     	<module>nucleus</module>
         <module>web</module>
         <module>glassfish</module>

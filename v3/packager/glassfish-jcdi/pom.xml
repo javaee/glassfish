@@ -43,10 +43,10 @@
         <artifactId>packages</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>glassfish-nucleus</artifactId>
-    <name>Glassfish Nucleus Package</name>
+    <artifactId>glassfish-jcdi</artifactId>
+    <name>Glassfish JCDI Package</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish Nucleus package</description>
+    <description>This pom describes how to assemble the GlassFish JCDI package</description>
 
     <build>
         <plugins>
@@ -65,86 +65,20 @@
         </plugins>
     </build>
 
+
     <dependencies>
         <!--
           modules to be included in this bundle
         -->       
         <dependency>
-           <groupId>com.sun.enterprise</groupId>
-           <artifactId>osgi-adapter</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.osgi-platforms</groupId>
-           <artifactId>equinox</artifactId>
-           <version>${project.version}</version>
-           <type>distribution-fragment</type>
-       </dependency>
-        <dependency>
-           <groupId>org.glassfish.core</groupId>
-           <artifactId>glassfish-extra-jre-packages</artifactId>
-           <version>${project.version}</version>
-       </dependency>
-        <dependency>
-           <groupId>org.glassfish.core</groupId>
-           <artifactId>api-exporter</artifactId>
-           <version>${project.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.core</groupId>
-           <artifactId>glassfish</artifactId>
-           <version>${project.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.core</groupId>
-           <artifactId>kernel</artifactId>
-           <version>${project.version}</version>
-  	</dependency>  
-	<dependency>
-           <groupId>org.glassfish.admin</groupId>
-           <artifactId>admin-cli</artifactId>
+           <groupId>org.glassfish.web</groupId>
+           <artifactId>webbeans-integration</artifactId>
            <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.branding</groupId>
-            <artifactId>branding</artifactId>
-	    <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-admin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-autodeploy</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-       <dependency>
-           <!-- base distribution image, move assembly here later -->
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>nucleus-base</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-       </dependency>
-       <dependency>
-           <groupId>com.sun.enterprise</groupId>
-           <artifactId>osgi-main</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.docs</groupId>
-           <artifactId>basedocs</artifactId>
-           <version>3.0-Prelude</version>
-	   <type>distribution-fragment</type>
-       </dependency> 
-       <dependency>
-            <groupId>org.glassfish.provider</groupId>
-            <artifactId>gfprobe-provider-client</artifactId>
-       </dependency>
-   
-	<!-- now, listing package dependencies so that their content
+
+    	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
-	<!-- package level dependency -->
-	<dependency>        
+        <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>felix</artifactId>
            <version>${project.version}</version>
@@ -167,7 +101,91 @@
            <artifactId>glassfish-api</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
-       </dependency>     
+   	</dependency>  
+ 	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-nucleus</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+        </dependency>
+   	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-corba-omgapi</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency> 
+	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-common</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+    	</dependency>
+  	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-registration</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+   	</dependency>  	
+        <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-management</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+        </dependency>
+        <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-amx</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>	
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-jca</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>	
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-jpa</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-codegen</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-corba</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+        </dependency>
+        <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-jta</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+        </dependency>
+        <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-jsf</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>	
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-web-management</artifactId>
+           <version>${project.version}</version>
+	   <type>zip</type>
+       </dependency>
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-web</artifactId>
+           <version>${project.version}</version>
+	   <type>zip</type>
+       </dependency>
     </dependencies>
 
     <profiles>

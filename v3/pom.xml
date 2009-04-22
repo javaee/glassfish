@@ -193,7 +193,8 @@
               	<module>jdbc</module>
               	<module>persistence</module>
               	<module>extras</module>
-                <module>admingui</module>
+		<module>admingui</module>
+		<module>packager</module>
               	<module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
@@ -272,7 +273,8 @@
               	<module>jdbc</module>
               	<module>persistence</module>
               	<module>extras</module>
-                <module>admingui</module>
+		<module>admingui</module>
+		<module>packager</module>
               	<module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
@@ -282,7 +284,6 @@
                 <module>embedded</module>
                 <module>webservices</module>
                 <module>orb</module>
-                <module>packager</module>
                 <module>distributions-ips</module>
                 <module>installer</module>
 		<module>sun-glassfish</module>
@@ -314,7 +315,8 @@
               	<module>jdbc</module>
               	<module>persistence</module>
               	<module>extras</module>
-                <module>admingui</module>
+		<module>admingui</module>
+		<module>packager</module>
               	<module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
@@ -324,7 +326,6 @@
                 <module>embedded</module>
                 <module>webservices</module>
                 <module>orb</module>
-                <module>packager</module>
                 <module>distributions-ips</module>
                 <module>installer</module>
 		<module>sun-glassfish</module>

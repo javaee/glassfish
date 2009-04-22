@@ -58,6 +58,8 @@
     </properties>
 
     <modules>
+	<module>external</module>
+	<module>nucleus-base</module>
 	<module>felix</module>
 	<module>glassfish-hk2</module>
 	<module>glassfish-grizzly</module>
@@ -76,6 +78,7 @@
 	<module>glassfish-jsf</module>
 	<module>glassfish-web-management</module>
 	<module>glassfish-web</module>
+	<!--module>glassfish-jcdi</module-->
 	<module>glassfish-jdbc-management</module>
 	<module>glassfish-jdbc</module>
 	<module>glassfish-gui</module>
