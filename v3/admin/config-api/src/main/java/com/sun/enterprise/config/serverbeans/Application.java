@@ -338,6 +338,10 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
             }
             deploymentProps.setProperty(ServerTags.OBJECT_TYPE,
                 instance.getObjectType());
+            if (instance.getContextRoot() != null) {
+                deploymentProps.setProperty(ServerTags.CONTEXT_ROOT,
+                    instance.getContextRoot());
+            }
             return deploymentProps;            
         }
 
