@@ -43,7 +43,7 @@
         <artifactId>packages</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>glassfish-ejb-timer</artifactId>
+    <artifactId>glassfish-ejb</artifactId>
     <name>Glassfish EJB Package</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the GlassFish EJB package</description>
