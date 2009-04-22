@@ -19,7 +19,7 @@
     <target name="compile">
         <javac
             srcdir="."
-            classpath="${env.APS_HOME}/lib/reporter.jar;${env.S1AS_HOME}/modules/el-api.jar"
+            classpath="${env.APS_HOME}/lib/reporter.jar;${env.S1AS_HOME}/modules/javax.servlet.jsp.jar"
             includes="WebTest.java"/>
 
     </target> 
