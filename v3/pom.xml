@@ -153,6 +153,7 @@
 	<antlr.version>2.7.6</antlr.version>
 	<mq.version>4.4-005</mq.version>
 	<bean-validator.version>3.0-JBoss-4.0.0.Alpha3-b01</bean-validator.version>
+        <webbeans.version>1.0.0.PREVIEW1</webbeans.version>
 	<jersey.version>1.0.1</jersey.version>
 	<jbi.version>1.0</jbi.version>
 	<wsdl4j.version>1.6.2</wsdl4j.version>
@@ -809,6 +810,21 @@
 	        <groupId>org.glassfish.provider</groupId>
                 <artifactId>gfprobe-provider-client</artifactId>
                 <version>${gfprobe-provider-client.version}</version>
+          </dependency>
+          <dependency>
+                <groupId>org.jboss.webbeans</groupId>
+                <artifactId>webbeans-osgi-bundle</artifactId>
+                <version>${webbeans.version}</version>
+          </dependency>
+          <dependency>
+                <groupId>com.sun.faces</groupId>
+                <artifactId>jsf-impl</artifactId>
+                <version>${jsf-impl.version}</version>
+          </dependency>
+          <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi_R4_core</artifactId>
+                <version>1.0</version>
           </dependency>
             
         </dependencies>
