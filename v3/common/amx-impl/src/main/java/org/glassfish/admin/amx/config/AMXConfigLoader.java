@@ -465,7 +465,8 @@ public final class AMXConfigLoader extends MBeanImplBase
             {
                 if ( t instanceof NoAMXConfigInfoException )
                 {
-                    warning( t.getMessage() );
+                    // ignore:  this entire module is going away
+                   // warning( t.getMessage() );
                 }
                 else
                 {
