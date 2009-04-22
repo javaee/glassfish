@@ -326,9 +326,6 @@ public class AppClientContainerAgent {
         String user = (cc != null ? cc.getUserName() : null);
         char[] pw = (cc != null && cc.getPassword() != null ?
             cc.getPassword().get() : null);
-        if (cc == null) {
-            cc = new ClientCredential();
-        }
 
         /*
          * user on command line?
