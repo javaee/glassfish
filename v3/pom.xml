@@ -330,6 +330,7 @@
 		<module>sun-glassfish/packager</module>
 		<module>sun-glassfish/distributions</module>
 		<module>sun-glassfish/installer</module>
+		<module>sun-glassfish/distributions/web-ri</module>
 		<module>sun-glassfish/distributions/glassfish-ri</module>
                 <module>appclient</module>
                 <module>jbi/serviceengine/sun-javaee-engine</module>
