@@ -53,6 +53,7 @@ import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import org.glassfish.webservices.monitoring.WebServiceTesterServlet;
+import org.glassfish.api.admin.ServerEnvironment;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -276,11 +277,11 @@ public class JAXWSServlet extends HttpServlet {
             } else {
                 mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
             }*/
-            /**
-             * TODO BM figure deployeddir
-             */
-            String deployedDir = null;
-            //mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
+
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
+            String deployedDir = servEnv.getApplicationRepositoryPath().getAbsolutePath();
+            
             File pkgedWsdl = null;
             if(deployedDir != null) {
                 if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {

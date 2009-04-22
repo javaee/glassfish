@@ -344,7 +344,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean globalSSOEnabled = true;
 
-    private EjbWSRegistryListener ejbWebServiceRegistryListener;
+    /*private EjbWSRegistryListener ejbWebServiceRegistryListener;*/
 
     protected WebContainerFeatureFactory webContainerFeatureFactory;
 
@@ -424,10 +424,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 PEWebContainerFeatureFactoryImpl.class);
 
 
+        /* WebContainer now does not register for ejb based endpoints
+           This is because there were issues when we would deploy a ear
+           file and a webcontainer would not be started
+           reimplemented that using Grizzly. See
+           org.glassfish.webservices.WebServiceApplication
+           */
+        /*
          ejbWebServiceRegistryListener = habitat.getComponent(EjbWSRegistryListener.class);
          if (ejbWebServiceRegistryListener != null){
              ejbWebServiceRegistryListener.setContainer(this);
-         }
+         }*/
          /*try {
             webModulesManager = new WebModulesManager(instance);
             appsManager = new AppsManager(instance);
@@ -534,9 +541,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         //end HERCULES:mod
 
-        if (ejbWebServiceRegistryListener != null){
+        /*if (ejbWebServiceRegistryListener != null){
             ejbWebServiceRegistryListener.register();
-        }
+        }*/
 
         ConstructorWomb<HttpServiceConfigListener> womb =
                 new ConstructorWomb<HttpServiceConfigListener>(
@@ -1394,9 +1401,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String msg = rb.getString("webcontainer.notStarted");
             throw new LifecycleException(msg);
         }
-        if (ejbWebServiceRegistryListener != null){
+        /*if (ejbWebServiceRegistryListener != null){
             ejbWebServiceRegistryListener.unregister();
-        }
+        }*/
         //HERCULES:mod
         stopHealthChecker();
         WebContainerStartStopOperation startStopOperation =
