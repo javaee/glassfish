@@ -68,6 +68,7 @@
     	<module>nucleus</module>
         <module>web</module>
         <module>glassfish</module>
+        <module>appclient</module>
     </modules>
 
     <build>
