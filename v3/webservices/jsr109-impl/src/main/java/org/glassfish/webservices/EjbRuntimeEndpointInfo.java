@@ -56,9 +56,7 @@ import java.util.logging.Level;
 import java.io.File;
 
 import org.glassfish.api.invocation.ComponentInvocation;
-
-
-
+import org.glassfish.api.admin.ServerEnvironment;
 
 
 /**
@@ -205,7 +203,10 @@ public class EjbRuntimeEndpointInfo {
                             String deployedDir =
                                 mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
                                 */
-                            String deployedDir= null;
+                            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+                            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
+                            String deployedDir = servEnv.getApplicationRepositoryPath().getAbsolutePath();
+
                             File pkgedWsdl = null;
                             if(deployedDir != null) {
                                 if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
