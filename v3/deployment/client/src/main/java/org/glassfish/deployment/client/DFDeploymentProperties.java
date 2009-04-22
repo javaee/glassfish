@@ -288,7 +288,7 @@ public class DFDeploymentProperties extends Properties {
     public static final String DEFAULT_AVAILABILITY_ENABLED = "false";
     public static final String ENABLED = "enabled";
     public static final String DEFAULT_ENABLED = "true";
-    public static final String CONTEXT_ROOT = "contextRoot";
+    public static final String CONTEXT_ROOT = "contextroot";
     public static final String ARCHIVE_NAME = "archiveName";
     public static final String NAME = "name";
     public static final String TYPE = "type";

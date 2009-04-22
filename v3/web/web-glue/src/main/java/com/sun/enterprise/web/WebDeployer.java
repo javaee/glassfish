@@ -106,7 +106,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             // 4. The default context root
             // 5. archive name
             DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-            String contextRoot = params.contextRoot;
+            String contextRoot = params.contextroot;
             if(contextRoot==null) {
                 contextRoot = wbd.getContextRoot();
                 if("".equals(contextRoot))

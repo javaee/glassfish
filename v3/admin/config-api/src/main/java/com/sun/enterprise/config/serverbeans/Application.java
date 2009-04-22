@@ -353,7 +353,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
             DeployCommandParameters deploymentParams = new DeployCommandParameters(new File(app.getLocation()));
             deploymentParams.name = app.getName();
             deploymentParams.enabled = Boolean.parseBoolean(app.getEnabled());
-            deploymentParams.contextRoot = app.getContextRoot();
+            deploymentParams.contextroot = app.getContextRoot();
             deploymentParams.libraries = app.getLibraries();
             deploymentParams.virtualservers = appRef.getVirtualServers();
             return deploymentParams;

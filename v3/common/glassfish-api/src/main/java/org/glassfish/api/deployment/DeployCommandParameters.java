@@ -51,7 +51,7 @@ public class DeployCommandParameters extends OpsParams {
     public String name = null;
 
     @Param(name = ParameterNames.CONTEXT_ROOT, optional=true)
-    public String contextRoot = null;
+    public String contextroot = null;
 
     @Param(name = ParameterNames.VIRTUAL_SERVERS, optional=true)
     @I18n("virtualservers")

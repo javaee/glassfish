@@ -236,8 +236,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // set to default "user", deployers can override it
             // during processing
             appProps.setProperty(ServerTags.OBJECT_TYPE, "user");
-            if (contextRoot!=null) {
-                appProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
+            if (contextroot!=null) {
+                appProps.setProperty(ServerTags.CONTEXT_ROOT, contextroot);
             }
             appProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
 
@@ -414,10 +414,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     private void settingsFromDomainXML(Application app) {
             //if name is null then cannot get the application's setting from domain.xml
         if (name != null) {
-            if (contextRoot == null) {            
-                contextRoot = app.getContextRoot();
-                if (contextRoot != null) {
-                    this.previousContextRoot = contextRoot;
+            if (contextroot == null) {            
+                contextroot = app.getContextRoot();
+                if (contextroot != null) {
+                    this.previousContextRoot = contextroot;
                 }
             }
             if (libraries == null) {
