@@ -1,72 +1,175 @@
-<!DOCTYPE  REFENTRY  PUBLIC  "-//Sun  Microsystems//DTD   DocBook
-V3.0-Based  SolBook Subset V2.0//EN" [ <!--ArborText, Inc., 1988-
-1999, v.4002--> <!ENTITY metainfo SYSTEM "metainfo.sgm"> <!ENTITY
-options-common  SYSTEM  "options-common.sgm">  <!ENTITY synopsis-
-common SYSTEM "synopsis-common.sgm"> <!ENTITY % commonents SYSTEM
-"smancommon.ent">   %commonents;  <!ENTITY  %  booktitles  SYSTEM
-"booktitles.ent"> %booktitles; <!ENTITY Dash "&ndash;"> ]>  <?Pub
-UDT   _bookmark   _target>  <?Pub  Inc>  <refentry  id="list-jms-
-resources-1">                   <refmeta><refentrytitle>list-jms-
-resources</refentrytitle><manvolnum>1</manvolnum>&metainfo;
-</refmeta>   <refnamediv><indexterm><primary    sortas="list-jms-
-resources ">list-jms-resources
- &mdash;               lists               the                JMS
-resources</primary></indexterm><indexterm><primary   sortas="gets
-all the JMS resources">lists the JMS resources &mdash;  list-jms-
-resources       </primary></indexterm><refname>list-jms-resources
-</refname><refpurpose>lists                the                JMS
-resources</refpurpose></refnamediv>
-<refsynopsisdiv><title>&synp-tt;</title>
-<cmdsynopsis><command>list-jms-resources</command>&synopsis-
-common;                                  <arg>&Dash;&Dash;restype
-<replaceable>type</replaceable></arg><arg><replaceable>
-target</replaceable></arg>        </cmdsynopsis></refsynopsisdiv>
-<refsect1><title>&desc-tt;</title>  <para>The  <command>list-jms-
-resources</command> command  lists  the  existing  JMS  resources
-(destination  and  connection factory resources). This command is
-supported    in    remote    mode    only.</para>     </refsect1>
-<refsect1><title>&opts-tt;</title>                  <variablelist
-termlength="medium">&options-common;  <varlistentry><term><option
-role="nodash">&Dash;&Dash;restype</option></term>
-<listitem><para>The     JMS     resource     type     can      be
-<filename>javax.jms.Topic</filename>,                  <filename>
-javax.jms.Queue</filename>,
-<filename>javax.jms.TopicConnectionFactory</filename>,         or
-<filename>javax.jms.QueueConnectionFactory</filename>.</para>
-</listitem></varlistentry>             </variablelist></refsect1>
-<refsect1><title>&oper-tt;</title>                  <variablelist
-termlength="medium">
-<varlistentry><term><replaceable>target</replaceable></term><listitem><para>
-This operand specifies the target for which the JMS resources are
-to    be     listed.      Valid     values     are:<itemizedlist>
-<listitem><para><literal>server</literal>,    which   lists   the
-resources for the default server instance. This  is  the  default
-value.</para>                                         </listitem>
-<listitem><para><literal>domain</literal>,   which   lists    the
-resources       for      the      domain.</para>      </listitem>
-<listitem><para><replaceable>cluster_name</replaceable>,    which
-lists the resources for the specified cluster.</para> </listitem>
-<listitem><para><replaceable>instance_name</replaceable>,   which
-lists  the  resources  for  a  particular  server  instance.<?Pub
-Caret></para>  </listitem>  </itemizedlist></para>  <para>&se-ee-
-only;</para>                           </listitem></varlistentry>
-</variablelist></refsect1>     <refsect1><title>&exam-tt;</title>
-<example> <title>Using the list-jms-resources command to list all
-JMS   resources</title>   <screen>asadmin>   <userinput>list-jms-
-resources  --user admin1 --passwordfile passwords.txt</userinput>
-jms/Queue          jms/Topic           jms/QueueConnectionFactory
-jms/DurableTopicConnectionFactory Command list-jms-resources exe-
-cuted successfully.</screen>  </example>  <example>  <title>Using
-the  list-jms-resources command to list JMS resources of a speci-
-fied type</title> <screen>asadmin>  <userinput>list-jms-resources
---user     admin1    --passwordfile    passwords.txt    --restype
-javax.jms.TopicConnectionFactory</userinput>
-jms/DurableTopicConnectionFactory jms/TopicConnectionFactory Com-
-mand list-jms-resources executed  successfully.</screen>  </exam-
-ple> </refsect1> <refsect1><title>&exit-tt;</title> <variablelist
-termlength="medium">
-<varlistentry><term>0</term><listitem><para>command executed suc-
-cessfully           </para>            </listitem></varlistentry>
-<varlistentry><term>1</term><listitem><para>error   in  executing
-the       command       </para>        </listitem></varlistentry>
-</variablelist></refsect1> </refentry> <?Pub *0000003938>
+
+Administration Commands                     list-jms-resources(1)
+
+NAME
+     list-jms-resources  - lists the JMS resources
+
+SYNOPSIS
+     list-jms-resources
+     [--terse={true|false}][ --echo={true|false} ]
+     [ --interactive={true|false} ] [ --host  host]
+     [--port port] [--secure| -s ] [ --user  admin_user]
+     [--passwordfile filename] [--help]
+      [ --restype  type]
+      [target]
+
+DESCRIPTION
+     The  list-jms-resources  command  lists  the  existing   JMS
+     resources  (destination  and  connection factory resources).
+     This command is supported in remote mode only.
+
+OPTIONS
+     -t --terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -e --echo
+         If set to true, the command-line statement is echoed  on
+         the standard output. Default is false.
+
+     -I --interactive
+
+         If set to true (default),  only  the  required  password
+         options are prompted.
+
+     -H --host
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
+
+     -p --port
+
+         The HTTP port or HTTPS  port  for  administration.  This
+         port is the port in the URL that you specify in your web
+         browser   to   manage   the   domain,    for    example,
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
+
+Java EE 6           Last change: 17 Apr 2009                    1
+
+Administration Commands                     list-jms-resources(1)
+
+     -s --secure
+
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
+
+         The default is false.
+
+     -u --user
+         The user name of the authorized administrative  user  of
+         the domain administration server.
+
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
+
+     --passwordfile
+
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
+
+         The entry for a password must have the AS_ADMIN_  prefix
+         followed  by the password name in uppercase letters. For
+         example, to specify the password for the domain adminis-
+         tration server, use an entry with the following format:
+
+           AS_ADMIN_PASSWORD=password
+
+         In this example, password is  the  actual  administrator
+         password.
+
+         The following other passwords can also be specified:
+
+             o    AS_ADMIN_MAPPEDPASSWORD
+
+             o    AS_ADMIN_USERPASSWORD
+
+             o    AS_ADMIN_ALIASPASSWORD
+         All remote  commands  must  specify  the  administration
+         password  to  authenticate  to the domain administration
+         server. The password can be specified by one of the fol-
+         lowing means:
+
+             o    Through the --passwordfile option
+
+             o    Through the asadmin login command
+
+             o    Interactively at the command prompt
+         The asadmin login command can be used  only  to  specify
+         the  administration  password.  For other passwords that
+         remote commands require, use the  --passwordfile  option
+         or specify them at the command prompt.
+
+Java EE 6           Last change: 17 Apr 2009                    2
+
+Administration Commands                     list-jms-resources(1)
+
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
+         AS_ADMIN_PASSWORD option is not required. You still must
+         provide    the    other    passwords,    for    example,
+         AS_ADMIN_USERPASSWORD, when required by individual  com-
+         mands, such as update-file-user.
+
+         For security reasons, a password that is specified as an
+         environment variable is not read by the asadmin command.
+
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
+
+     --help
+
+         Displays the help text for the command.
+
+     --restype
+         The  JMS   resource   type   can   be   javax.jms.Topic,
+         javax.jms.Queue,   javax.jms.TopicConnectionFactory,  or
+         javax.jms.QueueConnectionFactory.
+
+OPERANDS
+     target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using the list-jms-resources command to  list  all
+     JMS resources
+
+       asadmin> list-jms-resources --user admin1
+       --passwordfile passwords.txt
+       jms/Queue
+       jms/Topic
+       jms/QueueConnectionFactory
+       jms/DurableTopicConnectionFactory
+       Command list-jms-resources executed successfully.
+
+Java EE 6           Last change: 17 Apr 2009                    3
+
+Administration Commands                     list-jms-resources(1)
+
+     Example 2 Using the list-jms-resources command to  list  JMS
+     resources of a specified type
+
+       asadmin> list-jms-resources --user admin1
+       --passwordfile passwords.txt --restype javax.jms.TopicConnectionFactory
+       jms/DurableTopicConnectionFactory
+       jms/TopicConnectionFactory
+       Command list-jms-resources executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+Java EE 6           Last change: 17 Apr 2009                    4
+

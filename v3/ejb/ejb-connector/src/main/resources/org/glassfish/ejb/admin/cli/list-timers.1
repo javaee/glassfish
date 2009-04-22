@@ -1,26 +1,25 @@
 
-Administration Commands                         create-jmsdest(1)
+Administration Commands                            list-timers(1)
 
 NAME
-     create-jmsdest - creates a JMS physical destination
+     list-timers -  lists all  of  the  timers  owned  by  server
+     instance(s)
 
 SYNOPSIS
-     create-jmsdest
+     list-timers
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-      [ --target  target]
-      --desttype dest_type [--property (name=value)[:name=value]*]
-      dest_name
+     target
 
 DESCRIPTION
-     The create-jmsdest command creates a JMS  physical  destina-
-     tion.  Along  with  the  physical  destination,  you use the
-     create-jms-resource command  to  create  a  JMS  destination
-     resource  that has a Name property that specifies the physi-
-     cal destination. This command is supported  in  remote  mode
-     only.
+     The list-timers command lists the timers owned by a specific
+     server  instance  or a cluster of server instances. Adminis-
+     trators can use this information to decide whether to  do  a
+     timer  migration or to verify that a migration has been com-
+     pleted successfully. This command  is  supported  in  remote
+     mode only.
 
 OPTIONS
      -t --terse
@@ -50,9 +49,9 @@ OPTIONS
          browser   to   manage   the   domain,    for    example,
          http://localhost:4848.
 
-Java EE 6           Last change: 17 Apr 2009                    1
+Java EE 6           Last change: 16 Apr 2009                    1
 
-Administration Commands                         create-jmsdest(1)
+Administration Commands                            list-timers(1)
 
          The default port number for administration is 4848.
 
@@ -105,9 +104,9 @@ Administration Commands                         create-jmsdest(1)
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
 
-Java EE 6           Last change: 17 Apr 2009                    2
+Java EE 6           Last change: 16 Apr 2009                    2
 
-Administration Commands                         create-jmsdest(1)
+Administration Commands                            list-timers(1)
 
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
@@ -132,65 +131,33 @@ Administration Commands                         create-jmsdest(1)
 
          Displays the help text for the command.
 
-     --target
+OPERANDS
+     target
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the com-
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
-     -T--desttype
-
-         The type of the JMS destination. Valid values are  topic
-         and queue.
-
-     --property
-         Optional attribute name/value pairs for configuring  the
-         physical destination. You can specify the following pro-
-         perty for a physical destination:
-
-         maxNumActiveConsumers
-
-             The maximum number of consumers that can  be  active
-             in  load-balanced delivery from a queue destination.
-             A value of -1 means an unlimited number. The default
-             is 1.
-
-         To modify the value of this property or to specify other
-         physical   destination   properties,  use  the  install-
-
-Java EE 6           Last change: 17 Apr 2009                    3
-
-Administration Commands                         create-jmsdest(1)
-
-         dir/imq/bin/imqcmd command. See the Sun Java System Mes-
-         sage  Queue 3.7 UR1 Administration Guide for more infor-
-         mation.
-
-OPERANDS
-     dest_name
-
-         A unique  identifier  for  the  JMS  destination  to  be
-         created.
-
 EXAMPLES
-     Example 1 Using the create-jmsdest command
+     Example 1 Using list-timers
 
-     The following command creates a  JMS  physical  queue  named
-     PhysicalQueue.
+     This is an example of how the command is used.
 
-       asadmin> create-jmsdest --user admin
-       --passwordfile passwords.txt --host localhost --port 4848 --desttype queue
-       --property User=public:Password=public PhysicalQueue
-       Command create-jmsdest executed successfully.
+       asadmin>list-timers --user admin --passwordfile filename
+       The list-timers command was executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
 
-SEE ALSO
-     create-jms-resource(1), delete-jmsdest(1), list-jmsdest(1)
+Java EE 6           Last change: 16 Apr 2009                    3
 
-Java EE 6           Last change: 17 Apr 2009                    4
+Administration Commands                            list-timers(1)
+
+SEE ALSO
+     migrate-timers(1)
+
+Java EE 6           Last change: 16 Apr 2009                    4
 

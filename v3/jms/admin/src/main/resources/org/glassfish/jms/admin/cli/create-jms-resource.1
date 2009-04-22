@@ -10,10 +10,10 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --target  target]
-     --restype type [--enabled=true]
-     [--description text] [--property (name=value)[:name=value]*]
-     jndi_name
+      [ --target  target]
+      --restype type [--enabled={true|false}]
+      [ --description  text] [--property (name=value)[:name=value]*]
+      jndi_name
 
 DESCRIPTION
      The create-jms-resource command creates a Java Message  Ser-
@@ -21,821 +21,302 @@ DESCRIPTION
      resource. This command is supported in remote mode only.
 
 OPTIONS
-     -t --terse                  Indicates that any  output  data
-                                 must  be very concise, typically
-                                 avoiding   human-friendly   sen-
-                                 tences    and   favoring   well-
-                                 formatted data  for  consumption
-                                 by a script. Default is false.
+     -t --terse
 
-     -e --echo                   Setting to true  will  echo  the
-                                 command  line  statement  on the
-                                 standard  output.   Default   is
-                                 false.
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
 
-     -I --interactive            If set to true  (default),  only
-                                 the  required  password  options
-                                 are prompted.
+     -e --echo
+         If set to true, the command-line statement is echoed  on
+         the standard output. Default is false.
 
-     -H --host                   The  machine  name   where   the
-                                 domain  administration server is
-                                 running. The  default  value  is
-                                 localhost.
+     -I --interactive
 
-     -p --port                   The HTTP/S port for  administra-
-                                 tion.  This is the port to which
-                                 you should point your browser in
-                                 order  to manage the domain. For
-                                 example, http://localhost:4848.
+         If set to true (default),  only  the  required  password
+         options are prompted.
 
-Java EE 5           Last change: 30 Jan 2007                    1
+     -H --host
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
 
-Administration Commands                    create-jms-resource(1)
+     -p --port
 
-                                 The default port number is 4848.
+         The HTTP port or HTTPS  port  for  administration.  This
+         port is the port in the URL that you specify in your web
+         browser   to   manage   the   domain,    for    example,
+         http://localhost:4848.
 
-     -s --secure                 If set to true, uses SSL/TLS  to
-                                 communicate   with   the  domain
-                                 administration server.
+         The default port number for administration is 4848.
 
-     -u --user                   The authorized  domain  adminis-
-                                 tration   server  administrative
-                                 username.
-
-                                 If you have authenticated  to  a
-                                 domain  using  the asadmin login
-                                 command,  then  you   need   not
-                                 specify  the  --user  option  on
-                                 subsequent  operations  to  this
-                                 particular domain.
-
-     --passwordfile              The --passwordfile option speci-
-                                 fies  the  name,  including  the
-                                 full path, of a file  containing
-                                 the   password   entries   in  a
-                                 specific format. The  entry  for
-                                 the   password   must  have  the
-                                 AS_ADMIN_ prefix followed by the
-                                 password   name   in   uppercase
-                                 letters.
-
-                                 For  example,  to  specify   the
-                                 domain   administration   server
-                                 password, use an entry with  the
-                                 following                format:
-                                 AS_ADMIN_PASSWORD=password,
-                                 where  password  is  the  actual
-                                 administrator  password.   Other
-                                 passwords  that can be specified
-                                 include AS_ADMIN_MAPPEDPASSWORD,
-                                 AS_ADMIN_USERPASSWORD,       and
-                                 AS_ADMIN_ALIASPASSWORD.
-
-                                 All remote commands must specify
-                                 the  admin password to authenti-
-                                 cate to the  domain  administra-
-                                 tion  server,  either through --
-                                 passwordfile or  asadmin  login,
-                                 or  interactively on the command
-                                 prompt. The asadmin  login  com-
-                                 mand can be used only to specify
-                                 the admin  password.  For  other
-                                 passwords,    that    must    be
-
-Java EE 5           Last change: 30 Jan 2007                    2
+Java EE 6           Last change: 15 Apr 2009                    1
 
 Administration Commands                    create-jms-resource(1)
 
-                                 specified for  remote  commands,
-                                 use  the --passwordfile or enter
-                                 them at the command prompt.
+     -s --secure
 
-                                 If you have authenticated  to  a
-                                 domain  using  the asadmin login
-                                 command,  then  you   need   not
-                                 specify   the   admin   password
-                                 through    the    --passwordfile
-                                 option  on subsequent operations
-                                 to this particular domain.  How-
-                                 ever, this is applicable only to
-                                 AS_ADMIN_PASSWORD  option.   You
-                                 will  still  need to provide the
-                                 other  passwords,  for  example,
-                                 AS_ADMIN_USERPASSWORD,   as  and
-                                 when required by individual com-
-                                 mands, such as update-file-user.
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
 
-                                 For security reasons,  passwords
-                                 specified   as   an  environment
-                                 variable will  not  be  read  by
-                                 asadmin.
+         The default is false.
 
-                                 The    default     value     for
-                                 AS_ADMIN_MASTERPASSWORD       is
-                                 changeit.
+     -u --user
+         The user name of the authorized administrative  user  of
+         the domain administration server.
 
-     --help                      Displays the help text  for  the
-                                 command.
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
 
-     --target                    This option  helps  specify  the
-                                 target  for which you are creat-
-                                 ing  the  JMS  resource.   Valid
-                                 values are:
+     --passwordfile
 
-                                     o    server-  Specifies  the
-                                          default server instance
-                                          as   the   target   for
-                                          creating     the    JMS
-                                          resource. server is the
-                                          name   of  the  default
-                                          server instance and  is
-                                          the default value.
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
 
-                                     o    domain-   Specifies   a
-                                          certain  domain  as the
-                                          target for creating the
-                                          JMS resource.
+         The entry for a password must have the AS_ADMIN_  prefix
+         followed  by the password name in uppercase letters. For
+         example, to specify the password for the domain adminis-
+         tration server, use an entry with the following format:
 
-Java EE 5           Last change: 30 Jan 2007                    3
+           AS_ADMIN_PASSWORD=password
 
-Administration Commands                    create-jms-resource(1)
+         In this example, password is  the  actual  administrator
+         password.
 
-                                     o    cluster_name- Specifies
-                                          a  certain  cluster  as
-                                          the target for creating
-                                          the JMS resource.
+         The following other passwords can also be specified:
 
-                                     o    instance_name-   Speci-
-                                          fies a certain instance
-                                          as   the   target   for
-                                          creating     the    JMS
-                                          resource.
+             o    AS_ADMIN_MAPPEDPASSWORD
 
-     --restype                   The JMS resource type, which can
-                                 be              javax.jms.Topic,
-                                 javax.jms.Queue,javax.jms.TopicConnectionFactory,
-                                 or
-                                 javax.jms.QueueConnectionFactory.
+             o    AS_ADMIN_USERPASSWORD
 
-     --enabled                   If set to true, the resource  is
-                                 enabled at runtime.
+             o    AS_ADMIN_ALIASPASSWORD
+         All remote  commands  must  specify  the  administration
+         password  to  authenticate  to the domain administration
+         server. The password can be specified by one of the fol-
+         lowing means:
 
-     --description               Text providing  details  of  the
-                                 JMS resource.
+             o    Through the --passwordfile option
 
-     --property                  Optional  attribute   name/value
-                                 pairs  for  configuring  the JMS
-                                 resource.
+             o    Through the asadmin login command
 
-                                 You can  specify  the  following
-                                 properties for a connection fac-
-                                 tory resource:
+             o    Interactively at the command prompt
+         The asadmin login command can be used  only  to  specify
+         the  administration  password.  For other passwords that
+         remote commands require, use the  --passwordfile  option
+         or specify them at the command prompt.
 
-                                 ClientId                     Speci-
-                                                              fies
-                                                              a
-                                                              client
-                                                              ID
-                                                              for
-                                                              a
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              fac-
-                                                              tory
-                                                              that
-                                                              will
-                                                              be
-                                                              used
-                                                              by
-
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 6           Last change: 15 Apr 2009                    2
 
 Administration Commands                    create-jms-resource(1)
 
-                                                              a
-                                                              dur-
-                                                              able
-                                                              sub-
-                                                              scriber.
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
+         AS_ADMIN_PASSWORD option is not required. You still must
+         provide    the    other    passwords,    for    example,
+         AS_ADMIN_USERPASSWORD, when required by individual  com-
+         mands, such as update-file-user.
 
-                                 AddressList                  This
-                                                              is
-                                                              a
-                                                              comma-
-                                                              separated
-                                                              list
-                                                              of
-                                                              mes-
-                                                              sage
-                                                              queue
-                                                              addresses.
-                                                              It
-                                                              speci-
-                                                              fies
-                                                              the
-                                                              names
-                                                              (and,
-                                                              option-
-                                                              ally,
-                                                              port
-                                                              numbers)
-                                                              of
-                                                              a
-                                                              mes-
-                                                              sage
-                                                              broker
-                                                              instance
-                                                              or
-                                                              instances
-                                                              with
-                                                              which
-                                                              your
-                                                              appli-
-                                                              ca-
-                                                              tion
-                                                              will
-                                                              com-
-                                                              mun-
-                                                              i-
-                                                              cate.
-                                                              Each
-                                                              address
-                                                              in
-                                                              the
-                                                              list
+         For security reasons, a password that is specified as an
+         environment variable is not read by the asadmin command.
 
-Java EE 5           Last change: 30 Jan 2007                    5
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
+
+     --help
+
+         Displays the help text for the command.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
+
+     --restype
+
+         The JMS resource type,  which  can  be  javax.jms.Topic,
+         javax.jms.Queue,javax.jms.TopicConnectionFactory,     or
+         javax.jms.QueueConnectionFactory.
+
+     --enabled
+         If set to true (the default), the resource is enabled at
+         runtime.
+
+     --description
+
+         Text providing details of the JMS resource.
+
+     --property
+         Optional attribute name/value pairs for configuring  the
+         JMS resource.
+
+         You can specify the following properties for  a  connec-
+         tion factory resource:
+
+Java EE 6           Last change: 15 Apr 2009                    3
 
 Administration Commands                    create-jms-resource(1)
 
-                                                              speci-
-                                                              fies
-                                                              the
-                                                              host
-                                                              name
-                                                              (and,
-                                                              option-
-                                                              ally,
-                                                              host
-                                                              port
-                                                              and
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              ser-
-                                                              vice)
-                                                              for
-                                                              the
-                                                              con-
-                                                              nec-
-                                                              tion.
-                                                              For
-                                                              exam-
-                                                              ple,
-                                                              the
-                                                              value
-                                                              could
-                                                              be
-                                                              earth
-                                                              or
-                                                              earth:7677.
-                                                              Specify
-                                                              the
-                                                              port
-                                                              number
-                                                              if
-                                                              the
-                                                              mes-
-                                                              sage
-                                                              broker
-                                                              is
-                                                              run-
-                                                              ning
-                                                              on
-                                                              a
-                                                              port
-                                                              other
-                                                              than
-                                                              the
-                                                              default
-                                                              (7676).
-                                                              If
+         ClientId                     Specifies a client ID for a
+                                      connection   factory   that
+                                      will be used by  a  durable
+                                      subscriber.
 
-Java EE 5           Last change: 30 Jan 2007                    6
+         AddressList                  This is  a  comma-separated
+                                      list   of   message   queue
+                                      addresses. It specifies the
+                                      names   (and,   optionally,
+                                      port numbers) of a  message
+                                      broker      instance     or
+                                      instances with  which  your
+                                      application  will  communi-
+                                      cate. Each address  in  the
+                                      list   specifies  the  host
+                                      name (and, optionally, host
+                                      port  and  connection  ser-
+                                      vice) for  the  connection.
+                                      For   example,   the  value
+                                      could    be    earth     or
+                                      earth:7677.   Specify   the
+                                      port number if the  message
+                                      broker is running on a port
+                                      other  than   the   default
+                                      (7676). If you specify mul-
+                                      tiple hosts and ports in  a
+                                      clustered  environment, the
+                                      first available host on the
+                                      list  is  used. Default: An
+                                      address list composed  from
+                                      the  jms-hosts  defined  in
+                                      the  target's   jms-service
+                                      configuration.  The default
+                                      for PE is  local  host  and
+                                      the  default port number is
+                                      7676.   The   client   will
+                                      attempt  a  connection to a
+                                      broker on port 7676 of  the
+                                      local host.
+
+         MessageServiceAddressList    Same as  AddressList.  This
+                                      property   name  is  depre-
+                                      cated.   Use    AddressList
+                                      instead.
+
+         UserName                     The user name for the  con-
+                                      nection  factory.  Default:
+                                      guest.
+
+Java EE 6           Last change: 15 Apr 2009                    4
 
 Administration Commands                    create-jms-resource(1)
 
-                                                              you
-                                                              specify
-                                                              mul-
-                                                              ti-
-                                                              ple
-                                                              hosts
-                                                              and
-                                                              ports
-                                                              in
-                                                              a
-                                                              clustered
-                                                              environ-
-                                                              ment,
-                                                              the
-                                                              first
-                                                              avail-
-                                                              able
-                                                              host
-                                                              on
-                                                              the
-                                                              list
-                                                              is
-                                                              used.
-                                                              Default:
-                                                              An
-                                                              address
-                                                              list
-                                                              com-
-                                                              posed
-                                                              from
-                                                              the
-                                                              jms-
-                                                              hosts
-                                                              defined
-                                                              in
-                                                              the
-                                                              target's
-                                                              jms-
-                                                              service
-                                                              con-
-                                                              fi-
-                                                              gura-
-                                                              tion.
-                                                              The
-                                                              default
-                                                              for
-                                                              PE
-                                                              is
-                                                              local
-                                                              host
-                                                              and
-                                                              the
+         Password                     The password for  the  con-
+                                      nection  factory.  Default:
+                                      guest.
 
-Java EE 5           Last change: 30 Jan 2007                    7
+         ReconnectEnabled             If enabled (value =  true),
+                                      it   indicates   that   the
+                                      client runtime attempts  to
+                                      reconnect   to   a  message
+                                      server  (or  the  list   of
+                                      addresses       in      the
+                                      AddressList) when a connec-
+                                      tion   is   lost.  Default:
+                                      false.
+
+         ReconnectAttempts            Specifies  the  number   of
+                                      attempts   to  connect  (or
+                                      reconnect) for each address
+                                      in  the  AddressList before
+                                      the  client  runtime  tries
+                                      the  next  address  in  the
+                                      list. A value of  -1  indi-
+                                      cates  that  the  number of
+                                      reconnect    attempts    is
+                                      unlimited  (the client run-
+                                      time attempts to connect to
+                                      the  first address until it
+                                      succeeds). Default: 6.
+
+         ReconnectInterval            Specifies the  interval  in
+                                      milliseconds between recon-
+                                      nect attempts. This applies
+                                      to attempts on each address
+                                      in the AddressList and  for
+                                      successive addresses in the
+                                      list. If  the  interval  is
+                                      too  short, the broker does
+                                      not have time  to  recover.
+                                      If  it  is  too  long,  the
+                                      reconnect  might  represent
+                                      an    unacceptable   delay.
+                                      Default:    30,000     mil-
+                                      liseconds.
+
+         AddressListBehavior          Specifies  whether  connec-
+                                      tion  attempts  are  in the
+                                      order of addresses  in  the
+                                      AddressList       attribute
+                                      (PRIORITY) or in  a  random
+
+Java EE 6           Last change: 15 Apr 2009                    5
 
 Administration Commands                    create-jms-resource(1)
 
-                                                              default
-                                                              port
-                                                              number
-                                                              is
-                                                              7676.
-                                                              The
-                                                              client
-                                                              will
-                                                              attempt
-                                                              a
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              to
-                                                              a
-                                                              broker
-                                                              on
-                                                              port
-                                                              7676
-                                                              of
-                                                              the
-                                                              local
-                                                              host.
+                                      order   (RANDOM).  PRIORITY
+                                      means  that  the  reconnect
+                                      will  always try to connect
+                                      to the first server address
+                                      in the AddressList and will
+                                      use another one only if the
+                                      first  broker is not avail-
+                                      able.  If  you  have   many
+                                      clients  attempting  a con-
+                                      nection using the same con-
+                                      nection   factory,  specify
+                                      RANDOM to prevent them from
+                                      all  being connected to the
+                                      same address. Default:  The
+                                      AddressListBehavior   value
+                                      of the target's jms-service
+                                      configuration.
 
-                                 MessageServiceAddressList    Same
-                                                              as
-                                                              AddressList.
-                                                              This
-                                                              pro-
-                                                              perty
-                                                              name
-                                                              is
-                                                              depre-
-                                                              cated.
-                                                              Use
-                                                              AddressList
-                                                              instead.
+         AddressListIterations        Specifies  the  number   of
+                                      times  the  client  runtime
+                                      iterates    through     the
+                                      AddressList in an effort to
+                                      establish (or re-establish)
+                                      a  connection).  A value of
+                                      -1   indicates   that   the
+                                      number   of   attempts   is
+                                      unlimited. Default: -1.
 
-                                 UserName                     The
-                                                              user
-                                                              name
-                                                              for
-                                                              the
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              fac-
-                                                              tory.
-                                                              Default:
-                                                              guest.
+         You can specify the following properties for a  destina-
+         tion resource:
 
-Java EE 5           Last change: 30 Jan 2007                    8
+         Name
 
-Administration Commands                    create-jms-resource(1)
+             (Required) This property specifies the name  of  the
+             physical  destination  to  which  the  resource will
+             refer. You create a physical  destination  with  the
+             create-jmsdest command.
 
-                                 Password                     The
-                                                              pass-
-                                                              word
-                                                              for
-                                                              the
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              fac-
-                                                              tory.
-                                                              Default:
-                                                              guest.
-
-                                 ReconnectEnabled             If
-                                                              enabled
-                                                              (value
-                                                              =
-                                                              true),
-                                                              it
-                                                              indi-
-                                                              cates
-                                                              that
-                                                              the
-                                                              client
-                                                              run-
-                                                              time
-                                                              attempts
-                                                              to
-                                                              recon-
-                                                              nect
-                                                              to
-                                                              a
-                                                              mes-
-                                                              sage
-                                                              server
-                                                              (or
-                                                              the
-                                                              list
-                                                              of
-                                                              addresses
-                                                              in
-                                                              the
-                                                              AddressList)
-                                                              when
-                                                              a
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              is
-                                                              lost.
-                                                              Default:
-
-Java EE 5           Last change: 30 Jan 2007                    9
-
-Administration Commands                    create-jms-resource(1)
-
-                                                              false.
-
-                                 ReconnectAttempts            Speci-
-                                                              fies
-                                                              the
-                                                              number
-                                                              of
-                                                              attempts
-                                                              to
-                                                              con-
-                                                              nect
-                                                              (or
-                                                              recon-
-                                                              nect)
-                                                              for
-                                                              each
-                                                              address
-                                                              in
-                                                              the
-                                                              AddressList
-                                                              before
-                                                              the
-                                                              client
-                                                              run-
-                                                              time
-                                                              tries
-                                                              the
-                                                              next
-                                                              address
-                                                              in
-                                                              the
-                                                              list.
-                                                              A
-                                                              value
-                                                              of
-                                                              -1
-                                                              indi-
-                                                              cates
-                                                              that
-                                                              the
-                                                              number
-                                                              of
-                                                              recon-
-                                                              nect
-                                                              attempts
-                                                              is
-                                                              unlim-
-                                                              ited
-                                                              (the
-                                                              client
-                                                              runtime
-
-Java EE 5           Last change: 30 Jan 2007                   10
-
-Administration Commands                    create-jms-resource(1)
-
-                                                              attempts
-                                                              to
-                                                              con-
-                                                              nect
-                                                              to
-                                                              the
-                                                              first
-                                                              address
-                                                              until
-                                                              it
-                                                              succeeds).
-                                                              Default:
-                                                              6.
-
-                                 ReconnectInterval            Speci-
-                                                              fies
-                                                              the
-                                                              inter-
-                                                              val
-                                                              in
-                                                              mil-
-                                                              liseconds
-                                                              between
-                                                              recon-
-                                                              nect
-                                                              attempts.
-                                                              This
-                                                              applies
-                                                              to
-                                                              attempts
-                                                              on
-                                                              each
-                                                              address
-                                                              in
-                                                              the
-                                                              AddressList
-                                                              and
-                                                              for
-                                                              suc-
-                                                              ces-
-                                                              sive
-                                                              addresses
-                                                              in
-                                                              the
-                                                              list.
-                                                              If
-                                                              the
-                                                              inter-
-                                                              val
-                                                              is
-                                                              too
-
-Java EE 5           Last change: 30 Jan 2007                   11
-
-Administration Commands                    create-jms-resource(1)
-
-                                                              short,
-                                                              the
-                                                              broker
-                                                              does
-                                                              not
-                                                              have
-                                                              time
-                                                              to
-                                                              recover.
-                                                              If
-                                                              it
-                                                              is
-                                                              too
-                                                              long,
-                                                              the
-                                                              recon-
-                                                              nect
-                                                              might
-                                                              represent
-                                                              an
-                                                              unac-
-                                                              cept-
-                                                              able
-                                                              delay.
-                                                              Default:
-                                                              30,000
-                                                              mil-
-                                                              liseconds.
-
-                                 AddressListBehavior          Speci-
-                                                              fies
-                                                              whether
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              attempts
-                                                              are
-                                                              in
-                                                              the
-                                                              order
-                                                              of
-                                                              addresses
-                                                              in
-                                                              the
-                                                              AddressList
-                                                              attri-
-                                                              bute
-                                                              (PRIOR-
-                                                              ITY)
-                                                              or
-                                                              in
-
-Java EE 5           Last change: 30 Jan 2007                   12
-
-Administration Commands                    create-jms-resource(1)
-
-                                                              a
-                                                              ran-
-                                                              dom
-                                                              order
-                                                              (RAN-
-                                                              DOM).
-                                                              PRIOR-
-                                                              ITY
-                                                              means
-                                                              that
-                                                              the
-                                                              recon-
-                                                              nect
-                                                              will
-                                                              always
-                                                              try
-                                                              to
-                                                              con-
-                                                              nect
-                                                              to
-                                                              the
-                                                              first
-                                                              server
-                                                              address
-                                                              in
-                                                              the
-                                                              AddressList
-                                                              and
-                                                              will
-                                                              use
-                                                              another
-                                                              one
-                                                              only
-                                                              if
-                                                              the
-                                                              first
-                                                              broker
-                                                              is
-                                                              not
-                                                              avail-
-                                                              able.
-                                                              If
-                                                              you
-                                                              have
-                                                              many
-                                                              clients
-                                                              attempt-
-                                                              ing
-                                                              a
-                                                              con-
-                                                              nec-
-                                                              tion
-
-Java EE 5           Last change: 30 Jan 2007                   13
-
-Administration Commands                    create-jms-resource(1)
-
-                                                              using
-                                                              the
-                                                              same
-                                                              con-
-                                                              nec-
-                                                              tion
-                                                              fac-
-                                                              tory,
-                                                              specify
-                                                              RAN-
-                                                              DOM
-                                                              to
-                                                              prevent
-                                                              them
-                                                              from
-                                                              all
-                                                              being
-                                                              con-
-                                                              nected
-                                                              to
-                                                              the
-                                                              same
-                                                              address.
-                                                              Default:
-                                                              The
-                                                              AddressList-
-                                                              Behavior
-                                                              value
-                                                              of
-                                                              the
-                                                              target's
-                                                              jms-
-                                                              service
-                                                              con-
-                                                              fi-
-                                                              gura-
-                                                              tion.
-
-                                 AddressListIterations        Speci-
-                                                              fies
-                                                              the
-                                                              number
-                                                              of
-                                                              times
-                                                              the
-                                                              client
-                                                              run-
-                                                              time
-                                                              iterates
-                                                              through
-                                                              the
-
-Java EE 5           Last change: 30 Jan 2007                   14
-
-Administration Commands                    create-jms-resource(1)
-
-                                                              AddressList
-                                                              in
-                                                              an
-                                                              effort
-                                                              to
-                                                              estab-
-                                                              lish
-                                                              (or
-                                                              re-
-                                                              establish)
-                                                              a
-                                                              con-
-                                                              nec-
-                                                              tion).
-                                                              A
-                                                              value
-                                                              of
-                                                              -1
-                                                              indi-
-                                                              cates
-                                                              that
-                                                              the
-                                                              number
-                                                              of
-                                                              attempts
-                                                              is
-                                                              unlim-
-                                                              ited.
-                                                              Default:
-                                                              -1.
-
-                                 You can  specify  the  following
-                                 properties   for  a  destination
-                                 resource:
-
-                                 Name           (Required)   This
-                                                property   speci-
-                                                fies the name  of
-                                                the physical des-
-                                                tination to which
-                                                the resource will
-                                                refer. You create
-                                                a physical desti-
-                                                nation  with  the
-                                                create-jmsdest
-                                                command.
-
-                                 Description    This     property
-                                                provides        a
-                                                description    of
-                                                the      physical
-
-Java EE 5           Last change: 30 Jan 2007                   15
-
-Administration Commands                    create-jms-resource(1)
-
-                                                destination.
+         Description
+             This property provides a description of the physical
+             destination.
 
 OPERANDS
-     jndi_name                   The  JNDI  name   of   the   JMS
-                                 resource to be created.
+     jndi_name
+
+         The JNDI name of the JMS resource to be created.
+
+Java EE 6           Last change: 15 Apr 2009                    6
+
+Administration Commands                    create-jms-resource(1)
 
 EXAMPLES
      Example 1 Creating a JMS  connection  factory  resource  for
@@ -871,13 +352,9 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 5           Last change: 30 Jan 2007                   16
-
-Administration Commands                    create-jms-resource(1)
-
 SEE ALSO
      delete-jms-resource(1),    list-jms-resources(1),    create-
      jmsdest(1)
 
-Java EE 5           Last change: 30 Jan 2007                   17
+Java EE 6           Last change: 15 Apr 2009                    7
 

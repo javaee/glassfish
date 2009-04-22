@@ -1,26 +1,21 @@
 
-Administration Commands                         create-jmsdest(1)
+Administration Commands                   delete-iiop-listener(1)
 
 NAME
-     create-jmsdest - creates a JMS physical destination
+     delete-iiop-listener - removes an IIOP listener
 
 SYNOPSIS
-     create-jmsdest
+     delete-iiop-listener
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
       [ --target  target]
-      --desttype dest_type [--property (name=value)[:name=value]*]
-      dest_name
+      listener_id
 
 DESCRIPTION
-     The create-jmsdest command creates a JMS  physical  destina-
-     tion.  Along  with  the  physical  destination,  you use the
-     create-jms-resource command  to  create  a  JMS  destination
-     resource  that has a Name property that specifies the physi-
-     cal destination. This command is supported  in  remote  mode
-     only.
+     The delete-iiop-listener command removes the specified  IIOP
+     listener. This command is supported in remote mode only.
 
 OPTIONS
      -t --terse
@@ -50,11 +45,11 @@ OPTIONS
          browser   to   manage   the   domain,    for    example,
          http://localhost:4848.
 
-Java EE 6           Last change: 17 Apr 2009                    1
-
-Administration Commands                         create-jmsdest(1)
-
          The default port number for administration is 4848.
+
+Java EE 6           Last change: 16 Apr 2009                    1
+
+Administration Commands                   delete-iiop-listener(1)
 
      -s --secure
 
@@ -104,14 +99,13 @@ Administration Commands                         create-jmsdest(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
-
-Java EE 6           Last change: 17 Apr 2009                    2
-
-Administration Commands                         create-jmsdest(1)
-
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
+
+Java EE 6           Last change: 16 Apr 2009                    2
+
+Administration Commands                   delete-iiop-listener(1)
 
          After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
@@ -139,58 +133,34 @@ Administration Commands                         create-jmsdest(1)
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
-     -T--desttype
-
-         The type of the JMS destination. Valid values are  topic
-         and queue.
-
-     --property
-         Optional attribute name/value pairs for configuring  the
-         physical destination. You can specify the following pro-
-         perty for a physical destination:
-
-         maxNumActiveConsumers
-
-             The maximum number of consumers that can  be  active
-             in  load-balanced delivery from a queue destination.
-             A value of -1 means an unlimited number. The default
-             is 1.
-
-         To modify the value of this property or to specify other
-         physical   destination   properties,  use  the  install-
-
-Java EE 6           Last change: 17 Apr 2009                    3
-
-Administration Commands                         create-jmsdest(1)
-
-         dir/imq/bin/imqcmd command. See the Sun Java System Mes-
-         sage  Queue 3.7 UR1 Administration Guide for more infor-
-         mation.
-
 OPERANDS
-     dest_name
+     listener_id
 
-         A unique  identifier  for  the  JMS  destination  to  be
-         created.
+         The unique  identifier  for  the  IIOP  listener  to  be
+         deleted.
 
 EXAMPLES
-     Example 1 Using the create-jmsdest command
+     Example 1 Using the delete-iiop-listener command
 
-     The following command creates a  JMS  physical  queue  named
-     PhysicalQueue.
+     The  following  command  deletes  the  IIOP  listener  named
+     sample_iiop_listener:
 
-       asadmin> create-jmsdest --user admin
-       --passwordfile passwords.txt --host localhost --port 4848 --desttype queue
-       --property User=public:Password=public PhysicalQueue
-       Command create-jmsdest executed successfully.
+       asadmin> delete-iiop-listener --user admin
+       --passwordfile passwords.txt --host host1 --port 7070 sample_iiop_listener
+       Command delete-iiop-listener executed successfully.
 
 EXIT STATUS
+
+Java EE 6           Last change: 16 Apr 2009                    3
+
+Administration Commands                   delete-iiop-listener(1)
+
      0                           command executed successfully
 
      1                           error in executing the command
 
 SEE ALSO
-     create-jms-resource(1), delete-jmsdest(1), list-jmsdest(1)
+     create-iiop-listener(1), list-iiop-listeners(1)
 
-Java EE 6           Last change: 17 Apr 2009                    4
+Java EE 6           Last change: 16 Apr 2009                    4
 
