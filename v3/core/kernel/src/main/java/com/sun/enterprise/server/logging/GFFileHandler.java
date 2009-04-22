@@ -481,17 +481,27 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
      */
     public void log() {
 
-
         LogRecord record;
-        int logMsgs=0;
-        Vector<LogRecord> v = new Vector<LogRecord>();
-        logMsgs = pendingRecords.drainTo(v,flushFrequency);
+        int maxMsg = 1;
+        int queueSize =  pendingRecords.size();
 
-        for(int i=0; i< logMsgs;i++) {
-            record = v.elementAt(i);
-            super.publish(record);
-            if (record.getLevel().intValue()>=Level.WARNING.intValue()) {
-                recentErrors.offer(record);
+        if (queueSize == 0)
+            maxMsg = 1;
+        else if (queueSize < flushFrequency)
+            maxMsg = queueSize;
+        else if (queueSize >= flushFrequency)
+            maxMsg = flushFrequency;
+
+
+        for(int i=0; i< maxMsg;i++) {
+            try {
+                record = pendingRecords.take();
+                super.publish(record);
+                if (record.getLevel().intValue()>=Level.WARNING.intValue()) {
+                    recentErrors.offer(record);
+                }
+            } catch (InterruptedException e) {
+                return;
             }
         }
 
@@ -508,8 +518,6 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 rotationRequested.set(false);
             }
         }
-
-
 
     }
     /**
