@@ -112,6 +112,11 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     private SunWebApp sunWebApp = null;
 
+    // An entry here, may be set to indicate additional processing.
+    // This entry may be set, for example, by a Deployer.
+    //
+    private Map<String, String> extensionProperty = null;
+
     /**
      * Constrct an empty web app [{0}].
      */
@@ -1555,6 +1560,28 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     public void setSunDescriptor(SunWebApp webApp) {
         this.sunWebApp = webApp;
+    }
+
+    /**
+     * This property can be used to indicate special processing.
+     * For example, a Deployer may set this property.
+     */ 
+    public void setExtensionProperty(String key, String value) {
+        if (null == extensionProperty) {
+            extensionProperty = new HashMap();
+        }
+        extensionProperty.put(key, value);
+    }
+
+    /**
+     * Determine if an extension property has been set.
+     */
+    public boolean hasExtensionProperty(String key) {
+        if (null == extensionProperty || 
+            extensionProperty.get(key) == null) {
+            return false;
+        }
+        return true;
     }
 
     /*******************************************************************************************
