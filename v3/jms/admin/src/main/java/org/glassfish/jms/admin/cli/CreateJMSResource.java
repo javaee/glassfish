@@ -269,7 +269,7 @@ public class CreateJMSResource implements AdminCommand {
         Properties parameters = new Properties();
         //parameters.setProperty("restype", resourceType);
 
-        parameters.setProperty(DEFAULT_OPERAND, jndiName);
+        parameters.setProperty("poolname", jndiName);
         if(description != null)
             parameters.setProperty("description", description);
 
@@ -304,9 +304,9 @@ public class CreateJMSResource implements AdminCommand {
     private Properties populateConnectionResourceParameters()
     {
         Properties parameters = new Properties();
-        parameters.setProperty(DEFAULT_OPERAND, jndiName);
+        parameters.setProperty("jndi_name", jndiName);
         parameters.put("enabled", enabled);
-        //parameters.setProperty("poolname", jndiName);
+        parameters.setProperty("poolname", jndiName);
         if(description != null)
             parameters.setProperty("description", description);
 
