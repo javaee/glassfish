@@ -94,7 +94,8 @@
 	<module>glassfish-appclient</module>
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
-	<module>jersey</module>	
+	<module>jersey</module>
+	<module>glassfish-jcdi</module>
 	<module>mq</module>
     </modules>
 
