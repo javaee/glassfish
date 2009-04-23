@@ -23,18 +23,6 @@
             </roles>
         </developer>
     </developers>
-    <build>
-            <resources>
-                <resource>
-                    <directory>src/main/resources</directory>
-                    <includes>
-                        <include>**/*.1</include>
-                        <include>**/*.properties</include>
-                        <include>**/*.xsd</include>
-                    </includes>
-                </resource>
-              </resources>
-    </build>    
     <dependencies>
         <dependency>
             <groupId>com.sun.corba</groupId>
