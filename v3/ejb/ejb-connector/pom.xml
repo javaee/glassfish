@@ -58,19 +58,7 @@
                 <role>lead</role>
             </roles>
         </developer>
-    </developers>
-    <build>
-            <resources>
-                <resource>
-                    <directory>src/main/resources</directory>
-                    <includes>
-                        <include>**/*.1</include>
-                        <include>**/*.properties</include>
-                        <include>**/*.xsd</include>
-                    </includes>
-                </resource>
-              </resources>
-    </build>    
+    </developers> 
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
