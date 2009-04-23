@@ -129,12 +129,28 @@ own identifying information: Portions Copyright [yyyy]
 			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jdbc">	
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
-			 </subtract>
-		</scope>					 
+			     </subtract>
+			    
+		     </scope>
+		     
        </graphDef>
 
        
-       <stage-module-jars graphid="all-modules" />
+       <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" stripVersion="true">
+           <graphRef refid="all-modules"/>
+	       <excludeArtifactsTransitively>
+	           <artifact groupID="com.sun.woodstock.dependlibs" artifactId="dataprovider" />
+		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf" />
+		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf-suntheme" />
+		   <artifact groupID="com.sun.jsftemplating" artifactId="jsftemplating-dynafaces" />
+	   </excludeArtifactsTransitively>
+        </resolveAll>
+
+                <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
+	        <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
+	         <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
+
+     
        <stage-distribution-fragments graphid="all-modules" />
 
  
