@@ -789,6 +789,11 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
     }
 
+    public Habitat getHabitat() {
+        return habitat;
+    }
+    
+
     /**
      * Another version of the {@link #invoke(Object, Method, Object[])},
      * but instead of {@link Method} object, it takes the method name and argument types.
