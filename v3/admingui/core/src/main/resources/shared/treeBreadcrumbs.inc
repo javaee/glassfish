@@ -34,60 +34,60 @@
  holder.
 -->
 
-"<div id="breadcrumbs" style="border: 1px solid #E5E9ED; background-color: #E5E9ED">
-<!-- Make sure we have the scripts loaded -->
-<jsfExt:scripts />
-<sun:script url="/resource/js/adminjsf.js" />
-<!-- start the breadcrumbs -->
-<sun:breadcrumbs id="dynBreadCrumbs" pages="#{pageSession.breadCrumbs}"style="background-color: #E5E9ED">
-    <!beforeCreate
-        dummyHyperlinkArray(links=>$pageSession{breadCrumbs});
-    />
-    <!afterCreate
-	setPageSessionAttribute(key="dynBreadCrumbs" value="$this{clientId}");
-        setPageSessionAttribute(key="hasPageURL", value="#{false}");
-        if ("#{pageSession.pageURLForBreadCrumb}"){
-            setPageSessionAttribute(key="pageURL", value="#{pageSession.pageURLForBreadCrumb}");
-            setPageSessionAttribute(key="hasPageURL", value="#{true}");
-        }
-        if ("!#{pageSession.hasPageURL}"){
-            setPageSessionAttribute(key="pageURL" value="#{facesContext.externalContext.request.queryString}");
-            if ("#{pageSession.pageURL}") {
-                setPageSessionAttribute(key="pageURL" value="#{facesContext.externalContext.requestServletPath}#{facesContext.externalContext.requestPathInfo}?#{pageSession.pageURL}");
-            }
-            if ("!#{pageSession.pageURL}") {
-                setPageSessionAttribute(key="pageURL" value="#{facesContext.externalContext.requestServletPath}#{facesContext.externalContext.requestPathInfo}");
-            }
-        }
-    />
-</sun:breadcrumbs>
-
-<!-- Make an invisible button to handle the Ajax action -->
-<sun:button id="button" visible="#{false}">
-    <!afterCreate
-	setPageSessionAttribute(key="ajaxButton" value="$this{clientId}");
-    />
-    <!command
-	createHyperlinkArray(links=>$pageSession{breadCrumbs});
-    />
-</sun:button>
-
-<!-- Fire this during the onload of the page -->
-<f:verbatim>
-<script type="text/javascript">
-    var myonload = new Object();
-    myonload.oldonload = window.onload;
-    myonload.newonload = function() {
-	if ('#{pageSession.pageURL}' != '') {
-	    admingui.nav.selectTreeNodeWithURL('#{pageSession.pageURL}');
-	}
-	if (myonload.oldonload) {
-	    myonload.oldonload();
-	}
-	admingui.nav.calculateBreadCrumbs('#{pageSession.ajaxButton}', '#{pageSession.dynBreadCrumbs}', 0);
-    };
-    window.onload = myonload.newonload;
-</script>
-</f:verbatim>
-
-"</div>
+//"<div id="breadcrumbs" style="border: 1px solid #E5E9ED; background-color: #E5E9ED">
+//<!-- Make sure we have the scripts loaded -->
+//<jsfExt:scripts />
+//<sun:script url="/resource/js/adminjsf.js" />
+//<!-- start the breadcrumbs -->
+//<sun:breadcrumbs id="dynBreadCrumbs" pages="#{pageSession.breadCrumbs}"style="background-color: #E5E9ED">
+//    <!beforeCreate
+//        dummyHyperlinkArray(links=>$pageSession{breadCrumbs});
+//    />
+//    <!afterCreate
+//	setPageSessionAttribute(key="dynBreadCrumbs" value="$this{clientId}");
+//        setPageSessionAttribute(key="hasPageURL", value="#{false}");
+//        if ("#{pageSession.pageURLForBreadCrumb}"){
+//            setPageSessionAttribute(key="pageURL", value="#{pageSession.pageURLForBreadCrumb}");
+//            setPageSessionAttribute(key="hasPageURL", value="#{true}");
+//        }
+//        if ("!#{pageSession.hasPageURL}"){
+//            setPageSessionAttribute(key="pageURL" value="#{facesContext.externalContext.request.queryString}");
+//            if ("#{pageSession.pageURL}") {
+//                setPageSessionAttribute(key="pageURL" value="#{facesContext.externalContext.requestServletPath}#{facesContext.externalContext.requestPathInfo}?#{pageSession.pageURL}");
+//            }
+//            if ("!#{pageSession.pageURL}") {
+//                setPageSessionAttribute(key="pageURL" value="#{facesContext.externalContext.requestServletPath}#{facesContext.externalContext.requestPathInfo}");
+//            }
+//        }
+//    />
+//</sun:breadcrumbs>
+//
+//<!-- Make an invisible button to handle the Ajax action -->
+//<sun:button id="button" visible="#{false}">
+//    <!afterCreate
+//	setPageSessionAttribute(key="ajaxButton" value="$this{clientId}");
+//    />
+//    <!command
+//	createHyperlinkArray(links=>$pageSession{breadCrumbs});
+//    />
+//</sun:button>
+//
+//<!-- Fire this during the onload of the page -->
+//<f:verbatim>
+//<script type="text/javascript">
+//    var myonload = new Object();
+//    myonload.oldonload = window.onload;
+//    myonload.newonload = function() {
+//	if ('#{pageSession.pageURL}' != '') {
+//	    admingui.nav.selectTreeNodeWithURL('#{pageSession.pageURL}');
+//	}
+//	if (myonload.oldonload) {
+//	    myonload.oldonload();
+//	}
+//	admingui.nav.calculateBreadCrumbs('#{pageSession.ajaxButton}', '#{pageSession.dynBreadCrumbs}', 0);
+//    };
+//    window.onload = myonload.newonload;
+//</script>
+//</f:verbatim>
+//
+//"</div>
