@@ -331,4 +331,11 @@ public interface Session {
      */
     public boolean hasExpired();
     // END SJSAS 6329289
+
+
+    /** 
+     * Gets the version number of this Session
+     */    
+    public long getVersion();
+
 }
