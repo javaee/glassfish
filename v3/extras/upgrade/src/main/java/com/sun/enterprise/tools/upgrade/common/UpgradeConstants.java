@@ -69,7 +69,6 @@ public final class UpgradeConstants {
 	
     //application server related constants    
     public static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
-    public static final String AS_INSTALL_ROOT = "com.sun.aas.installRoot";
     public static final String AS_BIN_DIRECTORY = "bin";
     public static final String AS_CONFIG_DIRECTORY = "config";
     public static final String AS_ADMIN_ENV_CONF_FILE = "asadminenv.conf";

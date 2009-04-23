@@ -130,20 +130,6 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 	
 	
 	//- target specific ---------------------
-
-	public String getDTDFilename(){
-		if (dtdFilename == null){
-			VersionExtracter v = new VersionExtracter(super.domainRoot,
-				CommonInfoModel.getInstance());
-			dtdFilename = v.getDTDFileName(getConfigXMLFile());
-		}
-		return dtdFilename;
-	}
-
-	public String getInstallRootProperty(){
-		return System.getProperty(UpgradeConstants.AS_INSTALL_ROOT);
-	}
-
     public boolean isInPlaceUpgradeAllowed(){
         return isInPlaceUpgradeAllowed;
     }

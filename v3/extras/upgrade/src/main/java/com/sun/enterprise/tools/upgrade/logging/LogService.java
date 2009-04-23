@@ -47,14 +47,6 @@ import com.sun.enterprise.tools.upgrade.common.*;
 public class LogService {
 
     public static final String UPGRADE_LOGGER = "com.sun.enterprise.tools.upgrade";
-    public static final String UPGRADE_CLI_LOGGER = "com.sun.enterprise.tools.upgrade.cli";
-    public static final String UPGRADE_CERTCONVERSION_LOGGER = "com.sun.enterprise.tools.upgrade.certconversion";
-    public static final String UPGRADE_GUI_LOGGER = "com.sun.enterprise.tools.upgrade.gui";
-    public static final String UPGRADE_COMMON_LOGGER = "com.sun.enterprise.tools.upgrade.common";
-    public static final String UPGRADE_MISCCONFIG_LOGGER = "com.sun.enterprise.tools.upgrade.miscconfig";
-    public static final String UPGRADE_TRANSFORM_LOGGER = "com.sun.enterprise.tools.upgrade.transform";
-    public static final String UPGRADE_REALM_LOGGER = "com.sun.enterprise.tools.upgrade.realm";
-    public static final String UPGRADE_DEPLOYMENT_LOGGER = "com.sun.enterprise.tools.upgrade.deployment.DeploymentUpgrade";
    
     private static LogFormatter formatter;
     private static FileHandler loghandler;
@@ -89,9 +81,7 @@ public class LogService {
         return DEFAULT_LEVEL;
     }
 
-    //-public static Logger getLogger(Class name) {
     public static Logger getLogger(String name) {
-        //-Logger logger = Logger.getLogger(name.getCanonicalName());
         Logger logger = Logger.getLogger(name);
         logger.setLevel(logLevel);
         Handler[] h = logger.getHandlers();

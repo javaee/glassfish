@@ -51,8 +51,9 @@ import com.sun.enterprise.tools.upgrade.common.arguments.*;
 
 public class UpgradeToolMain {
 
+    private static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
     static{
-        String domainRoot = System.getProperty("com.sun.aas.domainRoot");
+        String domainRoot = System.getProperty(AS_DOMAIN_ROOT);
         if(domainRoot == null){
             System.out.println("Configuration Error: AS_DEFS_DOMAINS_PATH is not set.");
             System.exit(1);
@@ -75,19 +76,21 @@ public class UpgradeToolMain {
     
     static Logger _logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
 
-    private StringManager sm;
+    private StringManager sm = StringManager.getManager(UpgradeToolMain.class);
     private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
-   /// private UpgradeHarness harness = new UpgradeHarness();;
-    
+    private CliLogMessageListener stdoutMsgs = null;
+
     public UpgradeToolMain() {
-        sm = StringManager.getManager(UpgradeToolMain.class);
-///        _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
+        //- print tool's msgs to stnd out
+        stdoutMsgs = new CliLogMessageListener();
+        LogService.addLogMessageListener(stdoutMsgs);
+        _logger.log(Level.FINE, sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
 
         //- Have GF sets asenv.conf properties to system properties
         new ASenvPropertyReader();
 
         //- Default location of all traget server domains
-        String targetDomainRoot = System.getProperty(UpgradeConstants.AS_DOMAIN_ROOT);
+        String targetDomainRoot = System.getProperty(AS_DOMAIN_ROOT);
         if(targetDomainRoot == null) {
            targetDomainRoot = new File("").getAbsolutePath();
         }
@@ -95,17 +98,16 @@ public class UpgradeToolMain {
     }
     
     public void startGUI(String [] args){
-///        _logger.log(Level.INFO,sm.getString(
-///                "enterprise.tools.upgrade.start_upgrade_tool_gui"));
+        _logger.log(Level.FINE,sm.getString("enterprise.tools.upgrade.start_upgrade_tool_gui"));
         if(args.length > 0){
-            CliLogMessageListener l = new CliLogMessageListener();
-            LogService.addLogMessageListener(l);  //to log and output command line parsing
 			//- set all vaild options user provided on cmd-line
 			GUICmdLineInput guiIn = new GUICmdLineInput();
 			guiIn.processArguments(guiIn.parse(args));
-            LogService.removeLogMessageListener(l);
         }
-		
+
+		//- disable writing to stnd out when in GUI mode
+        LogService.removeLogMessageListener(stdoutMsgs);
+
 		MainFrame gui = new MainFrame();
         LogService.addLogMessageListener(gui);
         gui.addDialogListener(new DialogListener(){
@@ -115,17 +117,17 @@ public class UpgradeToolMain {
         });
         UpdateProgressManager.getProgressManager().addUpgradeUpdateListener(gui);
         gui.setVisible(true);
+
+        //- enable writing to stndout
+        LogService.addLogMessageListener(stdoutMsgs);
     }
     
     public void startCLI(String [] args){
-///        _logger.log(Level.INFO,
-///                sm.getString("enterprise.tools.upgrade.start_upgrade_tool_cli"));
-        LogService.addLogMessageListener(new CliLogMessageListener());        
+        _logger.log(Level.FINE, sm.getString("enterprise.tools.upgrade.start_upgrade_tool_cli"));
         try{
 			cliParse(args);
         }catch(Exception e){
-///            _logger.log(Level.INFO,sm.getString(
-///                    "enterprise.tools.upgrade.unexpected_parsing"),e);
+            _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.unexpected_parsing"),e);
             System.exit(1);
         }
         this.upgrade();
@@ -161,7 +163,7 @@ public class UpgradeToolMain {
 			}
 			buff.append(" ");
 		}
-		_logger.info(UpgradeConstants.ASUPGRADE + " " + buff.toString());
+		_logger.fine(UpgradeConstants.ASUPGRADE + " " + buff.toString());
 	}
 	
     private void processUIEvent(DialogEvent evt){
@@ -177,39 +179,25 @@ public class UpgradeToolMain {
         try {
             commonInfo.setupTasks();
 
-            //Start Upgrade
-///            _logger.log(Level.INFO, sm.getString(
-///                    "enterprise.tools.upgrade.start_upgrade_harness"));
-            /////harness.startUpgrade();
-            
             try {
-                TargetAppSrvObj _target = commonInfo.getTarget();
-                System.setProperty("com.sun.aas.configRoot",
-                        _target.getInstallRootProperty() + "/" + "config");
-
-                // Create a new domain
+                // preform upgrade
                 DomainsProcessor dProcessor = new DomainsProcessor(commonInfo);
+                TargetAppSrvObj _target = commonInfo.getTarget();
                 dProcessor.startDomain(_target.getDomainName());
-
-///			logger.log(Level.INFO,stringManager.getString(
-///				"enterprise.tools.upgrade.currentlyProcessingDomain", _source.getDomainName()));
-
-            // Move misc password files to target
-///			copyPasswdFiles();
+               // dProcessor.stopDomain(_target.getDomainName());
             } catch (HarnessException he) {
-///			logger.log(Level.SEVERE,stringManager.getString(
-///				"enterprise.tools.upgrade.generalException" ,he.getMessage()));
+                _logger.log(Level.INFO, sm.getString(
+                        "enterprise.tools.upgrade.generalException", he.getMessage()));
                 UpdateProgressManager.getProgressManager().processUpgradeUpdateEvent(-1);
                 commonInfo.recover();
             }
 
             //Delete temporary files (if any) created during the process
-///            _logger.log(Level.INFO, sm.getString(
-///                    "enterprise.tools.upgrade.deletingTempPasswordFiles"));
+            _logger.log(Level.FINE, sm.getString(
+                    "enterprise.tools.upgrade.deletingTempPasswordFiles"));
             commonInfo.getSource().getDomainCredentials().deletePasswordFile();
         } catch (Exception e) {
-///            _logger.log(Level.INFO, e.getMessage());
-            System.out.println(e.getMessage());
+            _logger.log(Level.INFO, e.getMessage());
         }
     }
     
@@ -231,7 +219,6 @@ public class UpgradeToolMain {
 			}
         }
         
-
 		if (isCLIcmd){
 			main.startCLI(args);
 		} else {

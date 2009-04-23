@@ -50,12 +50,9 @@ public class ARG_source extends ArgumentHandler {
 	}
 	public void setRawParameters(String p){
 		rawParameters = p;
-		//- each cmd may need its own param parsing rules.
-		paramList.clear();
 		if (rawParameters != null && 
 			commonInfo.getSource().isValidPath(rawParameters)){
 			super._isValidParameter = true;
-			paramList.add(rawParameters);
 		}
 	}
 	

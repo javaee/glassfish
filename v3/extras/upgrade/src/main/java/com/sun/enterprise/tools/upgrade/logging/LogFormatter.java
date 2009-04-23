@@ -36,10 +36,8 @@
 
 package com.sun.enterprise.tools.upgrade.logging;
 
-import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import java.text.*;
 import com.sun.enterprise.tools.upgrade.common.*;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
 
@@ -53,72 +51,28 @@ public class LogFormatter  extends UniformLogFormatter  {
 
 	private static List listenerList = new ArrayList();
 
- public String format(LogRecord rec) {
- /*
-	StringBuffer buf = new StringBuffer(1000);
-	buf.append("[");
-	buf.append(rec.getLevel());
-	buf.append("|");
-	buf.append(getForamtedDate(rec.getMillis()));
-	buf.append("|");
-	buf.append(rec.getLoggerName( ));
-	buf.append("|");
-	buf.append("ThreadID="+rec.getThreadID( ));
-	buf.append("|");
-	buf.append(formatMessage(rec));
-    Throwable th = rec.getThrown(); 
-    if(th !=null) {    
-        buf.append("|");    
-        buf.append("\n");
-		buf.append("	message: "+th.getMessage());
-        StackTraceElement[] st = th.getStackTrace();
-        buf.append("\n");
-        for(int i =0;i<st.length;i++){
-            buf.append("        "+st[i]);
-            buf.append("\n");
+    public String format(LogRecord rec) {
+        notifyRegisteredListeners(rec.getMessage(), rec);
+        return super.format(rec);
+    }
+
+    private void notifyRegisteredListeners(String msg, LogRecord record) {
+        int size = listenerList.size();
+        for (int i = 0; i < size; i++) {
+            LogMessageListener listener = (LogMessageListener) listenerList.get(i);
+            LogMessageEvent e = new LogMessageEvent("UpgradeTool", msg);
+            e.setLogRecord(record);
+            listener.logMessageReceived(e);
         }
     }
-	buf.append("]");
-    buf.append('\n');
-	String msg = buf.toString();
- */
 
-        notifyRegisteredListeners(rec.getMessage(),rec);
-	return super.format(rec);
-    }
-
-    private void notifyRegisteredListeners(String msg, LogRecord record){
-	int size = listenerList.size();
-	for(int i =0; i<size;i++) {
-	    LogMessageListener listener = (LogMessageListener)listenerList.get(i);
-	    LogMessageEvent e = new LogMessageEvent("UpgradeTool", msg);
-         e.setLogRecord(record);
-	    listener.logMessageReceived(e);
-	}
-    }
-/*
-    public String getHead(Handler h) {
-	return "\n";
-    }
-
-    public String getTail(Handler h) {
-	return "\n";
-    }
-*/
     public static void addLogMessageListener(LogMessageListener listener){
         listenerList.add(listener);
     }
 
     public static void removeLogMessageListener(LogMessageListener listener){
-	listenerList.remove(listener);
+        listenerList.remove(listener);
     }
-/*
-    public String getForamtedDate(long milisecond) {
-    SimpleDateFormat dateformat = new SimpleDateFormat("yyyy MMMMM dd hh:mm: ss aaa");
-	StringBuffer bf = new StringBuffer();
-    dateformat.format(new Date(milisecond),bf,new FieldPosition(0));
-    return bf.toString();
-    }
- */
+
  }
 

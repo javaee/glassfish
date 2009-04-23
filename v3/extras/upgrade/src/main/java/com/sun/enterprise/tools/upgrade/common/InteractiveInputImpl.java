@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.logging.*;
+import java.io.IOException;
 
 import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -67,7 +68,6 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
 public class InteractiveInputImpl implements InteractiveInput{
 	private Map<String, ArgumentHandler> inputMap;
 	private StringManager sm = StringManager.getManager(InteractiveInputImpl.class);
-    private StringManager smcli = StringManager.getManager(com.sun.enterprise.tools.upgrade.cli.CliLogMessageListener.class);
 	
 	/** Creates a new instance of InteractiveInputImpl */
 	public InteractiveInputImpl() {
@@ -93,7 +93,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 			masterPasswordPrompt();
 		}catch(Exception e) {
 			getLogger().log(Level.SEVERE,
-			smcli.getString("enterprise.tools.upgrade.cli.unexpectedException"),
+			sm.getString("enterprise.tools.upgrade.cli.unexpectedException"),
 			e);
 		}		
 	}
@@ -119,7 +119,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		if(tmpA == null) {
 			System.out.print(
-				smcli.getString("enterprise.tools.upgrade.cli.Source_input"));
+				sm.getString("enterprise.tools.upgrade.cli.Source_input"));
 			
 			String source = getResponse();
 			tmpA = new ARG_source();
@@ -131,7 +131,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 			tmpA.exec();
 		} else {
 			getLogger().severe(
-				smcli.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
+				sm.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
 			inputMap.remove(CLIConstants.SOURCE_SHORT);
 			inputMap.remove(CLIConstants.SOURCE);
 			sourcePrompt();
@@ -145,7 +145,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		if(tmpA == null) {
 			System.out.print(
-				smcli.getString("enterprise.tools.upgrade.cli.Target_input"));
+				sm.getString("enterprise.tools.upgrade.cli.Target_input"));
 			
 			String target = getResponse();
 			tmpA = new ARG_target();
@@ -156,7 +156,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		if (tmpA.isValidParameter()){
 			tmpA.exec();
 		} else {
-			getLogger().severe(smcli.getString("" +
+			getLogger().severe(sm.getString("" +
 				"enterprise.tools.upgrade.cli.not_valid_target_install"));
 			inputMap.remove(CLIConstants.TARGET_SHORT);
 			inputMap.remove(CLIConstants.TARGET);
@@ -171,7 +171,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		if(tmpA == null) {
 			System.out.print(
-				smcli.getString("enterprise.tools.upgrade.cli.adminuser_input"));
+				sm.getString("enterprise.tools.upgrade.cli.adminuser_input"));
 			
 			String admiuser = getResponse();
 			tmpA = new ARG_adminuser();
@@ -188,10 +188,11 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		
 		if(tmpA == null) {
-			System.out.print(
-				smcli.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
+			///System.out.print(
+			///	sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
 			
-			String adminPassword =  new CliUtil().getPassword();
+			///String adminPassword =  new CliUtil().getPassword();
+            String adminPassword = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
 			tmpA = new ARG_adminpassword();
 			tmpA.setRawParameters(adminPassword);
 			inputMap.put(CLIConstants.ADMINPASSWORD,tmpA);
@@ -205,15 +206,41 @@ public class InteractiveInputImpl implements InteractiveInput{
 			tmpA = inputMap.get(CLIConstants.MASTERPASSWORD);
 		}
 		if(tmpA == null) {
-			System.out.print(
-				smcli.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
-			String password =  new CliUtil().getPassword();
+			///System.out.print(
+			///	sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
+			///String password =  new CliUtil().getPassword();
+            String password = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
 			tmpA = new ARG_masterpassword();
 			tmpA.setRawParameters(password);
 			inputMap.put(CLIConstants.MASTERPASSWORD, tmpA);
 		}
 		tmpA.exec();
 	}
+
+    private String getPasswordResponse(String prompt){
+        String optionValue;
+        try {
+            InputsAndOutputs.getInstance().getUserOutput().print(prompt);
+            InputsAndOutputs.getInstance().getUserOutput().flush();
+            optionValue = new CliUtil().getPassword();
+        } catch (java.lang.NoClassDefFoundError e) {
+            optionValue = readInput();
+        } catch (java.lang.UnsatisfiedLinkError e) {
+            optionValue = readInput();
+        } catch (Exception e) {
+            optionValue=null;
+        }
+System.out.println("getPasswordResponse: optionValue: " + optionValue);
+        return optionValue;
+    }
+
+    private String readInput() {
+        try {
+            return InputsAndOutputs.getInstance().getUserInput().getLine();
+        } catch (IOException ioe) {
+            return null;
+        }
+    }
 
 	private Logger getLogger() {
 		return LogService.getLogger(LogService.UPGRADE_LOGGER);

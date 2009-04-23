@@ -62,11 +62,10 @@ public abstract class ArgumentHandler {
     /** Creates a new instance of ArgumentHandler */
 	String cmd = null;
 	String rawParameters = null;
-	ArrayList<String> paramList = new ArrayList<String>();
 	boolean _isValidParameter = false;
 	
 	public ArgumentHandler() {
-		sm = StringManager.getManager(ArgumentHandler.class);
+		sm = StringManager.getManager(CommonInfoModel.class);
 		this.commonInfo = CommonInfoModel.getInstance();
         utils = UpgradeUtils.getUpgradeUtils(commonInfo);
 	}
@@ -80,17 +79,12 @@ public abstract class ArgumentHandler {
 	
 	public void setRawParameters(String p){
 		rawParameters = p;
-		//- each cmd may need its own param parsing rules.
-		paramList.clear();
-		paramList.add(rawParameters);
 	}
 	
 	public String getRawParameter(){
 		return rawParameters;
 	}
-	public ArrayList<String> getParameters(){
-		return paramList;
-	}
+	
 	
 	//- process input parameters.
 	public void exec(){}

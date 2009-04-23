@@ -44,8 +44,6 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
 import java.util.logging.*;
 import java.util.ArrayList;
 

@@ -54,8 +54,6 @@ import java.util.logging.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class VersionExtracter {
 
@@ -70,59 +68,7 @@ public class VersionExtracter {
         this.installDir = iD;
         this.common = common;
     }
-    
-    public String getAsadminVersion() {
-        String appserverVersion = null;
-        
-        //Determine version from asadmin version command.
-        String asadminString = UpgradeConstants.ASADMIN_COMMAND;
-        if(System.getProperty(UpgradeConstants.OS_NAME_IDENTIFIER).indexOf("indows") != -1){
-            asadminString = UpgradeConstants.ASADMIN_BAT;
-        }
-        String asAdminFileStr = this.installDir + "/" + 
-                UpgradeConstants.AS_BIN_DIRECTORY +  "/" + asadminString;
-        if(new File(asAdminFileStr).exists()){
-            //-String execCommand = asAdminFileStr+" version";
-            String execCommand = asAdminFileStr+" version --terse=true";
 
-            try{
-                java.lang.Process asadminProcess = 
-                        Runtime.getRuntime().exec(execCommand);
-                BufferedReader pInReader = 
-                        new BufferedReader(new InputStreamReader(
-                        asadminProcess.getInputStream()));
-                String inLine = null;
-                while((inLine = pInReader.readLine()) != null){
-                    if((appserverVersion = this.parseVersion(inLine)) != null)
-                        break;
-                }
-                asadminProcess.destroy();
-            }catch(Exception ex){
-                logger.log(Level.SEVERE, 
-                        stringManager.getString("common.versionextracter.getVersionError"), 
-                        ex);
-            }
-        }
-        return appserverVersion;
-    }
-    
-    /**
-     * Method to parse the asadmin version string and get the version/edition
-     * Returns version info for 9.1
-     */
-	private String parseVersion(String versionString){
-		String v = null;
-		String versionEqualsStr = stringManager.getString(
-			"common.versionextracter.version_equals.string");
-		if (versionString.startsWith(versionEqualsStr)){
-			//- get all text as tokens in string.
-			//- version number is always the last token
-			String [] s = versionString.split(" ");
-			v = s[s.length -1];
-		}
-		return v;
-	}
- 
     /**
      * Method to put together the version and edition (if any) in a simple format.
      */
@@ -168,64 +114,5 @@ public class VersionExtracter {
             }
         }
         return verEdStr;
-    }
-	
-	public String getDTDFileName(String cfgFilename){
-		String f = null;
-		File configFile = new File(cfgFilename);
-		if (!configFile.exists() || !configFile.isFile()){
-			return f;
-		}
-		
-        UpgradeUtils upgrUtils = UpgradeUtils.getUpgradeUtils(common);
-        Document adminServerDoc = upgrUtils.getDomainDocumentElement(configFile.toString());
-
-        try {
-            String systemID = adminServerDoc.getDoctype().getSystemId();
-			String [] s= systemID.split("/");
-			f = s[s.length-1];
-		}catch (Exception ex){
-            logger.log(Level.SEVERE, stringManager.getString("common.versionextracter.dtd_version_find_failured"),ex);
-        }
-        return f;
-	}
-    private String getTextNodeData(Element element){
-		String c = null;
-        NodeList children = element.getChildNodes();
-        for(int index=0; index < children.getLength(); index++){
-            if(children.item(index).getNodeType() == Node.TEXT_NODE){
-                c = children.item(index).getNodeValue();
-				break;
-            }
-        }
-        return c;
-    }
-
-    public String getTargetDefaultProfile() {
-        String defaultProfile= null;
-        try {
-            String path = this.installDir + "/" + 
-                    UpgradeConstants.AS_CONFIG_DIRECTORY + "/" + 
-                    UpgradeConstants.AS_ADMIN_ENV_CONF_FILE;
-            File asadminenvFile = new File(path);
-            BufferedReader reader = new BufferedReader(new FileReader(asadminenvFile));
-            while( reader.ready() ) {
-                String line = reader.readLine();
-                if ( line.startsWith(UpgradeConstants.AS_PROPERTY_ADMIN_PROFILE) ) {
-                    defaultProfile = line.substring(line.indexOf("=") + 1);
-                    break;
-                } else continue;
-            }
-            reader.close();
-            if(defaultProfile == null) throw new Exception();
-        } catch (Exception e) {
-            logger.severe(stringManager.getString("upgrade.common.general_exception") + " " + e.getMessage());
-            common.recover();	    
-            System.exit(2);
-        }
-        return defaultProfile;
-    }
-	
-    public static void main(String[] args){
     }
 }

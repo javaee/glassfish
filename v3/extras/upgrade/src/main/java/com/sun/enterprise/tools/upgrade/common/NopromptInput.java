@@ -93,23 +93,4 @@ public class NopromptInput implements InteractiveInput{
 			System.exit(1);
 		}
 	}
-/***
-	private void checkCredentials(Credentials tmpC){
-		if (tmpC.getAdminUserName() == null){
-			ARG_adminuser tmpA = new ARG_adminuser();
-			tmpA.setRawParameters(CLIConstants.defaultAdminUser);
-			tmpA.exec();
-		}
-		if (tmpC.getAdminPassword() == null){
-			ARG_adminpassword tmpA = new ARG_adminpassword();
-			tmpA.setRawParameters(CLIConstants.defaultAdminPassword);
-			tmpA.exec();
-		}
-		if (tmpC.getMasterPassword() == null) {
-			ARG_masterpassword tmpA = new ARG_masterpassword();
-			tmpA.setRawParameters(CLIConstants.defaultMasterPassword);
-			tmpA.exec();
-		}
-	}
-***/
 }

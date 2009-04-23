@@ -83,7 +83,6 @@ public class CommonInfoModel{
 	}
 	
 	
-    ////-public void setTargetDomainRoot(String targetDomainsRoot) {
 	public void createUpgradeLogFile(String targetDomainRoot) {	
         //If target domains root is already set, avoid overwriting.
 		if (targetDomainRoot != null && !isUpgradeLogFile)
@@ -161,8 +160,7 @@ public class CommonInfoModel{
 
         if (!sourceVersion.equals(UpgradeConstants.VERSION_91) &&
             !sourceVersion.equals(UpgradeConstants.VERSION_3_0)){
-            logger.info(stringManager.getString(
-			"upgrade.common.upgrade_not_supported",
+            logger.info(stringManager.getString("upgrade.common.upgrade_not_supported",
 			sourceVersion, sAppSrvObj.getEdition(), targetVersion, tAppSrvObj.getEdition()));
             flag = false;
         }
@@ -179,30 +177,4 @@ public class CommonInfoModel{
             UpgradeUtils.getUpgradeUtils(this).recover();
         }
     }
-   
-	
-	/**
-	 * Consolidate identification of "ee" (pre-as9.1) and "enterprise"
-	 * (post as8.2) string designators for product edition.
-	 */
-	public boolean isEnterpriseEdition(String s){
-		boolean flag = false;
-		if(UpgradeConstants.ENTERPRISE_PROFILE.equals(s)){
-			flag = true;
-		}
-		return flag;
-	}
-	
-	/**
-	 * Consolidate identification of "pe" (pre-as9.1) and "developer"
-	 * (post as8.2) string designators for product edition.
-	 */
-	public boolean isPlatformEdition(String s){
-		boolean flag = false;
-		if(UpgradeConstants.DEVELOPER_PROFILE.equals(s)||
-			UpgradeConstants.CLUSTER_PROFILE.equals(s)){
-			flag = true;
-		}
-		return flag;
-	}
 }

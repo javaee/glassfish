@@ -62,7 +62,6 @@ public class ARG_passwordfile extends ArgumentHandler {
 			// TODO check of file exists
 			File userPasswordFile = new File(p);
 			if (userPasswordFile.exists() && userPasswordFile.isFile()){
-				paramList.add(rawParameters);
 				super._isValidParameter = true;
 			}
 		}

@@ -49,17 +49,10 @@ public class ARG_target extends ArgumentHandler {
 	}
 	public void setRawParameters(String p){
 		rawParameters = p;
-		paramList.clear();
         if (rawParameters != null) {
             File tmpF = new File(rawParameters);
             if (tmpF.exists()) {
-                //For backward compatibility if the target is the same as the install directory
-                //we use the setting of AS_DEF_DOMAINS_PATH as before for the domains root
-                if (!new File(rawParameters).equals(new File(
-                        commonInfo.getTarget().getInstallRootProperty()))) {
-                    paramList.add(rawParameters);
-                    super._isValidParameter = true;
-                }
+                super._isValidParameter = true;
             }
         }
 	}
