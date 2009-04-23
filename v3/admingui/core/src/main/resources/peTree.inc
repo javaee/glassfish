@@ -143,7 +143,7 @@
     <event>
 	<!afterCreate
 	    getUIComponent(clientId="#{pageSession.treeId}"  component=>$attribute{component});
-	    includeIntegrations(type="org.glassfish.admingui:treeNode" root="#{component}");
+	    includeIntegrations(type="org.glassfish.admingui:treeNode" root="#{requestScope.component}");
 	    // This is a hack which modifies the rendererType
 	    // to ensure no "widget" renderers are used.
 	    removeWidgetsFromTree(tree="#{requestScope.component}");

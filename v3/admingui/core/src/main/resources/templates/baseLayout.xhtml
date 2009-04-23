@@ -93,7 +93,7 @@
                 <ui:event type="afterCreate">
                     getClientId(component="$this{component}" clientId=>$attribute{formId})
                     getUIComponent(clientId="#{formId}"  component=>$attribute{component})
-                    includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{component}");
+                    includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{requestScope.component}");
                 </ui:event>
             </sun:form>
         </div>
