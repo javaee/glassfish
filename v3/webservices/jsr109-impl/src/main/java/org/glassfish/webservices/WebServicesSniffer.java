@@ -41,6 +41,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
+import javax.xml.ws.WebServiceRef;
 import java.util.ArrayList;
 import java.lang.annotation.Annotation;
 
@@ -53,7 +54,7 @@ import java.lang.annotation.Annotation;
 public class WebServicesSniffer extends GenericSniffer {
 
     private static final Class[]  handledAnnotations = new Class[] {javax.jws.WebService.class,
-            javax.xml.ws.WebServiceProvider.class};
+            javax.xml.ws.WebServiceProvider.class, javax.xml.ws.WebServiceRef.class};
 
     final String[] containers = { "org.glassfish.webservices.WebServicesContainer" };
 
