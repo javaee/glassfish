@@ -137,7 +137,6 @@ public class GFLauncherInfo {
         configDir = SmartFile.sanitize(f);
     }
     
-    
     public File getInstanceRootDir() throws GFLauncherException {
         if (!valid) {
             throw new GFLauncherException("internalError", "Call to getInstanceRootDir() on an invalid GFLauncherInfo object.");
@@ -205,6 +204,9 @@ public class GFLauncherInfo {
         map.put("-domainname", domainName);
         map.put("-instancename", instanceName);
 
+        if(respawnInfo != null) {
+            respawnInfo.put(map);
+        }
         return map;
     }
 
@@ -212,6 +214,10 @@ public class GFLauncherInfo {
         watchdog = b;
     }
 
+    public void setRespawnInfo(String classname, String classpath, String[] args) {
+        respawnInfo = new RespawnInfo(classname, classpath, args);
+    }
+    
     public boolean isWatchdog() {
         return watchdog;
     }
@@ -415,6 +421,7 @@ public class GFLauncherInfo {
         }
         return null;
     }
+
     private ServerType type;
     private boolean verbose = false;
     private boolean debug = false;
@@ -431,7 +438,7 @@ public class GFLauncherInfo {
     private ArrayList<String> argsRaw = new ArrayList<String>();
     private Set<Integer> adminPorts;
     private boolean watchdog = false;
-
+    private RespawnInfo respawnInfo;
     // BUG TODO get the def. domains dir from asenv 3/14/2008
     private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";
     private final static String CONFIG_DIR = "config";

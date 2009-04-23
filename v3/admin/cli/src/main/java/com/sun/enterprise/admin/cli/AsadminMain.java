@@ -38,6 +38,8 @@ package com.sun.enterprise.admin.cli;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Hashtable;
 
@@ -49,6 +51,9 @@ public class AsadminMain {
     public static void main(String[] args) {
         if(CLIConstants.debugMode) {
             System.setProperty(CLIConstants.WALL_CLOCK_START_PROP, "" + System.currentTimeMillis());
+            CLILogger.getInstance().printDebugMessage("CLASSPATH= " +
+                    System.getProperty("java.class.path") +
+                    "\nCommands: " + Arrays.toString(args));
         }
 
         AsadminMain main = new AsadminMain();
@@ -60,6 +65,10 @@ public class AsadminMain {
              System.exit(0);
         }
         copyOfArgs = new String[args.length];
+        classPath = System.getProperty("java.class.path");
+        className = main.getClass().getName();
+
+
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
 
         String command = args[0];
@@ -111,6 +120,12 @@ public class AsadminMain {
 
     /*pkg-priv*/ static String[] getArgs() {
         return copyOfArgs;
+    }
+    /*pkg-priv*/ static String getClassPath() {
+        return classPath;
+    }
+    /*pkg-priv*/ static String getClassName() {
+        return className;
     }
 
     private Map<String, String> getRemoteCommands() {
@@ -181,6 +196,8 @@ public class AsadminMain {
     private final static int SUCCESS = 0;
     private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
     private       static String[] copyOfArgs;
+    private       static String classPath;
+    private       static String className;
 }
 
 

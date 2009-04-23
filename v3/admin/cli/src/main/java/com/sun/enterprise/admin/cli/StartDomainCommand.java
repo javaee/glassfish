@@ -69,6 +69,9 @@ public class StartDomainCommand extends AbstractCommand {
             info.setVerbose(verbose);
             info.setWatchdog(watchdog);
             info.setDebug(getBooleanOption("debug"));
+            info.setRespawnInfo(AsadminMain.getClassName(),
+                                AsadminMain.getClassPath(),
+                                AsadminMain.getArgs());
             launcher.setup();
             // CLI calls this method only to ensure that domain.xml is parsed
             // once. This is a performance optimization.

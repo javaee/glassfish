@@ -274,6 +274,9 @@ public abstract class GFLauncher {
         try {
             addIgnoreNull(cmdLine, getInfo().getArgsAsList());
         }
+        catch(GFLauncherException gfle) {
+            throw gfle;
+        }
         catch(Exception e) {
             //harmless
         }
