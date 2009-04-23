@@ -19,41 +19,41 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish prelude distribution creation" default="create.distribution" basedir=".">
+<project name="glassfish web-nb distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
     <target name="create.distribution">
-        <echo message="Creating distribution: web"/>
+        <echo message="Creating distribution: web-nb"/>
         <unzip dest="target/stage">
             <fileset dir="target/stage">
                 <include name="*.zip"/>
-                <exclude name="nucleus-base*.zip"/>
             </fileset>
         </unzip>
-        <!-- unzip dest="target/stage/${install.dir.name}">
-            <fileset dir="target/stage">
-                <include name="nucleus-base*.zip"/>
-            </fileset>
-            <patternset>
-                <include name="**/domains/**"/>
-            </patternset>
-        </unzip -->
         <delete dir="target/stage" includes="*.zip"/>
 
         <chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
         <chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
-        <!-- create domain -->
-        <!-- ant antfile="../distributions.xml" target="create-domain">
-            <property name="exec.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin"/>
-            <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin/asadmin"/>
-        </ant -->
-         
+
         <!-- create distribution zip-->
-        <exec dir="target/stage" executable="zip">
-            <arg line= "-r ../web.zip ${install.dir.name}"/>
-        </exec>
+      	<zip file="target/web-nb.zip" duplicate="preserve">
+            <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/bin/*"
+		    excludes="${install.dir.name}/bin/*.bat" />
+	    <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/glassfish/bin/*"
+		    excludes="${install.dir.name}/glassfish/bin/*.bat" />
+            <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/bin/*.bat" />
+	    </zipfileset>
+	    <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/glassfish/bin/*.bat" />
+            </zipfileset>
+	    <zipfileset  dir="target/stage"
+		    includes="${install.dir.name}/**">
+            </zipfileset>
+        </zip> 
 
         <!-- deploy distribution artifact to maven repository" -->
-        <attachArtifact file="target/web.zip"/>
+        <attachArtifact file="target/web-nb.zip"/>
    </target>
 </project>

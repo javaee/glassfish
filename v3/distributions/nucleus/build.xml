@@ -19,32 +19,83 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="nucleus bundle creation" default="create.bundle" basedir=".">
-   <target name="create.bundle">
-       <mkdir dir="target/stage"/>
+<project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
+    <import file="../distributions.xml"/>
+    <target name="init">
+        <condition property="windows">
+            <os family="windows" />
+        </condition>
+        <condition property="unix">
+            <os family="unix" />
+        </condition>
+    </target>
 
-       <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
-       <resolveArtifact artifactId="felix" groupId="org.glassfish.osgi-platforms" property="felix.zip"/>
-       <resolveArtifact artifactId="equinox" groupId="org.glassfish.osgi-platforms" property="equinox.zip"/>
-       <resolveAll todir="target/stage/glassfish/modules" stripVersion="true">
-         <scope level="compile,runtime" />
-       </resolveAll>
+    <target name="create.distribution">
+        <echo message="Creating distribution: nucleus"/>
+        <unzip dest="target/stage">
+            <fileset dir="target/stage">
+                <include name="*.zip"/>
+            </fileset>
+        </unzip>
+       
+        <mkdir dir="../target"/>
 
-       <delete dir="target/stage/glassfish/modules" includes="*.zip" />
-       <delete dir="target/stage/glassfish/modules" includes="*.pom" />
-        
-        <graphDef id="generate-picture">
-            <visualize file="modules.png">
-                <scope level="compile,runtime"/>
-            </visualize>
-        </graphDef>
+        <delete dir="target/stage" includes="*.zip"/>
 
-       <zip file="target/nucleus.zip" basedir="target/stage">
-           <zipgroupfileset file="${nucleus-base.zip}"/>
-           <zipgroupfileset file="${felix.zip}"/>
-           <zipgroupfileset file="${equinox.zip}"/>
-       </zip>
-       <attachArtifact file="target/nucleus.zip"/>
+        <chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
+
+        <!-- get modules required to create default domain --> 
+        <ant antfile="../distributions.xml" target="fetch-domain-creation-artifacts">
+            <property name="modules.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/modules"/>
+        </ant>
+
+        <!-- create domain -->
+        <antcall target="create-domain"/>
+
+
+        <!-- delete modules required to create default domain; these are not bundled as part of nucleus --> 
+        <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
+            <property name="modules.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/modules"/>
+        </ant>
+
+        <!-- create distribution zip -->
+
+	<zip file="target/nucleus.zip" duplicate="preserve">
+            <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/bin/*"
+		    excludes="${install.dir.name}/bin/*.bat" />
+	    <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/glassfish/bin/*"
+		    excludes="${install.dir.name}/glassfish/bin/*.bat" />
+            <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/bin/*.bat" />
+	    </zipfileset>
+	    <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/glassfish/bin/*.bat" />
+            </zipfileset>
+	    <zipfileset  dir="target/stage"
+		    includes="${install.dir.name}/**">
+            </zipfileset>
+        </zip>
+
+        <!-- Deploy distribution artifact to maven repository" -->
+        <attachArtifact file="target/nucleus.zip"/>
+   </target>
+
+   <target name="create-domain" depends="create-domain-on-windows, create-domain-on-unix"/>
+
+   <target name="create-domain-on-windows" depends="init" if="windows">
+       <ant antfile="../distributions.xml" target="create-domain">
+           <property name="exec.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin"/>
+           <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin/asadmin.bat"/>
+       </ant>
+   </target>
+
+   <target name="create-domain-on-unix" depends="init" if="unix">
+       <ant antfile="../distributions.xml" target="create-domain">
+           <property name="exec.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin"/>
+           <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin/asadmin"/>
+       </ant>
    </target>
 </project>
-

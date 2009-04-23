@@ -44,475 +44,137 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>web</artifactId>
-    <name>Glassfish Web Bundle</name>
+    <name>Glassfish v3 Web Distribution(</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the Glassfish PE Bundle</description>
+    <description>This pom describes how to assemble the GlassFish v3 Web Distribution</description>
 
-    <properties>
-        <create.bundle> true </create.bundle>
-        <test.server> false </test.server>
-    </properties>
+    <developers>
+        <developer>
+            <id>rajeshwar</id>
+            <name>Rajeshwar Patil</name>
+            <url>http://blogs.sun.com/aquatic</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>snjezana</id>
+            <name>Snjezana Sevo-Zenzerovic</name>
+            <url>http://blogs.sun.com/snjezana</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <build>
         <plugins>
+            <!-- Get hold of all the required artifacts -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/stage</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <excludeTransitive>true</excludeTransitive>
+                            <includeScope>compile</includeScope>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                   </execution>
+                </executions>
+            </plugin>
+
+            <!-- Create distribution artifact --> 
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <configuration>
                     <tasks>
-
-		        <if test="${create.bundle}">
-                            <ant dir="." antfile="build.xml" target="create.bundle"/>
-                        </if>
-
-                        <if test="${build.all.jar}">
-                            <ant dir="." antfile="build.xml" target="all.jar"/>
-                        </if>
-
+                        <ant dir="." antfile="build.xml" target="create.distribution"/>
                     </tasks>
                 </configuration>
-		<executions>
-                    <execution>
-                        <phase> test </phase>
-                        <configuration>
-                            <tasks>
-                            <if test="${test.server}">
-                                <ant dir="." antfile="build.xml" target="test.server"/>
-                            </if>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <dependencies>
-                    <!-- TODO: add installer builder jars -->
-                    <!-- see http://kohsuke.sfbay/hudson/job/poormans-installer/ -->
-                </dependencies>
              </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfishbuild-extension</artifactId>
-                <version>${project.version}</version>
-            </extension>
-        </extensions>
     </build>
 
+    <!--
+    Activate this profile with "mvn -P ips"
     <profiles>
-        <profile><!-- activate this profile to build all-in-one jar -->
-            <id>all.jar</id>
-            <properties>
-                <build.all.jar>true</build.all.jar>
-            </properties>
-        </profile>
-
-        <profile><!-- activate this profile to run the sanity test  -->
-            <id>run.sanity.test</id>
+        <profile>
+            <id>ips</id>
             <activation>
-               <property>
-                   <name>run</name>
-                   <value>sanity.test</value>
-               </property>
+                <activeByDefault>false</activeByDefault>
             </activation>
-            <properties>
-                <test.server>true</test.server>
-                <create.bundle>false</create.bundle>
-            </properties>
+            <build>
+            <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.distribution"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-web-distributions"/>
+                    </tasks>
+                </configuration>
+             </plugin>
+            </plugins>
+            </build>
         </profile>
+   </profiles -->
 
-    </profiles>
 
     <dependencies>
-        <!-- base distribution image -->
+        <!-- Artifacts to be included in the distribution -->
+
+        <!-- web-nb distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>nucleus</artifactId>
+            <artifactId>web-nb</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
 
-        <!--
-          modules to be included in this bundle
-
-          As a general rule of thumb, this list should only include feature-level
-          modules. For one, all the modules that are transitively depended on are included
-          in the end, and more importantly, keeping this list short helps other people
-          (and us) to build custom distributions.
-        -->
+        <!-- admin ui package -->
         <dependency>
-            <groupId>org.glassfish.external</groupId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-gui</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>     
+
+        <!-- admin web container ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-web-gui</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <!-- admin jdbc ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc-gui</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <!-- javadb package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
             <artifactId>javadb</artifactId>
             <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-    <dependency>
-           <groupId>com.sun.enterprise</groupId>
-           <artifactId>hk2</artifactId>
-           <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.stream</groupId>
-                    <artifactId>stax-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>woodstox</groupId>
-                    <artifactId>wstx-asl</artifactId>
-                </exclusion>
-            </exclusions>
-    </dependency>         
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier-all</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.servlet.jsp</groupId>
-					<artifactId>jsp-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.servlet.jsp.jstl</groupId>
-					<artifactId>jstl-api</artifactId>
-				</exclusion>
-	        </exclusions>             
-    	</dependency>
-    	<dependency>
-    		<groupId>org.glassfish.extras</groupId>
-		    <artifactId>grizzly-container</artifactId>
-            <version>${project.version}</version>
-    	</dependency>
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>security-all</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-    	</dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-optional</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.scripting</groupId>
-            <artifactId>jruby-all</artifactId>
-            <version>${jruby-scripting.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
-            <artifactId>jdbc-ra</artifactId>
-            <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.connectors</groupId>
-            <artifactId>descriptors</artifactId>
-            <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.connectors</groupId>
-           <artifactId>gf-connectors-connector</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.connectors</groupId>
-           <artifactId>connectors-runtime</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.connectors</groupId>
-           <artifactId>work-management</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.transaction</groupId>
-           <artifactId>jts</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.persistence</groupId>
-           <artifactId>jpa-connector</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.web</groupId>
-           <artifactId>webbeans-integration</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.persistence</groupId>
-           <artifactId>eclipselink-wrapper</artifactId>
-           <version>${project.version}</version>
-           <type>pom</type>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.deployment</groupId>
-           <artifactId>deployment-client</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-core-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-config-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-ext-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.registration</groupId>
-           <artifactId>registration-impl</artifactId>
-	   <version>${project.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.registration</groupId>
-           <artifactId>glassfish-registration</artifactId>
-	   <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.deployment</groupId>
-           <artifactId>dtds</artifactId>
-           <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.deployment</groupId>
-           <artifactId>schemas</artifactId>
-           <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.flashlight</groupId>
-            <artifactId>flashlight-framework</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.flashlight</groupId>
-            <artifactId>flashlight-agent</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.jdbc</groupId>
-            <artifactId>jdbc-admin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.connectors</groupId>
-            <artifactId>connectors-admin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>gf-ejb-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>ejb-container</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.orb</groupId>
-            <artifactId>orb-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+            <type>zip</type>
+        </dependency>     
 
-         <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>ant</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.ant</groupId>
-                    <artifactId>ant</artifactId>
-                </exclusion>    
-                <exclusion>
-                    <groupId>org.apache.ant</groupId>
-                    <artifactId>ant-launcher</artifactId>
-                </exclusion>    
-            </exclusions>
-        </dependency>
-        
-        <!-- The following are all related to Admin Console -->
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-plugin-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>dataprovider</artifactId>
-            <version>${dataprovider.version}</version>
-            <exclusions>
-                <exclusion>
-		    <groupId>com.sun.woodstock.dependlibs</groupId>
-		    <artifactId>dataprovider</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jsftemplating</groupId>
-            <artifactId>jsftemplating</artifactId>
-            <version>${jsftemplating.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-common</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf-suntheme</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jsftemplating</groupId>
-                    <artifactId>jsftemplating-dynafaces</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-security-plugin</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf-suntheme</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jsftemplating</groupId>
-                    <artifactId>jsftemplating-dynafaces</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-	    <artifactId>console-jdbc-plugin</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf-suntheme</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jsftemplating</groupId>
-                    <artifactId>jsftemplating-dynafaces</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-	    <artifactId>console-updatecenter-plugin</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf-suntheme</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jsftemplating</groupId>
-                    <artifactId>jsftemplating-dynafaces</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-web-plugin</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf-suntheme</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jsftemplating</groupId>
-                    <artifactId>jsftemplating-dynafaces</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-community-branding-plugin</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.woodstock</groupId>
-                    <artifactId>webui-jsf-suntheme</artifactId>
-                    </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jsftemplating</groupId>
-                    <artifactId>jsftemplating-dynafaces</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>dist-fragment</artifactId>
-            <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-cometd</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-compat</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>bean-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>osgi-container</artifactId>
-            <version>${project.version}</version>
-        </dependency>		
     </dependencies>
 </project>
 

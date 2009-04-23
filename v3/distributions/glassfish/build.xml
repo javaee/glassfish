@@ -1,68 +1,60 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
- The contents of this file are subject to the terms
- of the Common Development and Distribution License
- (the "License").  You may not use this file except
- in compliance with the License.
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
 
- You can obtain a copy of the license at
- glassfish/bootstrap/legal/CDDLv1.0.txt or
- https://glassfish.dev.java.net/public/CDDLv1.0.html.
- See the License for the specific language governing
- permissions and limitations under the License.
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
 
- When distributing Covered Code, include this CDDL
- HEADER in each file and include the License file at
- glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
- add the following below this CDDL HEADER, with the
- fields enclosed by brackets "[]" replaced with your
- own identifying information: Portions Copyright [yyyy]
- [name of copyright owner]
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
 -->
-<project name="glassfish bundle creation" default="create.bundle" basedir=".">
+<project name="glassfish v3, glassfish distribution creation" default="create.distribution" basedir=".">
+    <import file="../distributions.xml"/>
+    <target name="create.distribution">
+        <echo message="Creating distribution: glassfish"/>
+        <unzip dest="target/stage">
+            <fileset dir="target/stage">
+                <include name="*.zip"/>
+            </fileset>
+        </unzip>
+       
+        <delete dir="target/stage" includes="*.zip"/>
 
-    <!-- import the bundle build script from the web module -->
-    <resolveArtifact artifactId="web" classifier="build" type="xml" property="base.build.xml"/>
-    <import file="${base.build.xml}" />
+        <chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
+         
+        <!-- create distribution zip-->
+      	<zip file="target/glassfish.zip" duplicate="preserve">
+            <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/bin/*"
+		    excludes="${install.dir.name}/bin/*.bat" />
+	    <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/glassfish/bin/*"
+		    excludes="${install.dir.name}/glassfish/bin/*.bat" />
+            <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/bin/*.bat" />
+	    </zipfileset>
+	    <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/glassfish/bin/*.bat" />
+            </zipfileset>
+	    <zipfileset  dir="target/stage"
+		    includes="${install.dir.name}/**">
+            </zipfileset>
+        </zip> 
 
-    <target name="create.bundle" depends="web.prepare">
-
-         <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
-	    <scope level="compile,runtime" />
-    </resolveAll>
-
-    <!-- using only runtime out of jersey zip file -->
-
-    <resolveArtifact groupID="org.glassfish.packager.temp" artifactID="jersey" type="zip" property="jersey.zip" />
-
-    <unzip src="${jersey.zip}" dest="target/stage">
-        <patternset>
-	     <include name="**/modules/*.jar"/>
-        </patternset>
-    </unzip>	    
-
-
-    <!-- temporary workaround for MS1 mq integration since artifact
-    type is not being properly resolved as distribution-fragment -->
-
-    <resolveArtifact todir="target/fragments" groupID="org.glassfish" artifactID="mq-distribution" type="zip" />
-
-
-	<delete dir="target/stage/glassfish/modules" includes="*.zip" />
-	<delete dir="target/stage/glassfish/modules" includes="*.pom" />
-	<delete dir="target/stage/glassfish/modules" includes="*.war" />
-	<delete dir="target/stage/glassfish/modules" includes="*.xml" />
-
-        <graphDef id="generate-picture" tolerateBrokenPOMs="true">
-            <visualize file="modules.png">
-                <scope level="compile,runtime" />
-            </visualize>
-        </graphDef>
-
-        <build-zip zipfile="target/glassfish.zip" base="${nucleus-base.zip}" />
-
-        <!-- this build script will be reused elsewhere -->
-        <attachArtifact file="build.xml" classifier="build" />
-    </target>
+        <!-- deploy distribution artifact to maven repository" -->
+        <attachArtifact file="target/glassfish.zip"/>
+   </target>
 </project>

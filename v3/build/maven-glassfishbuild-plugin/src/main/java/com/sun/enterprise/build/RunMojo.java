@@ -217,7 +217,7 @@ public class RunMojo extends DistributionAssemblyMojo {
         if(rootDir==null) {
             // where's the base installation image?
             Artifact baseImage = findBaseImage(distPoms);
-            rootDir = new File(new File(session.getExecutionRootDirectory()),"target/glassfish");
+            rootDir = new File(new File(session.getExecutionRootDirectory()),"target/glassfishv3/glassfish");
             if(!rootDir.exists()) {
                 getLog().info(
                     String.format("Extracting %1s to %2s as the installation base image",

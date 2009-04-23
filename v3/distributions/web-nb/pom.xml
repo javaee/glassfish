@@ -39,14 +39,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.distributions-ips</groupId>
+        <groupId>org.glassfish.distributions</groupId>
         <artifactId>distributions</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>web</artifactId>
-    <name>Glassfish v3 Web Distribution(</name>
+    <artifactId>web-nb</artifactId>
+    <name>Glassfish v3 Web-NB Distribution(</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish v3 Web Distribution</description>
+    <description>This pom describes how to assemble the GlassFish v3 Web-NB Distribution</description>
 
     <developers>
         <developer>
@@ -122,59 +122,118 @@
                 <configuration>
                     <tasks>
                         <ant dir="." antfile="build.xml" target="create.distribution"/>
-                        <ant dir="." antfile="../distributions.xml" target="create-web-distributions"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-web-nb-distributions"/>
                     </tasks>
                 </configuration>
              </plugin>
             </plugins>
             </build>
         </profile>
-   </profiles -->
-
+   </profiles>
+   -->
 
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
 
-        <!-- web-nb distribution -->
+        <!-- scripting distribution -->
         <dependency>
-            <groupId>org.glassfish.distributions-ips</groupId>
-            <artifactId>web-nb</artifactId>
+            <groupId>org.glassfish.distributions</groupId>
+            <artifactId>scripting</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
 
-        <!-- admin ui package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-gui</artifactId>
+            <artifactId>glassfish-common</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-registration</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-management</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-amx</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jca</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jpa</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jta</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+      </dependency>
+      <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jts</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+       </dependency>
+       <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+       </dependency>
+       <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-ejb-lite</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>    
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jsf</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
-
-        <!-- admin web container ui package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-web-gui</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-
-        <!-- admin jdbc ui package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jdbc-gui</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-
-        <!-- javadb package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>javadb</artifactId>
+            <artifactId>glassfish-web-management</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-web</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc-management</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency> 
 
+ 
     </dependencies>
 </project>
-

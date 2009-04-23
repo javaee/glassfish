@@ -284,7 +284,6 @@
                 <module>embedded</module>
                 <module>webservices</module>
                 <module>orb</module>
-                <module>distributions-ips</module>
                 <module>installer</module>
 		<module>sun-glassfish</module>
 		<module>sun-glassfish/packager</module>
@@ -326,7 +325,6 @@
                 <module>embedded</module>
                 <module>webservices</module>
                 <module>orb</module>
-                <module>distributions-ips</module>
                 <module>installer</module>
 		<module>sun-glassfish</module>
 		<module>sun-glassfish/packager</module>

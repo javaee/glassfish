@@ -24,7 +24,8 @@
     <property name="uc.stage.dir" value="${basedir}/target/uc" />
     <property name="tmp.dir" value="${basedir}/target/tmp" />
     <property name="resources.dir" value="${basedir}/src/main/resources" />
-    <property name="gf.zip.dir" value="${basedir}/../distributions-ips/glassfish/target" />    <property name="javaresources.dir" value="${basedir}/src/main/java/org/openinstaller/resource" />
+    <property name="gf.zip.dir" value="${basedir}/../distributions/glassfish/target" />
+    <property name="javaresources.dir" value="${basedir}/src/main/java/org/openinstaller/resource" />
       
     <!-- all -->
     <target name="all" depends="extract.oi, extract.uc, compile, assemble, package"  description="Build entire component">

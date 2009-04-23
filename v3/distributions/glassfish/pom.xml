@@ -42,234 +42,190 @@
         <groupId>org.glassfish.distributions</groupId>
         <artifactId>distributions</artifactId>
         <version>3.0-SNAPSHOT</version>
-    </parent>    
+    </parent>
     <artifactId>glassfish</artifactId>
-    <name>Glassfish Full Bundle</name>
+    <name>Glassfish v3 GlassFish Distribution(</name>
     <packaging>distribution-base-zip</packaging>
-    <description>GlassFish web bundle + EJB, ACC, and etc.</description>
+    <description>This pom describes how to assemble the GlassFish v3 GlassFish Distribution</description>
+
+    <developers>
+        <developer>
+            <id>rajeshwar</id>
+            <name>Rajeshwar Patil</name>
+            <url>http://blogs.sun.com/aquatic</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>snjezana</id>
+            <name>Snjezana Sevo-Zenzerovic</name>
+            <url>http://blogs.sun.com/snjezana</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <build>
         <plugins>
+            <!-- Get hold of all the required artifacts -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/stage</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <excludeTransitive>true</excludeTransitive>
+                            <includeScope>compile</includeScope>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                   </execution>
+                </executions>
+            </plugin>
+
+            <!-- Create distribution artifact --> 
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <configuration>
-                  <tasks>
-                    <ant dir="." antfile="build.xml" target="create.bundle"/>
-                  </tasks>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.distribution"/>
+                    </tasks>
                 </configuration>
              </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfishbuild-extension</artifactId>
-                <version>${project.version}</version>
-            </extension>
-        </extensions>
     </build>
 
+    <!--
+    Activate this profile with "mvn -P ips"
+    -->
+    <profiles>
+        <profile>
+            <id>ips</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+            <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.distribution"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-glassfish-distributions"/>
+                    </tasks>
+                </configuration>
+             </plugin>
+            </plugins>
+            </build>
+        </profile>
+   </profiles>
+
+
     <dependencies>
-        <!-- base distribution image -->
+        <!-- Artifacts to be included in the distribution -->
+
+        <!-- web distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
             <artifactId>web</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-        <dependency>
-            <!-- and its dist bundling script -->
-            <groupId>org.glassfish.distributions</groupId>
-            <artifactId>web</artifactId>
-            <version>${project.version}</version>
-            <classifier>build</classifier>
-            <type>xml</type>
-        </dependency>
-        
-        <!-- features in the glassfish bundle -->
-        
-        <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>ejb-all</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-        </dependency>
 
+	<!-- commons full package -->       
         <dependency>
-            <groupId>org.glassfish.connectors</groupId>
-            <artifactId>connectors-inbound-runtime</artifactId>
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-common-full</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+        </dependency> 
+    
+
+        <!-- ejb timer package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-ejb</artifactId>
             <version>${project.version}</version>
-            <!--<optional>true</optional>-->
-        </dependency>
+            <type>zip</type>
+        </dependency>     
 	
-	<dependency>
-	    <groupId>org.glassfish.jms</groupId>
-	    <artifactId>jms-core</artifactId>
-	    <version>${project.version}</version>
-	</dependency>
-	<dependency>
-	    <groupId>org.glassfish.jms</groupId>
-	    <artifactId>jms-admin</artifactId>
-	    <version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-            <groupId>org.glassfish</groupId>
-	    <artifactId>javax.jms</artifactId>
+	<!-- CMP package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-cmp</artifactId>
             <version>${project.version}</version>
-       </dependency>
-        
-        <dependency>
-            <groupId>org.glassfish.transaction</groupId>
-            <artifactId>jts</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.webservices</groupId>
-            <artifactId>webservices-scripts</artifactId>
-	    <version>${project.version}</version>
-	    <type>distribution-fragment</type>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>webservices-osgi</artifactId>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml</groupId>
-            <artifactId>webservices-api-osgi</artifactId>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.webservices</groupId>
-            <artifactId>jsr109-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>com.sun.xml.bind</groupId>
-           <artifactId>jaxb-osgi</artifactId>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-           <groupId>javax.xml.bind</groupId>
-           <artifactId>jaxb-api-osgi</artifactId>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.security</groupId>
-           <artifactId>webservices.security</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.persistence.cmp</groupId>
-           <artifactId>cmp-all</artifactId>
-           <version>${project.version}</version>
-           <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-codegen</artifactId>
-            <version>${glassfish-corba.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.orb</groupId>
-            <artifactId>orb-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.orb</groupId>
-            <artifactId>orb-iiop</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>mq-distribution</artifactId>
-	    <version>${mq.version}</version>
-	    <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>jmsra</artifactId>
-            <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-        <!-- temporary integration of Jersey content -->
-        <dependency>	  
-	    <groupId>org.glassfish.packager.temp</groupId>
-	    <artifactId>jersey</artifactId>
-	    <version>${jersey.version}</version>
             <type>zip</type>
-       </dependency>
-	<!-- following appclient modules should get replaced with appclient-all -->
-	<dependency>
-            <groupId>org.glassfish.appclient</groupId>
-            <artifactId>gf-client</artifactId>
-            <version>${project.version}</version>
-        </dependency> 
+        </dependency>     
+
+        <!--corba codegen package -->
         <dependency>
-            <groupId>org.glassfish.appclient</groupId>
-            <artifactId>gf-client-module</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-codegen</artifactId>
             <version>${project.version}</version>
-        </dependency>
+            <type>zip</type>
+        </dependency>    
+
+        <!--corba package -->
         <dependency>
-            <groupId>org.glassfish.appclient</groupId>
-            <artifactId>gf-client</artifactId>
-	    <version>${project.version}</version>
-	    <classifier>bundle</classifier>
-	    <type>zip</type>
-        </dependency> 
-         <dependency>
-            <groupId>org.glassfish.appclient</groupId>
-            <artifactId>acc-config</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-corba</artifactId>
             <version>${project.version}</version>
-        </dependency>
+            <type>zip</type>
+        </dependency>    
+
+        <!-- metro package -->
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>appclient-scripts</artifactId>
-	    <version>${project.version}</version>
-	    <type>distribution-fragment</type>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>metro</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
+
+        <!-- jersey package -->
         <dependency>
-            <groupId>org.glassfish.appclient.server</groupId>
-            <artifactId>appclient-connector</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>jersey</artifactId>
             <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
+
+     <!-- appclient package -->
         <dependency>
-            <groupId>org.glassfish.appclient.server</groupId>
-            <artifactId>appclient-server-core</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>glassfish-appclient</artifactId>
             <version>${project.version}</version>
-       </dependency>
-       <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>appclient.security</artifactId>
-            <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
-         <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>ejb.security</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-       <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-javaee-full</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
+        <!-- jms package -->
         <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>sun-as-jsr88-dm-frag</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>glassfish-jms</artifactId>
             <version>${project.version}</version>
-            <type>distribution-fragment</type>
+            <type>zip</type>
         </dependency>
+
+        <!-- mq package -->
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-j2ee-impl</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>mq</artifactId>
             <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>mejb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+
+</dependencies>
+
 </project>
 
