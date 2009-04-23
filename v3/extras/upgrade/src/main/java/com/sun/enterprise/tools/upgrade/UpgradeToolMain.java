@@ -93,6 +93,8 @@ public class UpgradeToolMain {
         String targetDomainRoot = System.getProperty(AS_DOMAIN_ROOT);
         if(targetDomainRoot == null) {
            targetDomainRoot = new File("").getAbsolutePath();
+        } else {
+            targetDomainRoot = new File(targetDomainRoot).getAbsolutePath();
         }
 		commonInfo.getTarget().setInstallDir(targetDomainRoot);
     }
@@ -184,6 +186,7 @@ public class UpgradeToolMain {
                 DomainsProcessor dProcessor = new DomainsProcessor(commonInfo);
                 TargetAppSrvObj _target = commonInfo.getTarget();
                 dProcessor.startDomain(_target.getDomainName());
+                UpdateProgressManager.getProgressManager().processUpgradeUpdateEvent(100);
                // dProcessor.stopDomain(_target.getDomainName());
             } catch (HarnessException he) {
                 _logger.log(Level.INFO, sm.getString(
