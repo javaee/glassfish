@@ -193,10 +193,10 @@ public class StandardClassLoader
         this.system = getSystemClassLoader();
         securityManager = System.getSecurityManager();
         if (repositories != null) {
-            for (int i = 0; i < repositories.length; i++)
+            for (int i = 0; i < repositories.length; i++) {
                 addRepositoryInternal(repositories[i]);
+            }
         }
-
     }
 
 
@@ -214,10 +214,10 @@ public class StandardClassLoader
         this.system = getSystemClassLoader();
         securityManager = System.getSecurityManager();
         if (repositories != null) {
-            for (int i = 0; i < repositories.length; i++)
+            for (int i = 0; i < repositories.length; i++) {
                 addRepositoryInternal(repositories[i]);
+            }
         }
-
     }
 
 
@@ -235,10 +235,10 @@ public class StandardClassLoader
         this.system = getSystemClassLoader();
         securityManager = System.getSecurityManager();
         if (repositories != null) {
-            for (int i = 0; i < repositories.length; i++)
+            for (int i = 0; i < repositories.length; i++) {
                 addRepositoryInternal(repositories[i].toString());
+            }
         }
-
     }
 
 
@@ -266,7 +266,7 @@ public class StandardClassLoader
      * The list of local repositories, in the order they should be searched
      * for locally loaded classes or resources.
      */
-    protected String repositories[] = new String[0];
+    protected ArrayList<String> repositories = new ArrayList<String>();
 
 
     /**
@@ -427,19 +427,6 @@ public class StandardClassLoader
 
 
     /**
-     * Return a String array of the current repositories for this class
-     * loader.  If there are no repositories, a zero-length array is
-     * returned. For security reason, returns a clone of the Array (since 
-     * String are immutable).
-     */
-    public String[] findRepositories() {
-
-        return ((String[])repositories.clone());
-
-    }
-
-
-    /**
      * This class loader doesn't check for reloading.
      */
     public boolean modified() {
@@ -459,9 +446,10 @@ public class StandardClassLoader
         sb.append(delegate);
         sb.append("\r\n");
         sb.append("  repositories:\r\n");
-        for (int i = 0; i < repositories.length; i++) {
+        Iterator<String> iter = repositories.iterator();
+        while (iter.hasNext()) {
             sb.append("    ");
-            sb.append(repositories[i]);
+            sb.append(iter.next());
             sb.append("\r\n");
         }
         if (this.parent != null) {
@@ -1003,13 +991,7 @@ public class StandardClassLoader
         }
 
         // Add this repository to our internal list
-        synchronized (repositories) {
-            String results[] = new String[repositories.length + 1];
-            System.arraycopy(repositories, 0, results, 0, repositories.length);
-            results[repositories.length] = repository;
-            repositories = results;
-        }
-
+        repositories.add(repository);
     }
 
 

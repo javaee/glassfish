@@ -84,14 +84,6 @@ public interface Reloader {
 
 
     /**
-     * Return a String array of the current repositories for this class
-     * loader.  If there are no repositories, a zero-length array is
-     * returned.
-     */
-    public String[] findRepositories();
-
-
-    /**
      * Have one or more classes or resources been modified so that a reload
      * is appropriate?
      */

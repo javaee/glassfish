@@ -763,19 +763,6 @@ public class WebappClassLoader
 
 
     /**
-     * Return a String array of the current repositories for this class
-     * loader.  If there are no repositories, a zero-length array is
-     * returned.For security reason, returns a clone of the Array (since
-     * String are immutable).
-     */
-    public String[] findRepositories() {
-
-        return repositories.clone();
-
-    }
-
-
-    /**
      * Have one or more classes or resources been modified so that a reload
      * is appropriate?
      */
@@ -877,7 +864,6 @@ public class WebappClassLoader
      * Render a String representation of this object.
      */
     public String toString() {
-
         StringBuffer sb = new StringBuffer("WebappClassLoader\r\n");
         sb.append("  delegate: ");
         sb.append(delegate);
@@ -896,7 +882,6 @@ public class WebappClassLoader
             sb.append("\r\n");
         }
         return (sb.toString());
-
     }
 
 
