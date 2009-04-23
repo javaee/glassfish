@@ -119,7 +119,7 @@ public class GrizzlyProxy implements NetworkProxy {
      */
     private void configureGrizzly() {
         grizzlyListener = new GrizzlyServiceListener(new Controller());
-        grizzlyListener.configure(networkListener, isWebProfile, null);
+        grizzlyListener.configure(networkListener, isWebProfile, grizzlyService.habitat);
 
         final V3Mapper mapper = new V3Mapper(logger);
         mapper.setPort(portNumber);
