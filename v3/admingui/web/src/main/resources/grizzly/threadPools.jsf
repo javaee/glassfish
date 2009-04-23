@@ -62,8 +62,39 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.threadPoolPageTitle}"
                  helpText="$resource{i18n_web.grizzly.threadPoolPageTitleHelp}" />
 		 "<br /> <br />
-#include "/web/grizzly/threadPoolsTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help_web.threadPools}" />
+         " *** NOTE: This page is not functional yet, please use CLI to manage Thread Pools ***
+         "<br /> <br />
+
+<sun:table id="configs" title="#{tableTitle}">
+
+#include "/web/grizzly/tableButtons.inc"
+
+   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+     <!afterCreate
+         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+        />
+    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+            <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.threadPool.threadPoolIdCol}" sort="name" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="link" text="#{td.value.name}"
+            url="#{pageSession.editLink}&name=#{td.value.name}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.threadPool.maxSizeCol}"   rowHeader="$boolean{true}" id="max">
+        <staticText id="max" value="#{td.value.maxSize}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.threadPool.minSizeCol}"  rowHeader="$boolean{true}" id="min">
+        <staticText id="min" value="#{td.value.minSize}" />
+    </sun:tableColumn>
+
+  </sun:tableRowGroup>
+
+</sun:table>
+
+<sun:hidden id="helpKey" value="$resource{help_web.threadPools}" />
             </sun:form>
 </define>
 </composition>

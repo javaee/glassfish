@@ -62,7 +62,34 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolsPageTitle}"
                  helpText="$resource{i18n_web.grizzly.protocolsPageTitleHelp}" />
 		 "<br /> <br />
-#include "/web/grizzly/protocolsTable.inc"
+         " *** NOTE: This page is not functional yet, please use CLI to manage protocols ***
+         "<br /> <br />
+
+<sun:table id="configs" title="#{tableTitle}">
+
+#include "/web/grizzly/tableButtons.inc"
+
+   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+     <!afterCreate
+         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+        />
+    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+            <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="name" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="link" text="#{td.value.name}"
+            url="#{pageSession.editLink}&name=#{td.value.name}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}"  rowHeader="$boolean{true}" id="ss">
+        <staticText id="ss" value="#{td.value.securityEnabled}" />
+    </sun:tableColumn>
+
+  </sun:tableRowGroup>
+
+</sun:table>
+
 	<sun:hidden id="helpKey" value="$resource{help_web.protocols}" />
             </sun:form>
 </define>

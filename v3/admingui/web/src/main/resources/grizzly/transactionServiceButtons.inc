@@ -33,29 +33,27 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/protocolsTable.inc -->
+<!-- configuration/transactionServiceButtons.inc -->
+<sun:panelGroup id="topButtons">
+    <sun:button id="saveButton" text="$resource{i18n.button.Save}"
+            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
+         <!command
+        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+        convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
+        prepareSuccessfulMsg();                             
+        saveTransactionServiceSettings(
+        ConfigName="#{configName}",
+        OnRestart="#{onRestart}",
+        Timeout="#{timeout}",
+        Retry="#{retry}",
+        LogLocation="#{logLocation}",
+        Heuristic="#{heuristic}",
+        KeyPoint="#{keyPoint}"                           
+        newProps="${newProps}"
+        );
+         redirect(page="#{request.contextPath}/web/configuration/transactionService.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
 
-<sun:table id="configs" title="#{tableTitle}">
-
-#include "/web/grizzly/tableButtons.inc" 
-    
-   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
-     <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
-        />
-    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
-            <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
-    </sun:tableColumn>    
-
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.name}" 
-            url="#{pageSession.editLink}&name=#{td.value.name}" />
-    </sun:tableColumn>
-
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}"  rowHeader="$boolean{true}" id="ss">
-        <staticText id="ss" value="#{td.value.securityEnabled}" />
-    </sun:tableColumn>
-    
-  </sun:tableRowGroup>
-  
-</sun:table>
+       />
+    </sun:button>
+</sun:panelGroup>

@@ -33,19 +33,82 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/networkListenerNew.jsf -->
+<!-- grizzly/threadPoolNew.jsf -->
+
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.threadPoolEditPageTitle}" >
 <!define name="content">
+    <event>
+    <!beforeCreate
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getThreadPoolAttr(configName="#{configName}", valueMap="#{pageSession.valueMap}");
+        />
+    </event>
+#include "/shared/restart.inc"
             <sun:form id="propertyForm">
+        //#include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
-                " Edit Thread Pool (TBD)
+
+                <!-- Page Title -->
+                <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.threadPoolEditPageTitle}" helpText="$resource{i18n_web.grizzly.threadPoolEditPageTitleHelp}">
+                    <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
+                        <!command
+                            //getThreadPoolDefault(configName="#{configName}", atts="#{pageSession.valueMap}")
+                        />
+                    </sun:button>
+                    <!-- Buttons  -->
+                    <!facet pageButtonsTop>
+// #include "/web/grizzly/buttons.inc"
+                    </facet>
+                    </sun:title>
+                    "<br><br>
+
+" *** NOTE: This page is not functional.  Please use CLI to create/edit Thread Pool
+
+
+                <!-- PropertySheet .... -->
+<sun:propertySheet id="propertySheet">
+    <!-- Text Field section -->
+    <sun:propertySheetSection id="propertSectionTextField">
+
+        <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.threadPool.nameHelp}">
+        <sun:textField id="name" styleClass="required" columns="$int{30}" text="#{pageSession.valueMap['name']}" />
+        </sun:property>
+
+        <sun:property id="classname"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
+        <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['classname']}" />
+        </sun:property>
+
+        <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
+        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['timeout']}" />
+        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+        </sun:property>
+
+        <sun:property id="max"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxQueue}" helpText="$resource{i18n_web.threadPool.maxQueueHelp}">
+        <sun:textField id="max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['maxQueue']}" />
+        </sun:property>
+
+        <sun:property id="maxThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxThread}" helpText="$resource{i18n_web.threadPool.maxThreadHelp}">
+        <sun:textField id="maxThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['maxThread']}" />
+        </sun:property>
+
+        <sun:property id="minThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.minThread}" helpText="$resource{i18n_web.threadPool.minThreadHelp}">
+        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['minThread']}" />
+        </sun:property>
+
+    </sun:propertySheetSection>
+
+                    </sun:propertySheet>
+                <sun:title id="propertyContentPage2">
+                    <!facet pageButtonsBottom>
+   #include "/web/grizzly/buttons.inc"
+                    </facet>
+                </sun:title>
+	<sun:hidden id="helpKey" value="$resource{help_web.threadPoolEdit}" />
             </sun:form>
 </define>
 </composition>
-
-

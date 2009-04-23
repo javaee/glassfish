@@ -75,32 +75,39 @@
     </facet>
 </dynamicTreeNode>
 
-
 <sun:treeNode
-    id="networkListeners"
-    text="$resource{i18n.tree.grizzly.networkListeners}"
-    url="/web/grizzly/networkListeners.jsf?configName=server-config"
+    id="networkConfig"
+    text="$resource{i18n.tree.grizzly.networkConfig}"
+    url="/web/grizzly/networkConfig.jsf?configName=server-config"
     imageURL="/resource/web/images/httpservice.gif"
-/>
+    >
 
-<sun:treeNode
-    id="threadPools"
-    text="$resource{i18n.tree.grizzly.threadPools}"
-    url="/web/grizzly/threadPools.jsf?configName=server-config"
-    imageURL="/resource/web/images/threadPool.gif"
-/>
+    <sun:treeNode
+        id="networkListeners"
+        text="$resource{i18n.tree.grizzly.networkListeners}"
+        url="/web/grizzly/networkListeners.jsf?configName=server-config"
+        imageURL="/resource/web/images/http.gif"
+    />
 
-<sun:treeNode
-    id="protocols"
-    text="$resource{i18n.tree.grizzly.protocols}"
-    url="/web/grizzly/protocols.jsf?configName=server-config"
-    imageURL="/resource/web/images/httpservice.gif"
-/>
-<sun:treeNode
-    id="transports"
-    text="$resource{i18n.tree.grizzly.transports}"
-    url="/web/grizzly/transports.jsf?configName=server-config"
-    imageURL="/resource/web/images/httpservice.gif"
-/>
+    <sun:treeNode
+        id="threadPools"
+        text="$resource{i18n.tree.grizzly.threadPools}"
+        url="/web/grizzly/threadPools.jsf?configName=server-config"
+        imageURL="/resource/web/images/threadPool.gif"
+    />
 
+    <sun:treeNode
+        id="protocols"
+        text="$resource{i18n.tree.grizzly.protocols}"
+        url="/web/grizzly/protocols.jsf?configName=server-config"
+        imageURL="/resource/web/images/http.gif"
+    />
+    <!-- no support for transport for now.
+    <sun:treeNode
+        id="transports"
+        text="$resource{i18n.tree.grizzly.transports}"
+        imageURL="/resource/web/images/httpservice.gif"
+    />
+    -->
+</sun:treeNode>
 

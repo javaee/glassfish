@@ -186,103 +186,55 @@ public class GrizzlyHandlers {
     }
 
 
-    /**
-     *	<p> This handler returns the values for all the attributes in 
-     *      New/Edit HTTP Listener Page </p>
-     *  <p> Input  value: "Edit"               -- Type: <code>java.lang.String</code></p>
-     *  <p> Input  value: "FromStep2"          -- Type: <code>java.lang.String</code></p>
-     *  <p> Input  value: "ConfigName"         -- Type: <code>java.lang.String</code></p>
-     *  <p> Input  value: "HttpName"           -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Listener"           -- Type: <code>java.lang.Boolean</code></p>
-     *	<p> Output value: "NetwkAddr"          -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "ListenerPort"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "DefaultVirtServer"  -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "ServerName"         -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "RedirectPort"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Acceptor"           -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "PoweredBy"          -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "Blocking"           -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "Properties"         -- Type: <code>java.util.Map</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    /*
-    @Handler(id="getHttpListenerValues",
+    @Handler(id="getNetworkListenerAttr",
     input={
-        @HandlerInput(name="Edit",       type=Boolean.class, required=true),
-        @HandlerInput(name="FromStep2",  type=Boolean.class, required=true),
-        @HandlerInput(name="ConfigName", type=String.class, required=true),
-        @HandlerInput(name="HttpName",   type=String.class, required=true) },
+        @HandlerInput(name="configName",   type=String.class, required=true) },
     output={
-        @HandlerOutput(name="Listener",          type=Boolean.class),
-        @HandlerOutput(name="security",          type=Boolean.class),
-        @HandlerOutput(name="NetwkAddr",         type=String.class), 
-        @HandlerOutput(name="ListenerPort",      type=String.class),
-        @HandlerOutput(name="DefaultVirtServer", type=String.class),
-        @HandlerOutput(name="ServerName",        type=String.class),
-        @HandlerOutput(name="RedirectPort",      type=String.class),
-        @HandlerOutput(name="Acceptor",          type=String.class),
-        @HandlerOutput(name="PoweredBy",         type=Boolean.class),
-        @HandlerOutput(name="Blocking",          type=Boolean.class),
-        @HandlerOutput(name="Properties",        type=Map.class)})
+        @HandlerOutput(name="valueMap",        type=Map.class)})
         
-        public static void getHttpListenerValues(HandlerContext handlerCtx) {
+        public static void getNetworkListenerAttr(HandlerContext handlerCtx) {
         try{
-            Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
-            Boolean fromStep2 = (Boolean) handlerCtx.getInputValue("FromStep2");
-            if(!edit){
-                if((fromStep2 == null) || (! fromStep2)){
-                    handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("httpProps", new HashMap());
-                    handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("sslProps", null);
-                    //we can hard coded "server-config" here since we only want to get some default valus.
-                    //Map<String, String> httpAttrMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_LISTENER_CONFIG, true);
-                    HTTPListenerConfig hc = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getHTTPListenerConfigMap().get("http-listener-1");
-                    handlerCtx.setOutputValue("Listener", hc.getDefaultValue("enabled"));
-                    handlerCtx.setOutputValue("security", hc.getDefaultValue("security-enabled"));
-                    handlerCtx.setOutputValue("Acceptor", hc.getDefaultValue("acceptor-threads"));
-                    String xx = hc.getDefaultValue("AcceptorThreads");
-                    handlerCtx.setOutputValue("PoweredBy", hc.getDefaultValue("xpowered-by"));
-                    handlerCtx.setOutputValue("Blocking", hc.getDefaultValue("blocking-enabled"));
-                }else{
-                    Map props = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("httpProps");
-                    handlerCtx.setOutputValue("Listener", props.get("enabled"));
-                    handlerCtx.setOutputValue("security", props.get("securityEnabled"));
-                    handlerCtx.setOutputValue("NetwkAddr", props.get("address"));
-                    handlerCtx.setOutputValue("ListenerPort", props.get("port"));
-                    handlerCtx.setOutputValue("DefaultVirtServer", props.get("virtualServer"));
-                    handlerCtx.setOutputValue("ServerName", props.get("serverName"));
-                    handlerCtx.setOutputValue("RedirectPort", props.get("redirectPort"));
-                    handlerCtx.setOutputValue("Acceptor", props.get("acceptor-threads"));
-                    handlerCtx.setOutputValue("PoweredBy", props.get("xpowered-by"));
-                    handlerCtx.setOutputValue("Blocking", props.get("blocking-enabled"));
-                    handlerCtx.setOutputValue("Properties", props.get("options"));
-                }
-                return;
-            }
-            String configName = (String) handlerCtx.getInputValue("ConfigName");
-            String httpListenerName = (String) handlerCtx.getInputValue("HttpName");
-            ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
-            HTTPListenerConfig httpListConfig = config.getHTTPServiceConfig().getHTTPListenerConfigMap().get(httpListenerName);
-            handlerCtx.setOutputValue("Listener", httpListConfig.getEnabled());
-            handlerCtx.setOutputValue("security", httpListConfig.getSecurityEnabled());
-            handlerCtx.setOutputValue("NetwkAddr", httpListConfig.getAddress());
-            handlerCtx.setOutputValue("ListenerPort", httpListConfig.getPort());
-            handlerCtx.setOutputValue("DefaultVirtServer", httpListConfig.getDefaultVirtualServer());
-            handlerCtx.setOutputValue("ServerName", httpListConfig.getServerName());
-            handlerCtx.setOutputValue("RedirectPort", httpListConfig.getRedirectPort());
-            handlerCtx.setOutputValue("Acceptor", httpListConfig.getAcceptorThreads());
-            handlerCtx.setOutputValue("PoweredBy", httpListConfig.getXpoweredBy());
-            handlerCtx.setOutputValue("Blocking", httpListConfig.getBlockingEnabled());
-            
-            //refer to issue#2920; If we want to hide this property, just uncomment the following 2 lines.
-            //if (httpListenerName.equals(ADMIN_LISTENER))
-            //    pMap.remove(PROXIED_PROTOCOLS);
-            
-            handlerCtx.setOutputValue("Properties", httpListConfig.getPropertyConfigMap());
+            String configName = (String) handlerCtx.getInputValue("configName");
+            Map valueMap = new HashMap();
+
+            valueMap.put("address", "0.0.0.0");
+            valueMap.put("enabled","true");
+            valueMap.put("port","");
+            valueMap.put("protocol","http-listener-1");
+            valueMap.put("threadPool","http-thread-pool-l");
+            valueMap.put("transport","tcp");
+
+            handlerCtx.setOutputValue("valueMap", valueMap);
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-    */
+
+
+    @Handler(id="getThreadPoolAttr",
+    input={
+        @HandlerInput(name="configName",   type=String.class, required=true) },
+    output={
+        @HandlerOutput(name="valueMap",        type=Map.class)})
+
+        public static void getThreadPoolAttr(HandlerContext handlerCtx) {
+        try{
+            String configName = (String) handlerCtx.getInputValue("configName");
+            Map valueMap = new HashMap();
+
+            valueMap.put("timeout","120");
+            valueMap.put("maxQueue","-1");
+            valueMap.put("maxThread","200");
+            valueMap.put("minThread","0");
+
+            handlerCtx.setOutputValue("valueMap", valueMap);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
+
     
     /**
      *	<p> This handler saves the values for all the attributes in 

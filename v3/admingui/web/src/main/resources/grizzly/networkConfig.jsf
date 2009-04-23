@@ -36,63 +36,57 @@
 
 -->
 
-<sun:property>
-    <sun:hyperlink 
-        toolTip="$resource{i18n.tree.webContainer.tooltip}" 
-        url="/web/configuration/webContainerGeneral.jsf?configName=#{configName}" 
-        >
-        <sun:image url="/resource/images/container.gif" />
-        <sun:staticText text="$resource{i18n.tree.webContainer}" />
-    </sun:hyperlink>
-</sun:property>
 
-<sun:property>
-    <sun:hyperlink 
-        toolTip="$resource{i18n.tree.transactionService.tooltip}" 
-        url="/web/configuration/transactionService.jsf?configName=#{configName}" 
-        >
-        <sun:image url="/resource/images/transactionService.gif" />
-        <sun:staticText text="$resource{i18n.tree.transactionService}" />
-    </sun:hyperlink>
-</sun:property>
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.networkConfigPageTitle}" >
+<!define name="content">
 
+#include "/shared/restart.inc"
+
+            <sun:form id="propertyForm">
+#include "/shared/alertMsg.inc"
+                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkConfigPageTitle}"
+                 helpText="$resource{i18n_web.grizzly.networkConfigPageTitleHelp}" />
+		 "<br /> <br />
+<sun:propertySheet id="propertySheet">
+    <sun:propertySheetSection>
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n.tree.httpService.tooltip}" 
-        url="/web/configuration/httpService.jsf?configName=#{configName}" 
+        toolTip="$resource{i18n.tree.grizzly.networkListeners.tooltip}"
+        url="/web/grizzly/networkListeners.jsf?configName=#{configName}"
         >
-    <sun:image url="/resource/images/httpservice.gif" />
-    <sun:staticText text="$resource{i18n.tree.httpService}" />
+        <sun:image url="/resource/web/images/http.gif" />
+        <sun:staticText text="$resource{i18n.tree.grizzly.networkListeners}" />
     </sun:hyperlink>
 </sun:property>
 
 <sun:property>
     <sun:hyperlink
-        toolTip="$resource{i18n.tree.virtualServers.tooltip}"
-        url="/web/configuration/virtualServers.jsf?configName=#{configName}"
+        toolTip="$resource{i18n.tree.grizzly.threadPools.tooltip}"
+        url="/web/grizzly/threadPools.jsf?configName=#{configName}"
         >
-    <sun:image url="/resource/images/http.gif" />
-    <sun:staticText text="$resource{i18n.tree.virtualServers}" />
+        <sun:image url="/resource/web/images/threadPool.gif" />
+        <sun:staticText text="$resource{i18n.tree.grizzly.threadPools}" />
     </sun:hyperlink>
 </sun:property>
 
 <sun:property>
     <sun:hyperlink
-        toolTip="$resource{i18n.tree.grizzly.networkConfig.tooltip}"
-        url="/web/configuration/networkConfig.jsf?configName=#{configName}"
+        toolTip="$resource{i18n.tree.grizzly.protocols.tooltip}"
+        url="/web/grizzly/protocols.jsf?configName=#{configName}"
         >
-    <sun:image url="/resource/images/http.gif" />
-    <sun:staticText text="$resource{i18n.tree.grizzly.networkConfig}" />
+        <sun:image url="/resource/web/images/http.gif" />
+        <sun:staticText text="$resource{i18n.tree.grizzly.protocols}" />
     </sun:hyperlink>
 </sun:property>
+</sun:propertySheetSection>
+</sun:propertySheet>
 
-<sun:property>
-    <sun:hyperlink 
-        toolTip="$resource{i18n.tree.monitoring.tooltip}"
-        url="/web/monitor/monitoringPage.jsf?configName=#{configName}" 
-        >
-        <sun:image url="/resource/web/images/monitor.gif" />
-        <sun:staticText text="$resource{i18n.tree.monitoring}" />
-    </sun:hyperlink>
-</sun:property>
+<sun:hidden id="helpKey" value="$resource{help_web.networkConfig}" />
+            </sun:form>
+</define>
+</composition>
 

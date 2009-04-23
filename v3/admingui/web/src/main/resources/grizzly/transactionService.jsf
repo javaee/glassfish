@@ -32,13 +32,17 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
+
+<grizzly/networkListernerNew.jsf>
+
 -->
+
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.ts.TransactionService}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
