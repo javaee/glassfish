@@ -66,5 +66,8 @@ public class Constants {
 
     public static final String JSP_SERVLET_CLASS =
         "org.apache.jasper.servlet.JspServlet";
+
     public static final String JSP_SERVLET_NAME = "jsp";
+
+    public static final String DEFAULT_SERVLET_NAME = "default";
 }

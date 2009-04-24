@@ -78,7 +78,6 @@ import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.session.*;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.TldConfig;
-import org.apache.catalina.startup.Constants;
 import org.apache.catalina.util.*;
 import org.apache.naming.ContextBindings;
 import org.apache.naming.resources.BaseDirContext;
@@ -3094,16 +3093,24 @@ public class StandardContext
             throw new IllegalArgumentException
                 (sm.getString("standardContext.servletMap.pattern", pattern));
 
-        // Add this mapping to our registered set
+        /*
+         * Add this mapping to our registered set, unless it is already
+         * present and the DefaultServlet is trying to override it (this
+         * is to prevent the DefaultServlet from hijacking "/")
+         */
         synchronized (servletMappings) {
             String name2 = servletMappings.get(pattern);
-            if (name2 != null) {
+            if (name2 != null &&
+                    !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
                 // Don't allow more than one servlet on the same pattern
                 Wrapper wrapper = (Wrapper) findChild(name2);
                 wrapper.removeMapping(pattern);
                 mapper.removeWrapper(pattern);
             }
-            servletMappings.put(pattern, name);
+            if (name2 == null ||
+                    !name.equals(Constants.DEFAULT_SERVLET_NAME)) {
+                servletMappings.put(pattern, name);
+            }
         }
         Wrapper wrapper = (Wrapper) findChild(name);
         wrapper.addMapping(pattern);
@@ -6042,7 +6049,8 @@ public class StandardContext
      * Are we processing a version 2.2 deployment descriptor?
      */
     protected boolean isServlet22() {
-        return publicId != null && publicId.equals(Constants.WebDtdPublicId_22);
+        return publicId != null && publicId.equals(
+            org.apache.catalina.startup.Constants.WebDtdPublicId_22);
     }
 
 
@@ -6623,7 +6631,7 @@ public class StandardContext
         ServletContext servletContext = getServletContext();
         if (servletContext != null) {
             stream = servletContext.getResourceAsStream(
-                Constants.ApplicationWebXml);
+                org.apache.catalina.startup.Constants.ApplicationWebXml);
         }
         if (stream == null) {
             return "";
