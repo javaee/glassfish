@@ -5179,9 +5179,11 @@ public abstract class BaseContainer
 
         void publish(GlassfishNamingManager nm) throws NamingException {
 
-            // Publish with rebind = false to prevent stomping on pre-existing
-            // entries.
-            boolean rebind = false;
+            // If it's a portable name, use rebind since the name is guaranteed
+            // to be unique.  Otherwise, use bind() so we detect any clashes.
+            // NOTE : Will need to revisit this if we allow a developer-specified
+            // portable JNDI name.
+            boolean rebind = portable;
 
             if( cosNaming ) {
                 nm.publishCosNamingObject(name, object, rebind);

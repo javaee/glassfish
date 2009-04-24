@@ -112,8 +112,7 @@ public class EjbApplication
     public boolean start(ApplicationContext startupContext) throws Exception {
 
         try {
-            // TODO: move restoreEJBTimers to correct location
-            System.out.println("==> Uses Timers? == " + usesEJBTimerService);
+            // TODO: move restoreEJBTimers to correct location           
             if (usesEJBTimerService) {
                 initEJBTimerService(startupContext);
             }
@@ -201,12 +200,14 @@ public class EjbApplication
 
     public boolean stop(ApplicationContext stopContext) {
 
-        UndeployCommandParameters params = ((DeploymentContext)stopContext).
-                getCommandParameters(UndeployCommandParameters.class);
+        OpsParams params = ((DeploymentContext)stopContext).
+                getCommandParameters(OpsParams.class);
 
-        // If true we're shutting down b/c of an undeploy.  If false, it's
-        // a shutdown without undeploy.
-        boolean undeploy = (params.origin == OpsParams.Origin.undeploy );
+        // If true we're shutting down b/c of an undeploy or a fatal error during
+        // deployment.  If false, it's a shutdown where the application will remain
+        // deployed.
+        boolean undeploy = (params.origin == OpsParams.Origin.undeploy ) ||
+                (params.origin == OpsParams.Origin.deploy);
 
         // First, shutdown any singletons that were initialized based
         // on a particular ordering dependency.

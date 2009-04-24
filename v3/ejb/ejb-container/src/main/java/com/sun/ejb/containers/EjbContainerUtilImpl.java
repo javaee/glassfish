@@ -181,6 +181,10 @@ public class EjbContainerUtilImpl
         return habitat;
     }
 
+    public static boolean isInitialized() {
+        return (_me != null);        
+    }
+
     public static EjbContainerUtil getInstance() {
         if (_me == null) {
             // This situation shouldn't happen. Print the error message 

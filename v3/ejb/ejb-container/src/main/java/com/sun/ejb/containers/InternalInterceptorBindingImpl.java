@@ -50,6 +50,12 @@ public class InternalInterceptorBindingImpl  {
 
     public void registerInterceptor(Object systemInterceptor) {
 
+        // If we're called before there the EJB runtime has even been initialized,
+        // just return.  
+        if( !EjbContainerUtilImpl.isInitialized() ) {
+            return;
+        }
+
         ComponentInvocation currentInv =
                 EjbContainerUtilImpl.getInstance().getCurrentInvocation();
 
@@ -74,18 +80,15 @@ public class InternalInterceptorBindingImpl  {
         Collection<EjbBundleDescriptor> ejbBundles =
                 moduleDesc.getDescriptor().getExtensionsDescriptors(EjbBundleDescriptor.class);
 
-        int numEjbBundles = ejbBundles.size();
-        if( numEjbBundles != 1) {
-            throw new IllegalStateException("Invalid number of associated ejb bundles = " +
-                numEjbBundles);
-        }
+        if( ejbBundles.size() == 1) {
 
-        EjbBundleDescriptor ejbBundle = ejbBundles.iterator().next();
-        for(EjbDescriptor ejb : ejbBundle.getEjbs()) {
-            BaseContainer container =
+            EjbBundleDescriptor ejbBundle = ejbBundles.iterator().next();
+            for(EjbDescriptor ejb : ejbBundle.getEjbs()) {
+                BaseContainer container =
                     EjbContainerUtilImpl.getInstance().getContainer(ejb.getUniqueId());
-            container.registerSystemInterceptor(systemInterceptor);
+                container.registerSystemInterceptor(systemInterceptor);
 
+            }
         }
 
 
