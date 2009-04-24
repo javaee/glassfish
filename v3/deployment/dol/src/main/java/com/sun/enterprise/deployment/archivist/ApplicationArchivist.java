@@ -238,12 +238,14 @@ public class ApplicationArchivist extends Archivist<Application>
             }
         }
  
-        // read the modules deployment descriptors
+        // read the modules standard deployment descriptors
+        handleRuntimeInfo = false;
         if (!readModulesDescriptors(application, archive))
             return null;
 
         // now read the runtime deployment descriptors
-        super.readRuntimeDeploymentDescriptor(archive, application);
+        handleRuntimeInfo = true;
+        readRuntimeDeploymentDescriptor(archive, application);
 
         // validate...
         if (classLoader!=null && isHandlingRuntimeInfo()) {
