@@ -343,6 +343,16 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
         // now read the runtime deployment descriptors
         readRuntimeDeploymentDescriptor(archive, descriptor);
+
+        // read extensions runtime deployment descriptors if any
+        for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
+            // after standard DD and annotations are processed, we should
+            // an extension descriptor now
+            if (extension.getValue() != null) {
+                extension.getKey().readRuntimeDeploymentDescriptor(this, archive, extension.getValue());
+            }
+        }
+
         postRuntimeDDsRead(descriptor, archive);
 
         return descriptor;
@@ -377,8 +387,9 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                         if (extension.getValue()==null) {
                             RootDeploymentDescriptor o = extension.getKey().getDefaultDescriptor();
                             processAnnotations(o, extension.getKey().getScanner(), archive);
-                            if (o!=null && !o.isEmpty()) {
+                            if (o!=null && !o.isEmpty() && (o instanceof RootDeploymentDescriptor)) {
                                 extension.getKey().addExtension(descriptor, o);
+                                extensions.put(extension.getKey(), (RootDeploymentDescriptor) o);
                             }
                         } else {
                             processAnnotations(extension.getValue(), extension.getKey().getScanner(), archive);

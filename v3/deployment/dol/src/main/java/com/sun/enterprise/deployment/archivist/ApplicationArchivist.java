@@ -589,6 +589,14 @@ public class ApplicationArchivist extends Archivist<Application>
                             newArchivist.readRuntimeDeploymentDescriptor(embeddedArchive,descriptor);
                         }
                     }
+                    // read extensions runtime deployment descriptors if any
+                    for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
+                        // after standard DD and annotations are processed
+                        // we should have an extension descriptor now
+                        if (extension.getValue() != null) {
+                            extension.getKey().readRuntimeDeploymentDescriptor(newArchivist, embeddedArchive, extension.getValue());
+                        }
+                    }
                 }
             } else {
                 // open the subarchive to get the deployment descriptor...

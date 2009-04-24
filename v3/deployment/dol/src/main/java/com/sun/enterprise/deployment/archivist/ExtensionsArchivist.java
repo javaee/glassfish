@@ -82,4 +82,28 @@ public abstract class ExtensionsArchivist  {
          }
          return null;
      }
+
+     public Object readRuntimeDeploymentDescriptor(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
+            throws IOException, SAXParseException {
+
+        DeploymentDescriptorFile confDD = getConfigurationDDFile(descriptor);
+        if (archive.getURI() != null) {
+            confDD.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
+        }
+        InputStream is = null;
+        try {
+            is = archive.getEntry(confDD.getDeploymentDescriptorPath());
+            if (is != null) {
+                confDD.setXMLValidation(main.getRuntimeXMLValidation());
+                confDD.setXMLValidationLevel(main.getRuntimeXMLValidationLevel());
+                return confDD.read(descriptor, is);
+            }
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+        return null;
+    }
+
 }
