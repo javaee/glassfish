@@ -48,7 +48,7 @@
     <artifactId>appclient</artifactId>
     <name>Glassfish Remote App Client Bundle</name>
     <description>This module assembles the Glassfish Remote App Client Bundle</description>
-    <packaging>distribution-base-zip</packaging>
+    <packaging>pom</packaging>
 
     <properties>
         <sun.acc.xml.include>**/domains/domain1/config/sun-acc.xml</sun.acc.xml.include>
@@ -142,13 +142,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfishbuild-extension</artifactId>
-                <version>${project.version}</version>
-            </extension>
-        </extensions>
     </build>
 
     <dependencies>
