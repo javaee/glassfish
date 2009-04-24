@@ -120,7 +120,7 @@ public class AppClientContainerAgent {
 
     private static Logger logger = Logger.getLogger(AppClientContainerAgent.class.getName());
 
-    private static LocalStringManager localStrings = new LocalStringManagerImpl(AppClientCommand.class);
+    private static LocalStringManager localStrings = new LocalStringManagerImpl(AppClientContainerAgent.class);
 
     private static AppClientContainer acc = null;
 
@@ -164,7 +164,7 @@ public class AppClientContainerAgent {
             AppclientCommandArguments appClientCommandArgs = AppclientCommandArguments
                     .newInstance(effectiveCommandLineArgs);
 
-            if (appClientCommandArgs.isUsage() | appClientCommandArgs.isHelp()) {
+            if (appClientCommandArgs.isUsage() || appClientCommandArgs.isHelp()) {
                 usage(0);
             }
             /*
@@ -546,7 +546,7 @@ public class AppClientContainerAgent {
         return localStrings.getLocalString(
             AppClientContainerAgent.class,
             "main.usage",
-            "appclient [ -client <appjar> | <classfile> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [app-args]"
+            "appclient [ -client <appjar> | <classfile> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [-targetserver host[:port][,host[:port]...] [app-args]"
             )
             + System.getProperty("line.separator")
             + localStrings.getLocalString(AppClientContainerAgent.class,
