@@ -183,7 +183,13 @@ public class CreateJMSResource implements AdminCommand {
                 try{
                  //validate the provided properties and modify it if required.
                     Properties properties =  validateDestinationResourceProps(props, jndiName);
-                    aoAttrList.put("property", properties);
+                    //aoAttrList.put("property", properties);
+                    String propString = "";
+                    for (java.util.Map.Entry<Object, Object>prop : properties.entrySet()) {
+                            propString += prop.getKey() + "=" + prop.getValue() + ":";
+                    }
+                    propString = propString.substring(0, propString.length());
+                    aoAttrList.put("property", propString); 
                 }catch (Exception e)
                 {
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
