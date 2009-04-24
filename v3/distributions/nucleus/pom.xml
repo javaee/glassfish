@@ -44,7 +44,7 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>nucleus</artifactId>
-    <name>Glassfish v3 Nucleus Distribution(</name>
+    <name>Glassfish v3 Nucleus Distribution</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the GlassFish v3 Nucleus Distribution</description>
 

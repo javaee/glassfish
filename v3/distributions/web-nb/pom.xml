@@ -44,7 +44,7 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>web-nb</artifactId>
-    <name>Glassfish v3 Web-NB Distribution(</name>
+    <name>Glassfish v3 Web-NB Distribution</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the GlassFish v3 Web-NB Distribution</description>
 

@@ -44,7 +44,7 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish</artifactId>
-    <name>Glassfish v3 GlassFish Distribution(</name>
+    <name>Glassfish v3 GlassFish Distribution</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the GlassFish v3 GlassFish Distribution</description>
 
