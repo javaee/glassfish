@@ -298,7 +298,7 @@ done
 if [ "$APPCPATH" != "" ]; then
     accArgs=$accArgs,appcpath=\"$APPCPATH\"
 fi
-if [ "$jvmMainArgs" == "" ]; then
+if [ "$jvmMainArgs" = "" ]; then
     accMainArgs=-usage
     jvmMainArgs=-jar\ $accJar
 fi
