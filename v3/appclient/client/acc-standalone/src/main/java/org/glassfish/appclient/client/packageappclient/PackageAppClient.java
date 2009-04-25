@@ -355,7 +355,7 @@ public class PackageAppClient {
             final OutputStream os,
             final URI uriToCopy) throws FileNotFoundException, IOException {
         File fileToCopy = new File(uriToCopy);
-        InputStream is = new BufferedInputStream(new FileInputStream(new File(uriToCopy)));
+        InputStream is = new BufferedInputStream(new FileInputStream(fileToCopy));
         int bytesRead;
         byte [] buffer = new byte[4096];
         while ((bytesRead = is.read(buffer)) != -1) {
