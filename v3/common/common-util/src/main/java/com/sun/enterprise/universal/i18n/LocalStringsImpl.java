@@ -29,6 +29,7 @@
  */
 package com.sun.enterprise.universal.i18n;
 
+import java.util.*;
 import java.util.ResourceBundle;
 import java.text.MessageFormat;
 
@@ -211,11 +212,27 @@ public class LocalStringsImpl {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+
     private void setBundle(Class clazz) {
-        setBundle(clazz.getName());
+
+        try {
+            String className = clazz.getName();
+            setBundle(className);
+
+            // April 25, 2009 -- if OSGi is in charge then we might not have got the
+            // bundle!  Fix: send in the class's Classloader...
+            if(bundle == null) {
+                String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
+                bundle = ResourceBundle.getBundle(props, Locale.getDefault(), clazz.getClassLoader());
+            }
+        }
+        catch (Exception e) {
+            bundle = null;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
+
     private void setBundle(String className) {
         try {
             String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
