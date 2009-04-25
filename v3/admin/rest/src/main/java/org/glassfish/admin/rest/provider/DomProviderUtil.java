@@ -35,6 +35,10 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  *
@@ -115,6 +119,17 @@ public class DomProviderUtil {
             }
         }
         sb.append('"');
+        return sb.toString();
+    }
+
+    static protected final String readAsString(InputStream in) throws IOException {
+        Reader reader = new InputStreamReader(in);
+        StringBuilder sb = new StringBuilder();
+        char[] c = new char[1024];
+        int l;
+        while ((l = reader.read(c)) != -1) {
+            sb.append(c, 0, l);
+        }
         return sb.toString();
     }
 }

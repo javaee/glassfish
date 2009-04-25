@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -122,17 +123,13 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     }
 
     @PUT
-    @Consumes("application/json")
-    public void updateEntity(InputStream data) {
-        try {
-            //  Customer customer = buildCustomer(null, customerData);
-            //  long customerId = persist(customer, 0);
-            //   return Response.created(URI.create("/" + id)).build();
-            System.out.println("JSON PUT IS CALLED" + data);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response updateEntity(HashMap<String, String> data) {
+        return updateConfig(data); 
+        ///return Dom.unwrap(getEntity());
     }
+
+
 
     @DELETE
     public void delete() {
@@ -140,5 +137,27 @@ public class TemplateResource<E extends ConfigBeanProxy> {
        
     }
 
+    public Response updateConfig(HashMap<String, String> data) {
+        if (data.containsKey("error")) {
+            return  Response.status(415).entity(data.get("error")).build();//unsupported media
+        } else {
+            for (String name : data.keySet()) {
+                System.out.println("name=" + name);
+                //System.out.println("value=" + data.get(name));
+            }
 
+
+            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>> ();
+            mapOfChanges.put(getConfigBean (), data);
+
+            try {
+                RestService.configSupport.apply(mapOfChanges); //throws TransactionFailure
+            } catch (TransactionFailure ex) {
+                System.out.println("exception" + ex);
+                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            }
+
+            return Response.ok().entity(uriInfo.getAbsolutePath() + " update successful").build();
+        }
+    }
 }
