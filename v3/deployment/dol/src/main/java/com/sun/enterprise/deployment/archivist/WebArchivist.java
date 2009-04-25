@@ -295,7 +295,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
         super.postStandardDDsRead(descriptor, archive);
         // apply default from default-web.xml
         if (getDefaultBundleDescriptor() != null) {
-            descriptor.addWebBundleDescriptor(defaultBundleDescriptor, true);
+            descriptor.addWebBundleDescriptor(defaultBundleDescriptor);
         }
     }
 

@@ -128,19 +128,6 @@ public class WebBundleDescriptor extends BundleDescriptor
      * @param webBundleDescriptor
      */
     public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
-        addWebBundleDescriptor(webBundleDescriptor, false);
-    }
-
-    /**
-     * This method will merge the contents of webComponents.
-     * The parameter asDefault indicates whether the given WebBundleDescriptor is regarded
-     * as default during the merging process. This has a different meaning, for instance,
-     * in welcome-file-list. One will not combine with default-web.xml if it is already
-     * defined in web.xml.
-     * @param webBundleDescriptor
-     * @param asDefault the added WebBundleDescriptor as default value
-     */
-    public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor, boolean asDefault) {
         super.addBundleDescriptor(webBundleDescriptor);
 
         for (WebComponentDescriptor webComponentDesc :webBundleDescriptor.getWebComponentDescriptors())
@@ -155,9 +142,8 @@ public class WebBundleDescriptor extends BundleDescriptor
         for (MimeMapping mimeMap : webBundleDescriptor.getMimeMappingsSet()) {
             addMimeMapping(mimeMap);
         }
-        if (!asDefault || (asDefault && getWelcomeFilesSet().size() == 0)) {
-            getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
-        }
+
+        getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
 
         // do not call getErrorPageDescriptorsSet.addAll() as there is special overriding rule
         for (ErrorPageDescriptor errPageDesc : webBundleDescriptor.getErrorPageDescriptorsSet()) {
