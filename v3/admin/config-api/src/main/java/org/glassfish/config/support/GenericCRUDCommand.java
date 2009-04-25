@@ -60,6 +60,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.lang.annotation.Annotation;
+import java.beans.PropertyVetoException;
 
 /**
  * Not much so far, just to get the APIs figured out.
@@ -188,14 +189,20 @@ public class GenericCRUDCommand implements AdminCommand, PostConstruct, CommandM
             }
         });
 
-        Object target = resolver.resolve(context);
-        if (target!=null) {
-            Domain d = (Domain) target;
+        final ConfigBeanProxy target = resolver.resolve(context);
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy> () {
+                public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                    ConfigBeanProxy child = target.createChild(targetType);
+                    // now injects the parameters...
+
+                    return child;
+                }
+            }, target);
+        } catch(TransactionFailure e) {
+            e.printStackTrace();
         }
-
-
-
-
     }
 
     public CommandModel getModel() {

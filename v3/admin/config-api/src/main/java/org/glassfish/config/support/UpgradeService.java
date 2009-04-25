@@ -31,8 +31,10 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
 
         // in v3-prelude, engines were created under application directly,
         // in v3 final, engines are placed under individual modules composing the application
+        // so if we have engines under application and not modules deployed, we need to upgrade
         for (Application app : domain.getApplications().getModules(Application.class)) {
-            if (app.getEngine()!=null && app.getEngine().size()>0) {
+            if (app.getEngine()!=null && app.getEngine().size()>0 &&
+                    (app.getModule()==null || app.getModule().size()==0)) {
                 // we need to update the application declaration from v3 prelude,
                 // we can safely assume this was a single module application
                 try {

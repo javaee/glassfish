@@ -154,6 +154,96 @@ public class CommandRunnerImpl implements CommandRunner {
         doCommand(model, command, parameters, report, null, null);
     }
 
+    public InjectionResolver<Param> getDelegatedResolver(final Object parameters) {
+
+        return new InjectionResolver<Param>(Param.class) {
+
+            @Override
+            public boolean isOptional(Param annotation) {
+                return annotation.optional();
+            }
+
+            public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+
+                // look for the name in the list of parameters passed.
+                if (target instanceof Field) {
+                    Field targetField = (Field) target;
+                    try {
+                        Field sourceField = parameters.getClass().getField(targetField.getName());
+                        targetField.setAccessible(true);
+                        Object paramValue = sourceField.get(parameters);
+/*
+                        if (paramValue==null) {
+                            return convertStringToObject(paramName, type, param.defaultValue());
+                        }
+*/
+                        // XXX temp fix, to revisit
+                        if (paramValue != null) {
+                        checkAgainstAcceptableValues(target, paramValue.toString());
+                        }
+                        return paramValue;
+                    } catch (IllegalAccessException e) {
+                    } catch (NoSuchFieldException e) {
+                    }
+                }
+                return null;
+            }
+
+        };
+    }
+
+    private InjectionResolver<Param> getPropsBasedResolver(final Properties parameters) {
+
+       return new InjectionResolver<Param>(Param.class) {
+
+            public boolean isOptional(Param annotation) {
+                return annotation.optional();
+            }
+
+            public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+                // look for the name in the list of parameters passed.
+                Param param = target.getAnnotation(Param.class);
+                String acceptable = param.acceptableValues();
+                String paramName = getParamName(param, target);
+                if (param.primary()) {
+                    // this is the primary parameter for the command
+                    String value = parameters.getProperty("DEFAULT");
+                    if (value!=null) {
+                        // let's also copy this value to the command with a real name.
+                        parameters.setProperty(paramName, value);
+                        return convertStringToObject(paramName, type, value);
+                    }
+                }
+                String paramValueStr = getParamValueString(parameters, param,
+                                                           target);
+
+                if(ok(acceptable)&& ok(paramValueStr)) {
+                    String[] ss = acceptable.split(",");
+                    boolean ok = false;
+
+                    for(String s : ss) {
+                        if(paramValueStr.equals(s.trim())) {
+                            ok = true;
+                            break;
+                        }
+                    }
+                    if(!ok)
+                        throw new UnacceptableValueException(
+                            adminStrings.getLocalString("adapter.command.unacceptableValue",
+                            "Invalid parameter: {0}.  Its value is {1} but it isn''t one of these acceptable values: {2}",
+                            paramName,
+                            paramValueStr,
+                            acceptable));
+                }
+                if (paramValueStr != null) {
+                    return convertStringToObject(paramName, type, paramValueStr);
+                }
+                //return default value
+                return getParamField(component, target);
+            }
+        };
+    }
+
     public ActionReport doCommand(
         final String commandName,
         final Object parameters,
@@ -1062,6 +1152,65 @@ public class CommandRunnerImpl implements CommandRunner {
         catch (Exception ex) {
             return null;
         }
+    }
+
+
+    public void doCommand(CommandBuilder b, ActionReport report, Logger logger) {
+        final AdminCommand command = getCommand(b.commandName, report, logger);
+        if (command==null) {
+            return;
+        }
+        CommandModel model;
+        if (command instanceof CommandModelProvider) {
+            model = ((CommandModelProvider) command).getModel();
+        } else {
+            model = new CommandModelImpl(command.getClass());
+        }
+        InjectionResolver<Param> resolver;
+        if (b.delegate==null) {
+            final Properties parameters = b.paramsAsProperties;
+            if (parameters.get("help")!=null || parameters.get("Xhelp")!=null) {
+                InputStream in = getManPage(model.getCommandName(), command);
+                String manPage = encodeManPage(in);
+
+                if(manPage != null && parameters.get("help")!=null) {
+                    report.getTopMessagePart().addProperty("MANPAGE", manPage);
+                }
+                else {
+                    report.getTopMessagePart().addProperty(AdminCommandResponse.GENERATED_HELP, "true");
+                    getHelp(command, report);
+                }
+                return;
+            }
+
+            try {
+                if (!skipValidation(command)) {
+                    validateParameters(model, parameters);
+                }
+            } catch (ComponentException e) {
+                // if the cause is UnacceptableValueException -- we want the message
+                // from it.  It is wrapped with a less useful Exception
+
+                Exception exception = e;
+                Throwable cause = e.getCause();
+                if(cause != null && (cause instanceof UnacceptableValueException)) {
+                    // throw away the wrapper.
+                    exception = (Exception)cause;
+                }
+                logger.severe(exception.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(exception.getMessage());
+                report.setFailureCause(exception);
+                ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
+                childPart.setMessage(getUsageText(command, model));
+                return;
+            }
+            resolver = getPropsBasedResolver(b.paramsAsProperties);
+        } else {
+            resolver = getDelegatedResolver(b.delegate);
+        }
+        doCommand(model, command, resolver, report, b.inbound, b.outbound);
+
     }
 }
 

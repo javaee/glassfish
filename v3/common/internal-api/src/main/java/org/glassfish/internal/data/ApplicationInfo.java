@@ -41,6 +41,7 @@ import java.beans.PropertyVetoException;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.Engine;
 
 /**
  * Information about a running application. Applications are composed of modules.
@@ -48,12 +49,10 @@ import com.sun.enterprise.config.serverbeans.Module;
  *
  * @author Jerome Dochez
  */
-public class ApplicationInfo {
+public class ApplicationInfo extends ModuleInfo {
 
     final private Collection<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-    final private String name;
     final private ReadableArchive source;
-    final private Events events;
     final private Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
     private String libraries;
 
@@ -65,11 +64,14 @@ public class ApplicationInfo {
      * @param source the archive for this application
      * @param name name of the application
      */
-    public ApplicationInfo(Events events, ReadableArchive source,
+    public ApplicationInfo(final Events events, ReadableArchive source,
                            String name) {
-        this.name = name;
+        super(events, name, new LinkedHashSet<EngineRef>(), null);
         this.source = source;
-        this.events = events;
+    }
+
+    public void add(EngineRef ref) {
+        engines.add(ref);
     }
     
     public void addMetaData(Object o) {
@@ -158,12 +160,18 @@ public class ApplicationInfo {
         return refs;
     }
 
+    protected ExtendedDeploymentContext getSubContext(ModuleInfo info, ExtendedDeploymentContext context) {
+        return context;
+    }
+
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker)
             throws Exception {
 
+
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
+        super.load(context, tracker);
         for (ModuleInfo module : modules) {
-            module.load(context, tracker);
+            module.load(getSubContext(module,context), tracker);
         }
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
@@ -172,22 +180,24 @@ public class ApplicationInfo {
 
 
     public void start(
-        DeploymentContext context,
+        ExtendedDeploymentContext context,
         ProgressTracker tracker) throws Exception {
 
+        super.start(context, tracker);
         // registers all deployed items.
         for (ModuleInfo module : getModuleInfos()) {
-            module.start(context, tracker);
+            module.start(getSubContext(module, context), tracker);
         }
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STARTED, this), false);
         }
     }
 
-    public void stop(ApplicationContext context, Logger logger) {
-        
+    public void stop(ExtendedDeploymentContext context, Logger logger) {
+
+        super.stop(context, logger);
         for (ModuleInfo module : getModuleInfos()) {
-            module.stop(context, logger);
+            module.stop(getSubContext(module, context), logger);
         }
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STOPPED, this), false);
@@ -197,8 +207,9 @@ public class ApplicationInfo {
 
     public void unload(ExtendedDeploymentContext context) {
 
+        super.unload(context);
         for (ModuleInfo module : getModuleInfos()) {
-            module.unload(context);
+            module.unload(getSubContext(module, context));
         }
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_UNLOADED, this), false);
@@ -207,7 +218,7 @@ public class ApplicationInfo {
 
     public boolean suspend(Logger logger) {
 
-        boolean isSuccess = true;
+        boolean isSuccess = super.suspend(logger);
 
         for (ModuleInfo module : modules) {
             if (!module.suspend(logger)) {
@@ -219,7 +230,7 @@ public class ApplicationInfo {
 
     public boolean resume(Logger logger) {
 
-        boolean isSuccess = true;
+        boolean isSuccess = super.resume(logger);
 
         for (ModuleInfo module : modules) {
             if (!module.resume(logger)) {
@@ -247,6 +258,12 @@ public class ApplicationInfo {
      * @param app the application being persisted
      */
     public void save(Application app) throws TransactionFailure, PropertyVetoException {
+
+        for (EngineRef ref : engines) {
+            Engine engine = app.createChild(Engine.class);
+            app.getEngine().add(engine);
+            ref.save(engine);
+        }
 
         for (ModuleInfo module : modules) {
             Module modConfig = app.createChild(Module.class);

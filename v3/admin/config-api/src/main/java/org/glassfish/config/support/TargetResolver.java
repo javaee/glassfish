@@ -2,6 +2,7 @@ package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -22,7 +23,7 @@ public class TargetResolver implements ConfigResolver {
     @Param(optional=true)
     String target;
     
-    public Object resolve(AdminCommandContext context) {
+    public ConfigBeanProxy resolve(AdminCommandContext context) {
         if (target==null) {
             return domain;
         }

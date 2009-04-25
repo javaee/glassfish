@@ -78,13 +78,13 @@ public class ModuleInfo {
 
     final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
     
-    private final Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
-    private final String name;
-    private final Events events;
+    protected final Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
+    protected final String name;
+    protected final Events events;
     private Properties moduleProps;
     private boolean started=false;
 
-    public ModuleInfo(Events events, String name, Collection<EngineRef> refs, 
+    public ModuleInfo(final Events events, String name, Collection<EngineRef> refs, 
         Properties moduleProps) {
         this.name = name;
         this.events = events;
@@ -155,8 +155,7 @@ public class ModuleInfo {
                     report.failure(logger, msg, null);
                     throw new Exception(msg);
                 }
-                tracker.add("loaded", EngineRef.class, engine);
-                engine.load(context);
+                engine.load(context, tracker);
                 engine.setApplicationContainer(appCtr);
 
 
@@ -237,7 +236,7 @@ public class ModuleInfo {
         
         for (EngineRef module : _getEngineRefs()) {
             try {
-                module.stop(context, logger);
+                module.stop(context);
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "Cannot stop module " +
                         module.getContainerInfo().getSniffer().getModuleType(),e );
@@ -280,7 +279,7 @@ public class ModuleInfo {
     public void clean(ExtendedDeploymentContext context) throws Exception {
         
         for (EngineRef ref : _getEngineRefs()) {
-            ref.clean(context, logger);
+            ref.clean(context);
         }
         if (events!=null) {
             events.send(new Event<DeploymentContext>(Deployment.MODULE_CLEANED,context), false);

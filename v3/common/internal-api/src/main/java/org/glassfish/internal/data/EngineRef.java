@@ -99,8 +99,10 @@ public class EngineRef {
         return appCtr;
     }
 
-    public void load(ExtendedDeploymentContext context) {
+    public void load(ExtendedDeploymentContext context, ProgressTracker tracker) {
         getContainerInfo().load(context);
+        tracker.add("loaded", EngineRef.class, this);
+
     }
 
     public boolean start(ApplicationContext context, ProgressTracker tracker)
@@ -121,8 +123,7 @@ public class EngineRef {
     /**
      * unloads the module from its container.
      *
-     * @param context
-     * @param report
+     * @param context unloading context
      * @return
      */
     public boolean unload(ExtendedDeploymentContext context) {
@@ -145,21 +146,20 @@ public class EngineRef {
      * Stops a module, meaning that components implemented by this module should not be accessed
      * by external modules
      *
-     * @param context
-     * @param logger
+     * @param context stopping context
      * @return
      */
-    public boolean stop(ApplicationContext context,  Logger logger) {
+    public boolean stop(ApplicationContext context) {
 
        return appCtr.stop(context);
     }
 
-    public void clean(ExtendedDeploymentContext context, Logger logger) {
+    public void clean(ExtendedDeploymentContext context) {
 
         try {
             getContainerInfo().clean(context);            
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Exception while cleaning module '" + this + "'" + e, e);
+            context.getLogger().log(Level.WARNING, "Exception while cleaning module '" + this + "'" + e, e);
         }
     }
 

@@ -1,6 +1,7 @@
 package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.api.admin.AdminCommandContext;
 
 /**
@@ -13,5 +14,5 @@ import org.glassfish.api.admin.AdminCommandContext;
 @Contract
 public interface ConfigResolver {
 
-    Object resolve(AdminCommandContext context); 
+    ConfigBeanProxy resolve(AdminCommandContext context); 
 }

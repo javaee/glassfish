@@ -42,17 +42,14 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.common.DeploymentContextImpl;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
-import com.sun.hk2.component.Holder;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.*;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -184,13 +181,13 @@ public class ApplicationLifecycle implements Deployment {
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
                 for (EngineRef module : get("started", EngineRef.class)) {
-                    module.stop(context, logger);
+                    module.stop(context);
                 }
                 for (EngineRef module : get("loaded", EngineRef.class)) {
                     module.unload(context);
                 }
                 for (EngineRef module : get("prepared", EngineRef.class)) {
-                    module.clean(context, logger);
+                    module.clean(context);
                 }
             }
         };
@@ -245,6 +242,7 @@ public class ApplicationLifecycle implements Deployment {
 
                     // this is a first time deployment as opposed as load following an unload event,
                     // we need to create the application info
+                    // todo : we should come up with a general Composite API solution
                     ModuleInfo moduleInfo = null;
                     try {
                         moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
@@ -265,7 +263,10 @@ public class ApplicationLifecycle implements Deployment {
                         for (Object m : context.getModuleMetadata()) {
                             appInfo.addMetaData(m);
                         }
-
+                    } else {
+                        for (EngineRef ref : moduleInfo.getEngineRefs()) {
+                            appInfo.add(ref);
+                        }
                     }
 
                     appRegistry.add(appName, appInfo);

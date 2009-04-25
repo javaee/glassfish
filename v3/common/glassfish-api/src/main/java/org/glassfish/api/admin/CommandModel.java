@@ -9,6 +9,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import com.sun.hk2.component.InjectionResolver;
+
 /**
  * Model for an administrative command
  *
