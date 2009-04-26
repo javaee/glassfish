@@ -87,33 +87,6 @@ public abstract class ASMainOSGi extends AbstractMain {
         domainDir = helper.getDomainRoot(new StartupContext(bootstrapFile, args));
         helper.verifyAndSetDomainRoot(domainDir);
         setFwDir();
-        setStartupContextProperties(logger, args);
-    }
-
-    /**
-     * We need to save the startup context and context root dir
-     * as there is no easy way to pass it through OSGi to our bundles.
-     */
-    private void setStartupContextProperties(Logger logger, String... args)
-    {
-
-        Properties properties = ArgumentManager.argsToMap(args);
-        properties.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
-        String lineformat = null;
-        try {
-            // when we switch to jdk6 and up as minimum platform, use following apis.
-            //Writer writer = new StringWriter();
-            //properties.store(writer, null);
-            //lineformat = writer.toString();
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            properties.store(os, null);
-            lineformat = os.toString();
-        } catch (IOException e) {
-            logger.info("Could not save startup parameters, will start with none");
-        }
-        if (lineformat!=null) {
-            System.setProperty("hk2.startup.context.args", lineformat); // NO I18N
-        }
         System.setProperty("hk2.startup.context.root", bootstrapFile.getParent());
     }
 

@@ -111,10 +111,12 @@ public class RestartDomainCommand implements AdminCommand {
 
     private void reincarnate() {
         try {
-            if(!setupReincarnationWithAsadmin())
-                setupReincarnationWithOther();
-
-            doReincarnation();
+            if(setupReincarnationWithAsadmin() || setupReincarnationWithOther())
+                doReincarnation();
+            else
+                logger.severe(strings.get("restart.domain.noStartupInfo", 
+                        strings.get("restart.domain.asadminError"),
+                        strings.get("restart.domain.nonAsadminError") ));
         }
         catch(RDCException rdce) {
             // already logged...
@@ -138,35 +140,41 @@ public class RestartDomainCommand implements AdminCommand {
     }
 
     private boolean setupReincarnationWithAsadmin() throws RDCException{
+        classpath   = props.getProperty("-asadmin-classpath");
+        classname   = props.getProperty("-asadmin-classname");
+        argsString  = props.getProperty("-asadmin-args");
+
+        return verify("restart.domain.asadminError");
+    }
+
+    private boolean setupReincarnationWithOther() throws RDCException {
+
+        classpath   = props.getProperty("-startup-classpath");
+        classname   = props.getProperty("-startup-classname");
+        argsString  = props.getProperty("-startup-args");
+
+        return verify("restart.domain.nonAsadminError");
+    }
+
+    private boolean verify(String errorStringKey) throws RDCException {
+        // Either asadmin or non-asadmin startup params have been set -- check them!
         // THREE possible returns:
         // 1) true
         // 2) false
         // 3) RDCException
-
-        classpath   = props.getProperty("-asadmin-classpath");
-        classname   = props.getProperty("-asadmin-classname");
-        String argsString  = props.getProperty("-asadmin-args");
-
         if(classpath == null && classname == null && argsString == null) {
-            // this is NOT an error.  We were NOT started by asadmin...
             return false;
         }
 
         // now that at least one is set -- demand that ALL OF THEM be set...
         if(!ok(classpath) || !ok(classname) || argsString == null) {
-            logger.severe(strings.get("restart.domain.asadminError"));
+            logger.severe(strings.get(errorStringKey));
             throw new RDCException();
         }
 
         args = argsString.split(",,,");
 
-        // good to go!
         return true;
-    }
-
-    private void setupReincarnationWithOther() throws RDCException {
-        logger.severe("Restart Domain does not yet support non-Asadmin restarts of the server.");
-        throw new RDCException();
     }
 
     private boolean ok(String s) {
@@ -183,6 +191,7 @@ public class RestartDomainCommand implements AdminCommand {
     private boolean         verbose;
     private String          classpath;
     private String          classname;
+    private String          argsString;
     private String[]        args;
 
     /////////////             static variables               ///////////////////
@@ -190,4 +199,5 @@ public class RestartDomainCommand implements AdminCommand {
     private static final String             magicProperty = "-DAS_RESTART=true";
     private static final LocalStringsImpl   strings = new LocalStringsImpl(RestartDomainCommand.class);
     private static final boolean            debug   = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
+
 }
