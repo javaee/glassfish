@@ -24,33 +24,36 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.process.JavaClassRunner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
-import java.util.Iterator;
-import java.util.Collection;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
 
 /**
- * AdminCommand to stop the domain execution which mean shuting down the application
- * server.  Then if the proper watchdog is running on the domain machine, the domain
- * will be restarted
+ * For non-verbose mode:
+ * Stop this server, spawn a new JVM that will wait for this JVM to die.  The new JVM then starts the server again.
+ *
+ * For verbose mode:
+ * We want the asadmin console itself to do the respawning -- so just return a 10 from
+ * System.exit().  This tells asadmin to restart.
  *
  * @author Byron Nevins
  */
+
 @Service(name="restart-domain")
 @Async
 @I18n("restart.domain.command")
+
 public class RestartDomainCommand implements AdminCommand {
-
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);
-
     @Inject
     ModulesRegistry registry;
 
@@ -63,39 +66,128 @@ public class RestartDomainCommand implements AdminCommand {
      * Client code that started us should notice the return value of 10 and restart us.
      */
     public void execute(AdminCommandContext context) {
-        // This has to be an asynchronous command so there is no way to directly
-        // return an error.  We log a warning and then ASSUME they wanted to stop the server
+        try {
+            init(context);
 
-        if(!isRestartAllowed()) {
-            context.getLogger().warning(localStrings.getLocalString(
-                    "restart.domain.not_enabled",
-                    "The server was not started with a watchdog. Restart is not " +
-                    "possible.  The server was stopped."));
+
+            if(!verbose) {
+                // do it now while we still have the Logging service running...
+                reincarnate();
+            }
+            // else we just return 10 from System.exit()
+
+            Collection<Module> modules = registry.getModules(
+                    "com.sun.enterprise.osgi-adapter");
+            if (modules.size() == 1) {
+                final Module mgmtAgentModule = modules.iterator().next();
+                mgmtAgentModule.stop();
+            }
+            else
+                context.getLogger().warning(modules.size() + " no of primordial modules found");
+            
+        }
+        catch(Exception e) {
+            context.getLogger().severe("Got an exception trying to restart: " + e);
         }
 
-        context.getLogger().info(localStrings.getLocalString("restart.domain.init","Server restart initiated"));
-        Collection<Module> modules = registry.getModules(
-                "com.sun.enterprise.osgi-adapter");
-        if (modules.size() == 1) {
-            final Module mgmtAgentModule = modules.iterator().next();
-            mgmtAgentModule.stop();
-        } else {
-            context.getLogger().warning(modules.size() + " no of primordial modules found");
-        }
-
-        /* System.exit() is required.  In java this is the only way to return an
-         * exit value.
-         * Normally I would use a constant with the value of 10.
-         * But this code goes into a jar that is sort of an island -- very few
-         * dependencies.  The client code on the other end will also just use 10
-         */
         System.exit(10);
     }
 
-    boolean isRestartAllowed() {
-        // TODO commandline args are clumped into this one System Property - 
-        
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    /////////               ALL PRIVATE BELOW               ////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    private void init(AdminCommandContext context) throws IOException {
+        logger = context.getLogger();
         String s = System.getProperty("hk2.startup.context.args");
-        return s != null && s.indexOf("-watchdog=true") >= 0;
+        Reader reader = new StringReader(s);
+        props = new Properties();
+        props.load(reader);
+        verbose = Boolean.parseBoolean(props.getProperty("-verbose", "false"));
+        logger.info(strings.get("restart.domain.init"));
     }
+
+    private void reincarnate() {
+        try {
+            if(!setupReincarnationWithAsadmin())
+                setupReincarnationWithOther();
+
+            doReincarnation();
+        }
+        catch(RDCException rdce) {
+            // already logged...
+        }
+        catch(Exception e) {
+            logger.severe(strings.get("restart.domain.internalError", e));
+        }
+
+    }
+
+    private void doReincarnation() throws RDCException {
+        try {
+            // TODO JavaClassRunner is very simple and primitive.
+            // Feel free to beef it up...
+            new JavaClassRunner(classpath, new String[]{magicProperty}, classname, args);
+        }
+        catch(Exception e) {
+            logger.severe(strings.get("restart.domain.jvmError", e));
+            throw new RDCException();
+        }
+    }
+
+    private boolean setupReincarnationWithAsadmin() throws RDCException{
+        // THREE possible returns:
+        // 1) true
+        // 2) false
+        // 3) RDCException
+
+        classpath   = props.getProperty("-asadmin-classpath");
+        classname   = props.getProperty("-asadmin-classname");
+        String argsString  = props.getProperty("-asadmin-args");
+
+        if(classpath == null && classname == null && argsString == null) {
+            // this is NOT an error.  We were NOT started by asadmin...
+            return false;
+        }
+
+        // now that at least one is set -- demand that ALL OF THEM be set...
+        if(!ok(classpath) || !ok(classname) || argsString == null) {
+            logger.severe(strings.get("restart.domain.asadminError"));
+            throw new RDCException();
+        }
+
+        args = argsString.split(",,,");
+
+        // good to go!
+        return true;
+    }
+
+    private void setupReincarnationWithOther() throws RDCException {
+        logger.severe("Restart Domain does not yet support non-Asadmin restarts of the server.");
+        throw new RDCException();
+    }
+
+    private boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    // We use this simply to tell the difference between fatal errors and other
+    // non-fatal conditions.
+    private static class RDCException extends Exception {
+    }
+
+    private Properties      props;
+    private Logger          logger;
+    private boolean         verbose;
+    private String          classpath;
+    private String          classname;
+    private String[]        args;
+
+    /////////////             static variables               ///////////////////
+
+    private static final String             magicProperty = "-DAS_RESTART=true";
+    private static final LocalStringsImpl   strings = new LocalStringsImpl(RestartDomainCommand.class);
+    private static final boolean            debug   = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
 }

@@ -199,7 +199,6 @@ public class GFLauncherInfo {
         Map<String, String> map = new HashMap<String, String>();
         map.put("-domaindir", SmartFile.sanitize(domainRootDir.getPath()));
         map.put("-verbose", Boolean.toString(verbose));
-        map.put("-watchdog", Boolean.toString(watchdog));
         map.put("-debug", Boolean.toString(debug));
         map.put("-domainname", domainName);
         map.put("-instancename", instanceName);
@@ -210,18 +209,10 @@ public class GFLauncherInfo {
         return map;
     }
 
-    public void setWatchdog(boolean b) {
-        watchdog = b;
-    }
-
     public void setRespawnInfo(String classname, String classpath, String[] args) {
         respawnInfo = new RespawnInfo(classname, classpath, args);
     }
     
-    public boolean isWatchdog() {
-        return watchdog;
-    }
-
     GFLauncherInfo(GFLauncherFactory.ServerType type) {
         this.type = type;
     }
@@ -437,7 +428,6 @@ public class GFLauncherInfo {
     private Map<String, String> argsMap;
     private ArrayList<String> argsRaw = new ArrayList<String>();
     private Set<Integer> adminPorts;
-    private boolean watchdog = false;
     private RespawnInfo respawnInfo;
     // BUG TODO get the def. domains dir from asenv 3/14/2008
     private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";

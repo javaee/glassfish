@@ -244,9 +244,8 @@ public abstract class GFLauncher {
         GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
         
         //if verbose, hang round until the domain stops
-        if (getInfo().isVerbose() || getInfo().isWatchdog()) {
+        if (getInfo().isVerbose())
             wait(process);
-        }
     }
 
     void setCommandLine() throws GFLauncherException {
@@ -312,7 +311,7 @@ public abstract class GFLauncher {
         // 2. a ^C (or equivalent signal) was received by the console
         // note that exitValue is still set to -1
 
-        // if we are watchdogging we may get many many processes.
+        // if we are restarting we may get many many processes.
         // Each time this method is called we reset the Process reference inside
         // the processWhacker
 

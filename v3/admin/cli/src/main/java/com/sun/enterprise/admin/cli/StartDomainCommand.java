@@ -31,6 +31,7 @@ import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.*;
 
@@ -65,9 +66,8 @@ public class StartDomainCommand extends AbstractCommand {
             }
 
             boolean verbose = getBooleanOption("verbose");
-            boolean watchdog = getBooleanOption(WATCHDOG);
+            boolean isRestart = Boolean.getBoolean(RESTART_FLAG);
             info.setVerbose(verbose);
-            info.setWatchdog(watchdog);
             info.setDebug(getBooleanOption("debug"));
             info.setRespawnInfo(AsadminMain.getClassName(),
                                 AsadminMain.getClassPath(),
@@ -82,25 +82,14 @@ public class StartDomainCommand extends AbstractCommand {
                 throw new CommandException(msg);
             }
 
-            if(watchdog && !verbose && System.getProperty(WATCHDOG_SYS_PROP) == null) {
-                // We need to run watchdog in the background with no console window...
-                Log.info("watchdog_launch");
-                runWatchdogProcess(launcher);
-                waitForDAS(info.getAdminPorts());
-                report(info);
-                return;
-            }
-            else if(watchdog) {
-                Log.info("watchdog_running");
-            }
+            if(isRestart)
+                waitForParentToDie();
 
-            // launch returns very quickly if neither verbose or watchdog is set
-            // it returns after the domain dies o/w
+            // launch returns very quickly if verbose is not set
+            // if verbose is set then it returns after the domain dies
             launcher.launch();
-            
-            // if we are in watchdog mode, we may need to restart indefinitely
-            if(watchdog) {
-                Log.info("watchdog_running");
+
+            if(verbose) { // we can potentially loop forever here...
                 while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
                     Log.info("restart");
 
@@ -110,7 +99,7 @@ public class StartDomainCommand extends AbstractCommand {
                     launcher.relaunch();
                 }
             }
-            else if(!verbose) {
+            else {
                 waitForDAS(info.getAdminPorts());
                 report(info);
             }
@@ -122,7 +111,6 @@ public class StartDomainCommand extends AbstractCommand {
             throw new CommandException(me);
         }
     }
-
 
     private void runCommandEmbedded() throws CommandException, CommandValidationException {
         try {
@@ -181,28 +169,6 @@ public class StartDomainCommand extends AbstractCommand {
         catch(MiniXmlParserException me) {
             throw new CommandException(me);
         }
-    }
-
-    private void runWatchdogProcess(GFLauncher launcher) throws GFLauncherException {
-        // We need to run watchdog in the background with no console window...
-        List<String> cmdline = new LinkedList<String>();
-        cmdline.add("-cp");
-        cmdline.add(System.getProperty("java.class.path"));
-        cmdline.add("-D" + WATCHDOG_SYS_PROP + "=true");
-
-        if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
-            cmdline.add("-Xdebug");
-            cmdline.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4444");
-        }
-        
-        cmdline.add(getClass().getPackage().getName() + ".ASWatchdog");
-        String[] args = AsadminMain.getArgs();
-
-        for(String arg : args) {
-            cmdline.add(arg);
-        }
-
-        launcher.launchJVM(cmdline);
     }
 
     // bnevins: note to me -- this String handling is EVIL.  Need to add plenty of utilities...
@@ -282,6 +248,19 @@ public class StartDomainCommand extends AbstractCommand {
             lg.popAndUnlockLevel();
         }
     }
+
+    private void waitForParentToDie() {
+        try {
+            // TODO timeout
+            // When parent process is dead in.read returns -1 (EOF) as the pipe breaks.
+            while(System.in.read() >= 0)
+                ;
+            
+        } catch (IOException ex) {
+            Logger.getLogger(StartDomainCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private GFLauncherInfo info;
 }
 

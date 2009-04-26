@@ -42,93 +42,63 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Run a native process with jps
- * -- get the pid for a running JVM
- * note:  dropping in an implementation for jps is not hard.
+ * Very simple initial implementation
+ * If it is useful there are plenty of improvements that can be made...
  * @author bnevins
  */
-public class Jps {
+public class JavaClassRunner {
+    public JavaClassRunner(String classpath, String[] sysprops, String classname, String[] args) throws IOException{
+        if(javaExe == null)
+            throw new IOException("Can not find a jvm");
 
-    /**
-     * return the platform-specific process-id of a JVM
-     * @param mainClassName The main class - this is how we identify the right JVM
-     * @return the process id if possible otherwise 0
-     */
-    final static public int getPid(String mainClassName) {
-        Jps jps = new Jps();
-        Integer integer = jps.pidMap.get(mainClassName);
+        if(!ok(classname))
+            throw new IllegalArgumentException("classname was null");
 
-        if(integer == null)
-            return 0;
+        List<String> cmdline = new LinkedList<String>();
+        cmdline.add(javaExe.getPath());
 
-        return integer;
-    }
-    /**
-     * Is this pid owned by a process?
-     * @param apid the pid of interest
-     * @return whether there is a process running with that id
-     */
-    final static public boolean isPid(int apid) {
-        return new Jps().pidMap.containsValue(apid);
-    }
-    
-    private Jps(){
-        try {
-            if(jpsExe == null)
-                return;
-
-            ProcessBuilder pb = new ProcessBuilder(jpsExe.getPath());
-            Process p = pb.start();
-            ProcessStreamDrainer saver = ProcessStreamDrainer.save("jps", p);
-            saver.waitFor();
-            String jpsOutput = saver.getOutString();
-            // get each line
-            String[] ss = jpsOutput.split("[\n\r]");
-
-            for(String line : ss) {
-                if(line == null || line.length() <= 0)
-                    continue;
-
-                String[] sublines = line.split(" ");
-                if(sublines == null || sublines.length != 2)
-                    continue;
-
-                int aPid = 0;
-                try {
-                    aPid = Integer.parseInt(sublines[0]);
-                }
-                catch(Exception e) {
-                    continue;
-                }
-                // todo -- handle duplicate names??
-                pidMap.put(sublines[1], aPid);
-            }
+        if(ok(classpath)) {
+            cmdline.add("-cp");
+            cmdline.add(classpath);
         }
-        catch(Exception e) {
-        }
+
+        if(sysprops != null)
+            for(String sysprop : sysprops) 
+                cmdline.add(sysprop);
+
+        cmdline.add(classname);
+
+        if(args != null)
+            for(String arg : args)
+                cmdline.add(arg);
+
+        ProcessBuilder pb = new ProcessBuilder(cmdline);
+        Process p = pb.start();
+        ProcessStreamDrainer drainer = ProcessStreamDrainer.drain(classname, p);
     }
 
-    private Map<String,Integer> pidMap = new  HashMap<String,Integer>();
-    private static final File jpsExe;
-    private static final String jpsName;
+    private boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    private static final File javaExe;
 
     static{
+        String javaName = "java";
+
         if(OS.isWindows())
-            jpsName = "jps.exe";
-        else
-            jpsName = "jps";
+            javaName = "java.exe";
 
         final String    javaroot    = System.getProperty("java.home");
-        final String    relpath     = "/bin/" + jpsName;
+        final String    relpath     = "/bin/" + javaName;
         final File      fhere       = new File(javaroot + relpath);
         File            fthere      = new File(javaroot + "/.." + relpath);
 
         if(fhere.isFile())
-            jpsExe = SmartFile.sanitize(fhere);
+            javaExe = SmartFile.sanitize(fhere);
         else if(fthere.isFile())
-            jpsExe = SmartFile.sanitize(fthere);
+            javaExe = SmartFile.sanitize(fthere);
         else
-            jpsExe = null;
+            javaExe = null;
     }
 }
-

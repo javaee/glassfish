@@ -51,11 +51,9 @@ public class CLIConstants {
     ///////       pkg-private                   /////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
+    static final String         RESTART_FLAG                    = "AS_RESTART"; // sent in as a System Property for restarts
     static final long           WAIT_FOR_DAS_TIME_MS            = 90000;
-    static final long           WAIT_FOR_DAS_DEATH_TIME_MS      = 30000;
-    static final String         WATCHDOG                        = "watchdog";
     static final int            RESTART_EXIT_VALUE              = 10;
-    static final String         WATCHDOG_SYS_PROP               = "GF_FINAL_WATCHDOG_PROCESS";
     static final String         WALL_CLOCK_START_PROP           = "WALL_CLOCK_START";
     static final boolean        debugMode;
 
