@@ -141,20 +141,15 @@ public final class ConnectorMessageBeanClient
 
         if (resourceAdapterMid == null) {
             resourceAdapterMid = System.getProperty(RA_MID);
-            if (resourceAdapterMid == null) {
-                throw new ConnectorRuntimeException("No RA Mid specified in descriptor of application : "
-                        + descriptor_.getApplication().getName());
-            }
         }
 
-        /* TODO V3
-        //Instead of assigning DEFAULT_JMS_ADAPTER by default, check whether the message-listener of
+        //TODO V3 Instead of assigning DEFAULT_JMS_ADAPTER by default, check whether the message-listener of
         //the MDB is supported by JMS_ADAPTER and then assign it ?
         
         if (resourceAdapterMid == null) {
             resourceAdapterMid = ConnectorRuntime.DEFAULT_JMS_ADAPTER;
+            logger.fine("No ra-mid is specified, using default JMS Resource Adapter");
         }
-        */
         ActiveInboundResourceAdapter aira = getActiveResourceAdapter(resourceAdapterMid);
 
         aira.updateMDBRuntimeInfo(descriptor_,
