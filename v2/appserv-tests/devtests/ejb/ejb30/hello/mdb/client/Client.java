@@ -9,6 +9,7 @@ import java.util.*;
 import javax.ejb.EJBHome;
 import javax.jms.*;
 import javax.annotation.Resource;
+import javax.naming.InitialContext;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
@@ -51,10 +52,21 @@ public class Client {
         if( args.length == 1 ) {
             numMessages = new Integer(args[0]).intValue();
         }
+
     }
 
     public void doTest() {
         try {
+	    if( queueConFactory == null ) {
+
+		System.out.println("Java SE mode...");
+		InitialContext ic = new InitialContext();
+		queueConFactory = (javax.jms.QueueConnectionFactory) ic.lookup("jms/ejb_ejb30_hello_mdb_QCF");
+		msgBeanQueue = (javax.jms.Queue) ic.lookup("jms/ejb_ejb30_hello_mdb_InQueue");
+		clientQueue = (javax.jms.Queue) ic.lookup("jms/ejb_ejb30_hello_mdb_OutQueue");
+		
+	    }
+
             setup();
             doTest(numMessages);
             stat.addStatus("cmt main", stat.PASS);
