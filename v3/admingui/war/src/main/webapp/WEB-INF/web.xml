@@ -17,6 +17,10 @@
         <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
         <param-value>true</param-value>
     </context-param>
+    <context-param>
+        <param-name>javax.faces.validator.DISABLE_DEFAULT_BEAN_VALIDATOR</param-name>
+        <param-value>true</param-value>
+    </context-param>
     <filter>
         <filter-name>UploadFilter</filter-name>
         <filter-class>com.sun.webui.jsf.util.UploadFilter</filter-class>

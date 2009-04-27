@@ -451,25 +451,33 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 
 	// Create Hyperlink
 	// NOTE: Last attribute "content" will be the facet named used.
-	UIComponent imageLink = ComponentUtil.getChild(
+	FacesContext ctx = FacesContext.getCurrentInstance();
+	ComponentUtil compUtil = ComponentUtil.getInstance(ctx);
+	UIComponent imageLink = compUtil.getChild(
 	    comp, "imagelink",
 	    "com.sun.jsftemplating.component.factory.sun.ImageHyperlinkFactory",
 	    props, "image");
+
+	// Force HTML renderer so we can use dynafaces safely.
+	imageLink.setRendererType("com.sun.webui.jsf.ImageHyperlink");
+
 	// We don't want the imageHyperlink to have the following property, so
 	// set it after creating it
 	setProperty(props, "text", comp.getAttributes().get("text"));
-	UIComponent link = ComponentUtil.getChild(
+	UIComponent link = compUtil.getChild(
 	    comp, "link",
 	    "com.sun.jsftemplating.component.factory.sun.HyperlinkFactory",
 	    props, "content");
+
+	// Force HTML renderer so we can use dynafaces safely.
+	link.setRendererType("com.sun.webui.jsf.Hyperlink");
 
 	// Check to see if we have a childURL, evalute it here (after component
 	// is created, before rendered) so we can use the link itself to define
 	// the URL.  This has proven to be useful...
 	Object val = desc.getOption("childURL");
 	if (val != null) {
-	    val = desc.resolveValue(
-		FacesContext.getCurrentInstance(), link, val);
+	    val = desc.resolveValue(ctx, link, val);
 	    link.getAttributes().put("url", val);
 	    imageLink.getAttributes().put("url", val);
 	}
@@ -478,7 +486,7 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	val = desc.getOption("childImageURL");
 	if (val != null) {
 	    imageLink.getAttributes().put("imageURL", desc.
-		resolveValue(FacesContext.getCurrentInstance(), link, val));
+		resolveValue(ctx, link, val));
 	}
 
 	// Set href's handlers...

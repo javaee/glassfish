@@ -208,7 +208,7 @@ public class PluginHandlers {
 			"externalContent", new ComponentType("tmpTextCT",
 			"com.sun.jsftemplating.component.factory.basic.StaticTextFactory"));
 		    stDesc.addOption("value", content);
-		    ComponentUtil.createChildComponent(ctx, stDesc, root);
+		    ComponentUtil.getInstance(ctx).createChildComponent(ctx, stDesc, root);
 		} else {
 		    // Include the first one...
 		    includeIntegrationPoint(ctx, root, point);
