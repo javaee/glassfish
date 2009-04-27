@@ -230,7 +230,7 @@ public final class StatsUtil {
             }
         }
 
-        return total/num;
+        return (num > 0 ? total/num : 0);
     }
 
 
