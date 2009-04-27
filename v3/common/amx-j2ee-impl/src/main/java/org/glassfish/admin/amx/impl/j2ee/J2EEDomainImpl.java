@@ -42,7 +42,7 @@ import org.glassfish.admin.amx.impl.util.Issues;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.j2ee.J2EEServer;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
 
@@ -81,7 +81,7 @@ public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
         protected void
     registerChildren()
     {
-        final ObjectNames builder = getObjectNames();
+        final ObjectNameBuilder builder = getObjectNames();
 
         final DASJ2EEServerImpl impl = new DASJ2EEServerImpl( getObjectName() );
         final String serverName = "das";

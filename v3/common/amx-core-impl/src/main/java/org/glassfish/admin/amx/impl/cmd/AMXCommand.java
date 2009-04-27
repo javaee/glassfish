@@ -79,7 +79,7 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
      */
     public final synchronized void _execute(AdminCommandContext context)
     {
-        final DomainRoot domainRoot = ProxyFactory.getInstance(  getMBeanServer() ).getDomainRoot();
+        final DomainRoot domainRoot = ProxyFactory.getInstance(  getMBeanServer() ).getDomainRootProxy();
         
         final ActionReport report = getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);

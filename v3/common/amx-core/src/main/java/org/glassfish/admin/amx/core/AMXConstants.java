@@ -45,11 +45,11 @@ public final class AMXConstants {
 
     private AMXConstants() {
     }
-    /** constant for the name of the Parent attribute {@link AMX#getParent} */
+    /** constant for the name of the Parent attribute {@link AMXProxy#getParent} */
     public static final String ATTR_PARENT = "Parent";
-    /** constant for the name of the Children attribute {@link AMX#getChildren} */
+    /** constant for the name of the Children attribute {@link AMXProxy#getChildren} */
     public static final String ATTR_CHILDREN = "Children";
-    /** constant for the name of the Name attribute getName {@link AMX#getChildren} */
+    /** constant for the name of the Name attribute getName {@link AMXProxy#getChildren} */
     public static final String ATTR_NAME = "Name";
     /** interfaces may contain a type field denoting the type to be used in the ObjectName;
      * this is an alternative to an annotation that may be desirable to avoid
@@ -70,25 +70,25 @@ public final class AMXConstants {
     private static final String P = "amx.";
     public static final String NOTIFICATION_PREFIX = P;
     /**
-    Value from {@link #getGroup} indicating that the AMX is a
+    Group value indicating that the AMX is a
     configuration MBean.
      */
     public static final String GROUP_CONFIGURATION = "configuration";
     /**
-    Value from {@link #getGroup} indicating that the AMX represents a monitoring MBean.
+    Value indicating that the AMX represents a monitoring MBean.
      */
     public static final String GROUP_MONITORING = "monitoring";
     /**
-    Value from {@link #getGroup} indicating that the AMX is a utility MBean.
+    Value indicating that the AMX is a utility MBean.
      */
     public static final String GROUP_UTILITY = "utility";
     /**
-    Value from {@link #getGroup} indicating that the AMX is a JSR 77 MBean
+    Value indicating that the AMX is a JSR 77 MBean
     (J2EE Management) .
      */
     public static final String GROUP_JSR77 = "jsr77";
     /**
-    Value from {@link #getGroup} indicating that the AMX is not one
+    Value indicating that the AMX is not one
     of the other types.
      */
     public static final String GROUP_OTHER = "other";

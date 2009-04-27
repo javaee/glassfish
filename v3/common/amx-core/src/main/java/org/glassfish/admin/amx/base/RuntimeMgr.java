@@ -50,6 +50,9 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(leaf=true, singleton=true)
 public interface RuntimeMgr extends AMXProxy, Utility, Singleton
 {
+    @ManagedOperation
+    public void stopDomain();
+    
     /** Map key is the name of the descriptor, value is the content of the descriptor */
     @ManagedOperation
     public Map<String,String> getDeploymentConfigurations(String appName);
@@ -77,11 +80,18 @@ public interface RuntimeMgr extends AMXProxy, Utility, Singleton
     @ManagedAttribute
     public String getRESTBaseURL();
     
+    
+    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
+    public static final String PROPERTY_MAP_KEY = "PropertyMapKey";
+    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
+    public static final String REASON_FAILED_KEY = "ReasonFailedKey";
+    
     /**
-        Load internal classes. Private use, do not use.
+        Get properties of JDBC Data Source
+        @see #PROPERTY_MAP_KEY
+        @see #REASON_FAILED_KEY
      */
-    @ManagedOperation
-    public Object loadInternal();
+    public Map<String,Object>  getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName );
 }
 
 

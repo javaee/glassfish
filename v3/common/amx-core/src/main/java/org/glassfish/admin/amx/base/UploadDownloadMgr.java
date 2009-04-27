@@ -47,7 +47,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	Manages uploading or downloading of files to/from the server. Generally
 	for internal use only.
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="updown",leaf=true, singleton=true)
 public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 {
 	/**

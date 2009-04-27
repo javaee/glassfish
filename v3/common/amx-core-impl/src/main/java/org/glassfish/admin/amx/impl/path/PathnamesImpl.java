@@ -47,9 +47,13 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Map;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.PathnameParser;
+import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
@@ -61,6 +65,9 @@ import org.glassfish.admin.amx.util.ListUtil;
 public final class PathnamesImpl  extends AMXImplBase
 	// implements Pathnames  (can't directly implement the interface)
 {
+    private static final int MAX_CACHE_SIZE = 1024;
+    private final ConcurrentMap<String,ObjectName> mPathnameCache = new ConcurrentHashMap<String,ObjectName>();
+    
 		public
 	PathnamesImpl( final ObjectName parentObjectName )
 	{
@@ -70,6 +77,9 @@ public final class PathnamesImpl  extends AMXImplBase
         public ObjectName
     resolvePath( final String path )
     {
+        ObjectName result = mPathnameCache.get(path);
+        if ( result != null ) return result;
+        
         if ( path.equals( DomainRoot.PATH ) )
         {
             return getDomainRoot();
@@ -79,14 +89,14 @@ public final class PathnamesImpl  extends AMXImplBase
         
         final String parentPath = parser.parentPath();
         
-        cdebug( "resolvePath: " + parser.toString() );
+        //cdebug( "resolvePath: " + parser.toString() + ", parentPath = " + parentPath );
         
         // fixed query based on the path, which will find all MBeans with that parent path
         final String props = Util.makeProp( AMXConstants.PARENT_PATH_KEY, parentPath );
         final ObjectName pattern = JMXUtil.newObjectNamePattern( getObjectName().getDomain(), props );
         final Set<ObjectName> s = getMBeanServer().queryNames( pattern, null);
         
-        cdebug( "resolvePath: " + path + " = query for parent " + pattern );
+        //cdebug( "resolvePath: " + path + " = query for parent " + pattern );
         
         ObjectName objectName = null;
         final String type = parser.type();
@@ -97,25 +107,55 @@ public final class PathnamesImpl  extends AMXImplBase
             if ( type.equals(  Util.getTypeProp(child) ) )
             {
                 final String nameProp = Util.getNameProp(child);
+                
+                //cdebug( "type match for " + path + ", objectName = " + child);
+                    
+                if ( nameProp == null )
+                {
+                    if ( name == null )
+                    {
+                        // no name, we matched on type alone
+                        objectName = child;
+                        break;
+                    }
+                    // badly formed: a name is specified, but none is present for this type
+                    cdebug( "A name is specified in path, but the type has none: path = " + path + ", objectName = " + child);
+                    continue;
+                }
+                
+                // there is a name in the ObjectName (nameProp)
+                // the nameProp could exist, but the item might be a singleton
                 if ( name != null && name.equals( nameProp ) )
                 {
                     objectName = child;
                     break;
                 }
-                else if ( name == null && nameProp == null )
+                                
+                // careful: name should be used only if it's not a singleton
+                final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(child);
+                final boolean singleton = AMXProxyHandler.singleton( mbeanInfo );
+                // match only if it's a singleton with no name; the check above handled the other cases
+                if ( singleton && name == null )
                 {
                     objectName = child;
                     break;
                 }
-                else
-                {
-                cdebug( "No match on name: " + name + " != " + Util.getNameProp(child) );
-                }
             }
             else
             {
-                cdebug( "No match on type: " + type + " != " + Util.getTypeProp(child) );
+                //cdebug( "No match on type: " + type + " != " + Util.getTypeProp(child) );
             }
+        }
+        
+        // limit the memory use; non-existent paths could otherwise build up
+        if ( mPathnameCache.keySet().size() > MAX_CACHE_SIZE )
+        {
+            mPathnameCache.clear();
+        }
+        
+        if ( objectName != null )
+        {
+            mPathnameCache.put( path, objectName );
         }
         
         return objectName;

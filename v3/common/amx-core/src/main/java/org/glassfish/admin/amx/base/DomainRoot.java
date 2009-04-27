@@ -46,10 +46,10 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
 	The top-level interface for an appserver domain. Access to all other
-	{@link AMX} begins here.
-    
-    For dependency reasons, not all children of DomainRoot have getter methods;
-    use {@link AMXHelper#getChild}.
+	{@link AMXProxy} begins here.
+    <p>
+    Not all children of DomainRoot have getter method; they could be added
+    dynamically.
     <p>
     The 'name' property in the ObjectName of DomainRoot is the name of the
     appserver domain.  For example, appserver domains 'domain' and 'domain2' would
@@ -68,6 +68,9 @@ public interface DomainRoot extends AMXProxy
     
     public static final String PARENT_PATH = "";
     public static final String PATH = PARENT_PATH + Pathnames.SEPARATOR;
+    
+    @ManagedOperation
+    public void stopDomain();
     
     /**
         Return the {@link Ext} MBean, parent of top-level utility and specialty MBeans.

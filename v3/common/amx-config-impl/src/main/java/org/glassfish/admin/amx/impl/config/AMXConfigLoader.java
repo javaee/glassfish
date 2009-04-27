@@ -38,16 +38,13 @@ package org.glassfish.admin.amx.impl.config;
 
 import org.glassfish.admin.amx.core.AMXConstants;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 
 import org.glassfish.admin.amx.impl.mbean.MBeanImplBase;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import org.glassfish.admin.amx.util.TypeCast;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
-import org.glassfish.admin.amx.impl.util.MBeanInfoSupport;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.jvnet.hk2.config.*;
 
 import javax.management.*;
@@ -60,7 +57,8 @@ import java.util.logging.Logger;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
-import org.glassfish.admin.amx.intf.misc.AMXConfigConstants;
+import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
+import org.glassfish.admin.amx.intf.config.AMXConfigConstants;
 import org.glassfish.admin.mbeanserver.AMXLoader;
 import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
 import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
@@ -82,7 +80,7 @@ public final class AMXConfigLoader extends MBeanImplBase
 
     private final PendingConfigBeansNew    mPendingConfigBeans;
     
-    private final ConfigBeanRegistry mRegistry = new ConfigBeanRegistry();
+    private final ConfigBeanRegistry mRegistry = ConfigBeanRegistry.getInstance();
     
         public
     AMXConfigLoader(
@@ -389,6 +387,7 @@ public final class AMXConfigLoader extends MBeanImplBase
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
+            SingletonEnforcer.register( AMXConfigLoader.class, this );
         }
         return null;
     }
@@ -494,7 +493,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         ObjectName objectName = null;
         
-        //debug( "registerConfigBeanAsMBean: " + cb.getProxyType().getNameProp()  );
+        //debug( "registerConfigBeanAsMBean: " + cb.getProxyType().getName()  + ", object = " + cb );
         final ConfigBean parentCB = getActualParent(cb);
         if ( parentCB != null && mRegistry.getObjectName(parentCB) == null )
         {
@@ -503,8 +502,8 @@ public final class AMXConfigLoader extends MBeanImplBase
             //debug( "REGISTERED parent: " + parentCB.getProxyType().getNameProp() + " as " + JMXUtil.toString(parentCB.getObjectName()) );
         }
        objectName =  _registerConfigBeanAsMBean( cb, parentCB );
-       assert mRegistry.getObjectName(cb) != null;
-        return objectName;
+       assert objectName == null || mRegistry.getObjectName(cb) != null;
+       return objectName;
     }
     
     /**
@@ -535,8 +534,10 @@ public final class AMXConfigLoader extends MBeanImplBase
         objectName = buildObjectName( cb );
     
         objectName  = createAndRegister( cb, objectName );
-        ImplUtil.getLogger().fine( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) );
-            //" ===> USING " +  " AMXConfigInfo = " + amxConfigInfo.toString() + ", AMXMBeanMetaData = " + metadata + "\n" );
+        if ( objectName != null )
+        {
+            ImplUtil.getLogger().fine( "REGISTERED MBEAN: " + objectName );
+        }
         
         return objectName;
     }
@@ -569,10 +570,6 @@ public final class AMXConfigLoader extends MBeanImplBase
         catch( final JMException e )
         {
             debug( ExceptionUtil.toString(e) );
-            if ( e instanceof InstanceAlreadyExistsException )
-            {
-                debug( "" + impl.getMBeanInfo() );
-            }
             
             objectName = null;
         }
@@ -627,12 +624,12 @@ public final class AMXConfigLoader extends MBeanImplBase
     
     private ObjectName getDomainRoot()
     {
-        return ObjectNames.getDomainRootObjectName();
+        return ObjectNameBuilder.getDomainRootObjectName();
     }
     
     private DomainRoot getDomainRootProxy()
     {
-        return ProxyFactory.getInstance(mMBeanServer).getDomainRoot();
+        return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy();
     }
     
         private ObjectName
@@ -655,7 +652,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         //debug( "Type/name for " + cb.getProxyType().getName() + " = " + type + " = " + name );
         
-        final ObjectName objectName = ObjectNames.buildChildObjectName( mServer, parentObjectName, type, name );
+        final ObjectName objectName = ObjectNameBuilder.buildChildObjectName( mServer, parentObjectName, type, name );
         
         //debug( "ObjectName for " + cb.getProxyType().getName() + " = " + objectName + " of parent " + parentObjectName );
 

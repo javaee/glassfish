@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.base;
 
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
@@ -42,7 +44,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	Interface for a sample MBean , used as target for sample and test code.
 	Various Attributes of varying types are made available for testing.
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="sample", leaf=true, singleton=true)
 public interface Sample extends AMXProxy
 {
 	/**
@@ -91,4 +93,15 @@ public interface Sample extends AMXProxy
     
     @ManagedOperation
 	public byte[]	downloadBytes( final int numBytes );
+
+    // these two methods exercise proxyt code in different ways
+    @ManagedAttribute
+    public ObjectName[] getAllAMX();
+    
+    @ManagedAttribute
+    public AMXProxy[]   getAllAMXProxies();
 }
+
+
+
+

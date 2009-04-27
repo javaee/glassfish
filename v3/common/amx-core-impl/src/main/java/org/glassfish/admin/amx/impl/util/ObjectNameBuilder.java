@@ -41,28 +41,25 @@ import java.util.List;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.base.QueryMgr;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-import org.glassfish.admin.amx.impl.loader.BootUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import static org.glassfish.admin.amx.core.AMXConstants.*;
 
 /**
-	Class used to build ObjectNames for AMX MBeans.
+	Class used to build ObjectNameBuilder for AMX MBeans.
  */
-public final class  ObjectNames
+public final class  ObjectNameBuilder
 {
     private final MBeanServer mMBeanServer;
 	private final String	  mJMXDomain;
     private final ObjectName  mParent;
         
 		public
-	ObjectNames( final MBeanServer mbeanServer, final String jmxDomain )
+	ObjectNameBuilder( final MBeanServer mbeanServer, final String jmxDomain )
 	{
         mMBeanServer = mbeanServer;
 		mJMXDomain   = jmxDomain;
@@ -70,7 +67,7 @@ public final class  ObjectNames
 	}
     
         public
-	ObjectNames( final MBeanServer mbeanServer, final ObjectName parent )
+	ObjectNameBuilder( final MBeanServer mbeanServer, final ObjectName parent )
 	{
         mMBeanServer = mbeanServer;
         if ( parent == null )
@@ -86,7 +83,7 @@ public final class  ObjectNames
 	debug( final Object o )
 	{
         System.out.println( "" + o);
-	    //AMXDebug.getInstance().getOutput( "org.glassfish.admin.amx.support.ObjectNames" ).println( o );
+	    //AMXDebug.getInstance().getOutput( "org.glassfish.admin.amx.support.ObjectNameBuilder" ).println( o );
 	}
 	
 		public String
@@ -120,7 +117,7 @@ public final class  ObjectNames
         final MBeanServer server,
         final ObjectName  start)
     {
-        //debug( "ObjectNames.getAncestors(): type = " + start );
+        //debug( "ObjectNameBuilder.getAncestors(): type = " + start );
         AMXProxy amx = ProxyFactory.getInstance(server).getProxy(start,AMXProxy.class);
         final List<ObjectName> ancestors = new ArrayList<ObjectName>();
         
@@ -161,6 +158,13 @@ public final class  ObjectNames
 	{
         return buildChildObjectName( mMBeanServer, mParent, intf );
     }
+    
+    
+		public ObjectName
+	buildChildObjectName( final Class<?> intf, final String name)
+	{
+        return buildChildObjectName( mMBeanServer, mParent, intf, name);
+    }
 
     
 
@@ -181,7 +185,7 @@ public final class  ObjectNames
 		final String		type,
 		final String		childName )
 	{
-        //debug( "ObjectNames.buildChildObjectName(): type = " + type + ", name = " + childName + ", parent = " + parent );
+        //debug( "ObjectNameBuilder.buildChildObjectName(): type = " + type + ", name = " + childName + ", parent = " + parent );
         String props = Util.makeRequiredProps(type, childName);
 
        /*

@@ -41,9 +41,7 @@ import org.glassfish.admin.amx.intf.config.ConfigElement;
 /**
 	Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface NetworkConfig extends Singleton, ConfigElement
+public interface FileCache extends Singleton, ConfigElement
 {
-    public Protocols  getProtocols();
-    public Transports getTransports();
-    public NetworkListeners  getNetworkListeners();
 }
+

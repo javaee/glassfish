@@ -112,23 +112,29 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
         }
         catch( final Exception e )
         {
-            // fine...
+            // nothing to be done, MBean gone missing, badly implemented, etc.
         }
         
-        if ( parent != null ) synchronized(this)
+        if ( parent != null )
         {
-            mChildParent.put(child, parent);
-            Set<ObjectName> children = mParentChildren.get(parent);
-            if ( children == null )
+            synchronized(this)
             {
-                children = new HashSet<ObjectName>();
-                mParentChildren.put(parent, children);
+                mChildParent.put(child, parent);
+                Set<ObjectName> children = mParentChildren.get(parent);
+                if ( children == null )
+                {
+                    children = new HashSet<ObjectName>();
+                    mParentChildren.put(parent, children);
+                }
+                children.add(child);
+                //debug( "MBeanTracker: ADDED " + child + " with parent " + parent );
             }
-            children.add(child);
-            //debug( "MBeanTracker: ADDED " + child + " with parent " + parent );
         }
     }
     
+    /**
+        Must be 'synchronized' because we're working on two different Maps.
+     */
     private synchronized ObjectName removeChild(final ObjectName child)
     {
         final ObjectName parent = mChildParent.remove(child);
@@ -153,7 +159,7 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
         return mChildParent.get(child);
     }
     
-        public Set<ObjectName>
+        public synchronized Set<ObjectName>
     getChildrenOf(final ObjectName parent)
     {
         final Set<ObjectName> children = mParentChildren.get(parent) ;

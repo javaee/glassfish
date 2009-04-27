@@ -33,20 +33,18 @@ import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
 
-import org.glassfish.admin.amx.base.KitchenSink;
 import org.glassfish.admin.amx.base.LoggingPropertiesMgr;
 import org.glassfish.admin.amx.base.RealmsMgr;
 import org.glassfish.admin.amx.base.RuntimeMgr;
 import org.glassfish.admin.amx.base.SystemStatus;
 import org.glassfish.admin.amx.impl.config.AMXExtStartupServiceMBean;
-import org.glassfish.admin.amx.impl.ext.KitchenSinkImpl;
 import org.glassfish.admin.amx.impl.ext.LoggingPropertiesMgrImpl;
 import org.glassfish.admin.amx.impl.ext.RealmsMgrImpl;
 import org.glassfish.admin.amx.impl.ext.RuntimeMgrImpl;
 import org.glassfish.admin.amx.impl.ext.SystemStatusImpl;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
 /**
     Startup service that loads support for AMX config MBeans.  How this is to be
@@ -92,7 +90,7 @@ public final class AMXExtStartupService
     
     public DomainRoot getDomainRootProxy()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
     }
     
         public synchronized ObjectName
@@ -104,14 +102,10 @@ public final class AMXExtStartupService
             AMXImplBase     mbean;
             final MBeanServer s = mMBeanServer;
             final ObjectName parent = getDomainRootProxy().getExt().extra().objectName();
-            final ObjectNames names = new ObjectNames(s, parent);
+            final ObjectNameBuilder names = new ObjectNameBuilder(s, parent);
                
             child	= names.buildChildObjectName( LoggingPropertiesMgr.class );
             mbean	= new LoggingPropertiesMgrImpl(parent);
-            registerChild( mbean, child );
-            
-            child	= names.buildChildObjectName( KitchenSink.class );
-            mbean	= new KitchenSinkImpl(parent);
             registerChild( mbean, child );
             
             child	= names.buildChildObjectName( SystemStatus.class );

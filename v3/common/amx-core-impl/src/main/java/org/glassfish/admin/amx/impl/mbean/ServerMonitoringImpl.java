@@ -15,7 +15,7 @@
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
  * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
+ * accompanied this code.  If applicable, add the following below the Licensep
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
@@ -33,33 +33,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.base;
+package org.glassfish.admin.amx.impl.mbean;
 
-import java.util.Map;
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.monitoring.ServerMonitoring;
 
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
-
-/**
-        Provides various routines which need to be reorganized.
-    <p>
-    <b>WARNING: some of these routines may be relocated.</b>
- */
-@AMXMBeanMetadata(leaf=true, singleton=true)
-public interface KitchenSink extends AMXProxy, Singleton, Utility
+public class ServerMonitoringImpl extends AMXImplBase // implements ServerMonitoringImpl
 {
-    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
-    public static final String PROPERTY_MAP_KEY = "PropertyMapKey";
-    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
-    public static final String REASON_FAILED_KEY = "ReasonFailedKey";
-    
-    /**
-        Get properties of JDBC Data Source
-        @see #PROPERTY_MAP_KEY
-        @see #REASON_FAILED_KEY
-     */
-    public Map<String,Object> 
-        getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName );
+    public ServerMonitoringImpl(final ObjectName parent) {
+        super(parent, ServerMonitoring.class);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

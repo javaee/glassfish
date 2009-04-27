@@ -68,12 +68,6 @@ public interface Ext extends AMXProxy, Singleton, Utility
      */
     @ManagedAttribute
     public SystemStatus		getSystemStatus();
-	
-    /**
-        @return the singleton KitchenSink
-     */
-    @ManagedAttribute
-    public KitchenSink		getKitchenSink();
 }
 
 

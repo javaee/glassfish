@@ -36,7 +36,6 @@
 package org.glassfish.admin.amx.core.proxy;
 
 import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.util.AMXDebug;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Extra;
@@ -64,8 +63,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.PathnameParser;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
 	Extends MBeanProxyHandler by also supporting the functionality required of an AMX.
@@ -113,10 +112,6 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
 	/**
 		Create a new AMX proxy.
-		
-		@param connectionSource	the connection
-		@param proxiedMBeanObjectName	the ObjectName of the proxied MBean
-		@param mbeanInfo    will be fetched if null
 	 */
 		protected
 	AMXProxyHandler(
@@ -127,24 +122,22 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	{
 		super( conn, objectName, mbeanInfo);
 		
-        mParentObjectName = (ObjectName)getAttributeNoThrow(ATTR_PARENT);
-        mName             = (String)getAttributeNoThrow(ATTR_NAME);
+        try
+        {
+            // one call, so one trip to the server
+            final AttributeList attrs = conn.getAttributes( objectName, new String[] { ATTR_NAME, ATTR_PARENT } );
+            final Map<String,Object>  m = JMXUtil.attributeListToValueMap(attrs);
+            
+            mParentObjectName = (ObjectName)m.get(AMXConstants.ATTR_PARENT);
+            mName             = (String)m.get(ATTR_NAME);
+        }
+        catch( final Exception e )
+        {
+            throw new RuntimeException( "Can't get Name and Parent from " + objectName, e );
+        }
 	}
 	
-	private static final String		CREATE	= "create";
 	private static final String		GET	= "get";
-	
-	private static final String		MAP_SUFFIX	= "Map";
-	private static final String		SET_SUFFIX	= "Set";
-	private static final String		LIST_SUFFIX	= "List";
-//	private static final String		OBJECT_NAME_MAP_SUFFIX= "ObjectName" + MAP_SUFFIX;
-//	private static final String		OBJECT_NAME_SET_SUFFIX= "ObjectName" + SET_SUFFIX;
-//	private static final String		OBJECT_NAME_LIST_SUFFIX= "ObjectName" + LIST_SUFFIX;
-	
-//	private static final String		OBJECT_NAME_SUFFIX	= "ObjectName";
-	
-	private static final String	DOMAIN_ROOT		= "DomainRoot";
-	private static final String	ATTRIBUTE_NAMES	= "AttributeNames";
 	
 	public final static String	ADD_NOTIFICATION_LISTENER		= "addNotificationListener";
 	public final static String	REMOVE_NOTIFICATION_LISTENER	= "removeNotificationListener";
@@ -165,7 +158,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	getDomainRoot( )
 		throws IOException
 	{
-		return( getProxyFactory().getDomainRoot( ) );
+		return( getProxyFactory().getDomainRootProxy( ) );
 	}
 	
 	private static final String	STRING	= String.class.getName();
@@ -189,93 +182,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	{
    		return getProxy( objectName, AMXProxy.class );
 	}
-    
-	
-// 	/**
-// 		Return true if the method is one that is requesting a Map of AMX object.
-// 	 */
-// 		protected static boolean
-// 	isProxyMapGetter(
-// 		final Method	method,
-// 		final int		argCount )
-// 	{
-// 		boolean	isProxyMapGetter	= false;
-// 		
-// 		final String	name	= method.getName();
-// 		if ( name.startsWith( GET ) &&
-// 			name.endsWith( MAP_SUFFIX ) && 
-// 			(! name.endsWith( OBJECT_NAME_MAP_SUFFIX )) && 
-// 			argCount <= 1 &&
-// 			Map.class.isAssignableFrom( method.getReturnType() ) )
-// 		{
-// 			isProxyMapGetter	= true;
-// 		}
-// 		
-// 		return( isProxyMapGetter );
-// 	}
-// 	
-// 	/**
-// 		Return true if the method is one that is requesting a List of AMX object.
-// 	 */
-// 		protected static boolean
-// 	isProxyListGetter(
-// 		final Method	method,
-// 		final int		argCount )
-// 	{
-// 		boolean	isProxyListGetter	= false;
-// 		
-// 		final String	name	= method.getName();
-// 		if ( ( name.startsWith( GET ) || name.startsWith( QUERY ) ) &&
-// 			name.endsWith( LIST_SUFFIX ) && 
-// 			(! name.endsWith( OBJECT_NAME_LIST_SUFFIX )) && 
-// 			argCount <= 1 &&
-// 			List.class.isAssignableFrom( method.getReturnType() ) )
-// 		{
-// 			isProxyListGetter	= true;
-// 		}
-// 		
-// 		return( isProxyListGetter );
-// 	}
-// 	/**
-// 		@return true if the method is one that is requesting a Set of AMX.
-// 	 */
-// 		protected static boolean
-// 	isProxySetGetter( final Method method, final int argCount )
-// 	{
-// 		boolean	isProxySetGetter	= false;
-// 		
-// 		final String	name	= method.getName();
-// 		if ( ( name.startsWith( GET ) || name.startsWith( QUERY ) ) &&
-// 			name.endsWith( SET_SUFFIX ) && 
-// 			!name.endsWith( OBJECT_NAME_SET_SUFFIX ) && 
-// 			argCount <= 2 &&
-// 			Set.class.isAssignableFrom( method.getReturnType() ) )
-// 		{
-// 			isProxySetGetter	= true;
-// 		}
-// 		
-// 		return( isProxySetGetter );
-// 	}
-	
-	/**
-		Return true if the method is one that is requesting a single AMX object.
-		Such methods are client-side methods and do not operate on the target MBean.
-	 */
-		protected static boolean
-	isSingleProxyGetter( final Method method, final int argCount )
-	{
-		boolean	isProxyGetter	= false;
-		
-		final String	name	= method.getName();
-		if ( ( name.startsWith( GET ) || name.startsWith( QUERY ) ) &&
-			argCount <= 2 &&
-			AMXProxy.class.isAssignableFrom( method.getReturnType() ) )
-		{
-			isProxyGetter	= true;
-		}
-		
-		return( isProxyGetter );
-	}
+   
 	
 
 	
@@ -305,10 +212,29 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 		return result;
 	}
 	
+    	
 	/**
-		The method is one that requests a Proxy.  Create the proxy by asking the
-		target MBean for the appropriate ObjectName.   The resulting Proxy will implement
-		the interface given as the return type of the Method.
+		Return true if the method is one that is requesting a single AMX object.
+		Such methods are client-side methods and do not operate on the target MBean.
+	 */
+		protected static boolean
+	isSingleProxyGetter( final Method method, final int argCount )
+	{
+		boolean	isProxyGetter	= false;
+		
+		final String	name	= method.getName();
+		if ( ( name.startsWith( GET ) || name.startsWith( QUERY ) ) &&
+			AMXProxy.class.isAssignableFrom( method.getReturnType() ) )
+		{
+			isProxyGetter	= true;
+		}
+		
+		return( isProxyGetter );
+	}
+    
+	/**
+		The method is one that requests a Proxy. The method could retrieve a real attribute,
+        but if there is no real Attribute, attempt to find a child of the matching type.
 	 */
 		AMXProxy
 	invokeSingleProxyGetter(
@@ -326,74 +252,31 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         
         if ( numArgs == 0 )
         {
-    //System.out.println( "invokeSingleProxyGetter: intf = " + returnClass.getName() );
-            if ( AMXProxy.class.isAssignableFrom(returnClass) && returnClass != AMXProxy.class )
-            {
-                final String	type	= Util.deduceType( returnClass );
-    
-    //System.out.println( "invokeSingleProxyGetter: type = " + type );
+            //System.out.println( "invokeSingleProxyGetter: intf = " + returnClass.getName() );
             
-                // must be accessed as an Attribute, deduce type from return type
-                final AMXProxy childProxy = child(type);
-                objectName = childProxy == null ? null : childProxy.extra().objectName();
+            // If a real Attribute exists with this name then it takes priority
+            final String attrName = JMXUtil.getAttributeName(method);
+            if ( getAttributeInfo(attrName) != null)
+            {
+                objectName = (ObjectName)invokeTarget( methodName, null, null );
             }
             else
             {
-                // try to get it as an Attribute
-                objectName	= (ObjectName) invokeTarget( methodName, null, EMPTY_SIG);
+                final String	type	= Util.deduceType( returnClass );
+    
+                //System.out.println( "invokeSingleProxyGetter: type = " + type );
+            
+                final AMXProxy childProxy = child(type);
+                objectName = childProxy == null ? null : childProxy.extra().objectName();
             }
-        }
-        else if ( numArgs == 1 && args[ 0 ].getClass() == String.class )
-        {
-            objectName	= (ObjectName) invokeTarget( methodName, args, STRING_SIG );
         }
         else
         {
-            getProxyLogger().warning( "Unknown form of proxy getter: " + method );
-            assert( false );
-            throw new IllegalArgumentException();
+            objectName	= (ObjectName) invokeTarget( methodName, args, STRING_SIG );
         }
             
-        return objectName == null ? null : getProxy(objectName, returnClass).as(returnClass);
+        return objectName == null ? null : getProxy(objectName, returnClass);
     }
-	
-	
-	/**
-        Does the method create a new MBean?
-	 */
-		protected static boolean
-	isProxyCreator( final Method method )
-	{
-		final String	methodName	= method.getName();
-		
-		return( methodName.startsWith( CREATE ) &&
-			AMXProxy.class.isAssignableFrom( method.getReturnType() ) );
-	}
-	
-	/**
-        Invoke a method that returns an ObjectName, creating a proxy for it.
-	 */
-		AMXProxy
-	invokeProxyCreator(
-    	final Method	method,
-    	final Object[]	args )
-		throws IOException, ReflectionException, InstanceNotFoundException, MBeanException,
-		AttributeNotFoundException
-	{
-		final String	methodName	= method.getName();
-		
-		final String[]	stringSig	= getStringSig( method );
-		final ObjectName	objectName	= (ObjectName)invokeTarget( methodName, args, stringSig );
-		assert( objectName != null ) :
-			"received null ObjectName from: " + methodName + " on target " + getObjectName();
-		
-		final AMXProxy	proxy	= getProxy( objectName );
-		
-		return( proxy );
-	}
-	
-
-
 	
 		private static String
 	toString( Object o )
@@ -417,22 +300,6 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 		final String[]	stringSig	= ClassUtil.classnamesFromSignature( sig );
 		return( stringSig );
 	}
-
-
-		protected static String
-	convertMethodName(
-		final String srcName,
-		final String srcSuffix,
-		final String resultSuffix )
-	{
-		if ( ! srcName.endsWith( srcSuffix ) )
-		{
-			throw new IllegalArgumentException( srcName + " does not end with " + srcSuffix );
-		}
-		final String	baseName	= srcName.substring( 0, srcName.lastIndexOf( srcSuffix ) );
-		
-		return( baseName + resultSuffix );
-	}
 	
 	private static final Map<String,AMXProxy> EMPTY_String_AMX   = Collections.emptyMap();
 	
@@ -454,7 +321,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	private static final String	GET_PARENT          = GET + ATTR_PARENT;
     
     /** proxy method */
-	private static final String	METHOD_NAME          = "name";
+	private static final String	METHOD_NAME_PROP          = "nameProp";
 
     /** proxy method */
 	private static final String	METHOD_CHILDREN      = "children";
@@ -490,6 +357,9 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	private static final String	METHOD_ATTRIBUTES_MAP    = "attributesMap";
     
     /** proxy method */
+	private static final String	METHOD_ATTRIBUTE_NAMES    = "attributeNames";
+    
+    /** proxy method */
 	private static final String	METHOD_PATHNAME         = "path";
 	
 	/**
@@ -499,7 +369,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	private static final Set<String> SPECIAL_METHOD_NAMES	= SetUtil.newUnmodifiableStringSet(
                 GET_PARENT,
                 
-                METHOD_NAME,
+                METHOD_NAME_PROP,
                 METHOD_PARENT,
 				METHOD_CHILDREN_SET,
 				METHOD_CHILDREN_MAP,
@@ -511,6 +381,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
                 METHOD_VALID,
                 
                 METHOD_ATTRIBUTES_MAP,
+                METHOD_ATTRIBUTE_NAMES,
                 METHOD_PATHNAME,
 				
 				ADD_NOTIFICATION_LISTENER,
@@ -543,7 +414,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 			}
 			else if ( methodName.equals( GET_PARENT ) )
             {
-                result = parent().extra().objectName();
+                result = parent() == null ? null : parent().extra().objectName();
             }
 			else if ( methodName.equals( METHOD_CHILDREN_SET ) )
             {
@@ -561,7 +432,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 			{
 				result	= getObjectName();
 			}
-		    else if ( methodName.equals( METHOD_NAME )  )
+		    else if ( methodName.equals( METHOD_NAME_PROP )  )
 			{
 				result	= getObjectName().getKeyProperty( NAME_KEY );
 			}
@@ -569,6 +440,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 			{
 				result	= attributesMap();
 			}
+            else if ( methodName.equals( METHOD_ATTRIBUTE_NAMES ) )
+            {
+				result	= attributeNames();
+            }
 		    else if ( methodName.equals( METHOD_VALID)  )
 			{
 				result	= valid();
@@ -630,24 +505,6 @@ public final class AMXProxyHandler extends MBeanProxyHandler
                 handled = false;
             }
 		}
-        /*
-        else if ( numArgs == 2 )
-        {
-            final Object arg1 = args[0];
-            final Object arg2 = args[0];
-            
-            handled = true;
-            if ( methodName.equals( METHOD_CHILD ) && (arg1 instanceof String) && (arg2 instanceof String) )
-			{
-				result	= child( (String)arg1, (String)arg2, null) ;
-			}
-            else
-            {
-                handled = false;
-            }
-
-        }
-        */
 		else
 		{
             handled = true;
@@ -696,13 +553,13 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         
        // System.out.println( "invoke: " + method.getName() + ", result = " + result );
    			
-	   		assert( result == null ||
-	   			ClassUtil.IsPrimitiveClass( method.getReturnType() ) ||
-	   			method.getReturnType().isAssignableFrom( result.getClass() ) ) :
-	   				method.getName() + ": result of type " + result.getClass().getName() +
-	   				" not assignable to " + method.getReturnType().getName() + ", " +
-	   				"interfaces: " + toString( result.getClass().getInterfaces() ) +
-	   				", ObjectName = " + getObjectName();
+            assert( result == null ||
+                ClassUtil.IsPrimitiveClass( method.getReturnType() ) ||
+                method.getReturnType().isAssignableFrom( result.getClass() ) ) :
+                    method.getName() + ": result of type " + result.getClass().getName() +
+                    " not assignable to " + method.getReturnType().getName() + ", " +
+                    "interfaces: " + toString( result.getClass().getInterfaces() ) +
+                    ", ObjectName = " + getObjectName();
 	   				
         //System.out.println( "invoke: " + method.getName() + ", return result = " + result );
 	   	    return result;
@@ -727,36 +584,21 @@ public final class AMXProxyHandler extends MBeanProxyHandler
    		throws java.lang.Throwable
    	{
 		debugMethod( method.getName(), args );
-		
    		Object	result	= null;
-   		
 		final String	methodName	= method.getName();
 		final int		numArgs	= args == null ? 0 : args.length;
-		boolean	handled	= false;
-//System.out.println( "_invoke: " + methodName + " on " + objectName() );
+        //System.out.println( "_invoke: " + methodName + " on " + objectName() );
 		
    		if ( SPECIAL_METHOD_NAMES.contains( methodName ) )
    		{
-   			handled	= true;
    			result	= handleSpecialMethod( myProxy, method, args );
    		}
-   		else if ( JMXUtil.isIsOrGetter( method ) )
+   		else
    		{
-   			assert( ! handled );
-   		
-   			final String	attrName	= JMXUtil.getAttributeName( method );
-   		}
-   		
-   		if ( ! handled )
-   		{
-//System.out.println( "_invoke: (not handled): " + methodName + " on " + objectName() );
+            //System.out.println( "_invoke: (not handled): " + methodName + " on " + objectName() );
 	   		if ( isSingleProxyGetter( method,  numArgs) )
 	   		{
    				result	= invokeSingleProxyGetter( myProxy, method, args );
-	   		}
-	   		else if ( isProxyCreator( method ) )
-	   		{
-	   			result	= invokeProxyCreator( method, args );
 	   		}
 	   		else
 	   		{
@@ -764,13 +606,19 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	   		}
    		}
         
-        // compatibility and convenience
+        // AUTO-CONVERT certain return types to proxy from ObjectName, ObjectName[]
+        
         final Class<?> returnType = method.getReturnType();
-//System.out.println( "_invoke: returnType: " + returnType.getName() );
-        if ( result != null &&
+        
+        if ( (result instanceof ObjectName) &&
+            AMXProxy.class.isAssignableFrom( returnType ) ) 
+        {
+            result = getProxy( (ObjectName)result, returnType.asSubclass(AMXProxy.class) );
+        }
+        else if ( result != null &&
             result instanceof ObjectName[] )
         {
-//System.out.println( "_invoke: trying to make ObjectName[] into proxies " );
+            //System.out.println( "_invoke: trying to make ObjectName[] into proxies " );
             final ObjectName[] items = (ObjectName[])result;
             
             Class<? extends AMXProxy>  proxyClass = AMXProxy.class;
@@ -792,18 +640,13 @@ public final class AMXProxyHandler extends MBeanProxyHandler
                result = getProxyFactory().toProxyMap( items, proxyClass );
             }
         }
-
-        if ( getDebug() )
-        {
-    		debug( AMXDebug.methodString( methodName, args ) + " => " + toString( result ) );
-		}
 		
-//System.out.println( "_invoke: done:  result class is " + result.getClass().getName() );
+        //System.out.println( "_invoke: done:  result class is " + result.getClass().getName() );
    		return( result );
    	}
 
 
-        Class<? extends AMXProxy>
+        private Class<? extends AMXProxy>
     getProxyClass( final ParameterizedType  pt)
     {
         Class<? extends AMXProxy> intf = null;
@@ -859,7 +702,9 @@ public final class AMXProxyHandler extends MBeanProxyHandler
    	    }
    	}
     
-//-----------------------------------    
+//-----------------------------------
+
+
     public static String getInterfaceName(final MBeanInfo info)
     {
         final Object value = info.getDescriptor().getFieldValue( DESC_STD_INTERFACE_NAME );
@@ -901,7 +746,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         return getObjectName();
     }
 
-    public String name() {
+    public String nameProp() {
         // name as found in the ObjectName
         return getObjectName().getKeyProperty( NAME_KEY );
     }
@@ -1025,7 +870,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         for( final AMXProxy proxy : childrenSet )
         {
             final Map<String,AMXProxy> m = maps.get( Util.getTypeProp(proxy) );
-            m.put( proxy.name(), proxy);
+            m.put( proxy.nameProp(), proxy);
         }
         return maps;
     }
@@ -1121,6 +966,19 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         return m;
     }
 	
+        public MBeanAttributeInfo
+    getAttributeInfo( final String name )
+    {
+        for( final MBeanAttributeInfo attrInfo :  getMBeanInfo().getAttributes() )
+        {
+            if ( attrInfo.getName().equals(name) )
+            {
+                return attrInfo;
+            }
+        }
+        return null;
+    }
+    
 		public Set<String>
 	attributeNames()
 	{
@@ -1130,14 +988,24 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	}
     
 
-    protected <T> T getDescriptorField(final String name, final T defaultValue)
+    public static <T> T getDescriptorField(final MBeanInfo info, final String name, final T defaultValue)
     {
-        T value = (T)getMBeanInfo().getDescriptor().getFieldValue( name );
+        T value = (T)info.getDescriptor().getFieldValue( name );
         if ( value == null )
         {
             value = defaultValue;
         }
         return value;
+    }       
+    public static boolean singleton(final MBeanInfo info)
+    {
+        return getDescriptorField( info, DESC_IS_SINGLETON, Boolean.FALSE);
+    }
+
+
+    protected <T> T getDescriptorField(final String name, final T defaultValue)
+    {
+        return getDescriptorField( getMBeanInfo(), name, defaultValue );
     }
                
     public boolean singleton()

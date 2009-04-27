@@ -31,7 +31,7 @@ import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.impl.j2ee.J2EEDomainImpl;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.j2ee.J2EEDomain;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
 import org.jvnet.hk2.annotations.Inject;
@@ -85,7 +85,7 @@ public final class AMXJ2EEStartupService
     
     private DomainRoot getDomainRootProxy()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
     }
     
         public ObjectName
@@ -106,7 +106,7 @@ public final class AMXJ2EEStartupService
     /*
         if ( mLoader == null )
         {
-            //getDomainRoot().waitAMXReady();
+            //getDomainRootProxy().waitAMXReady();
 
             mLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans, mTransactions);
             mLoader.start();
@@ -117,7 +117,7 @@ public final class AMXJ2EEStartupService
         final ObjectName domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRootObjectName();
         final J2EEDomainImpl impl = new J2EEDomainImpl(domainRoot);
         
-        final ObjectNames objectNames = new ObjectNames(mMBeanServer, domainRoot);
+        final ObjectNameBuilder objectNames = new ObjectNameBuilder(mMBeanServer, domainRoot);
         final String domainName = Util.getNameProp(domainRoot);
         ObjectName objectName = objectNames.buildChildObjectName( J2EEDomain.class );
         try

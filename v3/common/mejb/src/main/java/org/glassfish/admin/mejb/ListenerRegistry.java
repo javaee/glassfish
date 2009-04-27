@@ -117,7 +117,7 @@ public final class ListenerRegistry implements javax.management.j2ee.ListenerReg
         final EventListenerProxy proxy = EventListenerProxy.getEventListenerProxy();
         try {
             debug("ListenerRegistry.removeNotificationListener: " + listener + " for " + name);
-            debug("ListenerRegistry.listenerProxy = " + listenerConnectors.get(((RemoteListenerConnector) listener).getId()));
+            //debug("ListenerRegistry.listenerProxy = " + listenerConnectors.get(((RemoteListenerConnector) listener).getId()));
             final RemoteListenerConnector connector = listenerConnectors.get(listener);
             getMEJBUtility().removeNotificationListener(name, connector);
             proxy.removeListener(connector.getId());

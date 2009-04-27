@@ -36,14 +36,16 @@
 package org.glassfish.admin.amx.intf.config.grizzly;
 
 import java.util.Map;
-import org.glassfish.admin.amx.intf.config.PropertiesAccess;
-import org.glassfish.admin.amx.intf.config.SystemPropertiesAccess;
+import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.intf.config.ConfigElement;
 
 /**
 	Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface Transports
-	extends PropertiesAccess, SystemPropertiesAccess
+public interface Transports  extends ConfigElement, Singleton
 {
-    public Map<String,Protocols>  getTransport();
+    public Map<String,Transport>  getTransport();
+    public Map<String,SelectionKeyHandler>    getSelectionKeyHandler();
 }
+
+

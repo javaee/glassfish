@@ -46,11 +46,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 	<li>Access to existing log file contents--see {@link LogFileAccess}</li>
 	<li>Querying for log entries--see {@link LogQuery}</li>
 	</ul>
-	<p>
-	A Logging always has j2eeType={@link XTypes#LOGGING} and
-	the same name as the server it represents.
 	@since AS 9.0
-	@see org.glassfish.admin.amx.monitor.ServerRootMonitor#getLogging
  */
 public interface Logging
 	extends LogRecordEmitter, LogQuery, LogFileAccess, LogAnalyzer, AMXProxy
@@ -63,7 +59,6 @@ public interface Logging
 		
 		@param module	a module name as specified in {@link LogModuleNames}.
 		@param level	a log level
-    	@see org.glassfish.admin.amx.config.ModuleLogLevelsConfig
      */
     public void setModuleLogLevel( String module, String level );
     
@@ -74,7 +69,6 @@ public interface Logging
 		caused by configuration settings not matching</b>.
    		
    		@param moduleName a module name as specified in {@link LogModuleNames}
-   		@see org.glassfish.admin.amx.config.ModuleLogLevelsConfig
     */
     public String getModuleLogLevel( String moduleName );
     

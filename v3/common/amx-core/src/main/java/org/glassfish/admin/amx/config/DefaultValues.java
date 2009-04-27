@@ -41,12 +41,7 @@ import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 
 /**
-    Mixin interface indicating a provider of default values.  Except for oddball cases
-    (probably none), only {@link org.glassfish.admin.amx.base.Container}s should
-    implement DefaultValues. The difference between this interface
-    and the getDefaultValues() methods provided by {@link org.glassfish.admin.amx.intf.config.AMXConfig}
-    is that this one accomodates child (containee) elements that might not yet exist, hence
-    the use of the 'j2eeType'.
+    Mixin interface indicating a provider of default values.  
  */
 public interface DefaultValues
 {

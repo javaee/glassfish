@@ -92,8 +92,11 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
                     // CAUTION: we must register first to avoid a race condition
                     JMXUtil.listenToMBeanServerDelegate( mMBeanServer, this, null, mObjectName );
 
-                    // block
-                    mLatch.await( timeoutMillis, TimeUnit.MILLISECONDS );
+                    if ( mMBeanServer.isRegistered(mObjectName) )
+                    {
+                        // block
+                        mLatch.await( timeoutMillis, TimeUnit.MILLISECONDS );
+                    }
                     
                     unregisteredOK = true;
                 }

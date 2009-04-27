@@ -41,8 +41,6 @@ import java.io.IOException;
 
 /**
 	A source of an MBeanServerConnection.
-	@see com.sun.appserv.management.util.jmx.MBeanServerConnectionConnectionSource
-	@see com.sun.appserv.management.util.jmx.MBeanServerConnectionSource
  */
 public interface ConnectionSource
 {

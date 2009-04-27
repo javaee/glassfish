@@ -49,8 +49,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class UploadDownloadMgrImpl extends AMXImplBase
-	implements Utility, Singleton
-    // UploadDownloadMgr
+	//implements Utility, Singleton, UploadDownloadMgr
 {
 	/**
 		A Map keyed by uploadID to values of UploadInfo

@@ -43,7 +43,7 @@ import java.util.Set;
 /**
 	Convenience getters for Descriptor values and other metadata from the MBeanInfo.
     These operations do not make a trip to the server.
-    See {@link AMX#extra}.
+    See {@link AMXProxy#extra}.
  */
 public interface MetaGetters
 {

@@ -290,13 +290,13 @@ public class RefHelper
         final AMXProxy   amx = Util.asAMX( referent );
 
         return as( 
-            findAllRefConfigsWithName( getQueryMgr( amx ), SERVER_REF_CONFIG_TYPE, amx.name() ), ServerRefConfig.class);
+            findAllRefConfigsWithName( getQueryMgr( amx ), SERVER_REF_CONFIG_TYPE, amx.nameProp() ), ServerRefConfig.class);
     }
 
         private static QueryMgr
     getQueryMgr( final AMXProxy amx )
     {
-        return amx.extra().proxyFactory().getDomainRoot().getQueryMgr();
+        return amx.extra().proxyFactory().getDomainRootProxy().getQueryMgr();
     }
 
     /**
@@ -309,7 +309,7 @@ public class RefHelper
         final AMXProxy   amx = Util.asAMX( referent );
 
         final Set<RefConfig> refs =
-            findAllRefConfigsWithName( getQueryMgr( amx ), CLUSTER_REF_CONFIG_TYPE, amx.name() );
+            findAllRefConfigsWithName( getQueryMgr( amx ), CLUSTER_REF_CONFIG_TYPE, amx.nameProp() );
         return as(refs, ClusterRefConfig.class);
     }
 

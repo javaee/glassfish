@@ -35,15 +35,15 @@
  */
 package org.glassfish.admin.amx.intf.config.grizzly;
 
+import java.util.Map;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.intf.config.ConfigElement;
 
 /**
 	Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface NetworkConfig extends Singleton, ConfigElement
+public interface ProtocolChain  extends Singleton, ConfigElement
 {
-    public Protocols  getProtocols();
-    public Transports getTransports();
-    public NetworkListeners  getNetworkListeners();
+    public Map<String,ProtocolFilter> getProtocolFilter();
 }
+

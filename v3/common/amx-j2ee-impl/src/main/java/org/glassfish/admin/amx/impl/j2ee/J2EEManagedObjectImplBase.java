@@ -40,7 +40,7 @@ import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
 import javax.management.j2ee.Management;
 import javax.management.j2ee.ManagementHome;
 
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.j2ee.AppClientModule;
 import org.glassfish.admin.amx.j2ee.EJBModule;
 import org.glassfish.admin.amx.j2ee.EntityBean;
@@ -136,7 +136,7 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
 
         // now add ancestors, per JSR 77 spec
         // skip the first two: DomainRoot and  J2EEDomain
-        final List<ObjectName> ancestors = ObjectNames.getAncestors(server, getParent());
+        final List<ObjectName> ancestors = ObjectNameBuilder.getAncestors(server, getParent());
         boolean foundApp = false;
         for( int i = 2; i < ancestors.size(); ++ i)
         {

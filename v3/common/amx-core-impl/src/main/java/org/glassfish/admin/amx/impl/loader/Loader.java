@@ -50,7 +50,7 @@ import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl;
 import org.glassfish.admin.amx.impl.mbean.SystemInfoFactory;
 import org.glassfish.admin.amx.impl.mbean.SystemInfoImpl;
 import org.glassfish.admin.amx.impl.util.AMXDebugSupport;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
 import javax.management.*;
 import javax.management.relation.MBeanServerNotificationFilter;
@@ -265,7 +265,7 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 	    final Object    domainRoot  = createDomainRoot();
 	    if ( domainRoot != null )
 	    {
-    		ObjectName objectName	= ObjectNames.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN);
+    		ObjectName objectName	= ObjectNameBuilder.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN);
     	    
     	    debug( "Registering DomainRoot, impl class = " + domainRoot.getClass().getName() );
     		try
@@ -296,7 +296,7 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		final ProxyFactory    factory    =
 				ProxyFactory.getInstance( getMBeanServer() );
 		
-		return( factory.getDomainRoot() ); 
+		return( factory.getDomainRootProxy() );
 	}
 	
 	private static LoaderMBean	LOADER	= null;

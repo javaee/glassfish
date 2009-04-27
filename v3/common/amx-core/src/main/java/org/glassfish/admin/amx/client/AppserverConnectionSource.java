@@ -63,9 +63,6 @@ import org.glassfish.admin.amx.util.jmx.ConnectionSource;
 	This is the only official way
 	to get a connection to the appserver.
 	<p>
-	Helper methods to simplify connecting are available in
-	{@link org.glassfish.admin.amx.helper.Connect}.
-	<p>
 	If the server is running with TLS enabled, then you must use the constructor
 	that includes TLSParams. Here is an example of how to connect using TLS:
 <pre>
@@ -81,7 +78,7 @@ final AppserverConnectionSource src	=
 		"localhost", 8686, "admin", "admin123",
 		tlsParams,
 		null );
-final DomainRoot domainRoot	= src.getDomainRoot();
+final DomainRoot domainRoot	= src.getDomainRootProxy();
 </pre>
 	If security is not an  issue, it is recommended to simply disable TLS on the
 	server.  However, you can also connect using TLS whereby the 
@@ -93,7 +90,7 @@ final AppserverConnectionSource src	=
 		"localhost", 8686, "admin", "admin123",
 		tlsParams,
 		null );
-final DomainRoot domainRoot	= src.getDomainRoot();
+final DomainRoot domainRoot	= src.getDomainRootProxy();
 </pre>
 	
 	
@@ -528,7 +525,7 @@ public final class AppserverConnectionSource
 		throws IOException
 	{
 		final DomainRoot    domainRoot  =
-		    ProxyFactory.getInstance( this ).getDomainRoot( true );
+		    ProxyFactory.getInstance( this ).getDomainRootProxy( true );
 		
 		return domainRoot;
 	}

@@ -15,7 +15,7 @@
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
  * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
+ * accompanied this code.  If applicable, add the following below the Licensep
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
@@ -34,119 +34,352 @@
  * holder.
  */
 package org.glassfish.admin.amx.core;
- 
-import javax.management.ObjectName;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.HashSet;
-import java.lang.reflect.Proxy;
-
-import javax.management.*;
-
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.base.Pathnames;
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.Extra;
+import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
-
-
 /**
-    Validates and AMX MBean.
+Validation of key behavioral requirements of AMX MBeans.
+These tests do not validate any MBean-specific semantics, only general requirements for
+all AMX MBeans.
  */
-public class AMXValidator  {
-    private final MBeanServerConnection mConn;
-    private final ObjectName            mTarget;
-    private final MBeanInfo             mMBeanInfo;
-    private final AMXProxy                   mProxy;
-    
-    private AMXValidator( final AMXProxy amx ) {
-        final Extra extra = amx.extra();
-        
-        mProxy     = amx;
-        mConn      = extra.mbeanServerConnection();
-        mTarget    = extra.objectName();
-        mMBeanInfo = extra.mbeanInfo();
+public final class AMXValidator {
+
+    private static final String NL = StringUtil.NEWLINE();
+    private final MBeanServerConnection mMBeanServer;
+    private final ProxyFactory mProxyFactory;
+    private final DomainRoot mDomainRoot;
+
+    public AMXValidator(final MBeanServerConnection conn) {
+        mMBeanServer = conn;
+
+        mProxyFactory = ProxyFactory.getInstance(conn);
+        mDomainRoot = mProxyFactory.getDomainRootProxy();
     }
-    
-    private void
-    fail( final String msg )
-    {
-        throw new AMXException( "MBean " + mTarget  + " failed validation: " + msg );
-    }
-    
-    public static void validate(final AMXProxy proxy) {
-        new AMXValidator(proxy).validateAsAMX();
-    }
-    
-    private void validateObjectName() {
-        final String type = mTarget.getKeyProperty("type");
-        if ( type == null || type.length() == 0 )
-        {
-            fail ( "type property required in ObjectName" );
+
+    private static final class ValidationFailureException extends Exception {
+
+        private final ObjectName mObjectName;
+
+        public ValidationFailureException(final ObjectName objectName, final String msg) {
+            super(msg);
+            mObjectName = objectName;
         }
-    
-        final String nameProp = mTarget.getKeyProperty("name");
-        if ( nameProp != null )
-        {
-            if ( mTarget.getKeyProperty("name").length() == 0 )
-            {
-                fail ( "name property of ObjectName may not be empty" );
+
+        public ObjectName objectName() {
+            return mObjectName;
+        }
+    }
+
+    private static final class Failures {
+
+        private final ConcurrentMap<ObjectName, List<String>> mFailures = new ConcurrentHashMap<ObjectName, List<String>>();
+        private AtomicInteger mNumTested = new AtomicInteger();
+
+        public Failures() {
+        }
+
+        public int getNumTested() {
+            return mNumTested.get();
+        }
+
+        public int getNumFailures() {
+            return mFailures.keySet().size();
+        }
+
+        public Map<ObjectName, List<String>> getFailures() {
+            return mFailures;
+        }
+
+        void result(final ObjectName objectName, final List<String> problems) {
+            mNumTested.incrementAndGet();
+
+            if (problems != null && problems.size() != 0) {
+                mFailures.put(objectName, problems);
             }
         }
-        else
-        {
-            // no name property, it's by definition a singleton
-            final String name = mProxy.getName();
-            if ( ! name.equals(AMXConstants.NO_NAME) )
-            {
-                fail ( "getName() returned incorrect name for a singleton: " + name);
+
+        public String toString() {
+            final StringBuilder builder = new StringBuilder();
+
+            for (final ObjectName badBoy : mFailures.keySet()) {
+                final List<String> failures = mFailures.get(badBoy);
+
+                builder.append(badBoy + NL);
+                builder.append(CollectionUtil.toString(failures, NL));
+                builder.append(NL);
+                builder.append(NL);
             }
+            builder.append(mFailures.size() + " failures.");
+
+            return builder.toString() + NL +
+                    mNumTested + " MBeans tested.";
         }
     }
-    
-    private void validateRequiredAttributes() {
-        // verify that the required attributes are present
-        final Map<String,MBeanAttributeInfo> infos = JMXUtil.attributeInfosToMap(mMBeanInfo.getAttributes());
-        final Set<String> attrNames = infos.keySet();
-        if ( ! attrNames.contains("Name") ) {
-            fail("MBeanInfo does not contain Name attribute" );
+
+    private String toString(final Throwable t) {
+        return ExceptionUtil.toString(ExceptionUtil.getRootCause(t));
+    }
+
+    private List<String> _validate(final AMXProxy proxy) {
+        final List<String> problems = new ArrayList<String>();
+        final ObjectName objectName = proxy.objectName();
+
+        try {
+            validateObjectName(proxy);
+        } catch (Throwable t) {
+            problems.add(t.toString());
         }
-        if ( ! attrNames.contains("Parent") ) {
-            fail("MBeanInfo does not contain Parent attribute" );
+
+        try {
+            validateRequiredAttributes(proxy);
+        } catch (Throwable t) {
+            problems.add(t.toString());
         }
-        
-        if ( attrNames.contains("Children") ) {
-            // must contain a non-null list of children
+
+        final Pathnames paths = mDomainRoot.getPathnames();
+
+
+        // test required attributes
+        try {
+            final String name = proxy.getName();
+        } catch (Throwable t) {
+            problems.add("Proxy access to 'Name' failed: " + toString(t));
+        }
+
+        try {
+            final ObjectName parent = proxy.getParent();
+        } catch (Throwable t) {
+            problems.add("Proxy access to 'Parent' failed: " + toString(t));
+        }
+        try {
+            final ObjectName[] children = proxy.getChildren();
+        } catch (Throwable t) {
+            problems.add("Proxy access to 'Children' failed: " + toString(t));
+        }
+
+
+        // test path resolution
+        try {
+            final String path = proxy.path();
+            final ObjectName actualObjectName = Util.getObjectName(proxy);
+
+            final ObjectName o = paths.resolvePath(path);
+            if (o == null) {
+                problems.add("Path " + path + " does not resolve to any ObjectName, should resolve to: " + actualObjectName);
+            } else if (!actualObjectName.equals(o)) {
+                problems.add("Path " + path + " does not resolve to ObjectName: " + actualObjectName);
+            }
+        } catch (Throwable t) {
+            problems.add(ExceptionUtil.toString(ExceptionUtil.getRootCause(t)));
+        }
+
+        // test attributes
+        final Set<String> attributeNames = proxy.extra().attributeNames();
+        for (final String attrName : attributeNames) {
             try {
-                if ( mProxy.getChildren() == null )
-                {
-                    fail( "value of Children attribute must not be null" );
+                final Object result = proxy.extra().getAttribute(attrName);
+            } catch (final Throwable t) {
+                problems.add("Attribute failed: '" + attrName + "': " + toString(t));
+            }
+        }
+
+        // test proxy methods
+        try {
+            final AMXProxy parent = proxy.parent();
+            if (parent == null && !Util.getTypeProp(proxy).equals(DomainRoot.TYPE)) {
+                throw new Exception("Null parent");
+            }
+
+            final String nameProp = proxy.nameProp();
+            final boolean valid = proxy.valid();
+            final String path = proxy.path();
+            final Extra extra = proxy.extra();
+
+            final Set<AMXProxy> childrenSet = proxy.childrenSet();
+            final Map<String, Map<String, AMXProxy>> childrenMaps = proxy.childrenMaps();
+            final Map<String, Object> attributesMap = proxy.attributesMap();
+            final Set<String> attrNames = proxy.attributeNames();
+            if (!attrNames.equals(attributesMap.keySet())) {
+                throw new Exception("Attributes Map differs from attribute names");
+            }
+
+            for (final AMXProxy child : childrenSet) {
+                if (child.extra().singleton()) {
+                    final String childType = Util.getTypeProp(child);
+                    if (!child.objectName().equals(proxy.child(childType).objectName())) {
+                        throw new Exception("Child type " + childType + " cannot be found via child(type)");
+                    }
                 }
             }
-            catch( final AMXException e ) {
-                throw e;
+
+            for (final String type : childrenMaps.keySet()) {
+                final Map<String, AMXProxy> m = proxy.childrenMap(type);
+                if (m.keySet().size() == 0) {
+                    throw new Exception("Child type " + type + " has nothing in Map");
+                }
             }
-            catch( final Exception e ) {
-                fail( "does not supply children correctly" );
+
+        } catch (final Throwable t) {
+            problems.add("Test failure: " + toString(t));
+        }
+
+        return problems;
+    }
+
+    private void fail(final ObjectName objectName, final String msg)
+            throws ValidationFailureException {
+        throw new ValidationFailureException(objectName, msg);
+    }
+
+    private void validateObjectName(final AMXProxy proxy)
+            throws ValidationFailureException {
+        final ObjectName objectName = proxy.objectName();
+
+        final String type = objectName.getKeyProperty("type");
+        if (type == null || type.length() == 0) {
+            fail(objectName, "type property required in ObjectName");
+        }
+
+        final String nameProp = objectName.getKeyProperty("name");
+        if (nameProp != null) {
+            if (objectName.getKeyProperty("name").length() == 0) {
+                fail(objectName, "name property of ObjectName may not be empty");
+            }
+        } else {
+            // no name property, it's by definition a singleton
+            final String name = proxy.getName();
+            if (!name.equals(AMXConstants.NO_NAME)) {
+                fail(objectName, "getName() returned incorrect name for a singleton: " + name);
             }
         }
-        else {
+    }
+
+    private void validateRequiredAttributes(final AMXProxy proxy)
+            throws ValidationFailureException {
+        final ObjectName objectName = proxy.objectName();
+        // verify that the required attributes are present
+        final Map<String, MBeanAttributeInfo> infos = JMXUtil.attributeInfosToMap(proxy.extra().mbeanInfo().getAttributes());
+        final Set<String> attrNames = infos.keySet();
+        if (!attrNames.contains("Name")) {
+            fail(objectName, "MBeanInfo does not contain Name attribute");
+        }
+        if (!attrNames.contains("Parent")) {
+            fail(objectName, "MBeanInfo does not contain Parent attribute");
+        }
+
+        if (attrNames.contains("Children")) {
+            // must contain a non-null list of children
+            try {
+                if (proxy.getChildren() == null) {
+                    fail(objectName, "value of Children attribute must not be null");
+                }
+            } catch (final AMXException e) {
+                throw e;
+            } catch (final Exception e) {
+                fail(objectName, "does not supply children correctly");
+            }
+        } else {
             // must NOT contain children, we expect an exception
             try {
-                mProxy.getChildren();
-                fail( "Children attribute is present, but not listed in MBeanInfo" );
-            }
-            catch( final Exception e ) {
+                proxy.getChildren();
+                fail(objectName, "Children attribute is present, but not listed in MBeanInfo");
+            } catch (final Exception e) {
                 // good, this is expected
             }
         }
     }
     
-    private void validateAsAMX() {
-        validateRequiredAttributes();
-        validateObjectName();
+    public static final class ValidationResult {
+        private final String mDetails;
+        private final int mNumTested;
+        private final int mNumFailures;
+        public ValidationResult( final int numTested, final int numFailures, final String details )
+        {
+            mNumTested = numTested;
+            mNumFailures = numFailures;
+            mDetails = details;
+        }
+        public String details() { return mDetails; }
+        public int numTested() { return mNumTested; }
+        public int numFailures() { return mNumFailures; }
+        public String toString() { return details(); }
     }
 
+    public ValidationResult validate(final ObjectName[] targets) {
+        final Failures failures = new Failures();
+
+        final DomainRoot dr = mDomainRoot;
+        final Pathnames paths = dr.getPathnames();
+
+        // list them in order
+        final ObjectName[] all = paths.listObjectNames(dr.path(), true);
+        for (final ObjectName objectName : targets) {
+            final AMXProxy amx = mProxyFactory.getProxy(objectName);
+
+            final List<String> problems = _validate(amx);
+            failures.result(objectName, problems);
+        }
+        
+        final ValidationResult result = new ValidationResult( failures.getNumTested(), failures.getNumFailures(), failures.toString() );
+        return result;
+    }
+
+    public ValidationResult validate(final ObjectName objectName) {
+        final ObjectName[] targets = new ObjectName[]{objectName};
+
+        return validate(targets);
+    }
+
+    public ValidationResult validate() {
+        final Set<ObjectName> all = mDomainRoot.getQueryMgr().queryAllObjectNameSet();
+
+        return validate(CollectionUtil.toArray(all, ObjectName.class));
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

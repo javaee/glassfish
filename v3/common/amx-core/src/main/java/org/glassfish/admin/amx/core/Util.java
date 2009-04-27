@@ -147,8 +147,6 @@ public final class Util
 	
 	/**
 		Make an ObjectName property of the form name=<i>value</i>.
-		
-		@param value
 	 */
 		public static String
 	makeNameProp( final String name )
@@ -364,7 +362,7 @@ public final class Util
 	
 	/**
 		Extract the names from all ObjectNames.  The name is the value of the
-		property NAME_KEY (See {@link AMX}).  Note that if two or more ObjectNames
+		property NAME_KEY (See {@link AMXProxy}).  Note that if two or more ObjectNames
 		share the same name, the resulting Set will be of smaller size() than
 		the original.
 		
@@ -378,7 +376,7 @@ public final class Util
 	
 	/**
 		Extract the names from all ObjectNames.  The name is the value of the
-		property NAME_KEY (See {@link AMX}).  Note that if two or more ObjectNames
+		property NAME_KEY (See {@link AMXProxy}).  Note that if two or more ObjectNames
 		share the same name, the resulting Set will be of smaller size() than
 		the original.
 		
@@ -452,9 +450,7 @@ public final class Util
     
 	
 	/**
-		Get the ObjectName targeted by this {@link AMX}.
-		
-		@param proxy an AMX
+		Get the ObjectName targeted by this {@link AMXProxy}.
 	 */
 		public static <T extends AMXProxy> ObjectName
 	getObjectName( final T amx )

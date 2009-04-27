@@ -22,9 +22,14 @@ public final class ConfigBeanRegistry {
     private final ConcurrentMap<ConfigBean,ObjectName> mToObjectName;
     private final ConcurrentMap<ObjectName, ConfigBean> mToConfigBean;
     
-    public ConfigBeanRegistry() {
+    private ConfigBeanRegistry() {
         mToObjectName = new ConcurrentHashMap<ConfigBean,ObjectName>();
         mToConfigBean = new ConcurrentHashMap<ObjectName, ConfigBean>();
+    }
+    
+    private static final ConfigBeanRegistry INSTANCE = new ConfigBeanRegistry();
+    public static ConfigBeanRegistry getInstance() {
+        return INSTANCE;
     }
 
     public synchronized void  add(final ConfigBean cb, final ObjectName objectName)

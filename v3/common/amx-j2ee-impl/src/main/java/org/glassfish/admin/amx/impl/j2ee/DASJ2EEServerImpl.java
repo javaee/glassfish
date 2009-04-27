@@ -41,7 +41,7 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.util.Issues;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.j2ee.*;
 import static org.glassfish.admin.amx.j2ee.StateManageable.*;
 
@@ -73,7 +73,7 @@ public class DASJ2EEServerImpl extends J2EEServerImpl
             final Constructor<C> c = clazz.getConstructor(ObjectName.class);
             final J2EEManagedObjectImplBase impl = c.newInstance(parent);
             final String j2eeType = (String)intf.getField("J2EE_TYPE").get(c);
-            on = new ObjectNames( getMBeanServer(), parent).buildChildObjectName( j2eeType, name);
+            on = new ObjectNameBuilder( getMBeanServer(), parent).buildChildObjectName( j2eeType, name);
             on = registerChild( impl, on);
         }
         catch( final Exception e )
@@ -138,7 +138,7 @@ public class DASJ2EEServerImpl extends J2EEServerImpl
         protected void
     registerChildren()
     {
-        final ObjectNames builder = getObjectNames();
+        final ObjectNameBuilder builder = getObjectNames();
 
         final JVMImpl jvm = new JVMImpl( getObjectName() );
         final ObjectName jvmObjectName = builder.buildChildObjectName( JVM.J2EE_TYPE, null);

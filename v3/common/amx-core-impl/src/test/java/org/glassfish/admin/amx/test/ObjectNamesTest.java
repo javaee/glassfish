@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.test;
 
 import javax.management.ObjectName;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -49,8 +49,8 @@ public final class ObjectNamesTest extends TestBase
     public ObjectNamesTest() {
     }
 
-    private ObjectNames get() {
-        return new ObjectNames( ManagementFactory.getPlatformMBeanServer(), amxDomain());
+    private ObjectNameBuilder get() {
+        return new ObjectNameBuilder( ManagementFactory.getPlatformMBeanServer(), amxDomain());
     }
     
     @Before
@@ -60,7 +60,7 @@ public final class ObjectNamesTest extends TestBase
     
     @Test
     public void testCreate() {
-        final ObjectNames objectNames = get();
+        final ObjectNameBuilder objectNames = get();
     }
 
     private String amxDomain()

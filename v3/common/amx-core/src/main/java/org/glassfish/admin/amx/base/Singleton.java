@@ -35,10 +35,12 @@
  */
 package org.glassfish.admin.amx.base;
 
+import org.glassfish.admin.amx.core.AMXProxy;
+
 /**
 	A marker interface which indicates that this MBean is one-of-a-kind *within its scope*.
  */
-public interface Singleton
+public interface Singleton extends AMXProxy
 {
 }
 

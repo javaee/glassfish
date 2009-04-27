@@ -74,9 +74,9 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXConstants;
 
 /**
-	Factory for {@link AMX} proxies.
+	Factory for {@link AMXProxy} proxies.
 	Usually proxies are obtained by starting with the DomainRoot obtained via
-	{@link AppserverConnectionSource#getDomainRoot}.
+	{@link AppserverConnectionSource#getDomainRootProxy}.
 	
 	@see org.glassfish.admin.amx.client.AppserverConnectionSource
  */
@@ -285,18 +285,27 @@ public final class ProxyFactory implements NotificationListener
 		
 		return( dr );
 	}
+
+	/**
+		Return the ObjectName for the DomainMBean.
+	 */
+		public ObjectName
+	getDomainRootObjectName()
+	{
+		return( mDomainRootObjectName );
+	}
 	
 	/**
 	    Return the DomainRoot.  AMX may not yet be fully 
-	    initialized; call getDomainRoot( true ) if AMX
+	    initialized; call getDomainRootProxy( true ) if AMX
 	    must be initialized upon return.
 	    
 		@return the DomainRoot for this factory.
 	 */
 		public DomainRoot
-	getDomainRoot( )
+	getDomainRootProxy( )
 	{
-		return getDomainRoot( false );
+		return getDomainRootProxy( false );
 	}
 	
 	/**
@@ -308,7 +317,7 @@ public final class ProxyFactory implements NotificationListener
 		@return the DomainRoot for this factory.
 	 */
 		public DomainRoot
-	getDomainRoot( boolean waitReady )
+	getDomainRootProxy( boolean waitReady )
 	{
 	    if ( waitReady )
 	    {
@@ -335,15 +344,6 @@ public final class ProxyFactory implements NotificationListener
 	getMBeanServerID()
 	{
 		return( mMBeanServerID );
-	}
-	
-	/**
-		Return the ObjectName for the DomainMBean.
-	 */
-		public ObjectName
-	getDomainRootObjectName()
-	{
-		return( mDomainRootObjectName );
 	}
 	
 	/**
@@ -534,7 +534,7 @@ public final class ProxyFactory implements NotificationListener
 		
 		@param objectName	ObjectName for which a proxy should be created
 		@param intf         class of returned proxy, avoids casts and compiler warnings
-		@return an appropriate {@link AMX} interface for the ObjectName
+		@return an appropriate {@link AMXProxy} interface for the ObjectName
 	 */
 		public <T extends AMXProxy> T
 	getProxy(
@@ -680,6 +680,17 @@ public final class ProxyFactory implements NotificationListener
 		
 		return( s );
 	}
+    
+        public Set<AMXProxy>
+	toProxySet( final ObjectName[] objectNames, final Class<? extends AMXProxy> intf)
+	{
+		final Set<AMXProxy> result = new HashSet<AMXProxy>();
+		for( final ObjectName objectName : objectNames )
+		{
+            result.add( getProxy( objectName, intf) );
+		}
+		return( result );
+    }
 	
 	/**
 		Convert a Collection of ObjectName to a List of AMX.
@@ -754,17 +765,6 @@ public final class ProxyFactory implements NotificationListener
 		}
 		
 		return( resultMap );
-    }
-    
-        public Set<AMXProxy>
-	toProxySet( final ObjectName[] objectNames, final Class<? extends AMXProxy> intf)
-	{
-		final Set<AMXProxy> result = new HashSet<AMXProxy>();
-		for( final ObjectName objectName : objectNames )
-		{
-            result.add( getProxy( objectName, intf) );
-		}
-		return( result );
     }
     
         public List<AMXProxy>

@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.impl.mbean;
 
 import org.glassfish.admin.amx.base.SystemInfo;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
 import javax.management.MBeanServer;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public final class SystemInfoImpl extends AMXImplBase
 	public SystemInfoImpl(
 		final MBeanServer server )
 	{
-        super( ObjectNames.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN), SystemInfo.class );
+        super( ObjectNameBuilder.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN), SystemInfo.class );
 		
 		mServer			= server;
 		

@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.impl.ext;
 
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import java.util.Map;
 import javax.management.ObjectName;
 
@@ -45,17 +46,18 @@ import java.net.URL;
 import java.util.HashMap;
 import org.glassfish.admin.amx.base.RuntimeMgr;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
-import org.glassfish.admin.amx.intf.config.ConfigConfig;
-import org.glassfish.admin.amx.intf.config.ConfigsConfig;
 import org.glassfish.admin.amx.intf.config.DomainConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkListeners;
 import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
-import org.glassfish.admin.amx.intf.config.grizzly.Protocols;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
 
 /**
     AMX RealmsMgr implementation.
@@ -109,47 +111,45 @@ public final class RuntimeMgrImpl extends AMXImplBase
 
     public void stopDomain()
     {
+        // FIXME:  this might not work with authenticaion; need direct API call
         executeREST( "stop-domain" );
     }
 
-    private Protocol getProtocol()
+    private NetworkConfig networkConfig()
     {
-        final DomainConfig dc = getDomainRootProxy().child(DomainConfig.class);
+        return  getDomainRootProxy().child(DomainConfig.class).getConfigs().getConfig().get("server-config").getNetworkConfig().as(NetworkConfig.class);
+    }
+    
+    private static final String ADMIN_LISTENER_NAME = "admin-listener";
+    
+    private NetworkListener getAdminListener()
+    {
+        final NetworkConfig network = networkConfig();
         
-        final ConfigsConfig configs = dc.getConfigs();
-        final ConfigConfig  config = configs.getConfig().get("server-config");
+        final NetworkListeners listeners = network.getNetworkListeners();
         
-        final NetworkConfig network = config.getNetworkConfig().as(NetworkConfig.class);
-        final ObjectName[] children = network.getChildren();
-        for( final ObjectName o : children )
-        {
-            cdebug( "CHILD: " + o );
-        }
-        
-        final Protocols protocols = network.getProtocols();
-        cdebug( "Got Protocols: " + protocols );
-        final Map<String,Protocol> protocolMap = protocols.getProtocol();
+        final Map<String,NetworkListener> listenersMap = listeners.getNetworkListener();
 
-        final Protocol protocol = protocolMap.get("admin-listener");
+        final NetworkListener listener = listenersMap.get(ADMIN_LISTENER_NAME);
         
-        cdebug( "Got Protocol: " + protocol );
-        
-        return protocol;
+        return listener;
     }
 
     private int getRESTPort()
     {
-        return getProtocol().resolveInteger("Port");
+        return getAdminListener().resolveInteger("Port");
     }
 
     private String get_asadmin()
     {
-        return getProtocol().resolveAttribute("DefaultVirtualServer");
+        final Protocol protocol = networkConfig().getProtocols().getProtocol().get(ADMIN_LISTENER_NAME);
+        return protocol.getHttp().resolveAttribute("DefaultVirtualServer");
     }
 
     public String getRESTBaseURL()
     {
-        final String scheme = getProtocol().resolveBoolean("SecurityEnabled") ? "https" : "http";
+        final Protocol protocol = networkConfig().getProtocols().getProtocol().get(ADMIN_LISTENER_NAME);
+        final String scheme = protocol.resolveBoolean("SecurityEnabled") ? "https" : "http";
         final String host = "localhost";
         
         return scheme + "://" + host + ":" + getRESTPort() + "/" + get_asadmin() + "/";
@@ -185,6 +185,33 @@ public final class RuntimeMgrImpl extends AMXImplBase
         }
         return result;
     }
+    
+    
+        public Map<String,Object>
+    getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName ) {
+        final Map<String,Object> result = new HashMap<String,Object>();
+        final Habitat habitat = org.glassfish.internal.api.Globals.getDefaultHabitat();
+
+        if (habitat == null) {
+            result.put( RuntimeMgr.PROPERTY_MAP_KEY, null );
+            result.put( RuntimeMgr.REASON_FAILED_KEY, "Habitat is null");
+            return result;
+        }
+
+        // get connector runtime
+        try {
+            final ConnectorRuntime connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
+            final Map<String,Object>  connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults( datasourceClassName );
+            result.put( RuntimeMgr.PROPERTY_MAP_KEY, connProps );
+        } catch (ComponentException e) {
+            result.put( RuntimeMgr.PROPERTY_MAP_KEY, null );
+            result.put( RuntimeMgr.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        
+        // got everything, now get properties
+        return result;
+    }
+
 }
 
 

@@ -183,7 +183,7 @@ public final class AMXStartupServiceNew
         DomainRoot
     getDomainRootProxy()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
     }
     
         public ObjectName

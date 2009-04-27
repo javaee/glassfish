@@ -47,6 +47,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import org.glassfish.admin.amx.util.CollectionUtil;
 
 
 /**
@@ -207,7 +209,25 @@ public final class SampleImpl extends AMXImplBase
 		
 		return( bytes );
 	}
+    
+    public ObjectName[] getAllAMX()
+    {
+        return getAllAMXProxies();
+    }
+    
+    // will turn into proxies by declaration in the proxy
+    public ObjectName[] getAllAMXProxies()
+    {
+        final Set<ObjectName> all = getDomainRootProxy().getQueryMgr().queryAllObjectNameSet();
+        
+        return CollectionUtil.toArray( all, ObjectName.class );
+    }
 }
+
+
+
+
+
 
 
 

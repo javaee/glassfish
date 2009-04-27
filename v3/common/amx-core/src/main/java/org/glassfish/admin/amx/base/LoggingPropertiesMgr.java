@@ -48,9 +48,6 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(leaf=true, singleton=true)
 public interface LoggingPropertiesMgr extends AMXProxy, Utility, Singleton
 {
-    /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-  public static final String	J2EE_TYPE = "X-LoggingPropertiesMgr";
-
   public Map<String,String> getLoggingProps();
 
     /** Overwrite the existing value, return prior one.

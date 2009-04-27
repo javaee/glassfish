@@ -33,17 +33,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.intf.config.grizzly;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.intf.config.ConfigElement;
+
+package org.glassfish.admin.amx.intf.config;
+
 
 /**
-	Note: attribute getters/setters are not included in this interface; use generic approach.
- */
-public interface NetworkConfig extends Singleton, ConfigElement
+  OSGi breaks access to standard JDK classes across modules;
+  even though javax.managment is part of the JDK, if it is not referenced by
+  at least one class in this module, then
+  the manifest will not include an Import-Package directive,
+  and proxies to interfaces in this module will throw ClassNotFoundException
+  for classes like javax.management.ObjectName.
+*/
+public interface ForceThisModuleToHaveAccesstoTheseTypes
 {
-    public Protocols  getProtocols();
-    public Transports getTransports();
-    public NetworkListeners  getNetworkListeners();
+    public javax.management.ObjectName  forceInclusionOf_javax_management();
 }
+
+

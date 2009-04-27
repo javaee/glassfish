@@ -55,7 +55,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	occured.  This is why all results are of type Object[].
 	<p>
 	Clients wishing to use this interface should note that they may first
-	need to obtain an ObjectName[] from a Set or Map of {@link AMX}.  The easiest way
+	need to obtain an ObjectName[] from a Set or Map of {@link AMXProxy}.  The easiest way
 	to do this is to use {@link Util#toObjectNames} followed by
 	conversion of the Set to an ObjectName[].
  */

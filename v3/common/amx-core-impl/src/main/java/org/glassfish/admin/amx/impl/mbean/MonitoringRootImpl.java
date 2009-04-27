@@ -15,7 +15,7 @@
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
  * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
+ * accompanied this code.  If applicable, add the following below the Licensep
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
@@ -33,55 +33,75 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.impl.ext;
+package org.glassfish.admin.amx.impl.mbean;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import org.glassfish.admin.amx.base.KitchenSink;
-import static org.glassfish.admin.amx.base.KitchenSink.*;
-import org.glassfish.admin.amx.util.ExceptionUtil;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
-
+import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import java.util.HashMap;
-import java.util.Map;
-import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
+import org.glassfish.admin.amx.monitoring.MonitoringRoot;
+import org.glassfish.admin.amx.monitoring.ServerMonitoring;
 
-/**
-    
- */
-public final class KitchenSinkImpl extends AMXImplBase
-	//implements KitchenSink
+public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 {
-    public KitchenSinkImpl(final ObjectName parentObjectName) {
-        super( parentObjectName, KitchenSink.class );
-	}
-    
-        public Map<String,Object>
-    getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName ) {
-        final Map<String,Object> result = new HashMap<String,Object>();
-        final Habitat habitat = org.glassfish.internal.api.Globals.getDefaultHabitat();
+    public MonitoringRootImpl(final ObjectName parent) {
+        super(parent, MonitoringRoot.class);
+    }
 
-        if (habitat == null) {
-            result.put( PROPERTY_MAP_KEY, null );
-            result.put( REASON_FAILED_KEY, "Habitat is null");
-            return result;
-        }
+    @Override
+        protected final void
+    registerChildren()
+    {
+        super.registerChildren();
 
-        // get connector runtime
-        try {
-            final ConnectorRuntime connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
-            final Map<String,Object>  connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults( datasourceClassName );
-            result.put( PROPERTY_MAP_KEY, connProps );
-        } catch (ComponentException e) {
-            result.put( PROPERTY_MAP_KEY, null );
-            result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        }
-        
-        // got everything, now get properties
-        return result;
+        final ObjectName    self = getObjectName();
+        final MBeanServer   server = getMBeanServer();
+        final ObjectNameBuilder	objectNames	= new ObjectNameBuilder( server, self );
+
+        ObjectName childObjectName = null;
+        Object mbean = null;
+
+        // when clustering comes along, some other party will need to register MBeans
+        // for each non-DAS instance
+        childObjectName	= objectNames.buildChildObjectName( ServerMonitoring.class, "das");
+        mbean	= new ServerMonitoringImpl(self);
+        registerChild( mbean, childObjectName );
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

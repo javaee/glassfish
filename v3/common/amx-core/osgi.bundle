@@ -8,6 +8,7 @@
 		org.glassfish.admin.amx.core; \
 		org.glassfish.admin.amx.config; \
 		org.glassfish.admin.amx.core.proxy; \
+		org.glassfish.admin.amx.monitoring; \
 		org.glassfish.admin.amx.logging; \
 		version=${project.osgi.version}
 		

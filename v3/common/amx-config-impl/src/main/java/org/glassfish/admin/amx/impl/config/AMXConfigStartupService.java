@@ -40,7 +40,7 @@ import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import org.glassfish.admin.amx.intf.config.DomainConfig;
-import org.glassfish.admin.amx.intf.misc.AMXConfigConstants;
+import org.glassfish.admin.amx.intf.config.AMXConfigConstants;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
 import org.jvnet.hk2.config.Transactions;
@@ -103,7 +103,7 @@ public final class AMXConfigStartupService
     
     public DomainRoot getDomainRoot()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
     }
     
         public ObjectName
@@ -123,7 +123,7 @@ public final class AMXConfigStartupService
     {
         if ( mLoader == null )
         {
-            //getDomainRoot().waitAMXReady();
+            //getDomainRootProxy().waitAMXReady();
 
             mLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans, mTransactions);
             mLoader.start();

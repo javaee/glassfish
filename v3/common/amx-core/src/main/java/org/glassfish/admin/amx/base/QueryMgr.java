@@ -64,7 +64,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 	
 	
 	/**
-		Return all {@link AMX} whose type is equal to any specified in
+		Return all {@link AMXProxy} whose type is equal to any specified in
 		'types'. 
 		
 		@param types Set of String (type values).
@@ -81,10 +81,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 	
 	
 	/**
-		Return all {@link AMX} whose type is equal to 'typeValue.
-		Legal values include those defined in
-		{@link com.sun.appserv.management.j2ee.Types} and those
-		defined in  {@link com.sun.appserv.management.base.XTypes}
+		Return all {@link AMXProxy} whose type is equal to 'typeValue.
 		
 		@param typeValue  the value for the type property
 		@return Set of AMX or empty Set if none
@@ -100,7 +97,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 	
 
 	/**
-		Return all {@link AMX} whose name is equal to 'nameValue'.
+		Return all {@link AMXProxy} whose name is equal to 'nameValue'.
 		
 		@param nameValue  the value for the type property
 		@return Set of AMX or empty Set if none
@@ -193,7 +190,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 	
 	
 	/**
-		Return all {@link AMX} whose whose ObjectName matches all property
+		Return all {@link AMXProxy} whose whose ObjectName matches all property
 		expressions.  Each property expression consists of a key expression, and a value
 		expression; an expression which is null is considered a "*" (match all).
 		<p>
@@ -224,7 +221,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 	
 	
 	/**
-		Return all {@link AMX} that implement the specified interface,
+		Return all {@link AMXProxy} that implement the specified interface,
 		which may be any interface. This is the same as querying for all s
 		for their  interfaces, then returning the set for which the 
 		interface extends the specified interface.

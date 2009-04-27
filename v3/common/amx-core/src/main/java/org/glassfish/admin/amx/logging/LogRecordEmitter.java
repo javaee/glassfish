@@ -145,7 +145,7 @@ public interface LogRecordEmitter extends NotificationEmitter, ListenerInfo
 	/**
 		Key to access the string representation of the {@link java.util.logging.LogRecord}.
 		This value will always be present and non-null.
-		Use {@link org.glassfish.admin.amx.base.Util#getAMXNotificationValue}(LOG_RECORD_STRING_KEY)
+		Use LOG_RECORD_STRING_KEY
 		to obtain this value. 
 	 */
 	public static final String LOG_RECORD_AS_STRING_KEY	= LOG_RECORD_KEY_PREFIX + "toString";

@@ -43,7 +43,7 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 	Interface implemented by MBeans which can resolve a variable to a value.
     Variable attributes are strings  of the form ${...} and
 	are returned as the values of certain Attributes.  This interface is intended for use
-    only with {@link AMXConfig} MBeans.
+    only with config MBeans.
     <p>
  */
 public interface AttributeResolver

@@ -45,7 +45,7 @@ import static org.glassfish.admin.amx.logging.Logging.*;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.NotificationBuilder;
 import org.glassfish.admin.amx.util.*;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
 import javax.management.*;
 import java.io.File;
@@ -104,7 +104,7 @@ public final class LoggingImpl extends AMXImplBase
      */
     public LoggingImpl( final String serverName )
     {
-        super(  ObjectNames.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN), Logging.class );
+        super(  ObjectNameBuilder.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN), Logging.class );
         
         mServerName = serverName;
     	mLogMBean	= null;

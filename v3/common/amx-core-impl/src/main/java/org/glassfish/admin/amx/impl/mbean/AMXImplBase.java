@@ -72,7 +72,7 @@ import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
 import org.glassfish.admin.amx.impl.loader.AMXStartupServiceNew;
 import org.glassfish.admin.amx.impl.util.MBeanInfoSupport;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -112,6 +112,9 @@ import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 public class AMXImplBase extends MBeanImplBase
 	implements DynamicMBean, MBeanRegistration, NotificationEmitter, AMX_SPI
 {
+    /** console debug */
+    protected static void cdebug( final String s ) { System.out.println(s); }
+
 	protected static final String	GET	= "get";
 	protected static final String	SET	= "set";
 	
@@ -432,7 +435,6 @@ public class AMXImplBase extends MBeanImplBase
 	}
 
     
-protected static void cdebug( final String s ) { System.out.println(s); }
 
 	/**
 		Get an Attribute value, first by looking for a getter method
@@ -503,7 +505,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         {
             //cdebug( "getAttributeInternal: found getter method for: " + name );
             result	= getAttributeByMethod( name, m );
-            //debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
+            debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
         }
         else if ( attributeTypeMatches(name, ObjectName.class) )
         {
@@ -653,7 +655,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
     
     protected static final ObjectName[] EMPTY_OBJECT_NAMES = new ObjectName[0];
     
-    /** get child ObjectNames corresponding to the AttributeName  */
+    /** get child ObjectNameBuilder corresponding to the AttributeName  */
     protected ObjectName[] getObjectNamesForAttribute( final String attributeName )
     {
         final String[] types = attributeNameToType(attributeName);
@@ -685,7 +687,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
     /** get child ObjectName corresponding to the AttributeName  */
     protected ObjectName getObjectNameAttribute( final String attributeName )
     {
-       // cdebug( "getObjectNameAttribute: " + attributeName );
+        //cdebug( "getObjectNameAttribute: " + attributeName );
         final String[] types = attributeNameToType(attributeName);
         
         ObjectName result = null;
@@ -1087,6 +1089,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
             }
 			else
 			{
+                cdebug( "No method found for " + operationName );
 				result	= invokeManually( operationName, args, types );
 			}
 		}
@@ -1241,7 +1244,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		public final DomainRoot
 	getDomainRootProxy()
 	{
-		return( getProxyFactory().getDomainRoot() );
+		return( getProxyFactory().getDomainRootProxy() );
 	}
 
 		public final ObjectName
@@ -1319,10 +1322,10 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         }
     }
     
-    protected ObjectNames
+    protected ObjectNameBuilder
     getObjectNames()
     {
-        return new ObjectNames( getMBeanServer(), getObjectName() );
+        return new ObjectNameBuilder( getMBeanServer(), getObjectName() );
     }
 }
 

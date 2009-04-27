@@ -85,7 +85,10 @@ public interface Tools extends AMXProxy, Utility, Singleton
     public String  validate();
     
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public Object validate(final ObjectName mbean);
+    public String validate(final ObjectName mbean);
+    
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public String validate(final ObjectName[] mbeans);
 }
 
 

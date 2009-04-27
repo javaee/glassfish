@@ -104,22 +104,24 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver, DefaultValu
         <p>
         Required attributes must be specified, and should all be 'String' (The Map value is declared
         with a type of of 'Object' anticipating future extensions).
-        Use the {@link AMXAttributes#ATTR_NAME} key for the name.
+        Use the ATTR_NAME key for the name.
         <p>
         Properties can be included in the 'params' Map using the {@link PropertiesAccess#PROPERTY_PREFIX}
         prefix on the property name.  
         System properties can be included in the 'params' Map using the
-        {@link SystemPropertiesAccess#SYSTEM_PROPERTY_PREFIX} prefix on the property name.
+        SYSTEM_PROPERTY_PREFIX prefix on the property name.
         
         @param elementType the XML element type
         @param params Map containing  attributes which are required by the @Configured and any
         optional attributes (as desired).
         @return proxy interface to the newly-created AMXConfigProxy
-        
-        @see org.glassfish.admin.amx.base.XTypes
      */
     @ManagedOperation
     public AMXConfigProxy createChild( String elementType, Map<String,Object> params );
+    
+    /** same as the Map variant, but the name/value are in the array; even entries are names, odd are values */
+    @ManagedOperation
+    public AMXConfigProxy createChild( String elementType, Object[] params );
     
     /**
         Generically remove a config by type and name.
@@ -136,3 +138,9 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver, DefaultValu
     @ManagedOperation
     public void  removeChild( String childType );
 }
+
+
+
+
+
+

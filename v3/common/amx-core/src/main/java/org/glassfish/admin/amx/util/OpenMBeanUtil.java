@@ -261,9 +261,7 @@ public final class OpenMBeanUtil
 		<ul>
 		<li>Collection converts to an array</li>
 		</ul>
-		Nulls are not eliminated; use
-		{@link com.sun.appserv.management.util.misc.MapUtil#newMapNoNullValues} to
-		do that before or after.
+		Nulls are not eliminated.
 	 */
 		public static Map<String,Serializable>
 	convertTypes( final Map<String,Serializable> orig )

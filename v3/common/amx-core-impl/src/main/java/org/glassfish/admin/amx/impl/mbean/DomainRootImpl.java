@@ -42,7 +42,7 @@ import com.sun.appserv.server.util.Version;
 
 import org.glassfish.admin.amx.impl.loader.BootUtil;
 import org.glassfish.admin.amx.impl.util.Issues;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
@@ -60,6 +60,7 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import java.io.InputStream;
 import org.glassfish.admin.amx.impl.path.PathnamesImpl;
+import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 
 
 /**
@@ -68,6 +69,7 @@ public class DomainRootImpl extends AMXImplBase
 	// implements DomainRoot
 {
     private String	mAppserverDomainName;
+    private volatile ComplianceMonitor  mCompliance;
 
         public
     DomainRootImpl()
@@ -76,7 +78,11 @@ public class DomainRootImpl extends AMXImplBase
         mAppserverDomainName	= null;
     }
 
-         
+    public void stopDomain()
+    {
+        getDomainRootProxy().getExt().getRuntimeMgr().stopDomain();
+    }
+
     
     public ObjectName getQueryMgr()
     {
@@ -120,15 +126,17 @@ public class DomainRootImpl extends AMXImplBase
     {
         super.preRegisterDone();
     }
-
-/*
-        public ObjectName
-    getDomainNotificationEmitterServiceObjectName()
-    {
-        return( getContainerSupport().getContaineeObjectName( Util.getType(NotificationEmitterService.class),
-            NotificationEmitterService.DOMAIN_KEY ) );
-    }
-*/
+    
+    @Override
+		protected void
+	postRegisterHook( final Boolean registrationSucceeded )
+	{
+        super.postRegisterHook(registrationSucceeded);
+	    if ( registrationSucceeded.booleanValue() )
+		{
+            mCompliance = ComplianceMonitor.start( getDomainRootProxy() );
+		}
+	}
 
         public String
     getAppserverDomainName()
@@ -143,7 +151,7 @@ public class DomainRootImpl extends AMXImplBase
         super.registerChildren();
         
         final ObjectName    self = getObjectName();
-        final ObjectNames	objectNames	= new ObjectNames( getMBeanServer(), self );
+        final ObjectNameBuilder	objectNames	= new ObjectNameBuilder( getMBeanServer(), self );
         
         ObjectName childObjectName = null;
         Object mbean = null;
@@ -175,6 +183,10 @@ public class DomainRootImpl extends AMXImplBase
              
         childObjectName	= objectNames.buildChildObjectName( Pathnames.class);
         mbean	= new PathnamesImpl(self);
+        registerChild( mbean, childObjectName );
+
+        childObjectName	= objectNames.buildChildObjectName( MonitoringRoot.class);
+        mbean	= new MonitoringRootImpl(self);
         registerChild( mbean, childObjectName );
     }
     

@@ -38,10 +38,12 @@ package org.glassfish.admin.amx.core;
 import java.util.Set;
 import java.util.Map;
 
+import javax.management.ObjectName;
+
 
 /**
     The  interface presented by a dynamic proxy to an AMX MBean,
-    implemented by {@link org.glassfish.admin.amx.core.AMXProxyHandler}.
+    implemented by {@link org.glassfish.admin.amx.core.proxy.AMXProxyHandler}.
     Interfaces representing AMX MBeans may extend or implement this interface, but in
     most cases it will not be appropriate or convenient to 'implement' the interface because
     it is for use by a proxy to the MBean, not the MBean itself.
@@ -59,7 +61,7 @@ public interface AMXProxy extends AMX_SPI {
         Value of the name property of the ObjectName.  Could differ from getName(), which returns
         the internal name, which might not be legal in an ObjectName, or could have changed.
     */
-    public String name();
+    public String nameProp();
 	
 	/**
 		A proxy can become invalid if its corresponding MBean is unregistered.
@@ -73,8 +75,6 @@ public interface AMXProxy extends AMX_SPI {
     
     /**
         Get all children of a specified type, keyed by the name as found in the ObjectName.
-        @param type the child type eg its "type" property as found in its ObjectName
-        @param intf the proxy interface, passing null for the default is allowed.
      */
     public Map<String,AMXProxy> childrenMap(final String type);
     
@@ -110,14 +110,24 @@ public interface AMXProxy extends AMX_SPI {
 	 */
 	public Map<String,Object>		attributesMap();
     
+	/**
+		Get all available Attributes names, no trip to server needed.
+	 */
+    public Set<String>  attributeNames();
+    
     /** Get this MBean's pathname */
     public String path();
     
 	/**
-		Get extra information and convenience methods for this AMX MBean.
+		The ObjectName of this MBean.
 	 */
-    public Extra  extra();
+	public ObjectName		objectName();
+    
+    /** additional capabilities */
+    public Extra extra();
 }
+
+
 
 
 

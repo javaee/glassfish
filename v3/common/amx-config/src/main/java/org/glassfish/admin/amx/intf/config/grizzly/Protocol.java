@@ -35,13 +35,16 @@
  */
 package org.glassfish.admin.amx.intf.config.grizzly;
 
-import org.glassfish.admin.amx.intf.config.PropertiesAccess;
-import org.glassfish.admin.amx.intf.config.SystemPropertiesAccess;
+import org.glassfish.admin.amx.intf.config.NamedConfigElement;
+
 
 /**
 	Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface Protocol
-	extends PropertiesAccess, SystemPropertiesAccess
+public interface Protocol  extends NamedConfigElement
 {
+    public Http getHttp();
+    public PortUnification getPortUnification();
+    public Ssl getSsl();
+    public ProtocolChainInstanceHandler getProtocolChainInstanceHandler();
 }

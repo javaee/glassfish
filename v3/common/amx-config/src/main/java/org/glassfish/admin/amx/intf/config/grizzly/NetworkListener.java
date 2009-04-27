@@ -35,13 +35,16 @@
  */
 package org.glassfish.admin.amx.intf.config.grizzly;
 
-import org.glassfish.admin.amx.intf.config.PropertiesAccess;
-import org.glassfish.admin.amx.intf.config.SystemPropertiesAccess;
+import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 
 /**
 	Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface NetworkListener
-	extends PropertiesAccess, SystemPropertiesAccess
+public interface NetworkListener  extends NamedConfigElement
 {
+    public Protocol   findProtocol();
+    public ThreadPool findThreadPool();
+    public Transport  findTransport();
 }
+
+

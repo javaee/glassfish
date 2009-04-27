@@ -115,6 +115,11 @@ public final class PathnameParser {
             }
         }
         
+        if ( buf.length() == 0 )
+        {
+            buf.append( DomainRoot.PATH );
+        }
+        
         return buf.toString();
     }
 
@@ -145,7 +150,7 @@ public final class PathnameParser {
      */
     private void parse( final String path, final List<PathPart> parts)
     {
-        debug( "PathnameParser: parsing: " + path );
+        //debug( "PathnameParser: parsing: " + path );
         if ( path == null || path.length() == 0)
         {
             throw new IllegalArgumentException(path);
@@ -166,7 +171,7 @@ public final class PathnameParser {
             }
 
             final String type = matcher.group(1);
-            debug( "PathnameParser, matched type: \"" + type + "\"" );
+            //debug( "PathnameParser, matched type: \"" + type + "\"" );
 
             char matchChar = '\0';
             if ( type.length() < remaining.length()  )
@@ -180,8 +185,8 @@ public final class PathnameParser {
                 parts.add(part);
                 break;
             }
-            debug( "PathnameParser, match char: \"" + matchChar + "\"" );
-            debug( "PathnameParser, remaining: \"" + remaining + "\"" );
+            //debug( "PathnameParser, match char: \"" + matchChar + "\"" );
+           // debug( "PathnameParser, remaining: \"" + remaining + "\"" );
 
             String name = null;
             if ( matchChar == mNameLeft )
@@ -203,14 +208,14 @@ public final class PathnameParser {
             final PathPart part = new PathPart(type,name);
             parts.add(part);
 
-            debug( "PathnameParser, matched part: \"" + part + "\"" );
+            //debug( "PathnameParser, matched part: \"" + part + "\"" );
         }
 
         String s = "";
         for( final PathPart part : parts ){
             s = s + "{" + part + "}";
         }
-        debug( "FINAL PARSE for : " + path + " = " + s);
+        //debug( "FINAL PARSE for : " + path + " = " + s);
     }
      
     private List<PathPart> parse()

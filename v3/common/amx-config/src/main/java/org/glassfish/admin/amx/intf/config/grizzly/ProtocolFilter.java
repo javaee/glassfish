@@ -35,15 +35,12 @@
  */
 package org.glassfish.admin.amx.intf.config.grizzly;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.intf.config.ConfigElement;
+import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 
 /**
 	Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface NetworkConfig extends Singleton, ConfigElement
+public interface ProtocolFilter  extends NamedConfigElement
 {
-    public Protocols  getProtocols();
-    public Transports getTransports();
-    public NetworkListeners  getNetworkListeners();
 }
+

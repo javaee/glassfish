@@ -50,9 +50,9 @@ public class ConfigBeanJMXSupport {
 
     /** bugs: these @Configured do not set @Attribute(key=true) */
     private static final Map<String, String> CONFIGURED_BUGS = Collections.unmodifiableMap(MapUtil.newMap(
-            "com.sun.grizzly.config.dom.Protocol", "Name",
-            "com.sun.grizzly.config.dom.Transport", "Name",
-            "com.sun.grizzly.config.dom.ThreadPool", "ThreadPoolId"));
+            "com.sun.grizzly.config.dom.ThreadPool", "ThreadPoolId",
+            "", ""
+        ));
 
     private boolean hasConfiguredBug() {
         return configuredBugKey() != null;

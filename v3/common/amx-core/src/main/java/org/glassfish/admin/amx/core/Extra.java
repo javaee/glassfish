@@ -44,7 +44,7 @@ import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
 
 /**
-	Extra information available about each {@link AMX}.  Most
+	Extra information available about each {@link AMXProxy}.  Most
 	of these fields are for advanced use and/or direct use of JMX.
  */
 public interface Extra extends StdAttributesAccess, MetaGetters, AMXProxy

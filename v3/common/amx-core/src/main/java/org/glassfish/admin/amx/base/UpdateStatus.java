@@ -44,7 +44,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
 	Provides information about the updates from the Update Center Server.
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="update-status", leaf=true, singleton=true)
 public interface UpdateStatus extends AMXProxy, Singleton, Utility
 {
 	/**

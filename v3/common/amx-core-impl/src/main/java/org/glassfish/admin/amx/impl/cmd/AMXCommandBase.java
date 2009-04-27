@@ -95,7 +95,7 @@ abstract class AMXCommandBase implements AdminCommand {
     protected DomainRoot
     getDomainRoot()
     {
-        return ProxyFactory.getInstance(getMBeanServer()).getDomainRoot();
+        return ProxyFactory.getInstance(getMBeanServer()).getDomainRootProxy();
     }
     
     protected abstract void _execute(final AdminCommandContext context);
