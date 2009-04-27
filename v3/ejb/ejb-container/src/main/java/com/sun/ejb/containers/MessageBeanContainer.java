@@ -294,7 +294,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 						.getMaxPoolSize(), beanPoolDesc_
 						.getPoolIdleTimeoutInSeconds(), loader);
 
-		registryMediator.registerProvider(messageBeanPool_);
+		// TODO registryMediator.registerProvider(messageBeanPool_);
 		// super.setMonitorOn(mdbc.isMonitoringEnabled());
 	}
 

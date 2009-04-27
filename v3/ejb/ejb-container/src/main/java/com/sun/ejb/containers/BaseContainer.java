@@ -473,6 +473,13 @@ public abstract class BaseContainer
                 else {
                     isBeanManagedTran = false;
                 }
+
+                // TODO Temporary workaround to instantiate the ORB and Remote naming manager
+                // to allow client lookups of JMS queues/topics/connectionfactories
+                // For V3 FCS, there will be a sniffer listening on the naming port that will
+                // instantiate the orb/remote naming service on demand upon initial access.
+                // Once that's available, this call will be removed.
+                initializeProtocolManager();
             }
             else {
                 
