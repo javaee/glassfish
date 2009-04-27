@@ -1248,7 +1248,7 @@ public class PECoyoteConnector extends Connector {
 
         Object handler = null;
         try {
-            Class handlerClass = Class.forName(className);
+            Class handlerClass = webContainer.loadCommonClass(className);
             handler = handlerClass.newInstance();
         } catch (Exception e) {
             String msg = _rb.getString(

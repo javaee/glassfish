@@ -3365,4 +3365,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         sessionProbeProvider = new SessionProbeProvider();
         requestProbeProvider = new RequestProbeProvider();
     }
+
+
+    /*
+     * Loads the class with the given name using the common classloader,
+     * which is responsible for loading any classes from the domain's
+     * lib directory
+     *
+     * @param className the name of the class to load
+     */
+    public Class loadCommonClass(String className) throws Exception {
+        return clh.getCommonClassLoader().loadClass(className);
+    }
 }
