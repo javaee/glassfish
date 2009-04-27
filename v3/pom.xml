@@ -144,7 +144,8 @@
 	<ucbootstrap.version>0.0.0.15</ucbootstrap.version>
         <webservices.version>2.0-b09</webservices.version>
         <jaxb.version>2.2-promoted-b17</jaxb.version>
-        <javax-persistence-api.version>2.0.0-M1</javax-persistence-api.version>
+        <javax-persistence-api.version>2.0.0-M2.1</javax-persistence-api.version>
+	<eclipselink.version>2.0.0-M2.1</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
@@ -758,6 +759,36 @@
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-schema2beans</artifactId>
                 <version>${schema2beans.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.oracle</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.antlr</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.asm</artifactId>
+                <version>${eclipselink.version}</version>
             </dependency>
 
             <dependency>

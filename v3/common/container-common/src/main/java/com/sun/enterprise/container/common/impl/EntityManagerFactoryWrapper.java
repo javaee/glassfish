@@ -46,7 +46,8 @@ import org.glassfish.api.invocation.InvocationManager;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Cache;
-import javax.persistence.QueryBuilder;
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.metamodel.Metamodel;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -106,6 +107,10 @@ public class EntityManagerFactoryWrapper
 
     public QueryBuilder getQueryBuilder() {
         return getDelegate().getQueryBuilder();
+    }
+
+    public Metamodel getMetamodel() {
+        return getDelegate().getMetamodel();
     }
 
     public Map getProperties() {

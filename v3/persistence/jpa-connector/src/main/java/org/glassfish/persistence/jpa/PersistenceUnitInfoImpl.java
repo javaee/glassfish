@@ -48,6 +48,8 @@ import javax.naming.NamingException;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.persistence.CachingType;
+import javax.persistence.ValidationMode;
 import javax.sql.DataSource;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -182,11 +184,26 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         return persistenceUnitDescriptor.isExcludeUnlistedClasses();
     }
 
+    public CachingType getCaching() {
+        //TODO implement this in persistenceUnitDescriptor
+        return null;
+    }
+
+    public ValidationMode getValidationMode() {
+        //TODO implement this in persistenceUnitDescriptor
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */
     public Properties getProperties() {
         return persistenceUnitDescriptor.getProperties(); // its already a clone
+    }
+
+    public String PersistenceXMLSchemaVersion() {
+        //TODO implement this in persistenceUnitDescriptor
+        return null;  
     }
 
     /**

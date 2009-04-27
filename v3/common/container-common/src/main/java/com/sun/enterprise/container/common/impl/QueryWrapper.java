@@ -41,6 +41,7 @@ import com.sun.enterprise.container.common.spi.util.EntityManagerQueryMethod;
 import com.sun.enterprise.container.common.impl.util.DummyCallFlowAgentImpl;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.*;
 
 /**
@@ -93,7 +94,7 @@ public class QueryWrapper implements Query {
     // State used to construct query delegate object itself.
     private QueryType queryType;
     private String queryString;
-    private QueryDefinition queryDefinition;
+    private CriteriaQuery queryCriteria;
     private Class queryResultClass;
     private String queryResultSetMapping;
 
@@ -165,18 +166,18 @@ public class QueryWrapper implements Query {
                                            Map emProperties,
                                            EntityManager emDelegate,
                                            Query queryDelegate,
-                                           QueryDefinition queryDefinition) {
+                                           CriteriaQuery criteriaQuery) {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.CRITERIA,
-                                null, queryDefinition, null, null);
+                                null, criteriaQuery, null, null);
     }
     
 
     private QueryWrapper(EntityManagerFactory emf, Map emProperties,
                          EntityManager emDelegate, Query qDelegate,
                          QueryType type, String query,
-                         QueryDefinition definition, Class resultClass, String resultSetMapping)
+                         CriteriaQuery criteriaQuery, Class resultClass, String resultSetMapping)
     {
         entityMgrFactory = emf;
         entityMgrProperties = emProperties;
@@ -186,13 +187,45 @@ public class QueryWrapper implements Query {
 
         queryType = type;
         queryString = query;
-        queryDefinition = definition; 
+        queryCriteria = criteriaQuery;
         queryResultClass = resultClass;
         queryResultSetMapping = resultSetMapping;
 
         setterInvocations = new LinkedList<SetterData>();
 
         callFlowAgent = new DummyCallFlowAgentImpl();    //TODO get it from ContainerUtil
+    }
+
+    public List<Result> getTypedResultList() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_TYPED_RESULT_LIST);
+            }
+            Query delegate = getQueryDelegate();
+            return delegate.getTypedResultList();
+        } finally {
+            clearDelegates();
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public Result getTypedSingleResult() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_TYPED_SINGLE_RESULT);
+            }
+            Query delegate = getQueryDelegate();
+            return delegate.getTypedSingleResult();
+        } finally {
+            clearDelegates();
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
     }
 
     public List getResultList() {
@@ -371,6 +404,26 @@ public class QueryWrapper implements Query {
         }
     }
 
+    public <T> Query setParameter(Parameter<T> param, T value) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.SET_PARAMETER_PARAMETER_OBJECT);
+            }
+            Query delegate = getQueryDelegate();
+            delegate.setParameter(param, value);
+
+            SetterData setterData = SetterData.createParameter(param, value);
+            setterInvocations.add(setterData);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+
+        return this;
+    }
+
     public Query setParameter(String name, Object value) {
         
         try {
@@ -496,15 +549,15 @@ public class QueryWrapper implements Query {
         return this;
     }
 
-    public Map<String, Object> getNamedParameters() {
+    public Set<Parameter<?>> getParameters() {
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_NAMED_PARAMETERS);
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETERS);
             }
 
             Query delegate = getQueryDelegate();
-            return delegate.getNamedParameters();
+            return delegate.getParameters();
 
         } finally {
             if(callFlowAgent.isEnabled()) {
@@ -513,15 +566,100 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public List getPositionalParameters() {
+    public <T> Parameter<T> getParameter(String name, Class<T> type) {
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_POSITIONAL_PARAMETERS);
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_NAME_CLASS);
             }
 
             Query delegate = getQueryDelegate();
-            return delegate.getPositionalParameters();
+            return delegate.getParameter(name, type);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public <T> Parameter<T> getParameter(int position, Class<T> type) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_POSITION_CLASS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getParameter(position, type);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public <T> T getParameterValue(Parameter<T> param) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_VALUE);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getParameterValue(param);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public <T> ResultItem<T> getResultItem(String alias, Class<T> type) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_RESULT_ITEM_STRING_CLASS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getResultItem(alias, type);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public <T> ResultItem<T> getResultItem(int position, Class<T> type) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_RESULT_ITEM_INT_CLASS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getResultItem(position, type);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public List<ResultItem<?>> getResultItems() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_RESULT_ITEMS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getResultItems();
 
         } finally {
             if(callFlowAgent.isEnabled()) {
@@ -649,7 +787,7 @@ public class QueryWrapper implements Query {
                 case CRITERIA :
 
                     queryDelegate =
-                        entityManagerDelegate.createQuery(queryDefinition);
+                        entityManagerDelegate.createQuery(queryCriteria);
                     break;
 
               case NAMED :
@@ -706,6 +844,7 @@ public class QueryWrapper implements Query {
         MAX_RESULTS,
         FIRST_RESULT,
         HINT,
+        PARAM_PARAMETER_OBJECT,
         PARAM_NAME_OBJECT,
         PARAM_NAME_DATE_TEMPORAL,
         PARAM_NAME_CAL_TEMPORAL,
@@ -717,13 +856,14 @@ public class QueryWrapper implements Query {
 
     }
 
-    private static class SetterData {
+    private  static class  SetterData <T> {
 
         SetterType type;
 
         int int1;
         String string1;
-        Object object1;
+        T object1;
+        Parameter<T> parameter;
 
         Date date;
         Calendar calendar;
@@ -751,6 +891,14 @@ public class QueryWrapper implements Query {
             SetterData data = new SetterData();
             data.type = SetterType.HINT;
             data.string1 = hintName;
+            data.object1 = value;
+            return data;
+        }
+
+        static <T> SetterData createParameter(Parameter<T> param, T value) {
+            SetterData data = new SetterData<T>();
+            data.type = SetterType.PARAM_PARAMETER_OBJECT;
+            data.parameter = param;
             data.object1 = value;
             return data;
         }
@@ -852,6 +1000,11 @@ public class QueryWrapper implements Query {
                 query.setHint(string1, object1);
                 break;
 
+            case PARAM_PARAMETER_OBJECT :
+
+                query.setParameter(parameter, object1);
+                break;
+
             case PARAM_NAME_OBJECT :
                 
                 query.setParameter(string1, object1);
@@ -894,7 +1047,7 @@ public class QueryWrapper implements Query {
 
             }
         }
-        
+
     }
     
 

@@ -63,6 +63,12 @@ public enum EntityManagerMethod {
         }
     },
     
+    FIND_CLASS_OBJECT_MAP {
+        public String toString() {
+            return "find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties)";
+        }
+    },
+
     FIND {
         public String toString() {
             return "find(Class<T> entityClass, Object primaryKey)";
@@ -123,6 +129,12 @@ public enum EntityManagerMethod {
         }
     },
 
+    REFRESH_OBJECT_PROPERTIES {
+        public String toString() {
+            return "refresh(Object entity, Map<String, Object> properties)";
+        }
+    },
+
     REFRESH_OBJECT_LOCKMODETYPE {
         public String toString() {
             return "refresh(Object entity, LockModeType lockMode)";
@@ -150,6 +162,12 @@ public enum EntityManagerMethod {
     GET_LOCK_MODE {
         public String toString() {
             return "getLockMode()";
+        }
+    },
+
+    SET_PROPERTY {
+        public String toString() {
+            return "settProperties())";
         }
     },
 
@@ -240,6 +258,12 @@ public enum EntityManagerMethod {
     GET_QUERY_BUILDER {
         public String toString() {
             return "getQueryBuilder()";
+        }
+    },
+
+    GET_METAMODEL {
+        public String toString() {
+            return "getMetamodel()";
         }
     },
 

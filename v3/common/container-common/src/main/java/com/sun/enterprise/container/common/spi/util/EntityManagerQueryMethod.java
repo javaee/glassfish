@@ -45,6 +45,18 @@ package com.sun.enterprise.container.common.spi.util;
 
 public enum EntityManagerQueryMethod {
     
+    GET_TYPED_RESULT_LIST {
+        public String toString() {
+            return "getTypedResultList()";
+        }
+    },
+
+    GET_TYPED_SINGLE_RESULT {
+        public String toString() {
+            return "getTypedSingleResult()";
+        }
+    },
+
     GET_RESULT_LIST {
         public String toString() {
             return "getResultList()";
@@ -105,6 +117,12 @@ public enum EntityManagerQueryMethod {
         }
     },
 
+    SET_PARAMETER_PARAMETER_OBJECT {
+        public String toString() {
+            return "setParameter(Parameter<T> param, T value)";
+        }
+    },
+
     SET_PARAMETER_STRING_OBJECT {
         public String toString() {
             return "setParameter(String name, Object value)";
@@ -141,15 +159,45 @@ public enum EntityManagerQueryMethod {
         }
     },
     
-    GET_NAMED_PARAMETERS {
+    GET_PARAMETERS {
         public String toString() {
-            return "getNamedParameters()";
+            return "getParameter()";
         }
     },
 
-    GET_POSITIONAL_PARAMETERS {
+    GET_PARAMETER_NAME_CLASS {
         public String toString() {
-            return "getPositionalParameters()";
+            return "getParameter(String name, Class<T> type)";
+        }
+    },
+
+    GET_PARAMETER_POSITION_CLASS {
+        public String toString() {
+            return "getParameter(int position, Class<T> type)";
+        }
+    },
+
+    GET_PARAMETER_VALUE {
+        public String toString() {
+            return "getParameterValue()";
+        }
+    },
+
+    GET_RESULT_ITEM_STRING_CLASS {
+        public String toString() {
+            return "getResultItem(String alias, Class<T> type)";
+        }
+    },
+
+    GET_RESULT_ITEM_INT_CLASS {
+        public String toString() {
+            return "getResultItem(int position, Class<T> type)";
+        }
+    },
+
+    GET_RESULT_ITEMS {
+        public String toString() {
+            return "getResultItems()";
         }
     },
 

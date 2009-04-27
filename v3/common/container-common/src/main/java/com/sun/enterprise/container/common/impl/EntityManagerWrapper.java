@@ -48,7 +48,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
+import javax.persistence.criteria.*;
 import javax.persistence.*;
+import javax.persistence.metamodel.Metamodel;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
@@ -318,6 +320,26 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         return returnValue;
     }
 
+    public <T> T find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties) {
+        T returnValue = null;
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.FIND);
+            }
+            returnValue = _getDelegate().find(entityClass, primaryKey, properties);
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+        return returnValue;
+    }
+
+
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode) {
         T returnValue = null;
 
@@ -337,7 +359,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         return returnValue;
     }
 
-    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map properties) {
+    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map<String, Object> properties) {
         T returnValue = null;
 
         try {
@@ -426,7 +448,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         return returnValue;
     }
 
-    public Query createQuery(QueryDefinition queryDefinition) {
+    public Query createQuery(CriteriaQuery criteriaQuery) {
         Query returnValue = null;
 
         try {
@@ -434,13 +456,13 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                 callFlowAgent.entityManagerMethodStart(EntityManagerMethod.CREATE_QUERY_QUERY_DEFINITION);
             }
             EntityManager delegate = _getDelegate();
-            returnValue = delegate.createQuery(queryDefinition);
+            returnValue = delegate.createQuery(criteriaQuery);
 
             if( nonTxEntityManager != null ) {
                 Query queryDelegate = returnValue;
                 returnValue = QueryWrapper.createQueryWrapper
                     (entityManagerFactory, emProperties, delegate,
-                     queryDelegate, queryDefinition);
+                     queryDelegate, criteriaQuery);
                 // It's now the responsibility of the QueryWrapper to
                 // close the non-tx EM delegate
                 nonTxEntityManager = null;
@@ -606,6 +628,24 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         // tx is required so there's no need to do any non-tx cleanup
     }
 
+    public void refresh(Object entity, Map<String, Object> properties) {
+        doTransactionScopedTxCheck();
+
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.REFRESH_OBJECT_PROPERTIES);
+            }
+            _getDelegate().refresh(entity, properties);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
+        // tx is required so there's no need to do any non-tx cleanup
+    }
+
     public void refresh(Object entity, LockModeType lockMode) {
         doTransactionScopedTxCheck();
 
@@ -623,7 +663,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         // tx is required so there's no need to do any non-tx cleanup
     }
 
-    public void refresh(Object entity, LockModeType lockMode, Map properties) {
+    public void refresh(Object entity, LockModeType lockMode, Map<String, Object> properties) {
         doTransactionScopedTxCheck();
 
         try {
@@ -675,6 +715,25 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
 
         // tx is required so there's no need to do any non-tx cleanup
     }
+
+    public void setProperty(String propertyName, Object value) {
+
+        doTxRequiredCheck();
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.SET_PROPERTY);
+            }
+            _getDelegate().setProperty(propertyName, value);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
+        // tx is required so there's no need to do any non-tx cleanup
+    }
+
 
     public Map<String, Object> getProperties() {
 
@@ -786,6 +845,24 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
 
     }
 
+    public Metamodel getMetamodel() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_METAMODEL);
+            }
+            return _getDelegate().getMetamodel();
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
+    }
+
     public void lock(Object entity, LockModeType lockMode) {
 
         try {
@@ -803,7 +880,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         }
     }
 
-    public void lock(Object entity, LockModeType lockMode, Map properties) {
+    public void lock(Object entity, LockModeType lockMode, Map<String, Object> properties) {
 
         try {
             if(callFlowAgent.isEnabled()) {
@@ -837,8 +914,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         }
     }
 
-    //TODO Rename this method in next integration when EL also renames it
-    public void clear(Object o) {
+    public void detach(Object o) {
 
         //TODO revisit this check once Linda confirms whether it is required or not.
         doTransactionScopedTxCheck();
@@ -847,7 +923,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodStart(EntityManagerMethod.DETATCH);
             }
-            _getDelegate().clear(o);
+            _getDelegate().detach(o);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
