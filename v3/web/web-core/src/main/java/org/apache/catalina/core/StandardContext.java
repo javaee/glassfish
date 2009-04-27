@@ -3381,19 +3381,18 @@ public class StandardContext
      */
     public void addWelcomeFile(String name) {
 
-        synchronized (welcomeFiles) {
-            // Welcome files from the application deployment descriptor
-            // completely replace those from the default conf/web.xml file
-            if (replaceWelcomeFiles) {
-                welcomeFiles = new String[0];
-                setReplaceWelcomeFiles(false);
-            }
-            String results[] =new String[welcomeFiles.length + 1];
-            for (int i = 0; i < welcomeFiles.length; i++)
-                results[i] = welcomeFiles[i];
-            results[welcomeFiles.length] = name;
-            welcomeFiles = results;
+        // Welcome files from the application deployment descriptor
+        // completely replace those from the default conf/web.xml file
+        if (replaceWelcomeFiles) {
+            welcomeFiles = new String[0];
+            setReplaceWelcomeFiles(false);
         }
+        String results[] = new String[welcomeFiles.length + 1];
+        for (int i = 0; i < welcomeFiles.length; i++)
+            results[i] = welcomeFiles[i];
+        results[welcomeFiles.length] = name;
+        welcomeFiles = results;
+
         postWelcomeFiles();
 
         if (notifyContainerListeners) {
