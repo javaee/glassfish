@@ -144,7 +144,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         this();
         if (!isTimerInitialized)
             initializeTimer();
-        timer.schedule(this,timeout * 1000);
+        timer.schedule(this,timeout * 1000L);
         isTimerTask = true;
         this.timeout = timeout;
     }
