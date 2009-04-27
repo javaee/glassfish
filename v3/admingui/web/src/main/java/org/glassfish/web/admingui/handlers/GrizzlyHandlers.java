@@ -66,7 +66,7 @@ import java.util.Iterator;
  * @author Anissa Lam
  */
 public class GrizzlyHandlers {
-    
+
     
     @Handler(id="getNetworkListeners",
         input={
@@ -209,6 +209,32 @@ public class GrizzlyHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+    
+    @Handler(id="getNetworkListenerDefault",
+    input={
+        @HandlerInput(name="configName",   type=String.class, required=true) },
+    output={
+        @HandlerOutput(name="valueMap",        type=Map.class)})
+        
+        public static void getNetworkListenerDefault(HandlerContext handlerCtx) {
+        try{
+            String configName = (String) handlerCtx.getInputValue("configName");
+            Map valueMap = new HashMap();
+
+            valueMap.put("address", "0.0.0.0");
+            valueMap.put("enabled","true");
+            valueMap.put("port","");
+            valueMap.put("protocol","http-listener-1");
+            valueMap.put("threadPool","http-thread-pool-l");
+            valueMap.put("transport","tcp");
+
+            handlerCtx.setOutputValue("valueMap", valueMap);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
 
 
     @Handler(id="getThreadPoolAttr",
@@ -218,6 +244,28 @@ public class GrizzlyHandlers {
         @HandlerOutput(name="valueMap",        type=Map.class)})
 
         public static void getThreadPoolAttr(HandlerContext handlerCtx) {
+        try{
+            String configName = (String) handlerCtx.getInputValue("configName");
+            Map valueMap = new HashMap();
+
+            valueMap.put("timeout","120");
+            valueMap.put("maxQueue","-1");
+            valueMap.put("maxThread","200");
+            valueMap.put("minThread","0");
+
+            handlerCtx.setOutputValue("valueMap", valueMap);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    @Handler(id="getThreadPoolDefault",
+    input={
+        @HandlerInput(name="configName",   type=String.class, required=true) },
+    output={
+        @HandlerOutput(name="valueMap",        type=Map.class)})
+
+        public static void getThreadPoolDefault(HandlerContext handlerCtx) {
         try{
             String configName = (String) handlerCtx.getInputValue("configName");
             Map valueMap = new HashMap();

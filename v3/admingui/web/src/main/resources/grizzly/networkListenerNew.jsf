@@ -57,7 +57,7 @@
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerNewPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerNewPageTitleHelp}">
                     <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
                         <!command
-                            //getNetworkListenerDefault(configName="#{configName}", atts="#{pageSession.valueMap}")
+                            getNetworkListenerDefault(configName="#{configName}", atts="#{pageSession.valueMap}")
                         />
                     </sun:button>
                     <!-- Buttons  -->

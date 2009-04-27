@@ -34,23 +34,23 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/threadPools.jsf -->
+<!-- configuration/threadPools.jsf -->
 
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.threadPoolPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.configuration.threadPoolPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getThreadPools(configName="$pageSession{configName}", result=>$attribute{listOfRows} );
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteThreadPool}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/threadPoolNew.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/threadPools.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/grizzly/threadPoolEdit.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/threadPoolNew.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/configuration/threadPools.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?configName=#{configName}");
         setPageSessionAttribute(key="type" value="threadPool");
         setPageSessionAttribute(key="tableTitle" value="threadPool");
     />
@@ -59,15 +59,15 @@
 
             <sun:form id="propertyForm">
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.threadPoolPageTitle}"
-                 helpText="$resource{i18n_web.grizzly.threadPoolPageTitleHelp}" />
+                 <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolPageTitle}"
+                 helpText="$resource{i18n_web.configuration.threadPoolPageTitleHelp}" />
 		 "<br /> <br />
          " *** NOTE: This page is not functional yet, please use CLI to manage Thread Pools ***
          "<br /> <br />
 
 <sun:table id="configs" title="#{tableTitle}">
 
-#include "/web/grizzly/tableButtons.inc"
+#include "/web/configuration/tableButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
@@ -77,16 +77,16 @@
             <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.threadPool.threadPoolIdCol}" sort="name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.configuration.threadPool.threadPoolIdCol}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}"
             url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.threadPool.maxSizeCol}"   rowHeader="$boolean{true}" id="max">
+    <sun:tableColumn headerText="$resource{i18n_web.configuration.threadPool.maxSizeCol}"   rowHeader="$boolean{true}" id="max">
         <staticText id="max" value="#{td.value.maxSize}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.threadPool.minSizeCol}"  rowHeader="$boolean{true}" id="min">
+    <sun:tableColumn headerText="$resource{i18n_web.configuration.threadPool.minSizeCol}"  rowHeader="$boolean{true}" id="min">
         <staticText id="min" value="#{td.value.minSize}" />
     </sun:tableColumn>
 

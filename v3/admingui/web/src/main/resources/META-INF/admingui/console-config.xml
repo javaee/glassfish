@@ -6,7 +6,7 @@
                 type="org.glassfish.admingui:treeNode" 
                 priority="300" 
                 parentId="configuration" 
-                content="configuration/webContainerNode.jsf" 
+                content="webPluginTreeNode.jsf"
         />
 
         

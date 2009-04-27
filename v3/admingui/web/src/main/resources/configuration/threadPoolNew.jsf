@@ -33,14 +33,14 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/threadPoolNew.jsf -->
+<!-- configuration/threadPoolNew.jsf -->
 
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.threadPoolNewPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.configuration.threadPoolNewPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -54,15 +54,15 @@
 #include "/shared/alertMsg.inc"
 
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.threadPoolNewPageTitle}" helpText="$resource{i18n_web.grizzly.threadPoolNewPageTitleHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolNewPageTitle}" helpText="$resource{i18n_web.configuration.threadPoolNewPageTitleHelp}">
                     <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
                         <!command
-                            //getThreadPoolDefault(configName="#{configName}", atts="#{pageSession.valueMap}")
+                            getThreadPoolDefault(configName="#{configName}", valueMap="#{pageSession.valueMap}")
                         />
                     </sun:button>
                     <!-- Buttons  -->
                     <!facet pageButtonsTop>
-// #include "/web/grizzly/buttons.inc"
+// #include "/web/configuration/buttons.inc"
                     </facet>
                     </sun:title>
                     "<br><br>
@@ -105,7 +105,7 @@
                     </sun:propertySheet>
                 <sun:title id="propertyContentPage2">
                     <!facet pageButtonsBottom>
-   #include "/web/grizzly/buttons.inc"
+   #include "/web/configuration/buttons.inc"
                     </facet>
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_web.threadPoolNew}" />

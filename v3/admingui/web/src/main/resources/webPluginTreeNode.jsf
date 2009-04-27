@@ -74,7 +74,20 @@
         <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
     </facet>
 </dynamicTreeNode>
-
+<dynamicTreeNode id="threadPools"
+    treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+    objectName="amx:j2eeType=X-ThreadPoolsConfig,name=na,X-ConfigConfig=$pageSession{configName}"
+    methodName="getThreadPoolConfigMap"
+    childImageURL="/resource/web/images/threadPool.gif"
+    childExpanded="$boolean{false}"
+    childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+    text="$resource{i18n.tree.threadPools}"
+    url="/web/configuration/threadPools.jsf?configName=#{configName}"
+    >
+    <!facet image>
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/threadPools.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+    </facet>
+</dynamicTreeNode>
 <sun:treeNode
     id="networkConfig"
     text="$resource{i18n.tree.grizzly.networkConfig}"
@@ -88,14 +101,6 @@
         url="/web/grizzly/networkListeners.jsf?configName=server-config"
         imageURL="/resource/web/images/http.gif"
     />
-
-    <sun:treeNode
-        id="threadPools"
-        text="$resource{i18n.tree.grizzly.threadPools}"
-        url="/web/grizzly/threadPools.jsf?configName=server-config"
-        imageURL="/resource/web/images/threadPool.gif"
-    />
-
     <sun:treeNode
         id="protocols"
         text="$resource{i18n.tree.grizzly.protocols}"
