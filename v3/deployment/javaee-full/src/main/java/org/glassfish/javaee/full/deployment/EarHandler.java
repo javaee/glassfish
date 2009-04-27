@@ -36,6 +36,7 @@
 
 package org.glassfish.javaee.full.deployment;
 
+import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -59,18 +60,12 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
-import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.config.serverbeans.DasConfig;
 
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.jar.Manifest;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -96,7 +91,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     @Inject
     DasConfig dasConfig;
-    
+
+    private static LocalStringsImpl strings = new LocalStringsImpl(EarHandler.class);;
+
     public String getArchiveType() {
         return "ear";
     }
@@ -129,6 +126,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         subTarget = target.createSubArchive(
                             FileUtils.makeFriendlyFilename(moduleUri));
                         subHandler.expand(subArchive, subTarget, context);
+// Keep the original submodule file because the app client deployer needs it.
 /*
                         // delete the original module file
                         File origSubArchiveFile = new File(
@@ -166,7 +164,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         try {
             cl = new EarClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory()), parent);
         } catch (IOException e) {
-            _logger.log(Level.SEVERE, "error in adding libraries in library directory" ,e);
+            _logger.log(Level.SEVERE, strings.get("errAddLibs") ,e);
             throw new RuntimeException(e);
         }
 
@@ -176,6 +174,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
             ReadableArchive sub = null;
             try {
                 sub = archive.getSubArchive(md.getArchiveUri());
+                if (sub instanceof InputJarArchive) {
+                    throw new IllegalArgumentException(strings.get("wrongArchType", md.getArchiveUri()));
+                }
             } catch (IOException e) {
                 _logger.log(Level.FINE, "Sub archive " + md.getArchiveUri() + " seems unreadable" ,e);
             }
@@ -214,7 +215,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }
                 } catch (IOException e) {
-                    _logger.log(Level.SEVERE, "Cannot find a class loader for submodule", e);
+                    _logger.log(Level.SEVERE, strings.get("noClassLoader", md.getArchiveUri()), e);
                 }
 
             }
@@ -246,7 +247,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
                 holder = new ApplicationHolder(archivist.createApplication(
                     source, isDirectory));
-                System.out.println("time to read application.xml " + (System.currentTimeMillis() - start));
+                _logger.fine("time to read application.xml " + (System.currentTimeMillis() - start));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (SAXParseException e) {
@@ -256,7 +257,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         }
 
         if (holder.app==null) {
-            throw new RuntimeException("Cannot read application metadata");
+            throw new RuntimeException(strings.get("errReadMetadata"));
         }
         return holder;
     }
