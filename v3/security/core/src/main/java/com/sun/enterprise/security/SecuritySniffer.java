@@ -37,7 +37,6 @@
 package com.sun.enterprise.security;
 
 import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
-import com.sun.enterprise.deployment.util.AnnotationDetector;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.deployment.GenericSniffer;

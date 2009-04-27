@@ -100,5 +100,10 @@
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>asm-all-repackaged</artifactId>
+            <version>${project.version}</version>
+        </dependency>
    </dependencies>
 </project>

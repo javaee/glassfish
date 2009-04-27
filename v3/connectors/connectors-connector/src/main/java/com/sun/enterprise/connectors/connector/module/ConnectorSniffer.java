@@ -38,7 +38,6 @@ package com.sun.enterprise.connectors.connector.module;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.deployment.util.AnnotationDetector;
 import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 import com.sun.enterprise.deployment.annotation.introspection.ResourceAdapterAnnotationScanner;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;

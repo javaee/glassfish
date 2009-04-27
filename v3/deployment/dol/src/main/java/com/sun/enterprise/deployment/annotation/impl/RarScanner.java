@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.FileFilter;
 import java.util.logging.Level;
 
 import org.glassfish.apf.impl.AnnotationUtils;
@@ -62,6 +63,20 @@ public class RarScanner extends ModuleScanner<ConnectorDescriptor>{
         this.classLoader = classLoader;
         if (archiveFile.isDirectory()) {
             addScanDirectory(archiveFile);
+
+            // add top level jars for scanning
+            File[] jarFiles = archiveFile.listFiles(new FileFilter() {
+                 public boolean accept(File pathname) {
+                     return (pathname.isFile() &&
+                            pathname.getAbsolutePath().endsWith(".jar"));
+                 }
+            });
+
+            if (jarFiles != null && jarFiles.length > 0) {
+                for (File jarFile : jarFiles) {
+                    addScanJar(jarFile);
+                }
+            }
         }else{
             AnnotationUtils.getLogger().fine("RARScanner : not a directory : " + archiveFile.getName());
         }

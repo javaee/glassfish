@@ -136,11 +136,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>asm-all-repackaged</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 	<dependency>
 	    <groupId>com.sun.pkg</groupId>
 	    <artifactId>pkg-client</artifactId>

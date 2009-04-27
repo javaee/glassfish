@@ -36,12 +36,11 @@
 package com.sun.enterprise.connectors.connector.module;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
-import com.sun.enterprise.deployment.annotation.introspection.ResourceAdapterAnnotationScanner;
-import com.sun.enterprise.deployment.util.AnnotationDetector;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.GenericAnnotationDetector;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -59,6 +58,9 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
     @Inject
     private ConnectorsClassLoaderUtil loader;
 
+    private static final Class[] connectorAnnotations = new Class[] {
+            javax.resource.spi.Connector.class };
+
     /**
      * {@inheritDoc}
      */
@@ -72,8 +74,8 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
     public boolean handles(ReadableArchive archive) throws IOException {
         boolean handles =  archive.exists("META-INF/ra.xml");
         if (!handles) {
-            AnnotationDetector detector =
-                   new AnnotationDetector(new ResourceAdapterAnnotationScanner());
+            GenericAnnotationDetector detector =
+                new GenericAnnotationDetector(connectorAnnotations);
             handles = detector.hasAnnotationInArchive(archive);
         }
         return handles;

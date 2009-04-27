@@ -39,19 +39,17 @@ import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 
 /**
- * Abstract superclass for specific types of annotation detectors.
+ * Subclass for connector annotation detection.
+ * Connector annotation detector need to scan for top level jars as well
  *
- * @author Jerome Dochez
  */
-public class AnnotationDetector {
-    
-    protected final ClassFile classFile;
+public class ConnectorAnnotationDetector extends AnnotationDetector {
 
-    public AnnotationDetector(AnnotationScanner scanner) {
-        ConstantPoolInfo poolInfo = new ConstantPoolInfo(scanner);
-        classFile = new ClassFile(poolInfo);
+    public ConnectorAnnotationDetector(AnnotationScanner scanner) {
+        super(scanner);
     }
     
+    @Override
     public boolean hasAnnotationInArchive(ReadableArchive archive) throws IOException {
 
         Enumeration<String> entries = archive.entries();
@@ -62,29 +60,39 @@ public class AnnotationDetector {
                     return true;
                 }
             } 
-        }
-        return false;
-    }
 
-    public boolean containsAnnotation(ReadableArchive archive, String entryName) throws IOException {
-        return containsAnnotation(archive.getEntry(entryName), archive.getEntrySize(entryName));    
-    }
+            // scan classes in top level jars
+            File archiveFile = new File(archive.getURI());
+            File[] jarFiles = archiveFile.listFiles(new FileFilter() {
+                 public boolean accept(File pathname) {
+                     return (pathname.isFile() &&
+                            pathname.getAbsolutePath().endsWith(".jar"));
+                 }
+            });
 
-    protected boolean containsAnnotation(InputStream is, long size) 
-        throws IOException {
-        boolean result = false;
-        // check if it contains top level annotations...
-        ReadableByteChannel channel = null;
-        try {
-            channel = Channels.newChannel(is);
-            if (channel!=null) {
-                result = classFile.containsAnnotation(channel, size);
-             }
-             return result;
-        } finally {
-            if (channel != null) {
-                channel.close();
+            if (jarFiles != null && jarFiles.length > 0) {
+                for (File file : jarFiles) {
+                    JarFile jarFile = null; 
+                    try {
+                        jarFile = new JarFile(file);
+                        Enumeration<JarEntry> jarEntries = jarFile.entries();
+                        while (jarEntries.hasMoreElements()) {
+                            JarEntry jarEntry = jarEntries.nextElement();
+                            if (jarEntry.getName().endsWith(".class")) {
+                                if (containsAnnotation(jarFile.getInputStream(
+                                    jarEntry), jarEntry.getSize())) {
+                                    return true;
+                                }
+                            }
+                        } 
+                    } finally {
+                        if (jarFile != null) {
+                            jarFile.close();
+                        }
+                    }
+                }
             }
         }
+        return false;
     }
 }
