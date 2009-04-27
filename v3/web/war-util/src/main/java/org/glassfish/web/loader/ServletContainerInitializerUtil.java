@@ -180,23 +180,27 @@ public class ServletContainerInitializerUtil {
                 try {
                     if(path.endsWith(".jar")) {
                         JarFile jf = new JarFile(path);
-                        Enumeration<JarEntry> entries = jf.entries();
-                        while(entries.hasMoreElements()) {
-                            JarEntry anEntry = entries.nextElement();
-                            if(anEntry.isDirectory())
-                                continue;
-                            if(!anEntry.getName().endsWith(".class"))
-                                continue;
-                            try {
-                                String className = anEntry.getName().replace('/', '.');
-                                className = className.substring(0, className.length()-6);
-                                Class aClass = cl.loadClass(className);
-                                initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
-                            } catch (ClassNotFoundException e) {
-                                log.warning(sm.getString("ServletContainerInitializerUtil.CNFWarning",
-                                        anEntry.getName()));
-                                continue;
+                        try {
+                            Enumeration<JarEntry> entries = jf.entries();
+                            while(entries.hasMoreElements()) {
+                                JarEntry anEntry = entries.nextElement();
+                                if(anEntry.isDirectory())
+                                    continue;
+                                if(!anEntry.getName().endsWith(".class"))
+                                    continue;
+                                try {
+                                    String className = anEntry.getName().replace('/', '.');
+                                    className = className.substring(0, className.length()-6);
+                                    Class aClass = cl.loadClass(className);
+                                    initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
+                                } catch (ClassNotFoundException e) {
+                                    log.warning(sm.getString("ServletContainerInitializerUtil.CNFWarning",
+                                            anEntry.getName()));
+                                    continue;
+                                }
                             }
+                        } finally {
+                            jf.close();
                         }
                     } else {
                         File file = new File(path);
