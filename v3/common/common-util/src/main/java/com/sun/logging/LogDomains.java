@@ -243,30 +243,29 @@ public class LogDomains
      
     public static Logger getLogger(final Class clazz, final String name) {
         final ClassLoader cloader =clazz.getClassLoader();
-        Logger l = LogManager.getLogManager().getLogger(name);
-
-        if (l==null) {
-            //first time through for this logger.  create it and find the resource bundle
-
-            // should be pass in a resource bundle?
-            l = Logger.getLogger(name); 
-                    
-        };
-
-
-        // now create the real logger which is the logger name with the package name
-        // this is what will be returned.
-        //look for the resource bundle only in the package if not there then the resource
-        // bundle from the parent above will be used.
-        String pkgName = clazz.getPackage().getName();
-        String loggerName = name + "."+ pkgName;
-        Logger cLogger = LogManager.getLogManager().getLogger(loggerName);
-
-        // we should only add a logger of the same name at time.
         lock.lock();
         try {
-            // try again, the Logger may have been created in the meantime.
-            cLogger = LogManager.getLogManager().getLogger(loggerName);
+            Logger l = LogManager.getLogManager().getLogger(name);
+
+            if (l==null) {
+                //first time through for this logger.  create it and find the resource bundle
+
+                // should be pass in a resource bundle?
+                l = Logger.getLogger(name);
+                    
+            };
+
+
+            // now create the real logger which is the logger name with the package name
+            // this is what will be returned.
+            //look for the resource bundle only in the package if not there then the resource
+            // bundle from the parent above will be used.
+            String pkgName = clazz.getPackage().getName();
+            String loggerName = name + "."+ pkgName;
+            Logger cLogger = LogManager.getLogManager().getLogger(loggerName);
+
+            // we should only add a logger of the same name at time.
+
             if (cLogger == null) {
                 //first time through for this logger.  create it and find the resource bundle
                 cLogger = new Logger(loggerName, null) {
