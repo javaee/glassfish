@@ -97,9 +97,9 @@ public class SingletonDomHtmlProvider extends DomProviderUtil implements Message
      private String getHtml(Dom proxy) {
         String result;
         result = "<html>" + "<body>" + "\n" ;
-        result = result + "<h1>" + getTypeKey(proxy) + "</h1>" + "<hr>" + "\n";
-            result = result + getAttributes(proxy);
-        result = result + "<h1>" + getResourcesKey() + "</h1>" + "<hr>" + "\n";
+        result = result + "<h1>" + getTypeKey(proxy) + "</h1>" + "<hr>" + "<br>";
+            result = result + getAttributes(proxy) + "<br><br>";
+        result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>" + "<br>";
             result = result + getResourcesLinks(proxy);
         result = result + "</html>" + "</body>";
         return result;
@@ -120,9 +120,9 @@ public class SingletonDomHtmlProvider extends DomProviderUtil implements Message
         String result ="";
         Set<String> attributes = proxy.getAttributeNames();
         for (String attribute : attributes) { //for each attribute
-            result = result + indent + "<h2>"; //indent
-            result = result + attribute + ":" + proxy.attribute(attribute);
-            result = result + "</h2>" + "\n";
+            result = result + indent + "<b>"; //indent
+            result = result + attribute + ":&nbsp;&nbsp;&nbsp;&nbsp;" + proxy.attribute(attribute);
+            result = result + "</b>" + "<br>";
         }
         
         return result;
@@ -134,20 +134,18 @@ public class SingletonDomHtmlProvider extends DomProviderUtil implements Message
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) { //for each element
             try {
-                    result = result + indent + "<h2>"; //indent
-                    result = result + getElementLink(elementName);
-                    result = result + "</h2>" + "\n";
+                    result = result + indent + "<b>"; //indent
+                    result = result + "<a href=" + getElementLink(uriInfo, elementName) + ">";
+                    result = result + elementName;
+                    result = result + "</a>";
+                    ///result = result + getElementLink(uriInfo, elementName);
+                    result = result + "</b>" + "<br>";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         return result;
-    }
-
-
-    private String getElementLink(String elementName) {
-        return uriInfo.getAbsolutePath() + "/" + elementName;
     }
 
 

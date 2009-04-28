@@ -143,7 +143,7 @@ public class SingletonDomXmlProvider extends DomProviderUtil implements MessageB
             try {
                     result = result + indent; //indent
                     result = result + getStartXmlElement(getResourceKey());
-                    result = result + getElementLink(elementName);
+                    result = result + getElementLink(uriInfo, elementName);
                     result = result + getEndXmlElement(getResourceKey());
                     result = result + "\n";
             } catch (Exception e) {
@@ -152,11 +152,6 @@ public class SingletonDomXmlProvider extends DomProviderUtil implements MessageB
         }
 
         return result;
-    }
-
-
-    private String getElementLink(String elementName) {
-        return uriInfo.getAbsolutePath() + "/" + elementName;
     }
 
 

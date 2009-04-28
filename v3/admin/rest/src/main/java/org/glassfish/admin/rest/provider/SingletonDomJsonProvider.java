@@ -144,7 +144,7 @@ public class SingletonDomJsonProvider extends DomProviderUtil implements Message
             try {
                 ///List<Dom> elements = proxy.nodeElements(elementName);
                 ///for (Dom element : elements) {
-                    result = result + quote(getElementLink(elementName/*element*/));
+                    result = result + quote(getElementLink(uriInfo, elementName/*element*/));
                     result = result + ",";
                 ///}
             } catch (Exception e) {
@@ -155,11 +155,6 @@ public class SingletonDomJsonProvider extends DomProviderUtil implements Message
         int endIndex = result.length() - 1;
         if (endIndex > 0) result = result.substring(0, endIndex );
         return result;
-    }
-
-
-    private String getElementLink(String elementName) {
-        return uriInfo.getAbsolutePath() + "/" + elementName;
     }
 
 }

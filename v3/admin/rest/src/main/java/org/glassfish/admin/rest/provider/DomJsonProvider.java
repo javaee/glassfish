@@ -131,8 +131,8 @@ public class DomJsonProvider extends DomProviderUtil implements MessageBodyWrite
         String elementName;
         for (Dom proxy: proxyList) {
             try {
-                elementName = proxy.attribute("name");
-                result = result + quote(getElementLink(elementName));
+                elementName = proxy.getKey();
+                result = result + quote(getElementLink(uriInfo, elementName));
                 result = result + ",";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -142,11 +142,6 @@ public class DomJsonProvider extends DomProviderUtil implements MessageBodyWrite
         int endIndex = result.length() - 1;
         if (endIndex > 0) result = result.substring(0, endIndex - 1);
         return result;
-    }
-
-
-    private String getElementLink(String elementName) {
-        return uriInfo.getAbsolutePath() + "/" + elementName;
     }
 
 }

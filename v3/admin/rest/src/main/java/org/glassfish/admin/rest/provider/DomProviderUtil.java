@@ -40,6 +40,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import javax.ws.rs.core.UriInfo;
+
 /**
  *
  * @author rajeshwar patil
@@ -122,6 +124,7 @@ public class DomProviderUtil {
         return sb.toString();
     }
 
+
     static protected final String readAsString(InputStream in) throws IOException {
         Reader reader = new InputStreamReader(in);
         StringBuilder sb = new StringBuilder();
@@ -132,4 +135,12 @@ public class DomProviderUtil {
         }
         return sb.toString();
     }
+
+
+    static protected final String getElementLink(UriInfo uriInfo, String elementName) {
+        String link = uriInfo.getAbsolutePath().toString();
+        return link.endsWith("/")?
+            (link + elementName):(link + "/" + elementName);
+    }
+
 }

@@ -119,8 +119,8 @@ public class DomXmlProvider extends DomProviderUtil implements MessageBodyWriter
             try {
                     result = result + indent; //indent
                     result = result + getStartXmlElement(getResourceKey());
-                    elementName = proxy.attribute("name");
-                    result = result + getElementLink(elementName);
+                    elementName = proxy.getKey();
+                    result = result + getElementLink(uriInfo,elementName);
                     result = result + getEndXmlElement(getResourceKey());
                     result = result + "\n";
             } catch (Exception e) {
@@ -129,11 +129,6 @@ public class DomXmlProvider extends DomProviderUtil implements MessageBodyWriter
         }
 
         return result;
-    }
-
-
-    private String getElementLink(String elementName) {
-        return uriInfo.getAbsolutePath() + "/" + elementName;
     }
 
 

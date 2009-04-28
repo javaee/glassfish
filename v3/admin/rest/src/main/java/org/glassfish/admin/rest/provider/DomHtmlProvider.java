@@ -91,9 +91,9 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
 
      private String getHtml(List<Dom> proxy) {
         String result;
-        result = "<html>" + "<body>" + "\n" ;
-        result = result + "<h1>" + getTypeKey(proxy) + "</h1>" + "<hr>" + "\n";
-        result = result + "<h1>" + getResourcesKey() + "</h1>" + "<hr>" + "\n";
+        result = "<html>" + "<body>" + "<br>" ;
+        result = result + "<h1>" + getTypeKey(proxy) + "</h1>" + "<hr>" + "<br><br>";
+        result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>" + "<br>";
             result = result + getResourcesLinks(proxy);
         result = result + "</html>" + "</body>";
         return result;
@@ -115,20 +115,17 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
         String result = "";
         for (Dom proxy: proxyList) { //for each element
             try {
-                    result = result + indent + "<h2>"; //indent
-                    result = result + getElementLink(proxy.attribute("name"));
-                    result = result + "</h2>" + "\n";
+                    result = result + indent + "<b>"; //indent
+                    result = result + "<a href=" + getElementLink(uriInfo, proxy.getKey()) + ">";
+                    result = result + proxy.getKey();
+                    result = result + "</a>";
+                    result = result + "</b>" + "<br>";
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         return result;
-    }
-
-
-    private String getElementLink(String elementName) {
-        return uriInfo.getAbsolutePath() + "/" + elementName;
     }
 
 
