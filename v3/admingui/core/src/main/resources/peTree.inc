@@ -74,6 +74,10 @@
 	      url="/commonTask.jsf"
 	      imageURL="/resource/images/common_tasks.gif"
 	      clientSide="#{true}">
+	      <!facet content>
+		// Doing this avoids the JS which highlights the entire tree.
+		<sun:hyperlink id="ct" url="/commonTask.jsf" text="$resource{i18n.tree.commonTasks}" />
+	      </facet>
 	  <!afterCreate
 	      getClientId(component="$this{component}" clientId=>$page{treeId});
 	  />
