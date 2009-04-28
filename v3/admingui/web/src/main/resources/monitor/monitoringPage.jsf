@@ -36,26 +36,55 @@
 <!-- monitoring/monitoringPage.jsf -->
 <!initPage 
     setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings")
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+    setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks")
+
+    setAttribute(key="displayFeedback" value="#{displayFeedback}");
+    setAttribute(key="amxConfigName" value="monitoringServiceConfig.moduleMonitoringLevelsConfig")
+    setAttribute(key="amxConfigAttributes" value={"HTTPService","webContainer", "JVM"})
+
+#include "/templates/adminConsoleInit.inc"
 />
-<!composition template="/templates/adminConsolePropertySheet.tpl" 
-              pageTitle="$resource{web.monitoring.Title}" 
-              helpText="$resource{web.monitoring.PageHelp}"
-              helpBundle="org.glassfish.web.admingui.Helplinks"
-              helpKey="$resource{help_web.monitoringService}"
-              amxConfigName="monitoringServiceConfig.moduleMonitoringLevelsConfig"
-              <!--amxConfigAttributes={"HTTPService","webContainer", "JVM", "threadPool"}-->
-              amxConfigAttributes={"HTTPService","webContainer", "JVM"}
-              displayFeedback="#{true}">
-    <!define name="properties">
-        <sun:property id="httpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Http}">                           
-            <sun:dropDown id="Http" selected="#{configMap['HTTPService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
-        </sun:property>
-        <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Web}">                           
-            <sun:dropDown id="Web" selected="#{configMap.webContainer}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
-        </sun:property>                               
-        <sun:property id="jvm"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Jvm}">                           
-            <sun:dropDown id="Http" selected="#{configMap['JVM']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
-        </sun:property>          
-        "<br /><br />
+<!composition template="/templates/default.layout">
+<!define name="content">
+        <sun:form id="propertyForm">
+#include "/templates/adminConsoleForm.inc"
+            <sun:title id="topTitle" title="$resource{web.monitoring.Title}" helpText="$resource{web.monitoring.PageHelp}">
+                <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+                    <!command
+                        loadDefaultAmxConfigAttributes(amxConfig="#{amxConfig}", configMap="$pageSession{configMap}");
+                    />
+                </sun:button>
+
+                <!-- Buttons  -->
+                <!facet pageButtonsTop>
+                    <sun:panelGroup id="topButtons">
+                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
+                            <!command
+                                updateAmxConfig(moduleConfig="#{amxConfig}", configMap="$pageSession{configMap}");
+                                prepareSuccessfulMsg();
+                            />
+                        </sun:button>
+                    </sun:panelGroup>
+                </facet>
+            </sun:title>
+
+            <sun:propertySheet requiredFields="#{hasRequiredFields}">
+                <sun:propertySheetSection>
+                <sun:property id="httpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Http}">
+                    <sun:dropDown id="Http" selected="#{configMap['HTTPService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Web}">
+                    <sun:dropDown id="Web" selected="#{configMap.webContainer}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="jvm"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Jvm}">
+                    <sun:dropDown id="Http" selected="#{configMap['JVM']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                </sun:propertySheetSection >
+            </sun:propertySheet>
+            "<br /><br />
+
+            <sun:hidden id="helpKey" value="$resource{help_web.monitoringService}" />
+        </sun:form>
     </define>
 </composition>
