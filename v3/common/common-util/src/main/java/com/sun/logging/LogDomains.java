@@ -25,6 +25,7 @@ package com.sun.logging;
 import java.util.logging.Logger;
 import java.util.logging.LogManager;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 import java.util.Locale;
@@ -317,8 +318,10 @@ public class LogDomains
 
                                 } catch (MissingResourceException me) {
                             }
-                            //System.out.println("class name that failed "+clazz.getName());
-                            throw e;
+                            Logger l = LogManager.getLogManager().getLogger(name);
+                            l.log(Level.WARNING, "Can not find resource bundle for this logger. "+ " class name that failed: "+clazz.getName());
+                            //throw e;
+                            return null;
                         }
                     };
                 };
