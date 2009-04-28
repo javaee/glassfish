@@ -21,7 +21,7 @@
 		<!-- Could have used ant-contrib's foreach :-) -->
 		<antcall target="do_processing">
 			<param name="bundle.name" value="GlassFishV3WebProfilePreview" />
-			<param name="sourcezip.name" value="../distributions-ips/glassfish/target/sun-web-ips-installer.zip" />
+			<param name="sourcezip.name" value="../distributions/glassfish/target/web-ips-installer.zip" />
 			<param name="selfextractexe.name" value="glassfish-web" />
 		</antcall>
 
@@ -29,7 +29,7 @@
 		<!-- Could have used ant-contrib's foreach :-) -->
 		<antcall target="do_processing">
 			<param name="bundle.name" value="GlassFishV3Preview" />
-			<param name="sourcezip.name" value="../distributions-ips/glassfish/target/glassfish-ips-installer.zip" />
+			<param name="sourcezip.name" value="../distributions/glassfish/target/glassfish-ips-installer.zip" />
 			<param name="selfextractexe.name" value="glassfish-full" />
 		</antcall>
 		<antcall target="push_zip_artifact_to_repository"/>
