@@ -432,7 +432,6 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
                     for (String urlPattern : urlPatterns) {
                         if (implies(up, urlPattern)) {
                             url2MatchMap.put(urlPattern, Boolean.TRUE);
-                            break;
                         }
                     }
                 }
