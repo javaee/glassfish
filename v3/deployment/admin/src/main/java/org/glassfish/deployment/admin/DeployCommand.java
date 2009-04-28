@@ -216,6 +216,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 deploymentContext.getAppProps().putAll(properties);
             }
 
+            if (property!=null) {
+                deploymentContext.getAppProps().putAll(property);
+            }
+
             // clean up any generated files
             deploymentContext.clean();
 
@@ -367,7 +371,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 undeployParams.properties = new Properties();
                 undeployParams.properties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
                 subReport.setExtraProperties(new Properties());
+            } else if (property!=null && property.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
+                undeployParams.properties = new Properties();
+                undeployParams.properties.put(DeploymentProperties.KEEP_SESSIONS, property.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                subReport.setExtraProperties(new Properties());
             }
+
             commandRunner.doCommand("undeploy", undeployParams, subReport, null, null);
             return subReport.getExtraProperties();
         }

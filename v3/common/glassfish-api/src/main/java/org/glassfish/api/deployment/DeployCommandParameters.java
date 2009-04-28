@@ -113,8 +113,11 @@ public class DeployCommandParameters extends OpsParams {
     @Param(optional=true)
     public String description;
 
-    @Param(optional=true, name="property")
+    @Param(optional=true, name="properties")
     public Properties properties;
+
+    @Param(optional=true, name="property")
+    public Properties property;
 
     @Param(optional=true)
     public String type = null;
