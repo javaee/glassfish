@@ -43,7 +43,6 @@ import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 public interface NetworkListener  extends NamedConfigElement
 {
     public Protocol   findProtocol();
-    public ThreadPool findThreadPool();
     public Transport  findTransport();
 }
 

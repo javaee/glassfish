@@ -41,6 +41,8 @@ import org.glassfish.admin.amx.annotation.*;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
@@ -135,12 +137,12 @@ public interface DomainRoot extends AMXProxy
 
     /**
         Get the DomainConfig.
-        For module dependency reasons, the returned object must be cast to DomainConfig.class
-        by the client, as it cannot be referenced here.
+        For module dependency reasons, the returned object must be converted (if desired)
+        to DomainConfig using getDomain().as(DomainConfig.class).
         @return the singleton DomainConfig
      */
     @ManagedAttribute
-    public AMXProxy	getDomain();
+    public AMXConfigProxy	getDomain();
 
     /**
         @return the singleton {@link MonitoringRoot}.  All MonitoringRoot MBeans should be

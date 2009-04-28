@@ -421,7 +421,7 @@ public final class MBeanInfoSupport {
         desc.setField( DESC_STD_IMMUTABLE_INFO, immutable );
         desc.setField( DESC_STD_INTERFACE_NAME, intf.getName() );
         desc.setField( DESC_IS_SINGLETON, singleton );
-        desc.setField( DESC_PATH_PART, pathPart );
+        //desc.setField( DESC_PATH_PART, pathPart );
         desc.setField( DESC_GROUP, group );
         desc.setField( DESC_SUPPORTS_ADOPTION, supportsAdoption );
         
@@ -429,8 +429,8 @@ public final class MBeanInfoSupport {
             desc.setField( DESC_SUB_TYPES, subTypes );
         }
 
-
         return desc;
     }
-
 }
+
+

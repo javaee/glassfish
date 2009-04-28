@@ -130,10 +130,15 @@ public final class ComplianceMonitor implements NotificationListener {
                     break;
                 }
 
-                final AMXValidator validator = new AMXValidator(mServer);
-                final AMXValidator.ValidationResult result = validator.validate(objectName);
-                if (result.numFailures() != 0) {
-                    ImplUtil.getLogger().warning( result.toString() );
+                try {
+                    final AMXValidator validator = new AMXValidator(mServer);
+                    final AMXValidator.ValidationResult result = validator.validate(objectName);
+                    if (result.numFailures() != 0) {
+                        ImplUtil.getLogger().warning( result.toString() );
+                    }
+                }
+                catch( Throwable t ) {
+                    t.printStackTrace();
                 }
                // System.out.println( "VALIDATED: " + objectName );
             }

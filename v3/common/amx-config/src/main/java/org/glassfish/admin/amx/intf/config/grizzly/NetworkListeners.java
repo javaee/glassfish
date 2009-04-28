@@ -45,5 +45,4 @@ import org.glassfish.admin.amx.intf.config.ConfigElement;
 public interface NetworkListeners  extends Singleton, ConfigElement
 {
     public Map<String,NetworkListener>  getNetworkListener();
-    public Map<String,ThreadPool>  getThreadPool();
 }

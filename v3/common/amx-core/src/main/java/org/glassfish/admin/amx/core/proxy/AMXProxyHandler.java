@@ -1013,11 +1013,6 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         return getDescriptorField(DESC_IS_SINGLETON, Boolean.FALSE);
     }
     
-    public String pathPart()
-    {
-        return getDescriptorField(DESC_PATH_PART, (String)null);
-    }
-    
     public String group()
     {
         return getDescriptorField(DESC_GROUP, GROUP_OTHER);

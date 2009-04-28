@@ -49,12 +49,6 @@ public interface MetaGetters
 {
     public MBeanInfo mbeanInfo();
     
-	/**
-		Get the names of all available Attributes as found in MBeanInfo.
-		@return String[] of names
-	 */
-	public Set<String> attributeNames();
-    
     /**
         From Descriptor: get the Java classname of the interface for this MBean.
         If it has not been specified, a default generic interface is returned  eg 'AMX'.
@@ -67,9 +61,6 @@ public interface MetaGetters
     
     /** From Descriptor: true if this MBean is a singleton (1 instance within its parent scope) */
     public boolean singleton();
-    
-    /** From Descriptor: Get the path part of this MBean */
-    public String  pathPart();
     
     /** From Descriptor: Get the *potential* sub types this MBean expects to have */
     public String[]  subTypes();

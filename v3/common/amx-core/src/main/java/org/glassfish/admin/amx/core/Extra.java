@@ -50,11 +50,6 @@ import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 public interface Extra extends StdAttributesAccess, MetaGetters, AMXProxy
 {
 	/**
-		The ObjectName of this MBean.
-	 */
-	public ObjectName		objectName();
-    
-	/**
 		Get the MBeanServerConnection.
 	 */
 	public MBeanServerConnection		mbeanServerConnection();

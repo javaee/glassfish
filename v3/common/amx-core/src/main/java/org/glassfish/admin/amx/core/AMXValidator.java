@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -50,9 +51,11 @@ import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Extra;
 import org.glassfish.admin.amx.core.Util;
+import static org.glassfish.admin.amx.core.AMXConstants.*;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
@@ -62,7 +65,11 @@ These tests do not validate any MBean-specific semantics, only general requireme
 all AMX MBeans.
  */
 public final class AMXValidator {
-
+    private static void debug(final Object o)
+    {
+        System.out.println(o.toString() );
+    }
+    
     private static final String NL = StringUtil.NEWLINE();
     private final MBeanServerConnection mMBeanServer;
     private final ProxyFactory mProxyFactory;
@@ -82,6 +89,9 @@ public final class AMXValidator {
         public ValidationFailureException(final ObjectName objectName, final String msg) {
             super(msg);
             mObjectName = objectName;
+        }
+        public ValidationFailureException(final AMXProxy amx, final String msg) {
+            this( amx.objectName(), msg);
         }
 
         public ObjectName objectName() {
@@ -148,6 +158,16 @@ public final class AMXValidator {
         } catch (Throwable t) {
             problems.add(t.toString());
         }
+        
+        List<String> temp = null;
+        try {
+            temp = validateMetadata(proxy);
+            if ( temp != null )  {
+                problems.addAll(temp);
+            }
+        } catch (Throwable t) {
+            problems.add(t.toString());
+        }
 
         try {
             validateRequiredAttributes(proxy);
@@ -201,6 +221,13 @@ public final class AMXValidator {
                 problems.add("Attribute failed: '" + attrName + "': " + toString(t));
             }
         }
+        
+        List<String> tempProblems = null;
+        try {
+            validateChildren(proxy);
+        } catch (Throwable t) {
+            problems.add(t.toString());
+        }
 
         // test proxy methods
         try {
@@ -249,6 +276,10 @@ public final class AMXValidator {
             throws ValidationFailureException {
         throw new ValidationFailureException(objectName, msg);
     }
+    private void fail(final AMXProxy amx, final String msg)
+            throws ValidationFailureException {
+        throw new ValidationFailureException(amx, msg);
+    }
 
     private void validateObjectName(final AMXProxy proxy)
             throws ValidationFailureException {
@@ -271,6 +302,135 @@ public final class AMXValidator {
                 fail(objectName, "getName() returned incorrect name for a singleton: " + name);
             }
         }
+    }
+    
+    /** verify that the children/parent relationship exists */
+    private void validateChildren(final AMXProxy proxy)
+            throws ValidationFailureException
+    {
+        final Set<String> attrNames = proxy.attributeNames();
+        if ( ! attrNames.contains(ATTR_CHILDREN) )
+        {
+            // must NOT supply Children
+            try {
+                final ObjectName[] children = proxy.getChildren();
+                fail(proxy, "MBean has no Children attribute in its MBeanInfo, but supplies the attribute" );
+            }
+            catch( Exception e )
+            {
+                // good, the Attribute must not exist
+            }
+        }
+        else
+        {
+            // must supply Children
+            try {
+                final ObjectName[] children = proxy.getChildren();
+                if ( children == null )
+                {
+                    fail(proxy, "Children attribute must be non-null" );
+                }
+                // verify that each child is non-null and references its parent
+                for( final ObjectName childObjectName : children ) {
+                    if ( childObjectName == null ) {
+                        fail(proxy, "Child in Children array is null");
+                    }
+                    final AMXProxy child = mProxyFactory.getProxy(childObjectName);
+                    if ( ! proxy.objectName().equals( child.parent().objectName() ) )
+                    {
+                        fail( proxy, "Child’s Parent of " + child.parent().objectName() +
+                            " does not match the actual parent of " + proxy.objectName() );
+                    }
+                }
+            }
+            catch( Exception e )
+            {
+                fail(proxy, "MBean failed to supply Children attribute" );
+            }
+        }
+    }
+    
+    private static final class MetadataValidator {
+        private final Descriptor    mDescriptor;
+        private final Set<String>   mFieldNames;
+        private final List<String>  mProblems;
+        public MetadataValidator(final Descriptor d, final List<String> problems) {
+            mDescriptor = d;
+            mFieldNames = SetUtil.newSet( d.getFieldNames() );
+            mProblems = problems;
+        }
+    
+        void validateMetadataBoolean( final String fieldName )
+        {
+            if ( mFieldNames.contains(fieldName) )
+            {
+                final Object value = mDescriptor.getFieldValue(fieldName);
+                if ( value == null )
+                {
+                    mProblems.add( "Descriptor field " + fieldName + " must not be null" );
+                }
+                else if ( ! ( (value instanceof Boolean) || value.equals("true") || value.equals("false")) )
+                {
+                    mProblems.add( "Descriptor field " + fieldName + " must be set to 'true' or 'false', value is " + value );
+                }
+            }
+        }
+        
+       void validateMetadataStringNonEmpty( final String fieldName )
+        {
+            if ( mFieldNames.contains(fieldName) )
+            {
+                final Object value = mDescriptor.getFieldValue(fieldName);
+                if ( value == null || (! (value instanceof String)) || ((String)value).length() == 0 )
+                {
+                    mProblems.add( "Descriptor field " + fieldName + " must be non-zero length String, value = " + value);
+                }
+            }
+        }
+        
+       void validate( final String fieldName, final Class<?> clazz)
+        {
+            if ( mFieldNames.contains(fieldName) )
+            {
+                final Object value = mDescriptor.getFieldValue(fieldName);
+                if ( value == null || (! ( clazz.isAssignableFrom(value.getClass()) )) )
+                {
+                    mProblems.add( "Descriptor field " + fieldName + " must be of class " + clazz.getSimpleName() );
+                }
+            }
+        }
+    }
+    
+    private static List<String> validateMetadata(final AMXProxy proxy)
+    {
+        final List<String> problems = new ArrayList<String>();
+        
+        final Descriptor d = proxy.extra().mbeanInfo().getDescriptor();
+        
+        // verify that no extraneous field exist
+        final Set<String> LEGAL_AMX_DESCRIPTORS = SetUtil.newStringSet(
+            DESC_GENERIC_INTERFACE_NAME, DESC_IS_SINGLETON, DESC_GROUP, DESC_SUPPORTS_ADOPTION, DESC_SUB_TYPES);
+        for( final String fieldName : d.getFieldNames() )
+        {
+            if ( fieldName.startsWith(DESC_PREFIX) && ! LEGAL_AMX_DESCRIPTORS.contains(fieldName) )
+            {
+                problems.add( "Illegal/unknown AMX metadata field: " + fieldName + " = " + d.getFieldValue(fieldName) );
+            }
+        }
+        
+        final MetadataValidator val = new MetadataValidator(d, problems);
+        // verify data types
+        val.validateMetadataBoolean( DESC_IS_SINGLETON);
+        val.validateMetadataBoolean( DESC_SUPPORTS_ADOPTION );
+        val.validateMetadataBoolean( DESC_STD_IMMUTABLE_INFO );
+        
+        val.validateMetadataStringNonEmpty( DESC_STD_INTERFACE_NAME );
+        val.validateMetadataStringNonEmpty( DESC_GENERIC_INTERFACE_NAME );
+        val.validateMetadataStringNonEmpty( DESC_GROUP );
+        
+        val.validate( DESC_SUB_TYPES, String[].class );
+        
+        return problems;
     }
 
     private void validateRequiredAttributes(final AMXProxy proxy)

@@ -67,8 +67,11 @@ public final class AMXConstants {
     This will be "amx" after the switch, but is "amx3" until that time.
      */
     public static final String AMX_JMX_DOMAIN = AMXLoader.AMX_JMX_DOMAIN;
-    private static final String P = "amx.";
-    public static final String NOTIFICATION_PREFIX = P;
+    
+    /** prefix for AMX descriptor fields */
+    public static final String DESC_PREFIX = "amx.";
+    
+    public static final String NOTIFICATION_PREFIX = DESC_PREFIX;
     /**
     Group value indicating that the AMX is a
     configuration MBean.
@@ -142,35 +145,28 @@ public final class AMXConstants {
     cannot be loaded.  The class specified here must reside in the amx-core
     module eg org.glassfish.admin.amx.core eg AMXProxy or AMXConfigProxy.
      */
-    public static final String DESC_GENERIC_INTERFACE_NAME = P + "genericInterfaceName";
+    public static final String DESC_GENERIC_INTERFACE_NAME = DESC_PREFIX + "genericInterfaceName";
     /**
     Descriptor value: whether the MBean is a singleton, in spite of having a name property in its ObjectName.
     This is mainly for compatibility; named singletons are strongly discouraged.
 
     Invariant by type: yes
      */
-    public static final String DESC_IS_SINGLETON = P + "isSingleton";
-    /**
-    Descriptor value: Overrides the type value for the purposes of a Pathname.
-    For example the DomainConfig MBean uses eg "domain" instead of "DomainConfig".
-
-    This value corresponds to the type (only); it MUST NOT include the name.
-
-    Invariant by type: yes
-     */
-    public static final String DESC_PATH_PART = P + "pathPart";
+    public static final String DESC_IS_SINGLETON = DESC_PREFIX + "isSingleton";
+    
+    
     /**
     Descriptor value: Arbitrary string denoting the general classification of MBean.
     Predefined values include "configuration", "monitoring", "jsr77", "utility", "other".
     Invariant by type: yes
      */
-    public static final String DESC_GROUP = P + "group";
+    public static final String DESC_GROUP = DESC_PREFIX + "group";
     /**
     Descriptor value: whether new children may be added by code other than the implementation responsible for the MBean;
     this allows extension points within the hierarchy.
     Adding a new child means registering an MBean with an ObjectName that implies parentage via the ancestry type=name pairs.
      */
-    public static final String DESC_SUPPORTS_ADOPTION = P + "supportsAdoption";
+    public static final String DESC_SUPPORTS_ADOPTION = DESC_PREFIX + "supportsAdoption";
     /**
     Descriptor value: denotes the possible types of MBeans that children might be. If present, SHOULD include all possible and pre-known types.
 
@@ -180,5 +176,8 @@ public final class AMXConstants {
 
     Invariant by type: no (allow for different implementations and/or subclassing).
      */
-    public static final String DESC_SUB_TYPES = P + "subTypes";
+    public static final String DESC_SUB_TYPES = DESC_PREFIX + "subTypes";
 }
+
+
+
