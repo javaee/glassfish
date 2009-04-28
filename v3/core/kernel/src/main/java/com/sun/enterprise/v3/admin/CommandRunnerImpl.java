@@ -901,16 +901,6 @@ public class CommandRunnerImpl implements CommandRunner {
         return usageText.toString();
     }
 
-    public CommandModel getModel(AdminCommand command) {
-        // need to enhance this to support pluggability.
-        if (command instanceof CommandModelProvider) {
-            return ((CommandModelProvider) command).getModel();
-        } else {
-            return new CommandModelImpl(command.getClass());
-        }
-    }
-
-
     public void getHelp(AdminCommand command, ActionReport report) {
 
         CommandModel model = getModel(command);        
@@ -1154,18 +1144,33 @@ public class CommandRunnerImpl implements CommandRunner {
         }
     }
 
+    public CommandModel getModel(String commandName, Logger logger) {
+        AdminCommand command = null;
+        try {
+            command = habitat.getComponent(AdminCommand.class, commandName);
+        } catch(ComponentException e) {
+            logger.log(Level.SEVERE, "Cannot instantiate " + commandName, e);
+            return null;
+        }
+        return getModel(command);
+    }
+
+    private CommandModel getModel(AdminCommand command) {
+
+        if (command instanceof CommandModelProvider) {
+            return  ((CommandModelProvider) command).getModel();
+        } else {
+            return new CommandModelImpl(command.getClass());
+        }
+    }
+
 
     public void doCommand(CommandBuilder b, ActionReport report, Logger logger) {
         final AdminCommand command = getCommand(b.commandName, report, logger);
         if (command==null) {
             return;
         }
-        CommandModel model;
-        if (command instanceof CommandModelProvider) {
-            model = ((CommandModelProvider) command).getModel();
-        } else {
-            model = new CommandModelImpl(command.getClass());
-        }
+        CommandModel model = getModel(command);
         InjectionResolver<Param> resolver;
         if (b.delegate==null) {
             final Properties parameters = b.paramsAsProperties;

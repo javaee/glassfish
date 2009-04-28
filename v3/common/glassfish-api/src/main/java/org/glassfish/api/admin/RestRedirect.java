@@ -35,59 +35,29 @@
  */
 package org.glassfish.api.admin;
 
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import com.sun.hk2.component.InjectionResolver;
-
-import java.util.Properties;
-import java.util.logging.Logger;
-
 /**
- * CommandBuilder is an invocation object on a command, used to set the
- * invocation context (like how to get injectable resources).
+ * annotation to redirect a rest request from CRUD operations on the configuration
+ * tree to a command invocation (like deploy, undeploy).
  *
  * @author Jerome Dochez
  */
-public abstract class CommandBuilder {
+public @interface RestRedirect {
 
-    final public String commandName;
-    final private CommandRunner owner;
+    enum OpType { GET, PUT, POST, DELETE}
 
-    CommandBuilder(String name, CommandRunner owner) {
-        this.commandName = name;
-        this.owner = owner;
-    }
+    /**
+     * Rest operation type that should trigger a redirect to an actual asadmin
+     * command invocation
+     *
+     * @return the rest operation type for this redirect
+     */
+    OpType opType();
 
-    public Properties  paramsAsProperties;
-    public Object      delegate;
-    public Payload.Inbound inbound;
-    public Payload.Outbound outbound;
-
-    public abstract CommandBuilder setResolver(InjectionResolver<Param> resolver);
-
-    public CommandBuilder setParameters(Properties props) {
-        paramsAsProperties = props;
-        return this;
-    }
-
-    public CommandBuilder setParameters(Object delegate) {
-        this.delegate = delegate;
-        return this;
-    }
-
-    public CommandBuilder setInbound(Payload.Inbound inbound) {
-        this.inbound = inbound;
-        return this;
-    }
-
-    public CommandBuilder setOutbound(Payload.Outbound outbound) {
-        this.outbound = outbound;
-        return this;
-    }
-
-    public void execute(ActionReport report, Logger logger) {
-        owner.doCommand(this, report, logger);
-    }
-
+    /**
+     * Command identification for the redirection.
+     *
+     * @return the name of the command to invoke
+     */
+    String commandName();
 
 }

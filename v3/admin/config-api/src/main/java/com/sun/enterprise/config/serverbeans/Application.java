@@ -49,6 +49,8 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.quality.ToDo;
@@ -72,6 +74,12 @@ import javax.validation.constraints.NotNull;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfig")
 @Configured
+@RestRedirects(
+        {
+          @RestRedirect(opType= RestRedirect.OpType.DELETE, commandName="undeploy"),
+          @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
+        }
+)
 public interface Application extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
     /**

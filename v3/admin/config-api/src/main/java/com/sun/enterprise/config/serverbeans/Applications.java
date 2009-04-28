@@ -40,6 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.amx.AMXCreatorInfo;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
@@ -77,6 +78,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
      * {@link Application }
      */             
     @Element("*")
+    @RestRedirect(opType= RestRedirect.OpType.PUT, commandName="deploy")
     public List<Named> getModules();     
             
     /**

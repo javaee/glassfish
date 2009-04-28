@@ -33,61 +33,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.api.admin;
 
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import com.sun.hk2.component.InjectionResolver;
-
-import java.util.Properties;
-import java.util.logging.Logger;
-
 /**
- * CommandBuilder is an invocation object on a command, used to set the
- * invocation context (like how to get injectable resources).
+ * List of @RestRedirect
  *
  * @author Jerome Dochez
  */
-public abstract class CommandBuilder {
+public @interface RestRedirects {
 
-    final public String commandName;
-    final private CommandRunner owner;
-
-    CommandBuilder(String name, CommandRunner owner) {
-        this.commandName = name;
-        this.owner = owner;
-    }
-
-    public Properties  paramsAsProperties;
-    public Object      delegate;
-    public Payload.Inbound inbound;
-    public Payload.Outbound outbound;
-
-    public abstract CommandBuilder setResolver(InjectionResolver<Param> resolver);
-
-    public CommandBuilder setParameters(Properties props) {
-        paramsAsProperties = props;
-        return this;
-    }
-
-    public CommandBuilder setParameters(Object delegate) {
-        this.delegate = delegate;
-        return this;
-    }
-
-    public CommandBuilder setInbound(Payload.Inbound inbound) {
-        this.inbound = inbound;
-        return this;
-    }
-
-    public CommandBuilder setOutbound(Payload.Outbound outbound) {
-        this.outbound = outbound;
-        return this;
-    }
-
-    public void execute(ActionReport report, Logger logger) {
-        owner.doCommand(this, report, logger);
-    }
-
-
+    RestRedirect[] value();
 }

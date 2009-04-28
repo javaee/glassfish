@@ -73,7 +73,9 @@ public class CommandModelImpl extends CommandModel {
     private void add(AnnotatedElement e) {
         if (e.isAnnotationPresent(Param.class)) {
             ParamModel model = new ParamModelImpl(e);
-            params.put(model.getName(), model);
+            if (!params.containsKey(model.getName())) {
+                params.put(model.getName(), model);
+            }
         }
     }
 

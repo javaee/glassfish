@@ -108,6 +108,16 @@ public interface CommandRunner {
             final ActionReport report);
 
     /**
+     * Retuns the command model for a command name
+     *
+     * @param name command name
+     * @param logger logger to log any error messages
+     * @return model for this command (list of parameters,etc...), null if command
+     * is not found
+     */
+    public CommandModel getModel(String name, Logger logger);
+
+    /**
      * Obtain and return the command implementation defined by the passed commandName
      *
      * @param commandName command name as typed by users
