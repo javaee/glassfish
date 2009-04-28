@@ -486,7 +486,7 @@ public final class EmbeddedFileSystem {
         if (domainXmlSource != null) {
             // they specified it -- insist that it be bonafide.
             if (!ok(domainXmlSource)) {
-                throw new EmbeddedException("EFS_bad_domain_xml_file", domainXmlTarget);
+                throw new EmbeddedException("EFS_bad_domain_xml_file", domainXmlSource);
             }
         }
 
