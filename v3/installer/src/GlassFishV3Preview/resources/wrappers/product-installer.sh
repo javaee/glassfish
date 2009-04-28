@@ -128,7 +128,7 @@ ENGINE_OPS="${ENGINE_OPS} -a file://${MYDIR}/install.properties"
 ENGINE_OPS="${ENGINE_OPS} -i file://${MYDIR}/Product/"
 ENGINE_OPS="${ENGINE_OPS} -p Default-Product-ID=${PRODUCTNAME}"
 ENGINE_OPS="${ENGINE_OPS} -p Pkg-Format=zip"
-ENGINE_OPS="${ENGINE_OPS} -C ${MYDIR}/pkg-bootstrap.jar:${MYDIR}/pkg-java.jar:${MYDIR}/commons-codec-1.3.jar:${MYDIR}/registration-api.jar:${MYDIR}/registration-impl.jar:${MYDIR}/sysnet-registration.jar"
+ENGINE_OPS="${ENGINE_OPS} -C ${MYDIR}/pkg-bootstrap.jar:${MYDIR}/pkg-client.jar:${MYDIR}/commons-codec-1.3.jar:${MYDIR}/registration-api.jar:${MYDIR}/registration-impl.jar:${MYDIR}/sysnet-registration.jar"
 
 
 # add ubi-enabled packaging tool location to environment so that it
