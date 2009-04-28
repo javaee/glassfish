@@ -61,6 +61,8 @@
 	<ui:insert name="guiExtraHead" />
 	<style type="text/css">
 	    .yui-skin-sam .yui-layout .yui-layout-unit-center div.yui-layout-bd {background-color: #FFF;}
+        .yui-layout-unit-top .yui-layout-bd { background-color: #5b87a4; }
+        .yui-skin-sam .yui-layout .yui-layout-unit-top div.yui-layout-bd { background-color: #5b87a4; }
 	    .yui-layout-hd h2 {background: #7595AB url(#{request.contextPath}/theme/woodstock4_3/suntheme/images/masthead/masthead_button.gif) repeat-x scroll center bottom;}
 	    .tagDiv {padding: 10px;}
 	    .tagDiv .tagList {padding: 10px;}
@@ -74,7 +76,7 @@
 
     <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
 <sc:layout id="gfLayout" fullPage="true">
-    <sc:layoutUnit id="gfLayoutTop" position="top" height="110" scroll="false" gutter="5px" resize="false" collapse="false">
+    <sc:layoutUnit id="gfLayoutTop" position="top" height="115" scroll="false" gutter="5px" resize="false" collapse="false">
         <div class="header_main">
             <sun:form id="headerForm">
 		<h:commandButton id="setPref" style="display: none;">
