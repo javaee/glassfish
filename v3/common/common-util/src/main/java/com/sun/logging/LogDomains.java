@@ -242,10 +242,8 @@ public class LogDomains
      * @return
      */
      
-    public static Logger getLogger(final Class clazz, final String name) {
+    public static synchronized Logger getLogger(final Class clazz, final String name) {
         final ClassLoader cloader =clazz.getClassLoader();
-        lock.lock();
-        try {
             Logger l = LogManager.getLogManager().getLogger(name);
 
             if (l==null) {
@@ -348,9 +346,6 @@ public class LogDomains
             };
 
             return cLogger;
-        } finally {
-            lock.unlock();
-        }
 
     }
 }
