@@ -38,6 +38,7 @@ package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
+import com.sun.enterprise.container.common.spi.WebServiceReferenceManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
@@ -47,6 +48,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.JNDIBinding;
 import org.glassfish.api.naming.NamingObjectProxy;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -55,7 +57,9 @@ import org.jvnet.hk2.component.Inhabitant;
 import javax.naming.NamingException;
 import javax.naming.NameNotFoundException;
 import javax.naming.Context;
+import javax.enterprise.deploy.shared.ModuleType;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -63,6 +67,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.File;
 
 @Service
 public class ComponentEnvManagerImpl
@@ -201,6 +206,16 @@ public class ComponentEnvManagerImpl
                 // TODO handle non-default ORBs
                 value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
             } else if (resourceRef.isWebServiceContext()) {
+                WebServiceReferenceManager wsRefMgr = habitat.getByContract(WebServiceReferenceManager.class);
+                if (wsRefMgr != null )  {
+                    value = wsRefMgr.getWSContextObject();
+                } else {
+                    _logger.log (Level.SEVERE,
+                            "Cannot find the following class to proceed with @Resource WebServiceContext" +
+                                    wsRefMgr +
+                                    "Please confirm if webservices module is installed ");
+                }
+                
             } else {
               value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, true);
             }
@@ -215,17 +230,46 @@ public class ComponentEnvManagerImpl
             jndiBindings.add(new CompEnvBinding(name, value));
          }
 
-/*
-//TODO:
+
         for (Iterator itr = env.getServiceReferenceDescriptors().iterator();
              itr.hasNext();) {
             ServiceReferenceDescriptor next =
                 (ServiceReferenceDescriptor) itr.next();
-            DefaultJNDIBinding binding = new DefaultJNDIBinding(next);
-            jndiBindings.add(binding);
-        }
+            String name = JAVA_COMP_STRING + next.getName();
+            WebServiceRefProxy value = new WebServiceRefProxy(next);
+            jndiBindings.add(new CompEnvBinding(name,value))  ;
+            // Set WSDL File URL here if it null (happens during server restart)
+           /* if((next.getWsdlFileUrl() == null)  &&
+                (next.getWsdlFileUri() != null)) {
+                try {
+                    if(next.getWsdlFileUri().startsWith("http")) {
+                        // HTTP URLs set as is
+                        next.setWsdlFileUrl(new URL(next.getWsdlFileUri()));
+                    } else if((new File(next.getWsdlFileUri())).isAbsolute()) {
+                        // Absolute WSDL file paths set as is
+                        next.setWsdlFileUrl((new File(next.getWsdlFileUri())).toURL());
+                    } else {
 
-*/
+                        WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+                        ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
+                        String deployedDir = servEnv.getApplicationRepositoryPath().getAbsolutePath();
+                        if(deployedDir != null) {
+                            File fileURL;
+                            if(next.getBundleDescriptor().getApplication().isVirtual()) {
+                                fileURL = new File(deployedDir+File.separator+next.getWsdlFileUri());
+                            } else {
+                                fileURL = new File(deployedDir+File.separator+
+                                        next.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
+                                        File.separator +next.getWsdlFileUri());
+                            }
+                            next.setWsdlFileUrl(fileURL.toURL());
+                        }
+                    }
+                    }
+                } catch (Throwable mex) {
+                    throw new NamingException(mex.getLocalizedMessage());
+                }*/
+            }
 
          for (EntityManagerReferenceDescriptor next :
              env.getEntityManagerReferenceDescriptors()) {
@@ -428,6 +472,45 @@ public class ComponentEnvManagerImpl
         }
 
     }
+
+    private class WebServiceRefProxy
+            implements NamingObjectProxy {
+
+
+        private WebServiceReferenceManager wsRefMgr;
+        private ServiceReferenceDescriptor serviceRef;
+
+        WebServiceRefProxy(ServiceReferenceDescriptor servRef) {
+
+            this.serviceRef = servRef;
+        }
+
+        public Object create(Context ctx)
+                throws NamingException {
+            Object result = null;
+
+
+            wsRefMgr = habitat.getByContract(WebServiceReferenceManager.class);
+            if (wsRefMgr != null )  {
+                result = wsRefMgr.resolveWSReference(serviceRef,ctx);
+            } else {
+                //A potential cause for this is this is a web.zip and the corresponding
+                //metro needs to be dowloaded from UC
+                _logger.log (Level.SEVERE,
+                        "Cannot find the following class to proceed with @WebServiceRef" + wsRefMgr +
+                                "Please confirm if webservices module is installed ");
+            }
+
+            if( result == null ) {
+                throw new NameNotFoundException("Can not resolve webservice context of type " +
+                        serviceRef.getName());
+            }
+
+            return result;
+        }
+
+    }
+
     private class EjbReferenceProxy
         implements NamingObjectProxy {
 

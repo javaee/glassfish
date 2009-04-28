@@ -70,6 +70,7 @@ import org.w3c.dom.Node;
 import java.io.*;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedActionException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -681,10 +682,10 @@ public class WsUtil {
         return new HandlerInfo(handlerClass, properties, headers);
     }
 */
-   /* *//**
+   /**
      * Accessing wsdl URL might involve file system access, so wrap
      * operation in a doPrivileged block.
-     *//*
+     */
     public URL privilegedGetServiceRefWsdl
         (ServiceReferenceDescriptor desc) throws Exception {
         URL wsdlFileURL;
@@ -720,7 +721,9 @@ public class WsUtil {
         }
         return wsdlFileURL;
     }
-*/
+
+
+
     /*public javax.xml.rpc.Service createConfiguredService
         (ServiceReferenceDescriptor desc) throws Exception {
         
