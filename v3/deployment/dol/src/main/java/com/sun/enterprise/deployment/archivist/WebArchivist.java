@@ -343,22 +343,26 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
                 wfArchivist.setRuntimeXMLValidationLevel(
                         this.getRuntimeXMLValidationLevel());
                 wfArchivist.setAnnotationProcessingRequested(false);
-                ReadableArchive embeddedArchive = archive.getSubArchive(lib);
 
                 WebFragmentDescriptor wfDesc = null;
-                if (wfArchivist.hasStandardDeploymentDescriptor(embeddedArchive)) {
-                    try {
-                        wfDesc = (WebFragmentDescriptor)wfArchivist.open(embeddedArchive);
-                    } catch(SAXParseException ex) {
-                        IOException ioex = new IOException();
-                        ioex.initCause(ex);
-                        throw ioex;
-                    } finally {
+                ReadableArchive embeddedArchive = archive.getSubArchive(lib);
+                try {
+                    if (embeddedArchive != null &&
+                            wfArchivist.hasStandardDeploymentDescriptor(embeddedArchive)) {
+                        try {
+                            wfDesc = (WebFragmentDescriptor)wfArchivist.open(embeddedArchive);
+                        } catch(SAXParseException ex) {
+                            IOException ioex = new IOException();
+                            ioex.initCause(ex);
+                            throw ioex;
+                        }
+                    } else {   
+                        wfDesc = new WebFragmentDescriptor();
+                    }
+                } finally {
+                    if (embeddedArchive != null) {
                         embeddedArchive.close();
                     }
-
-                } else {   
-                    wfDesc = new WebFragmentDescriptor();
                 }
                 wfDesc.setJarName(lib.substring(lib.lastIndexOf('/') + 1));    
                 wfList.add(wfDesc);
