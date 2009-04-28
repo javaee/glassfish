@@ -63,7 +63,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.*;
 
 import org.apache.catalina.Authenticator;
@@ -875,13 +875,11 @@ public class Embedded  extends StandardService implements Lifecycle {
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this 
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners associated
+     * with this Embedded instance.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
+    public List<LifecycleListener> findLifecycleListeners() {
         return lifecycle.findLifecycleListeners();
-
     }
 
 
@@ -891,9 +889,7 @@ public class Embedded  extends StandardService implements Lifecycle {
      * @param listener The listener to remove
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
         lifecycle.removeLifecycleListener(listener);
-
     }
 
 

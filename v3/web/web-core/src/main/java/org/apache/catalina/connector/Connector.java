@@ -57,8 +57,7 @@ package org.apache.catalina.connector;
 
 import java.lang.reflect.Constructor;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -1479,20 +1478,16 @@ public class Connector
      * @param listener The listener to add
      */
     public void addLifecycleListener(LifecycleListener listener) {
-
         lifecycle.addLifecycleListener(listener);
-
     }
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners
+     * associated with this Connector.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
-        return null;//lifecycle.findLifecycleListeners();
-
+    public List<LifecycleListener> findLifecycleListeners() {
+        return lifecycle.findLifecycleListeners();
     }
 
 
@@ -1502,9 +1497,7 @@ public class Connector
      * @param listener The listener to add
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
         lifecycle.removeLifecycleListener(listener);
-
     }
 
 

@@ -62,10 +62,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
+import java.util.*;
 //START SJSAS 6202703
 import java.text.SimpleDateFormat;
-import java.util.*;
 //END SJSAS 6202703
 import java.util.logging.*;
 
@@ -1258,13 +1257,11 @@ public abstract class RealmBase
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this 
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners associated
+     * with this Realm.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
+    public List<LifecycleListener> findLifecycleListeners() {
         return lifecycle.findLifecycleListeners();
-
     }
 
 
@@ -1274,9 +1271,7 @@ public abstract class RealmBase
      * @param listener The listener to remove
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
         lifecycle.removeLifecycleListener(listener);
-
     }
 
     /**

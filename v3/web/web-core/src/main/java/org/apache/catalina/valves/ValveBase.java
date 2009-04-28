@@ -58,6 +58,7 @@
 package org.apache.catalina.valves;
 
 import java.io.IOException;
+import java.util.*;
 import java.util.logging.*;
 import javax.servlet.ServletException;
 import javax.management.ObjectName;
@@ -327,11 +328,10 @@ public abstract class ValveBase
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners associated
+     * with this Valve.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
+    public List<LifecycleListener> findLifecycleListeners() {
         return lifecycle.findLifecycleListeners();
     }
 

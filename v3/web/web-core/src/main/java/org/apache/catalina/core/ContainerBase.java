@@ -63,16 +63,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.concurrent.locks.*;
+import java.util.logging.*;
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -1114,29 +1107,34 @@ public abstract class ContainerBase
      * @param listener The listener to add
      */
     public void addLifecycleListener(LifecycleListener listener) {
-
         lifecycle.addLifecycleListener(listener);
     }
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this 
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners associated
+     * with this Container.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
+    public List<LifecycleListener> findLifecycleListeners() {
         return lifecycle.findLifecycleListeners();
     }
 
 
     /**
-     * Remove a lifecycle event listener from this component.
+     * Removes the given lifecycle event listener from this Container.
      *
      * @param listener The listener to remove
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
         lifecycle.removeLifecycleListener(listener);
+    }
+
+
+    /**
+     * Removes any lifecycle event listeners from this Container.
+     */
+    public void removeLifecycleListeners() {
+        lifecycle.removeLifecycleListeners();
     }
 
 
@@ -1358,13 +1356,7 @@ public abstract class ContainerBase
 
         // START SJSAS 6330332
         // Remove LifecycleListeners
-        LifecycleListener[] tmpLifecycleListeners = findLifecycleListeners();
-        if (tmpLifecycleListeners != null) {
-            for (int i=0;i<tmpLifecycleListeners.length;i++) {
-                removeLifecycleListener(tmpLifecycleListeners[i]);
-            }
-        }
- 
+        removeLifecycleListeners();
         // Release realm
         setRealm(null);
         // END SJSAS 6330332                

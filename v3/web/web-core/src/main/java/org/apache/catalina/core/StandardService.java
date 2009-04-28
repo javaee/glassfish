@@ -60,6 +60,7 @@ package org.apache.catalina.core;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.*;
 import java.util.logging.*;
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
@@ -469,20 +470,16 @@ public class StandardService
      * @param listener The listener to add
      */
     public void addLifecycleListener(LifecycleListener listener) {
-
         lifecycle.addLifecycleListener(listener);
-
     }
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this 
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners
+     * associated with this StandardService.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
+    public List<LifecycleListener> findLifecycleListeners() {
         return lifecycle.findLifecycleListeners();
-
     }
 
 
@@ -492,9 +489,7 @@ public class StandardService
      * @param listener The listener to remove
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
         lifecycle.removeLifecycleListener(listener);
-
     }
 
 

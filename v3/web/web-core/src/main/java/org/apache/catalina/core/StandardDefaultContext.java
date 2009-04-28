@@ -1231,10 +1231,12 @@ public class StandardDefaultContext
 
         if (event.getLifecycle() instanceof StandardContext) {
             context = (StandardContext) event.getLifecycle();
-            LifecycleListener[] listeners = context.findLifecycleListeners();
-            for (int i = 0; i < listeners.length; i++) {
-                if (listeners[i] instanceof NamingContextListener) {
-                    listener = (NamingContextListener) listeners[i];
+            Iterator<LifecycleListener> lifecycleIter =
+                context.findLifecycleListeners().iterator();
+            while (lifecycleIter.hasNext()) {
+                LifecycleListener lifecycleListener = lifecycleIter.next();
+                if (lifecycleListener instanceof NamingContextListener) {
+                    listener = (NamingContextListener) lifecycleListener;
                     break;
                 }
             }

@@ -61,11 +61,10 @@ package org.apache.catalina.core;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.logging.*;
-
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
-
 import org.apache.catalina.Contained;
 import org.apache.catalina.Container;
 import org.apache.catalina.Globals;
@@ -239,14 +238,11 @@ public class StandardPipeline
      * @param container The new associated container
      */
     public void setContainer(Container container) {
-
         this.container = container;
-
     }
 
 
-    // ------------------------------------------------------ Lifecycle Methods
-
+    // --------------------------------------------------- Lifecycle Methods
 
     /**
      * Add a lifecycle event listener to this component.
@@ -254,20 +250,16 @@ public class StandardPipeline
      * @param listener The listener to add
      */
     public void addLifecycleListener(LifecycleListener listener) {
-
         lifecycle.addLifecycleListener(listener);
-
     }
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this 
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners
+     * associated with this Pipeline.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
+    public List<LifecycleListener> findLifecycleListeners() {
         return lifecycle.findLifecycleListeners();
-
     }
 
 
@@ -277,10 +269,9 @@ public class StandardPipeline
      * @param listener The listener to remove
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
         lifecycle.removeLifecycleListener(listener);
-
     }
+
 
     /**
      * Prepare for active use of the public methods of this Component.

@@ -57,7 +57,7 @@
 
 package org.apache.catalina.util;
 
-
+import java.util.*;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
@@ -85,10 +85,8 @@ public final class LifecycleSupport {
      *  of events that we fire
      */
     public LifecycleSupport(Lifecycle lifecycle) {
-
         super();
         this.lifecycle = lifecycle;
-
     }
 
 
@@ -102,9 +100,10 @@ public final class LifecycleSupport {
 
 
     /**
-     * The set of registered LifecycleListeners for event notifications.
+     * The list of registered LifecycleListeners for event notifications.
      */
-    private LifecycleListener listeners[] = new LifecycleListener[0];
+    private List<LifecycleListener> listeners =
+        new ArrayList<LifecycleListener>();
 
 
     // --------------------------------------------------------- Public Methods
@@ -116,27 +115,16 @@ public final class LifecycleSupport {
      * @param listener The listener to add
      */
     public void addLifecycleListener(LifecycleListener listener) {
-
-      synchronized (listeners) {
-          LifecycleListener results[] =
-            new LifecycleListener[listeners.length + 1];
-          for (int i = 0; i < listeners.length; i++)
-              results[i] = listeners[i];
-          results[listeners.length] = listener;
-          listeners = results;
-      }
-
+        listeners.add(listener);
     }
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this 
-     * Lifecycle has no listeners registered, a zero-length array is returned.
+     * Gets the (possibly empty) list of lifecycle listeners associated
+     * with this LifecycleSupport instance.
      */
-    public LifecycleListener[] findLifecycleListeners() {
-
+    public List<LifecycleListener> findLifecycleListeners() {
         return listeners;
-
     }
 
 
@@ -149,15 +137,11 @@ public final class LifecycleSupport {
      * @param data Event data
      */
     public void fireLifecycleEvent(String type, Object data) {
-
         LifecycleEvent event = new LifecycleEvent(lifecycle, type, data);
-        LifecycleListener interested[] = null;
-        synchronized (listeners) {
-            interested = (LifecycleListener[]) listeners.clone();
+        Iterator<LifecycleListener> i = listeners.iterator(); 
+        while (i.hasNext()) {
+            i.next().lifecycleEvent(event);
         }
-        for (int i = 0; i < interested.length; i++)
-            interested[i].lifecycleEvent(event);
-
     }
 
 
@@ -167,28 +151,16 @@ public final class LifecycleSupport {
      * @param listener The listener to remove
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
-        synchronized (listeners) {
-            int n = -1;
-            for (int i = 0; i < listeners.length; i++) {
-                if (listeners[i] == listener) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-            LifecycleListener results[] =
-              new LifecycleListener[listeners.length - 1];
-            int j = 0;
-            for (int i = 0; i < listeners.length; i++) {
-                if (i != n)
-                    results[j++] = listeners[i];
-            }
-            listeners = results;
-        }
-
+        listeners.remove(listener);
     }
 
+
+    /**
+     * Removes any lifecycle event listeners from this LifecycleSupport
+     * instance.
+     */
+    public void removeLifecycleListeners() {
+        listeners.clear();
+    }
 
 }
