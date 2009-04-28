@@ -4637,29 +4637,25 @@ public class StandardContext
      */
     public void removeWelcomeFile(String name) {
 
-        synchronized (welcomeFiles) {
-
-            // Make sure this welcome file is currently present
-            int n = -1;
-            for (int i = 0; i < welcomeFiles.length; i++) {
-                if (welcomeFiles[i].equals(name)) {
-                    n = i;
-                    break;
-                }
+        // Make sure this welcome file is currently present
+        int n = -1;
+        for (int i = 0; i < welcomeFiles.length; i++) {
+            if (welcomeFiles[i].equals(name)) {
+                n = i;
+                break;
             }
-            if (n < 0)
-                return;
-
-            // Remove the specified constraint
-            int j = 0;
-            String results[] = new String[welcomeFiles.length - 1];
-            for (int i = 0; i < welcomeFiles.length; i++) {
-                if (i != n)
-                    results[j++] = welcomeFiles[i];
-            }
-            welcomeFiles = results;
-
         }
+        if (n < 0)
+            return;
+
+        // Remove the specified constraint
+        int j = 0;
+        String results[] = new String[welcomeFiles.length - 1];
+        for (int i = 0; i < welcomeFiles.length; i++) {
+            if (i != n)
+                results[j++] = welcomeFiles[i];
+        }
+        welcomeFiles = results;
 
         // Inform interested listeners
         postWelcomeFiles();
