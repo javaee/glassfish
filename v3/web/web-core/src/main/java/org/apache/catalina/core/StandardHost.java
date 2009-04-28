@@ -813,29 +813,27 @@ public class StandardHost
         //alias = alias.toLowerCase();
         // START OF PE 4989789
         
-        synchronized (aliases) {
-
-            // Make sure this alias is currently present
-            int n = -1;
-            for (int i = 0; i < aliases.length; i++) {
-                if (aliases[i].equals(alias)) {
-                    n = i;
-                    break;
-                }
+        // Make sure this alias is currently present
+        int n = -1;
+        for (int i = 0; i < aliases.length; i++) {
+            if (aliases[i].equals(alias)) {
+                n = i;
+                break;
             }
-            if (n < 0)
-                return;
-
-            // Remove the specified alias
-            int j = 0;
-            String results[] = new String[aliases.length - 1];
-            for (int i = 0; i < aliases.length; i++) {
-                if (i != n)
-                    results[j++] = aliases[i];
-            }
-            aliases = results;
-
         }
+        if (n < 0) {
+            return;
+        }
+
+        // Remove the specified alias
+        int j = 0;
+        String results[] = new String[aliases.length - 1];
+        for (int i = 0; i < aliases.length; i++) {
+            if (i != n) {
+                results[j++] = aliases[i];
+            }
+        }
+        aliases = results;
 
         // Inform interested listeners
         fireContainerEvent(REMOVE_ALIAS_EVENT, alias);
