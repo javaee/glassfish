@@ -58,7 +58,7 @@ public final class SampleImpl extends AMXImplBase
 {
 	// all Attributes live in a Map
 	private final Map<String,Serializable>	mAttributes;
-	private MBeanInfo	mMBeanInfo;
+	private MBeanInfo	mExtendedMBeanInfo;
 	
 		public void
 	emitNotifications( final Serializable data, final int numNotifs, final long interval )
@@ -76,7 +76,7 @@ public final class SampleImpl extends AMXImplBase
 	{
         super( parentObjectName, Sample.class );
 		mAttributes	= Collections.synchronizedMap( new HashMap<String,Serializable>() );
-		mMBeanInfo	= null;
+		mExtendedMBeanInfo	= null;
 	}
 		
 		public void
@@ -88,14 +88,14 @@ public final class SampleImpl extends AMXImplBase
 		}
 		
 		mAttributes.put( name, value );
-		mMBeanInfo	= null;
+		//mExtendedMBeanInfo	= null;
 	}
 	
 		public void
 	removeAttribute( final String name )
 	{
 		mAttributes.remove( name );
-		mMBeanInfo	= null;
+		mExtendedMBeanInfo	= null;
 	}
 	
 	
@@ -106,17 +106,12 @@ public final class SampleImpl extends AMXImplBase
 	}
 	
 		private synchronized MBeanInfo
-	createMBeanInfo()
+	createMBeanInfo( final MBeanInfo baseMBeanInfo)
 	{
-		final MBeanInfo	baseMBeanInfo	= super.getMBeanInfo();
-		
-		final MBeanAttributeInfo[]	dynamicAttrInfos	=
-			new MBeanAttributeInfo[ mAttributes.keySet().size() ];
-		final Iterator	iter	= mAttributes.keySet().iterator();
+		final MBeanAttributeInfo[]	dynamicAttrInfos	= new MBeanAttributeInfo[ mAttributes.keySet().size() ];
 		int	i = 0;
-		while ( iter.hasNext() )
+		for( final String name : mAttributes.keySet() )
 		{
-			final String	name	= (String)iter.next();
 			final Object	value	= mAttributes.get( name );
 			final String	type	= value == null ? String.class.getName() : value.getClass().getName();
 			
@@ -134,12 +129,12 @@ public final class SampleImpl extends AMXImplBase
 		public synchronized MBeanInfo
 	getMBeanInfo()
 	{
-		if ( mMBeanInfo == null )
+		if ( mExtendedMBeanInfo == null )
 		{
-			mMBeanInfo	= createMBeanInfo();
+			mExtendedMBeanInfo	= createMBeanInfo( super.getMBeanInfo() );
 		}
 		
-		return( mMBeanInfo );
+		return( mExtendedMBeanInfo );
 	}
 	
 		protected Serializable

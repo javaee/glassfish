@@ -55,6 +55,7 @@ public final class ComplianceMonitor implements NotificationListener {
     private static ComplianceMonitor INSTANCE = null;
     private final DomainRoot mDomainRoot;
     private final MBeanServer mServer;
+    private volatile boolean    mStarted = false;
     
     /** offloads the validation so as not to block during Notifications */
     private final ValidatorThread   mValidatorThread;
@@ -67,22 +68,31 @@ public final class ComplianceMonitor implements NotificationListener {
         mValidatorThread = new ValidatorThread(mServer);
     }
 
-    private void start() {
+    private void listen() {
         try {
             JMXUtil.listenToMBeanServerDelegate(mServer, this, null, null);
 
-            mValidatorThread.start();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
+    
+    public void validate( final ObjectName objectName ) {
+        mValidatorThread.add(objectName);
+    }
 
-    public static synchronized ComplianceMonitor start(final DomainRoot domainRoot) {
+    public static synchronized ComplianceMonitor getInstance(final DomainRoot domainRoot) {
         if (INSTANCE == null) {
             INSTANCE = new ComplianceMonitor(domainRoot);
-            INSTANCE.start();
+            INSTANCE.listen(); // to start queuing immediately
         }
         return INSTANCE;
+    }
+    
+    public void start() {
+        if ( ! mStarted ) {
+            mValidatorThread.start();
+        }
     }
 
     public void handleNotification(final Notification notifIn, final Object handback) {
@@ -131,16 +141,17 @@ public final class ComplianceMonitor implements NotificationListener {
                 }
 
                 try {
+                    //System.out.println( "VALIDATING: " + objectName );
                     final AMXValidator validator = new AMXValidator(mServer);
                     final AMXValidator.ValidationResult result = validator.validate(objectName);
                     if (result.numFailures() != 0) {
                         ImplUtil.getLogger().warning( result.toString() );
                     }
+                    //System.out.println( "VALIDATED: " + objectName );
                 }
                 catch( Throwable t ) {
                     t.printStackTrace();
                 }
-               // System.out.println( "VALIDATED: " + objectName );
             }
         }
     }

@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -75,6 +76,12 @@ public final class AMXValidator {
     private final ProxyFactory mProxyFactory;
     private final DomainRoot mDomainRoot;
 
+    private static final String LEGAL_CHARS_FOR_TYPE = "[\\$a-zA-Z0-9\\._-]";
+    private static final Pattern LEGAL_PATTERN_FOR_TYPE = Pattern.compile( LEGAL_CHARS_FOR_TYPE + LEGAL_CHARS_FOR_TYPE + "*" );
+    
+    private static final String LEGAL_CHARS_FOR_NAME = "[^\\[\\]]";
+    private static final Pattern LEGAL_PATTERN_FOR_NAME = Pattern.compile( LEGAL_CHARS_FOR_NAME + "*" );
+    
     public AMXValidator(final MBeanServerConnection conn) {
         mMBeanServer = conn;
 
@@ -96,6 +103,10 @@ public final class AMXValidator {
 
         public ObjectName objectName() {
             return mObjectName;
+        }
+        
+        public String toString() {
+            return getMessage() + ", " + mObjectName;
         }
     }
 
@@ -176,7 +187,6 @@ public final class AMXValidator {
         }
 
         final Pathnames paths = mDomainRoot.getPathnames();
-
 
         // test required attributes
         try {
@@ -281,6 +291,7 @@ public final class AMXValidator {
         throw new ValidationFailureException(amx, msg);
     }
 
+    
     private void validateObjectName(final AMXProxy proxy)
             throws ValidationFailureException {
         final ObjectName objectName = proxy.objectName();
@@ -289,17 +300,26 @@ public final class AMXValidator {
         if (type == null || type.length() == 0) {
             fail(objectName, "type property required in ObjectName");
         }
+        if ( ! LEGAL_PATTERN_FOR_TYPE.matcher(type).matches() ) {
+            fail( objectName, "Illegal type \"" + type + "\", does not match " + LEGAL_PATTERN_FOR_TYPE.pattern() );
+        }
 
         final String nameProp = objectName.getKeyProperty("name");
         if (nameProp != null) {
-            if (objectName.getKeyProperty("name").length() == 0) {
+            if ( nameProp.length() == 0) {
                 fail(objectName, "name property of ObjectName may not be empty");
+            }
+            if ( ! LEGAL_PATTERN_FOR_NAME.matcher(nameProp).matches() ) {
+                fail( objectName, "Illegal name \"" + nameProp + "\", does not match " + LEGAL_PATTERN_FOR_NAME.pattern() );
             }
         } else {
             // no name property, it's by definition a singleton
             final String name = proxy.getName();
             if (!name.equals(AMXConstants.NO_NAME)) {
-                fail(objectName, "getName() returned incorrect name for a singleton: " + name);
+                fail(objectName, "getName() returned a non-empty name for a singleton: " + name);
+            }
+            if ( ! proxy.extra().singleton() ) {
+                fail(objectName, "Metadata claims named (non-singleton), but no name property present in ObjectName");
             }
         }
     }
@@ -309,7 +329,7 @@ public final class AMXValidator {
             throws ValidationFailureException
     {
         final Set<String> attrNames = proxy.attributeNames();
-        if ( ! attrNames.contains(ATTR_CHILDREN) )
+        if ( ! attrNames.contains(ATTR_CHILDREN) ) 
         {
             // must NOT supply Children
             try {
@@ -488,10 +508,8 @@ public final class AMXValidator {
         final Failures failures = new Failures();
 
         final DomainRoot dr = mDomainRoot;
-        final Pathnames paths = dr.getPathnames();
 
         // list them in order
-        final ObjectName[] all = paths.listObjectNames(dr.path(), true);
         for (final ObjectName objectName : targets) {
             final AMXProxy amx = mProxyFactory.getProxy(objectName);
 

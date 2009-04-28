@@ -772,7 +772,8 @@ public final class JMXUtil
 					newInfos,
 					origInfo.getConstructors(),
 					origInfo.getOperations(),
-					origInfo.getNotifications() );
+					origInfo.getNotifications(),
+                    origInfo.getDescriptor() );
 		}
 	
 		return( result );
@@ -1482,7 +1483,8 @@ public final class JMXUtil
     	        origInfo.getAttributes(),
     	        origInfo.getConstructors(),
     	        origInfo.getOperations(),
-    	        mergeMBeanNotificationInfos( origInfo.getNotifications(), notifs )
+    	        mergeMBeanNotificationInfos( origInfo.getNotifications(), notifs ),
+                origInfo.getDescriptor()
     	        );
 	    }
 	    return result;
@@ -1549,7 +1551,6 @@ public final class JMXUtil
 		
 		@param info1
 		@param info2
-	 */
 	    public static MBeanInfo
 	mergeMBeanInfos(
 	    final MBeanInfo info1,
@@ -1570,10 +1571,13 @@ public final class JMXUtil
 	        mergeMBeanAttributeInfos( info1.getAttributes(), info2.getAttributes() ),
 	        mergeMBeanConstructorInfos( info1.getConstructors(), info2.getConstructors() ),
 	        mergeMBeanOperationInfos( info1.getOperations(), info2.getOperations() ),
-	        mergeMBeanNotificationInfos( info1.getNotifications(), info2.getNotifications() )
+	        mergeMBeanNotificationInfos( info1.getNotifications(), info2.getNotifications() ),
 	        ) );
+            
+            fix to merge descriptors!
 	        
 	}
+	 */
 	
 	
 	/**
@@ -1587,12 +1591,14 @@ public final class JMXUtil
 		final MBeanInfo	origMBeanInfo,
 		final MBeanAttributeInfo[]	newAttrInfos )
 	{
-		final MBeanInfo	info	= new MBeanInfo( origMBeanInfo.getClassName(),
+		final MBeanInfo	info	= new MBeanInfo(
+                                    origMBeanInfo.getClassName(),
 									origMBeanInfo.getDescription(),
 									newAttrInfos,
 									origMBeanInfo.getConstructors(),
 									origMBeanInfo.getOperations(),
-									origMBeanInfo.getNotifications() );
+									origMBeanInfo.getNotifications(),
+                                    origMBeanInfo.getDescriptor() );
 		return( info );
 	}
 	
@@ -1612,7 +1618,8 @@ public final class JMXUtil
 									origMBeanInfo.getAttributes(),
 									origMBeanInfo.getConstructors(),
 									newOps,
-									origMBeanInfo.getNotifications() );
+									origMBeanInfo.getNotifications(),
+                                    origMBeanInfo.getDescriptor() );
 		return( info );
 	}
 	

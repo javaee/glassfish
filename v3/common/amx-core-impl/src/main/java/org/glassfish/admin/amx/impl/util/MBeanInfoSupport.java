@@ -18,7 +18,6 @@ import java.util.Set;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
-import javax.management.MBeanFeatureInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
@@ -32,7 +31,6 @@ import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMX_SPI;
-import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 import static org.glassfish.admin.amx.core.AMXConstants.*;
@@ -86,7 +84,6 @@ public final class MBeanInfoSupport {
         final AMXMBeanMetadata meta = intf.getAnnotation(AMXMBeanMetadata.class);
 
         final boolean singleton = Singleton.class.isAssignableFrom(intf) || (meta != null && meta.singleton());
-        final String  pathPart = Util.deduceType(intf);
         final String  group = AMXConstants.GROUP_OTHER;
         final boolean isLeaf = meta != null && meta.leaf();
         final boolean supportsAdoption = ! isLeaf;
@@ -96,10 +93,10 @@ public final class MBeanInfoSupport {
             JMXUtil.remove( attrsList, AMXConstants.ATTR_CHILDREN);
         }
 
-        final Descriptor d = mbeanDescriptor( true,
+        final Descriptor d = mbeanDescriptor(
+            true,
             intf,
             singleton,
-            pathPart,
             group,
             supportsAdoption,
             null
@@ -403,7 +400,6 @@ public final class MBeanInfoSupport {
         final boolean immutable,
         final Class<?>  intf,
         final boolean singleton,
-        final String  pathPart,
         final String  group,
         final boolean supportsAdoption,
         final String[] subTypes
@@ -411,9 +407,6 @@ public final class MBeanInfoSupport {
     {
         final DescriptorSupport desc = new DescriptorSupport();
 
-        if ( pathPart == null || pathPart.length() == 0 ) {
-            throw new IllegalArgumentException("pathPart may not be empty");
-        }
         if ( intf == null || ! intf.isInterface() ) {
             throw new IllegalArgumentException("interface class must be an interface");
         }
@@ -421,7 +414,6 @@ public final class MBeanInfoSupport {
         desc.setField( DESC_STD_IMMUTABLE_INFO, immutable );
         desc.setField( DESC_STD_INTERFACE_NAME, intf.getName() );
         desc.setField( DESC_IS_SINGLETON, singleton );
-        //desc.setField( DESC_PATH_PART, pathPart );
         desc.setField( DESC_GROUP, group );
         desc.setField( DESC_SUPPORTS_ADOPTION, supportsAdoption );
         

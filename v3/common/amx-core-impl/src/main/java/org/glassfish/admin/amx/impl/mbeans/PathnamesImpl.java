@@ -33,9 +33,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.impl.path;
+package org.glassfish.admin.amx.impl.mbeans;
 
-import org.glassfish.admin.amx.base.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 
@@ -51,6 +50,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;

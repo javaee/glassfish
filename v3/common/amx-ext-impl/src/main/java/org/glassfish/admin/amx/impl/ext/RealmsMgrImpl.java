@@ -80,13 +80,20 @@ public final class RealmsMgrImpl extends AMXImplBase
         mRealmsManager = Globals.getDefaultHabitat().getComponent(RealmsManager.class);
 	}
     
-    private boolean    realmsLoaded = false;
+    private volatile boolean    realmsLoaded = false;
     
-        private synchronized void 
+        private void 
     loadRealms()
     {
         if ( realmsLoaded ) return;
-        realmsLoaded = true;
+        
+        _loadRealms();
+    }
+    
+        private synchronized void 
+    _loadRealms()
+    {
+        if ( realmsLoaded ) throw new IllegalStateException();
         
         // this is ugly, the underlying API doesn't understand that there is more than one <security-service>,
         // each with one or more <auth-realm>
@@ -129,8 +136,11 @@ public final class RealmsMgrImpl extends AMXImplBase
             catch (Exception e)
             {
                 Realm.setDefaultRealm(goodRealms.iterator().next());
+                e.printStackTrace();
             }
         }
+        
+        realmsLoaded = true;
     }
     
     public String[]

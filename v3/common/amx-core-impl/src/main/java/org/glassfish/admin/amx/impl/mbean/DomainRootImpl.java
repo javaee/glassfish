@@ -59,7 +59,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import java.io.InputStream;
-import org.glassfish.admin.amx.impl.path.PathnamesImpl;
+import org.glassfish.admin.amx.impl.mbeans.PathnamesImpl;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 
 
@@ -131,10 +131,19 @@ public class DomainRootImpl extends AMXImplBase
 		protected void
 	postRegisterHook( final Boolean registrationSucceeded )
 	{
-        super.postRegisterHook(registrationSucceeded);
-	    if ( registrationSucceeded.booleanValue() )
+        final boolean registeredOK = registrationSucceeded.booleanValue() ;
+	    if ( registeredOK )
 		{
-            mCompliance = ComplianceMonitor.start( getDomainRootProxy() );
+            // start it listening
+            mCompliance = ComplianceMonitor.getInstance( getDomainRootProxy() );
+		}
+        super.postRegisterHook(registrationSucceeded);
+        
+	    if ( registeredOK )
+		{
+            // validate ourself
+            mCompliance.validate( getObjectName() );
+            mCompliance.start();
 		}
 	}
 
