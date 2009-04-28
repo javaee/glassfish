@@ -80,6 +80,7 @@ import java.io.InputStream;
 
 import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.ConfigConfig;
+import com.sun.appserv.management.util.jmx.JMXUtil;
 
 /**
  */
@@ -362,9 +363,18 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         return new Object[] { elapsed, duration.toString() };
     }
 
-    public void stopDomain()
+    public Object stopDomain()
     {
-        executeREST( "stop-domain" );
+        // as this module is going away, just hard code to use AMX.new
+        final ObjectName root = JMXUtil.newObjectName( "v3:pp=,type=DomainRoot,name=v3" );
+        try
+        {
+            return getMBeanServer().invoke( root, "stopDomain", null, null);
+        }
+        catch( final Exception e )
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     static String toString(final InputStream is)
@@ -413,6 +423,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 
     public String executeREST(final String cmd)
     {
+        if ( DomainRoot.STOP_DOMAIN.equals(cmd) )
+        {
+            return "" + stopDomain();
+        }
+        
         String result = null;
         
         HttpURLConnection conn = null;
