@@ -50,7 +50,8 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     public void postConstruct() {
         try {
-            if (!domain.getConfigs().getConfig().get(0).getHttpService().getHttpListener().isEmpty()) {
+            final Config config = domain.getConfigs().getConfig().get(0);
+            if (!config.getHttpService().getHttpListener().isEmpty()) {
                 ConfigSupport.apply(new SingleConfigCode<Domain>() {
                     public Object run(Domain param) throws TransactionFailure {
                         migrateSettings(param);
@@ -58,34 +59,48 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                     }
                 }, domain);
             }
-            if (domain.getConfigs().getConfig().get(0).getThreadPools() != null) {
+            if (config.getNetworkConfig().getNetworkListeners().getThreadPool() != null) {
+                ThreadPools threadPools = config.getThreadPools();
+                if (threadPools == null) {
+                    threadPools = createThreadPools();
+                }
                 ConfigSupport.apply(new SingleConfigCode<ThreadPools>() {
                     public Object run(ThreadPools param) throws TransactionFailure {
                         migrateThreadPools(param);
                         return null;
                     }
-                }, domain.getConfigs().getConfig().get(0).getThreadPools());
+                }, threadPools);
             }
         } catch (TransactionFailure tf) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading application grizzly related items."
                 + "  Please redeploy", tf);
             throw new RuntimeException(tf);
+        } catch (PropertyVetoException e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading application grizzly related items."
+                + "  Please redeploy", e);
+            throw new RuntimeException(e);
         }
     }
 
     private void migrateThreadPools(final ThreadPools threadPools) throws TransactionFailure {
+        final Config config = threadPools.getParent(Config.class);
+        final NetworkListeners networkListeners = config.getNetworkConfig().getNetworkListeners();
+        threadPools.getThreadPool().addAll(networkListeners.getThreadPool());
+
         ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
-            @Override
-            public Object run(NetworkListeners param) {
-                param.getThreadPool().addAll(threadPools.getThreadPool());
+            public Object run(NetworkListeners param) throws PropertyVetoException {
+                param.getThreadPool().clear();
                 return null;
             }
-        }, threadPools.getParent(Config.class).getNetworkConfig().getNetworkListeners());
-        threadPools.getThreadPool().clear();
-        ConfigSupport.apply(new SingleConfigCode<Config>() {
-            public Object run(Config param) throws PropertyVetoException {
-                param.setThreadPools(null);
-                return null;
+        }, networkListeners);
+    }
+
+    private ThreadPools createThreadPools() throws TransactionFailure, PropertyVetoException {
+        return (ThreadPools) ConfigSupport.apply(new SingleConfigCode<Config>() {
+            public Object run(Config param) throws PropertyVetoException, TransactionFailure {
+                final ThreadPools threadPools = param.createChild(ThreadPools.class);
+                param.setThreadPools(threadPools);
+                return threadPools;
             }
         }, domain.getConfigs().getConfig().get(0));
     }

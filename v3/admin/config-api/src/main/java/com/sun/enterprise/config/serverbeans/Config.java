@@ -403,7 +403,6 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link ThreadPools }
      */
     @Element(required=true)
-    @Deprecated
     ThreadPools getThreadPools();
 
     /**
@@ -412,7 +411,6 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link ThreadPools }
      */
-    @Deprecated
     void setThreadPools(ThreadPools value) throws PropertyVetoException;
 
     /**

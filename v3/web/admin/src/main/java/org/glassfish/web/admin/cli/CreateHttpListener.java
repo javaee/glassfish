@@ -236,7 +236,7 @@ public class CreateHttpListener implements AdminCommand {
     }
 
     private void setThreadPool(NetworkConfig config, NetworkListener newListener) {
-        final List<ThreadPool> pools = config.getNetworkListeners().getThreadPool();
+        final List<ThreadPool> pools = config.getParent(Config.class).getThreadPools().getThreadPool();
         for (ThreadPool pool : pools) {
             if ("http-thread-pool".equals(pool.getThreadPoolId())) {
                 newListener.setThreadPool(pool.getThreadPoolId());

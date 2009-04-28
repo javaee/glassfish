@@ -10,6 +10,7 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.ServerRef;
+import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.ThreadPool;
@@ -64,7 +65,7 @@ public class IIOPUtils implements PostConstruct {
         if( processEnv.getProcessType() == ProcessType.Server) {
 
             iiopService = habitat.getComponent(IiopService.class);
-            final List<ThreadPool> threadPool = habitat.getComponent(NetworkListeners.class).getThreadPool();
+            final Collection<ThreadPool> threadPool = habitat.getAllByType(ThreadPool.class);
             final Collection<NetworkListener> listeners = habitat.getAllByType(NetworkListener.class);
             final Set<String> names = new TreeSet<String>();
             threadPools = new ArrayList<ThreadPool>();

@@ -50,7 +50,6 @@ import org.jvnet.hk2.config.Element;
 // general solution needed; this is intermediate solution
 @AMXCreatorInfo(creatables = {ThreadPool.class})
 @Configured
-@Deprecated
 public interface ThreadPools extends ConfigBeanProxy, Injectable {
     /**
      * Gets the value of the threadPool property. <p/> <p/> This accessor method returns a reference to the live list,

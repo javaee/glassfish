@@ -170,8 +170,6 @@
           </protocol>
         </protocols>
         <network-listeners>
-          <thread-pool max-thread-pool-size="20" min-thread-pool-size="2" thread-pool-id="http-thread-pool" max-queue-size="4096"></thread-pool>
-          <thread-pool thread-pool-id="thread-pool-1"/>
           <network-listener port="%%%HTTP_PORT%%%" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
           <network-listener port="%%%HTTP_SSL_PORT%%%" enabled="false" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
           <network-listener port="%%%ADMIN_PORT%%%" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="http-thread-pool"></network-listener>
@@ -180,6 +178,10 @@
           <transport name="tcp"></transport>
         </transports>
       </network-config>
+      <thread-pools>
+          <thread-pool min-thread-pool-size="2" thread-pool-id="http-thread-pool" max-queue-size="4096"></thread-pool>
+          <thread-pool thread-pool-id="thread-pool-1"/>
+      </thread-pools>
     </config> 
   </configs>
   <property name="administrative.domain.name" value="%%%DOMAIN_NAME%%%"/>
