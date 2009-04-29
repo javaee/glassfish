@@ -66,7 +66,7 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListConnectorWorkSecurityMaps.class);
 
-    @Param(name="securitymap")
+    @Param(name="securitymap", optional=true)
     String securityMap;
 
     @Param(name="resource-adapter-name", primary=true)
@@ -86,41 +86,22 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
+        final ActionReport.MessagePart mp = report.getTopMessagePart();
 
         try {
             boolean foundWSM = false;
             for (WorkSecurityMap wsm : workSecurityMaps) {
-                if (wsm.getName().equals(securityMap) &&
-                        wsm.getResourceAdapterName().equals(raName)) {
-                    List<PrincipalMap> principalList = wsm.getPrincipalMap();
-                    List<GroupMap> groupList = wsm.getGroupMap();
-
-                    report.setMessage(localStrings.getLocalString(
-                        "list.connector.work.security.maps.workSecurityMap",
-                        "Work security map {0} for resource adapter {1}", securityMap, raName));
-                    
-                    for (PrincipalMap map : principalList) {
-                        final ActionReport.MessagePart part =
-                            report.getTopMessagePart().addChild();
-                            part.setMessage(localStrings.getLocalString(
-                        "list.connector.work.security.maps.eisAndMappedPrincipal",
-                        "eis principal={0}, mapped principal={1}",
-                                    map.getEisPrincipal(), map.getMappedPrincipal()));
+                if (wsm.getResourceAdapterName().equals(raName)) {
+                    if (securityMap == null) {
+                        listWorkSecurityMap(wsm, mp);
+                        foundWSM = true;
+                    } else if (wsm.getName().equals(securityMap)) {
+                        listWorkSecurityMap(wsm, mp);
+                        foundWSM = true;
+                        break;
                     }
-                    
-                    for (GroupMap map : groupList) {
-                        final ActionReport.MessagePart part =
-                            report.getTopMessagePart().addChild();
-                            part.setMessage(localStrings.getLocalString(
-                        "list.connector.work.security.maps.eisAndMappedGroup",
-                        "eis group={0}, mapped group={1}",
-                                    map.getEisGroup(), map.getMappedGroup()));
-                    }
-                    foundWSM = true;
-                    break;
                 }
             }
-
             if (!foundWSM) {
                  report.setMessage(localStrings.getLocalString(
                         "list.connector.work.security.maps.workSecurityMapNotFound",
@@ -140,5 +121,26 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private void listWorkSecurityMap(WorkSecurityMap wsm, ActionReport.MessagePart mp) {
+        List<PrincipalMap> principalList = wsm.getPrincipalMap();
+        List<GroupMap> groupList = wsm.getGroupMap();
+
+        for (PrincipalMap map : principalList) {
+            final ActionReport.MessagePart part = mp.addChild();
+            part.setMessage(localStrings.getLocalString(
+                    "list.connector.work.security.maps.eisPrincipalAndMappedPrincipal",
+                    "{0}: EIS principal={1}, mapped principal={2}",
+                    wsm.getName(), map.getEisPrincipal(), map.getMappedPrincipal()));
+        }
+
+        for (GroupMap map : groupList) {
+            final ActionReport.MessagePart part = mp.addChild();
+            part.setMessage(localStrings.getLocalString(
+                    "list.connector.work.security.maps.eisGroupAndMappedGroup",
+                    "{0}: EIS group={1}, mapped group={2}",
+                    wsm.getName(), map.getEisGroup(), map.getMappedGroup()));
+        }
     }
 }
