@@ -34,6 +34,7 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
         try {
             webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
@@ -54,20 +55,36 @@ public class WebTest {
         bw.flush();
 
         // Read response
-        InputStream is = sock.getInputStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        InputStream is = null;
+        BufferedReader input = null;
         String line = null;
         String lastLine = null;
-        while ((line = input.readLine()) != null) {
-            lastLine = line;
+        try {
+            is = sock.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            while ((line = input.readLine()) != null) {
+                lastLine = line;
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
-        if (EXPECTED_RESPONSE.equals(lastLine)) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Wrong response body. Expected: "
-                               + EXPECTED_RESPONSE + ", received: "
-                               + lastLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+
+        if (!EXPECTED_RESPONSE.equals(lastLine)) {
+            throw new Exception("Wrong response body. Expected: " +
+                EXPECTED_RESPONSE + ", received: " + lastLine);
         }
     }
 }

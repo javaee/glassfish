@@ -61,6 +61,7 @@ public class WebTest {
      
         try { 
             invoke();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             ex.printStackTrace();
@@ -77,22 +78,37 @@ public class WebTest {
         os.write(("Proxy-auth-cert: " + CLIENT_CERT + "\n").getBytes());
         os.write("\n".getBytes());
 
-        InputStream is = socket.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
         String lastLine = null;
-        while ((line = bis.readLine()) != null) {
-            lastLine = line;
+        try {
+            is = socket.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            while ((line = bis.readLine()) != null) {
+                lastLine = line;
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         if (!EXPECTED_RESPONSE.equals(lastLine)) {
-            System.err.println("Wrong response. Expected: "
-                               + EXPECTED_RESPONSE
-                               + ", received: " + lastLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            stat.addStatus(TEST_NAME, stat.PASS);
+            throw new Exception("Wrong response. Expected: " +
+                                EXPECTED_RESPONSE + ", received: " +
+                                lastLine);
         }
     }
 }

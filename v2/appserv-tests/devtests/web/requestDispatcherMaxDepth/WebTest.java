@@ -57,12 +57,31 @@ public class WebTest {
                                 ", received: " + responseCode);
         }
 
-        InputStream is = conn.getInputStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is));
-        String line = input.readLine();
-        if (!EXPECTED_RESPONSE.equals(line)) {
-            throw new Exception("Wrong response. Expected: " +
-                EXPECTED_RESPONSE + ", received: " + line);
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String line = input.readLine();
+            if (!EXPECTED_RESPONSE.equals(line)) {
+                throw new Exception("Wrong response. Expected: " +
+                    EXPECTED_RESPONSE + ", received: " + line);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 

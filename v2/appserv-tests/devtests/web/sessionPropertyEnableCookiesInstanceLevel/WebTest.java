@@ -66,20 +66,38 @@ public class WebTest {
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
         String redirectLine = null;
         String cookieLine = null;
-        int i=0;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(i++ + ": " + line);
-            if (line.startsWith("Location:")) {
-                redirectLine = line;
-            } else if (line.startsWith("Set-Cookie:")) {
-                cookieLine = line;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            int i=0;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(i++ + ": " + line);
+                if (line.startsWith("Location:")) {
+                    redirectLine = line;
+                } else if (line.startsWith("Set-Cookie:")) {
+                    cookieLine = line;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 
@@ -121,10 +139,21 @@ public class WebTest {
             return;
         }
 
-        bis = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        while ((line = bis.readLine()) != null) {
-            if (line.equals(EXPECTED)) {
-                break;
+        try {
+            bis = new BufferedReader(new InputStreamReader(
+                conn.getInputStream()));
+            while ((line = bis.readLine()) != null) {
+                if (line.equals(EXPECTED)) {
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 

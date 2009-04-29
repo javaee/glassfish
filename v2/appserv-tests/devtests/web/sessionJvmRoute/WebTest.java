@@ -97,17 +97,36 @@ public class WebTest {
         os.write("\n".getBytes());
         
         sessionCookieHeader = null;
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
         boolean okStatus = false;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(line);
-            if (line.equals("HTTP/1.1 200 OK")) {
-                okStatus = true;
-            } else if (line.startsWith("Set-Cookie:") &&
-                    line.indexOf("JSESSIONID") != -1) {
-                sessionCookieHeader = line;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            while ((line = bis.readLine()) != null) {
+                System.out.println(line);
+                if (line.equals("HTTP/1.1 200 OK")) {
+                    okStatus = true;
+                } else if (line.startsWith("Set-Cookie:") &&
+                        line.indexOf("JSESSIONID") != -1) {
+                    sessionCookieHeader = line;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 
