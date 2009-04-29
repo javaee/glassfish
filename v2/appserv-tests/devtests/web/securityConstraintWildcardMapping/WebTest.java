@@ -38,33 +38,31 @@ public class WebTest {
     public static void main(String[] args) {
         stat.addDescription("Unit test for security constraints mapping");
         WebTest webTest = new WebTest(args);
-        webTest.doTest();
+
+        try {
+            webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
+        }
+
 	stat.printSummary();
     }
 
-    public void doTest() {
+    public void doTest() throws Exception {
      
-        try {
+        URL url = new URL("http://" + host  + ":" + port
+                          + contextRoot + "/application/redirect/xxx");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
 
-            URL url = new URL("http://" + host  + ":" + port
-                              + contextRoot + "/application/redirect/xxx");
-            System.out.println("Connecting to: " + url.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response code. Expected: "
-                                   + HttpURLConnection.HTTP_UNAUTHORIZED
-                                   + ", received: " + responseCode);
-                stat.addStatus(TEST_NAME, stat.FAIL);    
-            }
-
-        } catch( Exception ex) {
-            ex.printStackTrace();
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (responseCode != HttpURLConnection.HTTP_UNAUTHORIZED) {
+            throw new Exception("Wrong response code. Expected: " +
+                HttpURLConnection.HTTP_UNAUTHORIZED + ", received: " +
+                responseCode);
         }
     }
 

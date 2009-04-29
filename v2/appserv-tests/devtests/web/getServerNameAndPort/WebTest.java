@@ -22,6 +22,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -43,27 +44,53 @@ public class WebTest {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void invokeServlet() throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         os.write(("GET " + contextRoot + "/TestServlet HTTP/1.1\n").getBytes());
         os.write(("Host: " + SERVER_NAME + ":" + SERVER_PORT + "\n").getBytes());
         os.write("\n".getBytes());
         
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
-        String line = null;
-        int i = 0;;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(i++ + ": " + line);
-            if (EXPECTED.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-                return;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            int i = 0;;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(i++ + ": " + line);
+                if (EXPECTED.equals(line)) {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                    return;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 
