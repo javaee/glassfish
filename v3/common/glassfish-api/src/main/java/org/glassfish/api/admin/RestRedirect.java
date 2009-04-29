@@ -35,12 +35,16 @@
  */
 package org.glassfish.api.admin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * annotation to redirect a rest request from CRUD operations on the configuration
  * tree to a command invocation (like deploy, undeploy).
  *
  * @author Jerome Dochez
  */
+@Retention(RetentionPolicy.RUNTIME)
 public @interface RestRedirect {
 
     enum OpType { GET, PUT, POST, DELETE}

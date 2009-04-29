@@ -36,11 +36,15 @@
 
 package org.glassfish.api.admin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * List of @RestRedirect
  *
  * @author Jerome Dochez
  */
+@Retention(RetentionPolicy.RUNTIME)
 public @interface RestRedirects {
 
     RestRedirect[] value();

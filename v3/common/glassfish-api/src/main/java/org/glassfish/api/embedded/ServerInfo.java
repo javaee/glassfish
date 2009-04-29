@@ -36,12 +36,18 @@
 package org.glassfish.api.embedded;
 
 import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.util.*;
+
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
  *
@@ -128,19 +134,25 @@ public class ServerInfo  {
      * Creates a server configuration using the passed id as an identifier
      * or return an managed server info created with that name.
      *
-     * @param id the server indentified
-     * @return an unconfigured server instance
+     * @param id the server identification
+     * @return an unconfigured server info
      */
     public static ServerInfo getServerInfo(String id) {
         synchronized (servers) {
             if (servers.containsKey(id)) {
                 return servers.get(id);
             }
-            // create the habitat, somehow...
-            // should we make this habitat a static...
-            Habitat h = null;
+            // Bootstrap a hk2 environment.
+
+            ModulesRegistry registry = new StaticModulesRegistry(ServerInfo.class.getClassLoader());
+            Habitat habitat = registry.createHabitat("default");
+
+            StartupContext startupContext = new StartupContext();
+            habitat.add(new ExistingSingletonInhabitant(startupContext));
+
+            habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
             ServerInfo info = new ServerInfo(id);
-            info.setHabitat(h);
+            info.setHabitat(habitat);
             servers.put(id, info);
             return info;
         }

@@ -369,7 +369,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
             } else {
                 errorMsg = adminStrings.getLocalString("admin.param.missing.nofound",
-                       "I cannot find {1} is {0} model, file a bug", model.getCommandName(), e.getUnsatisfiedName());
+                       "Cannot find {1} in {0} command model, file a bug", model.getCommandName(), e.getUnsatisfiedName());
             }
             logger.severe(errorMsg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
