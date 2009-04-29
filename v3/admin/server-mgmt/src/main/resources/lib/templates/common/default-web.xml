@@ -1137,6 +1137,9 @@
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
 
+  <login-config>
+    <auth-method>BASIC</auth-method>
+  </login-config>
 
 </web-app>
 
