@@ -34,26 +34,16 @@
  holder.
 -->
 <!-- configuration/transactionServiceButtons.inc -->
+<!--
 <sun:panelGroup id="topButtons">
     <sun:button id="saveButton" text="$resource{i18n.button.Save}"
             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
          <!command
-        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-        convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-        prepareSuccessfulMsg();                             
-        saveTransactionServiceSettings(
-        ConfigName="#{configName}",
-        OnRestart="#{onRestart}",
-        Timeout="#{timeout}",
-        Retry="#{retry}",
-        LogLocation="#{logLocation}",
-        Heuristic="#{heuristic}",
-        KeyPoint="#{keyPoint}"                           
-        newProps="${newProps}"
-        );
-         redirect(page="#{request.contextPath}/web/configuration/transactionService.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
-
-       />
+            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+            prepareSuccessfulMsg();
+            //saveNetworkListener(ConfigName="#{configName}"  attrs="#{pageSession.valueMap}" );
+        />
     </sun:button>
 </sun:panelGroup>
+-->

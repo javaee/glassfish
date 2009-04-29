@@ -65,16 +65,6 @@
 
 <sun:property>
     <sun:hyperlink
-        toolTip="$resource{i18n.tree.grizzly.threadPools.tooltip}"
-        url="/web/grizzly/threadPools.jsf?configName=#{configName}"
-        >
-        <sun:image url="/resource/web/images/threadPool.gif" />
-        <sun:staticText text="$resource{i18n.tree.grizzly.threadPools}" />
-    </sun:hyperlink>
-</sun:property>
-
-<sun:property>
-    <sun:hyperlink
         toolTip="$resource{i18n.tree.grizzly.protocols.tooltip}"
         url="/web/grizzly/protocols.jsf?configName=#{configName}"
         >

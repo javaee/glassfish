@@ -45,7 +45,8 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getThreadPoolAttr(configName="#{configName}", valueMap="#{pageSession.valueMap}");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        getThreadPoolAttr(configName="#{configName}", name="#{pageSession.Name}"  fromDefault="false" valueMap="#{pageSession.valueMap}");
         />
     </event>
 #include "/shared/restart.inc"
@@ -57,7 +58,7 @@
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolEditPageTitle}" helpText="$resource{i18n_web.configuration.threadPoolEditPageTitleHelp}">
                     <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
                         <!command
-                            getThreadPoolDefault(configName="#{configName}", valueMap="#{pageSession.valueMap}")
+                            getThreadPoolAttr(configName="#{configName}", fromDefault="true" valueMap="#{pageSession.valueMap}")
                         />
                     </sun:button>
                     <!-- Buttons  -->
@@ -67,37 +68,34 @@
                     </sun:title>
                     "<br><br>
 
-" *** NOTE: This page is not functional.  Please use CLI to create/edit Thread Pool
-
-
                 <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.threadPool.nameHelp}">
-        <sun:textField id="name" styleClass="required" columns="$int{30}" text="#{pageSession.valueMap['name']}" />
+        <sun:staticText id="name" text="#{Name}"/>
         </sun:property>
 
         <sun:property id="classname"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
-        <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['classname']}" />
+        <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['Classname']}" />
         </sun:property>
 
         <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
-        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['timeout']}" />
+        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['IdleThreadTimeout']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="max"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxQueue}" helpText="$resource{i18n_web.threadPool.maxQueueHelp}">
-        <sun:textField id="max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['maxQueue']}" />
+        <sun:textField id="max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxQueueSize']}" />
         </sun:property>
 
         <sun:property id="maxThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxThread}" helpText="$resource{i18n_web.threadPool.maxThreadHelp}">
-        <sun:textField id="maxThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['maxThread']}" />
+        <sun:textField id="maxThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxThreadPoolSize']}" />
         </sun:property>
 
         <sun:property id="minThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.minThread}" helpText="$resource{i18n_web.threadPool.minThreadHelp}">
-        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['minThread']}" />
+        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MinThreadPoolSize']}" />
         </sun:property>
 
     </sun:propertySheetSection>

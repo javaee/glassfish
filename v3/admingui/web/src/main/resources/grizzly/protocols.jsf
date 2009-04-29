@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/protocols.jsf?configName=#{configName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}");
         setPageSessionAttribute(key="type" value="protocol");
-        setPageSessionAttribute(key="tableTitle" value="protocol");
+        setPageSessionAttribute(key="tableTitle"  value="$resource{i18n_web.grizzly.protocol.tableName}");
     />
     </event>
 #include "/shared/restart.inc"
@@ -62,8 +62,6 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolsPageTitle}"
                  helpText="$resource{i18n_web.grizzly.protocolsPageTitleHelp}" />
 		 "<br /> <br />
-         " *** NOTE: This page is not functional yet, please use CLI to manage protocols ***
-         "<br /> <br />
 
 <sun:table id="configs" title="#{tableTitle}">
 
@@ -78,12 +76,12 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.name}"
-            url="#{pageSession.editLink}&name=#{td.value.name}" />
+        <sun:hyperlink id="link" text="#{td.value.Name}"
+            url="#{pageSession.editLink}&name=#{td.value.Name}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}"  rowHeader="$boolean{true}" id="ss">
-        <staticText id="ss" value="#{td.value.securityEnabled}" />
+        <staticText id="ss" value="#{td.value.SecurityEnabled}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>
