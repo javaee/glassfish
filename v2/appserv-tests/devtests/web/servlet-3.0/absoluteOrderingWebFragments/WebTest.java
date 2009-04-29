@@ -58,11 +58,19 @@ public class WebTest {
                 input = new BufferedReader(new InputStreamReader(is));
                 line = input.readLine();
             } finally {
-                if (is != null) {
-                    is.close();
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
                 }
-                if (input != null) {
-                    input.close();
+                try {
+                    if (input != null) {
+                        input.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
                 }
             }
 
