@@ -37,7 +37,7 @@ public class WebTest {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.connect();
             int responseCode = conn.getResponseCode();
-            if (responseCode != 403) { // HttpServletResponse.SC_FORBIDDEN
+            if (responseCode != 401) { // HttpServletResponse.SC_UNAUTHORIZED
                 System.err.println("Wrong response code. Expected: 403, "
                                    + "received: " + responseCode);
                 stat.addStatus(TEST_NAME, stat.FAIL);
