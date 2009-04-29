@@ -193,9 +193,12 @@
 		<copy tofile="${stage.dir}/${bundle.name}/Product/Packages/glassfish.zip" file="${sourcezip.name}" />
 
 		<echo message="Creating icons zip file" />
-		<zip destfile="${stage.dir}/${bundle.name}/Product/Packages/icons.zip" basedir="${basedir}/src/${bundle.name}/resources/icons" excludes=".svn" />
-
-
+                <delete dir="${tmp.dir}"/>
+         	<copy todir="${tmp.dir}/glassfish/icons">
+             		<fileset dir="${basedir}/src/${bundle.name}/resources/icons" excludes=".svn"/>
+         	</copy>
+         	<zip destfile="${stage.dir}/${bundle.name}/Product/Packages/icons.zip" basedir="${tmp.dir}" />
+                <delete dir="${tmp.dir}"/>
 		<chmod file="${stage.dir}/${bundle.name}/product-installer.sh" perm="ugo+rx" />
 	</target>
 
