@@ -26,6 +26,7 @@ public class WebTest {
     private String port;
     private String contextRoot;
     private boolean fail = false;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -47,6 +48,14 @@ public class WebTest {
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         if (fail) {
@@ -60,7 +69,7 @@ public class WebTest {
 
     private void invokeServlet() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/redirectFrom" + " HTTP/1.0\n";
         System.out.println(get);

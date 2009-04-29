@@ -42,7 +42,8 @@ public class WebTest {
 
     private static void goGet(String host, int port,
                               String result, String contextPath)
-         throws Exception {
+            throws Exception {
+
         Socket s = new Socket(host, port);
         OutputStream os = s.getOutputStream();
 

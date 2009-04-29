@@ -35,6 +35,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -56,6 +57,14 @@ public class WebTest {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
@@ -87,7 +96,7 @@ public class WebTest {
         /*
          * Resume session
          */        
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String getRequestLine = "GET " + contextRoot + "/CheckSession" +
             " HTTP/1.0\n";

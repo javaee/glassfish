@@ -23,6 +23,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -39,6 +40,14 @@ public class WebTest {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             e.printStackTrace();
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         stat.printSummary(TEST_NAME);
@@ -46,7 +55,7 @@ public class WebTest {
 
     private void invokeJsp() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/jsp/test.jsp" + " HTTP/1.0\n";
         System.out.println(get);
@@ -67,13 +76,6 @@ public class WebTest {
                 lastLine = line;
             }
         } finally {
-            try {
-                if (sock != null) {
-                    sock.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
             try {
                 if (is != null) {
                     is.close();

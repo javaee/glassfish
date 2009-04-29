@@ -32,6 +32,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -54,12 +55,20 @@ public class WebTest {
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void testRemoteAddress() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/jsp/sendRedirect.jsp "
             + "HTTP/1.0\n";
@@ -81,13 +90,6 @@ public class WebTest {
                 }
             }
         } finally {
-            try {
-                if (sock != null) {
-                    sock.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
             try {
                 if (is != null) {
                     is.close();

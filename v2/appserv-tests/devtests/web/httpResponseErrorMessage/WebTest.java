@@ -23,6 +23,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -43,13 +44,21 @@ public class WebTest {
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void invoke() throws Exception {
 
         System.out.println("Host=" + host + ", port=" + port);        
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/index.jsp HTTP/1.1\n";
         System.out.println(get);

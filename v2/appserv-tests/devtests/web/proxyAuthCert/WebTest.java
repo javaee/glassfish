@@ -43,6 +43,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket socket = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -66,12 +67,20 @@ public class WebTest {
             System.out.println(TEST_NAME + " test failed");
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void invoke() throws Exception {
 
-        Socket socket = new Socket(host, new Integer(port).intValue());
+        socket = new Socket(host, new Integer(port).intValue());
         OutputStream os = socket.getOutputStream();
 
         os.write(("GET " + contextRoot + "/TestServlet HTTP/1.0\n").getBytes());
