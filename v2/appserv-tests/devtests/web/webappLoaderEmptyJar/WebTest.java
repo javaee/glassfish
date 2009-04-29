@@ -16,6 +16,7 @@ public class WebTest {
     private String port;
     private String contextRoot;
     private boolean fail;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -39,6 +40,14 @@ public class WebTest {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         return;
@@ -46,21 +55,38 @@ public class WebTest {
 
     private void invokeJSP() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/jsp/stringBean.jsp" + " HTTP/1.0\n";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
         
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(line);
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            while ((line = bis.readLine()) != null) {
+                System.out.println(line);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
-
     }
 
 }

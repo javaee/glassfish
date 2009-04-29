@@ -22,6 +22,7 @@ public class WebTest {
     private String appserverHome;
     private String expectedResponse;
     private boolean fail = false;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
 
@@ -50,6 +51,14 @@ public class WebTest {
         } catch (Exception ex) {
             ex.printStackTrace();
             fail = true;
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         if (fail) {
@@ -61,22 +70,40 @@ public class WebTest {
 
     public void invoke() throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + " HTTP/1.0\n";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
         
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
-        int i=0;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(i++ + ": " + line);
-            if (line.startsWith("Location:")) {
-                break;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            int i = 0;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(i++ + ": " + line);
+                if (line.startsWith("Location:")) {
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 
@@ -107,14 +134,25 @@ public class WebTest {
             return;
         }
 
-        processResponse(conn);
+
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(
+                conn.getInputStream()));
+            processResponse(br);
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+        }
     }
 
 
-    private void processResponse(HttpURLConnection conn) throws Exception {
-
-        BufferedReader br = new BufferedReader(
-                        new InputStreamReader(conn.getInputStream()));
+    private void processResponse(BufferedReader br) throws Exception {
 
         boolean first = true;
         String line = null;
