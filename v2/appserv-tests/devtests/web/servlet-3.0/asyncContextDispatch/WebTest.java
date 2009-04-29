@@ -54,13 +54,32 @@ public class WebTest {
                                 conn.getResponseCode());
         }
 
-        InputStream is = conn.getInputStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        InputStream is = null;
+        BufferedReader input = null;
         String line = null;
-        while ((line = input.readLine()) != null) {
-            System.out.println(line);
-            if (line.equals(EXPECTED_RESPONSE)) {
-                break;
+        try {
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            while ((line = input.readLine()) != null) {
+                System.out.println(line);
+                if (line.equals(EXPECTED_RESPONSE)) {
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
             }
         }
 
