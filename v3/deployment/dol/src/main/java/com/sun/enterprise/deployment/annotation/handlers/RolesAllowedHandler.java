@@ -131,23 +131,7 @@ public class RolesAllowedHandler extends AbstractCommonAttributeHandler implemen
             AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-        HandlerProcessingResult result =
-            processAuthAnnotationOnWebComponentContexts(ainfo, webCompContexts);
-
-        // default login config 
-        if (webCompContexts.length > 0) {
-            WebBundleDescriptor webBundleDesc =
-                webCompContexts[0].getDescriptor().getWebBundleDescriptor();
-            if (webBundleDesc != null &&
-                    webBundleDesc.getLoginConfiguration() == null) {
-                LoginConfiguration loginConfig = new LoginConfigurationImpl();
-                loginConfig.setAuthenticationMethod(
-                        LoginConfiguration.BASIC_AUTHENTICATION);
-                webBundleDesc.setLoginConfiguration(loginConfig);
-            }
-        }
-
-        return result;
+        return processAuthAnnotationOnWebComponentContexts(ainfo, webCompContexts);
     }
 
     /**
