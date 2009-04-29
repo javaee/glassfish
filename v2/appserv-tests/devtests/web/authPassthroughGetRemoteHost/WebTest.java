@@ -44,6 +44,7 @@ public class WebTest {
      
         try { 
             testRemoteAddress();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -62,22 +63,43 @@ public class WebTest {
         os.write("Proxy-ip: 127.0.0.1\n".getBytes());
         os.write("\n".getBytes());
         
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
         String lastLine = null;
-        while ((line = bis.readLine()) != null) {
-            lastLine = line;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            while ((line = bis.readLine()) != null) {
+                lastLine = line;
+            }
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
-        if (lastLine.startsWith(EXPECTED_RESPONSE)) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Wrong response. "
-                               + "Expected: " + EXPECTED_RESPONSE
-                               + ", received: " + lastLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (!lastLine.startsWith(EXPECTED_RESPONSE)) {
+            throw new Exception("Wrong response. " + "Expected: " +
+                EXPECTED_RESPONSE + ", received: " + lastLine);
         }
     }
 }

@@ -50,6 +50,7 @@ public class WebTest {
      
         try { 
             testRemoteAddress();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -68,31 +69,51 @@ public class WebTest {
         os.write("Proxy-ip: 123.456.789\n".getBytes());
         os.write("\n".getBytes());
         
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (line.startsWith("Location:")) {
-                break;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            while ((line = bis.readLine()) != null) {
+                if (line.startsWith("Location:")) {
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 
-        if (line != null) {
-            System.out.println("Location header: " + line);
+        if (line == null) {
+            throw new Exception("Missing Location response header");
+        }
 
-            String location = line.substring("Location:".length()).trim();
-            if (EXPECTED_LOCATION.equals(location)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong Location response header, expected: "
-                                   + EXPECTED_LOCATION
-                                   + ", received: " + location);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            }
-        } else {
-            System.err.println("Missing Location response header");
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        System.out.println("Location header: " + line);
+        String location = line.substring("Location:".length()).trim();
+        if (!EXPECTED_LOCATION.equals(location)) {
+            throw new Exception("Wrong Location response header, expected: "
+                                + EXPECTED_LOCATION
+                                + ", received: " + location);
         }
     }
 }
