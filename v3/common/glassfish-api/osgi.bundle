@@ -9,7 +9,6 @@
                         org.glassfish.api.content; \
                         org.glassfish.api.deployment; \
                         org.glassfish.api.deployment.archive; \
-                        org.glassfish.api.embedded; \                        
                         org.glassfish.api.event; \
                         org.glassfish.api.invocation; \
                         org.glassfish.api.logging; \
