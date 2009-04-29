@@ -4,13 +4,13 @@ To build, you must have Java 6 and Maven 2.0.9 installed (error messages
 in the build process will give you the exact versions). From the
 'upgrade' directory run:
 
-  maven clean install
+  mvn clean install
 
 To install and run:
 
 - Set JAVA_HOME if not already set.
 
-- Copy target/upgrade.jar to ${v3_install}/glassfish/modules
+- Copy target/upgradeTool.jar to ${v3_install}/glassfish/modules.
 
 - Copy src/main/scripts/asupgrade(.bat) to ${v3_install}/glassfish/bin.
   chmod +x asupgrade if it isn't executable already.
