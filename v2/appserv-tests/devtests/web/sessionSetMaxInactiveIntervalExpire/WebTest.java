@@ -65,14 +65,33 @@ public class WebTest {
             + " HTTP/1.0\n").getBytes());
         os.write(("Cookie: " + cookie + "\n").getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
+
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (EXPECTED_RESPONSE.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-                break;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            while ((line = bis.readLine()) != null) {
+                if (EXPECTED_RESPONSE.equals(line)) {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 

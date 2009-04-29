@@ -58,17 +58,36 @@ public class WebTest {
         os.write("Connection: close\n".getBytes());
         os.write("\n".getBytes());
 
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
-        String line = null;
+        InputStream is = null;
+        BufferedReader bis = null;
         boolean isExpected = false;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(line);
-            Matcher m = PATTERN.matcher(line);
-            if (m.matches()) {
-                isExpected = true;
-                break;
+
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(line);
+                Matcher m = PATTERN.matcher(line);
+                if (m.matches()) {
+                    isExpected = true;
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 
