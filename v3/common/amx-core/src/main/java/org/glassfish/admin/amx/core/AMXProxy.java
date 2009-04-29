@@ -62,6 +62,13 @@ public interface AMXProxy extends AMX_SPI {
         the internal name, which might not be legal in an ObjectName, or could have changed.
     */
     public String nameProp();
+    
+    /** The value of the {@link AMXConstants#PARENT_PATH_KEY} property in the ObjectName */
+    public String parentPath();
+    
+    /** The value of the {@link AMXConstants#TYPE_KEY} property in the ObjectName */
+    public String type();
+
 	
 	/**
 		A proxy can become invalid if its corresponding MBean is unregistered.
@@ -122,7 +129,7 @@ public interface AMXProxy extends AMX_SPI {
 		The ObjectName of this MBean.
 	 */
 	public ObjectName		objectName();
-    
+        
     /** additional capabilities */
     public Extra extra();
 }

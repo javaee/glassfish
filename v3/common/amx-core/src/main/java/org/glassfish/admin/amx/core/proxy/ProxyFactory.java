@@ -192,7 +192,7 @@ public final class ProxyFactory implements NotificationListener
         
         for( final AMXProxy amx : proxies )
         {
-            final AMXProxyHandler proxy = AMXProxyHandler.getInvocationHandler(amx);
+            final AMXProxyHandler proxy = AMXProxyHandler.unwrap(amx);
             proxy.connectionBad();
         }
 	}

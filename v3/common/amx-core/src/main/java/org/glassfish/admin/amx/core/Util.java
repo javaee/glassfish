@@ -643,33 +643,38 @@ public final class Util
     }
     
     /**
-        Deduce the type to be used in the path, looking for an {@link AMXMBeanMetadata} first.
+        Deduce the type to be used in the path.  Presence of a type field always
+        take precedence, then the AMXMBeanMetadata.
      */
         public static String
     deduceType( final Class<?> intf )
     {
         String type = null;
         
-        final AMXMBeanMetadata meta = intf.getAnnotation(AMXMBeanMetadata.class);
-        if ( meta != null && meta.type().length() != 0 && ! meta.type().equals( AMXMBeanMetadata.NULL ) )
+        AMXMBeanMetadata meta = null;
+        final Object typeField = ClassUtil.getFieldValue( intf, TYPE_FIELD );
+        if ( typeField instanceof String )
         {
-            type = meta.type();
+            type = (String)typeField;
         }
-        
-        if( type == null )
+        else if ( (meta = intf.getAnnotation(AMXMBeanMetadata.class)) != null )
         {
-            final Object value = ClassUtil.getFieldValue( intf, TYPE_FIELD );
-            if ( value instanceof String )
+            final String typeValue = meta.type();
+            
+            if ( typeValue.equals( AMXMBeanMetadata.NULL ) || typeValue.length() == 0)
             {
-                type = (String)value;
+                type = ClassUtil.stripPackageName( intf.getName() );
+            }
+            else
+            {
+                type = typeValue;
             }
         }
-        
-        if ( type == null )
+        else
         {
+            // no annotation, use our default conversion
             type = ClassUtil.stripPackageName( intf.getName() );
         }
-        
         return type;
     }
     

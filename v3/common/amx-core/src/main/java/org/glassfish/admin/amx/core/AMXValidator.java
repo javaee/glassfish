@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -242,7 +243,7 @@ public final class AMXValidator {
         // test proxy methods
         try {
             final AMXProxy parent = proxy.parent();
-            if (parent == null && !Util.getTypeProp(proxy).equals(DomainRoot.TYPE)) {
+            if (parent == null && ! proxy.type().equals(DomainRoot.TYPE)) {
                 throw new Exception("Null parent");
             }
 
@@ -261,7 +262,7 @@ public final class AMXValidator {
 
             for (final AMXProxy child : childrenSet) {
                 if (child.extra().singleton()) {
-                    final String childType = Util.getTypeProp(child);
+                    final String childType = child.type();
                     if (!child.objectName().equals(proxy.child(childType).objectName())) {
                         throw new Exception("Child type " + childType + " cannot be found via child(type)");
                     }
@@ -322,6 +323,13 @@ public final class AMXValidator {
                 fail(objectName, "Metadata claims named (non-singleton), but no name property present in ObjectName");
             }
         }
+        
+        if (  proxy.parent() != null )
+        {
+            if ( ! proxy.parentPath().equals( proxy.parent().path() ) ) {
+                fail( objectName, "Parent path of " + proxy.parentPath() + " does not match parent's path for " + proxy.parent().objectName() );
+            }
+        }
     }
     
     /** verify that the children/parent relationship exists */
@@ -361,6 +369,17 @@ public final class AMXValidator {
                         fail( proxy, "Child’s Parent of " + child.parent().objectName() +
                             " does not match the actual parent of " + proxy.objectName() );
                     }
+                }
+                
+                // verify that the children types do not differ only by case-sensitivity
+                final Set<String> caseSensitiveTypes = new HashSet<String>();
+                final Set<String> caseInsensitiveTypes = new HashSet<String>();
+                for( final ObjectName o : children ) {
+                    caseSensitiveTypes.add( Util.getTypeProp(o) );
+                    caseInsensitiveTypes.add( Util.getTypeProp(o).toLowerCase() );
+                }
+                if ( caseSensitiveTypes.size() != caseInsensitiveTypes.size() ) {
+                    fail( proxy, "Children types must be case-insensitive" );
                 }
             }
             catch( Exception e )

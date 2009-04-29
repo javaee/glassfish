@@ -77,11 +77,6 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     private final ObjectName    mParentObjectName;
     private final String        mName;
 	
-    public static AMXProxyHandler getInvocationHandler(final AMXProxy amx)
-    {
-        return (AMXProxyHandler)Proxy.getInvocationHandler(amx);
-    }
-
         public <T extends AMXProxy> T
     as(final Class<T> intf)
     {
@@ -104,10 +99,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 		return this;
 	}
 
-		public AMXProxyHandler
-	handler()
+		public static AMXProxyHandler
+	unwrap( final AMXProxy proxy)
 	{
-		return this;
+		return (AMXProxyHandler)Proxy.getInvocationHandler(proxy);
 	}
 
 	/**
@@ -165,11 +160,6 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	
 	private static final String[]	EMPTY_SIG		= new String[ 0 ];
 	private static final String[]	STRING_SIG		= new String[] { STRING } ;
-	private static final String[]	STRING2_SIG		= new String[] { STRING, STRING } ;
-	
-	private static final String[]	GET_OBJECT_NAMES_SIG_EMPTY	= EMPTY_SIG;
-	private static final String[]	GET_OBJECT_NAMES_SIG_STRING	= STRING_SIG;
-	
 
         protected <T extends AMXProxy> T
 	getProxy(final ObjectName	objectName, final Class<T> intf)
@@ -322,6 +312,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     
     /** proxy method */
 	private static final String	METHOD_NAME_PROP          = "nameProp";
+    
+	private static final String	METHOD_TYPE          = "type";
+    
+	private static final String	METHOD_PARENT_PATH   = "parentPath";
 
     /** proxy method */
 	private static final String	METHOD_CHILDREN      = "children";
@@ -370,7 +364,9 @@ public final class AMXProxyHandler extends MBeanProxyHandler
                 GET_PARENT,
                 
                 METHOD_NAME_PROP,
+                METHOD_TYPE,
                 METHOD_PARENT,
+                METHOD_PARENT_PATH,
 				METHOD_CHILDREN_SET,
 				METHOD_CHILDREN_MAP,
 				METHOD_CHILDREN_MAPS,
@@ -435,6 +431,14 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 		    else if ( methodName.equals( METHOD_NAME_PROP )  )
 			{
 				result	= getObjectName().getKeyProperty( NAME_KEY );
+			}
+		    else if ( methodName.equals( METHOD_TYPE )  )
+			{
+				result	= type();
+			}
+		    else if ( methodName.equals( METHOD_PARENT_PATH )  )
+			{
+				result	= parentPath();
 			}
 		    else if ( methodName.equals( METHOD_ATTRIBUTES_MAP )  )
 			{
@@ -748,7 +752,15 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
     public String nameProp() {
         // name as found in the ObjectName
-        return getObjectName().getKeyProperty( NAME_KEY );
+        return Util.getNameProp( getObjectName() );
+    }
+    
+    public String parentPath() {
+        return getObjectName().getKeyProperty( PARENT_PATH_KEY );
+    }
+    
+    public String type() {
+        return Util.getTypeProp( getObjectName() );
     }
 
     public String getName()

@@ -560,7 +560,10 @@ public class ConfigBeanJMXSupport {
         for( final DuckTypedInfo info : mDuckTypedInfos )
         {
             final MBeanOperationInfo opInfo = duckTypedToMBeanOperationInfo(info);
-            opInfos.add( opInfo );
+            if ( opInfo != null )
+            {
+                opInfos.add( opInfo );
+            }
         }
         return CollectionUtil.toArray( opInfos, MBeanOperationInfo.class );
     }
