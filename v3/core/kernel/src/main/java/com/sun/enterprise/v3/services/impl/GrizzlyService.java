@@ -41,7 +41,6 @@ import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
-import com.sun.grizzly.Controller;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
@@ -100,9 +99,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     List<NetworkProxy> proxies = new ArrayList<NetworkProxy>();
 
     List<Future<Result<Thread>>> futures;
-    
-    private final Controller controller  = new Controller();
-    
+
     Collection<String> hosts = new ArrayList<String>();
 
     private ThreadPoolProbeProvider threadPoolProbeProvider;
@@ -214,16 +211,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     }
 
     /**
-     * Returns the controller
-     *
-     * @return the controller.
-     */   
-    public Controller getController() {
-        return controller;
-    }
-    
-    
-    /**
      * Gets the logger.
      *
      * @return the logger
@@ -277,7 +264,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 null);
         DynamicConfigListener configListener = womb.get(null);
 
-        ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig);
+        ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
         bean.addListener(configListener);
 
         configListener.setGrizzlyService(this);
