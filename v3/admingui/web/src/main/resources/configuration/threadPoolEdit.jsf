@@ -44,6 +44,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setPageSessionAttribute(key="edit" value="#{true}" );
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         getThreadPoolAttr(configName="#{configName}", name="#{pageSession.Name}"  fromDefault="false" valueMap="#{pageSession.valueMap}");
@@ -61,12 +62,13 @@
                             getThreadPoolAttr(configName="#{configName}", fromDefault="true" valueMap="#{pageSession.valueMap}")
                         />
                     </sun:button>
-                    <!-- Buttons  -->
                     <!facet pageButtonsTop>
-// #include "/web/configuration/buttons.inc"
+                        <sun:panelGroup id="topButtons">
+#include "threadPoolButton.inc"
+                        </sun:panelGroup>
                     </facet>
                     </sun:title>
-                    "<br><br>
+                    "<br>
 
                 <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">

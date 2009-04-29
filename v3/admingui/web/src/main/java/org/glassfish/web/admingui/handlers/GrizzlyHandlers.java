@@ -232,6 +232,8 @@ public class GrizzlyHandlers {
         }
     }
 
+    
+
 
     @Handler(id="getThreadPoolAttr",
     input={
@@ -260,6 +262,32 @@ public class GrizzlyHandlers {
         }
     }
 
+    @Handler(id="saveThreadPoolAttr",
+    input={
+        @HandlerInput(name="configName",   type=String.class, required=true),
+        @HandlerInput(name="attrs",   type=Map.class),
+        @HandlerInput(name="Edit",   type=Boolean.class)})
+        public static void saveThreadPoolAttr(HandlerContext handlerCtx) {
+        try{
+            Map attrs = (Map) handlerCtx.getInputValue("attrs");
+            Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
+            ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
+            ThreadPoolsConfig tps = config.getThreadPools();
+            if (edit){
+                String name = (String) attrs.get("Name");
+                ThreadPoolConfig tpc = tps.getThreadPool().get(name);
+                tpc.setClassname(getA(attrs, "Classname"));
+                tpc.setIdleThreadTimeoutInSeconds(getA(attrs, "IdleThreadTimeout"));
+                tpc.setMaxQueueSize(getA(attrs, "MaxQueueSize"));
+                tpc.setMinThreadPoolSize(getA(attrs, "MinThreadPoolSize"));
+                tpc.setMaxThreadPoolSize(getA(attrs, "MaxThreadPoolSize"));
+            }else{
+                tps.createChild("thread-pool", attrs);
+            }
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
 
     
     //mbean Attribute Name
