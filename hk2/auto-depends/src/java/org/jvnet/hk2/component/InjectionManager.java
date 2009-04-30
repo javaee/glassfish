@@ -92,13 +92,13 @@ public class InjectionManager {
                                 }
 
                             } else {
-                                if(!target.isOptional(inject)) {
+                                if(!target.isOptional(field, inject)) {
                                     Logger.getAnonymousLogger().info("Cannot inject " + field + " in component" + component);
                                     throw new UnsatisfiedDepedencyException(field);
                                 }
                             }
                         } catch (ComponentException e) {
-                            if (!target.isOptional(inject)) {
+                            if (!target.isOptional(field, inject)) {
                                 throw new UnsatisfiedDepedencyException(field,e);
                             }
                         } catch (IllegalAccessException e) {
@@ -141,7 +141,7 @@ public class InjectionManager {
                                 } catch (Exception e) {
                                 }
                             } else {
-                                if (!target.isOptional(inject))
+                                if (!target.isOptional(method, inject))
                                     throw new UnsatisfiedDepedencyException(method);
                             }
                         } catch (IllegalAccessException e) {
