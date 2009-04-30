@@ -61,30 +61,41 @@ public class WebTest {
      * Attempt to access servlet resource protected by FORM based login.
      */
     private String accessServlet() throws Exception {
-
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/AccessSession HTTP/1.0\n";
-        System.out.print(get);
-        os.write(get.getBytes());
-        String sendCookie = "Cookie: JSESSIONID=AABBCCDDEEFFGGHH\n";
-        System.out.println(sendCookie);
-        os.write(sendCookie.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader br = null;
         String location = null;
         String cookie = null;
-        String line = null;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("Location:")) {
-                location = line;
-            } else if (line.startsWith("Set-Cookie")) {
-                cookie = line;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/AccessSession HTTP/1.0\n";
+            System.out.print(get);
+            os.write(get.getBytes());
+            String sendCookie = "Cookie: JSESSIONID=AABBCCDDEEFFGGHH\n";
+            System.out.println(sendCookie);
+            os.write(sendCookie.getBytes());
+            os.write("\r\n".getBytes());
+        
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.startsWith("Location:")) {
+                    location = line;
+                } else if (line.startsWith("Set-Cookie")) {
+                    cookie = line;
+                }
             }
+        } finally {
+            close(sock);
+            close(os);
+            close(is);
+            close(br);
         }
 
         if (location == null) {
@@ -102,29 +113,40 @@ public class WebTest {
      * Access login.jsp.
      */
     private String accessLoginPage() throws Exception {
-
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot
-            + "/j_security_check?j_username=" + adminUser
-            + "&j_password=" + adminPassword
-            + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        String cookie = "Cookie: " + jsessionId + "\n";
-        os.write(cookie.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader br = null;
         String location = null;
-        String line = null;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("Location:")) {
-                location = line;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot
+                + "/j_security_check?j_username=" + adminUser
+                + "&j_password=" + adminPassword
+                + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            String cookie = "Cookie: " + jsessionId + "\n";
+            os.write(cookie.getBytes());
+            os.write("\r\n".getBytes());
+        
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.startsWith("Location:")) {
+                    location = line;
+                }
             }
+        } finally {
+            close(sock);
+            close(os);
+            close(is);
+            close(br);
         }
 
         if (location == null) {
@@ -138,27 +160,38 @@ public class WebTest {
      * Follow redirect to original URL
      */
     private void followRedirect(String path) throws Exception {
-
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + path + " HTTP/1.0\n";
-        System.out.print(get);
-        os.write(get.getBytes());
-        String sendCookie = "Cookie: " + jsessionId + "\n";
-        System.out.println(sendCookie);
-        os.write(sendCookie.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader br = null;
         String response = null;
-        String line = null;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("JSESSIONID")) {
-                response = line;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + path + " HTTP/1.0\n";
+            System.out.print(get);
+            os.write(get.getBytes());
+            String sendCookie = "Cookie: " + jsessionId + "\n";
+            System.out.println(sendCookie);
+            os.write(sendCookie.getBytes());
+            os.write("\r\n".getBytes());
+        
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.startsWith("JSESSIONID")) {
+                    response = line;
+                }
             }
+        } finally {
+            close(sock);
+            close(os);
+            close(is);
+            close(br);
         }
 
         if (!jsessionId.equals(response)) {
@@ -182,5 +215,45 @@ public class WebTest {
         }
 
         return ret;
+    }
+
+    private void close(Socket sock) {
+        try {
+            if (sock != null) {
+                sock.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(InputStream is) {
+        try {
+            if (is != null) {
+                is.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(OutputStream os) {
+        try {
+            if (os != null) {
+                os.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(Reader reader) {
+        try {
+            if (reader != null) {
+                reader.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
     }
 }
