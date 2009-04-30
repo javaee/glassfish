@@ -90,10 +90,10 @@
             <artifactId>tiger-types-osgi</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>bean-validator</artifactId>
-            <version>4.0.0.Alpha3</version>
+	<dependency>
+	    <groupId>org.glassfish</groupId>
+	    <artifactId>bean-validator</artifactId>
+	    <version>3.0-JBoss-4.0.0.Alpha3-b01</version>
         </dependency>
     </dependencies>
     <profiles>
