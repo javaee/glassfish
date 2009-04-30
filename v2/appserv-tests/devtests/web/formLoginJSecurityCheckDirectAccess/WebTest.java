@@ -143,4 +143,44 @@ public class WebTest {
 
         return ret;
     }
+
+    private void close(Socket sock) {
+        try {
+            if (sock != null) {
+                sock.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(InputStream is) {
+        try {
+            if (is != null) {
+                is.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(OutputStream os) {
+        try {
+            if (os != null) {
+                os.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(Reader reader) {
+        try {
+            if (reader != null) {
+                reader.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
 }
