@@ -328,14 +328,14 @@ public class LogDomains
 
                 // We must not return an orphan logger (the one we just created) if
                 // a race condition has already created one
-                if ( ! LogManager.getLogManager().addLogger(cLogger) )
+                if ( ! addLoggerToLogManager(cLogger) )
                 {
                     final Logger existing = LogManager.getLogManager().getLogger(name);
                     if ( existing == null )
                     {
                         // Can loggers be removed?  If not, this should be impossible
                         // this time, make the call and hope for the best.
-                        LogManager.getLogManager().addLogger(cLogger);
+                        addLoggerToLogManager(cLogger);
                     }
                     else
                     {
@@ -346,6 +346,18 @@ public class LogDomains
             };
 
             return cLogger;
+    }
 
+    private static boolean addLoggerToLogManager(Logger logger) {
+        // bnevins April 30, 2009 -- there is a bug in the JDK having to do with
+        // the ordering of synchronization in the logger package.
+        // The work-around is to ALWAYS lock in the order that the JDK bug
+        // is assuming.  That means lock A-B-A instead of B-A
+        // A == Logger.class, B == LogManager.class
+        // I created this method to make it very very clear what is going on
+
+        synchronized(Logger.class) {
+            return LogManager.getLogManager().addLogger(logger);
+        }
     }
 }
