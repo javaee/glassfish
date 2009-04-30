@@ -92,7 +92,7 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
      private String getHtml(List<Dom> proxy) {
         String result;
         result = "<html>" + "<body>" + "<br>" ;
-        result = result + "<h1>" + getTypeKey(proxy) + "</h1>" + "<hr>" + "<br><br>";
+        result = result + "<h1>" + getTypeKey() + "</h1>" + "<hr>" + "<br><br>";
         result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>" + "<br>";
             result = result + getResourcesLinks(proxy);
         result = result + "</html>" + "</body>";
@@ -100,9 +100,8 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
     }
 
 
-    private String getTypeKey(List<Dom> proxy) {
-       //all the objects in the list are of the same type(same config bean type)
-       return getName(proxy.get(0).typeName());
+    private String getTypeKey() {
+       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
     }
 
 

@@ -92,18 +92,17 @@ public class DomXmlProvider extends DomProviderUtil implements MessageBodyWriter
      private String getXml(List<Dom> proxy) {
         String result;
         result ="<" ;
-        result = result + getTypeKey(proxy);
+        result = result + getTypeKey();
         result = result + ">";
         result = result + "\n";
              result = result + getResourcesLinks(proxy);
-        result = result + getEndXmlElement(getTypeKey(proxy));
+        result = result + getEndXmlElement(getTypeKey());
         return result;
     }
 
 
-    private String getTypeKey(List<Dom> proxy) {
-       //all the objects in the list are of the same type(same config bean type)
-       return getName(proxy.get(0).typeName());
+    private String getTypeKey() {
+       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
     }
 
 

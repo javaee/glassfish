@@ -54,13 +54,71 @@ public class DomProviderUtil {
      * returns just the name of the given fully qualified name.
      */
     protected String getName(String typeName) {
-        if ((typeName != null) && (typeName.length() > 0)) {
+        return getName(typeName, '.');
+        /*if ((typeName != null) && (typeName.length() > 0)) {
             int index = typeName.lastIndexOf('.');
             if (index != -1) {
                 return typeName.substring(index + 1);
             }
         }
+        return typeName;*/
+    }
+
+
+    /**
+     * returns just the name of the given fully qualified name.
+     */
+    protected String getName(String typeName, char delimiter) {
+        if ((typeName != null) && (typeName.length() > 0)) {
+            int index = typeName.lastIndexOf(delimiter);
+            if (index != -1) {
+                return typeName.substring(index + 1);
+            }
+        }
         return typeName;
+    }
+
+    /**
+     * Removes any hypens ( - ) from the given string.
+     * When it removes a hypen, it converts next immidiate
+     * character, if any,  to an Uppercase.(schema2beans convention)
+     * @param string the input string
+     * @return a <code>String</code> resulted after removing the hypens
+     */
+    protected String eleminateHypen(String string){
+        if(!(string == null || string.length() <= 0)){
+            int index = string.indexOf('-');
+            while(index != -1){
+                if(index == 0){
+                    string = string.substring(1);
+                } else {
+                    if(index == (string.length() - 1)){
+                        string = string.substring(0,string.length()-1);
+                    } else {
+                        string = string.substring(0,index) +
+                            upperCaseFirstLetter(string.substring(index + 1));
+                    }
+                }
+                index = string.indexOf('-');
+            }
+        }
+        return string;
+    }
+
+
+
+    /**
+    * Converts the first letter of the given string to Uppercase.
+    *
+    * @param string the input string
+    * @return the string with the Uppercase first letter
+    */
+    protected String upperCaseFirstLetter(String string)
+    {
+        if(string == null || string.length() <= 0){
+            return string;
+        }
+        return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
 
 

@@ -113,7 +113,6 @@ public class SingletonDomJsonProvider extends DomProviderUtil implements Message
 
 
     private String getTypeKey(Dom proxy) {
-       //all the objects in the list are of the same type(same config bean type)
         return quote(getName(proxy.typeName()));
     }
 

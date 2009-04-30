@@ -92,7 +92,7 @@ public class DomJsonProvider extends DomProviderUtil implements MessageBodyWrite
      private String getJson(List<Dom> proxy) {
         String result;
         result ="{" ;
-           result = result + getTypeKey(proxy);
+           result = result + getTypeKey();
            result = result + ":";
            result = result + "{";
              result = result + getAttributes();
@@ -108,9 +108,8 @@ public class DomJsonProvider extends DomProviderUtil implements MessageBodyWrite
     }
 
 
-    private String getTypeKey(List<Dom> proxy) {
-        //all the objects in the list are of the same type(same config bean type)
-        return quote(getName(proxy.get(0).typeName()));
+    private String getTypeKey() {
+       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
     }
 
 
