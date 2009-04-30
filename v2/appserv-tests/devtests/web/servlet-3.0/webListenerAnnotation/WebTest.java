@@ -51,9 +51,29 @@ public class WebTest {
             System.out.println("Unexpected return code: " + code);
             stat.addStatus(TEST_NAME, stat.FAIL);
         } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
+            InputStream is = null;
+            BufferedReader input = null;
+            String line = null;
+            try {
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(is));
+                line = input.readLine();
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
+                }
+                try {
+                    if (input != null) {
+                        input.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
+                }
+            }
             if (EXPECTED_RESPONSE.equals(line)) {
                 stat.addStatus(TEST_NAME, stat.PASS);
             } else {
