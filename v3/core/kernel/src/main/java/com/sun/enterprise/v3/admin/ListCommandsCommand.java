@@ -69,7 +69,13 @@ public class ListCommandsCommand implements AdminCommand {
     private List<String> sortedAdminCommands() {
         List<String> names = new ArrayList<String>();
         for (AdminCommand command : habitat.getAllByContract(AdminCommand.class)) {
-            String name = command.getClass().getAnnotation(Service.class).name();
+            Service service = command.getClass().getAnnotation(Service.class);
+
+            if(service == null)
+                continue;   // not a Service -- ignore it....
+
+            String name = service.name();
+
             if (debugCommand(command)) { //it's a debug command, add only if debug is set
                 if (debugSet())
                     names.add(name);                
