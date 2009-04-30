@@ -34,17 +34,17 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6346738");
-
+        WebTest test = new WebTest(args);
         try {
-            new WebTest(args).doTest();
+            test.doTest();
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
         } finally {
             try {
-                if (socket != null) {
-                    socket.close();
+                if (test.socket != null) {
+                    test.socket.close();
                 }
             } catch (IOException ioe) {
                 // ignore

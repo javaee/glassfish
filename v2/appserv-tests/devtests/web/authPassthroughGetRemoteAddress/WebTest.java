@@ -35,9 +35,9 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6347215");
-
+        WebTest test = new WebTest(args);
         try {
-            new WebTest(args).doTest();
+            test.doTest();
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
@@ -45,8 +45,8 @@ public class WebTest {
             ex.printStackTrace();
         } finally {
             try {
-                if (sock != null) {
-                    sock.close();
+                if (test.sock != null) {
+                    test.sock.close();
                 }
             } catch (IOException ioe) {
                 // ignore
