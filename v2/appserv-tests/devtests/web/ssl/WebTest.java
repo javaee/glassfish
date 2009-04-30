@@ -84,26 +84,38 @@ public class WebTest{
     private static void parseResponse(HttpsURLConnection connection)
                     throws Exception{
 
-       BufferedReader in = new BufferedReader(
-                new InputStreamReader(connection.getInputStream()));
+        BufferedReader in = null;
             
         String line = "";
         int index;
-        while ((line = in.readLine()) != null) {
-            index = line.indexOf("FILTER");
-            System.out.println(line);
-            if (index != -1) {
-                index = line.indexOf(":");
-                String status = line.substring(index+1);
-                    
-                if (status.equalsIgnoreCase("PASS")){
-                    stat.addStatus("ssl-" + line.substring(0,index),
-                                   stat.PASS);
-                } else {
-                    stat.addStatus("ssl-FILTER", stat.FAIL);                       
+        try {
+            in = new BufferedReader(
+                new InputStreamReader(connection.getInputStream()));
+
+            while ((line = in.readLine()) != null) {
+                index = line.indexOf("FILTER");
+                System.out.println(line);
+                if (index != -1) {
+                    index = line.indexOf(":");
+                    String status = line.substring(index+1);
+
+                    if (status.equalsIgnoreCase("PASS")){
+                        stat.addStatus("ssl-" + line.substring(0,index),
+                                       stat.PASS);
+                    } else {
+                        stat.addStatus("ssl-FILTER", stat.FAIL);                       
+                    }
+                    count++;
+                } 
+            }
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
                 }
-                count++;
-            } 
+            } catch(IOException ioe) {
+                // ignore
+            }
         }
 
         in.close();
