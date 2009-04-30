@@ -100,7 +100,7 @@
                                 <sun:textField id="DefaultPrincipal" columns="$int{55}" text="#{requestScope.principal}"/> 
                             </sun:property>    
                             <sun:property id="defaultPrincipalPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultPrincipalPassword}" helpText="$resource{i18nSecurity.security.DefaultPrincipalPasswordHelp}">
-                                <sun:textField id="DefaultPrincipalPassword" columns="$int{55}" text="#{requestScope.password}"/> 
+                                <sun:passwordField id="DefaultPrincipalPassword" columns="$int{55}" text="#{requestScope.password}"/>
                             </sun:property>
                             <!--
                           <sun:property id="jaccProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.Jacc}" helpText="$resource{i18nSecurity.security.JaccHelp}">
