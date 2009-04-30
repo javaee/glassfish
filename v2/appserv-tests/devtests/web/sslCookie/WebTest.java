@@ -84,55 +84,66 @@ public class WebTest{
     private static void parseResponse(HttpsURLConnection connection)
                     throws Exception{
 
-       BufferedReader in = new BufferedReader(
-                new InputStreamReader(connection.getInputStream()));
+        BufferedReader in = null;
             
         String line= ""; 
         int index = 0;
-        while ((line = in.readLine()) != null) {
-            index = line.indexOf("::");
-            System.out.println(lineNum + ":  " + line);
-            if (index != -1) {
-                String status = line.substring(index+2);
-                String context = line.substring(0, index);
-                System.out.println("context: " + context + " status: " + status);
-                if (firstConnection){
-                    if ( context.equalsIgnoreCase("getRequestSessionId") )
-                        requestedSessionId = status; 
-                    else if ( context.equalsIgnoreCase("getSession(false).getId")) {
-                        sessionFalseId = status;
-                    } else if ( context.equalsIgnoreCase("getRequestURI"))
-                        requestUri = status;
-                } else {
-                    if ( context.equalsIgnoreCase("getRequestSessionId") ) {
-                        System.out.println(requestedSessionId + " (1) " + status);
-                        if (sessionFalseId.equalsIgnoreCase(status)) {
-                            stat.addStatus("web-sslCookie: " + context,
-                                           stat.PASS);
-                        } else {
-                            stat.addStatus("web-sslCookie: getRequestSessionId", stat.FAIL);
+        try {
+            in = new BufferedReader(
+                new InputStreamReader(connection.getInputStream()));
+            while ((line = in.readLine()) != null) {
+                index = line.indexOf("::");
+                System.out.println(lineNum + ":  " + line);
+                if (index != -1) {
+                    String status = line.substring(index+2);
+                    String context = line.substring(0, index);
+                    System.out.println("context: " + context + " status: " + status);
+                    if (firstConnection){
+                        if ( context.equalsIgnoreCase("getRequestSessionId") )
+                            requestedSessionId = status; 
+                        else if ( context.equalsIgnoreCase("getSession(false).getId")) {
+                            sessionFalseId = status;
+                        } else if ( context.equalsIgnoreCase("getRequestURI"))
+                            requestUri = status;
+                    } else {
+                        if ( context.equalsIgnoreCase("getRequestSessionId") ) {
+                            System.out.println(requestedSessionId + " (1) " + status);
+                            if (sessionFalseId.equalsIgnoreCase(status)) {
+                                stat.addStatus("web-sslCookie: " + context,
+                                               stat.PASS);
+                            } else {
+                                stat.addStatus("web-sslCookie: getRequestSessionId", stat.FAIL);
+                            }
+                        } else if ( context.equalsIgnoreCase("getSession(false).getId")){
+                            System.out.println(sessionFalseId + " (2) " + status);
+                            if (sessionFalseId.equalsIgnoreCase(status)) {
+                                stat.addStatus("web-sslCookie: " + context,
+                                               stat.PASS);
+                            } else {
+                                stat.addStatus("web-sslCookie: getSession(false).getId", stat.FAIL);
+                            }
+                        } else if ( context.equalsIgnoreCase("getRequestURI")) {
+                            System.out.println(requestUri + " (3) " + status);
+                            if (requestUri.equalsIgnoreCase(status)) {
+                                stat.addStatus("web-sslCookie: " + context,
+                                               stat.PASS);
+                            } else {
+                                stat.addStatus("web-sslCookie: getRequestURI", stat.FAIL);
+                            }
                         }
-                    } else if ( context.equalsIgnoreCase("getSession(false).getId")){
-                        System.out.println(sessionFalseId + " (2) " + status);
-                        if (sessionFalseId.equalsIgnoreCase(status)) {
-                            stat.addStatus("web-sslCookie: " + context,
-                                           stat.PASS);
-                        } else {
-                            stat.addStatus("web-sslCookie: getSession(false).getId", stat.FAIL);
-                        }
-                    } else if ( context.equalsIgnoreCase("getRequestURI")) {
-                        System.out.println(requestUri + " (3) " + status);
-                        if (requestUri.equalsIgnoreCase(status)) {
-                            stat.addStatus("web-sslCookie: " + context,
-                                           stat.PASS);
-                        } else {
-                            stat.addStatus("web-sslCookie: getRequestURI", stat.FAIL);
-                        }
-                    }
-                    count++;
-                } 
+                        count++;
+                    } 
+                }
+                lineNum++;
             }
-            lineNum++;
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
         }
 
         in.close();
