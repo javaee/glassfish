@@ -42,8 +42,8 @@ locate_java() {
             minor=`echo $version | cut -d'.' -f2`
         fi
 
-        # We want 1.5 or newer
-        if [ "$major" -eq "1" -a "$minor" -ge "5" ];  then
+        # We want 1.6 or newer
+        if [ "$major" -eq "1" -a "$minor" -ge "6" ];  then
             echo "$j/java"
             return
         fi
@@ -84,7 +84,7 @@ my_java=`locate_java`
 if [ -z "$my_java" ]; then
     echo
     echo "Could not locate a suitable Java runtime."
-    echo "Please ensure that you have Java 5 or newer installed on your system"
+    echo "Please ensure that you have Java 6 or newer installed on your system"
     echo "and accessible in your PATH or by setting JAVA_HOME"
     exit 105
 fi
@@ -98,7 +98,7 @@ my_jar=`locate_jar`
 if [ -z "$my_jar" ]; then
     echo
     echo "Could not locate a suitable jar utility."
-    echo "Please ensure that you have Java 5 or newer installed on your system"
+    echo "Please ensure that you have Java 6 or newer installed on your system"
     echo "and accessible in your PATH or by setting JAVA_HOME"
     exit 105
 fi
@@ -144,7 +144,7 @@ fi
 	esac
 shift
 done
-tmp=`mktemp -d -t install.XXXX`
+tmp=`mktemp -d -t install.XXXXXX`
 if [ $? -ne 0 ]; then
     echo "Unable to create temporary directory, exiting..."
     exit 1
