@@ -64,20 +64,33 @@ public class WebTest {
                                               jsessionId);
 
         // Store the JSESSIONIDSSO in a file
-        FileOutputStream fos = new FileOutputStream(JSESSIONIDSSO);
-        OutputStreamWriter osw = new OutputStreamWriter(fos);
-        osw.write(jsessionIdSSO);
-        osw.close();
+        FileOutputStream fos = null;
+        OutputStreamWriter osw = null;
+        try {
+            fos = new FileOutputStream(JSESSIONIDSSO);
+            osw = new OutputStreamWriter(fos);
+            osw.write(jsessionIdSSO);
+        } finally {
+            close(fos);
+            close(osw);
+        }
 
         stat.addStatus(TEST_NAME, stat.PASS);
     }
 
     public void secondRun() throws Exception {
         // Read the JSESSIONIDSSO from the previous run
-        FileInputStream fis = new FileInputStream(JSESSIONIDSSO);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        accessIndexDotJsp(br.readLine());
-        new File(JSESSIONIDSSO).delete();
+        FileInputStream fis = null;
+        BufferedReader br = null;
+        try {
+            fis = new FileInputStream(JSESSIONIDSSO);
+            br = new BufferedReader(new InputStreamReader(fis));
+            accessIndexDotJsp(br.readLine());
+            new File(JSESSIONIDSSO).delete();
+        } finally {
+            close(fis);
+            close(br);
+        }
 
         stat.addStatus(TEST_NAME, stat.PASS);
     }
@@ -114,27 +127,39 @@ public class WebTest {
      */
     private String accessLoginPage(String jsessionId) throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot
-            + "/j_security_check?j_username=" + adminUser
-            + "&j_password=" + adminPassword
-            + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        String cookie = "Cookie: " + jsessionId + "\n";
-        os.write(cookie.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader br = null;
         String line = null;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("Location:")) {
-                break;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot
+                + "/j_security_check?j_username=" + adminUser
+                + "&j_password=" + adminPassword
+                + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            String cookie = "Cookie: " + jsessionId + "\n";
+            os.write(cookie.getBytes());
+            os.write("\r\n".getBytes());
+        
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.startsWith("Location:")) {
+                    break;
+                }
             }
+        } finally {
+            close(sock);
+            close(os);
+            close(is);
+            close(br);
         }
 
         if (line == null) {
@@ -152,29 +177,41 @@ public class WebTest {
     private String followRedirect(String path, String jsessionId)
             throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + path + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        String cookie = "Cookie: " + jsessionId + "\n";
-        os.write(cookie.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-        String line = null;
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader br = null;
         String cookieHeader = null;
         boolean accessGranted = false;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("Set-Cookie:")
-                    || line.startsWith("Set-cookie:")) {
-                cookieHeader = line;
-            } else if (line.contains("SUCCESS!")) {
-                accessGranted = true;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + path + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            String cookie = "Cookie: " + jsessionId + "\n";
+            os.write(cookie.getBytes());
+            os.write("\r\n".getBytes());
+        
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.startsWith("Set-Cookie:")
+                        || line.startsWith("Set-cookie:")) {
+                    cookieHeader = line;
+                } else if (line.contains("SUCCESS!")) {
+                    accessGranted = true;
+                }
             }
+        } finally {
+            close(sock);
+            close(os);
+            close(is);
+            close(br);
         }
 
         if (cookieHeader == null) {
@@ -193,40 +230,52 @@ public class WebTest {
      * supplying JSESSIONIDSSO from previous run.
      */
     private void accessIndexDotJsp(String jsessionIdSSO) throws Exception {
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/index.jsp" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        String cookie = "Cookie: " + jsessionIdSSO + "\n";
-        os.write(cookie.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-        /*
-         * Make sure that a login is required:
-         *
-         * The response must container either a redirect to the login page,
-         * or if the container dispatches the request to the login page
-         * (using RD.forward() internally), it must contain the
-         * j_security_check action from the login page.
-         *
-         * See https://glassfish.dev.java.net/issues/show_bug.cgi?id=3374
-         * for why a redirect to the login page may occur.
-         */
-        String line = null;
-        String redirectUrl = "Location: http://" + host + ":" + port
-            + contextRoot + "/login.jsp"; 
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader br = null;
         boolean loginRequired = false;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.equals(redirectUrl)
-                    || line.contains("j_security_check")) {
-                loginRequired = true;
-                break;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/index.jsp" + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            String cookie = "Cookie: " + jsessionIdSSO + "\n";
+            os.write(cookie.getBytes());
+            os.write("\r\n".getBytes());
+        
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            /*
+             * Make sure that a login is required:
+             *
+             * The response must container either a redirect to the login page,
+             * or if the container dispatches the request to the login page
+             * (using RD.forward() internally), it must contain the
+             * j_security_check action from the login page.
+             *
+             * See https://glassfish.dev.java.net/issues/show_bug.cgi?id=3374
+             * for why a redirect to the login page may occur.
+             */
+            String line = null;
+            String redirectUrl = "Location: http://" + host + ":" + port
+                + contextRoot + "/login.jsp"; 
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.equals(redirectUrl)
+                        || line.contains("j_security_check")) {
+                    loginRequired = true;
+                    break;
+                }
             }
+        } finally {
+            close(sock);
+            close(os);
+            close(is);
+            close(br);
         }
 
         if (!loginRequired) {
@@ -250,5 +299,55 @@ public class WebTest {
         }
 
         return ret;
+    }
+
+    private void close(Socket sock) {
+        try {
+            if (sock != null) {
+                sock.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(InputStream is) {
+        try {
+            if (is != null) {
+                is.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(OutputStream os) {
+        try {
+            if (os != null) {
+                os.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(Reader reader) {
+        try {
+            if (reader != null) {
+                reader.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
+    }
+
+    private void close(Writer writer) {
+        try {
+            if (writer != null) {
+                writer.close();
+            }
+        } catch(IOException ioe) {
+            // ignore
+        }
     }
 }
