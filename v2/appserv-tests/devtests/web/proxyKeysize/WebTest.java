@@ -45,21 +45,56 @@ public class WebTest {
 
     private void invokeJsp() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/jsp/test.jsp" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("Proxy-keysize: 512\n".getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (line.startsWith("Location:")) {
-                break;
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/jsp/test.jsp" + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("Proxy-keysize: 512\n".getBytes());
+            os.write("\n".getBytes());
+        
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+
+            while ((line = bis.readLine()) != null) {
+                if (line.startsWith("Location:")) {
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
             }
         }
 
