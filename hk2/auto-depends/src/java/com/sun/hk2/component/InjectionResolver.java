@@ -29,7 +29,7 @@ public abstract class InjectionResolver<U extends Annotation> {
      * @return true if the {@see getValue()} can return null without generating a
      * faulty injection operation
      */
-    public boolean isOptional(U annotation) {
+    public boolean isOptional(AnnotatedElement annotated, U annotation) {
         return false;
     }
 

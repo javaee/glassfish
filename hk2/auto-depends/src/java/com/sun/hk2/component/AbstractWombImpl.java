@@ -101,7 +101,7 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
 
         InjectionResolver[] targets = {
             (new InjectionResolver<Inject>(Inject.class) {
-                public boolean isOptional(Inject annotation) {
+                public boolean isOptional(AnnotatedElement element, Inject annotation) {
                     return annotation.optional();
                 }
 
