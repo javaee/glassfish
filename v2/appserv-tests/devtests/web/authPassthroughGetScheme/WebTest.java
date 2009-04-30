@@ -19,6 +19,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -37,16 +38,25 @@ public class WebTest {
      
         try { 
             invokeJsp();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void invokeJsp() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/jsp/test.jsp" + " HTTP/1.0\n";
         System.out.println(get);
@@ -54,23 +64,38 @@ public class WebTest {
         os.write("Proxy-keysize: 512\n".getBytes());
         os.write("Proxy-ip: 123.456.789\n".getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
-        String line = null;
+        InputStream is = null;
+        BufferedReader bis = null;
         String lastLine = null;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(line);
-            lastLine = line;
-        }
-
-        if ("Scheme=https".equals(lastLine)) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Unexpected response. Expected: Scheme=https, "
-                               + "received: " + lastLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(line);
+                lastLine = line;
+            }
+            if (!"Scheme=https".equals(lastLine)) {
+                throw new Exception(
+                    "Unexpected response. Expected: Scheme=https, " +
+                    "received: " + lastLine);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 }

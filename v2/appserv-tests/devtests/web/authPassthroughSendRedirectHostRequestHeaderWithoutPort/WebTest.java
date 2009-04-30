@@ -27,6 +27,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -45,15 +46,24 @@ public class WebTest {
      
         try { 
             testRemoteAddress();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void testRemoteAddress() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + " HTTP/1.0\n";
         System.out.println(get);
@@ -61,32 +71,44 @@ public class WebTest {
         os.write("Host: myhost\n".getBytes());
         os.write("Proxy-keysize: 512\n".getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
-        String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (line.startsWith("Location:")) {
-                break;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                if (line.startsWith("Location:")) {
+                    break;
+                }
             }
-        }
-
-        if (line != null) {
+            if (line == null) {
+                throw new Exception("Missing Location response header");
+            }
             System.out.println("Location header: " + line);
             String location = line.substring("Location:".length()).trim();
             String expectedLocation = "https://myhost" + contextRoot + "/";
-            if (expectedLocation.equals(location)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong Location response header, expected: "
-                                   + expectedLocation
-                                   + ", received: " + location);
-                stat.addStatus(TEST_NAME, stat.FAIL);
+            if (!expectedLocation.equals(location)) {
+                throw new Exception(
+                    "Wrong Location response header, expected: " +
+                    expectedLocation + ", received: " + location);
             }
-        } else {
-            System.err.println("Missing Location response header");
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ public class WebTest {
 
         try {
             webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -49,12 +50,14 @@ public class WebTest {
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            BufferedReader bis = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
+            throw new Exception("Wrong response code. Expected: 200" +
+                                ", received: " + responseCode);
+        }
+
+        BufferedReader bis = null;
+        try {
+            bis = new BufferedReader(new InputStreamReader(
+                conn.getInputStream()));
             String line = null;
             while ((line = bis.readLine()) != null) {
                 if (EXPECTED.equals(line)) {
@@ -62,11 +65,17 @@ public class WebTest {
                 }
             }
             if (line == null) {
-                System.err.println("Wrong response body. Could not find "
-                                   + "expected string: " + EXPECTED);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
+                throw new Exception(
+                    "Wrong response body. Could not find " +
+                    "expected string: " + EXPECTED);
+            }
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
     }
