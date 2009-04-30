@@ -50,7 +50,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -61,7 +60,7 @@ import org.jvnet.hk2.config.Dom;
  *
  * @author Ludovic Champenois ludo@dev.java.net
  */
-public  class TemplateListOfResource<E extends ConfigBeanProxy> {
+public class TemplateListOfResource<E extends ConfigBeanProxy> {
 
     @Context
     protected UriInfo uriInfo;
@@ -73,35 +72,28 @@ public  class TemplateListOfResource<E extends ConfigBeanProxy> {
     public TemplateListOfResource() {
     }
 
-     @GET
-     public List<Dom> get(@QueryParam("expandLevel")
-             @DefaultValue("1") int expandLevel) {
+    @GET
+    @Produces({"application/json", "text/html", "application/xml"})
+    public List<Dom> get(@QueryParam("expandLevel")
+            @DefaultValue("1") int expandLevel) {
 
-         List<Dom> domList = new ArrayList();
-         List<E> entities = getEntity();
-//         try {
-             Iterator iterator = entities.iterator();
-             E e;
-             while (iterator.hasNext()) {
-                 e = (E) iterator.next();
-                 domList.add(Dom.unwrap(e));
-             }
-//         } catch (Exception e) {
-//             System.out.println(e.getMessage());
-//         }
+        List<Dom> domList = new ArrayList();
+        List<E> entities = getEntity();
+        if (entities==null){
+            return domList;//empty one
+        }
+        Iterator iterator = entities.iterator();
+        E e;
+        while (iterator.hasNext()) {
+            e = (E) iterator.next();
+            domList.add(Dom.unwrap(e));
+        }
 
-         return domList;
+        return domList;
 
+    }
 
-
-
-}
-
-
-
-  //  public abstract List<E> getEntity();
-
-        public void setEntity(List<E> p) {
+    public void setEntity(List<E> p) {
         entity = p;
     }
 
@@ -109,19 +101,18 @@ public  class TemplateListOfResource<E extends ConfigBeanProxy> {
         return entity;
     }
 
-
-     @POST
+    @POST
     @Consumes("application/json")
     public Response createEntity(InputStream data) {
 
         try {
 
-
-                 // Example creating a new http-listener element under http-service
-           Map<String, String> attributes = new HashMap<String, String>();
-           attributes.put("id", "jerome-listener");
-           attributes.put("enabled", "true");
-           ///ConfigSupport.createAndSet(getEntity()., HttpListener.class, attributes);
+            // Example creating a new http-listener element under http-service
+            //TODO
+            Map<String, String> attributes = new HashMap<String, String>();
+            attributes.put("id", "test-listener");
+            attributes.put("enabled", "true");
+            ///ConfigSupport.createAndSet(getEntity()., HttpListener.class, attributes);
 
             //  Customer customer = buildCustomer(null, customerData);
             //  long customerId = persist(customer, 0);
@@ -131,76 +122,6 @@ public  class TemplateListOfResource<E extends ConfigBeanProxy> {
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
-
-
-    }
-
-
-    private String introspect(Dom proxy) {
-        Set<String> ss = proxy.getAttributeNames();
-        String ret = "";
-        //    System.out.println( "--------" + proxy.model.key);
-        boolean first = true;
-        ret = ret + "{\n";
-        for (String a : ss) {
-            if (first == false) {
-                ret = ret + ",\n";
-            }
-            ret = ret + "'";
-            ret = ret + a;
-            ret = ret + "' : '";
-
-            ret = ret + proxy.attribute(a);
-            ret = ret + "'";
-
-            first = false;
-
-
-        }
-        ret = ret + "}";
-        return ret;
-    }
-
-    private String introspectElements(Dom proxy) {
-        Set<String> elem = proxy.getElementNames();
-        //System.out.println(id+"set size is" + elem.size());
-
-        String ret = "";
-        //    System.out.println( "--------" + proxy.model.key);
-        boolean first = true;
-        ret = ret + "{\n";
-        for (String a : elem) {
-            if (first == false) {
-                ret = ret + ",\n";
-            }
-            ret = ret + "'";
-            ret = ret + a;
-            ret = ret + "' : '";
-
-            ret = ret + uriInfo.getAbsolutePath() + a;
-            ret = ret + "'";
-
-            first = false;
-
-
-        }
-        ret = ret + "}";
-        return ret;
-
-
-//        for (String bb : elem) {
-//            System.out.println("<" + bb + ">");
-//            org.jvnet.hk2.config.ConfigModel.Property prop = proxy.model.getElement(bb);
-//            if (prop != null && proxy.model.getElement(bb).isLeaf()) {
-//                System.out.println("-1-1-1- " + proxy.leafElement(bb));
-//            } else {
-//                introspect(out, proxy.element(bb));
-//            }
-//
-//            System.out.println("</" + bb + ">");
-//            System.out.println("    ");
-//            ///  }
-
 
 
     }
