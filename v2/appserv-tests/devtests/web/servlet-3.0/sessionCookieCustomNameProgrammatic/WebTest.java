@@ -47,22 +47,58 @@ public class WebTest {
 
     public String firstRun() throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/CreateSession" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\r\n".getBytes());
-        
-        // Get the MYJSESSIONID from the response
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        Socket sock = null;
+        InputStream is = null;
+        BufferedReader br = null;
+        OutputStream os = null;
         String line = null;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("Set-Cookie:")
-                    || line.startsWith("Set-cookie:")) {
-                break;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/CreateSession" + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("\r\n".getBytes());
+        
+            // Get the MYJSESSIONID from the response
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.startsWith("Set-Cookie:")
+                        || line.startsWith("Set-cookie:")) {
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
             }
         }
 
@@ -75,25 +111,61 @@ public class WebTest {
 
     public void secondRun(String sessionCookie) throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/ResumeSession" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        String cookie = "Cookie: " + sessionCookie + "\n";
-        os.write(cookie.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-        String line = null;
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader br = null;
         boolean found = false;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.contains(EXPECTED_RESPONSE)) {
-                found = true;
-                break;
+
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/ResumeSession" + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            String cookie = "Cookie: " + sessionCookie + "\n";
+            os.write(cookie.getBytes());
+            os.write("\r\n".getBytes());
+        
+            is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (line.contains(EXPECTED_RESPONSE)) {
+                    found = true;
+                    break;
+                }
+            }
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
+            }
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch(IOException ioe) {
+                // ignore
             }
         }
 
