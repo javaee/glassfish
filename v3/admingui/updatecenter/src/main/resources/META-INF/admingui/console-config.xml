@@ -3,7 +3,7 @@
 <console-config id="updateCenter">
         <integration-point
                 id="uc"
-                type="org.glassfish.admingui:treeNode"
+                type="org.glassfish.admingui:navNode"
                 priority="100"
                 parentId="tree"
                 content="updateCenterNode.jsf"

@@ -3,7 +3,7 @@
 <console-config id="web">
         <integration-point 
                 id="web" 
-                type="org.glassfish.admingui:treeNode" 
+                type="org.glassfish.admingui:navNode" 
                 priority="300" 
                 parentId="configuration" 
                 content="webPluginTreeNode.jsf"
@@ -12,7 +12,7 @@
         
         <integration-point 
                 id="monitor" 
-                type="org.glassfish.admingui:treeNode" 
+                type="org.glassfish.admingui:navNode" 
                 priority="350"
                 parentId="configuration" 
                 content="monitor/monitoringNode.jsf"
@@ -21,7 +21,7 @@
         <!--
         <integration-point
                 id="web"
-                type="org.glassfish.admingui:treeNode"
+                type="org.glassfish.admingui:navNode"
                 priority="100"
                 parentId="applications" 
                 content="webApp/webAppNode.jsf"

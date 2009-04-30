@@ -41,7 +41,7 @@
 <console-config id="jdbc">
         <integration-point 
                 id="jdbcNodes" 
-                type="org.glassfish.admingui:treeNode" 
+                type="org.glassfish.admingui:navNode" 
                 priority="200" 
                 parentId="resources" 
                 content="jdbcTreeNode.jsf" 

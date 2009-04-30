@@ -3,7 +3,7 @@
 <console-config id="security">
         <integration-point 
                 id="securityService" 
-                type="org.glassfish.admingui:treeNode" 
+                type="org.glassfish.admingui:navNode" 
                 priority="400" 
                 parentId="configuration" 
                 content="securityServiceNode.jsf" 
