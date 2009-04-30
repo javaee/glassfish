@@ -225,11 +225,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private WebConnector jkConnector;
 
     /**
-     * The id of this web container object.
-     */
-    private String _id = null;
-
-    /**
      * Allow disabling accessLog mechanism
      */
     protected boolean globalAccessLoggingEnabled = true;
@@ -417,32 +412,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         instanceName = _serverContext.getInstanceName();
 
-        /* FIXME
-        webContainerFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
-        */
         webContainerFeatureFactory = habitat.getComponent(
                 PEWebContainerFeatureFactoryImpl.class);
-
-
-        /* WebContainer now does not register for ejb based endpoints
-           This is because there were issues when we would deploy a ear
-           file and a webcontainer would not be started
-           reimplemented that using Grizzly. See
-           org.glassfish.webservices.WebServiceApplication
-           */
-        /*
-         ejbWebServiceRegistryListener = habitat.getComponent(EjbWSRegistryListener.class);
-         if (ejbWebServiceRegistryListener != null){
-             ejbWebServiceRegistryListener.setContainer(this);
-         }*/
-         /*try {
-            webModulesManager = new WebModulesManager(instance);
-            appsManager = new AppsManager(instance);
-        } catch (ConfigException cx) {
-            _logger.log(Level.WARNING,
-                "Error in creating web modules manager: ", cx);
-        }  */
-
 
         Config cfg = habitat.getComponent(Config.class);
         serverConfigLookup = new ServerConfigLookup(cfg, clh);
@@ -521,29 +492,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         initInstanceSessionProperties();
-
-        //HERCULES:mod
-        /*
-        registerAdminEvents();
-        initHealthChecker();
-        if(isNativeReplicationEnabled()) {
-            initReplicationReceiver();
-        }
-         */
-        long btime = 0L;
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("before schema check");
-            btime = System.currentTimeMillis();
-        }
-        doSchemaCheck();
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("after schema check time: " + (System.currentTimeMillis() - btime));
-        }
-        //end HERCULES:mod
-
-        /*if (ejbWebServiceRegistryListener != null){
-            ejbWebServiceRegistryListener.register();
-        }*/
 
         ConstructorWomb<HttpServiceConfigListener> womb =
                 new ConstructorWomb<HttpServiceConfigListener>(
@@ -1225,104 +1173,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             vs.setPorts(ports);
         }
     }
-    // ------------------------------------------------------------ Properties
 
-    /**
-     * Return the web container identifier.
-     */
-    public String getID() {
-        return _id;
-    }
 
-    // --------------------------------------------------------- HADB Health Status
-
-    private HealthChecker _healthChecker = null;
-    public HealthChecker getHealthChecker() {
-        return _healthChecker;
-    }
-
-    private void initHealthChecker() {
-        //added the pluggable interface way of getting the health checker
-        HealthChecker healthChecker = null;
-        try {
-            healthChecker = webContainerFeatureFactory.getHADBHealthChecker(this);
-        } catch (NoClassDefFoundError ex) {
-            _logger.log(Level.WARNING,
-                    "hadbhealthchecker.hadbClientJarsMissing");
-        }
-        if(_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("WebContainer>>initHealthChecker - healthChecker = " + healthChecker);
-        }
-        if(healthChecker != null) {
-            _healthChecker = healthChecker;
-            try {
-                _healthChecker.start();
-            } catch (LifecycleException ex) {}
-        }
-    }
-
-    private void stopHealthChecker() {
-        if(_healthChecker != null) {
-            try {
-                _healthChecker.stop();
-            } catch (LifecycleException ex) {}
-            _healthChecker = null;
-        }
-    }
-
-    // --------------------------------------------------------- end HADB Health Status
-
-    // --------------------------------------------------------- start Replication
-    /*
-    private ReplicationReceiver _replicationReceiver = null;
-    public ReplicationReceiver getReplicationReceiver() {
-        return _replicationReceiver;
-    }
-
-    private void initReplicationReceiver() {
-        ReplicationReceiver replicationReceiver =
-                webFeatureFactory.getReplicationReceiver(_embedded);
-        if(_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("WebContainer>>initReplicationReceiver - replicationReceiver = " + replicationReceiver);
-        }
-        if(replicationReceiver != null) {
-            _replicationReceiver = replicationReceiver;
-            if (_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("WebContainer:about to call replicationReceiver>>init()" + _replicationReceiver);
-            }
-            _replicationReceiver.init();
-        }
-    }
-
-    private void stopReplicationReceiver() {
-        if (_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("WebContainer:about to call replicationReceiver>>stop()" + _replicationReceiver);
-        }
-        try {
-            _replicationReceiver.stop();
-        } catch(Exception ex) {
-            if (_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("WebContainer:error during replicationReceiver>>stop(): can be ignored" + _replicationReceiver);
-            }
-        };
-        _replicationReceiver = null;
-    }
-
-    private boolean isNativeReplicationEnabled() {
-        /*ServerConfigLookup lookup = new ServerConfigLookup();
-        if (_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("GMS ENABLED:" + lookup.isGMSEnabled());
-            _logger.finest("NATIVE REPLICATION ENABLED:" + lookup.isNativeReplicationEnabledFromConfig());
-        }
-        return lookup.isGMSEnabled() && lookup.isNativeReplicationEnabledFromConfig();
-
-        return false;
-    }
-     **/
-
-    // --------------------------------------------------------- end Replication
-
-    // -------------------------------------------------------- Public Methods
+    // ------------------------------------------------------ Public Methods
 
     /**
      * Create a virtual server/host.
@@ -1345,46 +1198,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return vs;
     }
 
-    // ------------------------------------------------------ Lifecycle Methods
-
-
-    /**
-     * Add a lifecycle event listener to this component.
-     *
-     *
-    public void addLifecycleListener(LifecycleListener listener) {
-        _lifecycle.addLifecycleListener(listener);
-    }
-
-
-    /**
-     * Remove a lifecycle event listener from this component.
-     *
-     *
-    public void removeLifecycleListener(LifecycleListener listener) {
-        _lifecycle.removeLifecycleListener(listener);
-    }
-    */
-    private void doSchemaCheck() {
-        SchemaUpdater schemaUpdater = null;
-        try {
-
-            schemaUpdater = habitat.getComponent(SchemaUpdater.class);
-        } catch (NoClassDefFoundError ex) {
-            //one warning already logged so this one is level fine
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("HADB Warning - client jars missing - ok if not running with HADB");
-            }
-        }
-        if(schemaUpdater != null) {
-            try {
-                schemaUpdater.doSchemaCheck();
-            } catch (Exception ex) {
-                _logger.log(Level.SEVERE, "schemaupdater.error", ex);
-            }
-        }
-    }
-
 
     /**
      * Gracefully terminate the active use of the public methods of this
@@ -1401,15 +1214,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String msg = rb.getString("webcontainer.notStarted");
             throw new LifecycleException(msg);
         }
-        /*if (ejbWebServiceRegistryListener != null){
-            ejbWebServiceRegistryListener.unregister();
-        }*/
-        //HERCULES:mod
-        stopHealthChecker();
-        WebContainerStartStopOperation startStopOperation =
-            getWebContainerStartStopOperation();
-        ArrayList shutdownCleanupCapablesList = startStopOperation.doPreStop();
-        //end HERCULES:mod
 
         _started = false;
 
@@ -1421,34 +1225,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 throw ex;
             }
         }
-/*
-        if (_reloadManager != null) {
-            // Remove the entries from the reload monitor thread corresponding
-            // to this web container object that is being stopped
-            _reloadManager.stop();
-            _reloadManager = null;
-        }
- */
-        //HERCULES:mod
-        startStopOperation.doPostStop(shutdownCleanupCapablesList);
-        //end HERCULES:mod
     }
 
-    /**
-     * Get the webContainerStartStopOperation
-     * used for doing shutdown cleanup work
-     */
-    public WebContainerStartStopOperation getWebContainerStartStopOperation() {
 
-        //added the pluggable interface way of getting the start/stop operation
-        if (webContainerFeatureFactory==null) {
-            return null;
-        }
-        //startStopOperation.init(_embedded);
-        return webContainerFeatureFactory.getWebContainerStartStopOperation();
-    }
-
-    // -------------------------------------------------------- Private Methods
+    // ------------------------------------------------------ Private Methods
 
     /**
      * Configures a default web module for each virtual server.
@@ -2094,8 +1874,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     + contextRoot + " appName:" + appName);
         }
 
-        cleanSecurityContext(appName);
-
         // tomcat contextRoot starts with "/"
         if (contextRoot.length() != 0 && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
@@ -2287,40 +2065,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public LifecycleListener[] findLifecycleListeners() {
         return new LifecycleListener[0];
-    }
-
-
-    /**
-     * Clean security policy generated at deployment time.
-     * NOTE: This routine calls destroy on the WebSecurityManagers,
-     * but that does not cause deletion of the underlying policy (files).
-     * The underlying policy is deleted when removePolicy
-     * (in AppDeployerBase and WebModuleDeployer) is called.
-     * @param appName  the app name
-     */
-    private void cleanSecurityContext(String appName) {
-/*	String cIDs[] = webSecurityManagerFactory.getContextIdsOfApp(appName);
-
-        for (int i=0; cIDs != null && i <cIDs.length; i++) {
-            WebSecurityManager wsm
-                = webSecurityManagerFactory.getWebSecurityManager(cIDs[i]);
-
-            _logger.log(Level.FINE,"[JACC]: Removing WebSecurityManager: "
-                + cIDs[i]);
-
-            if (wsm != null) {
-                try {
-                    wsm.destroy();
-                } catch (javax.security.jacc.PolicyContextException pce){
-                    // log it and continue
-                    _logger.log(Level.WARNING,
-                            "Unable to destroy WebSecurityManager",
-                            pce);
-                }
-                webSecurityManagerFactory.removeWebSecurityManager(cIDs[i]);
-            }
-        }
- */
     }
 
 
