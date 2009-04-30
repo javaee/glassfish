@@ -154,15 +154,18 @@ public class CommandRunnerImpl implements CommandRunner {
         doCommand(model, command, parameters, report, null, null);
     }
 
-    public InjectionResolver<Param> getDelegatedResolver(final Object parameters) {
+    public InjectionResolver<Param> getDelegatedResolver(final CommandModel model, final Object parameters) {
 
         return new InjectionResolver<Param>(Param.class) {
 
             @Override
-            public boolean isOptional(Param annotation) {
-                return annotation.optional();
+            public boolean isOptional(AnnotatedElement element, Param annotation) {
+                String name = model.getParamName(annotation, element);
+                CommandModel.ParamModel param = model.getModelFor(name);
+                return param.getParam().optional();
             }
 
+            @Override
             public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
 
                 // look for the name in the list of parameters passed.
@@ -192,14 +195,18 @@ public class CommandRunnerImpl implements CommandRunner {
         };
     }
 
-    private InjectionResolver<Param> getPropsBasedResolver(final Properties parameters) {
+    private InjectionResolver<Param> getPropsBasedResolver(final CommandModel model, final Properties parameters) {
 
        return new InjectionResolver<Param>(Param.class) {
 
-            public boolean isOptional(Param annotation) {
-                return annotation.optional();
+           @Override
+            public boolean isOptional(AnnotatedElement element, Param annotation) {
+               String name = model.getParamName(annotation, element);
+               CommandModel.ParamModel param = model.getModelFor(name);
+               return param.getParam().optional();
             }
 
+           @Override
             public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
@@ -255,13 +262,15 @@ public class CommandRunnerImpl implements CommandRunner {
         if (command==null) {
             return report;
         }
-        CommandModel model = new CommandModelImpl(command.getClass());
+        final CommandModel model = new CommandModelImpl(command.getClass());
         
         InjectionResolver<Param> injectionTarget =  new InjectionResolver<Param>(Param.class) {
 
             @Override
-            public boolean isOptional(Param annotation) {
-                return annotation.optional();
+            public boolean isOptional(AnnotatedElement element, Param annotation) {
+                String name = model.getParamName(annotation, element);
+                CommandModel.ParamModel param = model.getModelFor(name);
+                return param.getParam().optional();
             }
 
             public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
@@ -359,7 +368,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
                 else if (paramDesc!=null) {
                     errorMsg = adminStrings.getLocalString("admin.param.missing",
-                                                           "{0} command requires the {1} parameter : {2}",
+                                                           "{0} command requires the {1} parameter ({2})",
                                                             model.getCommandName(), paramName, paramDesc);
 
                 }
@@ -508,55 +517,7 @@ public class CommandRunnerImpl implements CommandRunner {
         }
 
         // initialize the injector.
-        InjectionResolver<Param> injectionMgr =  new InjectionResolver<Param>(Param.class) {
-
-            public boolean isOptional(Param annotation) {
-                return annotation.optional();
-            }
-
-            public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
-                // look for the name in the list of parameters passed.
-                Param param = target.getAnnotation(Param.class);
-                String acceptable = param.acceptableValues();
-                String paramName = getParamName(param, target);
-                if (param.primary()) {
-                    // this is the primary parameter for the command
-                    String value = parameters.getProperty("DEFAULT");
-                    if (value!=null) {
-                        // let's also copy this value to the command with a real name.
-                        parameters.setProperty(paramName, value);
-                        return convertStringToObject(paramName, type, value);
-                    }
-                }
-                String paramValueStr = getParamValueString(parameters, param,
-                                                           target);
-
-                if(ok(acceptable)&& ok(paramValueStr)) {
-                    String[] ss = acceptable.split(",");
-                    boolean ok = false;
-                    
-                    for(String s : ss) {
-                        if(paramValueStr.equals(s.trim())) {
-                            ok = true;
-                            break;
-                        }
-                    }
-                    if(!ok)
-                        throw new UnacceptableValueException(
-                            adminStrings.getLocalString("adapter.command.unacceptableValue", 
-                            "Invalid parameter: {0}.  Its value is {1} but it isn''t one of these acceptable values: {2}",
-                            paramName,
-                            paramValueStr,
-                            acceptable));
-                }
-                if (paramValueStr != null) {
-                    return convertStringToObject(paramName, type, paramValueStr);
-                }
-                //return default value
-                return getParamField(component, target);
-            }
-        };
-
+        InjectionResolver<Param> injectionMgr =  getPropsBasedResolver(model, parameters);
         return doCommand(model, command, injectionMgr, report, inboundPayload, outboundPayload);
 
     }
@@ -1210,9 +1171,9 @@ public class CommandRunnerImpl implements CommandRunner {
                 childPart.setMessage(getUsageText(command, model));
                 return;
             }
-            resolver = getPropsBasedResolver(b.paramsAsProperties);
+            resolver = getPropsBasedResolver(model, b.paramsAsProperties);
         } else {
-            resolver = getDelegatedResolver(b.delegate);
+            resolver = getDelegatedResolver(model, b.delegate);
         }
         doCommand(model, command, resolver, report, b.inbound, b.outbound);
 

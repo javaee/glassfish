@@ -60,7 +60,7 @@ import java.io.File;
 @Scoped(PerLookup.class)
 @I18n("redeploy.command")
 
-public class ReDeployCommand implements AdminCommand {
+public class ReDeployCommand extends DeployCommandParameters implements AdminCommand {
 
     @Inject
     CommandRunner commandRunner;
@@ -72,7 +72,7 @@ public class ReDeployCommand implements AdminCommand {
     String name;
 
     @Param(primary=true, optional=true)
-    String path = null;
+    File path = null;
 
     @Param(optional=true)
     Properties properties=null;
@@ -94,7 +94,7 @@ public class ReDeployCommand implements AdminCommand {
         if (!validateParameters(name, report)) {
             return;
         }
-        DeployCommandParameters params = new DeployCommandParameters(new File(path));
+        DeployCommandParameters params = new DeployCommandParameters(path);
         params.force = true;
         params.name = name;
         params.properties = properties;
@@ -135,7 +135,7 @@ public class ReDeployCommand implements AdminCommand {
         }
 
         //if path not specified on the command line then get it from domain.xml
-        path = (path==null)?ConfigBeansUtilities.getLocation(name):path;
+        path = (path==null)?new File(ConfigBeansUtilities.getLocation(name)):path;
         if (path == null) {
                 //if unable to get path from domain.xml then return error.
             report.setMessage(localStrings.getLocalString("redeploy.command.invalid.path", "Cannot determine the path of application."));
