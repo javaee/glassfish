@@ -33,7 +33,7 @@ public class WebTest{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("TRACE");
             try {
-                conn.getInputStream();
+                conn.getInputStream().close();
             } catch (IOException ex) {
                 // Do nothing: If TRACE is disabled, we get IOException
                 // here if response body is empty
