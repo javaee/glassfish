@@ -13,7 +13,16 @@ public class WebTest
 
     private static final String TEST_NAME = "Filter URI Mapping test";
 
-    private Socket s = null;
+    private String host;
+    private String portS;
+    private String contextRoot;
+    private Socket sock = null;
+
+    public WebTest(String[] args) {
+        host = args[0];
+        portS = args[1];
+        contextRoot = args[2];
+    }
 
     public static void main(String args[]) {
 
@@ -22,25 +31,24 @@ public class WebTest
       
         stat.addDescription("Unit test for 4903209");
 
-        String host = args[0];
-        String portS = args[1];
-        String contextRoot = args[2];
+        WebTest webTest = new WebTest(args);
 
-        int port = new Integer(portS).intValue();
+        int port = new Integer(webTest.portS).intValue();
         String name;
         
         try {
             // Check if it strips out uri parameters (";.*") 
             // before mapping to webapps
-            goGet(host, port, contextRoot + "/ServletTest;test=aaa" );
+            webTest.goGet(webTest.host, port,
+                webTest.contextRoot + "/ServletTest;test=aaa" );
         } catch (Throwable t) {
             System.out.println(t.getMessage());
             stat.addStatus(" Test " + TEST_NAME + " UNPREDICTED-FAILURE",
                 stat.FAIL);
         } finally {
             try {
-                if (s != null) {
-                    s.close();
+                if (webTest.sock != null) {
+                    webTest.sock.close();
                 }
             } catch (IOException ioe) {
                 // ignore
@@ -50,12 +58,11 @@ public class WebTest
         stat.printSummary(TEST_NAME + " ---> PASS");
     }
 
-    private static void goGet(String host, int port,
-                              String contextPath)
+    private void goGet(String host, int port, String contextPath)
             throws Exception {
 
-        s = new Socket(host, port);
-        OutputStream os = s.getOutputStream();
+        sock = new Socket(host, port);
+        OutputStream os = sock.getOutputStream();
 
         System.out.println(("GET " + contextPath + " HTTP/1.0\n"));
         os.write(("GET " + contextPath + " HTTP/1.0\n").getBytes());
@@ -66,7 +73,7 @@ public class WebTest
         String line = null;
         boolean pass = false;
         try {
-            is = s.getInputStream();
+            is = sock.getInputStream();
             bis = new BufferedReader(new InputStreamReader(is));
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
