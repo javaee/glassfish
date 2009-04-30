@@ -60,16 +60,34 @@ public class WebTest
         boolean pass = false;
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(
-                new InputStreamReader(is));
+            InputStream is = null;
+            BufferedReader input = null;
             String line = null;
-            // Check if login page gets displayed
-            while ((line = input.readLine()) != null) {
-                System.out.println(line);
-                if (line.startsWith("login.jsp")) {
-                    pass = true;
-                    break;
+            try {
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(is));
+                // Check if login page gets displayed
+                while ((line = input.readLine()) != null) {
+                    System.out.println(line);
+                    if (line.startsWith("login.jsp")) {
+                        pass = true;
+                        break;
+                    }
+                }
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
+                }
+                try {
+                    if (input != null) {
+                        input.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
                 }
             }
         }
