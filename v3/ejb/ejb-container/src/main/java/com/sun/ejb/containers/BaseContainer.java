@@ -3372,7 +3372,7 @@ public abstract class BaseContainer
         Set proxyInterfacesSet = new LinkedHashSet();
 
         if( ejbDescriptor.getIASEjbExtraDescriptors().isIsReadOnlyBean() ) {
-            //TODO proxyInterfacesSet.add(ReadOnlyEJBHome.class);
+            proxyInterfacesSet.add(ReadOnlyEJBHome.class);
         }
 
         proxyInterfacesSet.add(homeIntf); 
@@ -3433,10 +3433,9 @@ public abstract class BaseContainer
         Set proxyInterfacesSet = new LinkedHashSet();
         
         proxyInterfacesSet.add(IndirectlySerializable.class);
-        /*TODO
         if( ejbDescriptor.getIASEjbExtraDescriptors().isIsReadOnlyBean()) {
             proxyInterfacesSet.add(ReadOnlyEJBLocalHome.class);
-        }*/
+        }
         proxyInterfacesSet.add(localHomeIntf);
         
         Class[] proxyInterfaces = (Class[])
