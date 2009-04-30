@@ -236,10 +236,6 @@ public class ApplicationLifecycle implements Deployment {
 
                 final String appName = commandParams.name();
 
-                appInfo = appRegistry.get(appName);
-                boolean alreadyRegistered = appInfo!=null;
-                if (!alreadyRegistered) {
-
                     // this is a first time deployment as opposed as load following an unload event,
                     // we need to create the application info
                     // todo : we should come up with a general Composite API solution
@@ -270,9 +266,7 @@ public class ApplicationLifecycle implements Deployment {
                     }
 
                     appRegistry.add(appName, appInfo);
-                } else {
-                    context.addModuleMetaData(appInfo);                    
-                }
+
                 if (events!=null) {
                     events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, context), false);
                 }
@@ -290,9 +284,6 @@ public class ApplicationLifecycle implements Deployment {
                     } catch(Exception loadException) {
                         report.failure(logger, "Exception while loading the app", loadException);
                         tracker.actOn(logger);
-                        if (!alreadyRegistered) {
-                            appRegistry.remove(appName);    
-                        }
                         return null;
                     }
                 }
