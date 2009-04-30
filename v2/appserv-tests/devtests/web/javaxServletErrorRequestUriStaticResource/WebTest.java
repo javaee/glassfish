@@ -43,8 +43,8 @@ public class WebTest {
             ex.printStackTrace();
         } finally {
             try {
-                if (sock != null) {
-                    sock.close();
+                if (webTest.sock != null) {
+                    webTest.sock.close();
                 }
             } catch (IOException ioe) {
                 // ignore
