@@ -9,7 +9,7 @@
         //disableComponent('#{dirPathId}', 'text');
         window.setTimeout("disableComponent('#{dirPathId}', 'text')", 1);
         synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');
-        if(getSelectedValue('uploadRdBtn')=='serverSide'){ 
+        if(getSelectedValue(document.forms['form'], 'uploadRdBtn')=='serverSide'){
             enableDOMComponent('#{dirPathId}'); 
             enableBtnComponent('#{dirSelectBtnId}'); 
             enableBtnComponent('#{filSelectBtnId}');
