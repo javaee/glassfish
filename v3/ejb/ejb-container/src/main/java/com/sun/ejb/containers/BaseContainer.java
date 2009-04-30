@@ -3675,7 +3675,7 @@ public abstract class BaseContainer
      * Called after all the components in the container's application
      * have deployed successfully.
      */
-    public void startApplication() {
+    public void startApplication(boolean deploy) {
         _logger.log(Level.FINE,"Application deployment successful : " + 
                     this);
 
@@ -3685,7 +3685,7 @@ public abstract class BaseContainer
                 ejbContainerUtilImpl.getEJBTimerService();
             if( timerService != null ) {
                 scheduleIds = timerService.recoverAndCreateSchedules(
-                        getContainerId(), schedules);
+                        getContainerId(), schedules, deploy);
             }
         }
 

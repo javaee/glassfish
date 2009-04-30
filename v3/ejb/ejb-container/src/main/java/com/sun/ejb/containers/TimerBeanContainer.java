@@ -83,9 +83,9 @@ public class TimerBeanContainer
      * Called after all the components in the container's application
      * have deployed successfully.
      */
-    public void startApplication() {
+    public void startApplication(boolean deploy) {
 
-        super.startApplication();
+        super.startApplication(deploy);
 
         try {
 

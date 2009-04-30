@@ -1146,10 +1146,11 @@ public class EJBTimerService
      * this PK times out.
      */
     Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
-            long containerId, Map<Method, List<ScheduledTimerDescriptor>> schedules) {
+            long containerId, Map<Method, 
+            List<ScheduledTimerDescriptor>> schedules,
+            boolean deploy) {
 
         Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();
-        boolean skipPersistent = false;
 
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
         try {
@@ -1162,7 +1163,6 @@ public class EJBTimerService
             if (timers.size() > 0) {
                 logger.log(Level.FINE, "Found " + timers.size() + 
                         " persistent timers for containerId: " + containerId);
-                skipPersistent = true;
             }
 
             for (TimerState timer : timers) {
@@ -1184,7 +1184,8 @@ public class EJBTimerService
             for (Method m : schedules.keySet()) {
                 for (ScheduledTimerDescriptor sch : schedules.get(m)) {
                     boolean persistent = sch.getPersistent();
-                    if (persistent && skipPersistent) {
+                    if (persistent && !deploy) {
+                        // Do not recreate schedule-based timers on restart
                         continue;
                     }
 

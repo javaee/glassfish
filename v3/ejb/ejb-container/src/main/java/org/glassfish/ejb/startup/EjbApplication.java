@@ -112,14 +112,17 @@ public class EjbApplication
     public boolean start(ApplicationContext startupContext) throws Exception {
 
         try {
+            DeployCommandParameters params = ((DeploymentContext)startupContext).
+                    getCommandParameters(DeployCommandParameters.class);
+
             // TODO: move restoreEJBTimers to correct location           
             if (usesEJBTimerService) {
-                initEJBTimerService(startupContext);
+                initEJBTimerService(params);
             }
             // TODO: move restoreEJBTimers to correct location
 
             for (Container container : containers) {
-                container.startApplication();
+                container.startApplication(params.origin == OpsParams.Origin.deploy);
             }
 
             // TODO handle singleton startup dependencies that refer to singletons in a different
@@ -279,7 +282,7 @@ public class EjbApplication
 
     }
 
-    private void initEJBTimerService(ApplicationContext startupContext) {
+    private void initEJBTimerService(DeployCommandParameters callerParams) {
 
         synchronized (lock) {
             EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
@@ -308,9 +311,6 @@ public class EjbApplication
                 ActionReport report = habitat.getComponent(ActionReport.class, "plain");
                 DeployCommandParameters params = new DeployCommandParameters(app);
                 params.name = "ejb-timer-service-app";
-
-                DeployCommandParameters callerParams = ((DeploymentContext)startupContext).
-                    getCommandParameters(DeployCommandParameters.class);
 
                 params.origin = callerParams.origin;
 

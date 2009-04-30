@@ -771,9 +771,10 @@ public final class MessageBeanContainer extends BaseContainer implements
      * module.  Now we can "turn on the spigot" and allow incoming
      * requests, which could result in the creation of message-bean
      * instances.
+     * @param deploy true if this method is called during application deploy
 	 */
-	public void startApplication() {
-		super.startApplication();
+	public void startApplication(boolean deploy) {
+		super.startApplication(deploy);
 
 		// Start delivery of messages to message bean instances.
 		try {

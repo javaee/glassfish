@@ -271,8 +271,9 @@ public interface Container {
      * phase of deployment.  Note that this callback occurs at a point
      * that is still considered within deployment.  Failures should still
      * still be treated as a deployment error.
+     * @param deploy true if this method is called during application deploy
      */
-    void startApplication();
+    void startApplication(boolean deploy);
 
     /** 
      * Called from EJB JarManager when an application is undeployed.
