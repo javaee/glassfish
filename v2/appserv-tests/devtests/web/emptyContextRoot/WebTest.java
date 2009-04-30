@@ -41,6 +41,7 @@ public class WebTest {
     public void doTest() {     
         try { 
             invokeJsp();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -56,26 +57,41 @@ public class WebTest {
         conn.connect();
 
         int responseCode = conn.getResponseCode();
-        if (responseCode == 200) {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        if (responseCode != 200) {
+            throw new Exception(
+                "Wrong response code. Expected: 200, received: " +
+                responseCode);
+        }
+
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
             String line = null;
             String lastLine = null;
             while ((line = input.readLine()) != null) {
                 lastLine = line;
             }
-            if (EXPECTED_RESPONSE.equals(lastLine)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response body. Expected: "
-                                   + EXPECTED_RESPONSE + ", received: "
-                                   + lastLine);
-                stat.addStatus(TEST_NAME, stat.FAIL);
+            if (!EXPECTED_RESPONSE.equals(lastLine)) {
+                throw new Exception("Wrong response body. Expected: " +
+                    EXPECTED_RESPONSE + ", received: " + lastLine);
             }
-        } else {
-            System.err.println("Wrong response code. Expected: 200, received: "
-                               + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+        } 
     }
 }

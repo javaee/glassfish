@@ -22,6 +22,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -43,29 +44,56 @@ public class WebTest {
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void runTest() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/createSession" + " HTTP/1.0\n";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        String line = null;
+
+        InputStream is = null;
+        BufferedReader bis = null;
         String locationHeader = null;
         String cookieHeader = null;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("Location:")) {
-                locationHeader = line;
-            } else if (line.startsWith("Set-Cookie:")) {
-                cookieHeader = line;
+        try {        
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(line);
+                if (line.startsWith("Location:")) {
+                    locationHeader = line;
+                } else if (line.startsWith("Set-Cookie:")) {
+                    cookieHeader = line;
+                }
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 

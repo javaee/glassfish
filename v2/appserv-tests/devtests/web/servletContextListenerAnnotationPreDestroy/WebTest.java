@@ -43,12 +43,33 @@ public class WebTest {
 
     public void doTest() throws Exception {
 
-        File inFile = new File("/tmp/mytest");
-        FileInputStream fis = new FileInputStream(inFile);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        String line = br.readLine();
-        inFile.delete();
-
+        File inFile = null;
+        FileInputStream fis = null;
+        BufferedReader br = null;
+        String line = null;
+        try {
+            inFile = new File("/tmp/mytest");
+            fis = new FileInputStream(inFile);
+            br = new BufferedReader(new InputStreamReader(fis));
+            line = br.readLine();
+        } finally {
+            inFile.delete();
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+        }
+            
         if ("SUCCESS".equals(line)) {
             stat.addStatus(TEST_NAME, stat.PASS);
 	} else {
