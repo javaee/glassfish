@@ -38,6 +38,7 @@ public class WebTest {
     public void doTest() {     
         try { 
             invokeServlet();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
@@ -55,23 +56,37 @@ public class WebTest {
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
+        InputStream is = null;
+        BufferedReader bis = null;
         String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (expectedRedirectLocation.equals(line)) {
-                break;
+        try { 
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            while ((line = bis.readLine()) != null) {
+                if (expectedRedirectLocation.equals(line)) {
+                    break;
+                }
             }
-        }
-
-        if (line != null) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Missing response header: "
-                               + expectedRedirectLocation);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            if (line == null) {
+                throw new Exception("Missing response header: " +
+                    expectedRedirectLocation);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 }

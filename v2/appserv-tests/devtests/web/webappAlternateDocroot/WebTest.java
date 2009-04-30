@@ -102,18 +102,37 @@ public class WebTest {
                                 + ", received: " + responseCode);
         }
 
-        InputStream is = conn.getInputStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        while ((line = input.readLine()) != null) {
-            // Search resource contents for expected string
-            if (line.contains(expected)) {
-                break;
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = input.readLine()) != null) {
+                // Search resource contents for expected string
+                if (line.contains(expected)) {
+                    break;
+                }
             }
-        }
 
-        if (line == null) {
-            throw new Exception("Missing content for " + uri);
+            if (line == null) {
+                throw new Exception("Missing content for " + uri);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 }
