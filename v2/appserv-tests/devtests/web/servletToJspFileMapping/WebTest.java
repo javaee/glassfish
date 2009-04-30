@@ -65,13 +65,34 @@ public class WebTest {
             
         System.out.println("Invoking servlet at: " + url);
 
-        HttpURLConnection conn = (HttpURLConnection) (new URL(url)).openConnection();
+        HttpURLConnection conn = (HttpURLConnection)
+            (new URL(url)).openConnection();
         int code = conn.getResponseCode();
-        InputStream is = conn.getInputStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        while ((line = input.readLine()) != null) {
-            System.out.println(line);
+
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = input.readLine()) != null) {
+                System.out.println(line);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         return code;

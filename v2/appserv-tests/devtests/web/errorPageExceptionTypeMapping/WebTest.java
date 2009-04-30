@@ -25,6 +25,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -47,30 +48,56 @@ public class WebTest {
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void invoke() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/sqlException.jsp HTTP/1.0\n";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
-        String line = null;
+        InputStream is = null;
+        BufferedReader bis = null;
         boolean statusMatched = false;
         boolean responseBodyMatched = false;
-        while ((line = bis.readLine()) != null) {
-            if (EXPECTED_STATUS.equals(line)) {
-                statusMatched = true;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                if (EXPECTED_STATUS.equals(line)) {
+                    statusMatched = true;
+                }
+                if (EXPECTED_RESPONSE_BODY.equals(line)) {
+                    responseBodyMatched = true;
+                }
             }
-            if (EXPECTED_RESPONSE_BODY.equals(line)) {
-                responseBodyMatched = true;
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }
 

@@ -24,6 +24,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket socket = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -40,6 +41,14 @@ public class WebTest {
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
 	stat.printSummary();
@@ -50,7 +59,7 @@ public class WebTest {
         String body = "param1=value2";
 
         // Create a socket to the host
-        Socket socket = new Socket(host, new Integer(port).intValue());
+        socket = new Socket(host, new Integer(port).intValue());
     
         // Send header
         BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(
@@ -66,12 +75,23 @@ public class WebTest {
         wr.flush();
 
         // Read response
-        BufferedReader bis = new BufferedReader(
-            new InputStreamReader(socket.getInputStream()));
-        String line = null;
+        BufferedReader bis = null;
         String lastLine = null;
-        while ((line = bis.readLine()) != null) {
-            lastLine = line;
+        try {
+            bis = new BufferedReader(new InputStreamReader(
+                socket.getInputStream()));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                lastLine = line;
+            }
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         if (!EXPECTED_RESPONSE.equals(lastLine)) {
