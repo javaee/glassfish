@@ -65,11 +65,13 @@ public class WebTest {
         int code = urlConnection.getResponseCode();
         boolean ok = (code == responseCode);
         if (expected != null) {
-            InputStream is = urlConnection.getInputStream();
-            BufferedReader bis = new BufferedReader(new InputStreamReader(is));
+            InputStream is = null;
+            BufferedReader bis = null;
             String line = null;
 
             try{
+                is = urlConnection.getInputStream();
+                bis = new BufferedReader(new InputStreamReader(is));
                 int lineNum = 1;
                 while ((line = bis.readLine()) != null) {
                     System.out.println(lineNum + ":  " + line);
@@ -79,6 +81,21 @@ public class WebTest {
             } catch( Exception ex){
                 ex.printStackTrace();   
                 throw new Exception("Test UNPREDICTED-FAILURE");
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
+                }
+                try {
+                    if (bis != null) {
+                        bis.close();
+                    }
+                } catch(IOException ioe) {
+                    // ignore
+                }
             }
         }
 
