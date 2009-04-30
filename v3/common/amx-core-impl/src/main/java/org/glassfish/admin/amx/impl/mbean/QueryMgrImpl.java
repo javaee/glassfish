@@ -456,7 +456,7 @@ public class QueryMgrImpl extends AMXImplBase
 			try
 			{
                 final MBeanInfo info = server.getMBeanInfo(objectName);
-				final String interfaceName	= AMXProxyHandler.getInterfaceName(info);
+				final String interfaceName	= AMXProxyHandler.interfaceName(info);
 				
 				final Class<?>	c	= ClassUtil.getClassFromName( interfaceName );
 					

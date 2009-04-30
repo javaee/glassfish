@@ -50,6 +50,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import javax.management.openmbean.OpenMBeanAttributeInfo;
 import org.glassfish.admin.amx.util.StringUtil;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 
 
@@ -1881,18 +1882,39 @@ public final class JMXUtil
         final StringBuffer buf = new StringBuffer();
         if ( d != null && d.getFieldNames().length != 0 )
         {
-            buf.append( idt(indent) + "Descriptor" + NL );
+            buf.append( idt(indent) + "Descriptor  = " + NL );
             for( final String fieldName : d.getFieldNames() )
             {
                 buf.append( idt(indent + 2) + nvp( fieldName, d.getFieldValue(fieldName)) + NL );
             }
+            buf.append( NL );
         }
         else
         {
-            buf.append( idt(indent) + "Descriptor = {}" + NL );
+            //buf.append( idt(indent) + "Descriptor = n/a" + NL );
         }
         
         return buf.toString();
+    }
+    
+    public static String impactStr(final int impact ) {
+        String s;
+        if ( impact == MBeanOperationInfo.INFO ) {
+            s = "INFO";
+        }
+        else if ( impact == MBeanOperationInfo.ACTION ) {
+            s = "ACTION";
+        }
+        else if ( impact == MBeanOperationInfo.UNKNOWN ) {
+            s = "UNKNOWN";
+        }
+        else if ( impact == MBeanOperationInfo.ACTION_INFO ) {
+            s = "ACTION_INFO";
+        }
+        else {
+            s= "" + impact;
+        }
+        return s;
     }
      
     public static String toString( final MBeanOperationInfo info, final int indent )
@@ -1903,7 +1925,7 @@ public final class JMXUtil
         final String idt = idt(indent + 2);
 
         buf.append( idt(indent) + title(info) + NL );
-        buf.append( idt + nvp("Impact", info.getImpact()) + NL );
+        buf.append( idt + nvp("Impact", impactStr(info.getImpact())) + NL );
         buf.append( idt + nvp("ReturnType", info.getReturnType()) + NL );
         buf.append( idt + nvp("Param count", info.getSignature().length) + NL );
         
@@ -1963,7 +1985,7 @@ public final class JMXUtil
         final String NL = NL();
         
         int indent = 2;
-        buf.append( "Clasname: " + info.getClassName() + NL);
+        buf.append( "Classname: " + info.getClassName() + NL);
         buf.append( "Description: " + info.getDescription() + NL );
         
         buf.append( toString( info.getDescriptor(), indent + 2) );
@@ -2013,7 +2035,7 @@ public final class JMXUtil
     
     private static String nvp( final String name, final Object value )
     {
-        return name + " = " + value;
+        return name + " = " + SmartStringifier.DEFAULT.stringify(value);
     }
 
 }

@@ -47,19 +47,19 @@ import java.util.Map;
 public interface AMX_SPI {
     /** the unencoded name, which could differ from the value of the 'name' property in the ObjectName */
     @ManagedAttribute
-    @Description("Name of this MBean, unescaped")
+    @Description("Name of this MBean, can differ from name in ObjectName")
     public String getName();
     
     /** Return the ObjectName of the parent.  Must not be null (except for DomainRoot) */
     @ManagedAttribute
-    @Description("Parent of this MBean")
+    @Description("Parent of this MBean, non-null except for DomainRoot")
     public ObjectName getParent();
     
     /**
         If no children are possible (a leaf node), an AttributeNotFoundException should be thrown.
      */
     @ManagedAttribute
-    @Description("Children of this MBean")
+    @Description("Children of this MBean, in no particular order")
     public ObjectName[] getChildren();
 }
 

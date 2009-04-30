@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.intf.config;
 
 
 
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import java.util.Map;
 
 
@@ -48,7 +48,7 @@ import java.util.Map;
  */
 public interface ClusterConfig
 	extends PropertiesAccess, SystemPropertiesAccess,
-	NamedConfigElement, DefaultValues
+	NamedConfigElement
 {
     public static final String AMX_TYPE = "cluster";
     

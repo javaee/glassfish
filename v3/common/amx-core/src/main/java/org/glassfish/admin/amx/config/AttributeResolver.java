@@ -38,6 +38,8 @@ package org.glassfish.admin.amx.config;
 import javax.management.AttributeList;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Description;
+import org.glassfish.admin.amx.annotation.Param;
 
 /**
 	Interface implemented by MBeans which can resolve a variable to a value.
@@ -70,28 +72,23 @@ public interface AttributeResolver
 		@return resolved value
 	 */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public String	resolveAttributeValue( String template );
+    @Description("Resolve a (possible) ${...} attribute *value* to a real value")
+	public String	resolveAttributeValue( @Param(name="value") String value );
     
     /** calls getAttribute(), then returns the resolved value or null */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public String	resolveAttribute( String attributeName );
-    
-    /** calls getAttribute(), then returns the resolved value
-        Legal classes include String, Boolean, Integer, Long
-	public <T> T	resolveAttribute( String attributeName, Class<T> clazz) throws AttributeNotFoundException;
-    */
+    @Description("Get and resolve a (possible) ${...} attribute to a real value")
+	public String	resolveAttribute( @Param(name="attributeName") String attributeName );
     
     /** Get the Attribute and resolve it to a Boolean or null */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Boolean	resolveBoolean( String attributeName);
-    
-    /** Get the Attribute and resolve it to an Integer or null */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Integer	resolveInteger( String attributeName);
+    @Description("Get and resolve a (possible)  ${...} attribute to a Boolean, returns null if not found")
+	public Boolean	resolveBoolean( @Param(name="attributeName") String attributeName);
     
     /** Get the Attribute and resolve it to a Long or null */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Long	resolveLong( String attributeName);
+    @Description("Get and resolve a (possible)  ${...} attribute to a Long, returns null if not found")
+	public Long	resolveLong( @Param(name="attributeName") String attributeName);
     
     /**
         Calls getAttributes(), then returns all resolved values.  If the attributes
@@ -99,7 +96,8 @@ public interface AttributeResolver
         (eg String, Boolean, Integer).
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public AttributeList	resolveAttributes( String[] attributeName );
+    @Description("Get and resolve attributes to values")
+	public AttributeList	resolveAttributes( @Param(name="attributeNames") String[] attributeNames );
 }
 
 

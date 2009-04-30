@@ -57,7 +57,6 @@ import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
 import org.glassfish.admin.amx.impl.util.UnregistrationListener;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.config.AttributeResolver;
-import org.glassfish.admin.amx.config.DefaultValues;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
@@ -85,7 +84,6 @@ Base class from which all AMX Config MBeans should derive (but not "must").
 <p>
  */
 public class AMXConfigImpl extends AMXImplBase
-        implements DefaultValues // and others more conveniently implemented generically
 {
 
     private final ConfigBean mConfigBean;

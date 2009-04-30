@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.config.DefaultValues;
+
 
 
 
@@ -47,6 +47,6 @@ import org.glassfish.admin.amx.config.DefaultValues;
     is generic, it must support all the potential operations, even if they might not actually
     be available in a particular case.
  */
-public interface AMXGenericConfig extends AMXConfigProxy, DefaultValues, PropertiesAccess, SystemPropertiesAccess
+public interface AMXGenericConfig extends AMXConfigProxy, PropertiesAccess, SystemPropertiesAccess
 {
 }

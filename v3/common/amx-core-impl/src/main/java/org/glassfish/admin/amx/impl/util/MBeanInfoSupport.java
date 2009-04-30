@@ -27,6 +27,7 @@ import javax.management.modelmbean.DescriptorSupport;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Description;
+import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -224,7 +225,7 @@ public final class MBeanInfoSupport {
         final String methodName = m.getName();
         
         final Description d = m.getAnnotation(Description.class);
-        final String description = d == null ? "n/a" : d.value();
+        final String description = d == null ? "" : d.value();
         
         String attrName = JMXUtil.getAttributeName(m);
         final boolean isGetter = JMXUtil.isGetter(m);
@@ -275,7 +276,7 @@ public final class MBeanInfoSupport {
 			final MBeanAttributeInfo info = new MBeanAttributeInfo(
 				attrName,
 				returnType(m.getReturnType()).getName(),
-				methodName,
+				description,
 				read,
 				write,
 				JMXUtil.isIs(m) );
@@ -319,7 +320,7 @@ public final class MBeanInfoSupport {
     getDescription( final AnnotatedElement o )
     {
         final Description d = o.getAnnotation(Description.class);
-        return d == null ? "n/a" : d.value();
+        return d == null ? "" : d.value();
     }
 
         public static MBeanParameterInfo[]
@@ -335,23 +336,14 @@ public final class MBeanInfoSupport {
 			final Class<?>	   paramClass	= sig[ i ];
             final Annotation[] annotations = paramAnnotations[i];
 
-            String paramName = "p" + i;
-            String description = paramClass.getName();
+            final Param p = getAnnotation(annotations, Param.class );
+            final String paramName = (p == null || p.name().length() == 0) ? ("p" + i) : p.name();
+            
             final Description d = getAnnotation(annotations, Description.class);
-            if ( d != null )
+            String description = "";
+            if ( d != null && d.value().length() != 0 )
             {
-                final String value = d.value();
-                // interpret a '|' to mean name and description
-                final int idx = value.indexOf("|");
-                if ( idx > 0 )
-                {
-                    paramName = value.substring(0, idx);
-                    description = value.substring(idx+1,value.length());
-                }
-                else
-                {
-                    description = value;
-                }
+                description = d.value();
             }
             
 			final String type = paramClass.getName();

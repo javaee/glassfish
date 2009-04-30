@@ -550,38 +550,35 @@ public final class ProxyFactory implements NotificationListener
 	getProxy( final ObjectName	objectName)
 	{
         final MBeanInfo info = getMBeanInfo(objectName);
-        final Class<? extends AMXProxy>  intf = getGenericAMXInterface(info);
+        final Class<? extends AMXProxy>  intf = genericInterface(info);
 		final AMXProxy proxy = getProxy( objectName, info, intf);
         return proxy;
 	}
 
-    /**
-        Get the generic AMX interface.  This is restricted to amx-core module.
-     */
-        public static Class<? extends AMXProxy>
-    getGenericAMXInterface(final MBeanInfo info)
-    {
-		final String intfName	= AMXProxyHandler.getGenericInterfaceName(info);
-        Class<? extends AMXProxy> intf = AMXProxy.class;
         
-        if ( intfName == null || AMXProxy.class.getName().equals( intfName ) )
+    public static Class<? extends AMXProxy> genericInterface(final MBeanInfo info)
+    {
+        final String intfName = AMXProxyHandler.genericInterfaceName(info);
+        Class<? extends AMXProxy> intf = AMXProxy.class;
+
+        if (intfName == null || AMXProxy.class.getName().equals(intfName))
         {
             intf = AMXProxy.class;
         }
-        else if ( AMXConfigProxy.class.getName().equals(intfName) )
+        else if (AMXConfigProxy.class.getName().equals(intfName))
         {
             intf = AMXConfigProxy.class;
         }
-        else if ( intfName.startsWith(AMXProxy.class.getPackage().getName() ) )
+        else if (intfName.startsWith(AMXProxy.class.getPackage().getName()))
         {
             try
             {
-                intf	= Class.forName( intfName, false, ProxyFactory.class.getClassLoader()  ).asSubclass(AMXProxy.class);
+                intf = Class.forName(intfName, false, ProxyFactory.class.getClassLoader()).asSubclass(AMXProxy.class);
             }
-            catch( final Exception e )
+            catch (final Exception e)
             {
                 // ok, use generic
-                debug( "ProxyFactory.getInterfaceClass(): Unable to load interface " + intfName );
+                debug("ProxyFactory.getInterfaceClass(): Unable to load interface " + intfName);
             }
         }
         else
@@ -590,7 +587,9 @@ public final class ProxyFactory implements NotificationListener
         }
         return intf;
     }
-      
+
+
+
         <T extends AMXProxy> T
 	getProxy(
         final ObjectName objectName,
@@ -610,14 +609,14 @@ public final class ProxyFactory implements NotificationListener
         Class<? extends AMXProxy>  intf = intfIn; 
         if ( AMXProxy.class == intf )
         {
-            intf = getGenericAMXInterface(mbeanInfoIn);
+            intf = genericInterface(mbeanInfoIn);
         }
         
         try
         {
             final AMXProxyHandler handler	= new AMXProxyHandler( getMBeanServerConnection(), objectName, mbeanInfo);
             proxy	= (AMXProxy)Proxy.newProxyInstance( intf.getClassLoader(), new Class[] { intf }, handler);
-            //debug( "CREATED proxy of type " + intf.getName() + ", metadata specifies " + AMXProxyHandler.getInterfaceName(mbeanInfo) );
+            //debug( "CREATED proxy of type " + intf.getName() + ", metadata specifies " + AMXProxyHandler.interfaceName(mbeanInfo) );
         }
         catch( IllegalArgumentException e )
         {

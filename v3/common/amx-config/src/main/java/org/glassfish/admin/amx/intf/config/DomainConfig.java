@@ -38,7 +38,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.base.Singleton;
 
@@ -52,7 +52,7 @@ import org.glassfish.admin.amx.base.Singleton;
 */
 public interface DomainConfig
 	extends PropertiesAccess, SystemPropertiesAccess,
-	ConfigElement, DefaultValues, Singleton
+	ConfigElement, Singleton
 {
     public static final String AMX_TYPE = "domain";
     

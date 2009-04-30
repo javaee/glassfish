@@ -56,6 +56,13 @@ public interface MetaGetters
     */
     public String interfaceName();
     
+    /**
+        From Descriptor: get the generic interface for this MBean
+        eg AMXProxy or AMXConfigProxy or (possibly) something else.
+        The generic interface is always part of amx-core.
+    */
+    public Class<? extends AMXProxy> genericInterface();
+    
     /** From Descriptor:  true if the MBeanInfo is invariant ("immutable") */
     public boolean isInvariantMBeanInfo();
     

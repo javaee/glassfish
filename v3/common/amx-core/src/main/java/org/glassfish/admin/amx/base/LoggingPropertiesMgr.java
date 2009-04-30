@@ -45,7 +45,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
     Manages logging.properties.
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="logging-props", leaf=true, singleton=true)
 public interface LoggingPropertiesMgr extends AMXProxy, Utility, Singleton
 {
   public Map<String,String> getLoggingProps();

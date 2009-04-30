@@ -48,9 +48,9 @@ import org.jvnet.hk2.config.Element;
  */
 public class ConfigBeanJMXSupport {
 
-    /** bugs: these @Configured do not set @Attribute(key=true) */
+    /** bugs: these @Configured do not set @Attribute(key=true)
+    Map classnmame to id field */
     private static final Map<String, String> CONFIGURED_BUGS = Collections.unmodifiableMap(MapUtil.newMap(
-            "com.sun.grizzly.config.dom.ThreadPool", "ThreadPoolId",
             "", ""
         ));
 
@@ -81,7 +81,7 @@ public class ConfigBeanJMXSupport {
         throw new IllegalArgumentException(key);
     }
 
-    public ConfigBeanJMXSupport( final ConfigBean configBean )
+    ConfigBeanJMXSupport( final ConfigBean configBean )
     {
         this( configBean.getProxyType(), nameFromKey(configBean.model.key));
         
@@ -504,6 +504,9 @@ public class ConfigBeanJMXSupport {
         d.setField(AMXConstants.DESC_SUPPORTS_ADOPTION, false);
 
         d.setField(AMXConstants.DESC_IS_SINGLETON, isSingleton());
+        
+        final String[] subTypes = CollectionUtil.toArray( childTypes().keySet(), String.class );
+        d.setField( AMXConstants.DESC_SUB_TYPES, subTypes );
 
         return d;
     }
@@ -932,10 +935,13 @@ public class ConfigBeanJMXSupport {
         final MBeanInfo info = getMBeanInfo();
         for (final MBeanAttributeInfo attrInfo : info.getAttributes()) {
             final String defaultValue = defaultValue(attrInfo);
-            final String attrName = attrInfo.getName();
-            final String name = useAttributeNames ? attrName : xmlName(attrInfo, attrName);
-
-            m.put(name, defaultValue);
+            
+            // emit values that exist (only); null is of no use.
+            if ( defaultValue != null ) {
+                final String attrName = attrInfo.getName();
+                final String name = useAttributeNames ? attrName : xmlName(attrInfo, attrName);
+                m.put(name, defaultValue);
+            }
         }
         return m;
     }

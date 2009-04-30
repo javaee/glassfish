@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.intf.config;
 
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import org.glassfish.admin.amx.base.Singleton;
 
 
@@ -50,7 +50,7 @@ import java.util.Map;
 	 Configuration for the &lt;ejb-container&gt; element.
  */
 public interface EJBContainerConfig extends 
-	AMXConfigProxy, PropertiesAccess, DefaultValues, Singleton
+	AMXConfigProxy, PropertiesAccess, Singleton
 {
     public static final String AMX_TYPE = "ejb-container";
     

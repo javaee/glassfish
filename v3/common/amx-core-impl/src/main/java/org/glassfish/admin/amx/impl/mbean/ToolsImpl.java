@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.HashSet;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.Pathnames;
@@ -49,6 +50,8 @@ import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.util.jmx.MBeanInterfaceGenerator;
+import org.glassfish.admin.amx.core.Util;
 
 public class ToolsImpl extends AMXImplBase // implements Tools
 {
@@ -93,15 +96,31 @@ public class ToolsImpl extends AMXImplBase // implements Tools
     }
 
     String info(final Collection<ObjectName> objectNames) {
+        final Set<String> alreadyDone = new HashSet<String>();
+        
         final StringBuffer buf = new StringBuffer();
 
         if (objectNames.size() != 0) {
             final String NL = StringUtil.NEWLINE();
             for (final ObjectName objectName : objectNames) {
                 final MBeanInfo mbeanInfo = ProxyFactory.getInstance(getMBeanServer()).getMBeanInfo(objectName);
+                
+                // Don't generate info if we've seen that type/class combination already
+                final String type = Util.getTypeProp(objectName);
+                final String classname = mbeanInfo.getClassName();
+                if ( alreadyDone.contains( type ) && alreadyDone.contains( classname ) )
+                {
+                    continue;
+                }
+                alreadyDone.add( type );
+                alreadyDone.add( classname );
 
                 buf.append("MBeanInfo for " + objectName + NL);
-                buf.append(JMXUtil.toString(mbeanInfo));
+                //buf.append(JMXUtil.toString(mbeanInfo) + NL + NL );
+                
+                final MBeanInterfaceGenerator gen = new MBeanInterfaceGenerator();
+                final String out = gen.generate( mbeanInfo, true);
+                buf.append(out);
                 buf.append(NL + NL + NL + NL);
             }
         }

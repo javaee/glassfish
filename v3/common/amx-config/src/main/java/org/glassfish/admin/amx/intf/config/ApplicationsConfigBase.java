@@ -38,7 +38,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import org.glassfish.admin.amx.base.Singleton;
 
 
@@ -51,7 +51,7 @@ import java.util.Map;
     @since Glassfish V3
 */
 public interface ApplicationsConfigBase
-	extends ConfigElement, ConfigCollectionElement, Singleton, DefaultValues
+	extends ConfigElement, ConfigCollectionElement, Singleton
 {
 	/**
         Glassfish V3 prefers {@link #getApplication}.

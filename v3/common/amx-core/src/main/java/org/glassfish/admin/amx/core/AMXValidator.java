@@ -46,10 +46,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Extra;
 import org.glassfish.admin.amx.core.Util;
@@ -251,6 +253,15 @@ public final class AMXValidator {
             final boolean valid = proxy.valid();
             final String path = proxy.path();
             final Extra extra = proxy.extra();
+            
+            final String interfaceName = extra.interfaceName();
+            final MBeanInfo mbeanInfo = extra.mbeanInfo();
+            final String group         = extra.group();
+            final Class<? extends AMXProxy> genericInterface = extra.genericInterface();
+            final boolean invariantMBeanInfo  = extra.isInvariantMBeanInfo();
+            final boolean supportsAdoption    = extra.supportsAdoption();
+            final String[] subTypes           = extra.subTypes();
+
 
             final Set<AMXProxy> childrenSet = proxy.childrenSet();
             final Map<String, Map<String, AMXProxy>> childrenMaps = proxy.childrenMaps();
@@ -279,6 +290,13 @@ public final class AMXValidator {
         } catch (final Throwable t) {
             problems.add("Test failure: " + toString(t));
         }
+        
+
+        try {
+            validateAMXConfig(proxy, problems);
+        } catch (Throwable t) {
+            problems.add(t.toString());
+        }
 
         return problems;
     }
@@ -291,7 +309,42 @@ public final class AMXValidator {
             throws ValidationFailureException {
         throw new ValidationFailureException(amx, msg);
     }
-
+    
+    private void validateAMXConfig(final AMXProxy proxy, final List<String> problems)
+    {
+        if ( ! AMXConfigProxy.class.isAssignableFrom( proxy.extra().genericInterface() ) )
+        {
+            return;
+        }
+        
+        // check default values support
+        final AMXConfigProxy config = proxy.as(AMXConfigProxy.class);
+        final Map<String,String> defaultValues= config.getDefaultValues(false);
+        final Map<String,String> defaultValuesAMX = config.getDefaultValues(true);
+        if ( defaultValues.keySet().size() != defaultValuesAMX.keySet().size() )
+        {
+            problems.add("Default values for AMX names differ in number from XML names: " + defaultValues.keySet().size() + " != " + defaultValuesAMX.keySet().size());
+        }
+        for( final String key : defaultValues.keySet() ) {
+            final Object value = defaultValues.get(key);
+            if ( value == null )
+            {
+                problems.add( "Default value of null for: " + key );
+            }
+            else if ( ! (value instanceof String) )
+            {
+                problems.add( "Default value is not a String for: " + key );
+            }
+        }
+        
+        final String[] subTypes = config.extra().subTypes();
+        if ( subTypes != null )
+        {
+            for( final String subType : subTypes ) {
+                final Map<String,String> subTypeDefaults = config.getDefaultValues(subType, false);
+            }
+        }
+    }
     
     private void validateObjectName(final AMXProxy proxy)
             throws ValidationFailureException {

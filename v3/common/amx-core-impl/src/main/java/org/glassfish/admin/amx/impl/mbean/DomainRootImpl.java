@@ -59,7 +59,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import java.io.InputStream;
-import org.glassfish.admin.amx.impl.mbeans.PathnamesImpl;
+import org.glassfish.admin.amx.impl.mbean.PathnamesImpl;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 
 

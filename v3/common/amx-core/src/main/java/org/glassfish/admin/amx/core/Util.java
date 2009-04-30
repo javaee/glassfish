@@ -599,14 +599,7 @@ public final class Util
         return result;
     }
     
-    /**
-        Get the ObjectName type property value.
-     */
-        public static String
-    getTypeProp( final AMXProxy amx )
-    {
-        return getTypeProp( amx.extra().objectName() );
-    }
+    
          public static String
     getTypeProp( final ObjectName objectName )
     {

@@ -33,62 +33,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.amx.util.jmx;
 
-package org.glassfish.admin.amx.intf.config;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanAttributeInfoStringifier;
+import org.glassfish.admin.amx.util.jmx.stringifier.MBeanFeatureInfoStringifierOptions;
 
-
-
-import org.glassfish.admin.amx.base.Singleton;
-
-
-import java.util.Map;
-
-
+import javax.management.MBeanAttributeInfo;
 
 /**
-	 Configuration for the &lt;session-manager&gt; element.
+	Caution: this Comparator may be inconsistent with equals() because it ignores the description.
  */
-public interface SessionManagerConfig
-	extends ConfigElement, Singleton
+public final class MBeanAttributeInfoComparator implements java.util.Comparator<MBeanAttributeInfo>
 {
-    public static final String AMX_TYPE = "session-manager";
-// 	/**
-// 		Creates new manager-properties element.
-// 	 
-// 		@param params Map of optional attributes whose keys are defined in
-// 		ManagerPropertiesParams interface.
-// 		@return A proxy to the ManagerPropertiesConfig MBean.
-// 		@see ManagerPropertiesConfigKeys
-// 	 */
-// 	public ManagerPropertiesConfig createManagerPropertiesConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes manager-properties element.
-// 	 */
-// 	public void removeManagerProperties();
-
-	/**
-		Get the ManagerPropertiesConfig MBean.
-	 */
-	public ManagerPropertiesConfig getManagerProperties();
-
-// 	/**
-// 		Creates new manager-properties element.
-// 	 
-// 		@param params Map of optional attributes whose keys are defined in
-// 		ManagerPropertiesParams interface.
-// 		@return A proxy to the StorePropertiesConfig MBean.
-// 		@see StorePropertiesConfigKeys
-// 	 */
-// 	public StorePropertiesConfig createStorePropertiesConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes store-properties element.
-// 	 */
-// 	public void removeStoreProperties();
-
-	/**
-		Get the StorePropertiesConfig MBean.
-	 */
-	public StorePropertiesConfig getStoreProperties();
+	private static final MBeanAttributeInfoStringifier		ATTRIBUTE_INFO_STRINGIFIER	=
+		new MBeanAttributeInfoStringifier( new MBeanFeatureInfoStringifierOptions( false, ",") );
+	
+	public static final MBeanAttributeInfoComparator		INSTANCE	= new MBeanAttributeInfoComparator();
+	
+	private	MBeanAttributeInfoComparator()	{}
+	
+		public int
+	compare( final MBeanAttributeInfo o1, final MBeanAttributeInfo o2 )
+	{
+		final String	s1	= ATTRIBUTE_INFO_STRINGIFIER.stringify( o1 );
+		final String	s2	= ATTRIBUTE_INFO_STRINGIFIER.stringify( o2 );
+		
+		return( s1.compareTo( s2 ) );
+	}
+	
+		public boolean
+	equals( Object other )
+	{
+		return( other instanceof MBeanAttributeInfoComparator );
+	}
 }
+	
+	
+
+
+

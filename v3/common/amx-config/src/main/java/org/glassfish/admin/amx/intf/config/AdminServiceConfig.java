@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.intf.config;
 
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import org.glassfish.admin.amx.base.Singleton;
 
 
@@ -48,7 +48,7 @@ import java.util.Map;
 	 Configuration for the &lt;admin-service&gt; element.
  */
 public interface AdminServiceConfig
-	extends AMXConfigProxy, PropertiesAccess, Singleton, DefaultValues
+	extends AMXConfigProxy, PropertiesAccess, Singleton
 {  
     public static final String AMX_TYPE = "admin-service";
     

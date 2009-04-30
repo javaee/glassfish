@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import org.glassfish.admin.amx.base.Singleton;
 
 
@@ -47,7 +47,7 @@ import java.util.Map;
 	 Configuration for the &lt;http-service&gt; element.
  */
 public interface HttpServiceConfig
-	extends ConfigElement, PropertiesAccess, DefaultValues, Singleton
+	extends ConfigElement, PropertiesAccess, Singleton
 {
     public static final String AMX_TYPE = "http-service";
 	

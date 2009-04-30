@@ -137,7 +137,7 @@ public final class RuntimeMgrImpl extends AMXImplBase
 
     private int getRESTPort()
     {
-        return getAdminListener().resolveInteger("Port");
+        return (int)(long)getAdminListener().resolveLong("Port");
     }
 
     private String get_asadmin()

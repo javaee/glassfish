@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import java.util.Map;
 import org.glassfish.admin.amx.core.AMXProxy;
 
@@ -45,7 +45,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
  */
 public interface ConfigConfig
 	extends PropertiesAccess, SystemPropertiesAccess,
-	NamedConfigElement, DefaultValues
+	NamedConfigElement
 {
     public static final String AMX_TYPE = "config";
 	

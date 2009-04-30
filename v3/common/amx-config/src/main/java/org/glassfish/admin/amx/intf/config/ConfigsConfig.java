@@ -38,7 +38,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import org.glassfish.admin.amx.base.Singleton;
 
 
@@ -52,7 +52,7 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
     @since Glassfish V3
 */
 public interface ConfigsConfig
-	extends ConfigElement, ConfigCollectionElement, Singleton, DefaultValues
+	extends ConfigElement, ConfigCollectionElement, Singleton
 {
     public static final String AMX_TYPE = "configs";
 	/**

@@ -47,7 +47,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
     @since GlassFish V3
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="runtime", leaf=true, singleton=true)
 public interface RuntimeMgr extends AMXProxy, Utility, Singleton
 {
     @ManagedOperation

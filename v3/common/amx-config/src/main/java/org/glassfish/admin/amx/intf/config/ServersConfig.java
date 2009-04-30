@@ -38,7 +38,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-import org.glassfish.admin.amx.config.DefaultValues;
+
 import org.glassfish.admin.amx.base.Singleton;
 
 
@@ -51,7 +51,7 @@ import java.util.Map;
     @since Glassfish V3
 */
 public interface ServersConfig
-	extends ConfigElement, ConfigCollectionElement, Singleton, DefaultValues
+	extends ConfigElement, ConfigCollectionElement, Singleton
 {
     public static final String AMX_TYPE = "servers";
     

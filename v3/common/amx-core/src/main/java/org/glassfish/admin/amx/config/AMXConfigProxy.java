@@ -36,12 +36,13 @@
 package org.glassfish.admin.amx.config;
 
 import org.glassfish.admin.amx.config.AttributeResolver;
-import org.glassfish.admin.amx.config.DefaultValues;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
 import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Param;
 
 
 /**
@@ -56,7 +57,7 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
     are enough exceptions that explicit mapping to the actual type cannot be purely
     algorithmic.
  */
-public interface AMXConfigProxy extends AMXProxy, AttributeResolver, DefaultValues
+public interface AMXConfigProxy extends AMXProxy, AttributeResolver
 {
 	/**
 		The type of the Notification emitted when a config element
@@ -87,15 +88,26 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver, DefaultValu
         @param useAMXAttributeName whether to key the values by the the AMX Attribute name or XML attribute name
 	 */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Map<String,String> getDefaultValues( final String type, final boolean useAMXAttributeName);
+    @Description("Get the default values for child type")
+	public Map<String,String> getDefaultValues(
+        @Param(name="type")
+            final String type,
+        @Param(name="useAMXAttributeName")
+        @Description("true to use Attribute names, false to use XML names")
+            final boolean useAMXAttributeName
+    );
     
 	/**
         Return a Map of default values for this MBean.
         @param useAMXAttributeName whether to key the values by the XML attribute name vs the AMX Attribute name
-        @see DefaultValues
 	 */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public Map<String,String> getDefaultValues(final boolean useAMXAttributeName);
+    @Description("Get the available default values")
+    public Map<String,String> getDefaultValues(
+        @Param(name="useAMXAttributeName")
+        @Description("true to use Attribute names, false to use XML names")
+        final boolean useAMXAttributeName
+    );
     
     
     /**
@@ -117,11 +129,24 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver, DefaultValu
         @return proxy interface to the newly-created AMXConfigProxy
      */
     @ManagedOperation
-    public AMXConfigProxy createChild( String elementType, Map<String,Object> params );
+    @Description("Create a child of the specified type")
+    public AMXConfigProxy createChild(
+        @Param(name="childType")
+            String childType,
+        @Param(name="params")
+        @Description("name/value pairs for attributes")
+            Map<String,Object> params
+    );
     
     /** same as the Map variant, but the name/value are in the array; even entries are names, odd are values */
     @ManagedOperation
-    public AMXConfigProxy createChild( String elementType, Object[] params );
+    public AMXConfigProxy createChild(
+        @Param(name="childType")
+            String childType,
+        @Param(name="params")
+        @Description("name/value pairs, even entries are names, odd entries are values")
+            Object[] params
+    );
     
     /**
         Generically remove a config by type and name.
@@ -129,14 +154,19 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver, DefaultValu
         @param name the name of the child
      */
     @ManagedOperation
-    public void  removeChild( String childType, String name );
+    public void  removeChild(
+        @Param(name="childType")
+            String childType, 
+        @Param(name="name")
+            String name );
 
     /**
         Generically remove a config by type (child must be a singleton)
         @param childType the AMX j2eeType as defined
      */
     @ManagedOperation
-    public void  removeChild( String childType );
+    public void  removeChild( 
+        @Param(name="childType") String childType );
 }
 
 

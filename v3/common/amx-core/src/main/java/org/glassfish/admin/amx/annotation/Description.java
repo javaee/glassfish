@@ -35,18 +35,16 @@
  */
 package org.glassfish.admin.amx.annotation;
 
-import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import java.lang.annotation.Target;
+import java.lang.annotation.RetentionPolicy;
 
 /**
    @author Lloyd Chambers
  */
-@Retention(RUNTIME)
-@Target({METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+// target of anything
 public @interface Description {
-    public String value() default "n/a";
+    public String value() default "";
 }
 
 

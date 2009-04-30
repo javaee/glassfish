@@ -48,7 +48,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
     @since GlassFish V3
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="realms", leaf=true, singleton=true)
 public interface RealmsMgr extends AMXProxy, Utility, Singleton
 {
     /** get the names of all realms */
