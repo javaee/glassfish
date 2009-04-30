@@ -23,6 +23,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -35,9 +36,18 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
         try {
             webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (webTest.sock != null) {
+                    webTest.sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         stat.printSummary(TEST_NAME);
@@ -45,38 +55,50 @@ public class WebTest {
 
     public void doTest() throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String request = "HEAD " + contextRoot + "/From " + "HTTP/1.0\n";
         System.out.println(request);
         os.write(request.getBytes());
         os.write("\n".getBytes());
 
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
-        String line = null;
-        String firstLine = null;
-        while ((line = bis.readLine()) != null) {
-            if (firstLine == null) {
-                firstLine = line;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            String firstLine = null;
+            while ((line = bis.readLine()) != null) {
+                if (firstLine == null) {
+                    firstLine = line;
+                }
+                if (EXPECTED_CONTENT_LENGTH_HEADER.equals(line)) {
+                    break;
+                }
             }
-            if (EXPECTED_CONTENT_LENGTH_HEADER.equals(line)) {
-                break;
+            if (!firstLine.startsWith("HTTP/1.1 200")) {
+                throw new Exception("Unexpected return code: " + firstLine);
             }
-        }
-
-        if (!firstLine.startsWith("HTTP/1.1 200")) {
-            System.err.println("Unexpected return code: " + firstLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            if (line != null) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong or missing Content-Length header. "
-                                   + "Expected: "
-                                   + EXPECTED_CONTENT_LENGTH_HEADER);
-                stat.addStatus(TEST_NAME, stat.FAIL);
+            if (line == null) {
+                throw new Exception(
+                    "Wrong or missing Content-Length header. " +
+                    "Expected: " + EXPECTED_CONTENT_LENGTH_HEADER);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
             }
         }    
     }

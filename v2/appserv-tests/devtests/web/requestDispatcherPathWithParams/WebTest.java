@@ -16,6 +16,7 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
+    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -33,48 +34,70 @@ public class WebTest {
     public void doTest() {     
         try { 
             invokeJsp();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (webTest.sock != null) {
+                    webTest.sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 
     private void invokeJsp() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
+        sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/jsp/forwardFrom.jsp HTTP/1.0\n";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        String secondToLastLine = null;
-        String lastLine = null;
 
-        int i=0;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(i++ + ": " + line);
-            secondToLastLine = lastLine;
-            lastLine = line;
-        }
-
-        System.out.println("requestURI: " + secondToLastLine);
-        System.out.println("queryString: " + lastLine);
-
-        if (!REQUEST_URI.equals(secondToLastLine)) {
-            System.out.println("Wrong requestURI. Received: " + secondToLastLine 
-                           + ", Expected: " + REQUEST_URI);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else if (!QUERY_STRING.equals(lastLine)) {
-            System.out.println("Wrong query string. Received: " + lastLine 
-                           + ", Expected: " + QUERY_STRING);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            stat.addStatus(TEST_NAME, stat.PASS);
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            String secondToLastLine = null;
+            String lastLine = null;
+            int i=0;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(i++ + ": " + line);
+                secondToLastLine = lastLine;
+                lastLine = line;
+            }
+            System.out.println("requestURI: " + secondToLastLine);
+            System.out.println("queryString: " + lastLine);
+            if (!REQUEST_URI.equals(secondToLastLine)) {
+                throw new Exception("Wrong requestURI. Received: " +
+                    secondToLastLine  + ", Expected: " + REQUEST_URI);
+            }
+            if (!QUERY_STRING.equals(lastLine)) {
+                throw new Exception("Wrong query string. Received: " +
+                    lastLine  + ", Expected: " + QUERY_STRING);
+            }
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
     }
 }
