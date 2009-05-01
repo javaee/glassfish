@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "Metro is a high-performance, extensible, easy-to-use web service stack. It is a one-stop shop for all your web service needs, from the simplest hello world web service to reliable, secured, and transacted web service that involves .NET services. ",
                         "info.classification" : "Web Services",
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-common" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
