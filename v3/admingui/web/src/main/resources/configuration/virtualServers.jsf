@@ -39,7 +39,7 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.vs.ListPageTitle}" >
 <!define name="content">
@@ -69,7 +69,7 @@
                  helpText="$resource{i18n.vs.ListPageHelp}" />
 		 "<br /> <br />
 #include "configsTable.inc"                 
-	<sun:hidden id="helpKey" value="$resource{help.virtualServers}" />
+	<sun:hidden id="helpKey" value="$resource{help_web.virtualServers}" />
             </sun:form>
 </define>
 </composition>

@@ -40,13 +40,13 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setAttribute(key="helpKey" value="$resource{help_web.virtualServerEdit}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.vs.EditTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-    setAttribute(key="helpKey" value="$resource{help.virtualServerEdit}");
     getRequestValue(key="configName", value=>$page{configName}  default="server-config");
     getRequestValue(key="name", value=>$page{name});
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.vs.EditTitle}");

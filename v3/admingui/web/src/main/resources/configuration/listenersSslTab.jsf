@@ -37,8 +37,9 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-    setAttribute(key="edit" value="#{true}" );
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setAttribute(key="edit" value="#{true}" );  
+    setPageSessionAttribute(key="helpid" value="$resource{help_web.httpSSL}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
 <!define name="content">
@@ -47,8 +48,7 @@
     getRequestValue(key="configName" value=>$page{configName}  default="server-config");
     getRequestValue(key="name", value=>$page{tabName});            
     getRequestValue(key="ssl2", value=>$page{ssl2});        
-    getRequestValue(key="type", value=>$page{type});     
-    setPageSessionAttribute(key="helpid" value="$resource{help.httpSSL}");
+    getRequestValue(key="type", value=>$page{type});   
     setPageSessionAttribute(key="finalPage", value="#{request.contextPath}/web/configuration/httpListeners.jsf");
     setSessionAttribute(key="listenersTab" value="sslTab");
     getRequestValue(key="editPage" value=>$page{editPage});        

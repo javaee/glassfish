@@ -36,6 +36,7 @@
 <!-- configuration/webContainerStore.jsf -->
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.webContainer.storeProp}" >
 <!define name="content">
@@ -93,7 +94,7 @@
                      </sun:propertySheet>    
 #include "/shared/propertyTable.inc"                        
                  
-	<sun:hidden id="helpKey" value="$resource{help.webContainerStore}" />
+	<sun:hidden id="helpKey" value="$resource{help_web.webContainerStore}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"         
 </define>

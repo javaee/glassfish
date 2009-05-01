@@ -36,7 +36,7 @@
 <!-- configuration/httpListenerNew.jsf -->
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
     setAttribute(key="edit" value="#{false}" );
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.httpListeners.step1PageTitle}" >
@@ -57,7 +57,7 @@
 #include "/shared/alertMsg.inc"
 #include "httpListener.inc" 
 #include "/shared/propertyTable.inc" 
-                <sun:hidden id="helpKey" value="$resource{help.httpListenerNew}" />
+                <sun:hidden id="helpKey" value="$resource{help_web.httpListenerNew}" />
             </sun:form>
             "<br/><br/>
 #include "/shared/changeButtonsJS.inc"         

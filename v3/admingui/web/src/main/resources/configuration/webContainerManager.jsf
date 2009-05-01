@@ -36,6 +36,7 @@
 <!-- configuration/webContainerManager.jsf -->
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
  
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.webContainer.managerProp}" >
@@ -114,7 +115,7 @@
     </sun:propertySheet>    
 
 #include "/shared/propertyTable.inc"
-    	<sun:hidden id="helpKey" value="$resource{help.webContainerGeneral}" />
+    	<sun:hidden id="helpKey" value="$resource{help_web.webContainerManager}" />
             </sun:title>
             </sun:form>
             "<br/>

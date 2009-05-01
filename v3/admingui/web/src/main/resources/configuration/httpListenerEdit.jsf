@@ -36,7 +36,7 @@
 <!-- configuration/httpListenerEdit.jsf -->
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
     setAttribute(key="edit" value="#{true}" )
 />
 //<sun:page id="page1">
@@ -61,7 +61,7 @@
 #include "/shared/alertMsg.inc"              
 #include "httpListener.inc"  
 #include "/shared/propertyTable.inc" 
-                <sun:hidden id="helpKey" value="$resource{help.httpListenerEdit}" />
+                <sun:hidden id="helpKey" value="$resource{help_web.httpListenerEdit}" />
             </sun:form>
              "<br/><br/>
 #include "/shared/changeButtonsJS.inc"         

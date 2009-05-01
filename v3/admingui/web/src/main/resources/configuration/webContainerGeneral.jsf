@@ -37,6 +37,7 @@
 <!initPage 
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="web" bundle="org.glassfish.admingui.core.Strings")
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 
 
@@ -82,7 +83,7 @@
     </facet>
 
 #include "/shared/propertyTable.inc"
-    	<sun:hidden id="helpKey" value="$resource{help.webContainerGeneral}" />
+    	<sun:hidden id="helpKey" value="$resource{help_web.webContainerGeneral}" />
             </sun:title>
             </sun:form>
             "<br/>

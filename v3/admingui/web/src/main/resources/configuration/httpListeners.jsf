@@ -37,6 +37,7 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.httpListeners.ListPageTitle}" >
 <!define name="content">
@@ -61,7 +62,7 @@
                  helpText="$resource{i18n.httpListeners.ListPageHelp}"/>
 		 "<br /> <br />
 #include "listenersTable.inc" 
-            <sun:hidden id="helpKey" value="$resource{help.httpListeners}" />
+            <sun:hidden id="helpKey" value="$resource{help_web.httpListeners}" />
             </sun:form>
 </define>
 </composition>
