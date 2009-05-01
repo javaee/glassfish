@@ -38,13 +38,13 @@
     
 <!initPage 
 	setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
-         setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks")
+         setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 <!composition template="/templates/baseTemplate.tpl" 
     pageTitle="$resource{i18nUC.updateCenter.installed.pageTitle}" 
     helpText="$resource{i18nUC.updateCenter.installed.pageTitleHelp}"
     i18nBundle="org.glassfish.admingui.core.Strings"
     helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
-    helpKey="$resource{help.uc.installed}"
+    helpKey="$resource{help_uc.uc.installed}"
     bodyOnLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');"
     >
     

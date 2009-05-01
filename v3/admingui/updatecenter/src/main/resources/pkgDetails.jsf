@@ -38,7 +38,7 @@
 
 <!initPage 
     setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks")
+    setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 />
 <!composition template="/templates/propertySheetTemplate.tpl" 
               pageTitle="$resource{i18nUC.pkgDetails.Title}" 
@@ -46,7 +46,7 @@
               helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
               i18nBundle="org.glassfish.admingui.core.Strings"
               useBottomTitle="false"
-              helpKey="$resource{help.uc.pkgDetails}"
+              helpKey="$resource{help_uc.uc.pkgDetails}"
               >
   
     <!define name="pageButtonsTop">

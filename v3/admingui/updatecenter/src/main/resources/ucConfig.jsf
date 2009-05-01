@@ -38,7 +38,7 @@
     
 <!initPage 
 	setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks")
+        setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}');">
@@ -120,7 +120,7 @@
                 </sun:tableColumn>
             </sun:tableRowGroup>
         </sun:table>
-    
+        <sun:hidden id="helpKey" value="$resource{help_uc.uc.config}" />
     
  </sun:form>
 

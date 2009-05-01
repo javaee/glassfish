@@ -38,7 +38,8 @@
 //<sun:page id="page1">
 <!initPage
     setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks");
+    setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks");
+    setAttribute(key="helpKey" value="$resource{help_uc.uc.update}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.update.pageTitle}">>
 <!define name="content">
@@ -57,7 +58,6 @@
         setPageSessionAttribute(key="versonColHeader" value="$resource{i18nUC.ucTable.installedVersion}");
         setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.change}");
         setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
-        setAttribute(key="helpKey" value="$resource{help.uc.update}");
         setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.upgradeSuccess}")
         getInstalledPath(result=>$attribute{installedPath});
         getAuthority(result=>$attribute{authority});
