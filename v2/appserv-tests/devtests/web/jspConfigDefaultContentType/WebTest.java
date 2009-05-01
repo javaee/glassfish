@@ -50,7 +50,7 @@ public class WebTest {
                 stat.addStatus(TEST_NAME, stat.FAIL);
             } else {
 
-                BufferedReader bis = new BufferedReader(
+                bis = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
                 String line = null;
                 int index = 0;
