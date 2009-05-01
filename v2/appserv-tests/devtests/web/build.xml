@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="388"/>
+    <property name="TOTAL_EXPECTED" value="389"/>
 
     &commonSetup;
     &commonBuild;
@@ -243,6 +243,7 @@
         <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
+        <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
     </target>
 
