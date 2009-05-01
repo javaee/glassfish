@@ -34,21 +34,22 @@
  holder.
 -->
 <!-- regInit.inc -->
+showRegistration(value=>$session{showRegistration});
 
-    if ($session{showRegistration}){   
-        getCookie("appServerRegistrationRemindLaterCookie",  value=>$attribute{cookie});
-        askRegistration( cookie="${cookie}", thisSession="#{dontAskRegistrationInThisSession}", askRegistration=>$attribute{askRegistration});
-    }
-    if (!$session{showRegistration}){
-        setAttribute(key="askRegistration" value="#{false}");
-    }
-    setAttribute(key="commonTaskVisibility" value="visible");
+if ($session{showRegistration}){   
+    getCookie("appServerRegistrationRemindLaterCookie",  value=>$attribute{cookie});
+    askRegistration( cookie="${cookie}", thisSession="#{dontAskRegistrationInThisSession}", askRegistration=>$attribute{askRegistration});
+}
+if (!$session{showRegistration}){
+    setAttribute(key="askRegistration" value="#{false}");
+}
+setAttribute(key="commonTaskVisibility" value="visible");
 
-    <!-- determines if we want to show or hide all the task when the popup appears.
-        if (!${askRegistration}){
-            setAttribute(key="commonTaskVisibility" value="hidden");
-        }
-        if (${askRegistration}){
-            setAttribute(key="commonTaskVisibility" value="visible");
-        }
-    -->
+<!-- determines if we want to show or hide all the task when the popup appears.
+    if (!${askRegistration}){
+        setAttribute(key="commonTaskVisibility" value="hidden");
+    }
+    if (${askRegistration}){
+        setAttribute(key="commonTaskVisibility" value="visible");
+    }
+-->

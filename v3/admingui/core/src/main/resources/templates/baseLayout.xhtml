@@ -32,6 +32,7 @@
         }
 
         showRegistration(value=>$session{showRegistration});
+
         if ($session{showRegistration}){
             setRegistrationNodeText();
         }
@@ -71,6 +72,8 @@
 	    .tagDiv .tagList a.tagLink:hover {color: #0000CC}
 	    .tagDiv .tagList a.removeTag {margin-left: 6px;padding: 1px 2px 1px 2px; text-decoration:none; background:#EEEEEE;border:1px solid #AAA;}
 	    .tagDiv .tagList a.removeTag:hover {color:red; font-weight:bold; text-decoration:none;}
+
+        #yui-gen1 .yui-layout-hd { display: none; }
 	</style>
     </sun:head>
 
@@ -257,7 +260,6 @@
     });
 
 </script>
-
 </sun:page>
 </ui:composition>
 </html>
