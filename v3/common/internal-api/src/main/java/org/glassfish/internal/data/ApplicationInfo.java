@@ -243,7 +243,7 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
         for (ModuleInfo info : modules) {
-            info.clean(context);
+            info.clean(getSubContext(info,context));
         }
         if (events!=null) {
             events.send(new EventListener.Event<DeploymentContext>(Deployment.APPLICATION_CLEANED, context), false);
