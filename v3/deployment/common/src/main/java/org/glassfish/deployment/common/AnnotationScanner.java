@@ -81,17 +81,16 @@ public class AnnotationScanner implements ClassVisitor {
                 } else if (entryName.endsWith(".jar")) {
                     // scan class files inside jar
                     try {
-                        // scan class files inside jar
-                        ReadableArchive jarSubArchive = null;
+                        File archiveRoot = new File(archive.getURI());
+                        File file = new File(archiveRoot, entryName);
+                        JarFile jarFile = new JarFile(file);
                         try {
-                            jarSubArchive = archive.getSubArchive(entryName);
-                            Enumeration<String> jarEntries = 
-                                jarSubArchive.entries();
+                            Enumeration<JarEntry> jarEntries = jarFile.entries();
                             while (jarEntries.hasMoreElements()) {
-                                String jarEntryName = jarEntries.nextElement();
+                                JarEntry entry = jarEntries.nextElement();
+                                String jarEntryName = entry.getName();
                                 if (jarEntryName.endsWith(".class")) {
-                                    InputStream is = 
-                                        jarSubArchive.getEntry(jarEntryName);
+                                    InputStream is = jarFile.getInputStream(entry);
                                     try {
                                         ClassReader cr = new ClassReader(is);
                                         cr.accept(this, crFlags);
@@ -101,10 +100,10 @@ public class AnnotationScanner implements ClassVisitor {
                                 }
                             }
                         } finally {
-                            jarSubArchive.close();
+                            jarFile.close();
                         }
                     } catch (IOException ioe) {
-                        logger.warning("Error scan jar entry" + entryName + 
+                        logger.warning("Error scan jar entry" + entryName +
                             ioe.getMessage());
                     }
                 }
