@@ -55,7 +55,7 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.main</artifactId>
-                               <version>1.6.0</version>
+                               <version>1.6.1</version>
                                <outputDirectory>${felix.outdir}/bin</outputDirectory>
                                <destFileName>felix.jar</destFileName>
                              </artifactItem>
