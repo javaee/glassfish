@@ -69,6 +69,7 @@ public class WebTest {
                     isExpected = true;
                     break;
                 }
+            }
             if (isExpected) {
                 stat.addStatus(TEST_NAME, stat.PASS);
             } else {
