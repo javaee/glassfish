@@ -37,7 +37,7 @@
 
 <!initPage
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    setResourceBundle(key="help_security" bundle="org.glassfish.security.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.auditModule.PageTitle}" >
 <!define name="content">
@@ -62,7 +62,7 @@
                  helpText="$resource{i18nSecurity.auditModule.PageHelp}"/>
 		 "<br /> <br />
 #include "/security/configTable.inc"    
-                <sun:hidden id="helpKey" value="$resource{help.auditModules}" />
+                <sun:hidden id="helpKey" value="$resource{help_security.auditModules}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"  
 </define>

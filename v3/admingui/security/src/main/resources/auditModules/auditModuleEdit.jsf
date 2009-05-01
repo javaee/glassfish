@@ -38,6 +38,8 @@
 <!initPage 
     setAttribute(key="edit" value="#{true}" )
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
+    setResourceBundle(key="help_security" bundle="org.glassfish.security.admingui.Helplinks");
+    setPageSessionAttribute(key="helpKey" value="$resource{help_security.auditModuleEdit}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.auditModule.EditPageTitle}" >
 <!define name="content">
@@ -47,7 +49,6 @@
     getRequestValue(key="name" value=>$page{name} );
     setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.auditModule.EditPageTitle}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.EditPageTitleHelp}");
-    setPageSessionAttribute(key="helpKey" value="$resource{help.auditModuleEdit}");
     />
     </event>
 

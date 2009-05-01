@@ -36,7 +36,8 @@
    <!initPage
         setAttribute(key="edit" value="#{false}" )
         setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+        setResourceBundle(key="help_security" bundle="org.glassfish.security.admingui.Helplinks");
+        setPageSessionAttribute(key="helpKey" value="$resource{help_security.auditModuleNew}");
     />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.auditModule.NewPageTitle}" >
 <!define name="content">
@@ -46,7 +47,6 @@
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.NewPageTitleHelp}");
         getRequestValue(key="configName" value=>$page{configName});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-        setPageSessionAttribute(key="helpKey" value="$resource{help.auditModuleNew}");
     />
     </event>
 #include "/security/auditModules/auditModule.inc"               
