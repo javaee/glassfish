@@ -956,7 +956,7 @@ public class PECoyoteConnector extends Connector {
         configureFileCache(listener.findProtocol().getHttp().getFileCache());
         
         final Http http = listener.findProtocol().getHttp();
-        setMaxHttpHeaderSize(Integer.parseInt(http.getSendBufferSize()));
+        setMaxHttpHeaderSize(Integer.parseInt(http.getSendBufferSizeBytes()));
         setDefaultHost(http.getDefaultVirtualServer());
         
         setXpoweredBy(Boolean.valueOf(http.getXpoweredBy()));
@@ -1104,15 +1104,15 @@ public class PECoyoteConnector extends Connector {
         if (fileCache != null) {
             setLargeFileCacheEnabled(ConfigBeansUtilities.toBoolean(
                 fileCache.getEnabled()));
-            if (fileCache.getMaxAge() != null) {
-                setSecondsMaxAge(Integer.parseInt(fileCache.getMaxAge()));
+            if (fileCache.getMaxAgeSeconds() != null) {
+                setSecondsMaxAge(Integer.parseInt(fileCache.getMaxAgeSeconds()));
             }
             if (fileCache.getMaxFilesCount() != null) {
                 setMaxCacheEntries(Integer.parseInt(
                     fileCache.getMaxFilesCount()));
             }
-            if (fileCache.getMaxCacheSize() != null) {
-                setMaxLargeCacheSize(Integer.parseInt(fileCache.getMaxCacheSize()));
+            if (fileCache.getMaxCacheSizeBytes() != null) {
+                setMaxLargeCacheSize(Integer.parseInt(fileCache.getMaxCacheSizeBytes()));
             }
         }
     }
@@ -1162,25 +1162,21 @@ public class PECoyoteConnector extends Connector {
     }
 
     public void configHttpProperties(Http http, Transport transport, Ssl ssl) {
-        if (http.getRequestBodyBufferSize() != null) {
-            setBufferSize(Integer.parseInt(http.getRequestBodyBufferSize()));
-        }
-        if (transport.getUseNioDirectByteBuffer() != null) {
-            setUseDirectByteBuffer(ConfigBeansUtilities.toBoolean(
-                transport.getUseNioDirectByteBuffer()));
+        if (http.getRequestBodyBufferSizeBytes() != null) {
+            setBufferSize(Integer.parseInt(http.getRequestBodyBufferSizeBytes()));
         }
         if (http.getMaxConnections() != null) {
             setMaxKeepAliveRequests(Integer.parseInt(http.getMaxConnections()));
         }
-        if (http.getTimeout() != null) {
-            setKeepAliveTimeoutInSeconds(Integer.parseInt(http.getTimeout()));
+        if (http.getTimeoutSeconds() != null) {
+            setKeepAliveTimeoutInSeconds(Integer.parseInt(http.getTimeoutSeconds()));
         }
         if (http.getEnableAuthPassThrough() != null) {
             setAuthPassthroughEnabled(ConfigBeansUtilities.toBoolean(
                 http.getEnableAuthPassThrough()));
         }
-        if (http.getMaxPostSize() != null) {
-            setMaxPostSize(Integer.parseInt(http.getMaxPostSize()));
+        if (http.getMaxPostSizeBytes() != null) {
+            setMaxPostSize(Integer.parseInt(http.getMaxPostSizeBytes()));
         }
         if (http.getCompression() != null) {
             setProperty("compression", http.getCompression());
@@ -1191,8 +1187,8 @@ public class PECoyoteConnector extends Connector {
         if (http.getNoCompressionUserAgents() != null) {
             setProperty("noCompressionUserAgents", http.getNoCompressionUserAgents());
         }
-        if (http.getCompressionMinSize() != null) {
-            setProperty("compressionMinSize", http.getCompressionMinSize());
+        if (http.getCompressionMinSizeBytes() != null) {
+            setProperty("compressionMinSize", http.getCompressionMinSizeBytes());
         }
         if (http.getRestrictedUserAgents() != null) {
             setProperty("restrictedUserAgents", http.getRestrictedUserAgents());
@@ -1205,9 +1201,9 @@ public class PECoyoteConnector extends Connector {
             setProperty("rcmSupport",ConfigBeansUtilities.toBoolean(
                 http.getEnableRcmSupport()));
         }
-        if (http.getConnectionUploadTimeout() != null) {
+        if (http.getConnectionUploadTimeoutMillis() != null) {
             setConnectionUploadTimeout(Integer.parseInt(
-                http.getConnectionUploadTimeout()));
+                http.getConnectionUploadTimeoutMillis()));
         }
         if (http.getDisableUploadTimeout() != null) {
             setDisableUploadTimeout(ConfigBeansUtilities.toBoolean(
@@ -1231,8 +1227,8 @@ public class PECoyoteConnector extends Connector {
             if (ssl.getTrustAlgorithm() != null) {
                 setTrustAlgorithm(ssl.getTrustAlgorithm());
             }
-            if (ssl.getTrustMaxCertLength() != null) {
-                setTrustMaxCertLength(ssl.getTrustMaxCertLength());
+            if (ssl.getTrustMaxCertLengthBytes() != null) {
+                setTrustMaxCertLength(ssl.getTrustMaxCertLengthBytes());
             }
         }
     }

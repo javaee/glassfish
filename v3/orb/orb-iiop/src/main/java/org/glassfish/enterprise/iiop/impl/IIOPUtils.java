@@ -10,9 +10,7 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.ServerRef;
-import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.ThreadPool;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
@@ -73,7 +71,7 @@ public class IIOPUtils implements PostConstruct {
                 names.add(listener.getThreadPool());
             }
             for (ThreadPool pool : threadPool) {
-                if(!names.contains(pool.getThreadPoolId())) {
+                if(!names.contains(pool.getName())) {
                     threadPools.add(pool);
                 }
             }

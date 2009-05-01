@@ -241,7 +241,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
         for (Config config : domain.getConfigs().getConfig()) {
             if (config.getName().equals("server-config")) {
                 for (ThreadPool tp : config.getThreadPools().getThreadPool()) {
-                    String id = tp.getThreadPoolId();
+                    String id = tp.getName();
                     String maxTPSize = tp.getMaxThreadPoolSize();
                     //Create tree node
                     TreeNode tpNode = TreeNodeFactory.createTreeNode(id, null, "http-service");

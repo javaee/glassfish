@@ -60,7 +60,7 @@ public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
 	/**
 		Key for use with {@link ConfigConfig#createThreadPoolConfig}.
 	 */
-	public static final String		IDLE_THREAD_TIMEOUT_IN_SECONDS_KEY	= "IdleThreadTimeoutInSeconds";
+	public static final String		IDLE_THREAD_TIMEOUT_IN_SECONDS_KEY	= "IdleThreadTimeoutSeconds";
 	/**
 		Key for use with {@link ConfigConfig#createThreadPoolConfig}.
 	 */
@@ -68,8 +68,8 @@ public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
     
     
     @ResolveTo(Integer.class)
-	public String	getIdleThreadTimeoutInSeconds();
-	public void	setIdleThreadTimeoutInSeconds( String value );
+	public String	getIdleThreadTimeoutSeconds();
+	public void	setIdleThreadTimeoutSeconds( String value );
 
     @ResolveTo(Integer.class)
 	public String	getMinThreadPoolSize();
@@ -80,14 +80,14 @@ public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
 	public void	setMaxThreadPoolSize( String value );
 
     @ResolveTo(Integer.class)
-	public String	getThreadIncrement();
-	public void	setThreadIncrement( String value );
+	public String	getThreadIncrement();  // unused.  delete?
+	public void	setThreadIncrement( String value );  // unused.  delete?
 
     @ResolveTo(Integer.class)
-	public String	getNumWorkQueues();
-	public void	setNumWorkQueues( String value );
+	public String	getNumWorkQueues();  // unused.  delete?
+	public void	setNumWorkQueues( String value );  // unused.  delete?
 
-	public String	getThreadPoolId();
+	public String getName();
 
     @ResolveTo(Integer.class)
 	public String	getMaxQueueSize();

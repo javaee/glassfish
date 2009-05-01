@@ -27,16 +27,8 @@
    <config name="%%%CONFIG_MODEL_NAME%%%">
      <http-service> 
         <access-log rotation-interval-in-minutes="15" rotation-suffix="yyyy-MM-dd" />
-        <virtual-server id="server" network-listeners="http-listener-1,http-listener-2">
-          <property value="${com.sun.aas.instanceRoot}/docroot" name="docroot" />
-          <property value="${com.sun.aas.instanceRoot}/logs/access" name="accesslog" />
-          <property value="false" name="sso-enabled" />
-        </virtual-server>
-        <virtual-server id="__asadmin" network-listeners="admin-listener">
-          <property value="${com.sun.aas.instanceRoot}/docroot" name="docroot" />
-          <property value="${com.sun.aas.instanceRoot}/logs/access" name="accesslog" />
-          <property value="false" name="sso-enabled" />
-        </virtual-server>
+        <virtual-server id="server" network-listeners="http-listener-1,http-listener-2"></virtual-server>
+        <virtual-server id="__asadmin" network-listeners="admin-listener"></virtual-server>
         <property value="false" name="accessLoggingEnabled" />
       </http-service>
       <iiop-service>
@@ -153,18 +145,18 @@
       <network-config>
         <protocols>
           <protocol name="http-listener-1">
-            <http header-buffer-length="8192" forced-response-type="text/plain; charset=iso-8859-1" default-virtual-server="server" max-connections="250" server-name="" default-response-type="text/plain; charset=iso-8859-1">
+            <http default-virtual-server="server" max-connections="250" server-name="">
               <file-cache enabled="false"></file-cache>
             </http>
           </protocol>
           <protocol security-enabled="true" name="http-listener-2">
-            <http header-buffer-length="8192" forced-response-type="text/plain; charset=iso-8859-1" default-virtual-server="server" max-connections="250" server-name="" default-response-type="text/plain; charset=iso-8859-1">
+            <http default-virtual-server="server" max-connections="250" server-name="">
               <file-cache enabled="false"></file-cache>
             </http>
             <ssl ssl3-enabled="false" cert-nickname="s1as"></ssl>
           </protocol>
           <protocol name="admin-listener">
-            <http header-buffer-length="8192" forced-response-type="text/plain; charset=iso-8859-1" default-virtual-server="__asadmin" max-connections="250" server-name="" default-response-type="text/plain; charset=iso-8859-1">
+            <http default-virtual-server="__asadmin" max-connections="250" server-name="">
               <file-cache enabled="false"></file-cache>
             </http>
           </protocol>
@@ -179,8 +171,8 @@
         </transports>
       </network-config>
       <thread-pools>
-          <thread-pool min-thread-pool-size="2" thread-pool-id="http-thread-pool" max-queue-size="4096"></thread-pool>
-          <thread-pool thread-pool-id="thread-pool-1"/>
+          <thread-pool name="http-thread-pool" max-queue-size="4096"></thread-pool>
+          <thread-pool name="thread-pool-1" max-thread-pool-size="200"/>
       </thread-pools>
     </config> 
   </configs>

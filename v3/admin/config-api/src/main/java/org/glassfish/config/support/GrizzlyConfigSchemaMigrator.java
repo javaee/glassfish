@@ -211,8 +211,8 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             ConfigSupport.apply(new SingleConfigCode<Http>() {
                 @Override
                 public Object run(Http http) {
-                    http.setRequestBodyBufferSize(pool.getReceiveBufferSizeInBytes());
-                    http.setSendBufferSize(pool.getSendBufferSizeInBytes());
+                    http.setRequestBodyBufferSizeBytes(pool.getReceiveBufferSizeInBytes());
+                    http.setSendBufferSizeBytes(pool.getSendBufferSizeInBytes());
                     return null;
                 }
             }, protocol.getHttp());
@@ -253,7 +253,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 @Override
                 public Object run(Http http) {
                     http.setMaxConnections(keepAlive.getMaxConnections());
-                    http.setTimeout(keepAlive.getTimeoutInSeconds());
+                    http.setTimeoutSeconds(keepAlive.getTimeoutInSeconds());
                     return null;
                 }
             }, protocol.getHttp());
@@ -275,14 +275,14 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             public Object run(NetworkListeners listeners) throws TransactionFailure {
                 final ThreadPool pool = listeners.createChild(ThreadPool.class);
                 listeners.getThreadPool().add(pool);
-                pool.setThreadPoolId("http-thread-pool");
+                pool.setName("http-thread-pool");
                 pool.setMaxThreadPoolSize(request.getThreadCount());
                 pool.setMinThreadPoolSize(request.getInitialThreadCount());
                 for (Protocol protocol : config.getProtocols().getProtocol()) {
                     ConfigSupport.apply(new SingleConfigCode<Http>() {
                         @Override
                         public Object run(Http http) {
-                            http.setHeaderBufferLength(request.getHeaderBufferLengthInBytes());
+                            http.setHeaderBufferLengthBytes(request.getHeaderBufferLengthInBytes());
                             return null;
                         }
                     }, protocol.getHttp());
@@ -291,7 +291,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                     ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
                         @Override
                         public Object run(NetworkListener param) {
-                            param.setThreadPool(pool.getThreadPoolId());
+                            param.setThreadPool(pool.getName());
                             return null;
                         }
                     }, listener);
@@ -320,8 +320,8 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                             final FileCache cache = http.createChild(FileCache.class);
                             http.setFileCache(cache);
                             cache.setEnabled(httpFileCache.getFileCachingEnabled());
-                            cache.setMaxAge(httpFileCache.getMaxAgeInSeconds());
-                            cache.setMaxCacheSize(httpFileCache.getMediumFileSpaceInBytes());
+                            cache.setMaxAgeSeconds(httpFileCache.getMaxAgeInSeconds());
+                            cache.setMaxCacheSizeBytes(httpFileCache.getMediumFileSpaceInBytes());
                             cache.setMaxFilesCount(httpFileCache.getMaxFilesCount());
                             return null;
                         }

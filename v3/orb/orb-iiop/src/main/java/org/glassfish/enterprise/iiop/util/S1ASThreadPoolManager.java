@@ -100,7 +100,7 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
 //        int numberOfQueues = DEFAULT_NUMBER_OF_QUEUES;
 
         try {
-            threadpoolId = threadpoolBean.getThreadPoolId();
+            threadpoolId = threadpoolBean.getName();
         } catch (NullPointerException npe) {
             if (_logger.isLoggable(Level.WARNING)) {
                 _logger.log(Level.WARNING, "ThreadPoolBean may be null ", npe);
@@ -139,7 +139,7 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
             }
         }
         try {
-            timeoutValue = threadpoolBean.getIdleThreadTimeout();
+            timeoutValue = threadpoolBean.getIdleThreadTimeoutSeconds();
             idleTimeoutInSeconds = Integer.parseInt(timeoutValue);
         } catch (NullPointerException npe) {
             if (_logger.isLoggable(Level.WARNING)) {

@@ -38,7 +38,7 @@ import test.admin.util.GeneralUtils;
  * @since GlassFish v3 Prelude
  */
 public class WebtierTests extends BaseAsadminTest {
-    private final String LISTENER_NAME = "ls123456"; //sufficiently unique, I believe
+    private final String LISTENER_NAME = "ls" + System.currentTimeMillis(); //sufficiently unique, I believe
     
     @BeforeClass
     private void setup() {

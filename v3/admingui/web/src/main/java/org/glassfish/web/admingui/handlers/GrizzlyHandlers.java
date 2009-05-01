@@ -277,7 +277,7 @@ public class GrizzlyHandlers {
                 String name = (String) attrs.get("Name");
                 ThreadPoolConfig tpc = tps.getThreadPool().get(name);
                 tpc.setClassname(getA(attrs, "Classname"));
-                tpc.setIdleThreadTimeoutInSeconds(getA(attrs, "IdleThreadTimeout"));
+                tpc.setIdleThreadTimeoutSeconds(getA(attrs, "IdleThreadTimeout"));
                 tpc.setMaxQueueSize(getA(attrs, "MaxQueueSize"));
                 tpc.setMinThreadPoolSize(getA(attrs, "MinThreadPoolSize"));
                 tpc.setMaxThreadPoolSize(getA(attrs, "MaxThreadPoolSize"));
