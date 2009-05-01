@@ -129,10 +129,10 @@ public interface Deployment {
 
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;
 
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
+    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report, ArchiveHandler handler)
             throws IOException;
 
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report)
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler handler)
             throws IOException;
 
 

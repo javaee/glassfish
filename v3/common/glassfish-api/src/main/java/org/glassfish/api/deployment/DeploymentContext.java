@@ -123,6 +123,13 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
 
 
     /**
+     * Gets the archive handlers for modules
+     *
+     * @return a map containing module archive handlers
+     */
+    public Map<String, ArchiveHandler> getModuleArchiveHandlers();
+
+    /**
      * Stores application level metadata in the context so other deployer's
      * can have access to it. The transient meta-data is not persistent which
      * mean that any modification to it will not be available at the next

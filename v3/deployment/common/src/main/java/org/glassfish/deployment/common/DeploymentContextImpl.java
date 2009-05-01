@@ -72,6 +72,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     ClassLoader sharableTemp = null;
     Map<String, Properties> modulePropsMap = new HashMap<String, Properties>();
     Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
+    Map<String, ArchiveHandler> moduleArchiveHandlers = new HashMap<String, ArchiveHandler>();
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(ActionReport actionReport, Logger logger, 
@@ -406,6 +407,15 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
      */
     public void setModulePropsMap(Map<String, Properties> modulePropsMap) {
         this.modulePropsMap = modulePropsMap;
+    }
+
+    /**
+     * Gets the archive handlers for modules
+     *
+     * @return a map containing module archive handlers
+     */
+    public Map<String, ArchiveHandler> getModuleArchiveHandlers() {
+        return moduleArchiveHandlers;
     }
 
     /**

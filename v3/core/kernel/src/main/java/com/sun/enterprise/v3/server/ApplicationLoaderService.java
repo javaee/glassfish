@@ -172,7 +172,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     parameters.origin = DeployCommandParameters.Origin.deploy;
 
                     ActionReport report = new HTMLActionReporter();
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report, null);
 
                     if (!sourceFile.isDirectory()) {
 
@@ -198,6 +198,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             sourceArchive = 
                                 archiveFactory.openArchive(tmpDir);
                             depContext.setSource(sourceArchive);
+                            depContext.setArchiveHandler(handler);
                             logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
                             logger.warning("Using " + appName + " as context root for application");
                         }
@@ -266,7 +267,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     archive = archiveFactory.openArchive(sourceFile, deploymentParams);
 
                     ActionReport report = new HTMLActionReporter();
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report, null);
 
                     depContext.getAppProps().putAll(app.getDeployProperties());
                     depContext.setModulePropsMap(app.getModulePropertiesMap());
@@ -338,7 +339,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 parameters.origin = UndeployCommandParameters.Origin.unload;
 
                 try {
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters, dummy);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters, dummy, null);
                     appInfo.stop(depContext, depContext.getLogger());
                     appInfo.unload(depContext);
                 } catch (IOException e) {

@@ -202,10 +202,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
 
             // create the parent class loader
-            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this, report);
-
-            // store the archive handler in the context
-            deploymentContext.setArchiveHandler(archiveHandler);
+            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this, report, archiveHandler);
 
             // reset the properties (might be null) set by the deployers when undeploying.
             if (undeployProps!=null) {

@@ -826,7 +826,7 @@ public class ApplicationLifecycle implements Deployment {
         return appRegistry.get(appName);
     }
 
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
+    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report, ArchiveHandler handler)
         throws IOException {
 
         ReadableArchive archive = null;
@@ -836,10 +836,10 @@ public class ApplicationLifecycle implements Deployment {
                 throw new IOException("Invalid archive type : " + source.getAbsolutePath());
             }
         }
-        return getContext(logger, archive, params, report);
+        return getContext(logger, archive, params, report, handler);
     }
 
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report) throws IOException {
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler archiveHandler) throws IOException {
         ExtendedDeploymentContext context = new DeploymentContextImpl(report, logger, source, params, env);
         if (source != null && !(new File(source.getURI().getSchemeSpecificPart()).isDirectory())) {
             // create a temporary deployment context
@@ -855,7 +855,9 @@ public class ApplicationLifecycle implements Deployment {
                 logger.fine(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
             }
             try {
-                ArchiveHandler archiveHandler = getArchiveHandler(source);
+                if (archiveHandler == null) {
+                    archiveHandler = getArchiveHandler(source);
+                }
                 Long start = System.currentTimeMillis();
                 archiveHandler.expand(source, archiveFactory.createArchive(expansionDir), context);
                 System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
@@ -874,6 +876,7 @@ public class ApplicationLifecycle implements Deployment {
                 throw e;
             }
         }
+        context.setArchiveHandler(archiveHandler);
         return context;
     }
 }

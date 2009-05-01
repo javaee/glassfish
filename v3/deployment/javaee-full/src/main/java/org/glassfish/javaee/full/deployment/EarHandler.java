@@ -122,6 +122,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 try {
                     subArchive = source.getSubArchive(moduleUri);
                     ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
+                    context.getModuleArchiveHandlers().put(
+                        moduleUri, subHandler);
                     if (subHandler!=null) {
                         subTarget = target.createSubArchive(
                             FileUtils.makeFriendlyFilename(moduleUri));
@@ -172,17 +174,25 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
         for (ModuleDescriptor md : holder.app.getModules()) {
             ReadableArchive sub = null;
+            String moduleUri = md.getArchiveUri();
             try {
-                sub = archive.getSubArchive(md.getArchiveUri());
+                sub = archive.getSubArchive(moduleUri);
                 if (sub instanceof InputJarArchive) {
-                    throw new IllegalArgumentException(strings.get("wrongArchType", md.getArchiveUri()));
+                    throw new IllegalArgumentException(strings.get("wrongArchType", moduleUri));
                 }
             } catch (IOException e) {
-                _logger.log(Level.FINE, "Sub archive " + md.getArchiveUri() + " seems unreadable" ,e);
+                _logger.log(Level.FINE, "Sub archive " + moduleUri + " seems unreadable" ,e);
             }
             if (sub!=null) {
                 try {
-                    ArchiveHandler handler = deployment.getArchiveHandler(sub);
+                    ArchiveHandler handler = 
+                        context.getModuleArchiveHandlers().get(moduleUri);
+                    if (handler == null) {
+                        handler = deployment.getArchiveHandler(sub);
+                        context.getModuleArchiveHandlers().put(
+                            moduleUri, handler);
+                    }
+
                     if (handler!=null) {
                         ActionReport subReport = 
                             context.getActionReport().addSubActionsReport();
@@ -212,10 +222,10 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         sub.setParentArchive(context.getSource());
 
                         ClassLoader subCl = handler.getClassLoader(cl, subContext);
-                        cl.addModuleClassLoader(md.getArchiveUri(), subCl);
+                        cl.addModuleClassLoader(moduleUri, subCl);
                     }
                 } catch (IOException e) {
-                    _logger.log(Level.SEVERE, strings.get("noClassLoader", md.getArchiveUri()), e);
+                    _logger.log(Level.SEVERE, strings.get("noClassLoader", moduleUri), e);
                 }
 
             }

@@ -320,7 +320,7 @@ public class EjbApplication
                 }
 
                 try {
-                    ExtendedDeploymentContext dc = deployment.getContext(logger, app, params, report);
+                    ExtendedDeploymentContext dc = deployment.getContext(logger, app, params, report, null);
                     deployment.deploy(dc);
 
                     if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
