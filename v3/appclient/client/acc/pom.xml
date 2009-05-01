@@ -219,7 +219,6 @@
             <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <!--
             We depend on the deployment/dtds module which contains the
             sun-application-client-container_1_2.dtd.  We use that for
@@ -365,5 +364,11 @@
             <version>${project.version}</version>
         </dependency>
 -->
+     <dependency>
+         <groupId>org.glassfish.transaction</groupId>
+         <artifactId>jts</artifactId>
+         <version>${project.version}</version>
+     </dependency>
+
    </dependencies>
 </project>
