@@ -74,12 +74,8 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
     @Param(primary=true, optional=true)
     File path = null;
 
-    @Param(optional=true)
-    Properties properties=null;
-
-
-        //define this variable to skip parameter valadation.
-        //Param validation will be done when referening deploy command.
+    //define this variable to skip parameter valadation.
+    //Param validation will be done when referening deploy command.
     boolean skipParamValidation = true;
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ReDeployCommand.class);
@@ -94,13 +90,9 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
         if (!validateParameters(name, report)) {
             return;
         }
-        DeployCommandParameters params = new DeployCommandParameters(path);
-        params.force = true;
-        params.name = name;
-        params.properties = properties;
+        force = true;
 
-
-        commandRunner.doCommand("deploy", params, report,
+        commandRunner.doCommand("deploy", this, report,
                 context.getInboundPayload(), context.getOutboundPayload());
     }
 
