@@ -37,7 +37,7 @@
 <!initPage 
     setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings")
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks")
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks")
 
     setAttribute(key="displayFeedback" value="#{displayFeedback}");
     setAttribute(key="amxConfigName" value="monitoringServiceConfig.moduleMonitoringLevelsConfig")
