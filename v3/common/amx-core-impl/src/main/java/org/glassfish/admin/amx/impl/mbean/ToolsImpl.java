@@ -89,13 +89,22 @@ public class ToolsImpl extends AMXImplBase // implements Tools
 
     public String infoPath(final String path) {
         final ObjectName objectName = getDomainRootProxy().getPathnames().resolvePath(path);
-        //cdebug( "infoPath: " + path + " => " + objectName);
 
         Collection<ObjectName> c = objectName == null ? new ArrayList<ObjectName>() : Collections.singleton(objectName);
         return info(c);
     }
 
-    String info(final Collection<ObjectName> objectNames) {
+    public String java(final ObjectName objectName) {
+        final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(objectName);
+        
+        final MBeanInterfaceGenerator gen = new MBeanInterfaceGenerator();
+        final String out = gen.generate( mbeanInfo, true);
+        
+        return out;
+    }
+    
+    public String info(final Collection<ObjectName> objectNames)
+    {
         final Set<String> alreadyDone = new HashSet<String>();
         
         final StringBuffer buf = new StringBuffer();
@@ -103,7 +112,7 @@ public class ToolsImpl extends AMXImplBase // implements Tools
         if (objectNames.size() != 0) {
             final String NL = StringUtil.NEWLINE();
             for (final ObjectName objectName : objectNames) {
-                final MBeanInfo mbeanInfo = ProxyFactory.getInstance(getMBeanServer()).getMBeanInfo(objectName);
+                final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(objectName);
                 
                 // Don't generate info if we've seen that type/class combination already
                 final String type = Util.getTypeProp(objectName);
@@ -118,9 +127,7 @@ public class ToolsImpl extends AMXImplBase // implements Tools
                 buf.append("MBeanInfo for " + objectName + NL);
                 //buf.append(JMXUtil.toString(mbeanInfo) + NL + NL );
                 
-                final MBeanInterfaceGenerator gen = new MBeanInterfaceGenerator();
-                final String out = gen.generate( mbeanInfo, true);
-                buf.append(out);
+                buf.append( java(objectName) );
                 buf.append(NL + NL + NL + NL);
             }
         }
@@ -171,9 +178,25 @@ public class ToolsImpl extends AMXImplBase // implements Tools
     }
     
     public String validate(final ObjectName[]  targets) {
-        final AMXValidator validator = new AMXValidator( getMBeanServer() );
+        final Set<ObjectName> all = new HashSet<ObjectName>();
         
-        final AMXValidator.ValidationResult result = validator.validate(targets);
+        for( final ObjectName objectName : targets )
+        {
+            if ( objectName.isPattern() )
+            {
+                final Set<ObjectName> found = getMBeanServer().queryNames( objectName, null );
+                all.addAll(found);
+            }
+            else
+            {
+                all.add(objectName);
+            }
+        }
+        
+        final ObjectName[] allArray = CollectionUtil.toArray( all, ObjectName.class );
+        
+        final AMXValidator validator = new AMXValidator( getMBeanServer() );
+        final AMXValidator.ValidationResult result = validator.validate( allArray );
         
         return result.toString();
     }

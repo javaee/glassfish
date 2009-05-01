@@ -79,6 +79,12 @@ public interface DomainRoot extends AMXProxy
      */
     @ManagedAttribute
     public Ext getExt();
+    
+    /**
+        Return the {@link Tools} MBean.
+     */
+    @ManagedAttribute
+    public Tools getTools();
 
     /**
         @return the singleton {@link QueryMgr}.

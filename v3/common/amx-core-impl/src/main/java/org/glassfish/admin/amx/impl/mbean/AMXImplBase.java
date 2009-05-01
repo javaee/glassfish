@@ -1123,24 +1123,8 @@ public class AMXImplBase extends MBeanImplBase
             toString( types ) + " in " + getObjectName() );
     }
 
-
-
-		protected String
-	getSelfName()
-	{
-		return( Util.getNameProp( getObjectName() ) );
-	}
-    
 	
-	protected final static Set<String>  EMPTY_STRING_SET    = Collections.emptySet();
-	
-       	
-		protected void
-	unregisterMisc()
-	{
-		// nothing by default
-	}
-	
+		
     /**
         A subclass might need to override this method if its name contains characters
         that are illegal for the ObjectName.
@@ -1259,54 +1243,18 @@ public class AMXImplBase extends MBeanImplBase
 		return( SmartStringifier.toString( o ) );
 	}
 	
-	
 	    public String
 	toString()
 	{
-	    return getImplString( false );
-	}
-	
-	    public String
-	getImplString( final boolean verbose )
-	{
-	    final String NEWLINE    = System.getProperty( "line.separator" );
-	    
-	    String s = this.getClass().getName() + NEWLINE +
-	        MBeanInfoStringifier.DEFAULT.stringify( getMBeanInfo() ) + NEWLINE;
-	    
-	    if ( verbose )
-	    {
-            final Set<String> namesSet = getAttributeNames();
-            final String[] names = new String[namesSet.size()];
-	        final AttributeList attrs   = getAttributes( names );
-	        final Map<String,Object>    m   = JMXUtil.attributeListToValueMap( attrs );
-	        s   = NEWLINE + s + MapUtil.toString( m, NEWLINE + NEWLINE ) + NEWLINE;
-	    }
-	    
-	    return s;
+	    return java();
 	}
     
-		protected synchronized void
-	unregisterChildren()
-	{
-        final ObjectName[] children = getChildren();
-        if ( children == null )  return;
-
-        for ( final ObjectName childObjectName : children )
-        {
-            try
-            {
-                getMBeanServer().unregisterMBean( childObjectName );
-                debug( "unregisterSelfMgrChildren: ", childObjectName, " is now unregistered" );
-            }
-            catch ( Exception e )
-            {
-                // continue even if one cannot be unregistered
-                // throw new RuntimeException(e);
-            }
-        }
-	}
+    public String java()
+    {
+        return getDomainRootProxy().getTools().java( getObjectName() );
+    }
     
+      
         protected ObjectName
     registerChild( final Object mbean, final ObjectName childObjectName )
     {

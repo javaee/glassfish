@@ -63,6 +63,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import org.glassfish.admin.amx.base.Tools;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.PathnameParser;
 
@@ -143,15 +144,11 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         return (ProxyFactory.getInstance(getMBeanServerConnection()));
     }
 
-    /**
-    Get the proxy corresponding to the DomainMBean for the domain to which
-    this proxy corresponds.
-     */
-    private final DomainRoot getDomainRoot()
-            throws IOException
+    private final DomainRoot getDomainRootProxy()
     {
-        return (getProxyFactory().getDomainRootProxy());
+        return getProxyFactory().getDomainRootProxy();
     }
+    
     private static final String STRING = String.class.getName();
     private static final String[] EMPTY_SIG = new String[0];
     private static final String[] STRING_SIG = new String[]
@@ -1019,9 +1016,13 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     {
         return getDescriptorField(DESC_SUB_TYPES, EMPTY_STRINGS);
     }
+    
+    public String java() {
+        final Tools tools  = getDomainRootProxy().getTools();
+        
+        return tools.java( getObjectName() );
+    }
 }
-
-
 
 
 
