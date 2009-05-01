@@ -79,7 +79,7 @@
 #include "/shared/jvmPathButtons.inc"
                     </facet>                            
                 </sun:title>
-	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
+	<sun:hidden id="helpKey" value="$resource{help.serverInstJvmPathSettings}" />
             </sun:form>
 </define>
 </composition>

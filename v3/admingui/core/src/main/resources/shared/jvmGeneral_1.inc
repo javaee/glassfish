@@ -46,7 +46,7 @@
         setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getServerJvmAttributes(ConfigName="#{configName}", JavaHome=>$attribute{javaHome}, 
-                    JavacOptions=>$attribute{javacOptions}, DebugEnabled=>$attribute{debugEnabled},
+               JavacOptions=>$attribute{javacOptions}, DebugEnabled=>$attribute{debugEnabled},
                     DebugOptions=>$attribute{debugOptions}, RmicOptions=>$attribute{rmicOptions}, 
                     BytecodePreprocessor=>$attribute{bytecodePreprocessor});
     />

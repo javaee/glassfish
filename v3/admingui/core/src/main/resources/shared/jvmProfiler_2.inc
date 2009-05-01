@@ -85,7 +85,7 @@
                     </sun:propertySheet>  
 #include "/shared/jvmOptionsTable.inc"                
                 
-	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
+	<sun:hidden id="helpKey" value="$resource{help.serverInstProfiler}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>

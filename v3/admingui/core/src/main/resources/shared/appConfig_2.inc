@@ -103,7 +103,7 @@
 #include "/shared/appConfig_2Buttons.inc"
         </facet>       
         </sun:title>
-		<sun:hidden id="helpKey" value="$attribute{helpKey}" />
+		<sun:hidden id="helpKey" value="$resource{help.serverInstAppsConfig}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>

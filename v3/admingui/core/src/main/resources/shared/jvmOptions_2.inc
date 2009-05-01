@@ -75,7 +75,7 @@
                 </facet>                                
             </sun:title>
 
-	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
+	<sun:hidden id="helpKey" value="$resource{help.serverJvmOptions}" />
          </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>

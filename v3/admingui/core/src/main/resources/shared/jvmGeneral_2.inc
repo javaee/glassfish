@@ -91,7 +91,7 @@
                         </sun:propertySheetSection>
 
                     </sun:propertySheet>    
-	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
+                    <sun:hidden id="helpKey" value="$resource{help.serverInstJvmGeneral}" />
             </sun:form>
 </define>
 </composition>
