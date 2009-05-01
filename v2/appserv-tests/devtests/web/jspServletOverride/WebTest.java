@@ -41,6 +41,7 @@ public class WebTest {
      
         String testName = "jsp-servlet-override-ieClassId";
 
+        BufferedReader bis = null;
         try {
             URL url = new URL("http://" + host  + ":" + port
                               + contextRoot + "/jsp/overrideIeClassId.jsp");
@@ -52,7 +53,7 @@ public class WebTest {
                 stat.addStatus("Wrong response code. Expected: 200"
                                + ", received: " + responseCode, stat.FAIL);
             } else {
-                BufferedReader bis = new BufferedReader(
+                bis = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
                 String line = null;
                 while ((line = bis.readLine()) != null) {
@@ -86,6 +87,10 @@ public class WebTest {
             ex.printStackTrace();
             System.out.println(testName + " test failed.");
             stat.addStatus(testName, stat.FAIL);
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 

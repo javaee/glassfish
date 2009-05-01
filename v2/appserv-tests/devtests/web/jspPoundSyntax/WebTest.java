@@ -64,6 +64,8 @@ public class WebTest {
 
     public void doTest1(String path, String testName) {
 
+        InputStream is = null;
+        BufferedReader input = null;
         try {
             URL url = new URL("http://" + host  + ':' + port + '/' + contextRoot + path);
             System.out.println("Connecting to: " + url.toString());
@@ -75,8 +77,8 @@ public class WebTest {
                                    + ", received: " + responseCode);
                 stat.addStatus(testName, stat.FAIL);
             } else {
-                InputStream is = conn.getInputStream();
-                BufferedReader input = new BufferedReader(new InputStreamReader(
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(
 is));
                 boolean error = false;
                 if (checkValue(input, "val1", "#{abc}"))
@@ -100,6 +102,13 @@ is));
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(testName, stat.FAIL);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 
@@ -127,6 +136,8 @@ is));
 
     public void doTest3(String path, String testName) {
 
+        InputStream is = null;
+        BufferedReader input = null;
         try {
             URL url = new URL("http://" + host  + ':' + port + '/' + contextRoot
  + path);
@@ -139,8 +150,8 @@ is));
                                    + ", received: " + responseCode);
                 stat.addStatus(testName, stat.FAIL);
             } else {
-                InputStream is = conn.getInputStream();
-                BufferedReader input = new BufferedReader(new InputStreamReader(
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(
 is));
                 boolean error = false;
                 if (checkValue(input, "val1", "#{abc}"))
@@ -166,11 +177,20 @@ is));
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(testName, stat.FAIL);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 
     public void doTest4(String path, String testName) {
 
+        InputStream is = null;
+        BufferedReader input = null;
         try {
             URL url = new URL("http://" + host  + ':' + port + '/' + contextRoot
  + path);
@@ -183,8 +203,8 @@ is));
                                    + ", received: " + responseCode);
                 stat.addStatus(testName, stat.FAIL);
             } else {
-                InputStream is = conn.getInputStream();
-                BufferedReader input = new BufferedReader(new InputStreamReader(
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(
 is));
                 boolean error = false;
                 if (checkValue(input, "val1", "\\#{abc}"))
@@ -208,6 +228,13 @@ is));
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(testName, stat.FAIL);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 

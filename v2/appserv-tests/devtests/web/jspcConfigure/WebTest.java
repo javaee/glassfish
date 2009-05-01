@@ -49,26 +49,33 @@ public class WebTest {
 
     private void invokeJsp() throws Exception {
 
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/jsp/test.jsp");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            BufferedReader bis = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-
-            if (bis.readLine() == null) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response, expected empty body");
+        BufferedReader bis = null;
+        try{
+            URL url = new URL("http://" + host  + ":" + port
+                              + contextRoot + "/jsp/test.jsp");
+            System.out.println("Connecting to: " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("Wrong response code. Expected: 200"
+                                   + ", received: " + responseCode);
                 stat.addStatus(TEST_NAME, stat.FAIL);
+            } else {
+                bis = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
+
+                if (bis.readLine() == null) {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                } else {
+                    System.err.println("Wrong response, expected empty body");
+                    stat.addStatus(TEST_NAME, stat.FAIL);
+                }
             }
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 }

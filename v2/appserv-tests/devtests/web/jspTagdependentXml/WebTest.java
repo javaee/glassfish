@@ -49,18 +49,22 @@ public class WebTest
     private static void goGet(String host, int port, String contextPath)
          throws Exception
     {
-        Socket s = new Socket(host, port);
-        OutputStream os = s.getOutputStream();
-
-        System.out.println("GET " + contextPath + " HTTP/1.0");
-        os.write(("GET " + contextPath + " HTTP/1.0\n").getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = s.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader bis = null;
         try {
+            sock = new Socket(host, port);
+            os = sock.getOutputStream();
+
+            System.out.println("GET " + contextPath + " HTTP/1.0");
+            os.write(("GET " + contextPath + " HTTP/1.0\n").getBytes());
+            os.write("\n".getBytes());
+
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+
             while ((line = bis.readLine()) != null) {
                 if (line.trim().length() > 0)
                     System.out.println(line);
@@ -91,6 +95,19 @@ public class WebTest
         } catch( Exception ex){
             ex.printStackTrace();   
             throw new Exception("Test UNPREDICTED-FAILURE");
+        } finally {
+            try {
+                if (os != null) os.close();
+            } catch (IOException ex) {}
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (sock != null) sock.close();
+            } catch (IOException ex) {}
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 }

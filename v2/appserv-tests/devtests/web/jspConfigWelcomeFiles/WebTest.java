@@ -36,7 +36,9 @@ public class WebTest {
     }
 
     public void doTest(String urlString, String testName) {
-     
+
+        InputStream is = null;
+        BufferedReader input = null;
         try { 
             URL url = new URL(urlString);
             System.out.println("Connecting to: " + url.toString());
@@ -48,8 +50,8 @@ public class WebTest {
                                    + ", received: " + responseCode);
                 stat.addStatus(testName, stat.FAIL);
             } else {
-                InputStream is = conn.getInputStream();
-                BufferedReader input = new BufferedReader(new InputStreamReader(is));
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(is));
                 String line = input.readLine();
                 if (!"Welcome".equals(line)) {
                     System.err.println("Wrong response. Expected: Welcome"
@@ -62,6 +64,13 @@ public class WebTest {
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(testName, stat.FAIL);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 

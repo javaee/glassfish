@@ -62,37 +62,56 @@ public class WebTest {
 
     private void invoke(String uri, String expectedResponseCode)
             throws Exception {
-         
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + uri + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
-        String line = null;
-        boolean expectedResponseCodeSeen = false;
-        while ((line = bis.readLine()) != null) {
-            if (line.contains(expectedResponseCode)) {
-                expectedResponseCodeSeen = true;
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + uri + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("\n".getBytes());
+
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            boolean expectedResponseCodeSeen = false;
+            while ((line = bis.readLine()) != null) {
+                if (line.contains(expectedResponseCode)) {
+                    expectedResponseCodeSeen = true;
+                }
+                if (line.toLowerCase().startsWith("content-type:")) {
+                    break;
+                }
             }
-            if (line.toLowerCase().startsWith("content-type:")) {
-                break;
+
+            if (!expectedResponseCodeSeen) {
+                throw new Exception("Response does not have expected response "
+                                    + "code: " + expectedResponseCode);
             }
-        }
 
-        if (!expectedResponseCodeSeen) {
-            throw new Exception("Response does not have expected response "
-                                + "code: " + expectedResponseCode);
-        }
-
-        if ((line == null) || (line.toLowerCase().startsWith("content-type:") && !line.contains(EXPECTED_CONTENT_TYPE))) {
-            throw new Exception("Wrong response content type. Expected: "
-                                + EXPECTED_CONTENT_TYPE + ", received: "
-                                + line);
+            if ((line == null) || (line.toLowerCase().startsWith("content-type:") && !line.contains(EXPECTED_CONTENT_TYPE))) {
+                throw new Exception("Wrong response content type. Expected: "
+                                    + EXPECTED_CONTENT_TYPE + ", received: "
+                                    + line);
+            }
+        } finally {
+            try {
+                if (os != null) os.close();
+            } catch (IOException ex) {}
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (sock != null) sock.close();
+            } catch (IOException ex) {}
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 }

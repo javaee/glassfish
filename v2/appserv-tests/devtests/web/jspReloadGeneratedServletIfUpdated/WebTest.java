@@ -64,34 +64,45 @@ public class WebTest {
 
     public void doTest() throws Exception {
 
-        String expectedResponse = null;
-        if ("first".equals(run)) {
-            expectedResponse = "This is my output";
-        } else {
-            expectedResponse = "This is my UPDATED output";
-        }
-     
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/jsp/test.jsp");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        int responseCode = conn.getResponseCode();
-
-        if (responseCode != 200) {
-            System.err.println("Unexpected return code: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
-            if (expectedResponse.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            String expectedResponse = null;
+            if ("first".equals(run)) {
+                expectedResponse = "This is my output";
             } else {
-                System.err.println("Wrong response. Expected: " + 
-                                   expectedResponse + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
+                expectedResponse = "This is my UPDATED output";
             }
+
+            URL url = new URL("http://" + host  + ":" + port
+                              + contextRoot + "/jsp/test.jsp");
+            System.out.println("Connecting to: " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode != 200) {
+                System.err.println("Unexpected return code: " + responseCode);
+                stat.addStatus(TEST_NAME, stat.FAIL);
+            } else {
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(is));
+                String line = input.readLine();
+                if (expectedResponse.equals(line)) {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                } else {
+                    System.err.println("Wrong response. Expected: " +
+                                       expectedResponse + ", received: " + line);
+                    stat.addStatus(TEST_NAME, stat.FAIL);
+                }
+            }
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 }

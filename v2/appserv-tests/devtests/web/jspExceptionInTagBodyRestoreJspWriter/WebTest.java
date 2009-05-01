@@ -42,31 +42,38 @@ public class WebTest {
     }
 
     public void invokeJsp() throws Exception {
-     
-        String url = "http://" + host + ":" + port + "/" + contextRoot
-            + "/jsp/test.jsp";
-        HttpURLConnection conn = (HttpURLConnection)
-            (new URL(url)).openConnection();
 
-        int code = conn.getResponseCode();
-        if (code != 200) {
-            System.err.println("Unexpected return code: " + code);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-            return;
-        }
+        BufferedReader bis = null;
+        try {
+            String url = "http://" + host + ":" + port + "/" + contextRoot
+                + "/jsp/test.jsp";
+            HttpURLConnection conn = (HttpURLConnection)
+                (new URL(url)).openConnection();
 
-        BufferedReader bis = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
-        String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (EXPECTED.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-                break;
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                System.err.println("Unexpected return code: " + code);
+                stat.addStatus(TEST_NAME, stat.FAIL);
+                return;
             }
-        }
 
-        if (line == null) {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        }    
+            bis = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream()));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                if (EXPECTED.equals(line)) {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                    break;
+                }
+            }
+
+            if (line == null) {
+                stat.addStatus(TEST_NAME, stat.FAIL);
+            }
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
+        }
     }
 }

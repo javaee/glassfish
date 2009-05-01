@@ -46,28 +46,39 @@ public class WebTest {
     }
 
     public void invokeJsp() throws Exception {
-     
-        String url = "http://" + host + ":" + port + contextRoot
-                     + "/jsps/test.jsp";
-        HttpURLConnection conn = (HttpURLConnection)
-            (new URL(url)).openConnection();
 
-        int code = conn.getResponseCode();
-        if (code != 200) {
-            System.err.println("Unexpected return code: " + code);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
-            if (!EXPECTED_RESPONSE.equals(line)) {
-                System.err.println("Wrong response. "
-                                   + "Expected: " + EXPECTED_RESPONSE
-                                   + ", received: " + line);
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            String url = "http://" + host + ":" + port + contextRoot
+                         + "/jsps/test.jsp";
+            HttpURLConnection conn = (HttpURLConnection)
+                (new URL(url)).openConnection();
+
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                System.err.println("Unexpected return code: " + code);
                 stat.addStatus(TEST_NAME, stat.FAIL);
             } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(is));
+                String line = input.readLine();
+                if (!EXPECTED_RESPONSE.equals(line)) {
+                    System.err.println("Wrong response. "
+                                       + "Expected: " + EXPECTED_RESPONSE
+                                       + ", received: " + line);
+                    stat.addStatus(TEST_NAME, stat.FAIL);
+                } else {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                }
             }
-        }    
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
+        }
     }
 }

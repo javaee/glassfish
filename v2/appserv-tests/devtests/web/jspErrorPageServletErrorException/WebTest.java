@@ -32,7 +32,9 @@ public class WebTest {
     }
 
     public void doTest() {
-     
+
+        InputStream is = null;
+        BufferedReader bis = null;
         try {
             Socket s = new Socket(host, new Integer(port).intValue());
             OutputStream os = s.getOutputStream();
@@ -42,8 +44,8 @@ public class WebTest {
             os.write(("GET " + requestUri + " HTTP/1.0\n").getBytes());
             os.write("\n".getBytes());
         
-            InputStream is = s.getInputStream();
-            BufferedReader bis = new BufferedReader(new InputStreamReader(is));
+            is = s.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
             String line = null;
             int count = 0;
             while ((line = bis.readLine()) != null) {
@@ -62,6 +64,13 @@ public class WebTest {
         } catch( Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 

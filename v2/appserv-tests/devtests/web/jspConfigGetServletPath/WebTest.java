@@ -34,7 +34,9 @@ public class WebTest {
         stat.printSummary(TEST_NAME);
     }
 
-    public void doTest() {     
+    public void doTest() {
+        InputStream is = null;
+        BufferedReader input = null;
         try { 
             URL url = new URL("http://" + host  + ":" + port + contextRoot
                               + SERVLET_PATH);
@@ -47,8 +49,8 @@ public class WebTest {
                                    + ", received: " + responseCode);
                 stat.addStatus(TEST_NAME, stat.FAIL);
             } else {
-                InputStream is = conn.getInputStream();
-                BufferedReader input = new BufferedReader(new InputStreamReader(is));
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(is));
                 String line = input.readLine();
                 if (!SERVLET_PATH.equals(line)) {
                     System.err.println("Wrong response. Expected: "
@@ -63,6 +65,13 @@ public class WebTest {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 

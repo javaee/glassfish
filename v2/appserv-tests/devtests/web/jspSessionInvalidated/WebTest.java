@@ -71,27 +71,33 @@ public class WebTest {
      */
     
     public void doTest() throws Exception {
-        URL url = new URL("http://" + host  + ":" + port
-                + contextRoot + "/jsp/test.jsp");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            System.err.println("Unexpected return code: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            BufferedReader input =
-                    new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = input.readLine();
-            System.out.println("Response: " + line);
-            if (EXPECTED_RESPONSE.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response. Expected: " + EXPECTED_RESPONSE);
+        BufferedReader input = null;
+        try {
+            URL url = new URL("http://" + host  + ":" + port
+                    + contextRoot + "/jsp/test.jsp");
+            System.out.println("Connecting to: " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("Unexpected return code: " + responseCode);
                 stat.addStatus(TEST_NAME, stat.FAIL);
+            } else {
+                input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String line = input.readLine();
+                System.out.println("Response: " + line);
+                if (EXPECTED_RESPONSE.equals(line)) {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                } else {
+                    System.err.println("Wrong response. Expected: " + EXPECTED_RESPONSE);
+                    stat.addStatus(TEST_NAME, stat.FAIL);
+                }
             }
+        } finally {
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 }

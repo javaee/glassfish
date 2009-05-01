@@ -46,16 +46,27 @@ public class WebTest {
                                    + ", received: " + responseCode);
                 stat.addStatus(TEST_NAME, stat.FAIL);
             } else {
-                InputStream is = conn.getInputStream();
-                BufferedReader input = new BufferedReader(new InputStreamReader(is));
-                String line = input.readLine();
-                if (!RESPONSE_BODY.equals(line)) {
-                    System.err.println("Wrong response. Expected: "
+                InputStream is = null;
+                BufferedReader input = null;
+                try {
+                    is = conn.getInputStream();
+                    input = new BufferedReader(new InputStreamReader(is));
+                    String line = input.readLine();
+                    if (!RESPONSE_BODY.equals(line)) {
+                        System.err.println("Wrong response. Expected: "
                                        + RESPONSE_BODY
                                        + ", received: " + line);
-                    stat.addStatus(TEST_NAME, stat.FAIL);
-                } else {
-                    stat.addStatus(TEST_NAME, stat.PASS);
+                        stat.addStatus(TEST_NAME, stat.FAIL);
+                    } else {
+                        stat.addStatus(TEST_NAME, stat.PASS);
+                    }
+                } finally {
+                    try {
+                        if (is != null) is.close();
+                    } catch (IOException ex) { }
+                    try {
+                        if (input != null) input.close();
+                    } catch (IOException ex) { }
                 }
             }
         } catch (Exception ex) {

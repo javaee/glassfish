@@ -44,31 +44,39 @@ public class WebTest {
     }
 
     public void doTest() throws Exception {
-     
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/test.jsp");
-        System.out.println("Connecting to: " + url.toString());
 
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        int responseCode = conn.getResponseCode();
+        BufferedReader bis = null;
+        try {
+            URL url = new URL("http://" + host  + ":" + port
+                              + contextRoot + "/test.jsp");
+            System.out.println("Connecting to: " + url.toString());
 
-        if (responseCode != 200) {
-            throw new Exception("Unexpected return code: " + responseCode);
-        }
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+            int responseCode = conn.getResponseCode();
 
-        BufferedReader bis = new BufferedReader(
-            new InputStreamReader(conn.getInputStream()));
-        String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (EXPECTED_RESPONSE.equals(line)) {
-                break;
+            if (responseCode != 200) {
+                throw new Exception("Unexpected return code: " + responseCode);
             }
-        }
 
-        if (line == null) {
-            throw new Exception("Wrong response body. Could not find " +
-                                "expected string: " + EXPECTED_RESPONSE);
+            bis = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                if (EXPECTED_RESPONSE.equals(line)) {
+                    break;
+                }
+            }
+
+            if (line == null) {
+                throw new Exception("Wrong response body. Could not find " +
+                                    "expected string: " + EXPECTED_RESPONSE);
+            }
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {
+            }
         }
     }
 }

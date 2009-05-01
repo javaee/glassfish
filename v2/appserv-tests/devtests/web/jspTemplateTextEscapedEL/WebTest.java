@@ -43,37 +43,48 @@ public class WebTest {
     }
 
     public void invokeJsp() throws Exception {
-     
-        String url = "http://" + host + ":" + port + "/" + contextRoot
-            + "/jsp/test.jsp";
-        HttpURLConnection conn = (HttpURLConnection)
-            (new URL(url)).openConnection();
 
-        int code = conn.getResponseCode();
-        if (code != 200) {
-            System.err.println("Unexpected return code: " + code);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } 
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            String url = "http://" + host + ":" + port + "/" + contextRoot
+                + "/jsp/test.jsp";
+            HttpURLConnection conn = (HttpURLConnection)
+                (new URL(url)).openConnection();
 
-        InputStream is = conn.getInputStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        boolean found1 = false;
-        boolean found2 = false;
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                System.err.println("Unexpected return code: " + code);
+                stat.addStatus(TEST_NAME, stat.FAIL);
+            }
 
-        while ((line = input.readLine()) != null) {
-            if (line.equals("${4+3}")) {
-                found1 = true;
-            } else if (line.equals("${2+2}")) {
-                found2 = true;
-	    }
-        }
-	
-        if (found1 && found2) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Wrong response body");
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            boolean found1 = false;
+            boolean found2 = false;
+
+            while ((line = input.readLine()) != null) {
+                if (line.equals("${4+3}")) {
+                    found1 = true;
+                } else if (line.equals("${2+2}")) {
+                    found2 = true;
+            }
+            }
+
+            if (found1 && found2) {
+                stat.addStatus(TEST_NAME, stat.PASS);
+            } else {
+                System.err.println("Wrong response body");
+                stat.addStatus(TEST_NAME, stat.FAIL);
+            }
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 }

@@ -78,64 +78,75 @@ public class WebTest {
      */
     public boolean doTest(String jspPage) throws Exception {
      
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/" + jspPage);
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            URL url = new URL("http://" + host  + ":" + port
+                              + contextRoot + "/" + jspPage);
+            System.out.println("Connecting to: " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
 
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            return false;
-        }
-
-        InputStream is = conn.getInputStream();
-
-        String contentType = conn.getHeaderField("Content-Type");
-        if ("UTF-16BE.jsp".equals(jspPage)) {
-            if (!TEXT_HTML_UTF_16_BE.equals(contentType)) {
-                System.err.println("Wrong response content-type. "
-                                   + "Expected: " + TEXT_HTML_UTF_16_BE
-                                   + ", received: " + contentType);
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("Wrong response code. Expected: 200"
+                                   + ", received: " + responseCode);
                 return false;
             }
-        } else if ("UTF-16LE.jsp".equals(jspPage)) {
-            if (!TEXT_HTML_UTF_16_LE.equals(contentType)) {
-                System.err.println("Wrong response content-type. "
-                                   + "Expected: " + TEXT_HTML_UTF_16_LE
-                                   + ", received: " + contentType);
+
+            is = conn.getInputStream();
+
+            String contentType = conn.getHeaderField("Content-Type");
+            if ("UTF-16BE.jsp".equals(jspPage)) {
+                if (!TEXT_HTML_UTF_16_BE.equals(contentType)) {
+                    System.err.println("Wrong response content-type. "
+                                       + "Expected: " + TEXT_HTML_UTF_16_BE
+                                       + ", received: " + contentType);
+                    return false;
+                }
+            } else if ("UTF-16LE.jsp".equals(jspPage)) {
+                if (!TEXT_HTML_UTF_16_LE.equals(contentType)) {
+                    System.err.println("Wrong response content-type. "
+                                       + "Expected: " + TEXT_HTML_UTF_16_LE
+                                       + ", received: " + contentType);
+                    return false;
+                }
+            } else if ("UTF-8.jsp".equals(jspPage)) {
+                if (!TEXT_HTML_UTF_8.equals(contentType)) {
+                    System.err.println("Wrong response content-type. "
+                                       + "Expected: " + TEXT_HTML_UTF_8
+                                       + ", received: " + contentType);
+                    return false;
+                }
+            } else {
                 return false;
             }
-        } else if ("UTF-8.jsp".equals(jspPage)) {
-            if (!TEXT_HTML_UTF_8.equals(contentType)) {
-                System.err.println("Wrong response content-type. "
-                                   + "Expected: " + TEXT_HTML_UTF_8
-                                   + ", received: " + contentType);
+
+            String charSet = getCharSet(contentType);
+            if (charSet == null) {
                 return false;
             }
-        } else {
-            return false;
+
+            input = new BufferedReader(
+                    new InputStreamReader(is, charSet));
+            String line = input.readLine();
+            if (!EXPECTED_RESPONSE.equals(line)) {
+                System.err.println("Wrong response. "
+                                   + "Expected: " + EXPECTED_RESPONSE
+                                   + ", received: " + line);
+                return false;
+            }
+
+            // Success
+            return true;
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
-
-        String charSet = getCharSet(contentType);
-        if (charSet == null) {
-            return false;
-	}
-
-        BufferedReader input = new BufferedReader(
-                new InputStreamReader(is, charSet));
-        String line = input.readLine();
-        if (!EXPECTED_RESPONSE.equals(line)) {
-            System.err.println("Wrong response. "
-                               + "Expected: " + EXPECTED_RESPONSE
-                               + ", received: " + line);
-            return false;
-        }
-
-        // Success
-        return true;
     }
 
 

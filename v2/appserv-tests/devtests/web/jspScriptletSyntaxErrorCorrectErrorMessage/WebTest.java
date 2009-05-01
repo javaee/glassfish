@@ -47,29 +47,49 @@ public class WebTest {
 
     private void invokeJsp() throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/jsp/test.jsp HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/jsp/test.jsp HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("\n".getBytes());
 
-        boolean found = false;
-        String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (line.endsWith(EXPECTED_ERROR) ||
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+
+            boolean found = false;
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                if (line.endsWith(EXPECTED_ERROR) ||
                     line.endsWith(EXPECTED_ERROR_JDK6)) {
-                found = true;
-                break;
+                    found = true;
+                    break;
+                }
             }
-        }
-		
-        if (!found) {
-            throw new Exception("Wrong response, expected: " +
-                                EXPECTED_ERROR);
+
+            if (!found) {
+                throw new Exception("Wrong response, expected: \n" +
+                                 "For JDK 5: " + EXPECTED_ERROR + '\n' +
+                                 "For JDK 6: " + EXPECTED_ERROR_JDK6);
+            }
+        } finally {
+            try {
+                if (os != null) os.close();
+            } catch (IOException ex) {}
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (sock != null) sock.close();
+            } catch (IOException ex) {}
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 

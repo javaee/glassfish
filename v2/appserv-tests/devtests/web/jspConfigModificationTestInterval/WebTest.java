@@ -113,24 +113,40 @@ public class WebTest {
 
     private String getBodyLine(String resource) throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/" + resource + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\n".getBytes());
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/" + resource + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("\n".getBytes());
 
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
 
-        String line = null;
-        String bodyLine = null;
-        while ((line = bis.readLine()) != null) {
-            bodyLine = line;
+            String line = null;
+            String bodyLine = null;
+            while ((line = bis.readLine()) != null) {
+                bodyLine = line;
+            }
+            return bodyLine;
+        } finally {
+            try {
+                if (os != null) os.close();
+            } catch (IOException ex) {}
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (sock != null) sock.close();
+            } catch (IOException ex) {}
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
-
-        bis.close();
-
-        return bodyLine;
     }   
 }

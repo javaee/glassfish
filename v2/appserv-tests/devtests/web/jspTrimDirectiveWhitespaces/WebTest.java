@@ -29,6 +29,8 @@ public class WebTest {
 
     public void doTest(String path, String testName) {
 
+        InputStream is = null;
+        BufferedReader input = null;
         try {
             URL url = new URL("http://" + host  + ':' + port + '/' + contextRoot + path);
             System.out.println("Connecting to: " + url.toString());
@@ -40,8 +42,8 @@ public class WebTest {
                                    + ", received: " + responseCode);
                 stat.addStatus(testName, stat.FAIL);
             } else {
-                InputStream is = conn.getInputStream();
-                BufferedReader input = new BufferedReader(new InputStreamReader(
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(
 is));
                 String line1 = input.readLine();
 //                System.out.println("line1:" + line1);
@@ -64,6 +66,13 @@ is));
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(testName, stat.FAIL);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 

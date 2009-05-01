@@ -43,29 +43,48 @@ public class WebTest {
     }
 
     private void invokeJsp() throws Exception {
-         
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/jsp/test.jsp" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
-        String line = null;
-        while ((line = bis.readLine()) != null) {
-            if (line.startsWith("X-Powered-By: JSP")) {
-                break;
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/jsp/test.jsp" + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("\n".getBytes());
+
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                if (line.startsWith("X-Powered-By: JSP")) {
+                    break;
+                }
             }
-        }
 
-        if (line == null) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Unexpected response header: " + line);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            if (line == null) {
+                stat.addStatus(TEST_NAME, stat.PASS);
+            } else {
+                System.err.println("Unexpected response header: " + line);
+                stat.addStatus(TEST_NAME, stat.FAIL);
+            }
+        } finally {
+            try {
+                if (os != null) os.close();
+            } catch (IOException ex) {}
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (sock != null) sock.close();
+            } catch (IOException ex) {}
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 

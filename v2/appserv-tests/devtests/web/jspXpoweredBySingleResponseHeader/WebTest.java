@@ -41,28 +41,47 @@ public class WebTest {
     }
 
     private void doTest() throws Exception {
-         
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/from.jsp" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
-        String line = null;
-        int count = 0;
-        while ((line = bis.readLine()) != null) {
-            if (line.startsWith("X-Powered-By: JSP")) {
-                count++;
+        Socket sock = null;
+        OutputStream os = null;
+        InputStream is = null;
+        BufferedReader bis = null;
+        try {
+            sock = new Socket(host, new Integer(port).intValue());
+            os = sock.getOutputStream();
+            String get = "GET " + contextRoot + "/from.jsp" + " HTTP/1.0\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("\n".getBytes());
+
+            is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            int count = 0;
+            while ((line = bis.readLine()) != null) {
+                if (line.startsWith("X-Powered-By: JSP")) {
+                    count++;
+                }
             }
-        }
 
-        if (count != 1) {
-            throw new Exception("Expected one 'X-Powered-By: JSP' response " +
-                                "header, got: " + count);
+            if (count != 1) {
+                throw new Exception("Expected one 'X-Powered-By: JSP' response " +
+                                    "header, got: " + count);
+            }
+        } finally {
+            try {
+                if (os != null) os.close();
+            } catch (IOException ex) {}
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (sock != null) sock.close();
+            } catch (IOException ex) {}
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 

@@ -41,32 +41,39 @@ public class WebTest {
     }
 
     public void doTest() throws Exception {
-     
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/jsp/test.jsp");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
 
-        } else {
-            BufferedReader bis = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-            String line = null;
-            while ((line = bis.readLine()) != null) {
-                if (EXPECTED.equals(line)) {
-                    stat.addStatus(TEST_NAME, stat.PASS);
-                    return;
+        BufferedReader bis = null;
+        try {
+            URL url = new URL("http://" + host  + ":" + port
+                              + contextRoot + "/jsp/test.jsp");
+            System.out.println("Connecting to: " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("Wrong response code. Expected: 200"
+                                   + ", received: " + responseCode);
+                stat.addStatus(TEST_NAME, stat.FAIL);
+
+            } else {
+                bis = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
+                String line = null;
+                while ((line = bis.readLine()) != null) {
+                    if (EXPECTED.equals(line)) {
+                        stat.addStatus(TEST_NAME, stat.PASS);
+                        return;
+                    }
                 }
-            }
 
-            System.err.println("Response does not contain expected string: " 
-                               + EXPECTED);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+                System.err.println("Response does not contain expected string: "
+                                   + EXPECTED);
+                stat.addStatus(TEST_NAME, stat.FAIL);
+            }
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 

@@ -46,14 +46,12 @@ public class WebTest {
 
     private void invoke() throws Exception {
 
-        System.out.println("Host=" + host + ", port=" + port);        
         Socket sock = null;
         OutputStream os = null;
         InputStream is = null;
         BufferedReader bis = null;
-        boolean isExpected = false;
-
         try {
+            System.out.println("Host=" + host + ", port=" + port);
             sock = new Socket(host, new Integer(port).intValue());
             os = sock.getOutputStream();
             String get = "GET " + contextRoot + "/page.jsp?blah=/../WEB-INF/web.xml HTTP/1.1\n";
@@ -61,53 +59,34 @@ public class WebTest {
             os.write(get.getBytes());
             os.write("Host: localhost\n".getBytes());
             os.write("\n".getBytes());
-
             is = sock.getInputStream();
             bis = new BufferedReader(new InputStreamReader(is));
-
             String line = null;
+            boolean isExpected = false;
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
                 if (line.equals(EXPECTED)) {
                     isExpected = true;
                     break;
                 }
+            if (isExpected) {
+                stat.addStatus(TEST_NAME, stat.PASS);
+            } else {
+                System.err.println("Missing expected response: " + EXPECTED);
             }
         } finally {
             try {
-                if (sock != null) {
-                    sock.close();
-                }
-            } catch(IOException ioe) {
-                // ignore
-            }
+                if (os != null) os.close();
+            } catch (IOException ex) {}
             try {
-                if (os != null) {
-                    os.close();
-                }
-            } catch(IOException ioe) {
-                // ignore
-            }
+                if (is != null) is.close();
+            } catch (IOException ex) {}
             try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch(IOException ioe) {
-                // ignore
-            }
+                if (sock != null) sock.close();
+            } catch (IOException ex) {}
             try {
-                if (bis != null) {
-                    bis.close();
-                }
-            } catch(IOException ioe) {
-                // ignore
-            }
-        }
-
-        if (isExpected) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Missing expected response: " + EXPECTED);
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 }

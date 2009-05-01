@@ -35,7 +35,8 @@ public class WebTest {
     }
 
     public void doTest() {
-     
+
+        BufferedReader bis = null;
         try { 
             URL url = new URL("http://" + host  + ":" + port
                               + contextRoot + "/jsp/test.jsp");
@@ -49,7 +50,7 @@ public class WebTest {
                 stat.addStatus(TEST_NAME, stat.FAIL);
             } else {
 
-                BufferedReader bis = new BufferedReader(
+                bis = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
                 String line = null;
                 int index = 0;
@@ -68,6 +69,10 @@ public class WebTest {
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 

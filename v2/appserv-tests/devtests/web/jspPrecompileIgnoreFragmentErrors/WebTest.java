@@ -49,36 +49,47 @@ public class WebTest {
     }
 
     public void doTest() throws Exception {
-     
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/jsp/test.jsp");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
 
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-            while ((line = input.readLine()) != null) {
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            URL url = new URL("http://" + host  + ":" + port
+                              + contextRoot + "/jsp/test.jsp");
+            System.out.println("Connecting to: " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("Wrong response code. Expected: 200"
+                                   + ", received: " + responseCode);
+                stat.addStatus(TEST_NAME, stat.FAIL);
+            } else {
+                is = conn.getInputStream();
+                input = new BufferedReader(new InputStreamReader(is));
+                String line = null;
+                while ((line = input.readLine()) != null) {
+                    if (EXPECTED_RESPONSE.equals(line)) {
+                        break;
+                    }
+                }
+
                 if (EXPECTED_RESPONSE.equals(line)) {
-                    break;
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                } else {
+                    System.err.println("Wrong response body. Expected: "
+                                       + EXPECTED_RESPONSE + ", received: "
+                                       + line);
+                    stat.addStatus(TEST_NAME, stat.FAIL);
                 }
             }
-
-            if (EXPECTED_RESPONSE.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response body. Expected: "
-                                   + EXPECTED_RESPONSE + ", received: "
-                                   + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            }
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
         }
     }
 }

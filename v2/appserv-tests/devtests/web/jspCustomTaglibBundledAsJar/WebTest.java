@@ -39,33 +39,40 @@ public class WebTest {
     }
 
     public void doTest() throws Exception {
-     
-        URL url = new URL("http://" + host  + ":" + port + contextRoot
-            + "/test.jsp");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            BufferedReader bis = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-            String line = null;
-            while ((line = bis.readLine()) != null) {
-                if (EXPECTED.equals(line)) {
-                    break;
-                }
-            }
-            if (line == null) {
-                System.err.println("Wrong response body. Could not find "
-                                   + "expected string: " + EXPECTED);
+
+        BufferedReader bis = null;
+        try {
+            URL url = new URL("http://" + host  + ":" + port + contextRoot
+                + "/test.jsp");
+            System.out.println("Connecting to: " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("Wrong response code. Expected: 200"
+                                   + ", received: " + responseCode);
                 stat.addStatus(TEST_NAME, stat.FAIL);
             } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
+                bis = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
+                String line = null;
+                while ((line = bis.readLine()) != null) {
+                    if (EXPECTED.equals(line)) {
+                        break;
+                    }
+                }
+                if (line == null) {
+                    System.err.println("Wrong response body. Could not find "
+                                       + "expected string: " + EXPECTED);
+                    stat.addStatus(TEST_NAME, stat.FAIL);
+                } else {
+                    stat.addStatus(TEST_NAME, stat.PASS);
+                }
             }
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException ex) {}
         }
     }
 }
