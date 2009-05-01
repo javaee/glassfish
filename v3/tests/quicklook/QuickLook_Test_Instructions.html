@@ -22,7 +22,7 @@
 <h1 style="margin-left: 80px;"><big><font style="font-size: 16pt;"
  size="4"><big><b><font face="Trebuchet MS, sans-serif">Instructions
 for QuickLook tests</font></b></big></font></big></h1>
-Last updated at: Feb. 2, 2009<br>
+Last updated at: May. 1, 2009<br>
 By: Ming.Zhang@sun.com<br>
 <p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
 Running QuickLook tests:</b></big></font></big></p>
@@ -193,16 +193,23 @@ programming. Below is an example of how to add a test suite to QL:<br>
 </p>
 <p style="margin-bottom: 0in;">An easy way to do is to copy an existing
 test suite, such as quicklook/web/helloworld, to your test directory.
-Then add your java or xml files (or your logic to the existing files)
+Then add your java or xml files (or your test logics to the existing
+files)
 to the test directory. The build.xml and properties files are
 inherited. <br>
 <br>
-For examples on the client side java code, please look at the following
-files for reference <br>
-quicklook/web/helloworld/src/test/HelloJSPTestNG.java<br>
-quicklook/web/jsfastrologer/src/test/JSFWebTestNG.java<br>
-<br>
-Here is an example of adding a test suite hellouniverse. All italic
+For examples on the client side java testing code, please look at the
+following
+files for reference:</p>
+<ul>
+  <li>Using HttpURLConnection to access URL and read the content:
+quicklook/web/helloworld/src/test/HelloJSPTestNG.java</li>
+  <li>Using httpclient as a testing tool:
+quicklook/adminconsole/src/test/admin/BaseAdminConsoleTest.java<br>
+  </li>
+</ul>
+<p style="margin-bottom: 0in;">Here is an example of adding a test
+suite hellouniverse. All italic
 text indicate a command. Unix OS is used for the commands<br>
 <br>
 <span style="font-style: italic;">% cp -r helloworld hellouniverse</span><br>
