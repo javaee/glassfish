@@ -38,10 +38,6 @@
 
 <!-- appServer/serverInstProfiler.jsf -->
 
-<!initPage
-    setAttribute(key="helpKey" value="$resource{help.serverInstProfiler}" );
-/>
-
 #include "/shared/jvmProfiler_1.inc"
 #include "serverInstTabs.inc"
 #include "/shared/jvmProfiler_2.inc"

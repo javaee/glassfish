@@ -37,9 +37,6 @@
 <!-- appServer/serverInstAppsConfig.jsf -->
 
 
-<!initPage
-    setAttribute(key="helpKey" value="$resource{help.serverInstAppsConfig}" );
-/>
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
 <!define name="content">
     <event>

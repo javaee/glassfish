@@ -36,7 +36,8 @@
 <!-- appServer/serverInstJvmPathSettings.jsf -->
 
 <!initPage
-    setAttribute(key="helpKey" value="$resource{help.serverInstJvmPathSettings}" );
+        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setAttribute(key="helpKey" value="$resource{help.serverInstJvmGeneral}" );
 />
 #include "/shared/jvmPath_1.inc"
 #include "serverInstTabs.inc"
