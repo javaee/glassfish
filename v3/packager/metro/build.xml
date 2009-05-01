@@ -182,7 +182,8 @@ own identifying information: Portions Copyright [yyyy]
        
        <stage-module-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
- 
+       <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/endorsed"/>
+       <move file="target/stage/${install.dir.name}/glassfish/modules/webservices-api-osgi.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
 
 	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
