@@ -24,7 +24,9 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.ObjectName;
 import javax.management.modelmbean.DescriptorSupport;
+import javax.validation.constraints.NotNull;
 import org.glassfish.admin.amx.core.AMXConstants;
+import static org.glassfish.admin.amx.config.AMXConfigProxy.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.util.ClassUtil;
@@ -33,6 +35,8 @@ import org.glassfish.admin.amx.util.MapUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBean;
@@ -371,26 +375,7 @@ public class ConfigBeanJMXSupport {
             }
         }
     }
-    public static final String P = "amx.configbean.";
-    /** type of item: @Attribute, @Element, @DuckTyped */
-    public static final String DESC_KIND = P + "kind";
-    /** class of Collection element eg String of something else */
-    public static final String DESC_ELEMENT_CLASS = P + "elementClass";
-    /** class of Collection element eg String of something else */
-    public static final String DESC_XML_NAME = P + "xmlName";
-    /** classname of data type (@Attribute only) */
-    public static final String DESC_DATA_TYPE = P + "dataType";
-    /** Default value, omitted if none */
-    public static final String DESC_DEFAULT_VALUE = P + "defaultValue";
-    /** true|false: whether this is the primary key (name) */
-    public static final String DESC_KEY = P + "key";
-    /** true|false if this is the primary key (name) */
-    public static final String DESC_REQUIRED = P + "required";
-    /** true|false whether this is a reference to another element */
-    public static final String DESC_REFERENCE = P + "reference";
-    /** true|false whether variable expansion should be supplied */
-    public static final String DESC_VARIABLE_EXPANSION = P + "variableExpansion";
-
+    
     public static String xmlName(final MBeanAttributeInfo info, final String defaultValue) {
         final String value = (String) info.getDescriptor().getFieldValue(DESC_XML_NAME);
         return value == null ? defaultValue : value;
@@ -578,6 +563,13 @@ public class ConfigBeanJMXSupport {
         final String xmlName = info.xmlName();
         descriptor.setField(DESC_XML_NAME, xmlName);
         //debug( m.getName() + " => " + name + " => " + xmlName );
+        
+        if ( info.pattern() != null )
+        {
+            descriptor.setField(DESC_PATTERN_REGEX, info.pattern() );
+        }
+        
+        descriptor.setField(DESC_NOT_NULL, "" + info.notNull() );
 
         Class type = info.returnType();
         final Attribute a = info.attribute();
@@ -585,7 +577,7 @@ public class ConfigBeanJMXSupport {
             // FIXME
         }
 
-        String description = "@Attribute " + name + " of " + mIntf.getName();
+        String description = "@Attribute " + name;
         final boolean isReadable = true;
         // we assume that all getters are writeable for now
         final boolean isWriteable = true;
@@ -695,6 +687,16 @@ public class ConfigBeanJMXSupport {
 
         public boolean key() {
             return mAttribute.key();
+        }
+        
+        public String pattern() {
+            final javax.validation.constraints.Pattern pat = mMethod.getAnnotation(javax.validation.constraints.Pattern.class);
+            return pat == null ? null : pat.regexp();
+        }
+        
+        public boolean notNull() {
+            final NotNull n = mMethod.getAnnotation(NotNull.class);
+            return n != null;
         }
     }
 
@@ -848,6 +850,17 @@ public class ConfigBeanJMXSupport {
 
             descriptor.setField(DESC_ELEMENT_CLASS, returnType.getName());
             descriptor.setField(DESC_XML_NAME, xmlName);
+            
+            final PropertiesDesc props = info.method().getAnnotation(PropertiesDesc.class);
+            if ( props != null )
+            {
+                final String propType = props.systemProperties() ?  "system-property" : "property";
+                for( final PropertyDesc p : props.props() )
+                {
+                    final String value = p.defaultValue() + " | " + p.dataType().getName() + " | " + p.description();
+                    descriptor.setField( DESC_PREFIX + propType + "." + p.name(), value);
+                }
+            }
 
             String description = "@Element " + name + " of interface " + mIntf.getName();
             final boolean isReadable = true;

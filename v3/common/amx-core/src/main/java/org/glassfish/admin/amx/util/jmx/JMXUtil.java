@@ -48,6 +48,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Pattern;
+import javax.management.modelmbean.DescriptorSupport;
 import javax.management.openmbean.OpenMBeanAttributeInfo;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
@@ -1462,7 +1463,35 @@ public final class JMXUtil
 		final MBeanNotificationInfo[]   merged  = new MBeanNotificationInfo[ all.size() ];
 		return all.toArray( merged );
 	}
-	
+    
+    /**
+        Merge two descriptors.  Values in 'src' override values in 'dest', but neither is
+        modified, a new one is returned.
+     */
+		public static DescriptorSupport
+	mergeDescriptors(
+		final Descriptor  src,
+		final Descriptor  dest )
+	{
+        final DescriptorSupport d = new DescriptorSupport();
+        
+        // do it manually, the APIs screw up booleans making the "(true)" instead of "true".
+        String[] fieldNames = dest.getFieldNames();
+        for( final String fieldName : fieldNames )
+        {
+            d.setField( fieldName, dest.getFieldValue(fieldName) );
+        }
+        
+        // now overwrite conflicting fields with those from 'src'
+        fieldNames  = src.getFieldNames();
+        for( final String fieldName : fieldNames )
+        {
+            d.setField( fieldName, src.getFieldValue(fieldName) );
+        }
+        
+        return d;
+    }
+    
 	/**
 		Add MBeanNotificationInfo into the MBeanInfo.
 		

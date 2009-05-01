@@ -48,6 +48,7 @@ import java.util.concurrent.ConcurrentMap;
 import javax.management.*;
 
 import org.glassfish.admin.amx.core.AMXConstants;
+import static org.glassfish.admin.amx.core.AMXConstants.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.impl.config.AttributeResolverHelper;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
@@ -120,20 +121,34 @@ public class AMXConfigImpl extends AMXImplBase
         final List<MBeanAttributeInfo> attrInfos = ListUtil.newListFromArray(info.getAttributes());
         final MBeanInfo spiInfo = MBeanInfoSupport.getAMX_SPIMBeanInfo();
 
-        // make a list so we can remove "Children" if this MBean cannot have any
+        // make a list so we can remove "Children" attribute if this MBean cannot have any
         final List<MBeanAttributeInfo> spiAttrInfos = ListUtil.newListFromArray(spiInfo.getAttributes());
         if (spt.isLeaf())
         {
-            JMXUtil.remove(spiAttrInfos, AMXConstants.ATTR_CHILDREN);
+            JMXUtil.remove(spiAttrInfos, ATTR_CHILDREN);
         }
+        
         // Add in the AMX_SPI attributes, replacing any with the same name
         for (final MBeanAttributeInfo attrInfo : spiAttrInfos)
         {
-            final MBeanAttributeInfo before = JMXUtil.remove(attrInfos, attrInfo.getName());
-            attrInfos.add(attrInfo);
-        // may need to merge some Descriptor fields...
-        //if ( before == null ) continue
-        //final Descriptor descBefore = before.getDescriptor();;
+            // remove existing info
+            final String attrName = attrInfo.getName();
+            final MBeanAttributeInfo priorAttrInfo = JMXUtil.remove(attrInfos, attrName);
+            
+            // special case the Name attribute to preserve its metadata
+            if ( attrName.equals(ATTR_NAME) && priorAttrInfo != null)
+            {
+                final Descriptor mergedD = JMXUtil.mergeDescriptors( attrInfo.getDescriptor(),  priorAttrInfo.getDescriptor() );
+                
+                final MBeanAttributeInfo newAttrInfo = new MBeanAttributeInfo( attrName,
+                    attrInfo.getType(), attrInfo.getDescription(), attrInfo.isReadable(), attrInfo.isWritable(), attrInfo.isIs(), mergedD);
+                
+                attrInfos.add(newAttrInfo);
+            }
+            else
+            {
+                attrInfos.add(attrInfo);
+            }
         }
 
         final List<MBeanOperationInfo> operationInfos = ListUtil.newListFromArray(info.getOperations());
@@ -225,7 +240,7 @@ public class AMXConfigImpl extends AMXImplBase
 
         String name = AMXConfigLoader.getName(cb);
 
-        return name == null ? AMXConstants.NO_NAME : name;
+        return name == null ? NO_NAME : name;
     }
 
     private final ConfigBean getConfigBean()

@@ -59,6 +59,42 @@ import org.glassfish.admin.amx.annotation.Param;
  */
 public interface AMXConfigProxy extends AMXProxy, AttributeResolver
 {
+    /** prefix for all Descriptor fields for config */
+    public static final String DESC_PREFIX = "amx.configbean.";
+    
+    /** Descriptor: type of item: @Attribute, @Element, @DuckTyped */
+    public static final String DESC_KIND = DESC_PREFIX + "kind";
+    
+    /** Descriptor: class of Collection element eg String of something else */
+    public static final String DESC_ELEMENT_CLASS = DESC_PREFIX + "elementClass";
+    
+    /** Descriptor: class of Collection element eg String of something else */
+    public static final String DESC_XML_NAME = DESC_PREFIX + "xmlName";
+    
+    /** Descriptor: classname of data type (@Attribute only) */
+    public static final String DESC_DATA_TYPE = DESC_PREFIX + "dataType";
+    
+    /** Descriptor: eefault value, omitted if none */
+    public static final String DESC_DEFAULT_VALUE = DESC_PREFIX + "defaultValue";
+    
+    /** Descriptor: true | false: whether this is the primary key (name) */
+    public static final String DESC_KEY = DESC_PREFIX + "key";
+    
+    /** Descriptor: true | false if this is required (implied if 'key') */
+    public static final String DESC_REQUIRED = DESC_PREFIX + "required";
+    
+    /** Descriptor:  true | false whether this is a reference to another element */
+    public static final String DESC_REFERENCE = DESC_PREFIX + "reference";
+    
+    /** Descriptor:  true | false whether variable expansion should be supplied */
+    public static final String DESC_VARIABLE_EXPANSION = DESC_PREFIX + "variableExpansion";
+    
+    /** Descriptor:  true | false whether this field is required to be non-null */
+    public static final String DESC_NOT_NULL = DESC_PREFIX + "notNull";
+    
+    /** Descriptor:  true | false whether variable expansion should be supplied */
+    public static final String DESC_PATTERN_REGEX = DESC_PREFIX + "pattern.regexp";
+
 	/**
 		The type of the Notification emitted when a config element
 		is created.
