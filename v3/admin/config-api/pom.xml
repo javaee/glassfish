@@ -92,10 +92,6 @@
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>bean-validator</artifactId>
-        </dependency>
 
         <!-- test dependencies -->
         <dependency>
