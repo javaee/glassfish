@@ -25,103 +25,39 @@ package org.glassfish.persistence.jpa;
 
 
 import org.glassfish.api.container.CompositeSniffer;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.ApplicationHolder;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.jar.JarFile;
-
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.BundleDescriptor;
-
 
 /**
- * Implementation of the Sniffer for JPA.
+ * Sniffer handling ears
  *
  * @author Mitesh Meswani
  */
-@Service(name="jpaCompositeSniffer")
+@Service(name = "jpaCompositeSniffer")
 @Scoped(Singleton.class)
-public class JPACompositeSniffer extends JPASniffer implements CompositeSniffer  {
+public class JPACompositeSniffer extends JPASniffer implements CompositeSniffer {
 
     /**
-     * Scans for puroots in non component jars present in root of ear.
-\     */
-    public boolean handles(DeploymentContext context) {
-        List<File> listofJars = getListOfJars(context);
-        for (File jar : listofJars) {
-            JarFile jarFile = null;
-            try {
-                jarFile = new JarFile(jar);
-                if (jarFile.getEntry("META-INF/persistence.xml") != null) {
-                    return true;
-                }
-            } catch (IOException ioe) {
-                // log warning
-            } finally {
-                if (jarFile != null) {
-                    try {
-                        jarFile.close();
-                    } catch (IOException e) {
-                        // ignore
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets list of non component jars
-\     */
-    private List<File> getListOfJars(DeploymentContext context) {
-          List<File> topLevelJars = new ArrayList<File>();
-
-          ReadableArchive source = context.getSource();
-
-          // when we get here, the archive should already be expanded
-          // and the top level application.xml should already be parsed into
-          // Application object
-          ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
-          if (holder != null && holder.app != null) {
-              File file = new File(source.getURI());
-              for (File f : file.listFiles()) {
-                  // if it's a top level jar
-                  if (!f.isDirectory() && f.getName().endsWith(".jar")) {
-                      // let's make sure if it's not one of the component jars
-                      if (!isComponentJar(f, holder.app.getModules()) ) {
-                          topLevelJars.add(f);
-                      }
-                  }
-              }
-          }
-          return topLevelJars;
-      }
-
-    /**
-     * Checks whether given <code>jar</code> file is a component jar within the given set of <code>moduleDescriptors</code>
-     * @param jar given jar file
-     * @param moduleDescriptors Given set of module descriptors
-     * @return true if the file is a component jar false otherwise
+     * Decides whether we have any pu roots at ear level
      */
-    private static boolean isComponentJar(File jar, Set<ModuleDescriptor<BundleDescriptor>> moduleDescriptors) {
-        boolean isComponentJar = false;
-        for (ModuleDescriptor md : moduleDescriptors) {
-            String archiveUri = md.getArchiveUri();
-            if (jar.getName().equals(archiveUri)) {
-                isComponentJar = true;
-                break;
-            }
+    public boolean handles(DeploymentContext context) {
+        // Scans for pu roots in the "lib" dir of an application.
+        // We do not scan for PU roots in root of .ear. JPA 2.0 spec will clarify that it is  not a portable use case.
+        // It is not portable use case because JavaEE spec implies that jars in root of ears are not visible by default
+        // to components (Unless an explicit Class-Path manifest entry is present) and can potentially be loaded by
+        // different class loaders (corresponding to each component that refers to it) thus residing in different name
+        // space. It does not make sense to make them visible at ear level (and thus in a single name space)
+        boolean isJPAApplication = false;
+        ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
+        ReadableArchive appRoot = context.getSource();
+        if (holder != null && holder.app != null) {
+            isJPAApplication = scanForPURootsInLibDir(appRoot, holder.app.getLibraryDirectory());
         }
-        return isComponentJar;
+        return isJPAApplication;
     }
-
 }

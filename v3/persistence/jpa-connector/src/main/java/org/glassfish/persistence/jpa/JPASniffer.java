@@ -54,7 +54,7 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
     private static char SEPERATOR_CHAR = '/';
     private static final String WEB_INF                  = "WEB-INF";
     private static final String LIB                      = "lib";
-    private static final String WEB_INF_LIb              = WEB_INF + SEPERATOR_CHAR + LIB;
+    private static final String WEB_INF_LIB              = WEB_INF + SEPERATOR_CHAR + LIB;
     private static final String WEB_INF_CLASSSES         = WEB_INF + SEPERATOR_CHAR + "classes";
     private static final String META_INF_PERSISTENCE_XML = "META-INF" + SEPERATOR_CHAR + "persistence.xml";
     private static final String WEB_INF_CLASSSES_META_INF_PERSISTENCE_XML = WEB_INF_CLASSSES + SEPERATOR_CHAR + META_INF_PERSISTENCE_XML;
@@ -80,33 +80,24 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
                 isJPAArchive = isEntryPresent(location, WEB_INF_CLASSSES_META_INF_PERSISTENCE_XML);
                 if (!isJPAArchive) {
                     // Check in WEB-INF/lib dir
-                    if (isEntryPresent(location, WEB_INF_LIb)) {
-                        Enumeration<String> entries = location.entries(WEB_INF_LIb);
-                        isJPAArchive = scanForPURootsInLibDir(location, entries);
+                    if (isEntryPresent(location, WEB_INF_LIB)) {
+                        isJPAArchive = scanForPURootsInLibDir(location, WEB_INF_LIB);
                     } // if (isEntryPresent(location, WEB_INF_LIb))
                 } // if (!isJPAArchive)
             } else {
-                // This can be ejb jar or ear
-
                 //Check for ejb jar case
                 isJPAArchive = isEntryPresent(location, META_INF_PERSISTENCE_XML);
-
-                // ear case, scan in lib of ear
-                // TODO we are hardcoding scanning in "lib" dir for now. Check from Hong how can get user specified "lib" dir for an ear from dol
-                if (isEntryPresent(location, LIB)) {
-                    Enumeration<String> entries = location.entries(LIB);
-                    isJPAArchive = scanForPURootsInLibDir(location, entries);
-                } // if (isEntryPresent(location, WEB_INF_LIb))
             }
             return isJPAArchive;
         }
 
-    private boolean scanForPURootsInLibDir(ReadableArchive parentArchive, Enumeration<String> entries) {
+    protected boolean scanForPURootsInLibDir(ReadableArchive parentArchive, String libLocation) {
         boolean puRootPresent = false;
+        Enumeration<String> entries = parentArchive.entries(libLocation);
         while (entries.hasMoreElements() && !puRootPresent) {
             String entryName = entries.nextElement();
             if (entryName.endsWith(JAR_SUFFIX) && // a jar in lib dir
-                    entryName.indexOf(SEPERATOR_CHAR, WEB_INF_LIb.length() + 1 ) == -1 ) { // && not WEB-INf/lib/foo/bar.jar
+                    entryName.indexOf(SEPERATOR_CHAR, libLocation.length() + 1 ) == -1 ) { // && not WEB-INf/lib/foo/bar.jar
                 try {
                     ReadableArchive jarInLib = parentArchive.getSubArchive(entryName);
                     puRootPresent = isEntryPresent(jarInLib, META_INF_PERSISTENCE_XML);
