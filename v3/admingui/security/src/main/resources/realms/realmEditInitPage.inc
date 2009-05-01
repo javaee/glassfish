@@ -42,6 +42,7 @@
 -->
 <!initPage
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
+    setResourceBundle(key="help_security" bundle="org.glassfish.security.admingui.Helplinks");
     setComponentRequired(id="form1:fileSection:jaax:jaax" required="$boolean{false}" );
     setComponentRequired(id="form1:fileSection:keyFile:keyFile" required="$boolean{false}" );
     setComponentRequired(id="form1:ldapSection:jaax:jaax" required="$boolean{false}" );

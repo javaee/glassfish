@@ -36,7 +36,7 @@
  
 <!initPage
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help_security" bundle="org.glassfish.security.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.manageUsers.EditPageTitle}" >
 <!define name="content">
@@ -109,7 +109,7 @@
                         </sun:propertySheetSection>
 
                     </sun:propertySheet>    
-                        <sun:hidden id="helpKey" value="$resource{help.manageUserEdit}" />
+                        <sun:hidden id="helpKey" value="$resource{help_security.manageUserEdit}" />
             </sun:form>
 <f:verbatim>
     <script type="text/javascript">

@@ -36,7 +36,7 @@
 
 <!initPage
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help_security" bundle="org.glassfish.security.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.manageUsers.NewPageTitle}" >
 <!define name="content">
@@ -107,7 +107,7 @@
                         </sun:propertySheetSection>
 
                     </sun:propertySheet>    
-                        <sun:hidden id="helpKey" value="$resource{help.manageUserNew}" />
+                        <sun:hidden id="helpKey" value="$resource{help_security.manageUserNew}" />
             </sun:form>
 
 

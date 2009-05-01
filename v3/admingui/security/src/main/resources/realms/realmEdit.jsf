@@ -43,7 +43,7 @@
     <!beforeCreate
         setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.realm.EditPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.realm.EditPageTitleHelp}");
-        setPageSessionAttribute(key="helpKey" value="$resource{help.realmNew}");
+        setPageSessionAttribute(key="helpKey" value="$resource{help_security.realmEdit}");
         setPageSessionAttribute(key="edit" value="#{true}" )
         setPageSessionAttribute(key="nextPage" value="security/realms/realmEdit.jsf" )
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
