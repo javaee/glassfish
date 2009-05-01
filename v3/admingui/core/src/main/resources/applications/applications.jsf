@@ -67,7 +67,7 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.title}" helpText="$resource{i18n.enterpriseApplications.titleHelp}"/>
                  "<br />
 #include "deployTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.enterpriseApplications}" />
+	<sun:hidden id="helpKey" value="$resource{help.applications}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>
