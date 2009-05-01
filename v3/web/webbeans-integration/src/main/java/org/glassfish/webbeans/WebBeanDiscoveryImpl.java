@@ -40,12 +40,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Set;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
@@ -66,31 +66,23 @@ public abstract class WebBeanDiscoveryImpl implements WebBeanDiscovery {
     private static final String JAR_SUFFIX = ".jar";
     private static final String SEPERATOR_CHAR = "/";
 
-    private final Set<Class<?>> wbClasses;
-    private final Set<URL> wbUrls;
+    private final List<Class<?>> wbClasses;
+    private final List<URL> wbUrls;
     private final ReadableArchive archive;
    
     public WebBeanDiscoveryImpl(ReadableArchive archive) {
-        this.wbClasses = new HashSet<Class<?>>();
-        this.wbUrls = new HashSet<URL>();
+        this.wbClasses = new ArrayList<Class<?>>();
+        this.wbUrls = new ArrayList<URL>();
         this.archive =  archive;
         scan();
     }
    
     public Iterable<Class<?>> discoverWebBeanClasses() {
-        return Collections.unmodifiableSet(wbClasses);
+        return Collections.unmodifiableList(wbClasses);
     }
    
     public Iterable<URL> discoverWebBeansXml() {
-        return Collections.unmodifiableSet(wbUrls);
-    }
-   
-    public Set<Class<?>> getWbClasses() {
-        return wbClasses;
-    }
-   
-    public Set<URL> getWbUrls() {
-        return wbUrls;
+        return Collections.unmodifiableList(wbUrls);
     }
    
     private void scan() {
