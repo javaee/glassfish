@@ -93,7 +93,46 @@ final class ConfigBeanJMXSupportRegistry
         }
         return helper;
     }
+    
+    /** Recursively attempt to find default values for a descendant of specified type */
+    public static Class<? extends ConfigBeanProxy> getConfigBeanProxyClassFor( final ConfigBeanJMXSupport start, final String type) {
+        Class<? extends ConfigBeanProxy> result = start.childTypes().get(type);
+        if ( result == null )
+        {
+            for( final String sub : start.childTypes().keySet() )
+            {
+                final Class<? extends ConfigBeanProxy> intf = start.childTypes().get(sub);
+                final ConfigBeanJMXSupport spt = getInstance(intf);
+                result = getConfigBeanProxyClassFor( spt, type );
+                if ( result != null )
+                {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

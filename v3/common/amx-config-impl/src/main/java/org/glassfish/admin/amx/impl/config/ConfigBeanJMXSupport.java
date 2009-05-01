@@ -766,7 +766,7 @@ public class ConfigBeanJMXSupport {
         return types;
     }
 
-    public Class<? extends ConfigBeanProxy> getConfigBeanProxyClassFor(final String type) {
+    public Class<? extends ConfigBeanProxy> getConfigBeanProxyClassFor(final String type, final boolean recursive) {
         return childTypes().get(type);
     }
 

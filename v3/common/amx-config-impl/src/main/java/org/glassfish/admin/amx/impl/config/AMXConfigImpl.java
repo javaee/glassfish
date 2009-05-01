@@ -686,7 +686,9 @@ public class AMXConfigImpl extends AMXImplBase
         {
             throw new IllegalArgumentException("Can't find ConfigBean @Configured class for AMX type " + type);
         }
-        return spt.getConfigBeanProxyClassFor(type);
+        // return spt.getConfigBeanProxyClassFor(type);
+        
+        return ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor( spt, type );
     }
 
     @Override
