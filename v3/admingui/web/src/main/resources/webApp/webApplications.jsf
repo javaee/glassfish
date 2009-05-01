@@ -37,6 +37,7 @@
 
 <!initPage
     setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings");
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 //<sun:page id="page1">
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.webAplications.title}">
@@ -68,7 +69,7 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n.webAplications.title}" helpText="$resource{i18n.webAplications.titleHelp}"/>
                  "<br />
 #include "deployTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.webApplications}" />
+	<sun:hidden id="helpKey" value="$resource{help_web.webApplications}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>

@@ -37,7 +37,7 @@
 <sun:page id="page1" >
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
     setPageSessionAttribute(key="descriptorPage" value="$attribute{pageName}");
     setPageSessionAttribute(key="appName" value="$attribute{appName}");
     />

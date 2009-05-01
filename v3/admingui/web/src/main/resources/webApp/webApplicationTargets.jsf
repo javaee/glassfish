@@ -38,7 +38,7 @@
 <sun:page id="page1" >
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+        setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
         setSessionAttribute(key="appGeneralTabs" value="targetTab");
         setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
         setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
@@ -65,7 +65,7 @@
                  "<br />
 
 #include "targetTable.inc"
-            <sun:hidden id="helpKey" value="$resource{help.webApplicationTargets}" />
+            <sun:hidden id="helpKey" value="$resource{help_web.webApplicationTargets}" />
             </sun:form>
         </sun:body>
 #include "/shared/changeButtonsJS.inc"

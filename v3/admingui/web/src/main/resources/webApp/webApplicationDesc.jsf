@@ -37,7 +37,7 @@
 <sun:page id="page1" >
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
     setPageSessionAttribute(key="showSubComponentColumn" value="$boolean{false}");
     setPageSessionAttribute(key="name" value="$requestParameter{appName}");
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.descriptorPageTitle}");
@@ -57,7 +57,7 @@
         <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
 #include "descriptor.inc"
-	<sun:hidden id="helpKey" value="$resource{help.webApplicationDesc}" />
+	<sun:hidden id="helpKey" value="$resource{help_web.webApplicationDesc}" />
         </sun:form>
     </sun:body>
   </sun:html>
