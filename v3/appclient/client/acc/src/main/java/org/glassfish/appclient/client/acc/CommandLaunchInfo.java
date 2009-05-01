@@ -178,6 +178,9 @@ public class CommandLaunchInfo {
 
         final String clientType = clientSpec.substring(0, equalsSign);
         clientName = clientSpec.substring(equalsSign + 1);
+        if (clientName.startsWith("\"") && clientName.endsWith("\"")) {
+            clientName = clientName.substring(1, clientName.length() - 1);
+        }
         ClientLaunchType type = ClientLaunchType.byType(clientType);
 
         return type;

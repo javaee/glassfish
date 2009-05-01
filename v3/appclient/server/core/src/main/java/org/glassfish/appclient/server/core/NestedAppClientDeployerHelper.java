@@ -46,12 +46,14 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +72,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private final URI earURI;
 
     /**
-     * downloads records the downloads needed to support this app client,
+     * records the downloads needed to support this app client,
      * including the app client JAR itself, the facade, and the transitive
      * closure of any library JARs from the EAR's lib directory or from the
      * app client's class path
@@ -125,7 +127,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          */
         Set<URI> jarURIsProcessed = new HashSet<URI>();
 
-        processJARDependencies(dc().getOriginalSource().getURI(), downloads, jarURIsProcessed);
+        processJARDependencies(appClientURIWithinApp(dc()), downloads, jarURIsProcessed);
 
         /*
          * Now incorporate the library JARs.
@@ -181,34 +183,39 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             return;
         }
 
+        URI dependencyFileURI = earURI.resolve(dependencyURI);
+
         /*
          * Get the dependency for a safe, JAR copy of an expanded directory if
          * that's what this URI is.
          */
         DownloadableArtifacts.FullAndPartURIs jarFileDependency =
                 safeCopyOfExpandedSubmodule(dependencyURI);
-        if (jarFileDependency == null) {
+        if (jarFileDependency != null) {
+            dependencyFileURI = jarFileDependency.getFull();
+        } else {
             /*
              * Get a URI of the same scheme as the EAR directory URI for the
              * client-side directory so relativize will work correctly.
              */
-            URI dependencyFileURI = null;
-            if (dependencyURI.getScheme().equals("jar")) {
-                if ( ! dependencyURI.getSchemeSpecificPart().startsWith("file:")) {
-                    dependencyFileURI = URI.create("file:" + dependencyURI.getRawSchemeSpecificPart());
-                } else {
-                    dependencyFileURI = URI.create(dependencyURI.getRawSchemeSpecificPart());
-                }
-            } else {
-                dependencyFileURI = dependencyURI;
-            }
+
+            
+//            if (scheme != null && scheme.equals("jar")) {
+//                dependencyFileURI = URI.create("file:" + dependencyURI.getRawSchemeSpecificPart());
+//            } else {
+//                if (scheme == null) {
+//                    scheme = "file:";
+//                }
+//                dependencyFileURI = URI.create(scheme + dependencyURI.getRawSchemeSpecificPart());
+//            }
+
             /*
              * The app might specify non-existent JARs in its Class-Path.
              */
             if ( ! new File(dependencyFileURI).exists()) {
                 return;
             }
-            jarFileDependency = new FullAndPartURIs(dependencyURI, 
+            jarFileDependency = new FullAndPartURIs(dependencyFileURI,
                     earDirUserURI(dc()).resolve(earURI.relativize(dependencyFileURI)));
         }
         downloads.add(jarFileDependency);
@@ -218,8 +225,9 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * archive and getting its manifest and processing the Class-Path
          * entry from there.
          */
+        URI jarURI = URI.create("jar:" + dependencyFileURI.getRawSchemeSpecificPart());
         ReadableArchive dependentJar = new InputJarArchive();
-        dependentJar.open(dependencyURI);
+        dependentJar.open(jarURI);
 
         Manifest jarManifest = dependentJar.getManifest();
         dependentJar.close();
@@ -237,8 +245,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
     /**
      * If the specified URI is for an expanded submodule, makes a copy of
-     * the submodule as a JAR (so it will be available after deployment completes
-     * and so it will be a JAR and not a directory) and returns the URI to the copy.
+     * the submodule as a JAR and returns the URI for the copy.
      * @param classPathElement
      * @return URI to the safe copy of the submodule, relative to the top level
      * if the classPathElement is for a submodule; null otherwise
@@ -246,14 +253,23 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private FullAndPartURIs safeCopyOfExpandedSubmodule(final URI candidateSubmoduleURI) throws IOException {
         for (ModuleDescriptor<BundleDescriptor> desc : appClientDesc().getApplication().getModules()) {
             if (matchesSubmoduleURI(candidateSubmoduleURI, desc.getArchiveUri())) {
-                final URI result = convertExpandedDirToJarURI(desc.getArchiveUri());
-                if (result != null) {
+                if ( ! dc().getSource().getParentArchive().exists(candidateSubmoduleURI.getPath())) {
                     ReadableArchive source = new FileArchive();
-                    source.open(dc().getSource().getURI().resolve(result));
+                    source.open(dc().getSource().getParentArchive().getURI().resolve(expandedDirURI(candidateSubmoduleURI)));
                     OutputJarArchive target = new OutputJarArchive();
-                    target.create(dc().getScratchDir("xml").toURI().resolve(result));
+                    target.create(dc().getScratchDir("xml").toURI().resolve(candidateSubmoduleURI));
+                    /*
+                     * Copy the manifest explicitly because the ReadableArchive
+                     * entries() method omits it.
+                     */
+                    Manifest mf = source.getManifest();
+                    OutputStream os = target.putNextEntry(JarFile.MANIFEST_NAME);
+                    mf.write(os);
+                    target.closeEntry();
                     ClientJarMakerUtils.copyArchive(source, target, Collections.EMPTY_SET);
-                    return new FullAndPartURIs(target.getURI(), result);
+                    target.close();
+                    return new FullAndPartURIs(target.getURI(), 
+                            earDirUserURI(dc()).resolve(earURI.relativize(candidateSubmoduleURI)));
                 }
             }
         }
@@ -287,6 +303,12 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         return normalizedCandidateURI.equals(normalizedSubmoduleURI);
     }
 
+    private URI expandedDirURI(final URI submoduleURI) {
+        final String uriText = submoduleURI.toString();
+        int lastDot = uriText.lastIndexOf('.');
+        return URI.create(uriText.substring(0, lastDot) + "_" + uriText.substring(lastDot + 1));
+    }
+    
     private URI convertExpandedDirToJarURI(final String submoduleURI) {
         URI result = null;
         Matcher m = submoduleURIPattern.matcher(submoduleURI);

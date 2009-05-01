@@ -151,6 +151,8 @@ public class AppClientDeployer
     @Inject
     private AppClientArchivist archivist;
 
+    private AppClientDeployerHelper helper = null;
+
     public AppClientDeployer() {
     }
 
@@ -189,11 +191,15 @@ public class AppClientDeployer
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         try {
-            AppClientDeployerHelper helper = AppClientDeployerHelper.newInstance(dc, archivist);
+            helper = AppClientDeployerHelper.newInstance(dc, archivist);
             helper.prepareJARs();
             downloadInfo.addArtifacts(params.name(), helper.downloads());
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
+    }
+
+    AppClientDeployerHelper helper() {
+        return helper;
     }
 }

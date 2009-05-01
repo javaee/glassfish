@@ -129,7 +129,14 @@ public class AppClientContainerAgent {
     public static void premain(String agentArgsText, Instrumentation inst) {
         try {
             long now = System.currentTimeMillis();
-
+            JavaVersion javaVersion = new JavaVersion();
+            if (javaVersion.asInt() < 16) {
+                throw new UserError(localStrings.getLocalString(
+                        AppClientContainerAgent.class,
+                        "main.badVersion",
+                        "Current Java version {0} is too low; {1} or later required",
+                        new Object[] {javaVersion.versionString, "1.6"}));
+            }
             AgentArguments agentArgs = AgentArguments.newInstance(agentArgsText);
 
             List<String> effectiveCommandLineArgs = new ArrayList<String>();
@@ -597,6 +604,39 @@ public class AppClientContainerAgent {
                 return new InputSource(new BufferedInputStream(new FileInputStream(dtdFile)));
             }
             return null;
+        }
+    }
+
+    private static class JavaVersion {
+        private String versionString = System.getProperty("java.version");
+        private int versionAsInt = initVersionAsInt();
+
+        private int initVersionAsInt() {
+            int firstDot = versionString.indexOf(".");
+            String tensString = versionString.substring(0,firstDot);
+            int nextDot = versionString.indexOf(".", firstDot+1);
+            if (nextDot<0) {
+                nextDot= versionString.length();
+            }
+            String onesString = versionString.substring(firstDot+1, nextDot);
+            int version = -1;
+    //        try {
+                int tens = new Integer( tensString ).intValue();
+                int ones = new Integer( onesString ).intValue();
+                version = (tens*10) + ones;
+    //        } catch(NumberFormatException nfe) {
+    //
+    //        }
+            return version;
+        }
+
+        private int asInt() {
+            return versionAsInt;
+        }
+
+        @Override
+        public String toString() {
+            return versionString;
         }
     }
 }
