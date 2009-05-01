@@ -37,7 +37,7 @@
 <!-- jdbc/jdbcConnectionPoolProperty.jsf -->
 <!initPage
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitle}" >
 <!define name="content">
@@ -86,7 +86,7 @@
                     </facet>                     
                 </sun:title>
 #include "/shared/propertyTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPoolProperty}" />
+	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolProperty}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>

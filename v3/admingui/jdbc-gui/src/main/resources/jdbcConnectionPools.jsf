@@ -37,7 +37,7 @@
 
 <!initPage
 	setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPools.pageTitle}" >
 <!define name="content">
@@ -60,7 +60,7 @@
                  helpText="$resource{i18njdbc.jdbcConnectionPools.pageTitleHelp}"/>
 		 "<br /><br />
 #include "poolTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPools}" />
+	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPools}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"        
 </define>
