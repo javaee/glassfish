@@ -37,6 +37,7 @@ import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.quality.ToDo;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBean;
@@ -850,6 +851,12 @@ public class ConfigBeanJMXSupport {
 
             descriptor.setField(DESC_ELEMENT_CLASS, returnType.getName());
             descriptor.setField(DESC_XML_NAME, xmlName);
+            
+            final ToDo toDo = info.method().getAnnotation(ToDo.class);
+            if ( toDo != null )
+            {
+                descriptor.setField( DESC_PREFIX + "toDo", toDo.priority() + ", " + toDo.details() );
+            }
             
             final PropertiesDesc props = info.method().getAnnotation(PropertiesDesc.class);
             if ( props != null )

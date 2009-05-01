@@ -129,6 +129,9 @@ public interface AMXProxy extends AMX_SPI {
 		The ObjectName of this MBean.
 	 */
 	public ObjectName		objectName();
+    
+    /** return a Java interface representing this MBean */
+    public String java();
         
     /** additional capabilities */
     public Extra extra();
