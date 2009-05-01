@@ -52,7 +52,6 @@ import java.security.Permissions;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.security.acl.*;
-import java.util.ArrayList;
 /**
  * This class is used for generating Web permissions based on the 
  * deployment descriptor.
@@ -61,8 +60,8 @@ import java.util.ArrayList;
  * @author Ron Monzillo
  */
 public class WebPermissionUtil {
-    private static Logger logger = 
-	Logger.getLogger(LogDomains.SECURITY_LOGGER);
+
+    static Logger logger = Logger.getLogger(LogDomains.SECURITY_LOGGER);
     
     public WebPermissionUtil() {
     }
@@ -80,18 +79,6 @@ public class WebPermissionUtil {
 	    return PT_PREFIX;
 	else if (pattern.equals("/")) return PT_DEFAULT;
 	else return PT_EXACT;
-    }
-    /**
-     * Exclude list when processing resource to url mapping.
-     **/
-    private static ArrayList skippableList;
-    
-    static {
-        skippableList = new ArrayList();
-        skippableList.add("meta-inf");
-        skippableList.add("web-inf");
-        skippableList.add("tld");
-        skippableList.add(".com.sun.deployment.backend.lock");
     }
 
     static boolean implies(String pattern, String path) {
@@ -134,9 +121,11 @@ public class WebPermissionUtil {
     public static HashMap parseConstraints(WebBundleDescriptor wbd)
     {
 	
-      if(logger.isLoggable(Level.FINE)){
+      if (logger.isLoggable(Level.FINE)){
 	  logger.entering("WebPermissionUtil", "parseConstraints");
       }
+
+      Set<Role> roleSet = wbd.getRoles();
 
       HashMap qpMap = new HashMap();
 
@@ -147,7 +136,7 @@ public class WebPermissionUtil {
       Enumeration esc = wbd.getSecurityConstraints(); 
       while (esc.hasMoreElements()) {
 	  
-	  if(logger.isLoggable(Level.FINE)){
+	  if (logger.isLoggable(Level.FINE)){
 	      logger.log(Level.FINE,"JACC: constraint translation: begin parsing security constraint");
 	  }
 
@@ -158,7 +147,7 @@ public class WebPermissionUtil {
 	  // Enumerate over collections of URLPatterns within constraint
 	  for (WebResourceCollection wrc: sc.getWebResourceCollections()) {
 
-	      if(logger.isLoggable(Level.FINE)){
+	      if (logger.isLoggable(Level.FINE)){
 		  logger.log(Level.FINE,"JACC: constraint translation: begin parsing web resource collection");
 	      }
 
@@ -169,7 +158,7 @@ public class WebPermissionUtil {
  		      url = url.replaceAll(":","%3A");
  		  }
 
-		  if(logger.isLoggable(Level.FINE)){
+		  if (logger.isLoggable(Level.FINE)){
 		      logger.log(Level.FINE,"JACC: constraint translation: process url: "+url);
 		  }
 
@@ -272,91 +261,223 @@ public class WebPermissionUtil {
 
 		  }
 
-		  BitSet methods = 
-		      MapValue.methodArrayToSet(wrc.getHttpMethodsAsArray(), wrc.getHttpMethodOmissionsAsArray());
+		  String[] methodNames = wrc.getHttpMethodsAsArray();
+		  BitSet methods = MethodValue.methodArrayToSet(methodNames);
 
-		  if(logger.isLoggable(Level.FINE)){
-		      logger.log(Level.FINE,"JACC: constraint translation: methods of collection: "+ MapValue.getActions(methods));
-		  }
+		  BitSet omittedMethods = null;
 
-		  if (ac == null) {
-		      if(logger.isLoggable(Level.FINE)){
-			  logger.log(Level.FINE,"JACC: constraint translation: collection is unchecked for authorization at methods: "+ MapValue.getActions(methods));
-		      }
-		      mValue.setPredefinedOutcomeOnMethods(methods,true);
-		  }
-		  else {
-		      Enumeration eroles = ac.getSecurityRoles();
-		      if (!eroles.hasMoreElements()) {
-			  if(logger.isLoggable(Level.FINE)){
-			      logger.log(Level.FINE,"JACC: constraint translation: collection is exclude at methods: "+ MapValue.getActions(methods));
-			  }
-			  mValue.setPredefinedOutcomeOnMethods(methods,false);
-		      }
-		      else while (eroles.hasMoreElements()) {
-			  SecurityRoleDescriptor srd = 
-			      (SecurityRoleDescriptor)eroles.nextElement();
-			  mValue.setRoleOnMethods(srd.getName(),methods,wbd);
-			  if(logger.isLoggable(Level.FINE)){
-			      logger.log(Level.FINE,"JACC: constraint translation: collection is athorized to: "+ srd.getName() + " at methods: "+ MapValue.getActions(methods));
-			  }
-		      }
+		  if (methods.isEmpty()) {
+		      String[] omittedNames = 
+			  wrc.getHttpMethodOmissionsAsArray();
+		      omittedMethods = 
+			  MethodValue.methodArrayToSet(omittedNames);
 		  }
 
-		  if (udc == null) {
-		      if(logger.isLoggable(Level.FINE)){
-			  logger.log(Level.FINE,"JACC: constraint translation: collection requires no transport guarantee at methods: "+ MapValue.getActions(methods));
-		      }
-		      mValue.setConnectOnMethods(null,methods);
-		  }
-		  else {
-		      if(logger.isLoggable(Level.FINE)){
-			  logger.log(Level.FINE,"JACC: constraint translation: collection requires transport guarantee: "+ udc.getTransportGuarantee()+ " at methods: "+ MapValue.getActions(methods));
-		      }
-		      mValue.setConnectOnMethods(udc.getTransportGuarantee(),
-						 methods);
-		  }
-   
-		  if(logger.isLoggable(Level.FINE)){
+		  // note that an empty omitted method set is used to represent
+		  // the set of all http methods
+
+		  mValue.setMethodOutcomes(roleSet,ac,udc,methods,omittedMethods);
+
+		  if (logger.isLoggable(Level.FINE)){
 		      logger.log(Level.FINE,"JACC: constraint translation: end processing url: "+url);
 		  }
 	      }
 
-	      if(logger.isLoggable(Level.FINE)){
+	      if (logger.isLoggable(Level.FINE)){
 		  logger.log(Level.FINE,"JACC: constraint translation: end parsing web resource collection");
 	      }
 	  }
-
-	  if(logger.isLoggable(Level.FINE)){
+	  if (logger.isLoggable(Level.FINE)){
 	      logger.log(Level.FINE,"JACC: constraint translation: end parsing security constraint");
 	  }
       }
 
-      if(logger.isLoggable(Level.FINE)){
+      if (logger.isLoggable(Level.FINE)){
 	  logger.exiting("WebPermissionUtil","parseConstraints");
       }
 
-      return qpMap;
+        return qpMap;
+    }	
+
+    static void handleExcluded(Permissions collection, MapValue m, String name) {
+	String actions = null;
+	BitSet excludedMethods = m.getExcludedMethods();
+	if (m.otherConstraint.isExcluded()) {
+	    BitSet methods = m.getMethodSet();
+	    methods.andNot(excludedMethods);
+	    if (!methods.isEmpty()) {
+		actions = "!" + MethodValue.getActions(methods);
+	    }
+	} else if (!excludedMethods.isEmpty()) { 
+	    actions = MethodValue.getActions(excludedMethods);
+	} else {
+	    return;
+	}
+
+	collection.add(new WebResourcePermission(name,actions));
+	collection.add(new WebUserDataPermission(name,actions));
+
+	if (logger.isLoggable(Level.FINE)){
+	    logger.log(Level.FINE,"JACC: constraint capture: adding excluded methods: "+ actions);
+	}
+    }
+
+    static Permissions addToRoleMap(HashMap<String, Permissions> map,
+				    String roleName, Permission p) {
+        Permissions collection = map.get(roleName);
+	if (collection == null) {
+	    collection = new Permissions();
+	    map.put(roleName,collection);
+	}
+	collection.add(p);
+	if (logger.isLoggable(Level.FINE)){
+	    logger.log(Level.FINE,"JACC: constraint capture: adding methods to role: "+ roleName+" methods: " + p.getActions());
+	}
+	return collection;
+    }
+		
+    static void handleRoles(HashMap<String,Permissions> map, MapValue m, 
+			    String name) {
+	HashMap rMap = m.getRoleMap();
+	List<String> roleList = null;
+	// handle the roles for the omitted methods
+	if (!m.otherConstraint.isExcluded() && m.otherConstraint.isAuthConstrained()) {
+	    roleList = m.otherConstraint.roleList;
+	    for (String roleName : roleList) {
+         	BitSet methods = m.getMethodSet();
+		//reduce ommissions for explicit methods granted to role  
+		BitSet roleMethods = (BitSet) rMap.get(roleName);
+		if (roleMethods != null) {
+		    methods.andNot(roleMethods);
+		}
+		String actions = null;
+		if (!methods.isEmpty()) {
+		    actions = "!" + MethodValue.getActions(methods);
+		}
+		addToRoleMap(map,roleName,new WebResourcePermission(name,actions)); 
+	    }
+	}
+	//handle explicit methods, skip roles that were handled above 
+	BitSet methods = m.getMethodSet();
+	if (!methods.isEmpty()) {
+	    Iterator rit = rMap.keySet().iterator();
+	    while (rit.hasNext()) {
+		String roleName = (String) rit.next();
+		if (roleList == null || !roleList.contains(roleName)) {
+		    BitSet roleMethods = (BitSet) rMap.get(roleName);
+		    if (!roleMethods.isEmpty()) {
+			String actions = MethodValue.getActions(roleMethods);
+		    	addToRoleMap(map,roleName,new WebResourcePermission(name,actions));
+		    }
+		}
+	    }
+	}
+    }
+
+    static void handleNoAuth(Permissions collection, MapValue m, 
+			     String name) {
+	String actions = null;
+	BitSet noAuthMethods = m.getNoAuthMethods();
+	if (!m.otherConstraint.isAuthConstrained()) {
+	    BitSet methods = m.getMethodSet();
+	    methods.andNot(noAuthMethods);
+	    if (!methods.isEmpty()) {
+		actions = "!" + MethodValue.getActions(methods);
+	    }
+	} else if (!noAuthMethods.isEmpty()) { 
+	    actions = MethodValue.getActions(noAuthMethods);
+	} else {
+	    return;
+	}
+
+	collection.add(new WebResourcePermission(name,actions));
+
+	if (logger.isLoggable(Level.FINE)){
+	    logger.log(Level.FINE,"JACC: constraint capture: adding unchecked (for authorization) methods: "+ actions);
+	}
+    }
+
+    static void handleConnections(Permissions collection, MapValue m, 
+				  String name) {
+	BitSet allConnectMethods = null;
+	boolean allConnectAtOther = m.otherConstraint.isConnectAllowed
+	    (ConstraintValue.ConnectTypeNone);
+
+	for (int i=0; i<ConstraintValue.connectKeys.length; i++) {
+
+	    String actions = null;
+	    String transport = ConstraintValue.connectKeys[i];
+
+	    BitSet connectMethods = m.getConnectMap(1<<i);
+	    if (i == 0) {
+		allConnectMethods = connectMethods;
+	    } 
+
+	    if (m.otherConstraint.isConnectAllowed(1<<i)) {
+		if (i != 0 && allConnectAtOther) {
+		    /* if connect type protected, and all connect allowed 
+		     * at other, remove methods that accept any connect,
+		     */
+		    connectMethods.andNot(allConnectMethods);
+		    if (connectMethods.isEmpty()) {
+			/* skip, if remainder is empty, because methods
+			 * that accept any connect were handled at i==0. 
+			 */
+			continue;
+		    }
+		    /* construct actions using methods with specific 
+		     * connection requirements
+		     */
+		    actions = MethodValue.getActions(connectMethods) ;
+		} else {
+		    BitSet methods = m.getMethodSet();
+		    methods.andNot(connectMethods);
+		    if (!methods.isEmpty()) {
+			actions = "!" + MethodValue.getActions(methods);
+		    }
+		}
+	    } else if (!connectMethods.isEmpty()) {
+		if (i != 0) {
+		    connectMethods.andNot(allConnectMethods);
+		    if (connectMethods.isEmpty()) {
+			continue;
+		    }
+		} 
+		actions = MethodValue.getActions(connectMethods) ;
+	    } else {
+		continue;
+	    }
+	    
+	    actions = (actions == null) ? "" : actions;
+	    String combinedActions = actions + ":" + transport; 
+
+	    collection.add(new WebUserDataPermission(name,combinedActions));
+
+	    if (logger.isLoggable(Level.FINE)){
+		logger.log(Level.FINE,"JACC: constraint capture: adding methods that accept connections with protection: "+ transport +" methods: "+ actions);
+	    }
+	}
     }
 
     public static void processConstraints(WebBundleDescriptor wbd,
 					  PolicyConfiguration pc)
     throws javax.security.jacc.PolicyContextException 
     {
-	if(logger.isLoggable(Level.FINE)){
+	if (logger.isLoggable(Level.FINE)){
 	    logger.entering("WebPermissionUtil", "processConstraints");
 	    logger.log(Level.FINE,"JACC: constraint translation: CODEBASE = "+
 		       pc.getContextID());
 	}
 
 	HashMap qpMap = parseConstraints(wbd);
-	HashMap roleMap = new HashMap();
+	HashMap<String,Permissions> roleMap = 
+	    new HashMap<String,Permissions>();
 
 	Permissions excluded = new Permissions();
 	Permissions unchecked = new Permissions();
 
 	// for each urlPatternSpec in the map
-	if(logger.isLoggable(Level.FINE)){
+	if (logger.isLoggable(Level.FINE)){
 	    logger.log(Level.FINE,"JACC: constraint capture: begin processing qualified url patterns");
 	}
 
@@ -367,100 +488,25 @@ public class WebPermissionUtil {
 
 		String name = m.urlPatternSpec.toString();
 
-		if(logger.isLoggable(Level.FINE)){
+		if (logger.isLoggable(Level.FINE)){
 		    logger.log(Level.FINE,"JACC: constraint capture: urlPattern: "+ name);
 		}
 
-		// handle excluded method
-		BitSet methods = m.getExcludedMethods();
-		if (!methods.isEmpty()) {
+		// handle excluded methods
+		handleExcluded(excluded,m,name);
 
-		    if(logger.isLoggable(Level.FINE)){
-			logger.log(Level.FINE,"JACC: constraint capture: adding excluded methods: "+ MapValue.getActions(methods));
-
-		    }
-
-		    String[] actions = MapValue.getMethodArray(methods);
-		    excluded.add(new WebResourcePermission(name,actions));
-		    excluded.add(new WebUserDataPermission(name,actions,null));
-		}
-
-		// handle methods requring  role
-		HashMap rMap = m.getRoleMap();
-		Iterator rit = rMap.keySet().iterator();
-		while (rit.hasNext()) {
-
-		    String role = (String) rit.next();
-		    methods = (BitSet) rMap.get(role);
-
-		    if (!methods.isEmpty()) {
-
-			Permissions p = (Permissions) roleMap.get(role);
-			if (p == null) {
-			    p = new Permissions();
-			    roleMap.put(role,p);
-			}
-
-			if(logger.isLoggable(Level.FINE)){
-			    logger.log(Level.FINE,"JACC: constraint capture: adding methods that may be called by role: "+ role+" methods: "+ MapValue.getActions(methods));
-			}
-
-			String[] actions = MapValue.getMethodArray(methods);
-			p.add(new WebResourcePermission(name,actions));
-		    }
-		}
-
-		// handle transport constrained methods (skip unprotected
-		// that is, connectKey index == 0)
-		for (int i=1; i<MethodValue.connectKeys.length; i++) {
-		    methods = m.getConnectMap(1<<i);
-		    if (!methods.isEmpty()) {
-			
-			if(logger.isLoggable(Level.FINE)){
-
-			    logger.log(Level.FINE,"JACC: constraint capture: adding methods that accept connections with protection: "+ MethodValue.connectKeys[i]+" methods: "+ MapValue.getActions(methods));
-			}
-
-			String[] actions = MapValue.getMethodArray(methods);
-			unchecked.add(new WebUserDataPermission
-			    (name, actions,
-			     (String) MethodValue.connectKeys[i]));
-		    }
-		}
+		// handle methods requiring role
+		handleRoles(roleMap,m,name);
 
 		// handle methods that are not auth constrained
-		methods = m.getAuthConstrainedMethods();
-		if (!methods.get(MethodValue.AllMethodsIdx)) {
-		    String actions;
-		    if (methods.isEmpty()) {
-			actions = null;
-		    } else {
-			actions = "!" + MapValue.getActions(methods);
-		    }
-		    if(logger.isLoggable(Level.FINE)){
-			logger.log(Level.FINE,"JACC: constraint capture: adding unchecked (for authorization) methods: "+ actions);
-		    }
-		    unchecked.add(new WebResourcePermission(name,actions));
-		} 
+		handleNoAuth(unchecked,m,name);
 
-		// handle methods that are not transport constrained
-		methods = m.getTransportConstrainedMethods();
-		if (!methods.get(MethodValue.AllMethodsIdx)) {
-		    String actions;
-		    if (methods.isEmpty()) {
-			actions = null;
-		    } else {
-			actions = "!" + MapValue.getActions(methods);
-		    }
-		    if(logger.isLoggable(Level.FINE)){
-			logger.log(Level.FINE,"JACC: constraint capture: adding methods that accept unprotected connections: "+ actions);
-		    }
-		    unchecked.add(new WebUserDataPermission(name,actions));
-		}
+		// handle transport constraints 
+		handleConnections(unchecked,m,name);
 	    }
 	}
 
-	if(logger.isLoggable(Level.FINE)){
+	if (logger.isLoggable(Level.FINE)){
 	    logger.log(Level.FINE,"JACC: constraint capture: end processing qualified url patterns");
 
 	    Enumeration e = excluded.elements();
@@ -482,13 +528,13 @@ public class WebPermissionUtil {
 
 	pc.addToUncheckedPolicy(unchecked);
 
-	it = roleMap.keySet().iterator();
-	while (it.hasNext()) {
-	    String role = (String) it.next();
-	    Permissions pCollection = (Permissions) roleMap.get(role);
+	Iterator<String> rit = roleMap.keySet().iterator();
+	while (rit.hasNext()) {
+	    String role = rit.next();
+	    Permissions pCollection = roleMap.get(role);
 	    pc.addToRole(role,pCollection);
 
-	    if(logger.isLoggable(Level.FINE)){
+	    if (logger.isLoggable(Level.FINE)){
 		Enumeration e = pCollection.elements();
 		while (e.hasMoreElements()) {
 		    Permission p = (Permission) e.nextElement();
@@ -499,7 +545,7 @@ public class WebPermissionUtil {
 	    }
 	}
 
-	if(logger.isLoggable(Level.FINE)){
+	if (logger.isLoggable(Level.FINE)){
 	    logger.exiting("WebPermissionUtil", "processConstraints");
 	}
 
@@ -509,7 +555,7 @@ public class WebPermissionUtil {
 						  PolicyConfiguration pc)
 	throws javax.security.jacc.PolicyContextException 
     {
-	if(logger.isLoggable(Level.FINE)){
+	if (logger.isLoggable(Level.FINE)){
 	    logger.entering("WebPermissionUtil", "createWebRoleRefPermission");
 	    logger.log(Level.FINE,"JACC: role-reference translation: Processing WebRoleRefPermission : CODEBASE = "+ pc.getContextID());
 	}
@@ -530,26 +576,26 @@ public class WebPermissionUtil {
 		    WebRoleRefPermission wrrp = new WebRoleRefPermission(name, action);
 		    role.add(new Role(action));
 		    pc.addToRole(srr.getSecurityRoleLink().getName(),wrrp);
-		    if(logger.isLoggable(Level.FINE)){
+		    if (logger.isLoggable(Level.FINE)){
 			logger.log(Level.FINE,"JACC: role-reference translation: RoleRefPermission created with name(servlet-name)  = "+ name  + 
 				   " and action(Role-name tag) = " + action + " added to role(role-link tag) = "+ srr.getSecurityRoleLink().getName());
 		    }
 
 		}
 	    }
-	    if(logger.isLoggable(Level.FINE)){
+	    if (logger.isLoggable(Level.FINE)){
 		logger.log(Level.FINE,"JACC: role-reference translation: Going through the list of roles not present in RoleRef elements and creating WebRoleRefPermissions ");
 	    }
 	    for(Iterator it = roleset.iterator(); it.hasNext();){
 		Role r = (Role)it.next();
-		if(logger.isLoggable(Level.FINE)){
+		if (logger.isLoggable(Level.FINE)){
 		    logger.log(Level.FINE,"JACC: role-reference translation: Looking at Role =  "+r.getName());
 		}
 		if(!role.contains(r)){
 		    String action = r.getName();
 		    WebRoleRefPermission wrrp = new WebRoleRefPermission(name, action);
 		    pc.addToRole(action ,wrrp);
-		    if(logger.isLoggable(Level.FINE)){
+		    if (logger.isLoggable(Level.FINE)){
 			logger.log(Level.FINE,"JACC: role-reference translation: RoleRef  = "+ action + 
 				   " is added for servlet-resource = " + name);
 			logger.log(Level.FINE, "JACC: role-reference translation: Permission added for above role-ref =" 
@@ -558,7 +604,7 @@ public class WebPermissionUtil {
 		}
 	    }
 	}
-	if(logger.isLoggable(Level.FINE)){
+	if (logger.isLoggable(Level.FINE)){
 	    logger.exiting("WebPermissionUtil", "createWebRoleRefPermission");
 	}
         
@@ -574,7 +620,7 @@ public class WebPermissionUtil {
          */
         for(Iterator it = roleset.iterator(); it.hasNext();){
             Role r = (Role)it.next();
-            if(logger.isLoggable(Level.FINE)){
+            if (logger.isLoggable(Level.FINE)){
                 logger.log(Level.FINE,
                     "JACC: role-reference translation: Looking at Role =  "
                         + r.getName());
@@ -582,7 +628,7 @@ public class WebPermissionUtil {
             String action = r.getName();
             WebRoleRefPermission wrrp = new WebRoleRefPermission("", action);
             pc.addToRole(action ,wrrp);
-            if(logger.isLoggable(Level.FINE)){
+            if (logger.isLoggable(Level.FINE)){
                 logger.log(Level.FINE,
                     "JACC: role-reference translation: RoleRef  = "
                     + action 
@@ -593,46 +639,20 @@ public class WebPermissionUtil {
             }
         }
         // END S1AS8PE 4966609
-        
-        
+                
     }
     
 }
 
+class ConstraintValue {
 
-class MethodValue {
-
-    int index;
-    boolean authConstrained;
-    boolean excluded;
-    List roleList;
-    int connectSet;
-
-    static final int AllMethodsIdx = 0;
-
-    private static ArrayList<String> methodNames = new ArrayList();
-    static {
-	methodNames.add(0,null);
-	methodNames.add("DELETE");
-	methodNames.add("GET");
-	methodNames.add("HEAD");
-	methodNames.add("OPTIONS");
-	methodNames.add("POST");
-	methodNames.add("PUT");
-	methodNames.add("TRACE");
-    };
-    
-    static ArrayList<String> getMethodNames() {
-        return methodNames;
-    }
-
-    static Object connectKeys[] = 
+    static String connectKeys[] = 
     { "NONE",
       "INTEGRAL",
       "CONFIDENTIAL"
     };
 
-    static int connectTypeNone = 1;
+    static int ConnectTypeNone = 1;
     static HashMap connectHash = new HashMap();
     static 
     {
@@ -640,24 +660,169 @@ class MethodValue {
 	    connectHash.put(connectKeys[i], new Integer(1<<i));
     };
 
-    MethodValue (String methodName)
-    {
+    boolean excluded;
+    boolean ignoreRoleList;
+    List<String> roleList;
+    int connectSet;
+
+    ConstraintValue() {
+	excluded = false;
+	ignoreRoleList = false;
+	roleList = new ArrayList<String>();
+	connectSet = 0;
+    }
+	
+    static boolean bitIsSet(int map , int bit) {
+        return (map & bit) == bit ? true : false;
+    }
+
+    void setRole(String role) {
+	synchronized(roleList) {
+	    if (!roleList.contains(role)) {
+		roleList.add(role);
+	    }
+	}
+    }   
+
+    void setPredefinedOutcome(boolean outcome) {
+	if (!outcome) {
+	    excluded = true;
+	} else {
+	    ignoreRoleList = true;
+	}
+    }
+
+    void addConnectType(String guarantee) {
+	int b = ConnectTypeNone;
+	if (guarantee != null) {
+	    Integer bit = (Integer) connectHash.get(guarantee);
+	    if (bit == null) 
+		throw new IllegalArgumentException
+		    ("constraint translation error-illegal trx guarantee");
+	    b = bit.intValue();
+	}
+
+	connectSet |= b;
+    }
+
+    boolean isExcluded() {
+	return excluded;
+    }
+
+    /* ignoreRoleList is true if  there was a security-constraint
+     * without an auth-constraint; such a constraint combines to
+     * allow access without authentication.
+     */
+    boolean isAuthConstrained() {
+	if (excluded) {
+	    return true;
+	} else if (ignoreRoleList || roleList.isEmpty()) {
+	    return false;
+	} 
+	return true;
+    }
+
+    boolean isTransportConstrained() {
+	if (excluded || (connectSet != 0 &&
+			 !bitIsSet(connectSet,ConnectTypeNone))) {
+	    return true;
+	}
+	return false;
+    }
+
+    boolean isConnectAllowed(int cType) {
+	if (!excluded && (connectSet == 0 ||
+			  bitIsSet(connectSet,ConnectTypeNone) ||
+			  bitIsSet(connectSet,cType))) {
+	    return true;
+	}
+	return false;
+    }
+
+    void setOutcome(Set<Role> roleSet,
+		    AuthorizationConstraint ac, UserDataConstraint udc) {
+	if (ac == null) {
+	    setPredefinedOutcome(true);
+	} else {
+	    Enumeration eroles = ac.getSecurityRoles();
+	    if (!eroles.hasMoreElements()) {
+		setPredefinedOutcome(false);
+	    }
+	    else while (eroles.hasMoreElements()) {
+		SecurityRoleDescriptor srd = 
+		    (SecurityRoleDescriptor)eroles.nextElement();
+		String roleName = srd.getName();
+		if ("*".equals(roleName)) {
+		    Iterator it = roleSet.iterator();
+		    while(it.hasNext()) {
+			setRole(((Role)it.next()).getName());
+		    }
+		} else {
+		    setRole(roleName);
+		}
+	    }
+	}
+	addConnectType(udc == null? null :  udc.getTransportGuarantee());
+
+	if (WebPermissionUtil.logger.isLoggable(Level.FINE)){
+	    WebPermissionUtil.logger.log
+		(Level.FINE,"JACC: setOutcome yields: " + toString());
+	}
+
+    }
+
+    void setValue(ConstraintValue constraint) {
+	excluded = constraint.excluded;
+	ignoreRoleList = constraint.ignoreRoleList;
+	roleList = new ArrayList<String>();
+	Iterator rit = constraint.roleList.iterator();
+	while(rit.hasNext()) {
+	    String role = (String) rit.next();
+	    roleList.add(role);
+	}
+	connectSet = constraint.connectSet;
+    }
+
+    public String toString() {
+	String roles =" roles: ";
+	Iterator rit = roleList.iterator();
+	while(rit.hasNext()) {
+	    roles += (" " + (String) rit.next());
+	}
+	String transports = "transports: ";
+	for (int i=0; i<connectKeys.length; i++) {
+	    if (isConnectAllowed(1<<i)) {
+		transports += (" " + connectKeys[i]);
+	    }
+	}
+	return " ConstraintValue ( " + 
+	    " excluded: " + excluded +
+	    " ignoreRoleList: " + ignoreRoleList + roles + transports + " ) ";
+    }
+}
+
+class MethodValue extends ConstraintValue {
+
+    private static ArrayList<String> methodNames = new ArrayList();
+
+    int index;
+
+    MethodValue (String methodName) {
 	index = getMethodIndex(methodName);
-	this.authConstrained = true;
-	this.excluded = false;
-	this.roleList = new ArrayList();
-	this.connectSet = 0;
     } 
 
-    static String getMethodName(int index) 
-    {
+    MethodValue (String methodName, ConstraintValue constraint) {
+	index = getMethodIndex(methodName);
+	setValue(constraint);
+    } 
+
+    static String getMethodName(int index) {
 	synchronized(methodNames) {
 	    return methodNames.get(index);
 	}
     }
 
-    static int getMethodIndex(String name) 
-    {
+    static int getMethodIndex(String name) {
 	synchronized(methodNames) {
 	    int index = methodNames.indexOf(name);
 	    if (index < 0) {
@@ -667,8 +832,62 @@ class MethodValue {
 	    return index;
 	}
     }
-    
 
+    static String getActions (BitSet methodSet) {
+	if (methodSet == null || methodSet.isEmpty()) {
+	    return null;
+	}
+	    
+	StringBuffer actions = null;
+
+	for (int i=methodSet.nextSetBit(0); i>=0; i=methodSet.nextSetBit(i+1)){
+	    if (actions == null) {
+		actions = new StringBuffer();
+	    } else {
+		actions.append(",");
+	    }
+	    actions.append(getMethodName(i));
+	}
+
+	return (actions == null ? null : actions.toString());
+    }
+
+    static String[] getMethodArray (BitSet methodSet) {
+	if (methodSet == null || methodSet.isEmpty()) {
+	    return null;
+	}
+	    
+	int size = 0;
+
+	ArrayList<String> methods = new ArrayList();
+
+	for (int i=methodSet.nextSetBit(0); i>=0; i=methodSet.nextSetBit(i+1)){
+	    methods.add(getMethodName(i));
+	    size += 1;
+	}
+
+	return (String[]) methods.toArray(new String[size]);
+    }
+
+    static BitSet methodArrayToSet(String[] methods) {
+	BitSet methodSet = new BitSet();
+
+	for (int i=0; methods != null && i<methods.length; i++) {
+	    if (methods[i] == null) {
+		throw new IllegalArgumentException
+		    ("constraint translation error - null method name");
+	    }
+	    int bit = getMethodIndex(methods[i]);
+	    methodSet.set(bit);
+	}
+
+	return methodSet;
+    }
+
+    public String toString() {
+	return "MethodValue( " + getMethodName(index) +
+	    super.toString() + " )";
+    }
 }
 
 class MapValue {
@@ -684,176 +903,43 @@ class MapValue {
     HashMap<String,MethodValue> methodValues = 
         new HashMap<String,MethodValue>();
 
-    static String getActions (BitSet methodSet)
-    {
+    ConstraintValue otherConstraint; 
 
-	// should never be null, and don't call this when no bits are set
-	if (methodSet == null || methodSet.isEmpty()) {
-	    throw new IllegalArgumentException
-		("internal constraint tranlation error - empty methodSet");
-	} else if (methodSet.get(MethodValue.AllMethodsIdx)) {
-	    // return null if all methods bit is set
-	    return null;
-	} 
-	    
-	StringBuffer actions = null;
-
-	for (int i=methodSet.nextSetBit(0); i>=0; i=methodSet.nextSetBit(i+1)){
-	    if (actions == null) {
-		actions = new StringBuffer();
-	    } else {
-		actions.append(",");
-	    }
-	    actions.append(MethodValue.getMethodName(i));
-	}
-
-	return (actions == null ? null : actions.toString());
-    }
-
-    static String[] getMethodArray (BitSet methodSet)
-    {
-	// should never be null, and don't call this when no bits are set
-	if (methodSet == null || methodSet.isEmpty()) {
-	    throw new IllegalArgumentException
-		("internal constraint tranlation error - empty methodSet");
-	} else if (methodSet.get(MethodValue.AllMethodsIdx)) {
-	    // return null if all methods bit is set
-	    return null;
-	} 
-	    
-	int size = 0;
-
-	ArrayList<String> methods = new ArrayList();
-
-	for (int i=methodSet.nextSetBit(0); i>=0; i=methodSet.nextSetBit(i+1)) {
-	    methods.add(MethodValue.getMethodName(i));
-	    size += 1;
-	}
-
-	return (String[]) methods.toArray(new String[size]);
-    }
-
-    static BitSet methodArrayToSet(String[] methods, String[] methodOmissions) {
-        BitSet methodSet = new BitSet();
-
-        if (methodOmissions == null || methodOmissions.length == 0) {
-            if (methods == null || methods.length == 0) {                
-                methodSet.set(MethodValue.AllMethodsIdx);
-            } else {
-                for (int i = 0; i < methods.length; i++) {
-                    int bit = MethodValue.getMethodIndex(methods[i]);
-                    methodSet.set(bit);
-                }
-            }
-        } else {
-            ArrayList<String> methodOmissionsList = new ArrayList(Arrays.asList(methodOmissions));
-            for(String methodOmission: methodOmissionsList) {
-                methodSet.clear(MethodValue.getMethodIndex(methodOmission));
-            }
-            for (String methodName : MethodValue.getMethodNames()) {
-                    if (methodName != null && !methodOmissionsList.contains(methodName)) {
-                        methodSet.set(MethodValue.getMethodIndex(methodName));
-                    }
-                }
-                
-            
-        }
-        return methodSet;
-    }
-    ;
-
-    MapValue (String urlPattern)
-    {
+    MapValue (String urlPattern) {
 	this.patternType = WebPermissionUtil.patternType(urlPattern);
 	this.patternLength = urlPattern.length();
 	this.irrelevantByQualifier = false;
 	this.urlPatternSpec = new StringBuffer(urlPattern);
 	this.methodValues = new HashMap();
+	otherConstraint = new ConstraintValue();
     } 
 
-    void addQualifier(String urlPattern) 
-    {
+    void addQualifier(String urlPattern) {
 	if (WebPermissionUtil.implies(urlPattern,
 		    this.urlPatternSpec.substring(0,this.patternLength)))
 	    this.irrelevantByQualifier = true;
 	this.urlPatternSpec.append(":" + urlPattern);
     }
 
-    MethodValue getMethodValue(int methodIndex) 
-    {
+    MethodValue getMethodValue(int methodIndex) {
 	String methodName = MethodValue.getMethodName(methodIndex);
-
 	synchronized(methodValues) {
 	    MethodValue methodValue = methodValues.get(methodName);
 	    if (methodValue == null) {
-		methodValue = new MethodValue(methodName);
+		methodValue = new MethodValue(methodName,otherConstraint);
 		methodValues.put(methodName,methodValue);
+
+		if (WebPermissionUtil.logger.isLoggable(Level.FINE)){
+		    WebPermissionUtil.logger.log
+			(Level.FINE,"JACC: created MethodValue: " +
+			 methodValue); 
+		}
 	    }
 	    return methodValue;
 	}
     }
-    
 
-    void setRoleOnMethods(String role,BitSet methodSet,WebBundleDescriptor wbd)
-    {
-	if (role.equals("*")) {
-
-	    Iterator it = wbd.getRoles().iterator();
-	    while(it.hasNext()) {
-		setRoleOnMethods(((Role)it.next()).getName(),methodSet,wbd);
-	    } 
-
-	} else for (int i = methodSet.nextSetBit(0); i >= 0; 
-		    i = methodSet.nextSetBit(i+1)) {
-
-	    MethodValue methodValue = getMethodValue(i);
-		
-	    if (methodValue.roleList.contains(role)) {
-		continue;
-	    }
-	    
-	    methodValue.roleList.add(role);
-	}
-    }
-
-    void setPredefinedOutcomeOnMethods (BitSet methodSet, boolean outcome)
-    {
-	for (int i = methodSet.nextSetBit(0); i >= 0; 
-	     i = methodSet.nextSetBit(i+1)) {
-
-	    MethodValue methodValue = getMethodValue(i);
-
-	    if (!outcome) {
-		methodValue.excluded = true;
-	    } else {
-		methodValue.authConstrained = false;
-	    }
-	}
-    }
-
-    void setConnectOnMethods(String guarantee, BitSet methodSet)
-    {
-	int b = MethodValue.connectTypeNone;
-	if (guarantee != null) {
-	    Integer bit = (Integer) 
-		MethodValue.connectHash.get(guarantee);
-	    if (bit == null) 
-		throw new IllegalArgumentException
-		    ("constraint translation error-illegal trx guarantee");
-	    b = bit.intValue();
-	}
-
-	for (int i = methodSet.nextSetBit(0); i >= 0; 
-	     i = methodSet.nextSetBit(i+1)) {
-
-	    MethodValue methodValue = getMethodValue(i);
-
-	    methodValue.connectSet |= b;
-	}
-    }
-
-    BitSet getExcludedMethods()
-    {
+    BitSet getExcludedMethods() {
 	BitSet methodSet = new BitSet();
 
 	synchronized(methodValues) {
@@ -863,7 +949,7 @@ class MapValue {
 
 	    while (it.hasNext()) {
 		MethodValue v = (MethodValue) it.next();
-		if (v.excluded) {
+		if (v.isExcluded()) {
 		    methodSet.set(v.index);
 		}
 	    }
@@ -871,8 +957,7 @@ class MapValue {
 	return methodSet;
     }
 
-    BitSet getAuthConstrainedMethods()
-    {
+    BitSet getNoAuthMethods() {
 	BitSet methodSet = new BitSet();
 
 	synchronized(methodValues) {
@@ -882,7 +967,7 @@ class MapValue {
 
 	    while (it.hasNext()) {
 		MethodValue v = (MethodValue) it.next();
-		if (v.excluded || v.authConstrained || !v.roleList.isEmpty()) {
+		if (!v.isAuthConstrained()) {
 		    methodSet.set(v.index);
 		}
 	    }
@@ -890,12 +975,7 @@ class MapValue {
 	return methodSet;
     }
 
-    static boolean bitIsSet(int map , int bit) {
-        return (map & bit) == bit ? true : false;
-    }
-
-    BitSet getTransportConstrainedMethods()
-    {
+    BitSet getAuthConstrainedMethods() {
 	BitSet methodSet = new BitSet();
 
 	synchronized(methodValues) {
@@ -905,8 +985,7 @@ class MapValue {
 
 	    while (it.hasNext()) {
 		MethodValue v = (MethodValue) it.next();
-		if (v.excluded || 
-		    !bitIsSet(v.connectSet,MethodValue.connectTypeNone)) {
+		if (v.isAuthConstrained()) {
 		    methodSet.set(v.index);
 		}
 	    }
@@ -914,8 +993,28 @@ class MapValue {
 	return methodSet;
     }
 
-    HashMap getRoleMap() 
-    {
+    BitSet getTransportConstrainedMethods() {
+	BitSet methodSet = new BitSet();
+
+	synchronized(methodValues) {
+
+	    Collection<MethodValue> values = methodValues.values();
+	    Iterator it = values.iterator();
+
+	    while (it.hasNext()) {
+		MethodValue v = (MethodValue) it.next();
+		if (v.isTransportConstrained()) {
+		    methodSet.set(v.index);
+		}
+	    }
+	}
+	return methodSet;
+    }
+
+    /**
+     * Map of methods allowed per role
+     */
+    HashMap getRoleMap() {
 	HashMap roleMap = new HashMap();
 
 	synchronized(methodValues) {
@@ -927,7 +1026,7 @@ class MapValue {
 
 		MethodValue v = (MethodValue) it.next();
 		
-		if (!v.excluded && v.authConstrained) {
+		if (!v.isExcluded() && v.isAuthConstrained()) {
 
 		    Iterator rit = v.roleList.iterator();
 		    while(rit.hasNext()) {
@@ -949,8 +1048,7 @@ class MapValue {
 	return roleMap;
     }
 
-    BitSet getConnectMap(int cType) 
-    {
+    BitSet getConnectMap(int cType) {
 	BitSet methodSet = new BitSet();
 
 	synchronized(methodValues) {
@@ -962,13 +1060,21 @@ class MapValue {
 
 		MethodValue v = (MethodValue) it.next();
 
-		if (!v.excluded) {
+		/* 
+		 * NOTE WELL: prior version of this method 
+		 * could not be called during constraint parsing
+		 * because it finalized the connectSet when its 
+		 * value was 0 (indicating any connection, until
+		 * some specific bit is set)
+		 *
 		    if (v.connectSet == 0) {
-			v.connectSet = MethodValue.connectTypeNone;
+		        v.connectSet = MethodValue.connectTypeNone;
 		    }
-		    if (bitIsSet(v.connectSet,cType)) {
-			methodSet.set(v.index);
-		    }
+
+		*/
+
+		if (v.isConnectAllowed(cType)) {
+		    methodSet.set(v.index);
 		}
 	    }
 	}
@@ -976,6 +1082,63 @@ class MapValue {
 	return methodSet;
     }
 
+    BitSet getMethodSet() {
+	BitSet methodSet = new BitSet();
+
+	synchronized(methodValues) {
+
+	    Collection<MethodValue> values = methodValues.values();
+	    Iterator it = values.iterator();
+
+	    while (it.hasNext()) {
+
+		MethodValue v = (MethodValue) it.next();
+		methodSet.set(v.index);
+
+	    }
+	}
+
+	return methodSet;
+    }
+
+    void setMethodOutcomes(Set<Role> roleSet,
+			   AuthorizationConstraint ac, UserDataConstraint udc, 
+			   BitSet methods,BitSet omittedMethods) {
+
+	if (omittedMethods != null) {
+	    
+	    // get the ommitted methodSet
+	    BitSet methodsInMap = getMethodSet();
+
+	    BitSet saved = (BitSet) omittedMethods.clone();
+
+	    // determine methods being newly omitted
+	    omittedMethods.andNot(methodsInMap);
+
+	    // create values for newly omitted, init from otherConstraint
+	    for (int i = omittedMethods.nextSetBit(0); i >= 0; 
+		 i = omittedMethods.nextSetBit(i+1)) {
+		getMethodValue(i);
+	    }
+	    
+	    //combine this constraint into constraint on all other methods
+	    otherConstraint.setOutcome(roleSet,ac,udc);
+
+	    methodsInMap.andNot(saved);
+
+	    // recursive call to combine constraint into prior omitted methods 
+	    setMethodOutcomes(roleSet,ac,udc,methodsInMap,null);
+	    
+	} else {
+
+	    for (int i = methods.nextSetBit(0); i >= 0; 
+		 i = methods.nextSetBit(i+1)){
+		// create values (and init from otherConstraint) if not in map
+		// then combine with this constraint.
+		getMethodValue(i).setOutcome(roleSet,ac,udc);
+	    }
+	}
+    }
 }
 
 
