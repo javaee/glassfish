@@ -65,7 +65,18 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
+ * Defines configuration used to create and manage
+ * a pool of connections to a EIS. Pool definition is named, and can be referred
+ * to by multiple connector-resource elements (See connector-resource)
  *
+ * Each named pool definition results in a pool instantiated at server start-up.
+ * Pool is populated when accessed for the first time. If two or more
+ * connector-resource elements point to the same connector-connection-pool
+ * element, they are using the same pool of connections, at run time
+ *
+ * There can be more than one pool for one connection-definition in one
+ * resource-adapter
+ * 
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -78,6 +89,15 @@ import javax.validation.constraints.NotNull;
 public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
         PropertyBag {
 
+    /**
+     * Gets the value of the resourceAdapterName property.
+     * 
+     * This is the name of resource adapter. Name of .rar file is taken as the
+     * unique name for the resource adapter.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
     @Attribute
     @NotNull
     String getResourceAdapterName();
@@ -92,6 +112,8 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the connectionDefinitionName property.
+     * Unique name, identifying one connection-definition in a Resource Adapter.
+     * Currently this is ConnectionFactory type.
      *
      * @return possible object is
      *         {@link String }
@@ -111,6 +133,8 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the steadyPoolSize property.
      *
+     * Minimum and initial number of connections maintained in the pool
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -129,6 +153,8 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the maxPoolSize property.
      *
+     * Maximum number of conections that can be created
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -146,6 +172,10 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the maxWaitTimeInMillis property.
+     *
+     * Amount of time the caller will wait before getting a connection timeout.
+     * The default is 60 seconds. A value of 0 will force caller to wait
+     * indefinitely.
      *
      * @return possible object is
      *         {@link String }
@@ -165,6 +195,11 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the poolResizeQuantity property.
      *
+     * Number of connections to be removed when idle-timeout-in-seconds timer
+     * expires. Connections that have idled for longer than the timeout are
+     * candidates for removal. When the pool size reaches steady-pool-size,
+     * the connection removal stops.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -182,6 +217,15 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
+     *
+     * Maximum time in seconds, that a connection can remain idle in the pool.
+     * After this time, the pool implementation can close this connection.
+     *
+     * Note that this does not control connection timeouts enforced at the
+     * database server side. Adminsitrators are advised to keep this timeout
+     * shorter than the EIS connection timeout (if such timeouts are configured
+     * on the specific EIS), to prevent accumulation of unusable connection in
+     * Application Server.                                        
      *
      * @return possible object is
      *         {@link String }
@@ -201,6 +245,10 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the failAllConnections property.
      *
+     * Indicates if all connections in the pool must be closed should a single
+     * connection fail validation. The default is false. One attempt will be
+     * made to re-establish failed connections.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -217,6 +265,12 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the transactionSupport property.
+     *
+     * Indicates the level of transaction support that this pool will have.
+     * Possible values are "XATransaction", "LocalTransaction" & "NoTransaction"
+     * This attribute will override that transaction support attribute in the
+     * Resource Adapter in a downward compatible way, i.e it can support a lower
+     * or equal transaction level than specified in the RA, but not higher level
      *
      * @return possible object is
      *         {@link String }
@@ -235,6 +289,9 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the isConnectionValidationRequired property.
      *
+     * This attribute specifies if the connection that is about to be returned
+     * is to be validated by the container,
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -251,6 +308,9 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the validateAtmostOncePeriodInSeconds property.
+     *
+     * Used to set the time-interval within which a connection is validated
+     * atmost once. Default is 0 which implies that it is not enabled.
      *
      * @return possible object is
      *         {@link String }
@@ -270,6 +330,16 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the connectionLeakTimeoutInSeconds property.
      *
+     * To aid user in detecting potential connection leaks by the application.
+     * When a connection is not returned back to the pool by the application
+     * within the specified period, it is assumed to be a potential leak and
+     * stack trace of the caller will be logged.
+     *
+     * Default is 0, which implies there is no leak detection, by default.
+     * A positive non-zero value turns on leak detection. Note however that,
+     * this attribute only detects if there is a connection leak. The connection
+     * can be reclaimed only if connection-leak-reclaim is set to true.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -287,7 +357,9 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the connectionLeakReclaim property.
-     *
+     * If enabled, connection will be reusable (put back into pool) after
+     * connection-leak-timeout-in-seconds occurs.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -304,6 +376,9 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the connectionCreationRetryAttempts property.
+     *
+     * The number of attempts to create a new connection. Default is 0,
+     * which implies no retries.
      *
      * @return possible object is
      *         {@link String }
@@ -322,6 +397,10 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the connectionCreationRetryIntervalInSeconds property.
      *
+     * The time interval between retries while attempting to create a connection
+     * Default is 10 seconds. Effective when connection-creation-retry-attempts
+     * is greater than 0.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -338,6 +417,11 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the lazyConnectionEnlistment property.
+     *
+     * Enlist a resource to the transaction only when it is actually used in a
+     * method, which avoids enlistment of connections that are not used in a
+     * transaction. This also prevents unnecessary enlistment of connections
+     * cached in the calling components. Default value is false.
      *
      * @return possible object is
      *         {@link String }
@@ -356,6 +440,11 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the lazyConnectionAssociation property.
      *
+     * Connections are lazily associated when an operation is performed on them.
+     * Also, they are disassociated when the transaction is completed and a
+     * component method ends, which helps reuse of the physical connections.
+     * Default value is false.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -373,6 +462,11 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the associateWithThread property.
      *
+     * Associate a connection with the thread such that when the same thread is
+     * in need of a connection, it can reuse the connection already associated
+     * with that thread, thereby not incurring the overhead of getting a
+     * connection from the pool.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -390,6 +484,11 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     /**
      * Gets the value of the matchConnections property.
      *
+     * To switch on/off connection matching for the pool. It can be set to false
+     * if the administrator knows that the connections in the pool will always
+     * be homogeneous and hence a connection picked from the pool need not be
+     * matched by the resource adapter. Default value is true.                               
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -406,6 +505,10 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
 
     /**
      * Gets the value of the maxConnectionUsageCount property.
+     * When specified, connections will be re-used by the pool for the specified
+     * number of times after which it will be closed. This is useful for
+     * instance, to avoid statement-leaks. Default value is 0, which implies the
+     * feature is not enabled.
      *
      * @return possible object is
      *         {@link String }
@@ -464,7 +567,13 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
     List<SecurityMap> getSecurityMap();
     
     /**
-    	Properties as per {@link PropertyBag}
+     *	Properties as per {@link PropertyBag}
+     *
+     *  Properties are used to override the ManagedConnectionFactory  javabean
+     * configuration settings. When one or more of these properties are
+     * specified, they are passed as is using set<Name>(<Value>) methods to the
+     * Resource Adapter's ManagedConnectionfactory class (specified in ra.xml).
+     *
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

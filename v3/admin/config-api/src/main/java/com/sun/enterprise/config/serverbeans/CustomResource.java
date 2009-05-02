@@ -56,7 +56,7 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Custom (or generic) resource managed by a user-written factory class.
  */
 
 /* @XmlType(name = "", propOrder = {

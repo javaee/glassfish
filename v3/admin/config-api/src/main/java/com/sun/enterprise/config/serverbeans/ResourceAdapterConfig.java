@@ -62,6 +62,12 @@ import javax.validation.constraints.Pattern;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+
+/**
+ *  This element is for configuring the resource adapter. These values
+ * (properties) over-rides the default values present in ra.xml. The name
+ * attribute has to be unique . It is optional for PE. It is used mainly for EE.
+ */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourceAdapterConfig")
 @Configured
 public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Resource, PropertyBag {

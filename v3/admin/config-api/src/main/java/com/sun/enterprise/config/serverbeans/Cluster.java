@@ -70,6 +70,11 @@ import javax.validation.constraints.Pattern;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClusterConfig")
 @Configured
+/**
+ * SE/EE Cluster configuration. A cluster defines a homogenous set of server 
+ * instances that share the same applications, resources, and configuration.                                                
+ *
+ */
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
     /**
@@ -87,6 +92,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
     /**
      * Gets the value of the configRef property.
+     *
+     * Points to a named config. All server instances in the cluster will
+     * share this config.
      *
      * @return possible object is
      *         {@link String }
@@ -106,6 +114,12 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     /**
      * Gets the value of the heartbeatEnabled property.
      *
+     * When "heartbeat-enabled" is set to "true", the GMS services will be
+     * started as a lifecycle module in each the application server in the
+     * cluster.When "heartbeat-enabled" is set to "false", GMS will not be
+     * started and its services will be unavailable. Clusters should function
+     * albeit with reduced functionality.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -123,6 +137,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     /**
      * Gets the value of the heartbeatPort property.
      *
+     * This is the communication port GMS uses to listen for group  events.
+     * This should be a valid port number.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -142,6 +159,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     /**
      * Gets the value of the heartbeatAddress property.
      *
+     * This is the address (only multicast supported) at which GMS will
+     * listen for group events.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -158,6 +178,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
     /**
      * Gets the value of the serverRef property.
+     *
+     * List of servers in the cluster
+     * 
      * <p/>
      * <p/>
      * This accessor method returns a reference to the live list,

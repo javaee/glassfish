@@ -59,6 +59,8 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the queueSizeInBytes property.
      *
+     * Size in bytes of the Connection queue
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -78,6 +80,8 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the maxPendingCount property.
      *
+     * Max no of pending connections on the listen socket
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -97,6 +101,8 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the receiveBufferSizeInBytes property.
      *
+     * The buffer size of the receive buffer used by sockets
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -116,6 +122,8 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the sendBufferSizeInBytes property.
      *
+     * The buffer size of the send buffer used by sockets
+     * 
      * @return possible object is
      *         {@link String }
      */

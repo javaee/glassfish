@@ -67,7 +67,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
- *
+ * The configuration defines the configuration of a server instance that can be
+ * shared by other server instances. The availability-service and are SE/EE only
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -111,6 +112,12 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
 
     /**
      * Gets the value of the dynamicReconfigurationEnabled property.
+     *
+     * When set to "true" then any changes to the system (e.g. applications
+     * deployed, resources created) will be automatically applied to the
+     * affected servers without a restart being required. When set to
+     * "false" such changes will only be picked up by the affected servers
+     * when each server restarts.
      *
      * @return possible object is
      *         {@link String }
