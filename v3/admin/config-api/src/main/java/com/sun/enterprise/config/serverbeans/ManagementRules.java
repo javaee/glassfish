@@ -48,9 +48,8 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
-
 /**
- *
+ * Container for self management rules
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -62,6 +61,10 @@ public interface ManagementRules extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the enabled property.
+     *
+     * Acts as high level switch for disabling all the defined rules. If set to
+     * "false" all the configured rules would disabled. If set to "true",
+     * enabled state of a particular rule will be decided at that rule level.
      *
      * @return possible object is
      *         {@link String }

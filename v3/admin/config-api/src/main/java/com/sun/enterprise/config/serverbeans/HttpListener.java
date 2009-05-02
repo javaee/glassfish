@@ -67,6 +67,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the id property.
      *
+     * Unique identifier for http listener.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -86,6 +88,10 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the address property.
      *
+     * IP address of the listen socket. Can be in dotted-pair or IPv6 notation.
+     * Can also be any for INADDR-ANY. Configuring a  listen socket to listen on
+     * any is required if more than one http-listener is configured to it.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -104,6 +110,11 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the port property.
      *
+     * Port number to create the listen socket on. Legal values are 1 - 65535.
+     * On Unix, creating sockets that listen on ports 1 - 1024 requires
+     * superuser privileges. Configuring an SSL listen socket to listen on port
+     * 443 is recommended.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -124,6 +135,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the externalPort property.
      *
+     * The port at which the user makes a request, typically a proxy server port
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -143,6 +156,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the family property.
      *
+     * Specified the family of addresses either inet or ncsa
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -160,6 +175,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the blockingEnabled property.
      *
+     * Enables blocking for the listen and external ports.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -176,6 +193,9 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the acceptorThreads property.
+     *
+     * Number of acceptor threads for the listen socket. The recommended value
+     * is the number of processors in the machine.
      *
      * @return possible object is
      *         {@link String }
@@ -196,6 +216,10 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the securityEnabled property.
      *
+     * Determines whether the http listener runs SSL. You can turn SSL2 or SSL3
+     * on or off and set ciphers using an ssl element. The enable-ssl in the
+     * protocol element should be set to true for this setting to work.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -213,6 +237,9 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the defaultVirtualServer property.
      *
+     * The id attribute of the default virtual server for this particular
+     * connection group.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -230,7 +257,14 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the serverName property.
-     *
+     * 
+     * Tells the server what to put in the host name section of any URLs it
+     * sends to client. This affects URLs the server automatically generates;
+     * it doesnt affect the URLs for directories and files stored in the server.
+     * This name should be the alias name if your server uses an alias.
+     * If you append a colon and port number, that port will be used in URLs the
+     * server sends to the client.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -248,6 +282,10 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the redirectPort property.
+     *
+     * If the connector is supporting non-SSL requests and a request is received
+     * for which a matching security-constraint requires SSL transport catalina
+     * will automatically redirect the request to the port number specified here
      *
      * @return possible object is
      *         {@link String }
@@ -267,6 +305,14 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the xpoweredBy property.
+     *
+     * The Servlet 2.4 spec defines a special X-Powered-By:
+     *  Servlet/2.4 header, which containers may add to
+     *  servlet-generated responses. This is complemented by the JSP 2.0 spec,
+     *  which defines a X-Powered-By: JSP/2.0 header to be added
+     *  (on an optional basis) to responses utilizing JSP technology. The goal
+     *  of these headers is to aid in gathering statistical data about the use
+     *  of Servlet and JSP technology. If true, these headers will be added.
      *
      * @return possible object is
      *         {@link String }

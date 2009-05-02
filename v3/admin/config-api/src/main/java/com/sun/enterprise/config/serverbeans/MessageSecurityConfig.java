@@ -49,8 +49,12 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+
 /**
- *
+ * Defines the message layer specific provider configurations of the application
+ * server. All of the providers within a message-security-config element must be
+ * able to perform authentication processing at the message layer defined by the
+ * value of the auth-layer attribute.                                         
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -62,6 +66,10 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the authLayer property. Values: "SOAP" or "HttpServlet".
+     *
+     * All of the providers within a message-security-config element must be
+     * able to perform authentication processing at the message layer defined
+     * by the value of the auth-layer attribute.
      *
      * @return possible object is
      *         {@link String }
@@ -81,6 +89,13 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the defaultProvider property.
      *
+     * Used to identify the server provider to be invoked for any application
+     * for which a specific server provider has not been bound.
+     *
+     * When a default provider of a type is not defined for a message layer,
+     * the container will only invoke a provider of the type (at the layer)
+     * for those applications for which a specific provider has been bound.   
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -98,6 +113,9 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the defaultClientProvider property.
      *
+     * Used to identify the client provider to be invoked for any application
+     * for which a specific client provider has not been bound
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -134,7 +152,4 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
      */
     @Element(required=true)
     public List<ProviderConfig> getProviderConfig();
-
-
-
 }

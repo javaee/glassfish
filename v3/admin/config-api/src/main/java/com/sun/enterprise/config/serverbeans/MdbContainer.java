@@ -71,7 +71,9 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the steadyPoolSize property.
-     *
+     * Minimum and initial number of message driven beans in pool.
+     * An integer in the range [0, max-pool-size].
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -90,6 +92,9 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the poolResizeQuantity property.
      *
+     * Quantum of increase/decrease, when the size of pool grows/shrinks.
+     * An integer in the range [0, max-pool-size].
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -107,7 +112,8 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the maxPoolSize property.
-     *
+     * maximum size, pool can grow to. A non-negative integer.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -126,6 +132,9 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the idleTimeoutInSeconds property.
      *
+     * Idle bean instance in pool becomes a candidate for deletion, when this
+     * timeout expires
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -142,8 +151,8 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
     void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
     
     
-  /**
-        Properties.
+    /**
+       Properties.
      */
 @PropertiesDesc(
     props={
@@ -154,5 +163,4 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
     )
     @Element
     List<Property> getProperty();
-
 }

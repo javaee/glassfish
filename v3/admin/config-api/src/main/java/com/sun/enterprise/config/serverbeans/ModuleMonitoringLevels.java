@@ -68,6 +68,8 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the threadPool property.
      *
+     * All the thread-pools used by the run time
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -85,6 +87,9 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the orb property.
      *
+     * Specifies the level for connection managers of the orb, which apply to
+     * connections to the orb
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -101,6 +106,8 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
 
     /**
      * Gets the value of the ejbContainer property.
+     *
+     * Various ejbs deployed to the server, ejb-pools, ejb-caches & ejb-methods
      *
      * @return possible object is
      *         {@link String }
@@ -136,6 +143,8 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the transactionService property.
      *
+     * Transaction subsystem
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -153,6 +162,8 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the httpService property.
      *
+     * http engine and the http listeners therein.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -170,6 +181,8 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the jdbcConnectionPool property.
      *
+     * Monitoring level for all the jdbc-connection-pools used by the runtime.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -186,6 +199,8 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
 
     /**
      * Gets the value of the connectorConnectionPool property.
+     *
+     * Monitoring level for all the connector-connection-pools used by runtime.
      *
      * @return possible object is
      *         {@link String }

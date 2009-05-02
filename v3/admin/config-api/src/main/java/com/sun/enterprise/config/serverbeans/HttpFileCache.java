@@ -64,6 +64,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the globallyEnabled property.
      *
+     * Globally enables the file cache
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -81,6 +83,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the fileCachingEnabled property.
      *
+     * Enables the caching of file content if the file size is less than the one
+     * specified ny med-file-size-limit
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -97,6 +102,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the maxAgeInSeconds property.
+     *
+     * Maximum age of a valid cache entry
      *
      * @return possible object is
      *         {@link String }
@@ -117,6 +124,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the mediumFileSizeLimitInBytes property.
      *
+     * Maximum size of a cached file that can be stored as a memory mapped file.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -135,6 +144,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the mediumFileSpaceInBytes property.
+     *
+     * Total size of all files that are cached as memory mapped files.
      *
      * @return possible object is
      *         {@link String }
@@ -155,6 +166,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the smallFileSizeLimitInBytes property.
      *
+     * Maximum size of a file that can be read into memory.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -173,6 +186,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the smallFileSpaceInBytes property.
+     *
+     * Total size of the files that are read into memory.
      *
      * @return possible object is
      *         {@link String }
@@ -193,6 +208,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the fileTransmissionEnabled property.
      *
+     * This is valid on Windows only. Enables the TransmitFileSystem call.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -210,6 +227,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the maxFilesCount property.
      *
+     * Maximum no. of files in the file cache.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -228,6 +247,8 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the hashInitSize property.
+     *
+     * Initial no. of hash buckets.
      *
      * @return possible object is
      *         {@link String }

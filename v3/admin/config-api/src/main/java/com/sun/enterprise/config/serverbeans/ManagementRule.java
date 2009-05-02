@@ -49,8 +49,9 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
+
 /**
- *
+ * Defines the configured self management rule
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -65,6 +66,8 @@ public interface ManagementRule extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the name property.
      *
+     * Name of the management rule
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -82,7 +85,8 @@ public interface ManagementRule extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the enabled property.
-     *
+     * Determines whether the rule is enabled or not. Default value  is false.
+     * 
      * @return possible object is
      *         {@link String }
      */

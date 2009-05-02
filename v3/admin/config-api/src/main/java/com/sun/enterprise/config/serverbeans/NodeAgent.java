@@ -52,8 +52,10 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
+
 /**
- *
+ * SE/EE Node Controller. The node agent is an agent that manages server
+ * instances on a host machine.
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -87,6 +89,8 @@ public interface NodeAgent extends ConfigBeanProxy, Injectable, org.glassfish.ap
     /**
      * Gets the value of the systemJmxConnectorName property.
      *
+     * The name of the internal jmx connector
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -103,6 +107,9 @@ public interface NodeAgent extends ConfigBeanProxy, Injectable, org.glassfish.ap
 
     /**
      * Gets the value of the startServersInStartup property.
+     *
+     * If true, starts all managed server instances when the
+     * Node Controller is started.
      *
      * @return possible object is
      *         {@link String }

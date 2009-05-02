@@ -59,6 +59,10 @@ public interface HttpAccessLog extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the logDirectory property.
      *
+     * location of the access logs specified as a directory.This defaults to the
+     * domain.log-root, which by default is ${INSTANCE_ROOT}/logs. Hence the
+     * default value for this attribute is ${INSTANCE_ROOT}/logs/access
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -75,6 +79,9 @@ public interface HttpAccessLog extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the iponly property.
+     *
+     * If the IP address of the user agent should be specified or a  DNS lookup
+     * should be done
      *
      * @return possible object is
      *         {@link String }

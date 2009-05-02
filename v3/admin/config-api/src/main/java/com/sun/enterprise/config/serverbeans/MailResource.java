@@ -63,6 +63,9 @@ import javax.validation.constraints.NotNull;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MailResourceConfig")
 @Configured
+/**
+ * The mail-resource element describes a javax.mail.Session resource 
+ */
 public interface MailResource extends ConfigBeanProxy, Injectable, Resource, org.glassfish.api.admin.config.PropertyBag, BindableResource {
 
 
@@ -137,6 +140,8 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, org
     /**
      * Gets the value of the host property.
      *
+     * ip V6 or V4 address or hostname
+     * 
      * @return possible object is
      *         {@link String }
      */

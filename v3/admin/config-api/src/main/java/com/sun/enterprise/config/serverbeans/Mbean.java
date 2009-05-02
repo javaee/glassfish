@@ -52,8 +52,13 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
+
 /**
- *
+ * Note on the Name of the MBean :
+ * It is a String that represents the name of the MBean. It is required that the
+ * name is valid to represent a "value" of a property in the property-list of
+ * MBean ObjectName. The name must be specified and is a primary key for an
+ * MBean. An invalid name implies failure of operation.
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -66,7 +71,8 @@ public interface Mbean extends ConfigBeanProxy, Injectable, Named, org.glassfish
 
     /**
      * Gets the value of the objectType property.
-     *
+     * A String representing whether it is a user-defined MBean or System MBean.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -83,7 +89,9 @@ public interface Mbean extends ConfigBeanProxy, Injectable, Named, org.glassfish
 
     /**
      * Gets the value of the implClassName property.
-     *
+     * A String that represents fully qualified class name of
+     * MBean implementation. This is read-only.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -101,6 +109,8 @@ public interface Mbean extends ConfigBeanProxy, Injectable, Named, org.glassfish
 
     /**
      * Gets the value of the objectName property.
+     *
+     * A String that represents a system-generated Object Name for this MBean.
      *
      * @return possible object is
      *         {@link String }
