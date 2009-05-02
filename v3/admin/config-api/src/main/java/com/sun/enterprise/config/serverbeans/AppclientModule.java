@@ -96,7 +96,9 @@ public interface AppclientModule extends ConfigBeanProxy, Injectable, Named, Pro
 
     /**
      * Gets the value of the javaWebStartEnabled property.
-     *
+     * This attribute indicates whether Java Web Start access is permitted to
+     * eligible application client(s) in this module
+     * 
      * @return possible object is
      *         {@link String }
      */

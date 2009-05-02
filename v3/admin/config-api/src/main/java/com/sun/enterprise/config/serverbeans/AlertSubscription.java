@@ -59,11 +59,16 @@ import javax.validation.constraints.NotNull;
 }) */
 //@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AlertSubscriptionConfig")
 @Configured
+/**
+ * Alert subscription details a specific subscription. Subscription comprises
+ * the configuration of a specific listener, and a filter to be applied
+ */
 public interface AlertSubscription extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the name property.
-     *
+     * The unique name identifying a particular alert service.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -113,7 +118,4 @@ public interface AlertSubscription extends ConfigBeanProxy, Injectable  {
      *              {@link FilterConfig }
      */
     public void setFilterConfig(FilterConfig value) throws PropertyVetoException;
-
-
-
 }

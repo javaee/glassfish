@@ -34,8 +34,6 @@
  * holder.
  */
 
-
-
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
@@ -51,9 +49,9 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
-
 /**
- *
+ * The Alert service provides a mechanism for users to register for and receive
+ * alerts. The alert service collects together a set of alert subscriptions
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -62,10 +60,13 @@ import org.glassfish.quality.ToDo;
 }) */
 //@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AlertServiceConfig", singleton=true)
 @Configured
+
 public interface AlertService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the alertSubscription property.
+     * Alert subscription details a specific subscription. Subscription comprises
+     * the configuration of a specific listener, and a filter to be applied
      * <p/>
      * <p/>
      * This accessor method returns a reference to the live list,

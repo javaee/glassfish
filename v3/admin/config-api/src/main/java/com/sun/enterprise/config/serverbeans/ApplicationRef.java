@@ -53,7 +53,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * References to applications deployed to the server instance    
  */
 
 /* @XmlType(name = "") */
@@ -97,7 +97,9 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the lbEnabled property.
-     *
+     * A boolean flag that causes any and all load-balancers using this
+     * application to consider this application unavailable to them.     
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -114,6 +116,8 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the disableTimeoutInMinutes property.
+     * The time, in minutes, that it takes this application to reach a quiescent 
+     * state after having been disabled
      *
      * @return possible object is
      *         {@link String }

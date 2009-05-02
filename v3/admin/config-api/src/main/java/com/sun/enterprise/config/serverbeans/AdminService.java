@@ -34,8 +34,6 @@
  * holder.
  */
 
-
-
 package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
@@ -59,11 +57,22 @@ import org.jvnet.hk2.config.Element;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminServiceConfig", singleton=true)
 @Configured
+/**
+ * Admin Service exists in every instance. It is the configuration for either
+ * a normal server, DAS or PE instance
+ */
 public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the type property.
-     *
+     * An instance can either be of type
+     * das
+         Domain Administration Server in SE/EE or the PE instance
+     * das-and-server
+     *   same as das
+     * server
+     *   Any non-DAS instance in SE/EE. Not valid for PE.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -80,7 +89,8 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the systemJmxConnectorName property.
-     *
+     * The name of the internal jmx connector
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -97,6 +107,8 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the jmxConnector property.
+     * The jmx-connector element defines the configuration of a JSR 160
+     * compliant remote JMX Connector.
      * Objects of the following type(s) are allowed in the list
      * {@link JmxConnector }
      */

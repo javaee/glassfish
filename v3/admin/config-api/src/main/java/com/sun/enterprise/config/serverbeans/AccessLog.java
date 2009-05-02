@@ -54,11 +54,15 @@ import javax.validation.constraints.Max;
 /* @XmlType(name = "") */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AccessLogConfig", singleton=true)
 @Configured
+
 public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the format property.
-     *
+     * The global format for the access log rotation-policy The
+     * policy based on which the log rotation would be done. 
+     * At this time only time based rotation is enabled.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -92,7 +96,8 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the rotationIntervalInMinutes property.
-     *
+     * The time interval in minutes between two successive rotations of the
+     * access logs.
      * @return possible object is
      *         {@link String }
      */
@@ -111,7 +116,10 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the rotationSuffix property.
-     *
+     * The suffix to be added to the access-log name after rotation.
+     * Acceptable values include those supported by
+     * java.text.SimpleDateFormat and "%YYYY;%MM;%DD;-%hh;h%mm;m%ss;s".
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -128,7 +136,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the rotationEnabled property.
-     *
+     * The flag for enabling the access-log rotation
      * @return possible object is
      *         {@link String }
      */

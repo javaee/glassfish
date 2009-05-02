@@ -57,7 +57,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * An audit-module specifies an optional plug-in module which implements audit
+ * capabilities.
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -69,6 +70,7 @@ public interface AuditModule extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the name property.
+     * Defines the name of this realm
      *
      * @return possible object is
      *         {@link String }
@@ -88,7 +90,8 @@ public interface AuditModule extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the classname property.
-     *
+     * Defines the java class which implements this audit module
+     * 
      * @return possible object is
      *         {@link String }
      */

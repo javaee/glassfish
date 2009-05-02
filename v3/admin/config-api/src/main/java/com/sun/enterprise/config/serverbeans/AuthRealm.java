@@ -62,11 +62,22 @@ import javax.validation.constraints.NotNull;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AuthRealmConfig")
 @Configured
+
+/**
+ * The auth-realm element defines and configures one authentication realm. 
+ * There must be at least one realm available for a server instance; 
+ * any number can be configured, as desired.               
+ * Authentication realms need provider-specific parameters which vary depending 
+ * on what a particular implementation needs; these are defined as properties 
+ * since they vary by provider and cannot be predicted for any custom or add-on 
+ * providers.
+ * For the default file provider, the param used is: file                     
+ */
 public interface AuthRealm extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the name property.
-     *
+     * Defines the name of this realm
      * @return possible object is
      *         {@link String }
      */
@@ -85,7 +96,7 @@ public interface AuthRealm extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the classname property.
-     *
+     * Defines the java class which implements this realm
      * @return possible object is
      *         {@link String }
      */

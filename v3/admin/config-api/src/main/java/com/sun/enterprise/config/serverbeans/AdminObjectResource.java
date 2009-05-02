@@ -66,12 +66,17 @@ import javax.validation.constraints.NotNull;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminObjectResourceConfig")
 @Configured
+/**
+ * The admin-object-resource element describes a administered object
+ * for a inbound resource adapter.
+ */
 public interface AdminObjectResource extends ConfigBeanProxy, Injectable, BindableResource, Resource,
     PropertyBag {
 
     /**
      * Gets the value of the resType property.
-     *
+     * Interface definition for the administered object
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -89,6 +94,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
 
     /**
      * Gets the value of the resAdapter property.
+     * Name of the inbound resource adapter
      *
      * @return possible object is
      *         {@link String }
@@ -107,7 +113,14 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
 
     /**
      * Gets the value of the objectType property.
-     *
+     * where object-type defines the type of the resource.
+     * It can be:
+     *  system-all - These are system resources for all instances and DAS
+     *  system-admin - These are system resources only in DAS
+     *  system-instance - These are system resources only in instances
+     *                    (and not DAS)
+     *  user - User resources (This is the default for all elements)
+     * 
      * @return possible object is
      *         {@link String }
      */

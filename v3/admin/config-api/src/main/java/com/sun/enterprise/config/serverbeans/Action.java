@@ -54,11 +54,14 @@ import javax.validation.constraints.NotNull;
 /* @XmlType(name = "") */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ActionConfig")
 @Configured
+/**
+ * Defines the action MBean associated with the event.
+ */
 public interface Action extends ConfigBeanProxy, Injectable {
 
     /**
      * Gets the value of the actionMbeanName property.
-     *
+     * Identifies the name of the action MBean.
      * @return possible object is
      *         {@link String }
      */
