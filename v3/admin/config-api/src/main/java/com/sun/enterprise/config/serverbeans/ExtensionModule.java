@@ -55,10 +55,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-/**
- *
- */
-
 /* @XmlType(name = "", propOrder = {
     "description",
     "property"
@@ -89,6 +85,9 @@ public interface ExtensionModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the moduleType property.
      *
+     * String representing the module type. This module type will be used by the
+     * runtime to find the appropriate extension container
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -141,6 +140,14 @@ public interface ExtensionModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the libraries property.
      *
+     * System dependent path separator [: for Unix/Solaris/Linux &; for Windows] 
+     * separated list of jar paths. These paths could be either relative
+     * [relative to {com.sun.aas.instanceRoot}/lib/applibs] or absolute paths.
+     * These dependencies appears *after* the libraries defined in
+     * classpath-prefix in the java-config and *before* the application server
+     * provided over-rideable jar set. The libraries would be made available to
+     * the application in the order in which they were specified.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -158,6 +165,9 @@ public interface ExtensionModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the availabilityEnabled property.
      *
+     * The exact semantics of availability being enabled for an extension module
+     * are undefined at this time. If this attribute is missing
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -174,6 +184,9 @@ public interface ExtensionModule extends ConfigBeanProxy, Injectable, Named, Pro
 
     /**
      * Gets the value of the directoryDeployed property.
+     *
+     * This attribute indicates whether the application has been deployed to a
+     * directory or not
      *
      * @return possible object is
      *         {@link String }

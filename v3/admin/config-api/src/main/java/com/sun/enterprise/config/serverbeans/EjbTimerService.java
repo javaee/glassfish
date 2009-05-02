@@ -59,7 +59,7 @@ import javax.validation.constraints.Min;
 
 
 /**
- *
+ * Configuration for ejb timer service
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -71,6 +71,10 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
 
     /**
      * Gets the value of the minimumDeliveryIntervalInMillis property.
+     *
+     * It is the minimum number of milliseconds allowed before the next timer
+     * expiration for a particular timer can occur. It guards  against extremely
+     * small timer increments that can overload the server.
      *
      * @return possible object is
      *         {@link String }
@@ -90,6 +94,10 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the maxRedeliveries property.
      *
+     * It is the maximum number of times the ejb timer service will attempt to
+     * redeliver a timer expiration due to exception or rollback.
+     * The minimum value is 1, per the ejb specification.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -108,6 +116,11 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the timerDatasource property.
      *
+     * overrides cmp-resource (jdbc/__TimerPool) specified in sun-ejb-jar.xml of
+     * (__ejb_container_timer_app) of the timer service system application.
+     * By default this is set to jdbc/__TimerPool, but can be overridden for the
+     * cluster or server instance, if they choose to.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -124,6 +137,9 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
 
     /**
      * Gets the value of the redeliveryIntervalInternalInMillis property.
+     *
+     * It is the number of milliseconds the ejb timer service will wait after a
+     * failed ejbTimeout delivery before attempting a redelivery.
      *
      * @return possible object is
      *         {@link String }

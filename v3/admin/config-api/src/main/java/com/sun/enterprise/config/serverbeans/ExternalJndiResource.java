@@ -56,7 +56,7 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Resource residing in an external JNDI repository
  */
 
 /* @XmlType(name = "", propOrder = {

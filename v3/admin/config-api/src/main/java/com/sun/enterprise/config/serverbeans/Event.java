@@ -57,7 +57,8 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Defines the event associated with the configured rule. 
+ * For each configured rule there exists one event associated with it.
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -70,6 +71,8 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
     
     /**
      * Gets the value of the type property.
+     *
+     * Identifies the configured event as one of the predefined event types.
      *
      * @return possible object is
      *         {@link String }
@@ -88,6 +91,10 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the recordEvent property.
      *
+     * Specifies whether the occurance of the event is to be logged or not.
+     * By default this would be true. If no action is specified, the event
+     * would be recorded.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -104,6 +111,8 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the level property.
+     *
+     * Specifies at what level to record the event occurance in server log file.
      *
      * @return possible object is
      *         {@link String }
