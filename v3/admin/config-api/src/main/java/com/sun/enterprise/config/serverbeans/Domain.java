@@ -58,10 +58,18 @@ import java.util.List;
 
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DomainConfig", singleton=true, omitAsAncestorInChildObjectName=true)
 @Configured
+/**
+ * Top level Domain Element that includes applications, resources, configs,
+ * servers, clusters and node-agents, load balancer configurations and load
+ * balancers. node-agents and load balancers are SE/EE related entities only.
+ *
+ */
 public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag  {
 
     /**
      * Gets the value of the applicationRoot property.
+     *
+     * For PE this defines the location where applications are deployed
      *
      * @return possible object is
      *         {@link String }
@@ -80,6 +88,10 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     /**
      * Gets the value of the logRoot property.
      *
+     * Specifies where the server instance's log files are kept, including
+     * HTTP access logs, server logs, and transaction logs.
+     * Default is $INSTANCE-ROOT/logs
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -113,7 +125,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
 
     /**
      * Gets the value of the version property. It is read-only.
+     *
      * Tools are not to depend on this property. It is only for reference.
+     *
      * @return String representing version of the Domain.
      */
     @Attribute

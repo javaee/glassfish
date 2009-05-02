@@ -71,6 +71,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
 
     /**
      * Gets the value of the computeChecksum property.
+     * Boolean attribute. Indicates whether checksum of binaries is computed.
      *
      * @return possible object is
      *         {@link String }
@@ -89,6 +90,9 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
     /**
      * Gets the value of the verifyConfig property.
      *
+     * A boolean attribute which indicates whether output of verify-config
+     * asadmin command is included in the diagnostic report.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -106,6 +110,9 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
     /**
      * Gets the value of the captureInstallLog property.
      *
+     * Boolean attribute which indicated whether the log generated  during
+     * installation of the application server is captured.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -122,6 +129,8 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
 
     /**
      * Gets the value of the captureSystemInfo property.
+     * Boolean attribute which specifies whether OS level information is
+     * collected as part of diagnostic report.        
      *
      * @return possible object is
      *         {@link String }
@@ -140,6 +149,8 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
     /**
      * Gets the value of the captureHadbInfo property.
      *
+     * Boolean attribute to indicate if HADB related information is collected.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -157,6 +168,10 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
     /**
      * Gets the value of the captureAppDd property.
      *
+     * Boolean attribute. If "true", application deployment descriptors in plain
+     * text are captured as part of diagnostic report. If Deployment descriptors
+     * contain any confidential information, it's recommended to set it to false
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -173,6 +188,12 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
 
     /**
      * Gets the value of the minLogLevel property.
+     *
+     * The log levels can be changed using one of the seven levels.
+     * Please refer JSR 047 to understand the Log Levels. The default level is
+     * INFO, meaning that messages at that level or higher (WARNING, SEVERE) are
+     * captured as part of the diagnostic report.If set to OFF, log contents
+     * will not be captured as part of diagnostic report.
      *
      * @return possible object is
      *         {@link String }
@@ -191,6 +212,9 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
     /**
      * Gets the value of the maxLogEntries property.
      *
+     * Max no. of log entries being captured as part of diagnostic  report.
+     * A non negative value.
+     * 
      * @return possible object is
      *         {@link String }
      */
