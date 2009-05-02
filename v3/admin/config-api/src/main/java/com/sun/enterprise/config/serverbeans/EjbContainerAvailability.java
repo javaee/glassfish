@@ -69,6 +69,15 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the availabilityEnabled property.
      *
+     * This boolean flag controls whether availability is enabled for SFSB
+     * checkpointing (and potentially passivation). If this is "false",
+     * then all SFSB checkpointing is disabled for all j2ee apps and ejb modules
+     * If it is "true" (and providing that the global availability-enabled in
+     * availability-service is also "true", then j2ee apps and stand-alone ejb
+     * modules may be ha enabled. Finer-grained control exists at lower levels.
+     * If this attribute is missing, it inherits the value of the global
+     * availability-enabled under availability-service.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -85,6 +94,10 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
 
     /**
      * Gets the value of the sfsbHaPersistenceType property.
+     *
+     * The persistence type used by the EJB Stateful Session Bean Container for
+     * checkpointing and passivating availability-enabled beans' state.
+     * Default is "ha".
      *
      * @return possible object is
      *         {@link String }
@@ -103,6 +116,9 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the sfsbPersistenceType property.
      *
+     * Specifies the passivation mechanism for stateful session beans that do
+     * not have availability enabled. Default is "file".
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -119,6 +135,9 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
 
     /**
      * Gets the value of the sfsbCheckpointEnabled property.
+     *
+     * This attribute is deprecated, replaced by availability-enabled and will
+     * be ignored if present.
      *
      * @return possible object is
      *         {@link String }
@@ -137,6 +156,8 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the sfsbQuickCheckpointEnabled property.
      *
+     * This attribute is deprecated and will be ignored if present.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -153,6 +174,11 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
 
     /**
      * Gets the value of the sfsbStorePoolName property.
+     * This is the jndi-name for the JDBC Connection Pool used by the
+     * EJB Stateful Session Bean Container for use in checkpointing/passivation
+     * when persistence-type = "ha". See sfsb-ha-persistence-type and
+     * sfsb-persistence-type for more details. It will default to value of
+     * store-pool-name under availability-service (ultimately "jdbc/hastore").
      *
      * @return possible object is
      *         {@link String }

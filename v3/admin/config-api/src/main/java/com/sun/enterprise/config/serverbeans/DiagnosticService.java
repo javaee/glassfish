@@ -71,7 +71,8 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
 
     /**
      * Gets the value of the computeChecksum property.
-     * Boolean attribute. Indicates whether checksum of binaries is computed.
+     *
+     * \Boolean attribute. Indicates whether checksum of binaries is computed.
      *
      * @return possible object is
      *         {@link String }

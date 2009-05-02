@@ -123,6 +123,15 @@ public interface EjbModule extends ConfigBeanProxy, Injectable, Named, PropertyB
     /**
      * Gets the value of the libraries property.
      *
+     * System dependent path separator [: for Unix/Solaris/Linux &; for Windows]
+     * separated list of jar paths. These paths could be either relative
+     * [relative to {com.sun.aas.instanceRoot}/lib/applibs] or absolute paths.
+     *
+     * These dependencies appears AFTERthe libraries defined in classpath-prefix
+     * in the java-config and *before* the application server provided
+     * over-rideable jar set. The libraries would be made available to the
+     * application in the order in which they were specified.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -140,6 +149,15 @@ public interface EjbModule extends ConfigBeanProxy, Injectable, Named, PropertyB
     /**
      * Gets the value of the availabilityEnabled property.
      *
+     * This boolean flag controls whether availability is enabled for SFSB
+     * checkpointing (and potentially passivation). If this is "false", then
+     * all SFSB checkpointing is disabled for either the given j2ee app or
+     * the given ejb module. If it is "true" (and providing that all the
+     * availability-enabled attributes above in precedence are also "true",
+     * then the j2ee app or stand-alone ejb modules may be ha enabled.
+     * Finer-grained control exists at lower level inside each bean.
+     * If this attribute is missing, it defaults to "false".
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -156,6 +174,9 @@ public interface EjbModule extends ConfigBeanProxy, Injectable, Named, PropertyB
 
     /**
      * Gets the value of the directoryDeployed property.
+     *
+     * This attribute indicates whether the application has been deployed to a
+     * directory or not
      *
      * @return possible object is
      *         {@link String }

@@ -95,7 +95,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * configuration file takes before it is detected by the load balancer
      * and the file reloaded. A value of 0 indicates that reloading is disabled.
      * Default period is 1 minute (60)
-     *
+
      * @return possible object is
      *         {@link String }
      */
