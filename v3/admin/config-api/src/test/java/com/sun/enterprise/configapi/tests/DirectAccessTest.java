@@ -84,8 +84,8 @@ public class DirectAccessTest extends ConfigPersistence {
         ConfigBean config2 = (ConfigBean) ConfigBean.unwrap(http);
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
         Map<String, String> configChanges = new HashMap<String, String>();
-        configChanges.put("max-age", "12543");
-        configChanges.put("max-cache-size", "1200");
+        configChanges.put("max-age-seconds", "12543");
+        configChanges.put("max-cache-size-bytes", "1200");
         Map<String, String> config2Changes = new HashMap<String, String>();
         config2Changes.put("version", "12351");
         changes.put(config, configChanges);
@@ -101,7 +101,7 @@ public class DirectAccessTest extends ConfigPersistence {
     }
 
     public boolean assertResult(String s) {
-        return s.contains("max-age=\"12543\"")
+        return s.contains("max-age-seconds=\"12543\"")
             && s.contains("version=\"12351\"")
             && s.contains("-XFooBar=false");
     }

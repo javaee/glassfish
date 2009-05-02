@@ -80,7 +80,7 @@ public class HttpServiceTest extends ConfigApiTest {
             public Object run(NetworkListener okToChange) throws TransactionFailure {
                 final Http http = okToChange.createChild(Http.class);
                 http.setMaxConnections("100");
-                http.setTimeout("65");
+                http.setTimeoutSeconds("65");
                 ConfigSupport.apply(new SingleConfigCode<Protocol>() {
                     @Override
                     public Object run(Protocol param) {
