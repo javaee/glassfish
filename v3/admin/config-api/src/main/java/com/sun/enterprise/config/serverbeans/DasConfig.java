@@ -70,6 +70,9 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the dynamicReloadEnabled property.
+     * When true, server checks timestamp on a .reload file at every module and
+     * application directory level to trigger reload. Polling frequency is
+     * controlled by reload-poll-interval-in-seconds
      *
      * @return possible object is
      *         {@link String }
@@ -87,6 +90,11 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the dynamicReloadPollIntervalInSeconds property.
+     *
+     * Maximum period, in seconds, that a change to the load balancer
+     * configuration file takes before it is detected by the load balancer
+     * and the file reloaded. A value of 0 indicates that reloading is disabled.
+     * Default period is 1 minute (60)
      *
      * @return possible object is
      *         {@link String }
@@ -106,6 +114,12 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the autodeployEnabled property.
      *
+     * This will enable the autodeployment service. If true, the service will
+     * automatically starts with the admin-server. Auto Deployment is a feature
+     * that enables developers to quickly deploy applications and modules to a
+     * running application server withoutrequiring the developer to perform an
+     * explicit application server restart or separate deployment operation.  
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -122,6 +136,10 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the autodeployPollingIntervalInSeconds property.
+     *
+     * The polling interval (in sec), at the end of which autodeployment service
+     * will scan the source directory (specified by "autodeploy-dir" tag) for
+     * any new deployable component.
      *
      * @return possible object is
      *         {@link String }
@@ -141,6 +159,10 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the autodeployDir property.
      *
+     * The source directory (relative to instance root) from which autodeploy
+     * service will pick deployable components.
+     * You can also specify an absolute directory.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -157,6 +179,9 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the autodeployVerifierEnabled property.
+     * To enable/disable verifier, during auto-deployment. If true, verification
+     * will be done before any deployment activity. In the event of any verifier
+     * test failure, deployment is not performed.
      *
      * @return possible object is
      *         {@link String }
@@ -174,6 +199,8 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the autodeployJspPrecompilationEnabled property.
+     *
+     * If true, JSPs will be pre compiled during deployment of war module(s).
      *
      * @return possible object is
      *         {@link String }
@@ -209,6 +236,16 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the deployXmlValidation property.
      *
+     * specifies if descriptor validation is required or not.
+     * full
+     *     xml will be validated and in case of xml validation errors,
+     *     deployment will fail
+     * parsing
+     *    xml errors will be reported but deployment process will continue.
+     * none
+     *    no xml validation will be perfomed on the standard or runtime
+     *    deployment descriptors
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -225,6 +262,8 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the adminSessionTimeoutInMinutes property.
+     *
+     * Timeout in minutes indicating the administration gui session timeout
      *
      * @return possible object is
      *         {@link String }
