@@ -55,7 +55,7 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Provides the means of specifying a filter to be applied to alerts
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -68,6 +68,9 @@ public interface FilterConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the filterClassName property.
      *
+     * The name of a class that can act as a filter. Non-empty string
+     * containing a Java class name.
+     * 
      * @return possible object is
      *         {@link String }
      */

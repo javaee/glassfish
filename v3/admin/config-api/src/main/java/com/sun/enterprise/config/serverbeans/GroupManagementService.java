@@ -58,7 +58,21 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Digits;
 
 /**
- *
+ * group-management-service(GMS) is an in-process service that provides cluster
+ * monitoring and group communication services. GMS notifies registered modules
+ * in an application server instance when one or more members in the cluster
+ * fail (become unreachable). GMS also provides the ability to send and receive
+ * messages between a group of processes. GMS is a abstraction layer that
+ * plugs-in group communication technologies which rely on a configurable stack
+ * of protocols. Each of these protocols has properties that can be changed for
+ * a given network and deployment topology. These relevant configurable
+ * protocols are: fd-protocol enables its members to periodically monitor other
+ * group members to determine their availability in the group. merge-protocol is
+ * used to reunite subgroups that formed as a result of network partition after
+ * such a partition has healed. ping-protocol is used for discovery of group &
+ * its members. vs-protocol verifies suspect instances by adding a verification
+ * layer to mark a failure suspicion as a confirmed failure.
+ * 
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -71,6 +85,9 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the fdProtocolMaxTries property.
      *
+     * Maximum number of attempts to try before GMS confirms that a failure is
+     * suspected in the group. Must be a positive integer.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -88,6 +105,9 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
 
     /**
      * Gets the value of the fdProtocolTimeoutInMillis property.
+     *
+     * Period of time between monitoring attempts to detect failure.
+     * Must be a positive integer.
      *
      * @return possible object is
      *         {@link String }
@@ -108,6 +128,9 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the mergeProtocolMaxIntervalInMillis property.
      *
+     * Specifies the maximum amount of time to wait to collect sub-group
+     * information before performing a merge. Must be a positive integer.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -126,6 +149,9 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
 
     /**
      * Gets the value of the mergeProtocolMinIntervalInMillis property.
+     *
+     * Specifies the minimum amount of time to wait to collect sub-group
+     * information before performing a merge. Must be a positive integer
      *
      * @return possible object is
      *         {@link String }
@@ -146,6 +172,9 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
     /**
      * Gets the value of the pingProtocolTimeoutInMillis property.
      *
+     * Amount of time in milliseconds that GMS waits for discovery of other
+     * members in this group. Must be a positive integer.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -164,6 +193,9 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
 
     /**
      * Gets the value of the vsProtocolTimeoutInMillis property.
+     *
+     * After this timeout a suspected failure is marked as verified.
+     * Must be a positive integer.
      *
      * @return possible object is
      *         {@link String }
