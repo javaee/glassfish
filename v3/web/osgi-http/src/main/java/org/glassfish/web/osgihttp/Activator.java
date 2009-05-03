@@ -39,6 +39,7 @@ package org.glassfish.web.osgihttp;
 
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebModule;
+import com.sun.enterprise.web.WebModuleConfig;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.Realm;
@@ -119,6 +120,11 @@ public class Activator implements BundleActivator {
         standardContext.addLifecycleListener(new ContextConfig());
         Realm realm = Globals.getDefaultHabitat().getByContract(Realm.class);
         standardContext.setRealm(realm);
+        WebModuleConfig wmConfig = new WebModuleConfig();
+        wmConfig.setWorkDirBase(System.getProperty("java.io.tmpdir"));
+        wmConfig.setVirtualServers(vsId);
+        wmConfig.setAppClassLoader(getClass().getClassLoader());
+        standardContext.setWebModuleConfig(wmConfig);
         vs.addChild(standardContext);
 //        StandardContext standardContext =
 //                StandardContext.class.cast(vs.findChild(contextPath));
