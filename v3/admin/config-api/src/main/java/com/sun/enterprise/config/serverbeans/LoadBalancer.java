@@ -84,6 +84,8 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish
     /**
      * Gets the value of the lbConfigName property.
      *
+     * Name of the lb-config used by this load balancer
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -102,6 +104,8 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish
     /**
      * Gets the value of the autoApplyEnabled property.
      *
+     * If true, immediately push changes to lb config to physical load balancer
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -118,7 +122,13 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish
     public void setAutoApplyEnabled(String value) throws PropertyVetoException;
     
     /**
-    	Properties as per {@link PropertyBag}
+     *Properties as per {@link PropertyBag}
+     *
+     * Known properties:
+     * device-host - Host name or IP address for the device
+     * device-admin-port - Device administration port number
+     * ssl-proxy-host - proxy host used for outbound HTTP
+     * ssl-proxy-port - proxy port used for outbound HTTP
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

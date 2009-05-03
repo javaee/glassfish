@@ -71,6 +71,8 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the name property.
      *
+     * Name of the load balancer configuration
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -89,6 +91,11 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the responseTimeoutInSeconds property.
      *
+     * Period within which a server must return a response or otherwise it will
+     * be considered unhealthy. Default value is 60 seconds. Must be greater
+     * than or equal to 0. A value of 0 effectively turns off this check
+     * functionality, meaning the server will always be considered healthy
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -107,6 +114,12 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the httpsRouting property.
      *
+     * Boolean flag indicating how load-balancer will route https requests.
+     * If true then an https request to the load-balancer will result in an
+     * https request to the server; if false then https requests to the
+     * load-balancer result in http requests to the server.
+     * Default is to use http (i.e. value of false)
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -124,6 +137,11 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the reloadPollIntervalInSeconds property.
      *
+     * Maximum period, in seconds, that a change to the load balancer
+     * configuration file takes before it is detected by the load balancer and
+     * the file reloaded. A value of 0 indicates that reloading is disabled.
+     * Default period is 1 minute (60 sec)
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -141,6 +159,9 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the monitoringEnabled property.
      *
+     * Boolean flag that determines whether monitoring is switched on or not.
+     * Default is that monitoring is switched off (false) 
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -158,6 +179,9 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the routeCookieEnabled property.
      *
+     * Boolean flag that determines whether a route cookie is or is not enabled.
+     * Default is enabled (true).
+     * 
      * @return possible object is
      *         {@link String }
      */

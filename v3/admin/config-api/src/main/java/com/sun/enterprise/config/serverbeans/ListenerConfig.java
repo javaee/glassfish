@@ -57,7 +57,7 @@ import javax.validation.constraints.NotNull;
 
 
 /**
- *
+ * Connects a specific listener class with specific managed objects  
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -70,6 +70,9 @@ public interface ListenerConfig extends ConfigBeanProxy, Injectable, PropertyBag
     /**
      * Gets the value of the listenerClassName property.
      *
+     * The name of a class that can act as a listener for alerts.
+     * Non-empty string containing a Java class name.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -88,6 +91,9 @@ public interface ListenerConfig extends ConfigBeanProxy, Injectable, PropertyBag
     /**
      * Gets the value of the subscribeListenerWith property.
      *
+     * A list of managed object names that the listener should be subscribed to.
+     * A non-empty, comma separated list.
+     * 
      * @return possible object is
      *         {@link String }
      */

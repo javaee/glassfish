@@ -53,6 +53,18 @@ import org.glassfish.api.amx.AMXConfigInfo;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
 
+/**
+ * By default, logs would be kept in $INSTANCE-ROOT/logs. The following log 
+ * files will be stored under the logs directory.     
+ * access.log                                                                 
+ *     keeps default virtual server HTTP access messages.            
+ * server.log                                                                 
+ *     keeps log messages from default virtual server. Messages from 
+ *     other configured virtual servers also go here, unless         
+ *     log-file is explicitly specified in the virtual-server        
+ *     element.                                                      
+ */
+
 /* @XmlType(name = "", propOrder = {
     "moduleLogLevels",
     "property"
@@ -64,6 +76,8 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the file property.
      *
+     * Can be used to rename or relocate server.log using absolute path.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -80,6 +94,9 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the useSystemLogging property.
+     *
+     * If true, will utilize Unix syslog service or Windows Event Logging to
+     * produce and manage logs.
      *
      * @return possible object is
      *         {@link String }
@@ -98,6 +115,18 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the logHandler property.
      *
+     * Can plug in a custom log handler to add it to the chain of handlers to
+     * log into a different log destination than the default ones given by the
+     * system (which are Console, File and Syslog). It is a requirement that
+     * customers use the log formatter provided by the the system to maintain
+     * uniformity in log messages. The custom log handler will be added at the
+     * end of the handler chain after File + Syslog Handler, Console Handler and
+     * JMX Handler. User cannot replace the handler provided by the system,
+     * because of loosing precious log statements. The Server Initialization
+     * will take care of installing the custom handler with the system formatter
+     * initialized. The user need to use JSR 047 Log Handler Interface to
+     * implement the custom handler.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -115,6 +144,10 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the logFilter property.
      *
+     * Can plug in a log filter to do custom filtering of log records.
+     * By default there is no log filter other than the log level filtering
+     * provided by JSR 047 log API.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -132,6 +165,8 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the logToConsole property.
      *
+     * logs will be sent to stderr when asadmin start-domain verbose is used
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -149,10 +184,11 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the logRotationLimitInBytes property.
      *
+     * Log Files will be rotated when the file size reaches the limit.
+     *
      * @return possible object is
      *         {@link String }
      */
-//    @Attribute (defaultValue="500000")
     @Attribute (defaultValue="0")
     @Min(value=1)
     public String getLogRotationLimitInBytes();
@@ -168,6 +204,12 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the logRotationTimelimitInMinutes property.
      *
+     * This is a new attribute to enable time based log rotation.
+     * The Log File will be rotated only if this value is non-zero and the valid
+     * range is 60 minutes (1 hour) to 10*24*60 minutes (10 days). If the value
+     * is zero then the files will be rotated based on size specified in
+     * log-rotation-limit-in-bytes.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -187,6 +229,10 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the alarms property.
      *
+     * if true, will turn on alarms for the logger. The SEVERE and WARNING
+     * messages can be routed through the JMX framework to raise SEVERE and
+     * WARNING alerts. Alarms are turned off by default.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -204,10 +250,14 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the retainErrorStatisticsForHours property.
      *
+     * The number of hours since server start, for which error statistics should
+     * be retained in memory. The default and minimum value is 5 hours.
+     * The maximum value allowed is 500 hours. Note that larger values will
+     * incur additional memory overhead.
+     * 
      * @return possible object is
      *         {@link String }
      */
-//    @Attribute (defaultValue="5")
     @Attribute (defaultValue="0")
     @Min(value=5)
     @Max(value=500)

@@ -70,6 +70,8 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the className property.
      *
+     * Fully qualified name of the startup class
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -88,6 +90,9 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the classpath property.
      *
+     * Where this module is actually located, if it is not
+     * under applications-root
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -105,6 +110,11 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the loadOrder property.
      *
+     * integer value that can be used to force the order in which deployed
+     * lifecycle modules are loaded at server start up. Smaller numbered modules
+     * get loaded sooner. Order is unspecified if two or more lifecycle modules
+     * have the same load-order value.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -123,6 +133,8 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the isFailureFatal property.
      *
+     * If true, aborts server start up if this module does not load properly
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -157,6 +169,9 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
     /**
      * Gets the value of the enabled property.
      *
+     * boolean attribute. If set to "false" this module will not be loaded at
+     * server start up.
+     * 
      * @return possible object is
      *         {@link String }
      */
