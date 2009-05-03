@@ -60,8 +60,6 @@ import java.util.Map;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
 
-import com.sun.appserv.management.config.HTTPServiceConfig;
-import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.IIOPServiceConfig;
 import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
@@ -72,6 +70,7 @@ import java.util.StringTokenizer;
 import javax.faces.context.ExternalContext;
 
 import javax.servlet.http.HttpServletRequest;
+import org.glassfish.admingui.common.util.V3AMX;
 
 public class InstanceHandler {
 
@@ -123,24 +122,7 @@ public class InstanceHandler {
         String hostName = request.getServerName();
         handlerCtx.setOutputValue("hostName", hostName);
 
-
-        //V3 GRIZZLY TODO
-        //http ports
-        /* HTTPServiceConfig service = amxRoot.getConfig(configName).getHTTPServiceConfig();
-        Map<String, HTTPListenerConfig> listeners = service.getHTTPListenerConfigMap();
-        StringBuffer ports = new StringBuffer();
-        for (String key : listeners.keySet()) {
-            String port = listeners.get(key).getPort();
-            if (port.startsWith("$")) {
-                port = resolveToken((port.substring(2, port.length() - 1)), instanceName);
-            }
-            ports.append("," + port);
-        }
-        ports.deleteCharAt(0);  //remove the first ','
-        handlerCtx.setOutputValue("httpPorts", ports.toString());
-         */
-        handlerCtx.setOutputValue("httpPorts", GuiUtil.getMessage("TBD"));
-
+        handlerCtx.setOutputValue("httpPorts", V3AMX.getHttpPortNumber( hostName, configName));
 
         //iiop ports
         IIOPServiceConfig iiopService = amxRoot.getConfig(configName).getIIOPServiceConfig();

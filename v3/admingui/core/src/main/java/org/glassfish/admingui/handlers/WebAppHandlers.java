@@ -50,12 +50,8 @@
 package org.glassfish.admingui.handlers;
 
 import com.sun.appserv.management.config.ApplicationConfig;
-import com.sun.appserv.management.config.DeployedItemRefConfig;
 import com.sun.appserv.management.config.EngineConfig;
-import com.sun.appserv.management.config.HTTPListenerConfig;
-import com.sun.appserv.management.config.HTTPServiceConfig;
 import com.sun.appserv.management.config.ModuleConfig;
-import com.sun.appserv.management.config.VirtualServerConfig;
 import com.sun.appserv.management.config.ObjectTypeValues;
 
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -81,6 +77,7 @@ import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.util.AppUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.deployment.client.DeploymentFacility;
 
 public class WebAppHandlers {
@@ -289,7 +286,7 @@ public class WebAppHandlers {
         
         String enableStr = TargetUtil.getEnabledStatus(appConfig, true);
         String protocol = "http";
-        String port = getPortForApplication(appConfig.getName());
+        String port = V3AMX.getPortForApplication(appConfig.getName());
         if (port == null) {
             oneRow.put("port", "");
             oneRow.put("hasLaunch", false);
@@ -423,77 +420,7 @@ public class WebAppHandlers {
         return defaultHostName;
     }
 
-    /* returns the port number on which appName could be executed 
-     * will try to get a port number that is not secured.  But if it can't find one, a
-     * secured port will be returned, prepanded with '-'
-     */
-    private static String getPortForApplication(String appName) {
-
-        DeployedItemRefConfig appRef = TargetUtil.getDeployedItemRefObject(appName, "server");
-        HTTPListenerConfig listener = null;
-        if (appRef == null) { // no application-ref found for this application, shouldn't happen for PE. TODO: think about EE
-            listener = getListener();
-        } else {
-            String vsId = TargetUtil.getAssociatedVS(appName, "server");
-            if (vsId == null || vsId.length() == 0) { // no vs specified
-                listener = getListener();
-            } else {
-                listener = getListener(vsId);
-
-            }
-        }
-        if (listener == null) {
-            return null;
-        }
-        String port = listener.getPort();
-        String security = listener.getSecurityEnabled();
-        return ("true".equals(security)) ? "-" + port : port;
-    }
-
-    // returns a  http-listener that is linked to a non-admin VS
-    private static HTTPListenerConfig getListener() {
-        Map<String, VirtualServerConfig> vsMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getVirtualServerConfigMap();
-        return getOneVsWithHttpListener(new ArrayList(vsMap.keySet()));
-    }
-
-    private static HTTPListenerConfig getListener(String vsIds) {
-        return getOneVsWithHttpListener(GuiUtil.parseStringList(vsIds, ","));
-    }
-
-    private static HTTPListenerConfig getOneVsWithHttpListener(List<String> vsList) {
-        if (vsList == null || vsList.size() == 0) {
-            return null;
-        }
-        HTTPListenerConfig secureListener = null;
-        HTTPServiceConfig hConfig = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig();
-        Map<String, VirtualServerConfig> vsMap = hConfig.getVirtualServerConfigMap();
-        for (String vsName : vsList) {
-            if (vsName.equals("__asadmin")) {
-                continue;
-            }
-            VirtualServerConfig vs = vsMap.get(vsName);
-            String listener = vs.getHTTPListeners();
-            if (GuiUtil.isEmpty(listener)) {
-                continue;
-            } else {
-                List<String> hpList = GuiUtil.parseStringList(listener, ",");
-                for (String one : hpList) {
-                    HTTPListenerConfig oneListener = hConfig.getHTTPListenerConfigMap().get(one);
-                    if (!"true".equals(oneListener.getEnabled())) {
-                        continue;
-                    }
-                    String security = oneListener.getSecurityEnabled();
-                    if ("true".equals(security)) {
-                        secureListener = oneListener;
-                        continue;
-                    } else {
-                        return oneListener;
-                    }
-                }
-            }
-        }
-        return secureListener;
-    }
+    
 
     private static String calContextRoot(String contextRoot) {
         //If context root is not specified or if the context root is "/", ensure that we don't show two // at the end.
