@@ -34,8 +34,6 @@
  * holder.
  */
 
-
-
 package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
@@ -56,8 +54,10 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
+
 /**
- *
+ * The jmx-connector element defines the configuration of a JSR 160 compliant
+ * remote JMX Connector.                                   
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -71,6 +71,8 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the name property.
      *
+     * Name of jmx connector used for identification
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -89,6 +91,8 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the enabled property.
      *
+     * Defines if this connector is enabled. For EE this must be enabled
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -106,6 +110,10 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the protocol property.
      *
+     * Defines the protocol that this jmx-connector should support.
+     * Supported protocols are defined by Entity rjmx-protocol. 
+     * Other protocols can be used by user applications independently.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -123,6 +131,8 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the address property.
      *
+     * Specifies the IP address or host-name.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -141,6 +151,10 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the port property.
      *
+     * Specifies the port of the jmx-connector-server. Note that jmx-service-url
+     * is a function of protocol, port and address as defined by the JSR 160 1.0
+     * Specification.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -160,6 +174,10 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the acceptAll property.
      *
+     * Determines whether the connection can be made on all the network
+     * interfaces. A value of false implies that the connections only for this
+     * specific address will be selected.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -177,6 +195,10 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the authRealmName property.
      *
+     * The name of the auth-realm in this config element that represents the
+     * special administrative realm. All authentication (from administraive GUI
+     * and CLI) will be handled by this realm.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -196,6 +218,9 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the securityEnabled property.
      *
+     * Decides whether the transport layer security be used in jmx-connector.
+     * If true, configure the ssl element
+     * 
      * @return possible object is
      *         {@link String }
      */

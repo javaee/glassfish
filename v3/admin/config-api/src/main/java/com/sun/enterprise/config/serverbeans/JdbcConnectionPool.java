@@ -62,7 +62,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Defines configuration used to create and manage a pool physical database
+ * connections. Pool definition is named, and can be referred to by multiple
+ * jdbc-resource elements (See <jdbc-resource>).
+ * Each named pool definition results in a pool instantiated at server start-up.
+ * Pool is populated when accessed for the first time. If two or more
+ * jdbc-resource elements point to the same jdbc-connection-pool element,
+ * they are using the same pool of connections, at run time.         
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -74,6 +80,18 @@ import javax.validation.constraints.NotNull;
 public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
     PropertyBag {
 
+    /**
+     *
+     * Gets the value of the datasourceClassname property.
+     * 
+     * Name of the vendor supplied JDBC datasource resource manager.
+     * An XA or global transactions capable datasource class will implement
+     * javax.sql.XADatasource interface. Non XA or Local transactions only
+     * datasources will implement javax.sql.Datasource interface.
+     * 
+     @return possible object is
+     *         {@link String }
+     */
     @Attribute
     @NotNull
     String getDatasourceClassname();
@@ -89,6 +107,14 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the resType property.
      *
+     * DataSource implementation class could implement one of
+     * javax.sql.DataSource, javax.sql.XADataSource or
+     * javax.sql.ConnectionPoolDataSource interfaces. This optional attribute
+     * must be specified to disambiguate when a Datasource class implements two
+     * or more of these interfaces. An error is produced when this attribute has
+     * a legal value and the indicated interface is not implemented by the
+     * datasource class. This attribute has no default value.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -106,6 +132,8 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the steadyPoolSize property.
      *
+     * Minimum and initial number of connections maintained in the pool
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -125,6 +153,8 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the maxPoolSize property.
      *
+     * Maximum number of conections that can be created
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -143,6 +173,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the maxWaitTimeInMillis property.
+     *
+     * Amount of time the caller will wait before getting a connection timeout.
+     * Default is 60 sec. A value of 0 will force caller to wait indefinitely.
      *
      * @return possible object is
      *         {@link String }
@@ -163,6 +196,11 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the poolResizeQuantity property.
      *
+     * Number of connections to be removed when dle-timeout-in-seconds timer
+     * expires. Connections that have idled for longer than the timeout are
+     * candidates for removal. When the pool size reaches steady-pool-size,
+     * the connection removal stops.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -181,6 +219,14 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
+     *
+     * maximum time in seconds, that a connection can remain idle in the pool.
+     * After this time, the pool implementation can close this connection.
+     * Note that this does not control connection timeouts enforced at the
+     * database server side. Adminsitrators are advised to keep this timeout
+     * shorter than the database server side timeout (if such timeouts are
+     * configured on the specific vendor's database), to prevent accumulation of
+     * unusable connection in Application Server.
      *
      * @return possible object is
      *         {@link String }
@@ -201,6 +247,16 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the transactionIsolationLevel property.
      *
+     * Specifies the Transaction Isolation Level on pooled database connections.
+     * Optional. Has no default. If left unspecified the pool operates with
+     * default isolation level provided by the JDBC Driver. A desired isolation
+     * level can be set using one of the standard transaction isolation levels,
+     * which see.
+     *
+     * Applications that change the Isolation level on a pooled connection
+     * programmatically, risk polluting the pool and this could lead to program
+     * errors. Also see: is-isolation-level-guaranteed
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -217,6 +273,14 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the isIsolationLevelGuaranteed property.
+     *
+     * Applicable only when a particular isolation level is specified for
+     * transaction-isolation-level. The default value is true.
+     * This assures that every time a connection is obtained from the pool,
+     * it is guaranteed to have the isolation set to the desired value.
+     * This could have some performance impact on some JDBC drivers. Can be set
+     * to false by that administrator when they are certain that the application
+     * does not change the isolation level before returning the connection.
      *
      * @return possible object is
      *         {@link String }
@@ -235,6 +299,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the isConnectionValidationRequired property.
      *
+     * if true, connections are validated (checked to find out if they are
+     * usable) before giving out to the application. The default is false.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -251,6 +318,17 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the connectionValidationMethod property.
+     *
+     * specifies the type of validation to be performed when
+     * is-connection-validation-required is true. The following types of
+     * validation are supported:
+     * 
+     * auto-commit
+     *   using connection.autoCommit()
+     * meta-data
+     *   using connection.getMetaData()
+     * table
+     *   performing a query on a user specified table(see validation-table-name)
      *
      * @return possible object is
      *         {@link String }
@@ -269,6 +347,12 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the validationTableName property.
      *
+     * Specifies the table name to be used to perform a query to validate a
+     * connection. This parameter is mandatory, if connection-validation-type is
+     * set to table. Verification by accessing a user specified table may become
+     * necessary for connection validation, particularly if database driver 
+     * caches calls to setAutoCommit() and getMetaData().
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -285,6 +369,10 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the failAllConnections property.
+     *
+     * Indicates if all connections in the pool must be closed should a single
+     * validation check fail. The default is false. One attempt will be made to
+     * re-establish failed connections.
      *
      * @return possible object is
      *         {@link String }
@@ -303,6 +391,10 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the nonTransactionalConnections property.
      *
+     * A pool with this property set to true returns non-transactional
+     * connections. This connection does not get automatically enlisted
+     * with the transaction manager.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -319,6 +411,16 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the allowNonComponentCallers property.
+     *
+     * A pool with this property set to true, can be used by non-J2EE components
+     * (i.e components other than EJBs or Servlets). The returned connection is
+     * enlisted automatically with the transaction context obtained from the
+     * transaction manager. This property is to enable the pool to be used by
+     * non-component callers such as ServletFilters, Lifecycle modules, and
+     * 3rd party persistence managers. Standard J2EE components can continue to
+     * use such pools. Connections obtained by non-component callers are not
+     * automatically cleaned at the end of a transaction by the container. They
+     * need to be explicitly closed by the the caller.
      *
      * @return possible object is
      *         {@link String }
@@ -337,6 +439,10 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the validateAtmostOncePeriodInSeconds property.
      *
+     * Used to set the time-interval within which a connection is validated
+     * atmost once. Default is 0 which implies that it is  not enabled.
+     * TBD: Documentation is to be corrected.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -355,6 +461,15 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the connectionLeakTimeoutInSeconds property.
+     *
+     * To aid user in detecting potential connection leaks by the application.
+     * When a connection is not returned back to the pool by the application
+     * within the specified period, it is assumed to be a potential leak and
+     * stack trace of the caller will be logged. Default is 0, which implies
+     * there is no leak detection, by default. A positive non-zero value turns
+     * on leak detection. Note however that, this attribute only detects if
+     * there is a connection leak. The connection can be reclaimed only if
+     * connection-leak-reclaim is set to true.
      *
      * @return possible object is
      *         {@link String }
@@ -375,6 +490,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the connectionLeakReclaim property.
      *
+     * If enabled, connection will be reusable (put back into pool) after
+     * connection-leak-timeout-in-seconds occurs. Default value is false.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -391,6 +509,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
 
     /**
      * Gets the value of the connectionCreationRetryAttempts property.
+     *
+     * The number of attempts to create a new connection.
+     * Default is 0, which implies no retries.
      *
      * @return possible object is
      *         {@link String }
@@ -411,6 +532,10 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the connectionCreationRetryIntervalInSeconds property.
      *
+     * The time interval between retries while attempting to create a connection
+     * Default is 10 seconds. Effective when connection-creation-retry-attempts
+     * is greater than 0.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -430,6 +555,10 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the statementTimeoutInSeconds property.
      *
+     * Sets the timeout property of a connection to enable termination of
+     * abnormally long running queries. Default value of -1 implies that it is
+     * not enabled.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -448,6 +577,11 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the lazyConnectionEnlistment property.
      *
+     * Enlist a resource to the transaction only when it is actually used in a
+     * method, which avoids enlistment of connections that are not used in a
+     * transaction. This also prevents unnecessary enlistment of connections
+     * cached in the calling components. Default value is false
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -465,6 +599,11 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the lazyConnectionAssociation property.
      *
+     * Connections are lazily associated when an operation is performed on them.
+     * Also, they are disassociated when the transaction is completed and a
+     * component method ends, which helps reuse of the physical connections.
+     * Default value is false.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -482,6 +621,11 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the associateWithThread property.
      *
+     * Associate a connection with the thread such that when the same thread is
+     * in need of a connection, it can reuse the connection already associated
+     * with that thread, thereby not incurring the overhead of getting a
+     * connection from the pool. Default value is false
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -499,6 +643,11 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the matchConnections property.
      *
+     * To switch on/off connection matching for the pool. It can be set to false
+     * if the administrator knows that the connections in the pool will always
+     * be homogeneous and hence a connection picked from the pool need not be
+     * matched by the resource adapter. Default value is false.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -516,6 +665,11 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the maxConnectionUsageCount property.
      *
+     * When specified, connections will be re-used by the pool for the specified
+     * number of times after which it will be closed. This is useful for
+     * instance, to avoid statement-leaks. Default value is 0, which implies the
+     * feature is not enabled.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -535,6 +689,10 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     /**
      * Gets the value of the wrapJdbcObjects property.
      *
+     * When set to true, application will get wrapped jdbc objects for
+     * Statement, PreparedStatement, CallableStatement, ResultSet,
+     * DatabaseMetaData. Defaults to false.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -568,7 +726,47 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     void setDescription(String value) throws PropertyVetoException;
 
     /**
-        Properties.  This list is likely incomplete as of 21 October 2008.
+     *   Properties.  This list is likely incomplete as of 21 October 2008.
+     *
+     * Most JDBC 2.0 drivers permit use of standard property lists, to specify
+     * User, Password and other resource configuration. While these are optional
+     * properties, according to the specification, several of these properties
+     * may be necessary for most databases. See Section 5.3 of JDBC 2.0 Standard
+     * Extension API.
+     * 
+     * The following are the names and corresponding values for these properties
+     * databaseName
+     *      Name of the Database
+     * serverName
+     *      Database Server name.
+     * port
+     *      Port where a Database server is listening for requests.
+     * networkProtocol
+     *      Communication Protocol used.
+     * user
+     *      default name of the database user with which connections
+     *      will be stablished. Programmatic database authentication
+     *      or default-resource-principal specified in vendor
+     *      specific web and ejb deployment descriptors will take
+     *      precedence, over this default. The details and caveats
+     *      are described in detail in the Administrator's guide.
+     * password
+     *      password for default database user
+     *  roleName
+     *      The initial SQL role name.
+     * datasourceName
+     *      used to name an underlying XADataSource, or ConnectionPoolDataSource
+     *      when pooling of connections is done 
+     * description
+     *      Textual Description
+     *
+     * When one or more of these properties are specified, they are passed as
+     * is using set<Name>(<Value>) methods to the vendors Datasource class
+     * (specified in datasource-classname). User and Password properties are
+     * used as default principal, if Container Managed authentication is
+     * specified and a default-resource-principal is not found in application
+     * deployment descriptors.
+     *
      */
 @PropertiesDesc(
     props={
@@ -594,6 +792,3 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     @Element
     List<Property> getProperty();
 }
-
-
-

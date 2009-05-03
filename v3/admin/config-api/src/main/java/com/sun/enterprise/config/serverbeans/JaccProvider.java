@@ -56,7 +56,9 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Defines the standard JACC properties used for setting up the JACC provider.
+ * It also allows optional properties which can be used by the provider
+ * implementation for its configuration.
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -68,6 +70,8 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the name property.
+     *
+     * A name for this jacc-provider. Is always "default" for default provider.
      *
      * @return possible object is
      *         {@link String }
@@ -87,6 +91,9 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the policyProvider property.
      *
+     * Corresponds to (and can be overridden by) the system property
+     * javax.security.jacc.policy.provider
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -104,6 +111,9 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the policyConfigurationFactoryProvider property.
+     *
+     * Corresponds to (and can be overridden by) the system property
+     * javax.security.jacc.PolicyConfigurationFactory.provider       
      *
      * @return possible object is
      *         {@link String }

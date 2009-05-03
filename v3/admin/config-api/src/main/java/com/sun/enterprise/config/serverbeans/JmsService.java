@@ -56,6 +56,11 @@ import org.glassfish.api.amx.AMXConfigInfo;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+/**
+ * The jms-service element specifies information about the bundled/built-in 
+ * JMS service that is managed by Application Server 
+ */
+
 /* @XmlType(name = "", propOrder = {
     "jmsHost",
     "property"
@@ -67,6 +72,11 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the initTimeoutInSeconds property.
      *
+     * specifies the time server instance will wait at start up, for its
+     * corresponding JMS service instance to respond. If there is no response
+     * within the specifies timeout period, application server startup is
+     * aborted. Default value of 60 seconds
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -85,6 +95,8 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the type property.
      *
+     * Type of JMS service
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -103,6 +115,9 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the startArgs property.
      *
+     * specifies the arguments that will be supplied to start up corresponding
+     * JMS service instance.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -119,6 +134,9 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the defaultJmsHost property.
+     *
+     * Reference to a jms-host that to be started when type of jms-service 
+     * is LOCAL.
      *
      * @return possible object is
      *         {@link String }
@@ -137,6 +155,8 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the reconnectIntervalInSeconds property.
      *
+     * Interval between reconnect attempts, in seconds. An integer.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -155,6 +175,8 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the reconnectAttempts property.
      *
+     * Total number of attempts to reconnect. An integer.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -172,6 +194,8 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the reconnectEnabled property.
      *
+     * Causes reconnect feature to be enabled (true) or disabled (false).
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -189,6 +213,12 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the addresslistBehavior property.
      *
+     * Determines broker selection from imqAddressList.
+     * random
+	 *      causes selection to be performed randomly
+     * priority
+	 *      causes selection to be performed sequentially
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -206,6 +236,9 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the addresslistIterations property.
      *
+     * Number of times reconnect logic should iterate imqAddressList.
+     * This property will not be used if the addresslist-behavior is "random".
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -224,6 +257,9 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the mqScheme property.
      *
+     * Scheme for establishing connection with broker. For e.g. scheme can be
+     * specified as "http" for connecting to MQ broker over http. Default: "mq"
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -241,6 +277,10 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the mqService property.
      *
+     * Type of broker service. If a broker supports ssl, then the type of
+     * service can be "ssljms". If nothing is specified, MQ will assume
+     * that service is "jms".
+     * 
      * @return possible object is
      *         {@link String }
      */

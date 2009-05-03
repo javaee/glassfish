@@ -59,7 +59,7 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * JDBC javax.sql.(XA)DataSource resource definition
  */
 
 /* @XmlType(name = "", propOrder = {

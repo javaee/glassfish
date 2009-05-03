@@ -58,7 +58,7 @@ import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 /**
- *
+ * Java Runtime environment configuration
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -72,6 +72,9 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the javaHome property.
      *
+     * Specifies the installation directory for Java runtime. 
+     * JDK 1.4 or higher is supported.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -89,6 +92,9 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the debugEnabled property.
      *
+     * If set to true, the server starts up in debug mode ready for attaching
+     * with a JPDA based debugger
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -106,6 +112,8 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the debugOptions property.
      *
+     * JPDA based debugging options string
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -123,6 +131,8 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the rmicOptions property.
      *
+     * Options string passed to RMI compiler, at application deployment time.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -139,6 +149,8 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the javacOptions property.
+     *
+     * Options string passed to Java compiler, at application deployment time.
      *
      * @return possible object is
      *         {@link String }
@@ -166,6 +178,8 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Sets the value of the classpathPrefix property.
      *
+     * A java classpath string that is prefixed to server-classpath
+     *
      * @param value allowed object is
      *              {@link String }
      */
@@ -174,6 +188,8 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the classpathSuffix property.
      *
+     * A java classpath string that is appended to server-classpath
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -191,6 +207,12 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the serverClasspath property.
      *
+     * A java classpath string that specifies the classes needed by the
+     * Application server. Do not expect users to change this under normal
+     * conditions. The shared application server classloader forms the final
+     * classpath by concatenating classpath-prefix, ${INSTALL_DIR}/lib,
+     * server-classpath, and classpath-suffix
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -207,6 +229,9 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the systemClasspath property.
+     *
+     * This classpath string supplied to the jvm at server startup.
+     * Contains appserv-launch.jar by default. Users may add to this classpath.
      *
      * @return possible object is
      *         {@link String }
@@ -225,6 +250,14 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the nativeLibraryPathPrefix property.
      *
+     * Prepended to the native library path, which is constructed internally
+     *
+     * Internally, the native library path is automatically constructed to be a
+     * concatenation of Application Server installation relative path for its
+     * native shared libraries, standard JRE native library path, the shell
+     * environment setting (LD-LIBRARY-PATH on Unix) and any path that may be
+     * specified in the profile element.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -242,6 +275,9 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the nativeLibraryPathSuffix property.
      *
+     * Appended to the native library path, which is constructed
+     * as described above
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -259,6 +295,11 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the bytecodePreprocessors property.
      *
+     * A comma separated list of classnames, each of which must implement the
+     * com.sun.appserv.BytecodePreprocessor interface. Each of the specified
+     * preprocessor class will be called in the order specified. At the moment
+     * the comelling use is for a 3rd party Performance Profiling tool.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -276,6 +317,11 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the envClasspathIgnored property.
      *
+     * If set to false, the CLASSPATH environment variable will be read and
+     * appended to the Application Server classpath, which is constructed as
+     * described above. The CLASSPATH environment variable will be added after
+     * the classpath-suffix, at the very end
+     * 
      * @return possible object is
      *         {@link String }
      */

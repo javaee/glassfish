@@ -34,8 +34,6 @@
  * holder.
  */
 
-
-
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
@@ -99,6 +97,8 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Sets the value of the host property.
      *
+     * ip V6 or V4 address or hostname
+     * 
      * @param value allowed object is
      *              {@link String }
      */
@@ -107,6 +107,8 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the port property.
      *
+     * Port number used by the JMS service
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -126,6 +128,8 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the adminUserName property.
      *
+     * Specifies the admin username
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -143,6 +147,8 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the adminPassword property.
      *
+     * Attribute specifies the admin password
+     * 
      * @return possible object is
      *         {@link String }
      */
