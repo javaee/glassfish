@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- configuration/threadPoolNew.jsf -->
+<!-- configuration/threadPoolEdit.jsf -->
 
 
 <!initPage
@@ -45,9 +45,14 @@
     <event>
     <!beforeCreate
         setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/threadPoolEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/threadPools.jsf");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        getThreadPoolAttr(configName="#{configName}", name="#{pageSession.Name}"  fromDefault="false" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/thread-pools,type=thread-pool,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools");
+        setPageSessionAttribute(key="childType" value="thread-pool");
+        getBeanAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         />
     </event>
 #include "/shared/restart.inc"
@@ -57,18 +62,9 @@
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolEditPageTitle}" helpText="$resource{i18n_web.configuration.threadPoolEditPageTitleHelp}">
-                    <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
-                        <!command
-                            getThreadPoolAttr(configName="#{configName}", fromDefault="true" valueMap="#{pageSession.valueMap}")
-                        />
-                    </sun:button>
-                    <!facet pageButtonsTop>
-                        <sun:panelGroup id="topButtons">
 #include "threadPoolButton.inc"
-                        </sun:panelGroup>
-                    </facet>
-                    </sun:title>
-                    "<br>
+                </sun:title>
+                "<br>
 
                 <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">
@@ -80,34 +76,31 @@
         </sun:property>
 
         <sun:property id="classname"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
-        <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['Classname']}" />
+            <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['Classname']}" />
         </sun:property>
 
-        <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
-        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['IdleThreadTimeout']}" />
-        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
-        </sun:property>
-
+       
         <sun:property id="max"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxQueue}" helpText="$resource{i18n_web.threadPool.maxQueueHelp}">
-        <sun:textField id="max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxQueueSize']}" />
+            <sun:textField id="max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxQueueSize']}" />
         </sun:property>
 
         <sun:property id="maxThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxThread}" helpText="$resource{i18n_web.threadPool.maxThreadHelp}">
-        <sun:textField id="maxThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxThreadPoolSize']}" />
+            <sun:textField id="maxThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxThreadPoolSize']}" />
         </sun:property>
 
         <sun:property id="minThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.minThread}" helpText="$resource{i18n_web.threadPool.minThreadHelp}">
-        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MinThreadPoolSize']}" />
+            <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MinThreadPoolSize']}" />
+        </sun:property>
+        
+         <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
+            <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['IdleThreadTimeoutSeconds']}" />
+            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
     </sun:propertySheetSection>
 
                     </sun:propertySheet>
-                <sun:title id="propertyContentPage2">
-                    <!facet pageButtonsBottom>
-   #include "/web/configuration/buttons.inc"
-                    </facet>
-                </sun:title>
+                
 	<sun:hidden id="helpKey" value="$resource{help_web.threadPoolEdit}" />
             </sun:form>
 </define>

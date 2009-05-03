@@ -33,17 +33,36 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- configuration/transactionServiceButtons.inc -->
-<!--
-<sun:panelGroup id="topButtons">
-    <sun:button id="saveButton" text="$resource{i18n.button.Save}"
-            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-         <!command
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            prepareSuccessfulMsg();
-            //saveNetworkListener(ConfigName="#{configName}"  attrs="#{pageSession.valueMap}" );
+<!-- grizzly/buttons.inc -->
+
+    <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
+        <!command
+            getDefaultBeanAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         />
     </sun:button>
-</sun:panelGroup>
--->
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                prepareSuccessfulMsg();
+                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}" );
+                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                />
+            </sun:button>
+
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    createBean(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                            attrs="#{pageSession.valueMap}"  );
+                    redirect(page="#{parentPage}?configName=#{configName}")
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    redirect(page="#{parentPage}?configName=#{configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>

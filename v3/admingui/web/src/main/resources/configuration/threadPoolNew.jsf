@@ -46,8 +46,12 @@
     <!beforeCreate
         setPageSessionAttribute(key="edit" value="#{false}" );
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getThreadPoolAttr(configName="#{configName}", fromDefault="true" valueMap="#{pageSession.valueMap}");
-        />
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/threadPoolNew.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/threadPools.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools" );
+        setPageSessionAttribute(key="childType" value="thread-pool");
+        getDefaultBeanAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+    />
     </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
@@ -56,30 +60,20 @@
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolNewPageTitle}" helpText="$resource{i18n_web.configuration.threadPoolNewPageTitleHelp}">
-                    <!facet pageButtonsTop>
-                        <sun:panelGroup id="topButtons">
 #include "threadPoolButton.inc"
-                        </sun:panelGroup>
-                    </facet>
-                    </sun:title>
-                    "<br>
+                </sun:title>
+                "<br>
 
-                <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.threadPool.nameHelp}">
-        <sun:textField id="name" styleClass="required" columns="$int{30}" text="#{pageSession.valueMap['name']}" />
+        <sun:textField id="name" styleClass="required" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
         </sun:property>
 
         <sun:property id="classname"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
         <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['Classname']}" />
-        </sun:property>
-
-        <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
-        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['IdleThreadTimeout']}" />
-        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="max"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxQueue}" helpText="$resource{i18n_web.threadPool.maxQueueHelp}">
@@ -94,14 +88,16 @@
         <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MinThreadPoolSize']}" />
         </sun:property>
 
+        <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
+        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['IdleThreadTimeoutSeconds']}" />
+        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+        </sun:property>
+
+
     </sun:propertySheetSection>
 
                     </sun:propertySheet>
-                <sun:title id="propertyContentPage2">
-                    <!facet pageButtonsBottom>
-   #include "/web/configuration/buttons.inc"
-                    </facet>
-                </sun:title>
+                
 	<sun:hidden id="helpKey" value="$resource{help_web.threadPoolNew}" />
             </sun:form>
 </define>

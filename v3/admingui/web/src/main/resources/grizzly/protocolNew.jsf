@@ -41,10 +41,61 @@
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
 <!define name="content">
+
+       <event>
+    <!beforeCreate
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolNew.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
+        setPageSessionAttribute(key="childType" value="protocol");
+        getDefaultBeanAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        />
+    </event>
+#include "/shared/restart.inc"
             <sun:form id="propertyForm">
+        //#include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
-                " Create Protocol (TBD)
+
+                <!-- Page Title -->
+                <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerNewPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerNewPageTitleHelp}">
+        <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    createBean(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                            attrs="#{pageSession.valueMap}"  );
+                    redirect(page="#{parentPage}?configName=#{configName}")
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    redirect(page="#{parentPage}?configName=#{configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
+                    </sun:title>
+                    "<br><br>
+
+<sun:propertySheet id="propertySheet">
+    <!-- Text Field section -->
+    <sun:propertySheetSection id="propertSectionTextField">
+
+        <sun:property id="nameNew"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
+            <sun:textField id="name"  rendered="#{Edit}" required="#{true}" columns="$int{10}" text="#{pageSession.valueMap['Name']}" />
+        </sun:property>
+
+        <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}" >
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['SecurityEnabled']}" selectedValue="true" />
+        </sun:property>
+        </sun:propertySheetSection>
+</sun:propertySheet> 
+
+    <sun:hidden id="helpKey" value="$resource{help_web.protocolNew}" />
             </sun:form>
+
 </define>
 </composition>
 

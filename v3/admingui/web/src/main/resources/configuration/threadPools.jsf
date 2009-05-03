@@ -93,7 +93,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.threadPool.timeoutCol}"  rowHeader="$boolean{true}" id="idle">
-        <staticText id="idle" value="#{td.value.IdleThreadTimeout}" />
+        <staticText id="idle" value="#{td.value.IdleThreadTimeoutSeconds}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

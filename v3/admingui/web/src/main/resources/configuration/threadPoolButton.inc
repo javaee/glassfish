@@ -34,24 +34,37 @@
  holder.
 -->
 
-        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" 
-                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-            <!command
-            prepareSuccessfulMsg();
-            saveThreadPoolAttr(configName="#{pageSession.configName}"  attrs="#{pageSession.valueMap}" Edit="#{pageSession.edit}" );
-            redirect(page="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{Name}&configName=$pageSession{configName}");
-            />    
-        </sun:button>
-
-    <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" 
-            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
+    <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
         <!command
-            saveThreadPoolAttr(configName="#{pageSession.configName}"  attrs="#{pageSession.valueMap}" Edit="#{pageSession.edit}" );
-            redirect(page="#{request.contextPath}/web/configuration/threadPools.jsf?configName=#{configName}")
+            getDefaultBeanAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         />
     </sun:button>
-    <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-        <!command
-            redirect(page="#{request.contextPath}/web/configuration/threadPools.jsf?configName=#{configName}");
-        />
-  </sun:button>
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                prepareSuccessfulMsg();
+                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                             );
+                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{Name}&configName=$pageSession{configName}");
+                />
+            </sun:button>
+
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    createBean(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}" 
+                            attrs="#{pageSession.valueMap}" 
+                            //skipAttrs={"IdleThreadTimeoutSeconds","MaxQueueSize","MaxThreadPoolSize", "MinThreadPoolSize" }
+                     );
+                    redirect(page="#{parentPage}?configName=#{configName}")
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    redirect(page="#{parentPage}?configName=#{configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>

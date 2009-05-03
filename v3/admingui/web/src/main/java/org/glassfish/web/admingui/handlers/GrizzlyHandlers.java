@@ -53,9 +53,10 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 
 
+import javax.management.ObjectName;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.ConfigConfig;
-import org.glassfish.admin.amx.intf.config.ConfigsConfig;
 import org.glassfish.admin.amx.intf.config.ThreadPoolConfig;
 import org.glassfish.admin.amx.intf.config.ThreadPoolsConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
@@ -157,7 +158,7 @@ public class GrizzlyHandlers {
                 oneRow.put("MinThreadPoolSize", getA(attrs, "MinThreadPoolSize"));
                 oneRow.put("MaxThreadPoolSize", getA(attrs, "MaxThreadPoolSize"));
                 oneRow.put("MaxQueueSize", getA(attrs, "MaxQueueSize"));
-                oneRow.put("IdleThreadTimeout", getA(attrs, "IdleThreadTimeout"));
+                oneRow.put("IdleThreadTimeoutSeconds", getA(attrs, "IdleThreadTimeoutSeconds"));
                 oneRow.put("selected", false);
                 result.add(oneRow);
             }catch(Exception ex){
@@ -232,63 +233,147 @@ public class GrizzlyHandlers {
         }
     }
 
-    
-
-
-    @Handler(id="getThreadPoolAttr",
+    @Handler(id="getBeanAttrs",
     input={
-        @HandlerInput(name="configName",   type=String.class, required=true),
-        @HandlerInput(name="name",   type=String.class),
-        @HandlerInput(name="fromDefault",   type=String.class)},
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
     output={
         @HandlerOutput(name="valueMap",        type=Map.class)})
 
-        public static void getThreadPoolAttr(HandlerContext handlerCtx) {
+        public static void getBeanAttrs(HandlerContext handlerCtx) {
         try{
-            String fromDefault = (String) handlerCtx.getInputValue("fromDefault");
-            Map attrs = null;
-            ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
-            ThreadPoolsConfig tps = config.getThreadPools();
-            if ( GuiUtil.isEmpty(fromDefault) || fromDefault.equals("false")){
-                String name = (String) handlerCtx.getInputValue("name");
-                ThreadPoolConfig tp = tps.getThreadPool().get(name);
-                attrs = tp.attributesMap();
-            } else {
-                attrs = tps.getDefaultValues("thread-pool", true);
-            }
-            handlerCtx.setOutputValue("valueMap", attrs);
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+            handlerCtx.setOutputValue("valueMap", amx.attributesMap());
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
-    @Handler(id="saveThreadPoolAttr",
+
+    @Handler(id="getDefaultBeanAttrs",
     input={
-        @HandlerInput(name="configName",   type=String.class, required=true),
+        @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
+        @HandlerInput(name="childType",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="valueMap",        type=Map.class)})
+
+        public static void getDefaultBeanAttrs(HandlerContext handlerCtx) {
+        try{
+	    
+            boolean calltest=false;
+
+            String parentName = (String) handlerCtx.getInputValue("parentObjectNameStr");
+            if (calltest){
+		AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
+		
+		String type = "file-cache";
+        System.out.println("type = " + type);
+        System.out.println("objectName = " + parentName);
+		Map mm = amx.getDefaultValues(type, true);
+        System.out.println(mm);
+	    }
+            String childType = (String) handlerCtx.getInputValue("childType");
+            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
+            Map valueMap = amx.getDefaultValues(childType, true);
+            handlerCtx.setOutputValue("valueMap", valueMap);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
+    @Handler(id="saveBeanAttributes",
+    input={
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
         @HandlerInput(name="attrs",   type=Map.class),
-        @HandlerInput(name="Edit",   type=Boolean.class)})
-        public static void saveThreadPoolAttr(HandlerContext handlerCtx) {
+        @HandlerInput(name="skipAttrs",   type=List.class) } )
+        public static void saveBeanAttributes(HandlerContext handlerCtx) {
         try{
             Map attrs = (Map) handlerCtx.getInputValue("attrs");
-            Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
-            ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
-            ThreadPoolsConfig tps = config.getThreadPools();
-            if (edit){
-                String name = (String) attrs.get("Name");
-                ThreadPoolConfig tpc = tps.getThreadPool().get(name);
-                tpc.setClassname(getA(attrs, "Classname"));
-                tpc.setIdleThreadTimeoutSeconds(getA(attrs, "IdleThreadTimeout"));
-                tpc.setMaxQueueSize(getA(attrs, "MaxQueueSize"));
-                tpc.setMinThreadPoolSize(getA(attrs, "MinThreadPoolSize"));
-                tpc.setMaxThreadPoolSize(getA(attrs, "MaxThreadPoolSize"));
-            }else{
-                tps.createChild("thread-pool", attrs);
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
+            if (skipAttrs != null){
+                for(String sk : skipAttrs){
+                    if (attrs.keySet().contains(sk)){
+                        attrs.remove(sk);
+                    }
+                }
             }
+            V3AMX.setAttributes( objectNameStr, attrs);
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
+
+    @Handler(id="createBean",
+    input={
+        @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
+        @HandlerInput(name="childType",   type=String.class, required=true),
+        @HandlerInput(name="attrs",   type=Map.class),
+        @HandlerInput(name="skipAttrs",   type=List.class)})
+        public static void createBean(HandlerContext handlerCtx) {
+        try{
+            final String childType = (String) handlerCtx.getInputValue("childType");
+            Map attrs = (Map) handlerCtx.getInputValue("attrs");
+            String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
+            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
+            List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
+            if (skipAttrs != null){
+                for(String sk : skipAttrs){
+                    if (attrs.keySet().contains(sk)){
+                        attrs.remove(sk);
+                    }
+                }
+            }
+            System.out.println("========createChild========");
+            System.out.println(amx.toString());
+            System.out.println("childType = " + childType);
+            System.out.println(attrs);
+            amx.createChild( childType,attrs);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
+    @Handler(id="createObjectName",
+    input={
+        @HandlerInput(name="value",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="result",        type=String.class)})
+
+        public static void createObjectName(HandlerContext handlerCtx) {
+        try{
+            String value = (String) handlerCtx.getInputValue("value");
+            String value1 = value.replaceAll("<", "[");
+            String result  = value1.replaceAll(">", "]");
+            handlerCtx.setOutputValue("result",result);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+    
+    @Handler(id="getChildrenByType",
+    input={
+        @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
+        @HandlerInput(name="type",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="result",        type=List.class)})
+
+        public static void getChildrenByType(HandlerContext handlerCtx) {
+        try{
+            String type = (String) handlerCtx.getInputValue("type");
+            String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
+            List result = new ArrayList();
+            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
+            Map<String, AMXProxy> childrenMap = amx.childrenMap(type);
+            result.addAll(childrenMap.keySet());
+            handlerCtx.setOutputValue("result",result);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
     
     //mbean Attribute Name
     private static List httpServiceSkipPropsList = new ArrayList();

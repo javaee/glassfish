@@ -76,8 +76,8 @@
 </dynamicTreeNode>
 <dynamicTreeNode id="threadPools"
     treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-    objectName="amx:j2eeType=X-ThreadPoolsConfig,name=na,X-ConfigConfig=$pageSession{configName}"
-    methodName="getThreadPoolConfigMap"
+    objectName="v3:pp=/domain/configs/config[server-config],type=thread-pools"
+    methodName="getChildren"
     childImageURL="/resource/web/images/threadPool.gif"
     childExpanded="$boolean{false}"
     childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"

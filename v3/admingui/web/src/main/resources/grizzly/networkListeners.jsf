@@ -89,7 +89,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.threadPoolCol}" sort="ThreadPool" rowHeader="$boolean{true}" id="threadPool">
-        <sun:hyperlink id="link" text="#{td.value.ThreadPool}" url="#{request.contextPath}/web/grizzly/threadPoolEdit.jsf?Name=#{td.value.ThreadPool}" />
+        <sun:hyperlink id="link" text="#{td.value.ThreadPool}" url="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?name=#{td.value.ThreadPool}" />
     </sun:tableColumn>
 
     <sun:tableColumn  headerText="$resource{i18n_web.grizzly.table.enabledCol}" sort="enabled" rowHeader="$boolean{true}" id="col22">
