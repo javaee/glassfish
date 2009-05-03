@@ -85,7 +85,7 @@ public class AppUtil {
     }
 
 
-    static  public List sniffersHide = new ArrayList();
+    static final public List sniffersHide = new ArrayList();
     static {
         sniffersHide.add("security");
     }
