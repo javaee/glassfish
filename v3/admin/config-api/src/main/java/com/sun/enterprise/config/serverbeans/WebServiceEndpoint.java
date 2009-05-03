@@ -52,7 +52,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * This specifies configuration for a web service end point. This web service
+ * end point could be JAXRPC or JSR-109 web service. It contains configuration
+ * about Monitoring, Transformation rules and Monitoring Log
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -66,6 +68,13 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the name property.
      *
+     * fully qualified web service name. Format:
+     * |ModuleName|#|EndpointName|, if the web service endpoint belongs to an
+     * application. (Parent of this element is j2ee-application).
+     * |EndpointName|, if the web service endpoint belongs to stand alone
+     * ejb-module or web-module (Parent of this element is either ejb-module
+     * or web-module).
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -84,6 +93,8 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the monitoring property.
      *
+     * Monitoring level for this web service.
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -100,6 +111,8 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the maxHistorySize property.
+     *
+     * Maximum number of monitoring records stored in history for this end point
      *
      * @return possible object is
      *         {@link String }
@@ -119,6 +132,8 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the jbiEnabled property.
      *
+     * If true, it enables the visibility of this endoint as a service in JBI.
+     * 
      * @return possible object is
      *         {@link String }
      */

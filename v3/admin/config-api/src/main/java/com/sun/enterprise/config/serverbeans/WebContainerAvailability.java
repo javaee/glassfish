@@ -54,7 +54,7 @@ import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 /**
- *
+ * web-container-availability SE/EE only
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -68,6 +68,15 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the availabilityEnabled property.
      *
+     * This boolean flag controls whether availability is enabled for HTTP
+     * session persistence. If this is "false", then session persistence is
+     * disabled for all web modules in j2ee apps and stand-alone web modules.
+     * If it is "true" (and providing that the global availability-enabled in
+     * availability-service is also "true", then j2ee apps and stand-alone web
+     * modules may be ha enabled. Finer-grained control exists at lower levels.
+     * If this attribute is missing, it "inherits" the value of the global
+     * availability-enabled under availability-service.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -85,6 +94,9 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the persistenceType property.
      *
+     * Specifies the session persistence mechanism for web applications that
+     * have availability enabled. Default is "memory".
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -102,6 +114,10 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the persistenceFrequency property.
      *
+     * The persistence frequency used by the session persistence framework,
+     * when persistence-type = "ha". Values may be "time-based" or "web-event"
+     * If it is missing, then the persistence-type will revert to "memory".
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -119,6 +135,11 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the persistenceScope property.
      *
+     * The persistence scope used by the session persistence framework, when
+     * persistence-type = "ha". Values may be "session", "modified-session",
+     * "modified-attribute". If it is missing, then the persistence-type will
+     * revert to "memory".
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -136,6 +157,10 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the persistenceStoreHealthCheckEnabled property.
      *
+     * Deprecated. This attribute has no effect. If you wish to control
+     * enabling/disabling HADB health check, refer to store-healthcheck-enabled
+     * attribute in the availability-service element.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -153,6 +178,8 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the ssoFailoverEnabled property.
      *
+     * Controls whether Single-Sign-On state will be made available for failover
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -170,6 +197,11 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     /**
      * Gets the value of the httpSessionStorePoolName property.
      *
+     * This is the jndi-name for the JDBC Connection Pool used by the HTTP
+     * Session Persistence Framework. If missing, internal code will default it
+     * to value of store-pool-name under availability-service
+     * (ultimately "jdbc/hastore").
+     * 
      * @return possible object is
      *         {@link String }
      */

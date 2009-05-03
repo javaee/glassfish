@@ -67,6 +67,12 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glass
     /**
      * Gets the value of the contextRoot property.
      *
+     * context-root must match the pattern for the hpath production in RFC 1738
+     * which can be found at: ttp://www.w3.org/Addressing/rfc1738.txt.
+     * This is flattened to the following regular expression in XML Schema's
+     * pattern language: The validation process however, does not impose any
+     * restrictions on the choice of context-root.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -137,6 +143,14 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glass
     /**
      * Gets the value of the libraries property.
      *
+     * System dependent path separator[: for Unix/Solaris/Linux & ; for Windows]
+     * separated list of jar paths. These paths could be either relative
+     * [relative to {com.sun.aas.instanceRoot}/lib/applibs] or absolute paths.
+     * These dependencies appears *after* the libraries defined in
+     * classpath-prefix in the java-config and *before* the application server
+     * provided over-rideable jar set. The libraries would be made available to
+     * the application in the order in which they were specified
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -154,6 +168,15 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glass
     /**
      * Gets the value of the availabilityEnabled property.
      *
+     * Controls whether availability is enabled for HTTP Session Persistence.
+     * If this is "false", then all session persistence is disabled for the
+     * given web module. If it is "true" (and providing that all the
+     * availability-enabled attributes above in precedence are also "true", then
+     * the web module may be ha enabled. Finer-grained control exists at lower
+     * level (see sun-web.xml).
+     *
+     * If this attribute is missing, it defaults to "false"
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -171,6 +194,8 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glass
     /**
      * Gets the value of the directoryDeployed property.
      *
+     * Indicates whether the application has been deployed to a directory or not
+     * 
      * @return possible object is
      *         {@link String }
      */
