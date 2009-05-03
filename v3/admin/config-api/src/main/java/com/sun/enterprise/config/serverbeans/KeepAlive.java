@@ -52,7 +52,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 /**
- *
+ * Keep-alive subsystem configuration
  */
 
 /* @XmlType(name = "") */
@@ -64,6 +64,8 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the threadCount property.
      *
+     * Number of Keep Alive threads in the system
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -83,6 +85,8 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the maxConnections property.
      *
+     * Max no of connection in the Keep Alive mode
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -102,6 +106,9 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the timeoutInSeconds property.
      *
+     * Keep Alive timeout , max time a connection can be deemed as idle and
+     * kept in the keep-alive state
+     * 
      * @return possible object is
      *         {@link String }
      */
