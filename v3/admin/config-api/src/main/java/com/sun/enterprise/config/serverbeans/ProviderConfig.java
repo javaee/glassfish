@@ -52,8 +52,15 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 
 import javax.validation.constraints.NotNull;
+
 /**
+ * The provider-config element defines the configuration of an authentication
+ * provider
  *
+ * A provider-config with no contained request-policy or response-policy
+ * sub-elements, is a null provider. The container will not instantiate or
+ * invoke the methods of a null provider, and as such the implementation class
+ * of a null provider need not exist
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -68,6 +75,8 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
     /**
      * Gets the value of the providerId property.
      *
+     * Identifier used to uniquely identify this provider-config element
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -86,6 +95,9 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
     /**
      * Gets the value of the providerType property.
      *
+     * Defines whether the provider is a client authentication provider or a
+     * server authentication provider.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -104,6 +116,17 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
     /**
      * Gets the value of the className property.
      *
+     * Defines the java implementation class of the provider.
+     *
+     * Client authentication providers must implement the
+     * com.sun.enterprise.security.jauth.ClientAuthModule interface.
+     *
+     * Server-side providers must implement the
+     * com.sun.enterprise.security.jauth.ServerAuthModule interface.
+     *
+     * A provider may implement both interfaces, but it must implement the
+     * interface corresponding to its provider type.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -122,6 +145,9 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
     /**
      * Gets the value of the requestPolicy property.
      *
+     * Defines the authentication policy requirements associated with request
+     * processing performed by the authentication provider
+     * 
      * @return possible object is
      *         {@link RequestPolicy }
      */
@@ -138,6 +164,9 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
 
     /**
      * Gets the value of the responsePolicy property.
+     *
+     * Defines the authentication policy requirements associated with the
+     * response processing performed by the authentication provider.
      *
      * @return possible object is
      *         {@link ResponsePolicy }

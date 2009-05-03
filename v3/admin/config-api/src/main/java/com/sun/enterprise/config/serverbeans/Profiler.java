@@ -57,6 +57,16 @@ import javax.validation.constraints.NotNull;
 
 /**
  *
+ * Profilers could be one of jprobe, optimizeit, hprof, wily and so on
+ * jvm-options and property elements are used to record the settings needed to
+ * get a particular profiler going. A server instance is tied to a particular
+ * profiler, by the profiler element in java-config. Changing the profiler will
+ * require a server restart
+ *
+ * The adminstrative graphical interfaces, could list multiple supported
+ * profilers (incomplete at this point) and will populate server.xml
+ * appropriately.
+ * 
  */
 
 /* @XmlType(name = "", propOrder = {

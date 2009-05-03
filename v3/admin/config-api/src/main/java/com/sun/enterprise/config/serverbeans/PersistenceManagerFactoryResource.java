@@ -55,7 +55,7 @@ import org.glassfish.quality.ToDo;
 
 
 /**
- *
+ * Persistence Manager runtime configuration
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -69,6 +69,8 @@ public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Inje
     /**
      * Gets the value of the factoryClass property.
      *
+     * Class that creates persistence manager instance
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -85,6 +87,8 @@ public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Inje
 
     /**
      * Gets the value of the jdbcResourceJndiName property.
+     *
+     * jdbc resource with which database connections are obtained
      *
      * @return possible object is
      *         {@link String }
