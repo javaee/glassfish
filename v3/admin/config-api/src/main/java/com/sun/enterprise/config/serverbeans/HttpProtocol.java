@@ -50,11 +50,17 @@ import java.beans.PropertyVetoException;
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPProtocolConfig", singleton=true)
 @Configured
 @Deprecated
+
+/**
+ * HTTP Protocol related settings
+ */
 public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the version property.
      *
+     * The version of the HTTP protocol used by the HTTP Service
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -72,6 +78,9 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the dnsLookupEnabled property.
      *
+     * If the DNS name for a particular ip address from which the request
+     * originates needs to be looked up.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -89,6 +98,10 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the forcedType property.
      *
+     * The response type to be forced if the content served cannot be matched by
+     * any of the MIME mappings for extensions. Specified as a semi-colon
+     * delimited string consisting of content-type, encoding, language, charset
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -106,6 +119,9 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the defaultType property.
      *
+     * Setting the default response-type. Specified as a semi-colon delimited
+     * string consisting of content-type, encoding, language, charset
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -123,6 +139,8 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the forcedResponseType property.
      *
+     * This attribute is deprecated. Use forced-type instead
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -140,6 +158,8 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the defaultResponseType property.
      *
+     * This attribute is deprecated. Use default-type instead
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -157,6 +177,8 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the sslEnabled property.
      *
+     * Globally enables SSL across the server
+     * 
      * @return possible object is
      *         {@link String }
      */

@@ -73,6 +73,8 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the id property.
      *
+     * if false, a configured listener, is disabled
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -92,6 +94,8 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the address property.
      *
+     * ip V6 or V4 address or hostname
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -110,6 +114,8 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the port property.
      *
+     * Port number
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -129,6 +135,9 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the securityEnabled property.
      *
+     * Determines whether the iiop listener runs SSL. You can turn 
+     * SSL2 or SSL3 on or off and set ciphers using an ssl element
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -146,6 +155,8 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the enabled property.
      *
+     * if false, a configured listener, is disabled
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -163,6 +174,9 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the ssl property.
      *
+     * Specifies optional SSL configuration. Note that the ssl2 ciphers are not
+     * supported for iiop, and therefore must be disabled
+     * 
      * @return possible object is
      *         {@link Ssl }
      */

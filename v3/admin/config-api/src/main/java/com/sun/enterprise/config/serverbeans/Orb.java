@@ -55,8 +55,9 @@ import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
+
 /**
- *
+ * Orb Configuration properties
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -70,6 +71,12 @@ public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
      * Gets the value of the useThreadPoolIds property.
      * Specifies a comma-separated list of thread-pool ids.
      *
+     * This would refer to the thread-pool-id(s) defined in the thread-pool
+     * sub-element of thread-pool-config element in domain.xml. These would be
+     * the threadpool(s) used by the ORB. More than one thread-pool-id(s) could
+     * be specified by using commas to separate the names
+     * e.g. orb-thread-pool-1, orb-thread-pool-2
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -87,6 +94,9 @@ public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the messageFragmentSize property.
+     *
+     * GIOPv1.2 messages larger than this will get fragmented.
+     * Minimum value is 128.
      *
      * @return possible object is
      *         {@link String }
@@ -106,6 +116,8 @@ public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Gets the value of the maxConnections property.
      *
+     * Maximum number of incoming connections, on all listeners
+     * 
      * @return possible object is
      *         {@link String }
      */
