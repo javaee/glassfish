@@ -62,6 +62,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 /**
  *
+ * J2EE Application Server Configuration
+ *
+ * Each Application Server instance is a J2EEv1.4 compliant container. One
+ * server instance is specially designated as the Administration Server in SE/EE
+ *
+ * User applications cannot be deployed to an Administration Server instance
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -75,11 +81,12 @@ import javax.validation.constraints.Min;
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
     /**
-     *  Name of the configured object
+     * Name of the server instance.                                  
      *
      * @return name of the configured object
-     FIXME: should set 'key=true'.  See bugs 6039, 6040
+     * 
      */
+    // FIXME: should set 'key=true'.  See bugs 6039, 6040
     @Attribute
     @NotNull
     String getName();
@@ -88,6 +95,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     /**
      * Gets the value of the configRef property.
+     *
+     * Points to a named config. Needed for stand-alone servers. If server
+     * instance is part of a cluster, then it must not be present, 
+     * and will be ignored.
      *
      * @return possible object is
      *         {@link String }
@@ -106,6 +117,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     /**
      * Gets the value of the nodeAgentRef property.
      *
+     * SE/EE only. Specifies name of node agent where server instance is hosted
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -123,6 +136,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     /**
      * Gets the value of the lbWeight property.
      *
+     * Each server instance in a cluster has a weight, which may be used to
+     * represent the relative processing capacity of that instance. Default
+     * weight is 100 for every instance. Weighted load balancing policies will
+     * use this weight while load balancing requests within the cluster.
+     * It is the responsibility of the administrator to set the relative weights
+     * correctly, keeping in mind deployed hardware capacity
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -140,6 +160,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     /**
      * Gets the value of the applicationRef property.
+     *
+     * References to applications deployed to the server instance
+     *
      * <p/>
      * <p/>
      * This accessor method returns a reference to the live list,
@@ -163,6 +186,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     /**
      * Gets the value of the resourceRef property.
+     *
+     * References to resources deployed to the server instance
+     *
      * <p/>
      * <p/>
      * This accessor method returns a reference to the live list,

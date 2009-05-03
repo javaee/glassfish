@@ -64,6 +64,8 @@ public interface ServerRef extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the ref property.
      *
+     * A reference to the name of a server defined elsewhere
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -83,6 +85,9 @@ public interface ServerRef extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the disableTimeoutInMinutes property.
      *
+     * The time, in minutes, that it takes this server to reach a quiescent
+     * state after having been disabled
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -100,6 +105,9 @@ public interface ServerRef extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the lbEnabled property.
      *
+     * Causes any and all load-balancers using this server to consider this
+     * server unavailable to them. Defaults to unavailable(false)
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -116,6 +124,9 @@ public interface ServerRef extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the enabled property.
+     *
+     * A boolean flag that causes the server to be enabled to serve end-users,
+     * or not. Default is to be enabled (true)
      *
      * @return possible object is
      *         {@link String }

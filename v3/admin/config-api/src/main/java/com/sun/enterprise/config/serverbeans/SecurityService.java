@@ -56,6 +56,15 @@ import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 
+/**
+ * The security service element defines parameters and configuration information
+ * needed by the core J2EE security service. Some container-specific security
+ * configuration elements are in the various container configuration elements
+ * and not here. SSL configuration is also elsewhere. At this time the security
+ * service configuration consists of a set of authentication realms. A number of
+ * top-level attributes are defined as well
+ * 
+ */
 /* @XmlType(name = "", propOrder = {
     "authRealm",
     "jaccProvider",
@@ -70,6 +79,9 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the defaultRealm property.
      *
+     * Specifies which realm (by name) is used by default when no realm is
+     * specifically requested. The file realm is the common default
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -87,6 +99,9 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the defaultPrincipal property.
      *
+     * Used as the identity of default security contexts when necessary and
+     * no principal is provided
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -104,6 +119,8 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the defaultPrincipalPassword property.
      *
+     * Password of default principal
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -121,6 +138,8 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the anonymousRole property.
      *
+     * This attribute is deprecated.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -138,6 +157,9 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the auditEnabled property.
      *
+     * If true, additional access logging is performed to provide
+     * audit information
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -154,7 +176,10 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
 
     /**
      * Gets the value of the jacc property.
-     *
+     * Specifies the name of the jacc-provider element to use for setting up the
+     * JACC infrastructure. The default value "default" does not need to be
+     * changed unless adding a custom JACC provider.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -172,6 +197,9 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the auditModules property.
      *
+     * Optional list of audit provider modules which will be used by the audit
+     * subsystem. Default value refers to the internal log-based audit module
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -189,6 +217,13 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Gets the value of the activateDefaultPrincipalToRoleMapping property.
      *
+     * Causes the appserver to apply a default principal to role mapping, to any
+     * application that does not have an application specific mapping defined.
+     * Every role is mapped to a same-named (as the role) instance of a
+     * java.security.Principal implementation class (see mapped-principal-class)
+     * This behavior is similar to that of Tomcat servlet container.
+     * It is off by default.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -208,6 +243,14 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
      * when activate-default-principal-to-role-mapping is set to true.
      * Should the default be set to com.sun.enterprise.deployment.Group?
      *
+     * This attribute is used to customize the java.security.Principal
+     * implementation class used in the default principal to role mapping.
+     * This attribute is optional. When it is not specified,
+     * com.sun.enterprise.deployment.Group implementation of
+     * java.security.Principal is used. The value of this attribute is only
+     * relevant when the activate-default principal-to-role-mapping attribute
+     * is set to true
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -293,6 +336,10 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
 
     /**
      * Gets the value of the messageSecurityConfig property.
+     *
+     * Optional list of layer specific lists of configured
+     * message security providers.
+     * 
      * <p/>
      * <p/>
      * This accessor method returns a reference to the live list,

@@ -55,7 +55,7 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 
 /**
- *
+ * Configuration for Transaction Manager
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -67,6 +67,8 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, org.gla
 
     /**
      * Gets the value of the automaticRecovery property.
+     *
+     * If true, server instance attempts recovery at restart
      *
      * @return possible object is
      *         {@link String }
@@ -85,6 +87,10 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, org.gla
     /**
      * Gets the value of the timeoutInSeconds property.
      *
+     * amount of time the transaction manager waits for response from a
+     * datasource participating in transaction.
+     * A value of 0 implies infinite timeout
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -102,6 +108,12 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, org.gla
     /**
      * Gets the value of the txLogDir property.
      *
+     * Transaction service creates a sub directory 'tx' under tx-log-dir to
+     * store the transaction logs. The default value of the tx-log-dir is
+     * $INSTANCE-ROOT/logs. If this attribute is not explicitly specified in the
+     * <transaction-service> element, 'tx' sub directory will be created under
+     * the path specified in log-root attribute of <domain> element.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -119,6 +131,9 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, org.gla
     /**
      * Gets the value of the heuristicDecision property.
      *
+     * During recovery, if outcome of a transaction cannot be determined from
+     * the logs, then this property is used to fix the outcome
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -136,6 +151,18 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, org.gla
     /**
      * Gets the value of the retryTimeoutInSeconds property.
      *
+     * Used to determine the retry time in the following scenarios.
+     * 
+     * 1 Time to wait at the transaction recovery time, when resources are
+     *   unreachable.
+     * 2 If there are any transient exceptions in the second phase of the
+     *   two PC protocol.
+     *
+     * A negative value indicates infinite retry. '0' indicates no retry.
+     * A positive value indicates the number of seconds for which retry will be
+     * attempted. Default is 10 minutes which may be appropriate for a database
+     * being restarted
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -153,6 +180,15 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, org.gla
     /**
      * Gets the value of the keypointInterval property.
      *
+     * property used to specify the number of transactions between keypoint
+     * operations on the log. A Keypoint operations could reduce the size of the
+     * transaction log files. A larger value for this property
+     * (for example, 1000) will result in larger transaction log files,
+     * between log compactions, but less keypoint operations, and potentially
+     * better performance. A smaller value (e.g. 20) results in smaller log
+     * files but slightly reduced performance due to the greater frequency of
+     * keypoint operations.
+     * 
      * @return possible object is
      *         {@link String }
      */

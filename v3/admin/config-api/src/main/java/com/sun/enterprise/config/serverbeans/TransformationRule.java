@@ -49,7 +49,7 @@ import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Specifies configuration for a XSLT transformation rule
  */
 
 /* @XmlType(name = "") */
@@ -59,6 +59,8 @@ public interface TransformationRule extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the name property.
+     *
+     * Name of the transformation rule
      *
      * @return possible object is
      *         {@link String }
@@ -78,6 +80,8 @@ public interface TransformationRule extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the enabled property.
      *
+     * If false, this transformation rule is disabled
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -94,6 +98,13 @@ public interface TransformationRule extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the applyTo property.
+     *
+     * - "request": transformations are applied to request in the order
+     *   in which they are specified.
+     * - "response": transformation is applied to response in the order in
+         which they are specified.
+     * - "both": transformation rule is applied to request and response. The
+     *   order is reversed for response.
      *
      * @return possible object is
      *         {@link String }
@@ -112,6 +123,11 @@ public interface TransformationRule extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the ruleFileLocation property.
      *
+     * Location of rule file to do transformation. Only XSLT files are allowed.
+     * Default is:
+     * ${com.sun.aas.instanceRoot}/generated/xml/<appOrModule>/<xslt-ilename>/
+     * Absolute paths can also be specified
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -126,7 +142,4 @@ public interface TransformationRule extends ConfigBeanProxy, Injectable  {
      *              {@link String }
      */
     public void setRuleFileLocation(String value) throws PropertyVetoException;
-
-
-
 }

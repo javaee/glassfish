@@ -47,8 +47,9 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
+
 /**
- *
+ * Syntax for supplying system properties as name value pairs        
  */
 
 /* @XmlType(name = "", propOrder = {

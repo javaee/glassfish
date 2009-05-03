@@ -55,7 +55,19 @@ import org.jvnet.hk2.config.Element;
 
 import javax.validation.constraints.NotNull;
 
-
+/**
+ * Configuration of Virtual Server
+ *
+ * Virtualization in Application Server allows multiple URL domains to be
+ * served by the same HTTP server process, which is listening on multiple
+ * host addresses If an application is available at two virtual servers,
+ * they still share same physical resource pools, such as JDBC connection pools.
+ * Sun ONE Application Server allows a list of virtual servers, to be specified
+ * along with web-module and j2ee-application elements. This establishes an
+ * association between URL domains, represented by the virtual server and the
+ * web modules (standalone web modules or web modules inside the ear file)
+ *
+ */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.VirtualServerConfig")
 @Configured
 public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag {
@@ -63,6 +75,9 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the value of the id property.
      *
+     * Virtual server ID. This is a unique ID that allows lookup of a specific
+     * virtual server. A virtual server ID cannot begin with a number.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -81,6 +96,9 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the value of the httpListeners property.
      *
+     * Comma-separated list of http-listener id(s), Required only for a
+     * Virtual Server that is not the default virtual server.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -117,6 +135,8 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the value of the defaultWebModule property.
      *
+     * Stand alone web module associated with this virtual server by default
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -134,6 +154,10 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the value of the hosts property.
      *
+     * A comma-separated list of values allowed in the Host request header to
+     * select current virtual server. Each Virtual Server that is configured to
+     * the same Connection Group must have a unique hosts value for that group.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -152,6 +176,16 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the value of the state property.
      *
+     * Determines whether Virtual Server is active(on) or inactive(off, disable)
+     * The default is on (active). When inactive, a Virtual Server does not
+     * service requests.
+     * off
+     *      returns a 404: Status code (404) indicating that the requested
+     *      resource is not available
+     * disabled
+     *      returns a 403: Status code (403) indicating the server understood
+     *      the request but refused to fulfill it.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -169,6 +203,9 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the value of the docroot property.
      *
+     * The location on the filesystem where the files related to the content to
+     * be served by this virtual server is stored.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -238,6 +275,9 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the value of the logFile property.
      *
+     * Specifies a log file for virtual-server-specific log messages.
+     * Default value is ${com.sun.aas.instanceRoot}/logs/server.log
+     * 
      * @return possible object is
      *         {@link String }
      */

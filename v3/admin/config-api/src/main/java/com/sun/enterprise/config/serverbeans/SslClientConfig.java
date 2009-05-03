@@ -49,7 +49,8 @@ import java.beans.PropertyVetoException;
 
 
 /**
- *
+ * Specifies the SSL configuration when the Application Server is making
+ * outbound IIOP/SSL connections.   
  */
 
 /* @XmlType(name = "", propOrder = {

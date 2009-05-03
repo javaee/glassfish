@@ -47,6 +47,10 @@ import org.jvnet.hk2.config.Configured;
 import java.beans.PropertyVetoException;
 
 
+/**
+ * Provides attributes to configure the request processing subsystem in the
+ * HTTP service
+ */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.RequestProcessingConfig", singleton=true)
 @Configured
 @Deprecated
@@ -55,6 +59,8 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the threadCount property.
      *
+     * Max no of request processing threads.
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -71,6 +77,8 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the initialThreadCount property.
+     *
+     * The no of request processing threads when the http service is initialized
      *
      * @return possible object is
      *         {@link String }
@@ -89,6 +97,9 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the threadIncrement property.
      *
+     * The increment in the number of request processing threads when the number
+     * of requests reaches the number specified by request-threads-init
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -106,6 +117,8 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the requestTimeoutInSeconds property.
      *
+     * Time after which the request times out
+     * 
      * @return possible object is
      *         {@link String }
      */
@@ -123,6 +136,9 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
     /**
      * Gets the value of the headerBufferLengthInBytes property.
      *
+     * The size of the buffer used by the request processing threads for reading
+     * the request data
+     * 
      * @return possible object is
      *         {@link String }
      */

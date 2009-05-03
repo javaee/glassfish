@@ -48,8 +48,12 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+
 /**
- *
+ * Perform mapping from principal received during Servlet/EJB authentication,
+ * to credentials accepted by the EIS. This mapping is optional.
+ * It is possible to map multiple (server) principal to same backend principal
+ * 
  */
 
 /* @XmlType(name = "", propOrder = {

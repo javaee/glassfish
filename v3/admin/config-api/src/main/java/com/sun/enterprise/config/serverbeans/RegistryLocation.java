@@ -50,7 +50,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
- *
+ * Specifies the registry where web service end point artifacts are published.
  */
 
 /* @XmlType(name = "") */

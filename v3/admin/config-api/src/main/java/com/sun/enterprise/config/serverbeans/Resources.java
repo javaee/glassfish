@@ -50,7 +50,8 @@ import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXCreatorInfo;
 
 /**
- *
+ * J2EE Applications look up resources registered with the Application server,
+ * using portable JNDI names.                    
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -85,7 +86,7 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
      * Objects of the following type(s) are allowed in the list
      * {@link CustomResource }
      * {@link ExternalJndiResource }
-     * {@link JdbcResource }                                       «
+     * {@link JdbcResource }                                       ï¿½
      * {@link MailResource }
      * {@link PersistenceManagerFactoryResource }
      * {@link AdminObjectResource }
