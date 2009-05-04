@@ -46,6 +46,8 @@ public class WebTest {
         contextPath = contextRoot + "/myurl2";
         doWebMethod("GET", host, port, contextPath, true, "Class-@RolesAllowed", 200, "g:Hello, javaee");
         doWebMethod("POST", host, port, contextPath, true, "Methad-override-@RolesAllowed", 403, null);
+        doWebMethod("TRACE", host, port, contextPath, false, "Methad-override-@PermitAll", 200, "t:Hello");
+        doWebMethod("PUT", host, port, contextPath, true, "Methad-override-@DenyAll", 403, null);
     }
 
     private static void doWebMethod(String webMethod, String host, int port,

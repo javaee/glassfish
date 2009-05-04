@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 
 import javax.servlet.ServletException;
@@ -21,6 +23,22 @@ public class TestServlet2 extends HttpServlet {
 
     @RolesAllowed("staff")
     public void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, ServletException {
+
+        PrintWriter writer = res.getWriter();
+        writer.write("p:Hello, " + req.getRemoteUser() + "\n");
+    }
+
+    @PermitAll
+    public void doTrace(HttpServletRequest req, HttpServletResponse res) 
+            throws IOException, ServletException {
+
+        PrintWriter writer = res.getWriter();
+        writer.write("t:Hello");
+    }
+
+    @DenyAll
+    protected void doPut(HttpServletRequest req, HttpServletResponse res) 
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
