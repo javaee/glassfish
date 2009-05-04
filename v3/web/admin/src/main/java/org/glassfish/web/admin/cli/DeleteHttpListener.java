@@ -70,12 +70,16 @@ import java.util.regex.Pattern;
 @I18n("delete.http.listener")
 public class DeleteHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteHttpListener.class);
+
     @Param(name = "listener_id", primary = true)
     String listenerId;
+
     @Param(name = "secure", optional = true)
     String secure;
+
     @Inject
     HttpService httpService;
+
     @Inject
     NetworkConfig networkConfig;
 
@@ -95,32 +99,13 @@ public class DeleteHttpListener implements AdminCommand {
         }
         try {
             NetworkListener ls = networkConfig.getNetworkListener(listenerId);
+            final String name = ls.getProtocol();
             VirtualServer vs = httpService
                 .getVirtualServerByName(ls.findProtocol().getHttp().getDefaultVirtualServer());
-            ConfigSupport.apply(new Config(), networkConfig.getNetworkListeners());
-            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                public Object run(VirtualServer avs) throws PropertyVetoException {
-                    String lss = avs.getNetworkListeners();
-                    if (lss != null && lss.contains(listenerId)) { //change only if needed
-                        Pattern p = Pattern.compile(",");
-                        String[] names = p.split(lss);
-                        List<String> nl = new ArrayList<String>();
-                        for (String name : names) {
-                            if (!listenerId.equals(name)) {
-                                nl.add(name);
-                            }
-                        }
-                        //we removed the listenerId from lss and is captured in nl by now
-                        lss = nl.toString();
-                        lss = lss.substring(1, lss.length() - 1);
-                        avs.setNetworkListeners(lss);
-                    }
-                    return avs;
-                }
-            }, vs);
-            //remove the id from associated virtual-server's
+            ConfigSupport.apply(new DeleteNetworkListener(), networkConfig.getNetworkListeners());
+            ConfigSupport.apply(new UpdateVirtualServer(), vs);
+            cleanUp(name);
             report.setActionExitCode(ExitCode.SUCCESS);
-
         } catch (TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.http.listener.fail", "failed",
                 listenerId));
@@ -133,43 +118,69 @@ public class DeleteHttpListener implements AdminCommand {
         return networkConfig.getNetworkListener(listenerId) != null;
     }
 
-    private void cleanUp(NetworkListener listener) throws TransactionFailure {
-        final Protocol protocol = listener.findProtocol();
+    private void cleanUp(String name) throws TransactionFailure {
         boolean found = false;
-        for (NetworkListener candidate : listener.getParent(NetworkListeners.class).getNetworkListener()) {
-            found |= !listener.getName().equals(candidate.getName()) && candidate.getProtocol()
-                .equals(protocol.getName());
+        for (NetworkListener candidate : networkConfig.getNetworkListeners().getNetworkListener()) {
+            found |= candidate.getProtocol().equals(name);
         }
         if (!found) {
-            ConfigSupport.apply(new SingleConfigCode<Protocols>() {
-                @Override
-                public Object run(Protocols param) throws PropertyVetoException, TransactionFailure {
-                    List<Protocol> list = new ArrayList<Protocol>(param.getProtocol());
-                    for (Protocol old : list) {
-                        if (protocol.getName().equals(old.getName())) {
-                            list.remove(old);
-                            break;
-                        }
-                    }
-                    param.getProtocol().clear();
-                    param.getProtocol().addAll(list);
-                    return null;
-                }
-            }, protocol.getParent(Protocols.class));
+            ConfigSupport.apply(new DeleteProtocol(name), networkConfig.getProtocols());
         }
     }
 
-    private class Config implements SingleConfigCode<NetworkListeners> {
+    private class DeleteNetworkListener implements SingleConfigCode<NetworkListeners> {
         public Object run(NetworkListeners param) throws PropertyVetoException, TransactionFailure {
-            final List<NetworkListener> list = param/*.getNetworkListeners()*/.getNetworkListener();
+            final List<NetworkListener> list = param.getNetworkListener();
             for (NetworkListener listener : list) {
                 if (listener.getName().equals(listenerId)) {
                     list.remove(listener);
-                    cleanUp(listener);
                     break;
                 }
             }
             return list;
+        }
+    }
+
+    private class UpdateVirtualServer implements SingleConfigCode<VirtualServer> {
+        public Object run(VirtualServer avs) throws PropertyVetoException {
+            String lss = avs.getNetworkListeners();
+            if (lss != null && lss.contains(listenerId)) { //change only if needed
+                Pattern p = Pattern.compile(",");
+                String[] names = p.split(lss);
+                List<String> nl = new ArrayList<String>();
+                for (String name : names) {
+                    if (!listenerId.equals(name)) {
+                        nl.add(name);
+                    }
+                }
+                //we removed the listenerId from lss and is captured in nl by now
+                lss = nl.toString();
+                lss = lss.substring(1, lss.length() - 1);
+                avs.setNetworkListeners(lss);
+            }
+            return avs;
+        }
+    }
+
+    private static class DeleteProtocol implements SingleConfigCode<Protocols> {
+        private final String name;
+
+        public DeleteProtocol(String name) {
+            this.name = name;
+        }
+
+        public Object run(Protocols param) throws PropertyVetoException, TransactionFailure {
+            System.out.println("looking for " + name);
+            List<Protocol> list = new ArrayList<Protocol>(param.getProtocol());
+            for (Protocol old : list) {
+                System.out.println("old = " + old);
+                if (name.equals(old.getName())) {
+                    param.getProtocol().remove(old);
+                    break;
+                }
+            }
+
+            return param;
         }
     }
 }
