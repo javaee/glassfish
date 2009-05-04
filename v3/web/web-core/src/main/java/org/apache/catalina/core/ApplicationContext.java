@@ -758,7 +758,29 @@ public class ApplicationContext
         try {
             listCollectionPaths(set, resources, path);
         } catch (NamingException e) {
-            return (null);
+            // Ignore, need to check for resource paths underneath
+            // WEB-INF/lib/[*.jar]/META-INF/resources, see next
+        }
+        try {
+            // Trigger expansion of bundled JAR files
+            URL u = context.getLoader().getClassLoader().getResource(
+                Globals.META_INF_RESOURCES + path);
+            String realPath = (u != null ? u.getPath() : null);
+            if (realPath != null) {
+                File[] children = new File(realPath).listFiles();
+                StringBuilder sb = null;
+                for (File child : children) {
+                    sb = new StringBuilder(path);
+                    sb.append("/");
+                    sb.append(child.getName());
+                    if (child.isDirectory()) {
+                        sb.append("/");
+                    }
+                    set.add(sb.toString());
+                }
+            }
+        } catch (Exception e) {
+            // ignore
         }
         set.setLocked(true);
         return (set);
