@@ -10,7 +10,7 @@
     </jdbc-connection-pool>
     <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.ClientDataSource" is-isolation-level-guaranteed="false" res-type="javax.sql.DataSource" name="DerbyPool">
       <property name="PortNumber" value="1527"></property>
-      <property name="Password" value="APP"></property>GC
+      <property name="Password" value="APP"></property>
       <property name="User" value="APP"></property>
       <property name="serverName" value="localhost"></property>
       <property name="DatabaseName" value="sun-appserv-samples"></property>
