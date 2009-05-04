@@ -20,54 +20,61 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-
 package test.admin;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Manifest;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import test.admin.util.GeneralUtils;
 
-/** Provides web-tier configuration tests. We should also use this class to
- * test out the runtime behavior of web-tier. e.g. Are the webtier components
- * really available the moment we create them?
+/**
+ * Provides web-tier configuration tests. We should also use this class to test out the runtime behavior of web-tier.
+ * e.g. Are the webtier components really available the moment we create them?
+ *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish v3 Prelude
  */
 public class WebtierTests extends BaseAsadminTest {
-    private final String LISTENER_NAME = "ls" + System.currentTimeMillis(); //sufficiently unique, I believe
-    
+    private final String LISTENER_NAME = "ls12345"; //sufficiently unique, I believe
+
     @BeforeClass
     private void setup() {
-        
     }
-    @Test(groups={"pulse"}) // test method
+
+    @Test(groups = {"pulse"})
+    // test method
     public void createListener() {
-        String CMD = "create-http-listener";
-        Map<String, String> options = getCreateOptions();
-        String operand = LISTENER_NAME;
-        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
-        //Reporter.log("url: " + up);
-        Manifest man = super.invokeURLAndGetManifest(up);
-        String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
-        GeneralUtils.handleManifestFailure(man);
+        if (!getListeners().contains(LISTENER_NAME)) {
+            String CMD = "create-http-listener";
+            Map<String, String> options = getCreateOptions();
+            String operand = LISTENER_NAME;
+            String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
+            //Reporter.log("url: " + up);
+            Manifest man = super.invokeURLAndGetManifest(up);
+            String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
+            GeneralUtils.handleManifestFailure(man);
+        }
     }
-    
-    @Test(groups={"pulse"}, dependsOnMethods={"createListener"})
+
+    @Test(groups = {"pulse"}, dependsOnMethods = {"createListener"})
     public void ensureCreatedListenerExists() { //should be run after createListener method
-        Manifest man = runListHttpListenersCommand();
-        GeneralUtils.handleManifestFailure(man);
-        // we are past failure, now test the contents
-        String children = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.CHILDREN);
-        if (!children.contains(LISTENER_NAME)) {
+        if (!getListeners().contains(LISTENER_NAME)) {
             throw new RuntimeException("created http listener: " + LISTENER_NAME + " does not exist in the list");
         }
     }
-    
-    @Test(groups={"pulse"}, dependsOnMethods={"createListener", "ensureCreatedListenerExists"})
+
+    private String getListeners() {
+        Manifest man = runListHttpListenersCommand();
+        GeneralUtils.handleManifestFailure(man);
+        // we are past failure, now test the contents
+        return GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.CHILDREN);
+    }
+
+    @Test(groups = {"pulse"}, dependsOnMethods = {"createListener", "ensureCreatedListenerExists"})
     public void deleteListener() {
         String CMD = "delete-http-listener";
         Map<String, String> options = Collections.EMPTY_MAP;
@@ -76,27 +83,24 @@ public class WebtierTests extends BaseAsadminTest {
 //        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
-        GeneralUtils.handleManifestFailure(man);  
-    }
-    
-    @Test(groups={"pulse"}, dependsOnMethods={"deleteListener"})
-    public void ensureDeletedListenerDoesNotExist() {
-        Manifest man = runListHttpListenersCommand();
         GeneralUtils.handleManifestFailure(man);
-        // we are past failure, now test the contents
-        String children = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.CHILDREN);
-        if (children.contains(LISTENER_NAME)) {
-            throw new RuntimeException("deleted http listener: " + LISTENER_NAME + " exists in the list");
-        }        
     }
+
+    @Test(groups = {"pulse"}, dependsOnMethods = {"deleteListener"})
+    public void ensureDeletedListenerDoesNotExist() {
+        if (getListeners().contains(LISTENER_NAME)) {
+            throw new RuntimeException("deleted http listener: " + LISTENER_NAME + " exists in the list");
+        }
+    }
+
     private Map<String, String> getCreateOptions() {
         Map<String, String> opts = new HashMap<String, String>();
         opts.put("listeneraddress", "0.0.0.0");
         opts.put("listenerport", "1234");
         opts.put("defaultvs", "server");
-        return ( opts );
+        return (opts);
     }
-    
+
     private Manifest runListHttpListenersCommand() {
         String CMD = "list-http-listeners";
         Map<String, String> options = Collections.EMPTY_MAP;
@@ -104,6 +108,6 @@ public class WebtierTests extends BaseAsadminTest {
         String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
 //        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
-        return ( man );
+        return (man);
     }
 }
