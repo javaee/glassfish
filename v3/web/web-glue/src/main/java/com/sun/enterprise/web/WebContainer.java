@@ -85,6 +85,7 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
+import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
@@ -206,6 +207,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     JavaEEObjectStreamFactory javaEEObjectStreamFactory;
+
+    @Inject
+    FileLoggerHandler logHandler;
 
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
@@ -449,7 +453,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         _embedded = new EmbeddedWebContainer(_serverContext, this,
-                                             logServiceFile, logLevel);
+                                             logServiceFile, logLevel, logHandler);
 
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
@@ -2510,7 +2514,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         virtualServer.setBean(vsBean);
 
-        virtualServer.setLogFile(vsBean.getLogFile(), logLevel);
+        virtualServer.setLogFile(vsBean.getLogFile(), logLevel, logHandler);
 
         virtualServer.configureState();
 

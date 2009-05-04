@@ -58,6 +58,7 @@ import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
+import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.logging.LogDomains;
 import com.sun.web.server.WebContainerListener;
@@ -94,17 +95,21 @@ public final class EmbeddedWebContainer extends Embedded {
      */
     private String logLevel;
 
+    private FileLoggerHandler logHandler;
  
     // ------------------------------------------------------------ Constructor
 
     public EmbeddedWebContainer(ServerContext serverContext,
                                 WebContainer webContainer,
                                 String logServiceFile,
-                                String logLevel) {
+                                String logLevel,
+                                FileLoggerHandler logHandler) {
+
         super();
         this.webContainer = webContainer;
         this.logServiceFile = logServiceFile;
         this.logLevel = logLevel;
+        this.logHandler = logHandler;
         this.serverContext = serverContext;
         habitat = serverContext.getDefaultHabitat();
         webContainerFeatureFactory = habitat.getByContract(
@@ -138,7 +143,7 @@ public final class EmbeddedWebContainer extends Embedded {
         VirtualServer vs = new VirtualServer();
 
         vs.configure(vsID, vsBean, vsDocroot, vsLogFile, vsMimeMap,
-                     logServiceFile, logLevel);
+                     logServiceFile, logLevel, logHandler);
          
         ContainerListener listener = loadListener
             ("com.sun.enterprise.web.connector.extension.CatalinaListener");

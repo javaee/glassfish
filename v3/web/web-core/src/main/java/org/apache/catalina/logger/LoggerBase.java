@@ -247,7 +247,7 @@ public class LoggerBase
      *
      * @param verbosityLevel The new verbosity level, as a string
      */
-    public void setLoggingLevel(String logLevel) {
+    public void setLevel(String logLevel) {
             
         if ("SEVERE".equalsIgnoreCase(logLevel)) {
             log.setLevel(Level.SEVERE);
@@ -268,7 +268,14 @@ public class LoggerBase
         }
         
     }
-    
+
+
+    public void addHandler(Handler handler) {
+        log.setUseParentHandlers(false);
+        handler.setLevel(log.getLevel());
+        log.addHandler(handler);
+    }
+
 
     // --------------------------------------------------------- Public Methods
 

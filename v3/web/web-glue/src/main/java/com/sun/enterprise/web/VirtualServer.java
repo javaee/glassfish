@@ -75,6 +75,7 @@ import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.logger.FileLogger;
+import com.sun.enterprise.web.logger.FileLoggerHandler;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -927,8 +928,9 @@ public class VirtualServer extends StandardHost {
                     String vsLogFile,
                     MimeMap vsMimeMap,
                     String logServiceFile,
-                    String logLevel) {
-            
+                    String logLevel,
+                    FileLoggerHandler logHandler) {
+
         setDebug(debug);
         setAppBase(vsDocroot);
         setName(vsID);
@@ -987,7 +989,7 @@ public class VirtualServer extends StandardHost {
              * 'log-file' attribute of this <virtual-server> and 'file'
              * attribute of <log-service> are different (See 6189219).
              */
-            setLogFile(vsLogFile, logLevel);
+            setLogFile(vsLogFile, logLevel, logHandler);
         }
     }
 
@@ -1029,7 +1031,7 @@ public class VirtualServer extends StandardHost {
      * @param logFile The value of the virtual server's log-file attribute in
      * the domain.xml
      */
-    void setLogFile(String logFile, String logLevel) {
+    void setLogFile(String logFile, String logLevel, FileLoggerHandler logHandler) {
         
         String logPrefix = logFile;
         String logDir = null;
@@ -1062,8 +1064,9 @@ public class VirtualServer extends StandardHost {
             contextLogger.setSuffix(logSuffix);
         }
         contextLogger.setTimestamp(true);
-        contextLogger.setLoggingLevel(logLevel);
-        
+        contextLogger.setLevel(logLevel); 
+        logHandler.setLogFile(logFile);
+        contextLogger.addHandler(logHandler); 
         setLogger(contextLogger);
     }
 
