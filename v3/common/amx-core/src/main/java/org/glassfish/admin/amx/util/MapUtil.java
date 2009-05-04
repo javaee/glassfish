@@ -108,6 +108,34 @@ public final class MapUtil
 		return( m );
 	}
 	
+    
+    private static <K,V> Map<K, V>
+    toMap(final Object[] params, final Class<K> keyClass, final Class<V> valueClass)
+    {
+        final Map<K, V> m = new HashMap<K, V>();
+
+        for (int i = 0; i < params.length; i += 2)
+        {
+            final Object key = params[i];
+            if ( key == null ) throw new IllegalArgumentException();
+            
+            if ( ! keyClass.isAssignableFrom(key.getClass()) )
+            {
+                throw new IllegalArgumentException( "Key of class " + key.getClass().getName() + " not assignable to " + keyClass.getName() );
+            }
+
+            final Object value = params[i + 1];
+            if ( value != null && ! valueClass.isAssignableFrom( value.getClass() ) )
+            {
+                throw new IllegalArgumentException( "Value of class " + value.getClass().getName() + " not assignable to " + valueClass.getName() );
+            }
+
+            m.put( keyClass.cast(key), valueClass.cast(value) );
+        }
+        return m;
+    }
+
+
 	/**
 		Create a new Map and insert the specified mappings as found in 'mappings'.
 		The even-numbered entries are the keys, and the odd-numbered entries are

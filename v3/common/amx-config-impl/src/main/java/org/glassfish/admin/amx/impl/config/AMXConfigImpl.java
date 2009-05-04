@@ -47,7 +47,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.management.*;
 
-import org.glassfish.admin.amx.core.AMXConstants;
 import static org.glassfish.admin.amx.core.AMXConstants.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.impl.config.AttributeResolverHelper;
@@ -321,6 +320,9 @@ public class AMXConfigImpl extends AMXImplBase
 
 //========================================================================================
 
+    /**
+        Convert incoming parameters to HK2 data structures and sub-element Maps.
+     */
         static private void
     toAttributeChanges(
         final Map<String, Object> values,
@@ -329,23 +331,38 @@ public class AMXConfigImpl extends AMXImplBase
     {
         if (values != null)
         {
-            for (final String name : values.keySet())
+            for (final String nameAsProvided : values.keySet())
             {
-                final Object value = values.get(name);
+                final Object value = values.get(nameAsProvided);
+                
+                final String xmlName = ConfigBeanJMXSupport.toXMLName(nameAsProvided);
 
-                if (value == null || (value instanceof String))
+                // auto-convert specific basic types to String
+                if (value == null ||
+                    (value instanceof String) ||
+                    (value instanceof Number) || 
+                    (value instanceof Boolean) )
                 {
-                    changes.add(new ConfigSupport.SingleAttributeChange(name, (String) value));
+                    //System.out.println( "toAttributeChanges: " + xmlName + " = " + value );
+                    final String valueString = value == null ? null : "" + value;
+                    final ConfigSupport.SingleAttributeChange change = new ConfigSupport.SingleAttributeChange(xmlName, valueString);
+                    changes.add( change );
                 }
                 else if ( value instanceof Map )
                 {
+                    //System.out.println( "toAttributeChanges: Map?!!!!!!!!!!!!!" );
                      // sub-element
                      final Map<String,Object> m = TypeCast.checkMap( Map.class.cast(value), String.class, Object.class);
-                     subs.put( name, m);
+                     subs.put( xmlName, m);
+                }
+                else if ( value instanceof String[] )
+                {
+                    //System.out.println( "toAttributeChanges: MultipleAttributeChanges" );
+                    changes.add(new ConfigSupport.MultipleAttributeChanges(xmlName, (String[]) value));
                 }
                 else
                 {
-                    changes.add(new ConfigSupport.MultipleAttributeChanges(name, (String[]) value));
+                    throw new IllegalArgumentException( "Value of class " + value.getClass().getName() + " not supported for attribute " + nameAsProvided );
                 }
             }
         }
@@ -413,29 +430,28 @@ public class AMXConfigImpl extends AMXImplBase
 
         for (int i = 0; i < params.length; i += 2)
         {
-            if (!(params[i] instanceof String))
-            {
-                throw new IllegalArgumentException("key not a string: " + params[i]);
-            }
             final String name = (String) params[i];
 
             final Object value = params[i + 1];
-            if (!((value instanceof String) || (value instanceof Object[])))
-            {
-                throw new IllegalArgumentException("Illegal value for " + name);
-            }
 
-            if (value instanceof String)
+            // interpret an Object[] as meaning to create a sub-map
+            if ( value == null || value instanceof String)
             {
                 m.put(name, value);
             }
-            else
+            else if ( value instanceof Object[] )
             {
                 m.put(name, paramsToMap((Object[]) value));
+            }
+            else
+            {
+                // let it be dealt with further on...
+                m.put(name, value);
             }
         }
         return m;
     }
+
 
     public ObjectName createChild(final String type, final Object[] params)
     {
@@ -446,10 +462,27 @@ public class AMXConfigImpl extends AMXImplBase
 
         return createChild(type, paramsToMap(params));
     }
-
+    
+    /*
+    public ObjectName test()
+    {
+        final Object[] args = {
+            "name", "test1",
+            "idle-thread-timeout-seconds", "900",
+            "MAX-QUEUE-SIZE", "3",
+            "min-thread-pool-size", "10",
+            "min-thread-pool-size", "30",
+            "classname", "com.sun.grizzly.http.StatsThreadPool"
+        };
+        return createChild( "thread-pool", args );
+    }
+    */
+    
     private ObjectName createChild(final Class<? extends ConfigBeanProxy> intf, final Map<String, Object> params)
             throws ClassNotFoundException, TransactionFailure
     {
+        //cdebug( "createChild: " + intf.getName() + ", params =  " + MapUtil.toString(params) );
+        
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(intf);
         if (!spt.isSingleton())
         {
@@ -458,11 +491,14 @@ public class AMXConfigImpl extends AMXImplBase
                 throw new IllegalArgumentException("Named element requires at least its name");
             }
             final Set<String> requiredAttrs = spt.requiredAttributeNames();
-            for (final String req : requiredAttrs)
+            //cdebug( "createChild: " + intf.getName() + ", requiredAttributeNames =  " + CollectionUtil.toString(requiredAttrs, ", ") );
+            for (final String reqName : requiredAttrs)
             {
-                if (!params.containsKey(req))
+                final String xmlName = ConfigBeanJMXSupport.toXMLName(reqName);
+                // allow either the Attribute name or the xml name at this stage
+                if ( ! ( params.containsKey(reqName) || params.containsKey( xmlName ))  )
                 {
-                    throw new IllegalArgumentException("Required attribute missing: " + req);
+                    throw new IllegalArgumentException("Required attribute missing: " + reqName);
                 }
             }
         }

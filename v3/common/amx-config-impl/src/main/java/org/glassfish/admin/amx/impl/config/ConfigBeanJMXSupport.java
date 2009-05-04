@@ -888,7 +888,7 @@ public class ConfigBeanJMXSupport {
         return mNameHint.mIsElement;
     }
 
-    private static String toXMLName(final String name) {
+    public static String toXMLName(final String name) {
         return name == null ? name : Dom.convertName(name);
     }
     private final static String DEFAULT_NAME_HINT = "name";
