@@ -105,7 +105,8 @@ public class DeleteSsl implements AdminCommand {
             if ("http-listener".equals(type) || "network-listener".equals(type)) {
                 Config config = configs.getConfig().get(0);
                 NetworkConfig netConfig = config.getNetworkConfig();
-                NetworkListener networkListener = netConfig.getNetworkListener(listenerId);
+                NetworkListener networkListener =
+                    netConfig.getNetworkListener(listenerId);
 
                 if (networkListener == null) {
                     report.setMessage(localStrings.getLocalString(
@@ -114,7 +115,16 @@ public class DeleteSsl implements AdminCommand {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
                 }
-                
+
+                Protocol protocol = networkListener.findProtocol();
+                if (protocol.getSsl() == null) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.ssl.element.doesnotexist", "Ssl element does " +
+                        "not exist for Listener named {0}", listenerId));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+
                 ConfigSupport.apply(new SingleConfigCode<Protocol>() {
                     public Object run(Protocol param) {
                         param.setSsl(null);
@@ -137,7 +147,15 @@ public class DeleteSsl implements AdminCommand {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
                 }
-                
+
+                if (iiopListener.getSsl() == null) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.ssl.element.doesnotexist", "Ssl element does " +
+                        "not exist for Listener named {0}", listenerId));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+
                 ConfigSupport.apply(new SingleConfigCode<IiopListener>() {
                     public Object run(IiopListener param) 
                     throws PropertyVetoException {
