@@ -10,7 +10,7 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --verbose =false]
+     [ --verbose ={false|true}]
 
 DESCRIPTION
      Use the version command to display the version  information.
@@ -19,7 +19,7 @@ DESCRIPTION
      command  will  retrieve  the  version  locally and display a
      warning message.
 
-     This command is supported in remote mode only.
+     This command is supported in remote mode and local mode.
 
 OPTIONS
      -t --terse
@@ -49,7 +49,7 @@ OPTIONS
          browser   to   manage   the   domain,    for    example,
          http://localhost:4848.
 
-Java EE 6           Last change: 23 Sep 2008                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands                                version(1)
 
@@ -104,7 +104,7 @@ Administration Commands                                version(1)
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
 
-Java EE 6           Last change: 23 Sep 2008                    2
+Java EE 6            Last change: 3 May 2009                    2
 
 Administration Commands                                version(1)
 
@@ -139,7 +139,8 @@ EXAMPLES
      Example 1 Using remote mode to display version
 
        asadmin> version
-       Version = Sun Java System Application Server 9.1
+       GlassFish v3  (build b48)
+
        Command version executed successfully.
 
 EXIT STATUS
@@ -150,5 +151,5 @@ EXIT STATUS
 SEE ALSO
      asadmin(1M)
 
-Java EE 6           Last change: 23 Sep 2008                    3
+Java EE 6            Last change: 3 May 2009                    3
 

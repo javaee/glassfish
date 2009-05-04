@@ -3,7 +3,7 @@ Administration Commands      list-connector-work-security-maps(1)
 
 NAME
      list-connector-work-security-maps - lists the work  security
-     maps belonging to the specified resource adapter
+     maps belonging to the specified resource adapter.
 
 SYNOPSIS
      list-connector-work-security-maps
@@ -11,16 +11,11 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-      [  --securitymap  security-map_name ]
-      [--verbose={false|true}] resource-adapter-name
+      [  --raname  resource_adapter_name]
 
 DESCRIPTION
-     Use this command to list the security maps belonging to  the
-     specified resource adapter.
-
-     For this command to succeed, you must have first  created  a
-     connector   connection   pool  using  the  create-connector-
-     connection-pool command.
+     Use this command to list the work security maps belonging to
+     the specified resource adapter.
 
      This command is supported in remote mode only.
 
@@ -45,10 +40,6 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 6           Last change: 20 Apr 2009                    1
-
-Administration Commands      list-connector-work-security-maps(1)
-
      -p --port
 
          The HTTP port or HTTPS  port  for  administration.  This
@@ -58,14 +49,18 @@ Administration Commands      list-connector-work-security-maps(1)
 
          The default port number for administration is 4848.
 
+Java EE 6           Last change: 20 Apr 2009                    1
+
+Administration Commands      list-connector-work-security-maps(1)
+
      -s --secure
+
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
          The default is false.
 
      -u --user
-
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -74,6 +69,7 @@ Administration Commands      list-connector-work-security-maps(1)
          option for subsequent operations on the domain.
 
      --passwordfile
+
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -99,10 +95,6 @@ Administration Commands      list-connector-work-security-maps(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 6           Last change: 20 Apr 2009                    2
-
-Administration Commands      list-connector-work-security-maps(1)
-
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
@@ -112,6 +104,10 @@ Administration Commands      list-connector-work-security-maps(1)
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
+
+Java EE 6           Last change: 20 Apr 2009                    2
+
+Administration Commands      list-connector-work-security-maps(1)
 
          After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
@@ -132,29 +128,18 @@ Administration Commands      list-connector-work-security-maps(1)
 
          Displays the help text for the command.
 
-     --securitymap
-         Specifies the name of the security map contained  within
-         the  connector  connection  pool from which the identity
-         and principals should be listed. With  this  option,  --
-         verbose is redundant.
-
-     --verbose
-
-         Returns a list including the identity,  principals,  and
-         security name. Default is false.
-
-OPERANDS
-     resource-adapter-name
+     --raname
          The name of the resource adapter for which you  want  to
          list security maps.
 
 EXAMPLES
-
-Java EE 6           Last change: 20 Apr 2009                    3
-
-Administration Commands      list-connector-work-security-maps(1)
-
      Example 1 Using list-connector-work-security-maps command
+
+       asadmin list-connector-work-security-maps --raname my_resource_adapter_name --user
+       admin  --passwordfile pwd_file.txt
+       worksecuritymap1
+       worksecuritymap2
+       Command list-connector-work-security-maps executed successfully.
 
 EXIT STATUS
      0                            command executed successfully
@@ -162,8 +147,8 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-connector-security-map(1),          create-connector-
-     security-map(1), update-connector-security-map(1)
+     delete-connector-work-security-map(1),     create-connector-
+     work-security-map(1), update-connector-work-security-map(1)
 
-Java EE 6           Last change: 20 Apr 2009                    4
+Java EE 6           Last change: 20 Apr 2009                    3
 

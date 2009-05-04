@@ -11,13 +11,23 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-
-      [--steadypoolsize 8] [--maxpoolsize 32] [--maxwait 60000]
-      [--poolresize 2] [--idletimeout 300] [--failconnection=false]
-      --raname resource_adapter_name --connectiondefinition connection_definition_name
-      [--transactionsupport transaction_support] [--isconnectvalidatereq=false]
-      [--description text] [--property (name=value)[:name=value]*]
-      connector_connection_pool_name
+     --raname resource_adapter_name --connectiondefinition connection_definition_name
+      [--steadypoolsize steadypoolsize] [--maxpoolsize maxpoolsize]
+     [--maxwait maxwait] [--poolresize poolresize]
+     [--idletimeout idletimeout] [--failconnection={false|true}]
+     [--leaktimeout=timeout] [--leakreclaim={false|true}]
+     [ --creationretryattempts =attempts]
+     [--creationretryinterval=interval]
+     [--lazyconnectionenlistment={false|true}]
+     [ --lazyconnectionassociation ={false|true}]
+     [ --associatewiththread ={false|true}] [ --matchconnections ={false|true}]
+     [ --maxconnectionusagecount =count]
+     [--validateatmostonceperiod=interval]
+      [--transactionsupport transaction_support] [--isconnectvalidatereq={false|true}]
+      [--description text]
+     [--property (name=value)[:name=value]*]
+     [--target=target]
+     connector_connection_pool_name
 
 DESCRIPTION
      The create-connector-connection-pool adds  a  new  connector
@@ -40,20 +50,19 @@ OPTIONS
          If set to true (default),  only  the  required  password
          options are prompted.
 
+Java EE 6           Last change: 20 Apr 2009                    1
+
+Administration Commands       create-connector-connection-pool(1)
+
      -H --host
+
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
      -p --port
-
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-
-Java EE 6           Last change: 30 Jan 2007                    1
-
-Administration Commands       create-connector-connection-pool(1)
-
          http://localhost:4848.
 
          The default port number for administration is 4848.
@@ -94,6 +103,10 @@ Administration Commands       create-connector-connection-pool(1)
 
              o    AS_ADMIN_USERPASSWORD
 
+Java EE 6           Last change: 20 Apr 2009                    2
+
+Administration Commands       create-connector-connection-pool(1)
+
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
          password  to  authenticate  to the domain administration
@@ -103,10 +116,6 @@ Administration Commands       create-connector-connection-pool(1)
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
-
-Java EE 6           Last change: 30 Jan 2007                    2
-
-Administration Commands       create-connector-connection-pool(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
@@ -146,18 +155,19 @@ Administration Commands       create-connector-connection-pool(1)
      --steadypoolsize
 
          The minimum and initial number of connections maintained
-         in the pool. The default value is 8.
 
-     --maxpoolsize
-         The maximum number of connections that can be created to
-         satisfy client requests. The default value is 32.
-
-Java EE 6           Last change: 30 Jan 2007                    3
+Java EE 6           Last change: 20 Apr 2009                    3
 
 Administration Commands       create-connector-connection-pool(1)
 
-     --maxwaittime
+         in the pool. The default value is 8.
 
+     --maxpoolsize
+
+         The maximum number of connections that can be created to
+         satisfy client requests. The default value is 32.
+
+     --maxwait
          The amount of time, in milliseconds, that a caller  must
          wait  before a connection is created, if a connection is
          not available. If set to 0, the caller is blocked  inde-
@@ -165,6 +175,7 @@ Administration Commands       create-connector-connection-pool(1)
          occurs. The default value is 60000.
 
      --poolresize
+
          Quantity by which the pool will scale-up  or  scale-down
          the  number  of connections. Scale-up: When the pool has
          no free connections, pool will scale-up  by  this  quan-
@@ -176,20 +187,171 @@ Administration Commands       create-connector-connection-pool(1)
          default value is 2.
 
      --idletimeout
-
          The maximum time that a connection can  remain  idle  in
          the  pool. After this amount of time, the pool can close
          this connection. The default value is 300.
 
      --failconnection
+
          If set to true, all connections in the pool  are  closed
          if  a  single  validation check fails. This parameter is
          mandatory  if  the   --is-connection-validation-required
          option  is  set  to true. Legal values are on, off, yes,
          no, 1,0, true or false. The default value is false.
 
-     --transactionsupport
+     --leaktimeout
+         Specifies the amount of time, in seconds, for which con-
+         nection leaks in a connection pool are to be traced.
 
+         If connection leak tracing is enabled, you can  use  the
+         Admin  Console  to enable monitoring of the JDBC connec-
+         tion pool to get statistics on the number  of connection
+
+Java EE 6           Last change: 20 Apr 2009                    4
+
+Administration Commands       create-connector-connection-pool(1)
+
+         leaks.
+
+         The default value is 0, which disables  connection  leak
+         tracing.
+
+     --leakreclaim
+
+         Specifies whether leaked connections are restored to the
+         connection  pool  after  leak connection tracing is com-
+         plete. Possible values are as follows:
+
+         false
+             Leaked connections are not restored to  the  connec-
+             tion pool (default).
+
+         true
+
+             Leaked connections are restored to   the  connection
+             pool.
+
+     --creationretryattempts
+         Specifies the maximum number of times  that  the  server
+         retries  to  create  a connection if the initial attempt
+         fails.
+
+         The default value is 0, which specifies that the  server
+         does not retry to create the connection.
+
+     --creationretryinterval
+
+         Specifies the interval, in seconds,  between  successive
+         attempts to create a connection.
+
+         If    --creationretryattempts    is    0,     the     --
+         creationretryinterval option is ignored.
+
+         The default value is 10.
+
+     --lazyconnectionenlistment
+         Specifies  whether  a  resource  to  a  transaction   is
+         enlisted  only when a method actually uses the resource.
+         Possible values are as follows:
+
+         false
+
+             Resources to a transaction are always  enlisted  and
+             not  only  when  a method actually uses the resource
+
+Java EE 6           Last change: 20 Apr 2009                    5
+
+Administration Commands       create-connector-connection-pool(1)
+
+             (default).
+
+         true
+
+             Resources to a transaction are enlisted only when  a
+             method actually uses the resource.
+
+     --lazyconnectionassociation
+         Specifies whether a physical connection should be  asso-
+         ciated  with the logical connection only when the physi-
+         cal connection is used, and disassociated when the tran-
+         saction  is completed. Such association and dissociation
+         enable  the  reuse  of  physical  connections.  Possible
+         values are as follows:
+
+         false
+
+             A physical connection is associated with the logical
+             connection  even  before  the physical connection is
+             used, and is not disassociated when the  transaction
+             is completed (default).
+
+         true
+             A physical connection is associated with the logical
+             connection  only  when  the  physical  connection is
+             used, and disassociated when the transaction is com-
+             pleted.   The --lazyconnectionenlistment option must
+             also be set to true.
+
+     --associatewiththread
+
+         Specifies whether a connection is  associated  with  the
+         thread  to enable the thread to reuse the connection. If
+         a connection is not  associated  with  the  thread,  the
+         thread  must obtain a connection from the pool each time
+         that the thread requires a connection.  Possible  values
+         are as follows:
+
+         false
+             A connection  is  not  associated  with  the  thread
+             (default).
+
+         true
+
+             A connection is associated with the thread.
+
+Java EE 6           Last change: 20 Apr 2009                    6
+
+Administration Commands       create-connector-connection-pool(1)
+
+     --matchconnections
+
+         Specifies whether a connection that is selected from the
+         pool should be matched with the resource adaptor. If all
+         connections in the pool are identical, matching  between
+         connections  and resource adapters is not required. Pos-
+         sible values are as follows:
+
+         false
+             A connection should not be matched with the resource
+             adaptor (default).
+
+         true
+
+             A connection should be  matched  with  the  resource
+             adaptor.
+
+     --maxconnectionusagecount
+         Specifies the maximum number of times that a  connection
+         can be reused.
+
+         When this limit is reached, the connection is closed. By
+         limiting  the  maximum number of times that a connection
+         can be reused, you can avoid statement leaks.
+
+         The default value is 0, which specifies no limit on  the
+         number of times that a connection can be reused.
+
+     --validateatmostonceperiod
+
+         Specifies the time interval in seconds  between  succes-
+         sive request to validate a connection at most once. Set-
+         ting this attribute to an  appropriate  value  minimizes
+         the number of validation requests by a connection.
+
+         The default value is 0, which specifies that the connec-
+         tion is never validated.
+
+     --transactionsupport
          Indicates the level of  transaction  support  that  this
          pool  will  have.  Possible  values  are  XATransaction,
          LocalTransaction and NoTransaction. This  attribute  can
@@ -199,27 +361,27 @@ Administration Commands       create-connector-connection-pool(1)
          an order of values, where XATransaction is the  highest,
          and NoTransaction the lowest.
 
+Java EE 6           Last change: 20 Apr 2009                    7
+
+Administration Commands       create-connector-connection-pool(1)
+
      --isconnectvalidatereq
+
          If the value is set to true,  the  connections  will  be
          checked to see if they are usable, before they are given
          out to the application. The default value is false.
 
-Java EE 6           Last change: 30 Jan 2007                    4
-
-Administration Commands       create-connector-connection-pool(1)
-
      --description
-
          Text providing descriptive details about  the  connector
          connection pool.
 
      --property
+
          Optional attribute name value pairs for configuring  the
          resource.
 
 OPERANDS
      connector_connection_pool_name
-
           The name of the connection pool to be created.
 
 EXAMPLES
@@ -243,5 +405,5 @@ SEE ALSO
      delete-connector-connection-pool(1),         list-connector-
      connection-pools(1)
 
-Java EE 6           Last change: 30 Jan 2007                    5
+Java EE 6           Last change: 20 Apr 2009                    8
 

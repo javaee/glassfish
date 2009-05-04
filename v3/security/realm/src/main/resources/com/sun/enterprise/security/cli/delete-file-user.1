@@ -10,7 +10,7 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --target  target]
+     [ --authrealmname  auth_realm_name] [--target target]
      username
 
 DESCRIPTION
@@ -47,7 +47,7 @@ OPTIONS
 
          The default port number for administration is 4848.
 
-Java EE 6            Last change: 2 Sep 2008                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands                       delete-file-user(1)
 
@@ -103,7 +103,7 @@ Administration Commands                       delete-file-user(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-Java EE 6            Last change: 2 Sep 2008                    2
+Java EE 6            Last change: 3 May 2009                    2
 
 Administration Commands                       delete-file-user(1)
 
@@ -126,7 +126,12 @@ Administration Commands                       delete-file-user(1)
 
          Displays the help text for the command.
 
+     --authrealmname
+         The name of the authentication realm with which the user
+         was created.
+
      --target
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the com-
@@ -147,16 +152,15 @@ EXAMPLES
 EXIT STATUS
      0                           command executed successfully
 
-     1                           error in executing the command
-
-SEE ALSO
-
-Java EE 6            Last change: 2 Sep 2008                    3
+Java EE 6            Last change: 3 May 2009                    3
 
 Administration Commands                       delete-file-user(1)
 
+     1                           error in executing the command
+
+SEE ALSO
      create-file-user(1),    list-file-users(1),     update-file-
      user(1), list-file-groups(1)
 
-Java EE 6            Last change: 2 Sep 2008                    4
+Java EE 6            Last change: 3 May 2009                    4
 

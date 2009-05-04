@@ -24,142 +24,116 @@ DESCRIPTION
      only.
 
 OPTIONS
-     --appname                   name of the application.
+     --appname
 
-     -t --terse                  Indicates that any  output  data
-                                 must  be very concise, typically
-                                 avoiding   human-friendly   sen-
-                                 tences    and   favoring   well-
-                                 formatted data  for  consumption
-                                 by a script. Default is false.
+         The name of the application.
 
-     -e --echo                   If set to true, the command-line
-                                 statement is echoed on the stan-
-                                 dard output. Default is false.
+     -t --terse
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
 
-     -I --interactive            If set to true  (default),  only
-                                 the  required  password  options
-                                 are prompted.
+     -e --echo
 
-     -H --host                   The  machine  name   where   the
-                                 domain  administration server is
-                                 running. The  default  value  is
-                                 localhost.
+         If set to true, the command-line statement is echoed  on
+         the standard output. Default is false.
+
+     -I --interactive
+         If set to true (default),  only  the  required  password
+         options are prompted.
+
+     -H --host
+
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
 
 Java EE 6           Last change: 30 Jan 2007                    1
 
 Administration Commands                       get-client-stubs(1)
 
-     -p --port                   The HTTP port or HTTPS port  for
-                                 administration. This port is the
-                                 port in the URL that you specify
-                                 in  your  web  browser to manage
-                                 the   domain,    for    example,
-                                 http://localhost:4848.
+     -p --port
 
-                                 The  default  port  number   for
-                                 administration is 4848.
+         The HTTP port or HTTPS  port  for  administration.  This
+         port is the port in the URL that you specify in your web
+         browser   to   manage   the   domain,    for    example,
+         http://localhost:4848.
 
-     -s --secure                 If set to true, uses SSL/TLS  to
-                                 communicate   with   the  domain
-                                 administration server.
+         The default port number for administration is 4848.
 
-                                 The default is false.
+     -s --secure
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
 
-     -u --user                   The user name of the  authorized
-                                 administrative   user   of   the
-                                 domain administration server.
+         The default is false.
 
-                                 If you have authenticated  to  a
-                                 domain   by  using  the  asadmin
-                                 login  command,  you  need   not
-                                 specify  the  --user  option for
-                                 subsequent  operations  on   the
-                                 domain.
+     -u --user
 
-     --passwordfile              Specifies  the  name,  including
-                                 the  full  path,  of a file that
-                                 contains the password entries in
-                                 a specific format.
+         The user name of the authorized administrative  user  of
+         the domain administration server.
 
-                                 The entry for  a  password  must
-                                 have  the  AS_ADMIN_ prefix fol-
-                                 lowed by the  password  name  in
-                                 uppercase  letters. For example,
-                                 to specify the password for  the
-                                 domain   administration  server,
-                                 use an entry with the  following
-                                 format:
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
 
-                                   AS_ADMIN_PASSWORD=password
+     --passwordfile
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
 
-                                 In this example, password is the
-                                 actual administrator password.
+         The entry for a password must have the AS_ADMIN_  prefix
+         followed  by the password name in uppercase letters. For
+         example, to specify the password for the domain adminis-
+         tration server, use an entry with the following format:
 
-                                 The  following  other  passwords
-                                 can also be specified:
+           AS_ADMIN_PASSWORD=password
+
+         In this example, password is  the  actual  administrator
+         password.
+
+         The following other passwords can also be specified:
+
+             o    AS_ADMIN_MAPPEDPASSWORD
+
+             o    AS_ADMIN_USERPASSWORD
+
+             o    AS_ADMIN_ALIASPASSWORD
+         All remote  commands  must  specify  the  administration
+         password  to  authenticate  to the domain administration
+         server. The password can be specified by one of the fol-
+         lowing means:
 
 Java EE 6           Last change: 30 Jan 2007                    2
 
 Administration Commands                       get-client-stubs(1)
 
-                                     o    AS_ADMIN_MAPPEDPASSWORD
+             o    Through the --passwordfile option
 
-                                     o    AS_ADMIN_USERPASSWORD
+             o    Through the asadmin login command
 
-                                     o    AS_ADMIN_ALIASPASSWORD
-                                 All remote commands must specify
-                                 the  administration  password to
-                                 authenticate   to   the   domain
-                                 administration server. The pass-
-                                 word can be specified by one  of
-                                 the following means:
+             o    Interactively at the command prompt
+         The asadmin login command can be used  only  to  specify
+         the  administration  password.  For other passwords that
+         remote commands require, use the  --passwordfile  option
+         or specify them at the command prompt.
 
-                                     o    Through     the      --
-                                          passwordfile option
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
+         AS_ADMIN_PASSWORD option is not required. You still must
+         provide    the    other    passwords,    for    example,
+         AS_ADMIN_USERPASSWORD, when required by individual  com-
+         mands, such as update-file-user.
 
-                                     o    Through   the   asadmin
-                                          login command
+         For security reasons, a password that is specified as an
+         environment variable is not read by the asadmin command.
 
-                                     o    Interactively  at   the
-                                          command prompt
-                                 The asadmin login command can be
-                                 used   only   to   specify   the
-                                 administration   password.   For
-                                 other passwords that remote com-
-                                 mands  require,   use   the   --
-                                 passwordfile  option  or specify
-                                 them at the command prompt.
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
 
-                                 After authenticating to a domain
-                                 by  using the asadmin login com-
-                                 mand, you need not  specify  the
-                                 administration  password through
-                                 the  --passwordfile  option  for
-                                 subsequent   operations  on  the
-                                 domain.   However,   only    the
-                                 AS_ADMIN_PASSWORD  option is not
-                                 required. You still must provide
-                                 the  other  passwords, for exam-
-                                 ple, AS_ADMIN_USERPASSWORD, when
-                                 required by individual commands,
-                                 such as update-file-user.
+     --help
 
-                                 For security reasons, a password
-                                 that is specified as an environ-
-                                 ment variable is not read by the
-                                 asadmin command.
-
-                                 The    default     value     for
-                                 AS_ADMIN_MASTERPASSWORD       is
-                                 changeit.
-
-Java EE 6           Last change: 30 Jan 2007                    3
-
-Administration Commands                       get-client-stubs(1)
-
-     --help                      Displays the help text  for  the
-                                 command.
+         Displays the help text for the command.
 
 OPERANDS
      local_directory_path        path  to  the  local   directory
@@ -177,6 +151,10 @@ EXIT STATUS
      0                   command executed successfully
 
      1                   error in executing the command
+
+Java EE 6           Last change: 30 Jan 2007                    3
+
+Administration Commands                       get-client-stubs(1)
 
 SEE ALSO
      undeploy(1)

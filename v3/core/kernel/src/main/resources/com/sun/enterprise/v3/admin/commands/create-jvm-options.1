@@ -50,7 +50,7 @@ DESCRIPTION
          tual  Machine  for  the Java platform.Startup parameters
          are preceded by the dash character (-) , for example:
 
-Java EE 6           Last change: 30 Sep 2008                    1
+Java EE 6           Last change: 30 Apr 2009                    1
 
 Administration Commands                     create-jvm-options(1)
 
@@ -100,16 +100,11 @@ Administration Commands                     create-jvm-options(1)
              o    Startup parameters for  the  JVM  machine,  for
                   example, -Xmx1024m, -client or -d64
 
-      To restart the DAS, use  the  following  commands  in  this
-     order:
+      To restart the DAS, use the restart-domain(1) command.
 
-Java EE 6           Last change: 30 Sep 2008                    2
+Java EE 6           Last change: 30 Apr 2009                    2
 
 Administration Commands                     create-jvm-options(1)
-
-         1.   stop-domain(1)
-
-         2.   start-domain(1)
 
      For more information about the  Java  application  launcher,
      see the reference page for the operating system that you are
@@ -152,18 +147,18 @@ OPTIONS
 
          The default port number for administration is 4848.
 
-Java EE 6           Last change: 30 Sep 2008                    3
-
-Administration Commands                     create-jvm-options(1)
-
      -s --secure
-
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
          The default is false.
 
+Java EE 6           Last change: 30 Apr 2009                    3
+
+Administration Commands                     create-jvm-options(1)
+
      -u --user
+
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -172,7 +167,6 @@ Administration Commands                     create-jvm-options(1)
          option for subsequent operations on the domain.
 
      --passwordfile
-
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -208,16 +202,17 @@ Administration Commands                     create-jvm-options(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-Java EE 6           Last change: 30 Sep 2008                    4
-
-Administration Commands                     create-jvm-options(1)
-
          After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
          AS_ADMIN_PASSWORD option is not required. You still must
          provide    the    other    passwords,    for    example,
+
+Java EE 6           Last change: 30 Apr 2009                    4
+
+Administration Commands                     create-jvm-options(1)
+
          AS_ADMIN_USERPASSWORD, when required by individual  com-
          mands, such as update-file-user.
 
@@ -260,12 +255,12 @@ OPERANDS
            about escape characters in command  options,  see  the
            asadmin(1M) man page.
 
-Java EE 6           Last change: 30 Sep 2008                    5
-
-Administration Commands                     create-jvm-options(1)
-
 EXAMPLES
      Example 1 Setting Java System Properties
+
+Java EE 6           Last change: 30 Apr 2009                    5
+
+Administration Commands                     create-jvm-options(1)
 
      JVM machine options must start with  a  dash  (-).  Use  the
      backslash (\fR) to escape the dash delimiter.
@@ -306,14 +301,14 @@ EXAMPLES
          o    Information about garbage collection is to be  pro-
               vided.
 
-Java EE 6           Last change: 30 Sep 2008                    6
-
-Administration Commands                     create-jvm-options(1)
-
        asadmin> create-jvm-options "-Xmx1024m:-XX:+PrintGCDetails"
        created 1 option(s)
 
        Command create-jvm-options executed successfully.
+
+Java EE 6           Last change: 30 Apr 2009                    6
+
+Administration Commands                     create-jvm-options(1)
 
      In this example, one parameter already  existed  before  the
      command  was  run.  Therefore, the command reports that only
@@ -325,8 +320,8 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-jvm-options(1), list-jvm-options(1), start-domain(1),
-     stop-domain(1)
+     delete-jvm-options(1),     list-jvm-options(1),     restart-
+     domain(1)
 
      asadmin(1M)
 
@@ -337,5 +332,5 @@ SEE ALSO
      Windows
      (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 6           Last change: 30 Sep 2008                    7
+Java EE 6           Last change: 30 Apr 2009                    7
 

@@ -11,17 +11,19 @@ SYNOPSIS
 
 DESCRIPTION
      Use  the  restart-domain  command  to  restart  the   Domain
-     Administration Server (DAS) of the specified domain.
+     Administration  Server  (DAS)  of  the specified domain. The
+     domain is specified through  a  combination  of  the  --host
+     option  and  the  --port  option. The domain must already be
+     started.
 
-     The prerequisites for using this command are as follows:
+     The restart-domain command does not exit until  the  command
+     has verified that the domain has been stopped and restarted.
 
-         o    The domain must already be started.
-
-         o    When the domain was started, the --watchdog  option
-              of  the start-domain(1) must have been set to true.
-              If this option was set to false and you attempt  to
-              restart  the  domain,  the  domain is stopped and a
-              warning message is logged.
+     A domain might be started with the  verbose  option  of  the
+     start-domain(1)  command  set  to  true.  In this situation,
+     after the domain  is  restarted,  messages  continue  to  be
+     displayed  in  the  console  window that was opened when the
+     domain was originally started.
 
      This command can be run in the remote mode only.
 
@@ -44,13 +46,14 @@ OPTIONS
 
      -p --port
          The HTTP port or HTTPS  port  for  administration.  This
+
+Java EE 6           Last change: 27 Apr 2009                    1
+
+Administration Commands                         restart-domain(1)
+
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
          http://localhost:4848.
-
-Java EE 6           Last change: 20 Apr 2009                    1
-
-Administration Commands                         restart-domain(1)
 
          The default port number for administration is 4848.
 
@@ -78,17 +81,28 @@ OPERANDS
      None.
 
 EXAMPLES
-     Example 1 Using restart-domain command
+     Example 1 Using the restart-domain Command
+
+     This example shows the command for restarting a domain  that
+     is  running  on  localhost  and  listens  for administration
+     requests on HTTP port 4848.
 
        asadmin> restart-domain
+       Successfully restarted the domain
+       Command restart-domain executed successfully.
 
 EXIT STATUS
      0                   command executed successfully
 
+Java EE 6           Last change: 27 Apr 2009                    2
+
+Administration Commands                         restart-domain(1)
+
      1                   error in executing the command
 
 SEE ALSO
-     start-domain(1), delete-domain(1), list-domains(1)
+     delete-domain(1),  list-domains(1),  start-domain(1),  stop-
+     domain(1)
 
-Java EE 6           Last change: 20 Apr 2009                    2
+Java EE 6           Last change: 27 Apr 2009                    3
 

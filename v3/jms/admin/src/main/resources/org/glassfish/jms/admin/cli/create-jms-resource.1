@@ -161,162 +161,118 @@ Java EE 6           Last change: 15 Apr 2009                    3
 
 Administration Commands                    create-jms-resource(1)
 
-         ClientId                     Specifies a client ID for a
-                                      connection   factory   that
-                                      will be used by  a  durable
-                                      subscriber.
+         ClientId
 
-         AddressList                  This is  a  comma-separated
-                                      list   of   message   queue
-                                      addresses. It specifies the
-                                      names   (and,   optionally,
-                                      port numbers) of a  message
-                                      broker      instance     or
-                                      instances with  which  your
-                                      application  will  communi-
-                                      cate. Each address  in  the
-                                      list   specifies  the  host
-                                      name (and, optionally, host
-                                      port  and  connection  ser-
-                                      vice) for  the  connection.
-                                      For   example,   the  value
-                                      could    be    earth     or
-                                      earth:7677.   Specify   the
-                                      port number if the  message
-                                      broker is running on a port
-                                      other  than   the   default
-                                      (7676). If you specify mul-
-                                      tiple hosts and ports in  a
-                                      clustered  environment, the
-                                      first available host on the
-                                      list  is  used. Default: An
-                                      address list composed  from
-                                      the  jms-hosts  defined  in
-                                      the  target's   jms-service
-                                      configuration.  The default
-                                      for PE is  local  host  and
-                                      the  default port number is
-                                      7676.   The   client   will
-                                      attempt  a  connection to a
-                                      broker on port 7676 of  the
-                                      local host.
+             Specifies a client ID for a connection factory  that
+             will be used by a durable subscriber.
 
-         MessageServiceAddressList    Same as  AddressList.  This
-                                      property   name  is  depre-
-                                      cated.   Use    AddressList
-                                      instead.
+         AddressList
+             This is a  comma-separated  list  of  message  queue
+             addresses.  It specifies the names (and, optionally,
+             port  numbers)  of  a  message  broker  instance  or
+             instances  with which your application will communi-
+             cate. Each address in the list  specifies  the  host
+             name (and, optionally, host port and connection ser-
+             vice) for the connection.  For  example,  the  value
+             could  be  earth  or  earth:7677.  Specify  the port
+             number if the message broker is running  on  a  port
+             other than the default (7676). If you specify multi-
+             ple hosts and ports in a clustered environment,  the
+             first  available  host on the list is used. Default:
+             An address list composed from the jms-hosts  defined
+             in   the  target's  jms-service  configuration.  The
+             default for PE is local host and  the  default  port
+             number is 7676. The client will attempt a connection
+             to a broker on port 7676 of the local host.
 
-         UserName                     The user name for the  con-
-                                      nection  factory.  Default:
-                                      guest.
+         MessageServiceAddressList
+
+             Same as AddressList. This property  name  is  depre-
+             cated. Use AddressList instead.
+
+         UserName
+             The user name for the connection  factory.  Default:
+             guest.
+
+         Password
+
+             The password for the  connection  factory.  Default:
+             guest.
+
+         ReconnectEnabled
+             If enabled (value = true),  it  indicates  that  the
+             client  runtime  attempts  to reconnect to a message
+             server (or the list of addresses in the AddressList)
+             when a connection is lost. Default: false.
+
+         ReconnectAttempts
+
+             Specifies the number  of  attempts  to  connect  (or
 
 Java EE 6           Last change: 15 Apr 2009                    4
 
 Administration Commands                    create-jms-resource(1)
 
-         Password                     The password for  the  con-
-                                      nection  factory.  Default:
-                                      guest.
+             reconnect)  for  each  address  in  the  AddressList
+             before the client runtime tries the next address  in
+             the list. A value of -1 indicates that the number of
+             reconnect attempts is unlimited (the client  runtime
+             attempts  to  connect  to the first address until it
+             succeeds). Default: 6.
 
-         ReconnectEnabled             If enabled (value =  true),
-                                      it   indicates   that   the
-                                      client runtime attempts  to
-                                      reconnect   to   a  message
-                                      server  (or  the  list   of
-                                      addresses       in      the
-                                      AddressList) when a connec-
-                                      tion   is   lost.  Default:
-                                      false.
+         ReconnectInterval
 
-         ReconnectAttempts            Specifies  the  number   of
-                                      attempts   to  connect  (or
-                                      reconnect) for each address
-                                      in  the  AddressList before
-                                      the  client  runtime  tries
-                                      the  next  address  in  the
-                                      list. A value of  -1  indi-
-                                      cates  that  the  number of
-                                      reconnect    attempts    is
-                                      unlimited  (the client run-
-                                      time attempts to connect to
-                                      the  first address until it
-                                      succeeds). Default: 6.
+             Specifies  the  interval  in  milliseconds   between
+             reconnect attempts. This applies to attempts on each
+             address  in  the  AddressList  and  for   successive
+             addresses in the list. If the interval is too short,
+             the broker does not have time to recover. If  it  is
+             too long, the reconnect might represent an unaccept-
+             able delay. Default: 30,000 milliseconds.
 
-         ReconnectInterval            Specifies the  interval  in
-                                      milliseconds between recon-
-                                      nect attempts. This applies
-                                      to attempts on each address
-                                      in the AddressList and  for
-                                      successive addresses in the
-                                      list. If  the  interval  is
-                                      too  short, the broker does
-                                      not have time  to  recover.
-                                      If  it  is  too  long,  the
-                                      reconnect  might  represent
-                                      an    unacceptable   delay.
-                                      Default:    30,000     mil-
-                                      liseconds.
+         AddressListBehavior
+             Specifies whether connection  attempts  are  in  the
+             order  of  addresses  in  the  AddressList attribute
+             (PRIORITY) or in a random order  (RANDOM).  PRIORITY
+             means  that the reconnect will always try to connect
+             to the first server address in the  AddressList  and
+             will use another one only if the first broker is not
+             available. If you have  many  clients  attempting  a
+             connection   using   the  same  connection  factory,
+             specify RANDOM to prevent them from all  being  con-
+             nected   to   the   same   address.   Default:   The
+             AddressListBehavior  value  of  the  target's   jms-
+             service configuration.
 
-         AddressListBehavior          Specifies  whether  connec-
-                                      tion  attempts  are  in the
-                                      order of addresses  in  the
-                                      AddressList       attribute
-                                      (PRIORITY) or in  a  random
+         AddressListIterations
 
-Java EE 6           Last change: 15 Apr 2009                    5
-
-Administration Commands                    create-jms-resource(1)
-
-                                      order   (RANDOM).  PRIORITY
-                                      means  that  the  reconnect
-                                      will  always try to connect
-                                      to the first server address
-                                      in the AddressList and will
-                                      use another one only if the
-                                      first  broker is not avail-
-                                      able.  If  you  have   many
-                                      clients  attempting  a con-
-                                      nection using the same con-
-                                      nection   factory,  specify
-                                      RANDOM to prevent them from
-                                      all  being connected to the
-                                      same address. Default:  The
-                                      AddressListBehavior   value
-                                      of the target's jms-service
-                                      configuration.
-
-         AddressListIterations        Specifies  the  number   of
-                                      times  the  client  runtime
-                                      iterates    through     the
-                                      AddressList in an effort to
-                                      establish (or re-establish)
-                                      a  connection).  A value of
-                                      -1   indicates   that   the
-                                      number   of   attempts   is
-                                      unlimited. Default: -1.
+             Specifies the number of  times  the  client  runtime
+             iterates  through  the  AddressList  in an effort to
+             establish (or re-establish) a connection).  A  value
+             of  -1  indicates  that  the  number  of attempts is
+             unlimited. Default: -1.
 
          You can specify the following properties for a  destina-
          tion resource:
 
          Name
-
              (Required) This property specifies the name  of  the
              physical  destination  to  which  the  resource will
              refer. You create a physical  destination  with  the
              create-jmsdest command.
 
+Java EE 6           Last change: 15 Apr 2009                    5
+
+Administration Commands                    create-jms-resource(1)
+
          Description
+
              This property provides a description of the physical
              destination.
 
 OPERANDS
      jndi_name
-
          The JNDI name of the JMS resource to be created.
-
-Java EE 6           Last change: 15 Apr 2009                    6
-
-Administration Commands                    create-jms-resource(1)
 
 EXAMPLES
      Example 1 Creating a JMS  connection  factory  resource  for
@@ -349,6 +305,10 @@ EXAMPLES
 
 EXIT STATUS
      0                           command executed successfully
+
+Java EE 6           Last change: 15 Apr 2009                    6
+
+Administration Commands                    create-jms-resource(1)
 
      1                           error in executing the command
 

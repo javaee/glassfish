@@ -61,23 +61,19 @@ Administration Commands                                  login(1)
      get  prompted  for  admin user and admin password, you would
      invoke asadmin commands in succession like this:
 
-     asadmin>create-jdbc-connection-pool    --user    admin    --
-     passwordfile passwordfile.txt <other options> samplePool1
+       asadmin>create-jdbc-connection-pool --user admin --passwordfile passwordfile.txt <other options> samplePool1
 
-     asadmin>deploy --user admin --passwordfile  passwordfile.txt
-     <other options> /home/myapplication.ear
+       asadmin>deploy --user admin --passwordfile passwordfile.txt <other options> /home/myapplication.ear
 
-     asadmin>list-components    --user    admin    --passwordfile
-     passwordfile.txt <other options>
+       asadmin>list-components --user admin --passwordfile passwordfile.txt <other options>
 
      If you now log in, you can run remote commands like this:
 
-     asadmin>create-jdbc-connection-pool  <other  options>   sam-
-     plePool1
+       asadmin>create-jdbc-connection-pool <other options> samplePool1
 
-     asadmin>deploy <other options> /home/myapplication.ear
+       asadmin>deploy <other options> /home/myapplication.ear
 
-     asadmin>list-components <other options>
+       asadmin>list-components <other options>
 
      Login information is saved permanently and this  information
      can be used across multiple domain restarts.
@@ -87,41 +83,41 @@ Administration Commands                                  login(1)
      --port.
 
 OPTIONS
-     -t --terse                  Indicates that any  output  data
-                                 must  be very concise, typically
-                                 avoiding   human-friendly   sen-
-                                 tences    and   favoring   well-
-                                 formatted data  for  consumption
+     -t --terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
 
 Java EE 6           Last change: 22 Dec 2004                    2
 
 Administration Commands                                  login(1)
 
-                                 by a script. Default is false.
+         well-formatted data for consumption by a script. Default
+         is false.
 
-     -e --echo                   Setting to true  will  echo  the
-                                 command  line  statement  on the
-                                 standard  output.   Default   is
-                                 false.
+     -e --echo
 
-     -H --host                   The  machine  name   where   the
-                                 domain  administration server is
-                                 running. The  default  value  is
-                                 lcoalhost.   If   you  login  to
-                                 localhost, you need not  specify
-                                 host  or port options for subse-
-                                 quent remote commands.
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
 
-     -p --port                   The port number  of  the  domain
-                                 administration  server listening
-                                 for administration requests.
+     -H --host
+         The machine name where the domain administration  server
+         is running. The default value is lcoalhost. If you login
+         to localhost, you need not specify host or port  options
+         for subsequent remote commands.
 
-     -s --secure                 If set to true, uses SSL/TLS  to
-                                 communicate   with   the  domain
-                                 administration server.
+     -p --port
 
-      --help                     Displays the help text  for  the
-                                 command.
+         The port number  of  the  domain  administration  server
+         listening for administration requests.
+
+     -s --secure
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
+
+      --help
+
+         Displays the help text for the command.
 
 EXAMPLES
      Example 1 Using the login command

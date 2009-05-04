@@ -49,7 +49,7 @@ DESCRIPTION
 
              o    --XX:PermSize=size
 
-Java EE 6           Last change: 30 Sep 2008                    1
+Java EE 6           Last change: 30 Apr 2009                    1
 
 Administration Commands                     delete-jvm-options(1)
 
@@ -92,16 +92,7 @@ Administration Commands                     delete-jvm-options(1)
              o    Startup parameters for  the  JVM  machine,  for
                   example, -Xmx1024m, -client or -d64
 
-      To restart the DAS, use  the  following  commands  in  this
-     order:
-
-         1.   stop-domain(1)
-
-         2.   start-domain(1)
-
-Java EE 6           Last change: 30 Sep 2008                    2
-
-Administration Commands                     delete-jvm-options(1)
+      To restart the DAS, use the restart-domain(1) command.
 
      For more information about the  Java  application  launcher,
      see the reference page for the operating system that you are
@@ -109,6 +100,11 @@ Administration Commands                     delete-jvm-options(1)
 
          o    Solaris Operating System (Solaris  OS)  and  Linux:
               java    -    the    Java    application    launcher
+
+Java EE 6           Last change: 30 Apr 2009                    2
+
+Administration Commands                     delete-jvm-options(1)
+
               (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 
          o    Windows:  java  -  the  Java  application  launcher
@@ -150,20 +146,22 @@ OPTIONS
 
          The default is false.
 
-Java EE 6           Last change: 30 Sep 2008                    3
-
-Administration Commands                     delete-jvm-options(1)
-
      -u --user
 
          The user name of the authorized administrative  user  of
          the domain administration server.
 
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
+         If you have authenticated  to  a  domain  by  using  the
+
+Java EE 6           Last change: 30 Apr 2009                    3
+
+Administration Commands                     delete-jvm-options(1)
+
+         asadmin  login  command, you need not specify the --user
          option for subsequent operations on the domain.
 
      --passwordfile
+
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -205,16 +203,15 @@ Administration Commands                     delete-jvm-options(1)
          quent  operations  on  the  domain.  However,  only  the
          AS_ADMIN_PASSWORD option is not required. You still must
          provide    the    other    passwords,    for    example,
-
-Java EE 6           Last change: 30 Sep 2008                    4
-
-Administration Commands                     delete-jvm-options(1)
-
          AS_ADMIN_USERPASSWORD, when required by individual  com-
          mands, such as update-file-user.
 
          For security reasons, a password that is specified as an
          environment variable is not read by the asadmin command.
+
+Java EE 6           Last change: 30 Apr 2009                    4
+
+Administration Commands                     delete-jvm-options(1)
 
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
@@ -256,16 +253,16 @@ EXAMPLES
 
      To remove more than one JVM  option,  use  a  colon  (:)  to
      separate  the  options.  If the JVM option itself contains a
-
-Java EE 6           Last change: 30 Sep 2008                    5
-
-Administration Commands                     delete-jvm-options(1)
-
      colon (:), use the backslash (\fR) to offset the  colon  (:)
      delimiter.
 
        asadmin> delete-jvm-options -e
        --interactive=true --secure=true --passwordfile passwords.txt
+
+Java EE 6           Last change: 30 Apr 2009                    5
+
+Administration Commands                     delete-jvm-options(1)
+
        --terse=false --user admin --target server --host localhost
        --echo=true --port 4848 "-Dtmp=sun"
        Command delete-jvm-options executed successfully
@@ -284,8 +281,8 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     create-jvm-options(1), list-jvm-options(1), start-domain(1),
-     stop-domain(1)
+     create-jvm-options(1),     list-jvm-options(1),     restart-
+     domain(1)
 
      asadmin(1M)
 
@@ -296,5 +293,5 @@ SEE ALSO
      Windows
      (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 6           Last change: 30 Sep 2008                    6
+Java EE 6           Last change: 30 Apr 2009                    6
 

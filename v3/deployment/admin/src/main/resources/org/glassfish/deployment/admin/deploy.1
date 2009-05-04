@@ -20,13 +20,16 @@ SYNOPSIS
      [--enabled={true|false}] [ --generatermistubs ={false|true}]
      [ --availabilityenabled ={false|true}]
      [ --libraries  jar_file[(path_separator)jar_file*]]
-     [--target target] filepath
+     [--target target]
+     [--type pkg-type]
+     [--properties(name=value)[:name=value]*]
+     filepath
 
 DESCRIPTION
      Deploys an  enterprise  application,  web  application,  EJB
      module,  connector  module, or application client module. If
      the component is already deployed or already exists,  it  is
-     forcefully redeployed if the --force option is set to true.
+     forcibly redeployed if the --force option is set to true.
 
      This command is supported in remote mode only.
 
@@ -47,7 +50,7 @@ OPTIONS
          If set to true (default),  only  the  required  password
          options are prompted.
 
-Java EE 6           Last change: 16 Sep 2008                    1
+Java EE 6            Last change: 3 May2009                     1
 
 Administration Commands                                 deploy(1)
 
@@ -100,7 +103,7 @@ Administration Commands                                 deploy(1)
 
              o    AS_ADMIN_USERPASSWORD
 
-Java EE 6           Last change: 16 Sep 2008                    2
+Java EE 6            Last change: 3 May2009                     2
 
 Administration Commands                                 deploy(1)
 
@@ -153,7 +156,7 @@ Administration Commands                                 deploy(1)
          If set to true, makes sure the component  is  redeployed
          even   if  the  specified  component  has  already  been
 
-Java EE 6           Last change: 16 Sep 2008                    3
+Java EE 6            Last change: 3 May2009                     3
 
 Administration Commands                                 deploy(1)
 
@@ -166,8 +169,11 @@ Administration Commands                                 deploy(1)
          JSPs are compiled during runtime.
 
      --verify
-         If set to true, the syntax and semantics of the  deploy-
-         ment descriptor is verified. Default is false.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --name
 
@@ -175,10 +181,10 @@ Administration Commands                                 deploy(1)
 
      --upload
          When set to true (the default), uploads  the  deployable
-         file  to  the  administration server. If the filepath of
-         the deployable file is mounted to the server machine, or
-         if the administration server is running locally, set the
-         upload option to false.
+         file  to  the administration server. The deployable file
+         must be accessible from  the  client.  If  the  file  is
+         accessible  to  both server and client, set the --upload
+         option to false.
 
      --retrieve
 
@@ -186,47 +192,56 @@ Administration Commands                                 deploy(1)
          machine to the local directory.
 
      --dbvendorname
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
-         ignored.
+         Specifies the name of  the  database  vendor  for  which
+         tables are created. Supported values include db2, mssql,
+         oracle,  derby,  javadb,  postgresql,   pointbase,   and
+         sybase, case-insensitive. If not specified, the value of
+         the database-vendor-name attribute in sun-ejb-jar.xml is
+         used.  If no value is specified, a connection is made to
+         the resource specified by the  jndi-name  subelement  of
+         the  cmp-resource  element  in the sun-ejb-jar.xml file,
+         and the database vendor name is read. If the  connection
+         cannot  be  established,  or  if the value is not recog-
+         nized, SQL-92 compliance is presumed.
 
-     --createtables
-
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
-         ignored.
-
-Java EE 6           Last change: 16 Sep 2008                    4
+Java EE 6            Last change: 3 May2009                     4
 
 Administration Commands                                 deploy(1)
 
-     --dropandcreatetables
+     --createtables
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
-         ignored.
+         Creates tables at  deployment  of  an  application  with
+         unmapped  CMP  beans.  Default  is the create-tables-at-
+         deploy entry in the cmp-resource  element  of  the  sun-
+         ejb-jar.xml file.
+
+     --dropandcreatetables
+         If set to true, when the component  is  redeployed,  the
+         tables  created  by  the previous deployment are dropped
+         before creating  the  new  tables.  Applies  to  already
+         deployed  applications  with  unmapped CMP beans. If not
+         set to true, the tables are dropped if the  drop-tables-
+         at-undeploy  entry  in  the  cmp-resource element of the
+         sun-ejb-jar.xml file is set to true. The new tables  are
+         created  if  the  create-tables-at-deploy  entry  in the
+         cmp-resource element of the sun-ejb-jar.xml file is  set
+         to true.
 
      --uniquetablenames
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
-         ignored.
+
+         Guarantees unique table names  for  all  the  beans  and
+         results  in a hashcode added to the table names. This is
+         useful if you have an  application  with  case-sensitive
+         bean names.
 
      --deploymentplan
-
          Takes the deployment plan, which  is  a  JAR  containing
          Sun-specific descriptors, and deploys it. This should be
          passed along when deploying a pure EAR file. A pure  EAR
          file is an EAR without Sun-specific descriptors.
 
      --enabled
+
          If set to true (default), allows  users  to  access  the
          application.  If set to false, users will not be able to
          access the application. In a domain whose profile is the
@@ -237,31 +252,26 @@ Administration Commands                                 deploy(1)
          deploy to a specific instance or cluster.
 
      --generatermistubs
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error  does  not  occur.  Instead,  the
 
-         If set to true, static RMI-IIOP stubs are generated  and
-         put  into  the client.jar. If set to false (default) the
-         stubs are not generated.
-
-     --availabilityenabled
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile. This
-         option controls whether high-availability is enabled for
-         SFSB checkpointing and potentially passivation.  If  set
-         to  false  (default)  all SFSB checkpointing is disabled
-         for the specified application or EJB module. If  set  to
-         true, the specified application or module is enabled for
-
-Java EE 6           Last change: 16 Sep 2008                    5
+Java EE 6            Last change: 3 May2009                     5
 
 Administration Commands                                 deploy(1)
 
-         high-availability. Set this option to true only if  high
-         availability is configured and enabled at higher levels,
-         such as the server and container levels.
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --availabilityenabled
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --libraries
-
          A comma-separated list of library JAR files. Specify the
          library  JAR  files by their relative or absolute paths.
          Specify   relative   paths   relative    to    instance-
@@ -269,83 +279,91 @@ Administration Commands                                 deploy(1)
          the application in the order specified.
 
      --target
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the com-
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
+     --type
+         The packaging archive type  of  the  component  that  is
+         being deployed. Possible values are as follows:
+
+         osgi
+
+             The component is packaged as an OSGI  Alliance  bun-
+             dle.
+
+         The --type option is optional. If the component is pack-
+         aged as a regular archive, omit this option.
+
+     --properties --property
+         Optional keyword-value  pairs  that  specify  additional
+         properties  for the deployment. The available properties
+         are determined by the implementation  of  the  component
+         that is being deployed.
+
+         Note -
+
+           The --properties option and the --property option  are
+
+Java EE 6            Last change: 3 May2009                     6
+
+Administration Commands                                 deploy(1)
+
+           equivalent.  You  can  use either option regardless of
+           the number of properties that you specify.
+
 OPERANDS
      filepath
 
-         Path to the deployable file on the local machine if  the
-         upload  option  is  set  to true; otherwise the absolute
-         path to the file on the server machine.
+         Path to the deployable file on the local client  machine
+         if the upload option is set to true; otherwise the abso-
+         lute path to the file on the server machine.
 
 EXAMPLES
-     Example 1 Deploying an Enterprise application
+     Example 1 Deploying an Enterprise Application
 
-     This syntax deploys the Enterprise application  packaged  in
-     the  Cart.ear file to the default server instance server. In
-     a domain whose profile is the cluster profile or the  enter-
-     prise,  use  the  --target  option  to deploy to a different
-     server instance or to a cluster.
+     This syntax deploys the enterprise application  packaged  in
+     the Cart.ear file.
 
        asadmin> deploy --user admin --passwordfile filename Cart.ear
        Command deploy executed successfully
 
-     Example 2 Deploying a Web application with the default  con-
-     text root
+     Example 2 Deploying a Web Application With the Default  Con-
+     text Root
 
-     This syntax deploys the Web  application  in  the  hello.war
-     file  to  the  default  server  instance server. In a domain
-     whose profile is the cluster profile or the enterprise,  use
-
-Java EE 6           Last change: 16 Sep 2008                    6
-
-Administration Commands                                 deploy(1)
-
-     the --target option to deploy to a different server instance
-     or to a cluster.
+     This syntax deploys the web  application  in  the  hello.war
+     file.
 
        asadmin> deploy --user admin --passwordfile myfile hello.war
        Command deploy executed successfully
 
-     Example 3 Deploying an enterprise bean (EJB component)
+     Example 3  Forcibly  Deploying  a  Web  Application  With  a
+     Specific Context Root
 
-     Deploy an enterprise bean with container-managed persistence
-     (CMP) and create the database tables used by the bean.
+     This syntax  forcibly deploys the  web  application  in  the
+     hello.war  file. The context root of the deployed web appli-
+     cation is greetings. If the  application  has  already  been
+     deployed, it is redeployed.
 
-     This example uses the --target option,  which  is  available
-     only  in  domains  that  are configured to support clusters,
-     such as domains that are created with the cluster profile or
-     the enterprise profile. To use this example in a domain that
-     is not configured to support clusters, omit that option. The
-     target in this example is an existing cluster, cluster1.
-
-       asadmin> deploy --user admin --passwordfile filename
-       --createtables=true --target cluster1 EmployeeEJB.jar
+       asadmin> deploy --user admin --passwordfile myfile --force=true
+       --contextroot greetings hello.war
        Command deploy executed successfully
+
+Java EE 6            Last change: 3 May2009                     7
+
+Administration Commands                                 deploy(1)
 
      Example 4 Deploying a connector module (resource adapter)
 
-     Deploy a connector module packaged in a RAR file.
-
-     This example uses the --target option,  which  is  available
-     only  in  domains  that  are configured to support clusters,
-     such as domains that are created with the cluster profile or
-     the enterprise profile. To use this example in a domain that
-     is not configured to support clusters, omit that option. The
-     target  in  this  example  is  an existing standalone server
-     instance that does not belong to a cluster.
+     This syntax deploys a connector module that is packaged in a
+     RAR file.
 
        asadmin> deploy --user admin --passwordfile filename
-       --target myinstance jdbcra.rar
+       jdbcra.rar
        Command deploy executed successfully
-
-Java EE 6           Last change: 16 Sep 2008                    7
-
-Administration Commands                                 deploy(1)
 
 EXIT STATUS
      0                           command executed successfully
@@ -353,7 +371,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     undeploy(1), list-components(1)
+     redeploy(1), list-components(1), undeploy(1)
 
-Java EE 6           Last change: 16 Sep 2008                    8
+Java EE 6            Last change: 3 May2009                     8
 

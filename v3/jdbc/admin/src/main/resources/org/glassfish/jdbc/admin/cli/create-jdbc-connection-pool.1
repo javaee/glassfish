@@ -12,7 +12,7 @@ SYNOPSIS
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
      [ --target =target]
-     [--datasourceclassname=classname] [--restype=res_type]
+     --datasourceclassname=classname [--restype=res_type]
      [--steadypoolsize=poolsize] [--maxpoolsize=poolsize]
      [--maxwait=time] [--poolresize=limit]
      [--idletimeout=time] [--isolationlevel=isolation_level]
@@ -51,7 +51,7 @@ OPTIONS
          If set to true, the command-line statement is echoed  on
          the standard output. Default is false.
 
-Java EE 6           Last change: 22 Oct 2008                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -102,7 +102,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          In this example, password is  the  actual  administrator
          password.
 
-Java EE 6           Last change: 22 Oct 2008                    2
+Java EE 6            Last change: 3 May 2009                    2
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -155,7 +155,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          The name of the vendor-supplied JDBC datasource resource
          manager.
 
-Java EE 6           Last change: 22 Oct 2008                    3
+Java EE 6            Last change: 3 May 2009                    3
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -207,7 +207,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          The transaction-isolation-level on the  pooled  database
          connections.  This option does not have a default value.
 
-Java EE 6           Last change: 22 Oct 2008                    4
+Java EE 6            Last change: 3 May 2009                    4
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -257,7 +257,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          value is false. One  attempt  is  made  to  re-establish
          failed connections.
 
-Java EE 6           Last change: 22 Oct 2008                    5
+Java EE 6            Last change: 3 May 2009                    5
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -309,7 +309,7 @@ Administration Commands            create-jdbc-connection-pool(1)
 
          The default value is 0, which specifies that  Enterprise
 
-Java EE 6           Last change: 22 Oct 2008                    6
+Java EE 6            Last change: 3 May 2009                    6
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -360,7 +360,7 @@ Administration Commands            create-jdbc-connection-pool(1)
      --lazyconnectionassociation
          Specifies  whether  a  physical  connection  should   be
 
-Java EE 6           Last change: 22 Oct 2008                    7
+Java EE 6            Last change: 3 May 2009                    7
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -412,7 +412,7 @@ Administration Commands            create-jdbc-connection-pool(1)
 
              A connection should not be matched with the resource
 
-Java EE 6           Last change: 22 Oct 2008                    8
+Java EE 6            Last change: 3 May 2009                    8
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -463,7 +463,7 @@ Administration Commands            create-jdbc-connection-pool(1)
 
              o    java.sql.CallableStatement
 
-Java EE 6           Last change: 22 Oct 2008                    9
+Java EE 6            Last change: 3 May 2009                    9
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -514,7 +514,7 @@ EXAMPLES
        --passwordfile passwords.txt --host localhost --port 7070
        --datasourceclassname org.apache.derby.jdbc.ClientDataSource
 
-Java EE 6           Last change: 22 Oct 2008                   10
+Java EE 6            Last change: 3 May 2009                   10
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -540,5 +540,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2008                   11
+Java EE 6            Last change: 3 May 2009                   11
 

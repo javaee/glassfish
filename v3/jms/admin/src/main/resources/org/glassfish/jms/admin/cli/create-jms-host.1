@@ -11,20 +11,12 @@ SYNOPSIS
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
       [ --target  target]
-      [--mqhost host] [--mqport port]
-      [--update-resources{true|false} ] [ --mquser  user]
-      [--mqpassword password] [--property (name=value)[:name=value]*]
+      --mqhost mq-host --mqport mq-port
+      [--update-resources{true|false} ]  --mquser  mq-user
+      --mqpassword mq-password [--property (name=value)[:name=value]*]
       jms_host_name
 
 DESCRIPTION
-     Note -
-
-       This command is available only in domains that are config-
-       ured to support clusters, such as domains that are created
-       with the cluster profile or the  enterprise  profile.  For
-       information about profiles, see Usage Profiles in Sun Java
-       System Application Server 9.1 Administration Guide.
-
      Creates a JMS host within the JMS service. This  command  is
      supported in remote mode only.
 
@@ -49,10 +41,6 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 6           Last change: 17 Apr 2009                    1
-
-Administration Commands                        create-jms-host(1)
-
      -p --port
 
          The HTTP port or HTTPS  port  for  administration.  This
@@ -62,14 +50,18 @@ Administration Commands                        create-jms-host(1)
 
          The default port number for administration is 4848.
 
+Java EE 6            Last change: 3 May 2009                    1
+
+Administration Commands                        create-jms-host(1)
+
      -s --secure
+
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
          The default is false.
 
      -u --user
-
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -78,6 +70,7 @@ Administration Commands                        create-jms-host(1)
          option for subsequent operations on the domain.
 
      --passwordfile
+
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -103,10 +96,6 @@ Administration Commands                        create-jms-host(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 6           Last change: 17 Apr 2009                    2
-
-Administration Commands                        create-jms-host(1)
-
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
@@ -116,6 +105,10 @@ Administration Commands                        create-jms-host(1)
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
+
+Java EE 6            Last change: 3 May 2009                    2
+
+Administration Commands                        create-jms-host(1)
 
          After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
@@ -156,17 +149,18 @@ Administration Commands                        create-jms-host(1)
 
          Helps update the resources. The default value is true.
 
-Java EE 6           Last change: 17 Apr 2009                    3
-
-Administration Commands                        create-jms-host(1)
-
      --mquser
-
          The user name for the JMS service. The default value  is
          admin.
 
      --mqpassword
+
          The password for the JMS service. The default  value  is
+
+Java EE 6            Last change: 3 May 2009                    3
+
+Administration Commands                        create-jms-host(1)
+
          admin.
 
      --property
@@ -195,5 +189,5 @@ EXIT STATUS
 SEE ALSO
      list-jms-hosts(1), delete-jms-host(1)
 
-Java EE 6           Last change: 17 Apr 2009                    4
+Java EE 6            Last change: 3 May 2009                    4
 

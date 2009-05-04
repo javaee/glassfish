@@ -47,7 +47,7 @@ OPTIONS
 
          The default port number for administration is 4848.
 
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands                    list-jdbc-resources(1)
 
@@ -103,7 +103,7 @@ Administration Commands                    list-jdbc-resources(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6            Last change: 3 May 2009                    2
 
 Administration Commands                    list-jdbc-resources(1)
 
@@ -128,35 +128,17 @@ Administration Commands                    list-jdbc-resources(1)
 
 OPERANDS
      target
-         This operand specifies  which  JDBC  resources  you  can
-         list.  Usage  of  this operand is optional. Valid values
-         are:
-
-         server
-
-             Lists the JDBC resources in the current  server  and
-             is the default.
-
-         domain
-             Lists the JDBC resources in the current domain.
-
-         cluster_name
-
-             Lists the JDBC resources in a cluster.
-
-         instance_name
-             Lists the JDBC resources for a particular instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 EXAMPLES
      Example 1 Using the list-jdbc-resources command
 
        asadmin> list-jdbc-resources --user admin --passwordfile passwords.txt
        jdbc/DerbyPool
-
-Java EE 6           Last change: 30 Jan 2007                    3
-
-Administration Commands                    list-jdbc-resources(1)
-
        Command list-jdbc-resources executed successfully.
 
 EXIT STATUS
@@ -167,5 +149,5 @@ EXIT STATUS
 SEE ALSO
      create-jdbc-resource(1), delete-jdbc-resource(1)
 
-Java EE 6           Last change: 30 Jan 2007                    4
+Java EE 6            Last change: 3 May 2009                    3
 

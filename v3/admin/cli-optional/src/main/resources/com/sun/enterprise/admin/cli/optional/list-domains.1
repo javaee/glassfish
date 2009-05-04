@@ -2,26 +2,27 @@
 Administration Commands                           list-domains(1)
 
 NAME
-     list-domains - lists the domains  in  the  specified  domain
+     list-domains - lists the domains in  the  specified  domains
      directory
 
 SYNOPSIS
-     list-domains  [--domaindir install-dir/domains]
-     [--terse=false] [--echo=false]
+     list-domains  [--domaindir domains]
+     [--terse={false|true}] [ --echo ={false|true}] [ --help ]
 
 DESCRIPTION
-     Use the list-domains command to  list  the  domain.  If  the
-     domain directory is not specified, the domain in the default
-     install-dir/domains directory is listed. If  there  is  more
-     that one domain, the domain_name operand must be identified.
+     Use the list-domains command to  list  the  domains  in  the
+     specified domains directory. If the domains directory is not
+     specified, the domains  in  the  default  as-install/domains
+     directory  are  listed.  If  there  is more that one domains
+     directory, the --domaindir option must be specified.
 
 OPTIONS
      --domaindir
 
-         The directory where the domains are to  be  started.  If
+         The directory where the domains are  to  be  listed.  If
          specified,  the  path must be accessible in the filesys-
-         tem.  If  not  specified,  the  domain  in  the  default
-         install-dir/domains directory is started.
+         tem. If not specified, the domains in  the  default  as-
+         install/domains directory are listed.
 
      -t --terse
          Indicates that any output data  must  be  very  concise,
@@ -34,6 +35,9 @@ OPTIONS
          Setting to true will echo the command line statement  on
          to the standard output. Default is false.
 
+     --help
+         Displays the help text for the command.
+
 EXAMPLES
      Example 1 Using the list-domains command
 
@@ -42,12 +46,12 @@ EXAMPLES
        sampleDomain not running
        Command list-domains executed successfully
 
-     Where: domain1 and sampleDomain are the domains  located  in
-     the default install-dir/domains directory.
-
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands                           list-domains(1)
+
+     Where: domain1 and sampleDomain are the domains  located  in
+     the default as-install/domains directory.
 
 EXIT STATUS
      0                           command executed successfully
@@ -58,5 +62,5 @@ SEE ALSO
      create-domain(1), delete-domain(1),  start-domain(1),  stop-
      domain(1),
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6            Last change: 3 May 2009                    2
 

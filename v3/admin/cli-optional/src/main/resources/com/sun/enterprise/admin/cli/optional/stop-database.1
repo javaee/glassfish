@@ -2,20 +2,20 @@
 Administration Commands                          stop-database(1)
 
 NAME
-     stop-database - stops Java DB
+     stop-database - stops the Java DB
 
 SYNOPSIS
-     stop-database  [--dbhost 0.0.0.0] [--dbport 1527]
+     stop-database  [--dbhost host] [--dbport port-no]
 
 DESCRIPTION
      The stop-database command stops a process  of  the  Java  DB
-     server. Java DB server is available with the Sun Java System
-     Application Server software for  use  with  the  Application
-     Server.  Java DB is based upon Apache Derby. The database is
-     typically started with the asadmin  start-database  command.
-     Note  that  a  single host can have multiple database server
-     processes running on different ports. This command stops the
-     database server process for the specified port only.
+     server. Java DB server is available for use with Sun GlassF-
+     ish Enterprise Server. Java DB is based upon  Apache  Derby.
+     The database is typically started with the start-database(1)
+     asadmin command. Note that a single host can  have  multiple
+     database  server  processes running on different ports. This
+     command stops the database server process for the  specified
+     port only.
 
      This command is supported in local mode only.
 
@@ -46,14 +46,14 @@ EXIT STATUS
      The exit status applies to errors in executing  the  asadmin
      command.   For  information  on  database  errors,  see  the
 
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands                          stop-database(1)
 
      derby.log file. This file is located in  the  directory  you
      specified  using  the  --dbhome  option  when you ran start-
      database(1), or if you did not specify --dbhome,  the  value
-     of DERBY_INSTALL, which defaults to install-dir/javadb.
+     of DERBY_INSTALL, which defaults to as-install/javadb.
 
      0                           command executed successfully
 
@@ -62,5 +62,5 @@ Administration Commands                          stop-database(1)
 SEE ALSO
      start-database(1)
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6            Last change: 3 May 2009                    2
 

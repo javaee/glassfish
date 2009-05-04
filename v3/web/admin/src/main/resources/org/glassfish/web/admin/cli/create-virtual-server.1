@@ -10,10 +10,10 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --target  server]
-     --hosts hosts [--httplisteners http_listeners]
+     [ --target  target]
+     --hosts hosts [--networklisteners network-listeners]
      [--defaultwebmodule default_web_module]
-     [--state on] [--logfile log_file]
+     [--state state] [--logfile log_file]
      [--property (name=value)[:name=value]*]
      virtual_server_id
 
@@ -48,7 +48,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 6            Last change: 2 Sep 2008                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -102,7 +102,7 @@ Administration Commands;                 create-virtual-server(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 6            Last change: 2 Sep 2008                    2
+Java EE 6            Last change: 3 May 2009                    2
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -149,12 +149,12 @@ Administration Commands;                 create-virtual-server(1)
          Each virtual server that is configured to the same  con-
          nection group must have a unique host for that group.
 
-     --httplisteners
-         A  comma-separated  (,)  list  of  HTTP  listener   IDs.
+     --networklisteners
+         A comma-separated (,)  list  of  network  listener  IDs.
          Required  only  for  a  virtual  server  that is not the
          default virtual server.
 
-Java EE 6            Last change: 2 Sep 2008                    3
+Java EE 6            Last change: 3 May 2009                    3
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -205,7 +205,7 @@ Administration Commands;                 create-virtual-server(1)
              sign-on  applies  across several applications on the
              same  virtual  server,  access   to   any   of   the
 
-Java EE 6            Last change: 2 Sep 2008                    4
+Java EE 6            Last change: 3 May 2009                    4
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -255,7 +255,7 @@ Administration Commands;                 create-virtual-server(1)
              Specifies the size, in bytes, of  the  buffer  where
              access log calls are stored.
 
-Java EE 6            Last change: 2 Sep 2008                    5
+Java EE 6            Last change: 3 May 2009                    5
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -305,7 +305,7 @@ Administration Commands;                 create-virtual-server(1)
              property. The default value  for  this  property  is
              null.
 
-Java EE 6            Last change: 2 Sep 2008                    6
+Java EE 6            Last change: 3 May 2009                    6
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -334,5 +334,5 @@ SEE ALSO
      delete-virtual-server(1),  list-virtual-servers(1),  create-
      http-listener(1)
 
-Java EE 6            Last change: 2 Sep 2008                    7
+Java EE 6            Last change: 3 May 2009                    7
 

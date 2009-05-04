@@ -46,7 +46,7 @@ OPTIONS
 
          The default port number for administration is 4848.
 
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6           Last change: 30 Apr 2009                    1
 
 Administration Commands                       list-auth-realms(1)
 
@@ -102,7 +102,7 @@ Administration Commands                       list-auth-realms(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6           Last change: 30 Apr 2009                    2
 
 Administration Commands                       list-auth-realms(1)
 
@@ -127,35 +127,17 @@ Administration Commands                       list-auth-realms(1)
 
 OPERANDS
      target_name
-         The name of the target for which you want  to  list  the
-         authentication realms.
-
-         server
-
-             Lists the realms for  the  default  server  instance
-             server and is the default value.
-
-         configuration_name
-             Lists the realms for the named configuration.
-
-         cluster_name
-
-             Lists the realms for every server  instance  in  the
-             cluster.
-
-         instance_name
-             Lists the realms for a particular server instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 EXAMPLES
      Example 1 Using list-auth-realms
 
        asadmin> list-auth-realms --user admin --passwordfile password.txt
        --host localhost --port 4848
-
-Java EE 6           Last change: 30 Jan 2007                    3
-
-Administration Commands                       list-auth-realms(1)
-
        file
        ldap
        certificate
@@ -168,10 +150,14 @@ Administration Commands                       list-auth-realms(1)
 EXIT STATUS
      0                           command executed successfully
 
+Java EE 6           Last change: 30 Apr 2009                    3
+
+Administration Commands                       list-auth-realms(1)
+
      1                           error in executing the command
 
 SEE ALSO
      create-auth-realm(1), delete-auth-realm(1)
 
-Java EE 6           Last change: 30 Jan 2007                    4
+Java EE 6           Last change: 30 Apr 2009                    4
 

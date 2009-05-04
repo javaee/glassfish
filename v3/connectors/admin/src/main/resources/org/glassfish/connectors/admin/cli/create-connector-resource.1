@@ -13,7 +13,9 @@ SYNOPSIS
      [--passwordfile filename] [--help]
       [--target target]
       --poolname connectorConnectionPoolName [--enabled=true]
-      [--description text] jndi_name
+      [--description text]
+     [--property (name=value)[:name=value]*]
+     jndi_name
 
 DESCRIPTION
      This command registers the connector resource with the  JNDI
@@ -47,11 +49,11 @@ OPTIONS
          browser   to   manage   the   domain,    for    example,
          http://localhost:4848.
 
-         The default port number for administration is 4848.
-
 Java EE 6           Last change: 14 Apr 2009                    1
 
 Administration Commands              create-connector-resource(1)
+
+         The default port number for administration is 4848.
 
      -s --secure
 
@@ -101,13 +103,14 @@ Administration Commands              create-connector-resource(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
-         the  administration  password.  For other passwords that
-         remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
 
 Java EE 6           Last change: 14 Apr 2009                    2
 
 Administration Commands              create-connector-resource(1)
+
+         the  administration  password.  For other passwords that
+         remote commands require, use the  --passwordfile  option
+         or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
@@ -149,13 +152,19 @@ Administration Commands              create-connector-resource(1)
 
          Text providing details about the connector resource.
 
-OPERANDS
-     jndi_name
-         The JNDI name of this connector resource.
+     --property
+         Optional attribute name value pairs for configuring  the
 
 Java EE 6           Last change: 14 Apr 2009                    3
 
 Administration Commands              create-connector-resource(1)
+
+         resource.
+
+OPERANDS
+     jndi_name
+
+         The JNDI name of this connector resource.
 
 EXAMPLES
      Example 1 Using the create-connector-resource command

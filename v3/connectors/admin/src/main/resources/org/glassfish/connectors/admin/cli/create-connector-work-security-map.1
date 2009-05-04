@@ -3,7 +3,7 @@ Administration Commands     create-connector-work-security-map(1)
 
 NAME
      create-connector-work-security-map - creates a work security
-     map for the specified resource adapter
+     map for the specified resource adapter.
 
 SYNOPSIS
      create-connector-work-security-map
@@ -12,25 +12,20 @@ SYNOPSIS
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
       --raname  resource-adapter-name
-     [--principalsmap eis-principal=principal_name1[, eis-principal=principal_name2]*
-     --groupsmap eis-group=server-group1[, eis-group=server-group2]*
-       security-map-name
+     [--principalsmap eis-principal1=principal_name1[, eis-principal2=principal_name2]*
+     --groupsmap eis-group1=server-group1[, eis-group2=server-group2]*
+     [--description text]
+       work-security-map-name
 
 DESCRIPTION
-     Use this command to create a security map for the  specified
-     connector  connection  pool.  If  the  security  map  is not
-     present, a new one is created. Also, use this command to map
-     the  caller  identity  of the application (principal or user
-     group) to a  suitable  EIS  principal  in  container-managed
-     transaction-based scenarios. One or more named security maps
-     may be associated with a connector connection pool. The con-
-     nector  security  map  configuration supports the use of the
-     wild card asterisk (*) to indicate all  users  or  all  user
-     groups.
-
-     For this command to succeed, you must have first  created  a
-     connector   connection   pool  using  the  create-connector-
-     connection-pool command.
+     You can use this command to map the caller identity  of  the
+     work  submitted by the resource adapter EIS principal or EIS
+     user group to a suitable principal  or  user  group  in  the
+     application  server  security domain. One or more work secu-
+     rity maps may be associated with  a  resource  adapter.  The
+     connector  work  security map configuration supports the use
+     of the wild card asterisk (*) to indicate all users  or  all
+     user groups.
 
      The enterprise information system (EIS) is any  system  that
      holds  the data of an organization. It can be a mainframe, a
@@ -48,11 +43,6 @@ OPTIONS
 
      -e --echo
          If set to true, the command-line statement is echoed  on
-
-Java EE 6           Last change: 20 Apr 2009                    1
-
-Administration Commands     create-connector-work-security-map(1)
-
          the standard output. Default is false.
 
      -I --interactive
@@ -60,12 +50,16 @@ Administration Commands     create-connector-work-security-map(1)
          If set to true (default),  only  the  required  password
          options are prompted.
 
+Java EE 6           Last change: 20 Apr 2009                    1
+
+Administration Commands     create-connector-work-security-map(1)
+
      -H --host
+
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
      -p --port
-
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
@@ -74,13 +68,13 @@ Administration Commands     create-connector-work-security-map(1)
          The default port number for administration is 4848.
 
      -s --secure
+
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
          The default is false.
 
      -u --user
-
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -89,6 +83,7 @@ Administration Commands     create-connector-work-security-map(1)
          option for subsequent operations on the domain.
 
      --passwordfile
+
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -99,10 +94,6 @@ Administration Commands     create-connector-work-security-map(1)
 
            AS_ADMIN_PASSWORD=password
 
-Java EE 6           Last change: 20 Apr 2009                    2
-
-Administration Commands     create-connector-work-security-map(1)
-
          In this example, password is  the  actual  administrator
          password.
 
@@ -111,6 +102,10 @@ Administration Commands     create-connector-work-security-map(1)
              o    AS_ADMIN_MAPPEDPASSWORD
 
              o    AS_ADMIN_USERPASSWORD
+
+Java EE 6           Last change: 20 Apr 2009                    2
+
+Administration Commands     create-connector-work-security-map(1)
 
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
@@ -147,17 +142,54 @@ Administration Commands     create-connector-work-security-map(1)
 
          Displays the help text for the command.
 
-OPERANDS
-     security-map-name
-         The name of the security map to be created.
+     --raname
+         Indicates the connector module name, which is  the  name
+         of the resource adapter in the domain.xml file.
+
+     --principalsmap
+
+         Specifies a map of the back-end  EIS  principal  to  the
+         application server principal. Use a comma-separated list
+         to specify more than one  mapping.  Use  either  the  --
+         principalsmap  option or the --groupsmap option, but not
+         both.
 
 Java EE 6           Last change: 20 Apr 2009                    3
 
 Administration Commands     create-connector-work-security-map(1)
 
+     --groupsmap
+
+         Specifies a map of the back-end EIS user  group  to  the
+         application  server  user  group.  Use a comma-separated
+         list to specify more than one mapping.  Use  either  the
+         --principalsmap  option  or  the --groupsmap option, but
+         not both.
+
+     --description
+         Text providing descriptive details about  the  connector
+         work security map.
+
+OPERANDS
+     work-security-map-name
+
+         The name of the work security map to be created.
+
 EXAMPLES
      Example 1 Using the create-connector-work-security-map  com-
      mand
+
+       asadmin create-connector-work-security-map --user admin
+       --passwordfile pwd_file.txt --raname my-resource-adapter-name
+       --principalsmap eis-principal-1=server-principal-1,eis-principal-2=server-principal-2,
+       eis-principal-3=server-principal-1 workSecurityMap1
+       Command create-connector-work-security-map executed successfully.
+
+       asadmin create-connector-work-security-map --user admin
+       --passwordfile pwd_file.txt --raname my-resource-adapter-name
+       --groupsmap eis-group-1=server-group-1,eis-group-2=server-group-2,
+       eis-group-3=server-group-1 workSecurityMap2
+       Command create-connector-work-security-map executed successfully.
 
 EXIT STATUS
      0                            command executed successfully
@@ -165,8 +197,8 @@ EXIT STATUS
      1                            error in executing the command
 
 SEE ALSO
-     delete-connector-security-map(1),   list-connector-security-
-     maps(1), update-connector-security-map(1)
+     delete-connector-work-security-map(1),  list-connector-work-
+     security-maps(1)
 
 Java EE 6           Last change: 20 Apr 2009                    4
 

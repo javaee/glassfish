@@ -10,7 +10,7 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [target]
+      [ --authrealmname   auth_realm_name] [target]
 
 DESCRIPTION
      The list-file-users command creates a  list  of  file  users
@@ -46,7 +46,7 @@ OPTIONS
 
          The default port number for administration is 4848.
 
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6            Last change: 3 May 2009                    1
 
 Administration Commands                        list-file-users(1)
 
@@ -102,7 +102,7 @@ Administration Commands                        list-file-users(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6            Last change: 3 May 2009                    2
 
 Administration Commands                        list-file-users(1)
 
@@ -125,26 +125,18 @@ Administration Commands                        list-file-users(1)
 
          Displays the help text for the command.
 
+     --authrealmname
+         Lists only the users  in  the  specified  authentication
+         realm.
+
 OPERANDS
      target
-         Specifies the target for which you are creating the list
-         of file users. This option is valid only in domains that
-         are configured to support clusters, such as domains that
-         are  created  with the cluster profile or the enterprise
-         profile.Valid targets are:
 
-         server
-
-             Lists the file users in the default server instance.
-             This is the default value.
-
-         cluster_name
-             Lists the file users on every server instance in the
-             cluster.
-
-         instance_nameinstance_name
-
-             Lists the file users on a particular sever instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 EXAMPLES
      Example 1 Using the list-file-users command
@@ -153,15 +145,14 @@ EXAMPLES
        sample_user05
        sample_user08
        sample_user12
-
-Java EE 6           Last change: 30 Jan 2007                    3
-
-Administration Commands                        list-file-users(1)
-
        Command list-file-users executed successfully
 
 EXIT STATUS
      0                           command executed successfully
+
+Java EE 6            Last change: 3 May 2009                    3
+
+Administration Commands                        list-file-users(1)
 
      1                           error in executing the command
 
@@ -169,5 +160,5 @@ SEE ALSO
      create-file-user(1),    delete-file-user(1),    update-file-
      user(1), list-file-groups(1)
 
-Java EE 6           Last change: 30 Jan 2007                    4
+Java EE 6            Last change: 3 May 2009                    4
 

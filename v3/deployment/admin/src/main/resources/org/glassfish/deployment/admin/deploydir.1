@@ -18,7 +18,10 @@ SYNOPSIS
       [--dbvendorname dbvendorname] [--createtables=false |  --dropandcreatetables =false]
       [ --generatermistubs =false] [ --availabilityenabled =false]
       [ --libraries  jar_file[(path_separator)jar_file*]]
-      [--target target] dirpath
+      [--target target]
+     [--type pkg-type]
+     [--properties(name=value)[:name=value]*]
+     dirpath
 
 DESCRIPTION
      Note -
@@ -46,13 +49,14 @@ DESCRIPTION
 
      The --force option makes sure the  component  is  forcefully
      (re)deployed  even  if  the  specified component has already
+
+Java EE 6            Last change: 3 May 2009                    1
+
+Administration Commands                              deploydir(1)
+
      been deployed or already exists. Set --force to false for  a
      first  deployment. If the application with that name is run-
      ning and force is set to false, the command fails.
-
-Java EE 6           Last change: 16 Sep 2008                    1
-
-Administration Commands                              deploydir(1)
 
      This command is supported in remote mode only.
 
@@ -97,13 +101,13 @@ OPTIONS
          The user name of the authorized administrative  user  of
          the domain administration server.
 
+Java EE 6            Last change: 3 May 2009                    2
+
+Administration Commands                              deploydir(1)
+
          If you have authenticated to a domain by using the asad-
          min  login  command,  you  need  not  specify the --user
          option for subsequent operations on the domain.
-
-Java EE 6           Last change: 16 Sep 2008                    2
-
-Administration Commands                              deploydir(1)
 
      --passwordfile
 
@@ -154,12 +158,12 @@ Administration Commands                              deploydir(1)
          For security reasons, a password that is specified as an
          environment variable is not read by the asadmin command.
 
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
-
-Java EE 6           Last change: 16 Sep 2008                    3
+Java EE 6            Last change: 3 May 2009                    3
 
 Administration Commands                              deploydir(1)
+
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
 
      --help
 
@@ -181,8 +185,11 @@ Administration Commands                              deploydir(1)
 
      --verify
 
-         If set to true, the syntax and semantics of the  deploy-
-         ment descriptor is verified.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --precompilejsp
          By default, this option is set to false, which does  not
@@ -200,52 +207,61 @@ Administration Commands                              deploydir(1)
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
-     --dbvendorname
-
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
-
-Java EE 6           Last change: 16 Sep 2008                    4
+Java EE 6            Last change: 3 May 2009                    4
 
 Administration Commands                              deploydir(1)
 
-         ignored.
+     --dbvendorname
+
+         Specifies the name of  the  database  vendor  for  which
+         tables are created. Supported values include db2, mssql,
+         oracle, derby, javadb, postgresql, pointbase and sybase,
+         case-insensitive.  If  not  specified,  the value of the
+         database-vendor-name  attribute  in  sun-ejb-jar.xml  is
+         used.  If no value is specified, a connection is made to
+         the resource specifie by the jndi-name subelement of the
+         cmp-resource  element  in  the sun-ejb-jar.xml file, and
+         the database vendor name is read. If the connection can-
+         not  be  established, or if the value is not recognized,
+         SQL-92 compliance is presumed.
 
      --createtables
-
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the com-
-         mand  runs  successfully  and  the  option  is  silently
-         ignored.
+         Creates tables at  deployment  of  an  application  with
+         unmapped  CMP  beans.  Default  is the create-tables-at-
+         deploy entry in the cmp-resource  element  of  the  sun-
+         ejb-jar.xml file.
 
      --dropandcreatetables
+
+         Drops existing tables and creates tables during  deploy-
+         ment  for  application  using unmapped CMP beans. If not
+         specified, the tables are dropped  if  the  drop-tables-
+         at-undeploy  entry  in  the  cmp-resource element of the
+         sun-ejb-jar.xml file is set to true. The new tables  are
+         created  if  the  create-tables-at-deploy  entry  in the
+         cmp-resource element of the sun-ejb-jar.xml  is  set  to
+         true.  When  the  component  is  redeployed,  the tables
+         created by the previous deployment  are  dropped  before
+         creating the new tables.
+
+     --generatermistubs
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the com-
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
-     --generatermistubs
-
-         if set to true, static RMI-IIOP stubs are generated  and
-         put  into  the client.jar. If set to false (default) the
-         stubs are not generated.
-
      --availabilityenabled
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile. This
-         option controls whether high-availability is enabled for
-         SFSB checkpointing and potentially passivation.  If  set
-         to  false  (default)  all SFSB checkpointing is disabled
-         for the specified application or EJB module. If  set  to
-         true, the specified application or module is enabled for
-         high-availability. Set this option to true only if  high
-         availability is configured and enabled at higher levels,
-         such as the server and container levels.
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
+
+Java EE 6            Last change: 3 May 2009                    5
+
+Administration Commands                              deploydir(1)
 
      --libraries
 
@@ -257,22 +273,46 @@ Administration Commands                              deploydir(1)
          the application in the order specified. Place the depen-
          dent JAR files in the domain-dir/lib directory.
 
-Java EE 6           Last change: 16 Sep 2008                    5
-
-Administration Commands                              deploydir(1)
-
      --target
-
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the com-
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
+     --type
+
+         The packaging archive type  of  the  component  that  is
+         being deployed. Possible values are as follows:
+
+         osgi
+             The component is packaged as an OSGI  Alliance  bun-
+             dle.
+
+         The --type option is optional. If the component is pack-
+         aged as a regular archive, omit this option.
+
+     --properties --property
+
+         Optional keyword-value  pairs  that  specify  additional
+         properties  for the deployment. The available properties
+         are determined by the implementation  of  the  component
+         that is being deployed.
+
+         Note -
+
+           The --properties option and the --property option  are
+           equivalent.  You  can  use either option regardless of
+           the number of properties that you specify.
+
 OPERANDS
      dirpath
          Path to the directory containing the exploded format  of
          the deployable archive.
+
+Java EE 6            Last change: 3 May 2009                    6
+
+Administration Commands                              deploydir(1)
 
 EXAMPLES
      Example 1 Using the deploydir command
@@ -295,5 +335,5 @@ SEE ALSO
      deploy(1), disable(1), enable(1), list-components(1),  rede-
      ploy(1), undeploy(1)
 
-Java EE 6           Last change: 16 Sep 2008                    6
+Java EE 6            Last change: 3 May 2009                    7
 
