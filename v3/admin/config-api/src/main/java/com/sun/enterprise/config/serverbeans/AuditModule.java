@@ -97,6 +97,7 @@ public interface AuditModule extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute
     @NotNull
+    @Pattern(regexp="^[\\S]*$")
     String getClassname();
 
     /**
