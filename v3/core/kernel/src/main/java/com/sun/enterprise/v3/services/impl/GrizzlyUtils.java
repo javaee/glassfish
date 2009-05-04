@@ -58,7 +58,7 @@ public class GrizzlyUtils {
         
         if (sslEngine == null) {
             return Utils.readWithTemporarySelector(key.channel(), 
-                    thread.getByteBuffer(), timeout);
+                    thread.getByteBuffer(), timeout).bytesRead;
         } else {
             // if ssl - try to unwrap secured buffer first
             ByteBuffer byteBuffer = thread.getByteBuffer();
@@ -76,7 +76,7 @@ public class GrizzlyUtils {
             
             // if no bytes were unwrapped - read more
             return SSLUtils.doSecureRead(key.channel(), sslEngine, byteBuffer,
-                    securedBuffer);
+                    securedBuffer).bytesRead;
         }
     }
 }

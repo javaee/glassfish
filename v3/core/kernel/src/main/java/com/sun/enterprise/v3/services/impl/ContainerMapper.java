@@ -22,7 +22,6 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -40,7 +39,6 @@ import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.buf.ByteChunk;
