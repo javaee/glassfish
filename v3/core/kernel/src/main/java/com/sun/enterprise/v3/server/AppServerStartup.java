@@ -278,7 +278,7 @@ public class AppServerStartup implements ModuleStartup {
     // TODO(Sahoo): Revisit this method after discussing with Jerome.
     private final void shutdown(Collection<Inhabitant<? extends Startup>> startups, Collection<Inhabitant<? extends Startup>> executedServices) {
 
-        CommandRunner runner = habitat.getByType(CommandRunner.class);
+        CommandRunner runner = habitat.getByContract(CommandRunner.class);
         if (runner!=null) {
            final Properties params = new Properties();
             if (context.getArguments().containsKey("--noforcedshutdown")) {

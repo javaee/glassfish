@@ -6,10 +6,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.admin.FileMonitoring;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -32,8 +29,18 @@ public class FileMonitoringImpl implements FileMonitoring, PostConstruct {
     public void postConstruct() {
         scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
             public void run() {
+                if (monitored.isEmpty()) {
+                    return;
+                }
                 // check our list of monitored files for any changes
-                for (File file : listeners.keySet()) {
+                Set<File> monitoredFiles = new HashSet<File>();
+                monitoredFiles.addAll(listeners.keySet());
+                for (File file : monitoredFiles) {
+                    if (!file.exists()) {
+                        removed(file);
+                        listeners.remove(file);
+                        monitored.remove(file);
+                    } else 
                     if (file.lastModified()!=monitored.get(file)) {
                         // file has changed
                         monitored.put(file, file.lastModified());
@@ -59,6 +66,16 @@ public class FileMonitoringImpl implements FileMonitoring, PostConstruct {
     }
 
 
+    private void removed(final File file) {
+        for (final FileChangeListener listener : listeners.get(file)) {
+            executor.submit(new Runnable() {
+                public void run() {
+                    listener.deleted(file);
+                }
+            });
+        }
+
+    }
 
     private void changed(final File file) {
         for (final FileChangeListener listener : listeners.get(file)) {

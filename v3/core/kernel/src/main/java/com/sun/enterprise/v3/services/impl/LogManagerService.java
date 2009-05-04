@@ -212,10 +212,12 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                     }
 
                 }
+
+                public void deleted(File deletedFile) {
+                    logger.log(Level.INFO, "logging.properties file removed, updating log levels disabled");
+                }
             });
         }
-        logger.log(Level.INFO, "Starting GlassFish Application Server.");
-
     }
 
     public void preDestroy() {

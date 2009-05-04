@@ -94,9 +94,6 @@ public class ComponentEnvManagerImpl
     @Inject
     private InvocationManager invMgr;
 
-    @Inject(optional=true)
-    private EjbNamingReferenceManager ejbRefMgr;
-
     private Map<String, JndiNameEnvironment> compId2Env =
             new ConcurrentHashMap<String, JndiNameEnvironment>();
 
@@ -170,7 +167,7 @@ public class ComponentEnvManagerImpl
              itr.hasNext();) {
             EjbReferenceDescriptor next = (EjbReferenceDescriptor) itr.next();
             String name = JAVA_COMP_STRING + next.getName();
-            EjbReferenceProxy proxy = new EjbReferenceProxy(ejbRefMgr, next);
+            EjbReferenceProxy proxy = new EjbReferenceProxy(next);
             jndiBindings.add(new CompEnvBinding(name, proxy));
         }
 
@@ -514,7 +511,6 @@ public class ComponentEnvManagerImpl
     private class EjbReferenceProxy
         implements NamingObjectProxy {
 
-        private volatile EjbNamingReferenceManager ejbRefMgr;
         private EjbReferenceDescriptor ejbRef;
 
         // Note : V2 had a limited form of ejb-ref caching.  It only applied
@@ -523,8 +519,7 @@ public class ComponentEnvManagerImpl
         // value given the behavior is different for EJB 3.x references.  For now,
         // all ejb-ref caching is turned off.
 
-        EjbReferenceProxy(EjbNamingReferenceManager ejbRefMgr, EjbReferenceDescriptor ejbRef) {
-            this.ejbRefMgr = ejbRefMgr;
+        EjbReferenceProxy(EjbReferenceDescriptor ejbRef) {
             this.ejbRef = ejbRef;
         }
 
@@ -532,10 +527,7 @@ public class ComponentEnvManagerImpl
                 throws NamingException {
 
             Object result = null;
-
-            if (ejbRefMgr==null) {
-                ejbRefMgr = habitat.getByContract(EjbNamingReferenceManager.class);
-            }
+            EjbNamingReferenceManager ejbRefMgr = habitat.getByContract(EjbNamingReferenceManager.class);
 
             if (ejbRefMgr != null) {
 

@@ -56,5 +56,6 @@ public interface FileMonitoring {
 
     public interface FileChangeListener {
         public void changed(File changedFile);
+        public void deleted(File deletedFile);
     }
 }

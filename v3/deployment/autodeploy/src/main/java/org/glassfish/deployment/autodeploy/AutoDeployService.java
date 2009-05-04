@@ -199,7 +199,8 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy, Co
                         try {
                             autoDeployer.run();
                         } catch (Exception ex) {
-                            ex.printStackTrace();
+                            // shoule have been already logged
+                            AutoDeployer.sLogger.log(Level.FINE, ex.getMessage(), ex);
                         }
                     }
                 }, 

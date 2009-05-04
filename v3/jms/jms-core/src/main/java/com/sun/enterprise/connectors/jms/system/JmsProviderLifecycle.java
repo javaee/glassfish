@@ -41,12 +41,14 @@ import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.logging.LogDomains;
+import com.sun.hk2.component.Holder;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +59,7 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
     //static Logger logger = LogDomains.getLogger(JmsProviderLifecycle.class, LogDomains.RSR_LOGGER);
 
     @Inject
-    ConnectorRuntime connectorRuntime;
+    Habitat habitat;
 
    public Lifecycle getLifecycle() {
         return Lifecycle.SERVER;
@@ -71,6 +73,7 @@ public class JmsProviderLifecycle implements Startup, PostConstruct{
         try {
              String module = ConnectorConstants.DEFAULT_JMS_ADAPTER;
              String loc = ConnectorsUtil.getSystemModuleLocation(module);
+             ConnectorRuntime connectorRuntime = habitat.getComponent(ConnectorRuntime.class);
              connectorRuntime.createActiveResourceAdapter(loc, module, null);
                } catch (ConnectorRuntimeException e) {
                    e.printStackTrace();

@@ -74,7 +74,7 @@ public class AutoDeployer {
     private String virtualServer = null;
 
     private String target=null;
-    private static final Logger sLogger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static final Logger sLogger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployer.class);
     private DirectoryScanner directoryScanner=null;
     
@@ -328,13 +328,17 @@ public class AutoDeployer {
      * with the current configurable settings.
      */
     public void run() {
-        run(DEFAULT_INCLUDE_SUBDIR);
-        /*
-         * If the cancel request was set then it has already caused the
-         * earlier logic to end.  Clear it so the next iteration will run
-         * normally.
-         */
-        cancelDeployment = false;
+        if (directory.exists()) {
+            run(DEFAULT_INCLUDE_SUBDIR);
+            /*
+             * If the cancel request was set then it has already caused the
+             * earlier logic to end.  Clear it so the next iteration will run
+             * normally.
+             */
+            cancelDeployment = false;
+        } else {
+            sLogger.fine("autodeploy directory does not exist");
+        }
     }
     
     public void run(boolean includeSubdir) {
@@ -344,7 +348,7 @@ public class AutoDeployer {
             undeployAll(directory, includeSubdir);
         } catch (AutoDeploymentException e) {
             // print and continue
-            e.printStackTrace();
+            sLogger.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             clearInProgress();
         }
