@@ -13,7 +13,6 @@ set AS_IMQ_LIB=..\..\mq\lib
 set AS_IMQ_BIN=..\..\mq\bin
 set AS_CONFIG=..\config
 set AS_INSTALL=..
-set AS_JAVA=c:\java\jdk1.6.0\jre/..
 set AS_ACC_CONFIG=..\domains\domain1\config\sun-acc.xml
 set AS_JHELP=..\lib
 set AS_ICU_LIB=..\lib
