@@ -33,5 +33,12 @@ public class EarSniffer extends GenericCompositeSniffer {
         return DeploymentUtils.isEAR(location);
     }
 
+    /**
+     * @return whether this sniffer should be visible to user
+     *
+     */
+    public boolean isUserVisible() {
+        return true;
+    }
 }
 

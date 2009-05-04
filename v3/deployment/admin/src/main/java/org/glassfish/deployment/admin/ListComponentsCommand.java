@@ -48,6 +48,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * list-components command
@@ -81,7 +82,7 @@ public class ListComponentsCommand  implements AdminCommand {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
                         childPart.setMessage(app.getName() + " " +
-                                             getSnifferEngines(app.getModule().get(0), true));
+                                             getAppSnifferEngines(app, true));
                         numOfApplications++;
                     }
                 }
@@ -101,26 +102,39 @@ public class ListComponentsCommand  implements AdminCommand {
          *  false.
          */
     boolean isApplicationOfThisType(final Application app, final String type) {
-        for (Module module : app.getModule()) {
-            final List<Engine> engineList = module.getEngines();
-            for (Engine engine : engineList) {
-                if (engine.getSniffer().equals(type)) {
-                    return true;
-                }
+        List <Engine> engineList = getAppEngines(app);
+        for (Engine engine : engineList) {
+            if (engine.getSniffer().equals(type)) {
+                return true;
             }
         }
         return false;
     }
 
-        /**
-         * return all user visible sniffer engines in an application.
-         * The return format is <sniffer1, sniffer2, ...>
-         * @param module - Application's module
-         * @return sniffer engines
-         */
+    /**
+     * return all user visible sniffer engines in an application.
+     * The return format is <sniffer1, sniffer2, ...>
+     * @param module - Application's module
+     * @return sniffer engines
+     */
+    String getAppSnifferEngines(final Application app, final boolean format) {
+        return getSniffers(getAppEngines(app), format);
+    }
+
+    /**
+     * return all user visible sniffer engines in an application.
+     * The return format is <sniffer1, sniffer2, ...>
+     * @param module - Application's module
+     * @return sniffer engines
+     */
     String getSnifferEngines(final Module module, final boolean format) {
-        final List<Engine> engineList = module.getEngines();
+        return getSniffers (module.getEngines(), format);
+    }
+
+    private String getSniffers(final List<Engine> engineList, 
+        final boolean format) {
         StringBuffer se = new StringBuffer();
+
         if (!engineList.isEmpty()) {
             if (format) {
                 se.append("<");
@@ -141,12 +155,26 @@ public class ListComponentsCommand  implements AdminCommand {
         return se.toString();
     }
 
-        /**
-         * check to see if Sniffer engine is to be visible by the user.
-         *
-         * @param engType - type of sniffer engine
-         * @return true if visible, else false.
-         */
+    private List<Engine> getAppEngines(final Application app) {
+        final List<Engine> engineList = new ArrayList<Engine>();
+
+        // first add application level engines
+        engineList.addAll(app.getEngine());
+
+        // now add module level engines
+        for (Module module: app.getModule()) {
+            engineList.addAll(module.getEngines());
+        }
+
+        return engineList;
+    }
+
+    /**
+     * check to see if Sniffer engine is to be visible by the user.
+     *
+     * @param engType - type of sniffer engine
+     * @return true if visible, else false.
+     */
     boolean displaySnifferEngine(String engType) {
         final Sniffer sniffer = snifferManager.getSniffer(engType);
         return sniffer.isUserVisible();
