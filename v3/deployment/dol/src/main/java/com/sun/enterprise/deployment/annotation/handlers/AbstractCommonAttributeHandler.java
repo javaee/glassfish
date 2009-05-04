@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.annotation.context.*;
+import com.sun.enterprise.deployment.web.AuthorizationConstraint;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
 import org.glassfish.apf.AnnotatedElementHandler;
@@ -63,6 +64,7 @@ import java.util.logging.Level;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.TransportProtected;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -85,6 +87,9 @@ import javax.servlet.http.HttpServletResponse;
  * It may also need to override the following if other annotations
  * need to be processed prior to given annotation:
  *     public Class&lt;? extends Annotation&gt;[] getTypeDependencies();
+ *
+ * Note that this class is only used for security related annotation
+ * processing in this moment.
  *
  * @author Shing Wai Chan
  */
@@ -196,33 +201,66 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
     }
 
     /**
-     * This method checks whether there are more than one security annotations.
+     * This method is for processing annotations associated to security constraint.
+     * Dervied class call this method may like to override
+     * protected void processSecurityConstraint(Annotation authAnnotation,
+     *       SecurityConstraint securityConstraint,
+     *       WebComponentDescriptor webComponentDesc) {
      *
-     * @param ainfo
-     * @return validity
      */
-    protected boolean hasMoreThanOneAccessControlAnnotation(AnnotationInfo ainfo)
+    protected HandlerProcessingResult processSecurityConstraintAnnotation(
+            AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-        boolean moreThanOne = false;
-        AnnotatedElement ae = (AnnotatedElement)ainfo.getAnnotatedElement();
-
-        int count = 0;
-        count += (ae.isAnnotationPresent(RolesAllowed.class)? 1 : 0);
-        count += (ae.isAnnotationPresent(DenyAll.class)? 1 : 0);
-        if (count < 2) {
-            count += (ae.isAnnotationPresent(PermitAll.class)? 1 : 0);
+        if (!validateAccessControlAnnotations(ainfo)) {
+            return getDefaultFailedResult();
         }
 
-        if (count > 1) {
-            log(Level.SEVERE, ainfo,
-                localStrings.getLocalString(
-                "enterprise.deployment.annotation.handlers.inconsistentsecannotation",
-                "This annotation is not consistent with other annotations.  One cannot have more than one of @RolesAllowed, @PermitAll, @DenyAll in the same AnnotatedElement."));
-            moreThanOne = true;
+        Annotation authAnnotation = ainfo.getAnnotation();
+        boolean ok = true;
+        if (ElementType.TYPE.equals(ainfo.getElementType())) {
+            for (WebComponentContext webCompContext : webCompContexts) {
+                WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
+                addAllHttpMethodConstraint(authAnnotation, webCompDesc,
+                        webCompContext);
+            }
+        } else {
+            Method annMethod = (Method) ainfo.getAnnotatedElement();
+            if (isValidHttpServletAnnotatedMethod(annMethod)) {
+                String httpMethod = annMethod.getName().substring(2).toUpperCase();
+                for (WebComponentContext webCompContext : webCompContexts) {
+                    WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
+
+                    SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
+                    if (typeSecConstr != null) {
+                        validateClassMethodAccessControlAnnotations(ainfo, typeSecConstr);
+                        //there should be only one
+                        for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
+                            wrc.addHttpMethodOmission(httpMethod);
+                            addHttpMethodConstraint(authAnnotation,
+                                    webCompDesc, httpMethod, wrc.getUrlPatterns(), webCompContext);
+                        }
+                    } else {
+                        addHttpMethodConstraint(authAnnotation, webCompDesc,
+                                httpMethod, null, webCompContext);
+                    }
+                }     
+            } else {
+                ok = false;
+            }
         }
 
-        return moreThanOne;
+        return ((ok)? getDefaultProcessedResult() : getDefaultFailedResult());
+    }
+
+    /**
+     * This method processes the SecurityConstraint for the given Annotation.
+     * Derived class may like to override this method if necessary.
+     */
+    protected void processSecurityConstraint(Annotation authAnnotation,
+            SecurityConstraint securityConstraint,
+            WebComponentDescriptor webComponentDesc) {
+
     }
 
     /**
@@ -300,82 +338,136 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
         return false;
     }
 
-    protected HandlerProcessingResult processAuthAnnotationOnWebComponentContexts(
-            AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
+    /**
+     * This method checks whether annotations are compatible.
+     * One cannot have two or more of the @DenyAll, @PermitAll, @RoleAllowed.
+     * In addition, one cannot use @DenyAll with @TransportProtected.
+     *
+     * @param ainfo
+     * @return validity
+     */
+    protected boolean validateAccessControlAnnotations(AnnotationInfo ainfo)
             throws AnnotationProcessorException {
 
-        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
-            return getDefaultFailedResult();
+        boolean validity = true;
+        AnnotatedElement ae = (AnnotatedElement)ainfo.getAnnotatedElement();
+
+        int count = 0;
+        boolean hasDenyAll = false;
+
+        count += (ae.isAnnotationPresent(RolesAllowed.class)? 1 : 0);
+        if (ae.isAnnotationPresent(DenyAll.class)) {
+            count += 1;
+            hasDenyAll = true;
         }
 
-        Annotation authAnnotation = ainfo.getAnnotation();
-        boolean ok = true;
-        if (ElementType.TYPE.equals(ainfo.getElementType())) {
-            for (WebComponentContext webCompContext : webCompContexts) {
-                WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                addHttpMethodConstraint(authAnnotation, webCompDesc,
-                        null, webCompContext, true);
-            }
-        } else {
-            Method annMethod = (Method) ainfo.getAnnotatedElement();
-            if (isValidHttpServletAnnotatedMethod(annMethod)) {
-                String httpMethod = annMethod.getName().substring(2).toUpperCase();
-                for (WebComponentContext webCompContext : webCompContexts) {
-                    WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-
-                    SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
-                    if (typeSecConstr != null) {
-                        //there should be only one
-                        for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
-                            wrc.addHttpMethodOmission(httpMethod);
-                            addHttpMethodConstraint(authAnnotation,
-                                    webCompDesc, httpMethod, wrc.getUrlPatterns());
-                        }
-                    } else {
-                        addHttpMethodConstraint(authAnnotation, webCompDesc,
-                                httpMethod, webCompContext, false);
-                    }
-                }     
-            } else {
-                ok = false;
-            }
+        // continue the checking if not already more than one
+        if (count < 2 && ae.isAnnotationPresent(PermitAll.class)) {
+            count++;
         }
 
-        return ((ok)? getDefaultProcessedResult() : getDefaultFailedResult());
+        if (count > 1) {
+            log(Level.SEVERE, ainfo,
+                localStrings.getLocalString(
+                "enterprise.deployment.annotation.handlers.morethanoneauthannotation",
+                "One cannot have more than one of @RolesAllowed, @PermitAll, @DenyAll in the same AnnotatedElement."));
+            validity = false;
+        }
+
+        if (hasDenyAll && ae.isAnnotationPresent(TransportProtected.class)) {
+            log(Level.WARNING, ainfo,
+                localStrings.getLocalString(
+                "enterprise.deployment.annotation.handlers.warningdenyalltransportprotected",
+                "One should not have @DenyAll and @TransportProtected together. The @TransportProtected would be ignored."));
+        }
+
+        return validity;
     }
 
-    private SecurityConstraint addHttpMethodConstraint(Annotation authAnnotation,
-            WebComponentDescriptor webCompDesc, String httpMethod,
-            WebComponentContext webCompContext, boolean isType) {
+    private void validateClassMethodAccessControlAnnotations(
+            AnnotationInfo ainfo, SecurityConstraint typeSecConstr)
+            throws AnnotationProcessorException {
 
-        Set<String> nonOverridedUrlPatterns =
-                webCompContext.getNonOverridedUrlPatterns();
-
-        if (nonOverridedUrlPatterns == null) {
-            nonOverridedUrlPatterns = getNonOverridedUrlPatterns(webCompDesc);
-            webCompContext.setNonOverridedUrlPatterns(nonOverridedUrlPatterns);
+        if (typeSecConstr == null) {
+            return;
         }
 
-        SecurityConstraint securityConstraint = addHttpMethodConstraint(
-                authAnnotation, webCompDesc, httpMethod, nonOverridedUrlPatterns);
-        if (isType) {
+        AnnotatedElement ae = (AnnotatedElement)ainfo.getAnnotatedElement();
+        AuthorizationConstraint authConstr = typeSecConstr.getAuthorizationConstraint();
+        // should not have @DenyAll and @TransportProtected in class and method together
+        if ((typeSecConstr.getUserDataConstraint() != null && ae.isAnnotationPresent(DenyAll.class)) ||
+                (authConstr != null && (!authConstr.getSecurityRoles().hasMoreElements()) &&
+                 ae.isAnnotationPresent(TransportProtected.class))) {
+
+            log(Level.WARNING, ainfo,
+                localStrings.getLocalString(
+                "enterprise.deployment.annotation.handlers.warningdenyalltransportprotected",
+                "One should not have @DenyAll and @TransportProtected together. The @TransportProtected would be ignored."));
+        }
+    }
+
+    private void addAllHttpMethodConstraint(Annotation authAnnotation,
+            WebComponentDescriptor webCompDesc,
+            WebComponentContext webCompContext) {
+
+        // if it exists, then it must be orthogonal and combine in the same security constraint
+        SecurityConstraint securityConstraint =
+                webCompContext.getTypeSecurityConstraint();
+        
+        if (securityConstraint == null) {
+            Set<String> nonOverridedUrlPatterns =
+                    webCompContext.getNonOverridedUrlPatterns();
+
+            if (nonOverridedUrlPatterns == null) {
+                nonOverridedUrlPatterns = getNonOverridedUrlPatterns(webCompDesc);
+                webCompContext.setNonOverridedUrlPatterns(nonOverridedUrlPatterns);
+            }
+
+            securityConstraint =
+                createSecurityConstraint(webCompDesc, nonOverridedUrlPatterns, null);
             webCompContext.setTypeSecurityConstraint(securityConstraint);
         }
-        return securityConstraint;
+
+        if (securityConstraint != null) {
+            processSecurityConstraint(authAnnotation, securityConstraint, webCompDesc);
+        }
     }
 
-    /**
-     * This method add a default empty security constraint which correspond to
-     * permit all. Dervied class may like to override this method if necessary.
-     */
-    protected SecurityConstraint addHttpMethodConstraint(
+    private void addHttpMethodConstraint(
             Annotation authAnnotation, WebComponentDescriptor webCompDesc,
-            String httpMethod, Set<String> urlPatterns) {
+            String httpMethod, Set<String> urlPatterns,
+            WebComponentContext webCompContext) {
 
-        WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
+        if (urlPatterns == null) {
+            urlPatterns = webCompContext.getNonOverridedUrlPatterns();
+
+            if (urlPatterns == null) {
+                urlPatterns = getNonOverridedUrlPatterns(webCompDesc);
+                webCompContext.setNonOverridedUrlPatterns(urlPatterns);
+            }
+        }
+
         SecurityConstraint securityConstraint =
-                createSecurityConstraint(webBundleDesc, urlPatterns, httpMethod);
-        return securityConstraint;
+                webCompContext.getMethodSecurityConstraint(httpMethod);
+
+        if (securityConstraint == null) {
+            securityConstraint =
+                createSecurityConstraint(webCompDesc, urlPatterns, httpMethod);
+
+            if (securityConstraint != null) {
+                SecurityConstraint typeSecurityConstraint = webCompContext.getTypeSecurityConstraint();
+                //get authorization and user data constraint from type as it may be omitted in the processing
+                if (typeSecurityConstraint != null) {
+                    securityConstraint.setAuthorizationConstraint(typeSecurityConstraint.getAuthorizationConstraint());
+                    securityConstraint.setUserDataConstraint(typeSecurityConstraint.getUserDataConstraint());
+                }
+                webCompContext.putMethodSecurityConstraint(httpMethod, securityConstraint);
+            }
+        }
+
+        if (securityConstraint != null) {
+            processSecurityConstraint(authAnnotation, securityConstraint, webCompDesc);
+        }
     }
 
     /**
@@ -449,14 +541,16 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
 
     /**
      * Create a SecurityConstriant for given urlPattern and httpMethod.
+     * @param webCompDesc
      * @param urlPattern
      * @param httpMethod
      * @return SecurityConstraint
      */
-    protected SecurityConstraint createSecurityConstraint(
-            WebBundleDescriptor webBundleDesc, Set<String> urlPatterns,
+    private SecurityConstraint createSecurityConstraint(
+            WebComponentDescriptor webCompDesc, Set<String> urlPatterns,
             String httpMethod) {
 
+        WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
         if (urlPatterns.size() == 0) {
             return null;
         }

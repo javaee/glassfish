@@ -91,7 +91,7 @@ public class RolesAllowedHandler extends AbstractCommonAttributeHandler implemen
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
+        if (validateAccessControlAnnotations(ainfo)) {
             return getDefaultFailedResult();
         }
         
@@ -131,7 +131,7 @@ public class RolesAllowedHandler extends AbstractCommonAttributeHandler implemen
             AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-        return processAuthAnnotationOnWebComponentContexts(ainfo, webCompContexts);
+        return processSecurityConstraintAnnotation(ainfo, webCompContexts);
     }
 
     /**
@@ -206,25 +206,18 @@ public class RolesAllowedHandler extends AbstractCommonAttributeHandler implemen
     }
 
     @Override
-    protected SecurityConstraint addHttpMethodConstraint(
-            Annotation authAnnotation, WebComponentDescriptor webCompDesc,
-            String httpMethod, Set<String> urlPatterns) {
+    protected void processSecurityConstraint(Annotation authAnnotation,
+            SecurityConstraint securityConstraint, WebComponentDescriptor webCompDesc) { 
 
-        RolesAllowed rolesAllowedAn = (RolesAllowed)authAnnotation;
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
-        SecurityConstraint securityConstraint =
-                createSecurityConstraint(webBundleDesc, urlPatterns, httpMethod);
-
-        if (securityConstraint != null) {
-            AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
-            for (String roleName : rolesAllowedAn.value()) {
-                // add role if not exists
-                Role role = new Role(roleName);
-                webBundleDesc.addRole(role);
-                ac.addSecurityRole(roleName);
-            }
-            securityConstraint.setAuthorizationConstraint(ac);
+        RolesAllowed rolesAllowedAn = (RolesAllowed)authAnnotation;
+        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
+        for (String roleName : rolesAllowedAn.value()) {
+             // add role if not exists
+             Role role = new Role(roleName);
+             webBundleDesc.addRole(role);
+             ac.addSecurityRole(roleName);
         }
-        return securityConstraint;
+        securityConstraint.setAuthorizationConstraint(ac);
     }
 }

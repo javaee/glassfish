@@ -35,47 +35,44 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.MethodPermission;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.UserDataConstraintImpl;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
-import com.sun.enterprise.deployment.web.WebResourceCollection;
+import com.sun.enterprise.deployment.web.UserDataConstraint;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import com.sun.enterprise.deployment.util.TypeUtil;
+import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
+import javax.annotation.security.TransportProtected;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
 import java.util.Set;
 
 /**
- * This handler is responsible for handling the javax.annotation.security.DenyAll.
+ * This handler is responsible for handling the
+ * javax.annotation.security.TransportProtected.
  *
  * @author Shing Wai Chan
  */
 @Service
-public class DenyAllHandler extends AbstractCommonAttributeHandler {
+public class TransportProtectedHandler extends AbstractCommonAttributeHandler {
     
-    public DenyAllHandler() {
+    public TransportProtectedHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return DenyAll.class;
+        return TransportProtected.class;
     }    
 
     /**
@@ -87,29 +84,12 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        if (validateAccessControlAnnotations(ainfo)) {
+        // EJB does not support this annotation at this point
+        if (ejbContexts.length > 0) {
+            return getInvalidAnnotatedElementHandlerResult(ejbContexts[0], ainfo);
+        } else {
             return getDefaultFailedResult();
         }
-
-        Method annMethod = (Method) ainfo.getAnnotatedElement();
-
-        for (EjbContext ejbContext : ejbContexts) {
-            EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-                
-            for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
-                MethodDescriptor md = (MethodDescriptor)next;
-                // override by xml
-                if (!hasMethodPermissionsFromDD(md, ejbDesc)) {
-                    Method m = md.getMethod(ejbDesc);
-                    if (TypeUtil.sameMethodSignature(m, annMethod)) {
-                        ejbDesc.addPermissionedMethod(
-                            MethodPermission.getExcludedMethodPermission(), md);
-                    }
-                }
-            }
-        }
-
-        return getDefaultProcessedResult();
     }   
 
     /**
@@ -123,6 +103,7 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
             throws AnnotationProcessorException {
 
         return processSecurityConstraintAnnotation(ainfo, webCompContexts);
+
     }
 
     /**
@@ -140,13 +121,13 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
     }
 
     /**
-     * @return an array of annotation types this annotation handler would 
-     * require to be processed (if present) before it processes it's own 
+     * @return an array of annotation types this annotation handler would
+     * require to be processed (if present) before it processes it's own
      * annotation type.
      */
     @Override
     public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAndWebAnnotationTypes();
+        return new Class[] { javax.servlet.annotation.WebServlet.class };
     }
 
     @Override
@@ -158,7 +139,12 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
     protected void processSecurityConstraint(Annotation authAnnotation,
             SecurityConstraint securityConstraint, WebComponentDescriptor webCompDesc) { 
 
-        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
-        securityConstraint.setAuthorizationConstraint(ac);
+        TransportProtected transportProtected = (TransportProtected)authAnnotation;
+        UserDataConstraint udc = new UserDataConstraintImpl();
+        udc.setTransportGuarantee(
+                (transportProtected.value() ?
+                UserDataConstraint.CONFIDENTIAL_TRANSPORT :
+                UserDataConstraint.NONE_TRANSPORT));
+        securityConstraint.setUserDataConstraint(udc);
     }
 }

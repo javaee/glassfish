@@ -40,6 +40,8 @@ import com.sun.enterprise.deployment.web.SecurityConstraint;
 
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -54,6 +56,9 @@ public class WebComponentContext extends ResourceContainerContextImpl {
      * Then we can have a Map later.
      */
     private SecurityConstraint typeSecConstraint = null;
+
+    private Map<String, SecurityConstraint> method2SecurityConstraint
+            = new HashMap<String, SecurityConstraint>();
 
     /*
      * This is for keeping the non-overrided url patterns shared
@@ -103,4 +108,13 @@ public class WebComponentContext extends ResourceContainerContextImpl {
     public void setNonOverridedUrlPatterns(Set<String> noup) {
         nonOverridedUrlPatterns = noup;
     }
+
+    public void putMethodSecurityConstraint(String methodName, SecurityConstraint secConstr) {
+        method2SecurityConstraint.put(methodName, secConstr);
+    }
+
+    public SecurityConstraint getMethodSecurityConstraint(String methodName) {
+        return method2SecurityConstraint.get(methodName);
+    }
+
 }

@@ -87,7 +87,7 @@ public class PermitAllHandler extends AbstractCommonAttributeHandler implements 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
+        if (validateAccessControlAnnotations(ainfo)) {
             return getDefaultFailedResult();
         }
 
@@ -127,7 +127,7 @@ public class PermitAllHandler extends AbstractCommonAttributeHandler implements 
             AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-        return processAuthAnnotationOnWebComponentContexts(ainfo, webCompContexts);
+        return processSecurityConstraintAnnotation(ainfo, webCompContexts);
 
     }
 
@@ -184,5 +184,12 @@ public class PermitAllHandler extends AbstractCommonAttributeHandler implements 
                 }
             }
         }
+    }
+
+    @Override
+    protected void processSecurityConstraint(Annotation authAnnotation,
+            SecurityConstraint securityConstraint, WebComponentDescriptor webCompDesc) { 
+
+        securityConstraint.setAuthorizationConstraint(null);
     }
 }
