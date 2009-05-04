@@ -188,10 +188,6 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 		
 		if(tmpA == null) {
-			///System.out.print(
-			///	sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
-			
-			///String adminPassword =  new CliUtil().getPassword();
             String adminPassword = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.adminpassword_input"));
 			tmpA = new ARG_adminpassword();
 			tmpA.setRawParameters(adminPassword);
@@ -206,9 +202,6 @@ public class InteractiveInputImpl implements InteractiveInput{
 			tmpA = inputMap.get(CLIConstants.MASTERPASSWORD);
 		}
 		if(tmpA == null) {
-			///System.out.print(
-			///	sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
-			///String password =  new CliUtil().getPassword();
             String password = getPasswordResponse(sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
 			tmpA = new ARG_masterpassword();
 			tmpA.setRawParameters(password);
@@ -230,7 +223,6 @@ public class InteractiveInputImpl implements InteractiveInput{
         } catch (Exception e) {
             optionValue=null;
         }
-System.out.println("getPasswordResponse: optionValue: " + optionValue);
         return optionValue;
     }
 

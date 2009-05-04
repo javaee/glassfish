@@ -99,9 +99,13 @@ public class DomainCredentials implements Credentials {
 			try {
 				passwordFile = java.io.File.createTempFile("ugpw", null);
 				FileWriter writer = new FileWriter(passwordFile);
-				writer.write("AS_ADMIN_PASSWORD=" + getAdminPassword() +"\n");
-				writer.write("AS_ADMIN_ADMINPASSWORD=" + getAdminPassword() +"\n");
-				writer.write("AS_ADMIN_MASTERPASSWORD=" + getMasterPassword() + "\n");
+                if (getAdminPassword() != null) {
+                    writer.write("AS_ADMIN_PASSWORD=" + getAdminPassword() +"\n");
+                    writer.write("AS_ADMIN_ADMINPASSWORD=" + getAdminPassword() +"\n");
+                }
+                if (getMasterPassword() != null){
+                    writer.write("AS_ADMIN_MASTERPASSWORD=" + getMasterPassword() + "\n");
+                }
 				writer.close();
 			} catch (IOException ioe) {
 				CommonInfoModel.getDefaultLogger().severe(

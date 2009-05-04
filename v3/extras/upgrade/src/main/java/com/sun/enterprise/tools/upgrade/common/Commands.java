@@ -43,6 +43,7 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.io.*;
+import java.util.ArrayList;
 
 import com.sun.enterprise.cli.framework.CLIMain;
 import com.sun.enterprise.cli.framework.InputsAndOutputs;
@@ -63,14 +64,27 @@ public class Commands {
     public static boolean startDomain(String domainName, CommonInfoModel commonInfo) {
         Credentials c = commonInfo.getSource().getDomainCredentials();
 		String adminUser = c.getAdminUserName();
-		String command[] = {
-            "start-domain", 
-                "--domaindir", "\"" + commonInfo.getTarget().getInstallDir() + "\"", 
-                "--user", adminUser, 
-                "--passwordfile ", "\"" + c.getPasswordFile() +"\"", 
-                domainName
-        };
-        
+
+        ArrayList<String> tmpC = new ArrayList<String>();
+        tmpC.add("start-domain");
+        tmpC.add("--domaindir");
+        tmpC.add("\"" + commonInfo.getTarget().getInstallDir() + "\"");
+
+        //- V3 allows for anonymous user credentials. skip passing credentials
+        if (adminUser != null && adminUser.length() > 0){
+            tmpC.add("--user");
+            tmpC.add(adminUser);
+            String adminPassword = c.getAdminPassword();
+            if(adminPassword != null && adminPassword.length() > 0){
+                tmpC.add("--passwordfile ");
+                tmpC.add("\"" + c.getPasswordFile() +"\"");
+            }
+        }
+        tmpC.add(domainName);
+
+        String command[] = new String[tmpC.size()];
+        command = tmpC.toArray(command);
+
         try {
             boolean b = executeCommand(command);
             return b;

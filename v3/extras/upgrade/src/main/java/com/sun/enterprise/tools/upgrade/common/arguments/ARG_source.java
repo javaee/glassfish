@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
+import java.io.File;
+
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 
 /**
@@ -50,9 +52,14 @@ public class ARG_source extends ArgumentHandler {
 	}
 	public void setRawParameters(String p){
 		rawParameters = p;
-		if (rawParameters != null && 
-			commonInfo.getSource().isValidPath(rawParameters)){
-			super._isValidParameter = true;
+        if (rawParameters != null){
+            if (p.length() == 0){
+                File tmpF = new File(p);
+                rawParameters = tmpF.getAbsolutePath();
+            }
+            if (commonInfo.getSource().isValidPath(rawParameters)){
+                super._isValidParameter = true;
+            }
 		}
 	}
 	

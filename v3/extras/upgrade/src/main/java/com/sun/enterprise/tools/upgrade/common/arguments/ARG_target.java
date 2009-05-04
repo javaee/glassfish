@@ -54,6 +54,9 @@ public class ARG_target extends ArgumentHandler {
             if (tmpF.exists()) {
                 super._isValidParameter = true;
             }
+            if (p.length() == 0){
+                rawParameters = tmpF.getAbsolutePath();
+            }
         }
 	}
 
