@@ -154,11 +154,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public static final String JWS_APPCLIENT_WAR_NAME = "sys";
     private static final String JWS_APPCLIENT_MODULE_NAME = JWS_APPCLIENT_EAR_NAME + ":" + JWS_APPCLIENT_WAR_NAME + ".war";
 
-    private static final String DOC_BUILDER_FACTORY_PROPERTY =
-            "javax.xml.parsers.DocumentBuilderFactory";
-    private static final String DOC_BUILDER_FACTORY_IMPL =
-            "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
-
     private static final String DOL_DEPLOYMENT =
             "com.sun.enterprise.web.deployment.backend";
 
@@ -484,11 +479,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } else {
             ServerInfo.setServerInfo(Version.getVersion());
             System.setProperty("product.name", Version.getVersion());
-        }
-
-        if (System.getProperty(DOC_BUILDER_FACTORY_PROPERTY) == null) {
-            System.setProperty(DOC_BUILDER_FACTORY_PROPERTY,
-                    DOC_BUILDER_FACTORY_IMPL);
         }
 
         initInstanceSessionProperties();
