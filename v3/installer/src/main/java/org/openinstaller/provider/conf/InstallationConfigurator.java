@@ -358,46 +358,53 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
     String javaHome = System.getProperty("java.home");
     LOGGER.log(Level.INFO, "javaHome: " +javaHome);
 
-    String jdkHome = new File(javaHome).getParent();
-    
-    // Mac OS resolves java.home differently, reset jdkHome to java.home
-    if (isMac) {
-        jdkHome = javaHome;
-    }
+    String jdkHome;
+   	try {
+   		jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
+        }catch(Exception e) {
+    	LOGGER.log(Level.INFO, "JDKHome Couldnt be found ");
+    	jdkHome = new File(javaHome).getParent();
+    	if (isMac) {
+       	 jdkHome = javaHome;
+    	}
+       }
 
     LOGGER.log(Level.INFO, "jdkHome: " +jdkHome);
 
-    //write jdkHome value to asenv.bat on Windows platform...
+    //write jdkHome value to asenv.bat on Windows, asenv.conf on non-Windows platform...
 
-    if (isWindows) {
-
+    File asenvFile = null;
+    if (isWindows) 
+            asenvFile = new File(installDir +"\\glassfish\\config\\asenv.bat");
+    else 
+            asenvFile = new File(installDir +"/glassfish/config/asenv.conf");
         try {
 	    
             String line;
             StringBuffer sb = new StringBuffer();
 	    	
-            File asenvFile = new File(installDir +
-	         "\\glassfish\\config\\asenv.bat");
 
             FileInputStream fis = new FileInputStream(asenvFile);
 	    BufferedReader reader=new BufferedReader ( new InputStreamReader(fis));
 	    while((line = reader.readLine()) != null) {
-		if (line.indexOf("AS_JAVA=") != -1) {
-	            line = "set AS_JAVA=" + jdkHome;
-		}
 		sb.append(line+"\n");
 	    }
-	    
+	/* Add AS_JAVA to end of buffer and file. */ 
+            if (isWindows)
+	       line = "set AS_JAVA=\"" + jdkHome + "\"";
+            else
+	       line = "AS_JAVA=\"" + jdkHome + "\"";
+	    sb.append(line+"\n");
             reader.close();
+
             BufferedWriter out=new BufferedWriter ( new FileWriter(asenvFile));
 	    out.write(sb.toString());
 	    out.close();
 	} catch (Exception ex) {
 
-            LOGGER.log(Level.INFO, "Error while updating asenv.bat file: " + ex.getMessage());
+            LOGGER.log(Level.INFO, "Error while updating asenv configuration file: " + ex.getMessage());
 	}
 	   
-    }
     
     //construct asadmin command
     ExecuteCommand asadminExecuteCommand = null;

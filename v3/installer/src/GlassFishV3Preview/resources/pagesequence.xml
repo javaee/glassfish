@@ -46,6 +46,7 @@
     <page name="InstallHome"/>
     <page name="glassfish"/>
     <page name="updatetool"/>
+    <page name="JDKSelection"/>
     <page name="ReadyToInstall"/>
     <page name="Progress"/>
     <page name="RegistrationOptions">
