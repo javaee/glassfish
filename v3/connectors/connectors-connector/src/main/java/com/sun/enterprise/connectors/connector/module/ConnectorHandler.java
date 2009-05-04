@@ -41,6 +41,7 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.GenericAnnotationDetector;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -72,7 +73,7 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
      * {@inheritDoc}
      */
     public boolean handles(ReadableArchive archive) throws IOException {
-        boolean handles =  archive.exists("META-INF/ra.xml");
+        boolean handles =  DeploymentUtils.isRAR(archive);
         if (!handles) {
             GenericAnnotationDetector detector =
                 new GenericAnnotationDetector(connectorAnnotations);
