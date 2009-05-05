@@ -31,6 +31,7 @@ public class WebTest {
     public void doTest() {     
         try { 
             invokeJsp();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -57,11 +58,8 @@ public class WebTest {
         }
 
         if (!"Foo".equals(bodyLine)) {
-            stat.addStatus("Wrong response. Received: " + bodyLine
-                           + ", Expected: " + "Foo", 
-                           stat.FAIL);
-        } else {
-            stat.addStatus(TEST_NAME, stat.PASS);
+            throw new Exception("Wrong response. Received: " + bodyLine +
+                ", Expected: " + "Foo");
         }
     }
 }
