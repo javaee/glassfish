@@ -185,8 +185,7 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
             _logger.log(Level.SEVERE,
                  "enterprise_naming.excep_in_insertserialcontextprovider",ex);
 
-            RemoteException re = new RemoteException("initSerialCtxProvider error");
-            re.initCause(ex);
+            RemoteException re = new RemoteException("initSerialCtxProvider error", ex);
             throw re;
         }
 
