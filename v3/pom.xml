@@ -105,8 +105,8 @@
         <el-impl.version>2.1.2-b03</el-impl.version>
         <jstl-impl.version>1.2</jstl-impl.version>
         <jstl-api.version>1.2</jstl-api.version>
-        <jsf-api.version>2.0.0-b11</jsf-api.version>
-        <jsf-impl.version>2.0.0-b11</jsf-impl.version>
+        <jsf-api.version>2.0.0-b12</jsf-api.version>
+        <jsf-impl.version>2.0.0-b12</jsf-impl.version>
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.9.15</grizzly.version>
@@ -120,8 +120,8 @@
         <commons.collections.version>2.1</commons.collections.version>
         <commons.digester.version>1.5</commons.digester.version>
         <commons.modeler.version>1.1</commons.modeler.version>
-        <hk2.version>0.3.57</hk2.version>
-        <hk2.plugin.version>0.3.57</hk2.plugin.version>
+        <hk2.version>0.3.58</hk2.version>
+        <hk2.plugin.version>0.3.58</hk2.plugin.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <product.name>GlassFish</product.name>
