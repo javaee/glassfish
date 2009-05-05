@@ -376,7 +376,9 @@
         <!-- XXX temporary commented out due to issue 7896
         <ant dir="authPassthroughGetScheme" target="all"/>
         <ant dir="authPassthroughRequestIsSecure" target="all"/>
+		  -->
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
+		  <!--
         <ant dir="authPassthroughGetRemoteHost" target="all"/>
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectFromJspWithHttpsServerName" target="all"/>

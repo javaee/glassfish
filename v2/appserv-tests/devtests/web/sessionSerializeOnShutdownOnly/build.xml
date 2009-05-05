@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="runfirst,restart,runthird,redeploy,runsecond,undeploy"/>
+    <target name="all" depends="runfirst,restart,checkForSession,redeploy,checkForNoSession,undeploy"/>
 
     <target name="clean" depends="init-common">
         <delete dir="build" failonerror="false"/>
@@ -81,7 +81,7 @@
         </java>
     </target>
 
-    <target name="runsecond" depends="init-common">
+    <target name="checkForNoSession" depends="init-common">
         <java classname="test.WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
@@ -95,7 +95,7 @@
         </java>
     </target>
 
-    <target name="runthird" depends="init-common">
+    <target name="checkForSession" depends="init-common">
         <java classname="test.WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
