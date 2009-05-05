@@ -127,7 +127,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          */
         Set<URI> jarURIsProcessed = new HashSet<URI>();
 
-        processJARDependencies(appClientURIWithinApp(dc()), downloads, jarURIsProcessed);
+        processJARDependencies(appClientServerURI(dc()), downloads, jarURIsProcessed);
 
         /*
          * Now incorporate the library JARs.
@@ -199,15 +199,15 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
              * client-side directory so relativize will work correctly.
              */
 
-            
-//            if (scheme != null && scheme.equals("jar")) {
-//                dependencyFileURI = URI.create("file:" + dependencyURI.getRawSchemeSpecificPart());
-//            } else {
-//                if (scheme == null) {
-//                    scheme = "file:";
-//                }
-//                dependencyFileURI = URI.create(scheme + dependencyURI.getRawSchemeSpecificPart());
-//            }
+            String scheme = dependencyFileURI.getScheme();
+            if (scheme != null && scheme.equals("jar")) {
+                dependencyFileURI = URI.create("file:" + dependencyURI.getRawSchemeSpecificPart());
+            } else {
+                if (scheme == null) {
+                    scheme = "file";
+                }
+                dependencyFileURI = URI.create(scheme + ":" + dependencyURI.getRawSchemeSpecificPart());
+            }
 
             /*
              * The app might specify non-existent JARs in its Class-Path.
