@@ -50,6 +50,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
     Intended as an intermediate solution until a more generic and automatic solution can be
     devised.
 
+    @Deprecated
     @author llc
  */
 @Retention(RetentionPolicy.RUNTIME)
