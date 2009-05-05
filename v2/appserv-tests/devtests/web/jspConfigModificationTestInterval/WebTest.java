@@ -48,8 +48,8 @@ public class WebTest {
     public void doTest() {     
         try { 
             run();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
-            System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
@@ -62,12 +62,8 @@ public class WebTest {
         // Access JSP
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!ORIGINAL_CONTENT.equals(bodyLine)) {
-            stat.addStatus("Wrong line: Expected: " + ORIGINAL_CONTENT
-                           //XXX Do not print out message body as Grizzly error page contains mismatched BODY tag
-                           //+ ", received: " + bodyLine,
-                           + ", received: ",
-                           stat.FAIL);
-            return;
+            throw new Exception("Wrong response: Expected: " +
+                ORIGINAL_CONTENT);
         }
 
         // Update JSP
@@ -83,10 +79,8 @@ public class WebTest {
          */
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!ORIGINAL_CONTENT.equals(bodyLine)) {
-            stat.addStatus("Wrong line: Expected: " + ORIGINAL_CONTENT
-                           + ", received: " + bodyLine,
-                           stat.FAIL);
-            return;
+            throw new Exception("Wrong response: Expected: " +
+                ORIGINAL_CONTENT + ", received: " + bodyLine);
         }
 
         /*
@@ -102,13 +96,9 @@ public class WebTest {
          */
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!UPDATED_CONTENT.equals(bodyLine)) {
-            stat.addStatus("Wrong line: Expected: " + UPDATED_CONTENT
-                           + ", received: " + bodyLine,
-                           stat.FAIL);
-            return;
+            throw new Exception("Wrong response: Expected: " +
+                UPDATED_CONTENT + ", received: " + bodyLine);
         }
-
-        stat.addStatus(TEST_NAME, stat.PASS);
     }
 
     private String getBodyLine(String resource) throws Exception {
