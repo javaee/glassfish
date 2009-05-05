@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.net.URLPattern;
@@ -48,6 +49,7 @@ import org.w3c.dom.Node;
 
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This nodes handles the web-collection xml tag element
@@ -100,6 +102,26 @@ public class WebResourceCollectionNode extends DeploymentDescriptorNode  {
      */
     public void setElementValue(XMLElement element, String value) {
         if (WebTagNames.URL_PATTERN.equals(element.getQName())) {
+            if (!URLPattern.isValid(value)) {
+                // try trimming url (in case DD uses extra whitespace for
+                // aligning)
+                String trimmedUrl = value.trim();
+                if (URLPattern.isValid(trimmedUrl)) {
+                    // warn user with error message if url included \r or \n
+                    if (URLPattern.containsCRorLF(value)) {
+                        DOLUtils.getDefaultLogger().log(Level.WARNING,
+                                "enterprise.deployment.backend.urlcontainscrlf",
+                                new Object[] { value });
+                    }
+                    value = trimmedUrl;
+                } else {
+                    throw new IllegalArgumentException(localStrings
+                            .getLocalString(
+                                    "enterprise.deployment.invalidurlpattern",
+                                    "Invalid URL Pattern: [{0}]",
+                                    new Object[] { value }));
+                }
+            }
             // If URL Pattern does not start with "/" then
             // prepend it (for Servlet2.2 Web apps)
             Object parent = getParentNode().getParentNode().getDescriptor();
@@ -109,12 +131,6 @@ public class WebResourceCollectionNode extends DeploymentDescriptorNode  {
                 if(!value.startsWith("/") && !value.startsWith("*.")) {
                     value = "/" + value;
                 }
-            }
-            if (!URLPattern.isValid(value)) {
-                throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.invalidurlpattern",
-                "Invalid URL Pattern: [{0}]",
-                new Object[] {value}));
             }
             descriptor.addUrlPattern(value);
         } else super.setElementValue(element, value);

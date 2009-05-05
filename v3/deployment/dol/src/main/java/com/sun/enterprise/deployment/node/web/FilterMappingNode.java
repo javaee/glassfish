@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.net.URLPattern;
@@ -54,6 +55,7 @@ import org.w3c.dom.Node;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.servlet.DispatcherType;
 
@@ -103,6 +105,26 @@ public class FilterMappingNode extends DeploymentDescriptorNode {
         if (WebTagNames.SERVLET_NAME.equals(element.getQName())) {
             descriptor.addServletName(value);
         } else if (WebTagNames.URL_PATTERN.equals(element.getQName())) {
+            if (!URLPattern.isValid(value)) {
+                // try trimming url (in case DD uses extra whitespace for
+                // aligning)
+                String trimmedUrl = value.trim();
+                if (URLPattern.isValid(trimmedUrl)) {
+                    // warn user with error message if url included \r or \n
+                    if (URLPattern.containsCRorLF(value)) {
+                        DOLUtils.getDefaultLogger().log(Level.WARNING,
+                                "enterprise.deployment.backend.urlcontainscrlf",
+                                new Object[] { value });
+                    }
+                    value = trimmedUrl;
+                } else {
+                    throw new IllegalArgumentException(localStrings
+                            .getLocalString(
+                                    "enterprise.deployment.invalidurlpattern",
+                                    "Invalid URL Pattern: [{0}]",
+                                    new Object[] { value }));
+                }
+            }
             // If URL Pattern does not start with "/" then
             // prepend it (for Servlet2.2 Web apps)
             Object parent = getParentNode().getDescriptor();
@@ -112,13 +134,6 @@ public class FilterMappingNode extends DeploymentDescriptorNode {
                 if(!value.startsWith("/") && !value.startsWith("*.")) {
                     value = "/" + value;
                 }
-            }
-
-            if (!URLPattern.isValid(value)) {
-                throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.invalidurlpattern",
-                "Invalid URL Pattern: [{0}]",
-                new Object[] {value}));
             }
             descriptor.addURLPattern(value);
         } else if (WebTagNames.DISPATCHER.equals(element.getQName())) {

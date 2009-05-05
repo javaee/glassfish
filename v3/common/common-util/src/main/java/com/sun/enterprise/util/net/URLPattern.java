@@ -62,7 +62,7 @@ public class URLPattern {
     public static boolean isValid(String urlPattern) {
         // URL Pattern should not contain New Line (NL) or
         // Carriage Return (CR)
-        if (urlPattern.indexOf(NL) != -1  || urlPattern.indexOf (CR) != -1) {
+        if (containsCRorLF(urlPattern)) {
             return false;
         }
 
@@ -82,5 +82,18 @@ public class URLPattern {
             return false;
         }
 
+    }
+
+    /**
+     * This method is used to check whether a url pattern contains a CR(#xD) or
+     * LF (#xA). According to the Servlet spec the developer must be informed
+     * when it does.
+     * 
+     * @param urlPattern
+     *            the url pattern (must not be null)
+     * @return true if it contains one or more CRs or LFs
+     */
+    public static boolean containsCRorLF(String urlPattern) {
+        return (urlPattern.indexOf(NL) != -1  || urlPattern.indexOf (CR) != -1);
     }
 }

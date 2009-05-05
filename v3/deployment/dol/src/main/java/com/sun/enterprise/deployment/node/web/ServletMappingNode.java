@@ -72,6 +72,26 @@ public class ServletMappingNode extends DeploymentDescriptorNode {
             servletName = value;
         } 
         if (WebTagNames.URL_PATTERN.equals(element.getQName())) {
+            if (!URLPattern.isValid(value)) {
+                // try trimming url (in case DD uses extra whitespace for
+                // aligning)
+                String trimmedUrl = value.trim();
+                if (URLPattern.isValid(trimmedUrl)) {
+                    // warn user with error message if url included \r or \n
+                    if (URLPattern.containsCRorLF(value)) {
+                        DOLUtils.getDefaultLogger().log(Level.WARNING,
+                                "enterprise.deployment.backend.urlcontainscrlf",
+                                new Object[] { value });
+                    }
+                    value = trimmedUrl;
+                } else {
+                    throw new IllegalArgumentException(localStrings
+                            .getLocalString(
+                                    "enterprise.deployment.invalidurlpattern",
+                                    "Invalid URL Pattern: [{0}]",
+                                    new Object[] { value }));
+                }
+            }
             // If URL Pattern does not start with "/" then 
             // prepend it (for Servlet2.2 Web apps) 
             Object parent = getParentNode().getDescriptor(); 
@@ -83,12 +103,6 @@ public class ServletMappingNode extends DeploymentDescriptorNode {
                 } 
             } 
             urlPattern = value;
-            if (!URLPattern.isValid(urlPattern)) {
-                throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.invalidurlpattern", 
-                "Invalid URL Pattern: [{0}]",
-                new Object[] {urlPattern}));
-            }
 
             XMLNode  parentNode = getParentNode();
             if (parentNode instanceof WebBundleNode) {
