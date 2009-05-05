@@ -47,9 +47,8 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ASMainKnopflerFish extends ASMainOSGi {
-
-    public ASMainKnopflerFish(Logger logger, String... args) {
-        super(logger, args);
+    protected String getPreferedCacheDir() {
+        return "knopfler-cache/gf";
     }
 
     protected void setFwDir() {

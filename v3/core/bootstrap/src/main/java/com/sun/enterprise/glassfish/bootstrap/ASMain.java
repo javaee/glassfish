@@ -64,27 +64,36 @@ public class ASMain {
         // Set the system property if downstream code wants to know about it
         System.setProperty(PLATFORM_PROPERTY_KEY, platform.toString());
 
+        AbstractMain delegate=null;
         switch (platform) {
             case Felix:
                 logger.info("Launching GlassFish on Apache Felix OSGi platform");
-                new ASMainFelix(logger, args).run();
+                delegate = new ASMainFelix();
                 break;
             case Equinox:
                 logger.info("Launching GlassFish on Equinox OSGi platform");
-                new ASMainEquinox(logger, args).run();
+                delegate = new ASMainEquinox();
                 break;
             case Knopflerfish:
             case KnopflerFish:
                 logger.info("Launching GlassFish on Knopflerfish OSGi platform");
-                new ASMainKnopflerFish(logger, args).run();
+                delegate = new ASMainKnopflerFish();
                 break;
             case HK2:
                 throw new RuntimeException("GlassFish does not run on the HK2 platform anymore");
             case Static:
-                new ASMainStatic(logger, args).run();
+                delegate = new ASMainStatic();
                 break;
             default:
                 throw new RuntimeException("Platform not yet supported");
+        }
+        if (delegate!=null) {
+            try {
+                delegate.run(logger, args);
+            } catch(Exception e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+
         }
     }
 

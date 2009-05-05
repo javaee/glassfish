@@ -1,12 +1,14 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.Which;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import java.io.*;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.MalformedURLException;
+import java.net.URI;
 
 /**
  * Top level abstract main class
@@ -17,14 +19,54 @@ public abstract class AbstractMain {
 
     final File bootstrapFile;
 
+    protected Logger logger;
+
+    final protected ASMainHelper helper;
+
+    final protected File glassfishDir; // glassfish/
+
+    protected File domainDir; // default is glassfish/domains/domain1    
+
     abstract Logger getLogger();
 
     abstract long getSettingsLastModification();
+
+    protected abstract String getPreferedCacheDir();
 
     abstract boolean createCache(File cacheDir) throws IOException;
 
     AbstractMain() {
         this.bootstrapFile = findBootstrapFile();
+        System.setProperty("hk2.startup.context.root", bootstrapFile.getParent());
+        glassfishDir = bootstrapFile.getParentFile().getParentFile(); //glassfish/
+        System.setProperty("com.sun.aas.installRoot",glassfishDir.getAbsolutePath());
+        helper = new ASMainHelper(logger);
+        helper.parseAsEnv(glassfishDir);
+    }
+
+    public void run(Logger logger, String... args) throws Exception {
+        this.logger = logger;
+        domainDir = helper.getDomainRoot(new StartupContext(bootstrapFile, args));
+        helper.verifyAndSetDomainRoot(domainDir);
+        
+        File cacheProfileDir = new File(domainDir, getPreferedCacheDir());
+        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
+    }
+
+    protected void setSystemProperties() throws Exception {
+       /* Set a system property called com.sun.aas.installRootURI.
+         * This property is used in felix/conf/config.properties and possibly
+         * in other OSGi framework's config file to auto-start some modules.
+         * We can't use com.sun.aas.installRoot,
+         * because that com.sun.aas.installRoot is a directory path, where as
+         * we need a URI.
+         */
+        String installRoot = System.getProperty("com.sun.aas.installRoot");
+        URI installRootURI = new File(installRoot).toURI();
+        System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
+        String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+        URI instanceRootURI = new File(instanceRoot).toURI();
+        System.setProperty("com.sun.aas.instanceRootURI", instanceRootURI.toString());        
     }
 
     boolean isCacheOutdated(long lastModified, File cacheDir) {
@@ -57,6 +99,7 @@ public abstract class AbstractMain {
         if (isCacheOutdated(lastModified, cacheDir)) {
             flushAndCreate(cacheDir, lastModified);
         }
+        System.setProperty("com.sun.hk2.cacheDir", cacheDir.getAbsolutePath());
     }
 
     public void flushAndCreate(File cacheDir, long lastModified) throws IOException {

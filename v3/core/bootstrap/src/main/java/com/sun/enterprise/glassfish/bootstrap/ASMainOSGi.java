@@ -61,14 +61,6 @@ public abstract class ASMainOSGi extends AbstractMain {
      */
     protected ClassLoader launcherCL;
 
-    protected Logger logger;
-
-    protected ASMainHelper helper;
-
-    protected File glassfishDir; // glassfish/
-
-    protected File domainDir; // default is glassfish/domains/domain1
-
     protected File fwDir; // OSGi framework directory
 
     //
@@ -79,21 +71,23 @@ public abstract class ASMainOSGi extends AbstractMain {
     private String[] additionalJars = {
     };
 
-    public ASMainOSGi(Logger logger, String... args) {
-        this.logger = logger;
-        glassfishDir = bootstrapFile.getParentFile().getParentFile(); //glassfish/
-        helper = new ASMainHelper(logger);
-        helper.parseAsEnv(glassfishDir);
-        domainDir = helper.getDomainRoot(new StartupContext(bootstrapFile, args));
-        helper.verifyAndSetDomainRoot(domainDir);
+    @Override
+    public void run(Logger logger, String... args) throws Exception {
         setFwDir();
-        System.setProperty("hk2.startup.context.root", bootstrapFile.getParent());
+        super.run(logger, args);
+        setSystemProperties();
+        setupLauncherClassLoader();
+        launchOSGiFW();
     }
 
     protected abstract void setFwDir();
 
-    public ASMainOSGi(String... args) {
-        this(Logger.getAnonymousLogger(), args);
+    @Override
+    void setUpCache(File sourceDir, File cacheDir) throws IOException {
+        // Starting with Felix 1.4.0, the cache dir is identified by
+        // property called org.osgi.framework.storage.
+        System.setProperty("org.osgi.framework.storage", cacheDir.getCanonicalPath());
+        super.setUpCache(sourceDir, cacheDir);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     /**
@@ -103,31 +97,10 @@ public abstract class ASMainOSGi extends AbstractMain {
 
     protected abstract void launchOSGiFW() throws Exception;
 
-    public void run() {
-        try {
-            setSystemProperties();
-            setupLauncherClassLoader();
-            launchOSGiFW();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     protected void setSystemProperties() throws MalformedURLException, Exception
     {
-        /* Set a system property called com.sun.aas.installRootURI.
-         * This property is used in felix/conf/config.properties and possibly
-         * in other OSGi framework's config file to auto-start some modules.
-         * We can't use com.sun.aas.installRoot,
-         * because that com.sun.aas.installRoot is a directory path, where as
-         * we need a URI.
-         */
-        String installRoot = System.getProperty("com.sun.aas.installRoot");
-        URI installRootURI = new File(installRoot).toURI();
-        System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
-        String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-        URI instanceRootURI = new File(instanceRoot).toURI();
-        System.setProperty("com.sun.aas.instanceRootURI", instanceRootURI.toString());
+        super.setSystemProperties();
+        
         // Set the modules dir. This is used by our main bundle to locate all
         // bundles and install them
         System.setProperty("org.jvnet.hk2.osgimain.bundlesDir",

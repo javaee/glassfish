@@ -1,3 +1,39 @@
+/*
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.Main;
@@ -29,43 +65,28 @@ import org.jvnet.hk2.component.Habitat;
  */
 public class ASMainStatic extends AbstractMain {
 
-    private final Logger logger;
-    private String args[];
     private File out;
     
-    public ASMainStatic(Logger logger, String args[]) {
-        this.logger = logger;
-        this.args = args;
+    protected String getPreferedCacheDir() {
+        return "static-cache/gf/";
     }
 
-    public void run() {
-        try {
-            start(args);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    void setUpCache(File sourceDir, File cacheDir) throws IOException {
+        // I take care of this when running...
     }
 
-    public void start(String args[]) throws BootException {
+    public void run(final Logger logger, String... args) throws Exception {
 
+        super.run(logger, args);
         final File modulesDir = findBootstrapFile().getParentFile();
-        final File glassfishDir = modulesDir.getParentFile();
 
         final StartupContext startupContext = new StartupContext(modulesDir, args);
-
-        ASMainHelper helper = new ASMainHelper(Logger.getAnonymousLogger());
-        helper.parseAsEnv(glassfishDir);
         File domainDir = helper.getDomainRoot(startupContext);
         helper.verifyAndSetDomainRoot(domainDir);
 
-        System.setProperty("com.sun.aas.installRoot",glassfishDir.getAbsolutePath());
-        // crazy. we need to do better 
-        String installRoot = System.getProperty("com.sun.aas.installRoot");
-        URI installRootURI = new File(installRoot).toURI();
-        System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
-        String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-        URI instanceRootURI = new File(instanceRoot).toURI();
-        System.setProperty("com.sun.aas.instanceRootURI", instanceRootURI.toString());
+
+        setSystemProperties();
 
         // our unique class loader.
         ClassLoader singleClassLoader = null;
@@ -74,7 +95,7 @@ public class ASMainStatic extends AbstractMain {
         HK2Factory.initialize();
 
         // set up the cache.
-        final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), "static-cache/gf/"):new File(domainDir, "static-cache/gf/");
+        final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), getPreferedCacheDir()):new File(domainDir, getPreferedCacheDir());
         out = new File(cacheDir, "glassfish.jar");
         final long lastModified = getLastModified(bootstrapFile.getParentFile(), 0);
         Thread cacheThread = null;

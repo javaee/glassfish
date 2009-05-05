@@ -48,8 +48,8 @@ import java.util.logging.Logger;
 public class ASMainFelix extends ASMainOSGi {
     private static final String FELIX_HOME = "FELIX_HOME";
 
-    public ASMainFelix(Logger logger, String... args) {
-        super(logger, args);
+    protected String getPreferedCacheDir() {
+        return "felix-cache/gf/";
     }
 
     protected void setFwDir() {
@@ -65,6 +65,12 @@ public class ASMainFelix extends ASMainOSGi {
         }
     }
 
+    @Override
+    void setUpCache(File sourceDir, File cacheDir) throws IOException {
+        System.setProperty("felix.cache.profiledir", cacheDir.getCanonicalPath());
+        super.setUpCache(sourceDir, cacheDir);    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
     protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
         cpb.addJar(new File(fwDir, "bin/felix.jar"));
     }
@@ -74,12 +80,6 @@ public class ASMainFelix extends ASMainOSGi {
         System.setProperty("felix.system.properties", sysFileURL);
         String confFileURL = new File(fwDir, "conf/config.properties").toURI().toURL().toString();
         System.setProperty("felix.config.properties", confFileURL);
-        File cacheProfileDir = new File(domainDir, "felix-cache/gf/");
-        System.setProperty("felix.cache.profiledir", cacheProfileDir.getCanonicalPath());
-        // Starting with Felix 1.4.0, the cache dir is identified by
-        // property called org.osgi.framework.storage.
-        System.setProperty("org.osgi.framework.storage", cacheProfileDir.getCanonicalPath());
-        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
         final Method m = mc.getMethod("main", new Class[]{args.getClass()});

@@ -56,8 +56,8 @@ public class ASMainEquinox extends ASMainOSGi {
      * */
     private static File pluginsDir=null;
 
-    public ASMainEquinox(Logger logger, String... args) {
-        super(logger, args);
+    protected String getPreferedCacheDir() {
+        return "equinox-cache/gf/";
     }
 
     protected void setFwDir() {
