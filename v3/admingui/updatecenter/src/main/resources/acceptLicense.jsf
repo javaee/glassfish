@@ -39,35 +39,19 @@
 <!initPage 
     setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
     setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks");
+    setAttribute(key="useBottomTitle" value="true" );
 />
-<!composition template="/templates/propertySheetTemplate.tpl" 
-              pageTitle="$resource{i18nUC.licensePg.Title}" 
-              helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
-              i18nBundle="org.glassfish.admingui.core.Strings"
-              useBottomTitle="true"
-              helpKey="$resource{help_uc.uc.licensePage}">
-    
-    <!define name="pageButtonsBottom">
-        "<div style="width: 25px; margin: auto">
-        <sun:button id="acceptButton" text="$resource{i18n.button.Accept}" 
-                onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}')"
-        >
-            <!command
-                updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
-                prepareAlertMsg(summary="#{successMsg}" type="success");
-		redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-            />
-        </sun:button>
-        <sun:button id="declineButton" text="$resource{i18n.button.Decline}" >
-            <!command
-                redirect(page="#{fromPage}");
-            />
-        </sun:button>
-        "</div>  
-        "<br /><br /><br />
-    </define>
-    
-    <!define name="properties">
+
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.licensePg.Title}">>
+<!define name="content">
+
+#include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"      
+        <sun:form id="form">
+             <sun:title id="topTitle" title="$resource{i18nUC.licensePg.Title}" />
+             
+    <sun:propertySheet requiredFields="#{hasRequiredFields}">
+    <sun:propertySheetSection>
         <sun:property id="accept"  labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" label="" >
             "<pre><font size="4" />
                 <staticText id="" value="$resource{i18nUC.licensePg.TitleHelp}" />
@@ -86,5 +70,32 @@
             "</pre> 
         </sun:property>
         
-    </define>
+    </sun:propertySheetSection>
+    </sun:propertySheet>
+    <sun:title id="bottomTitle">
+        <!facet pageButtonsBottom>
+                    <sun:panelGroup id="bottomButtons">
+        "<div style="width: 25px; margin: auto">
+        <sun:button id="acceptButton" text="$resource{i18n.button.Accept}" 
+                onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}')"
+        >
+            <!command
+                updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
+                prepareAlertMsg(summary="#{successMsg}" type="success");
+		redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            />
+        </sun:button>
+        <sun:button id="declineButton" text="$resource{i18n.button.Decline}" >
+            <!command
+                redirect(page="#{fromPage}");
+            />
+        </sun:button>
+        "</div>  
+        "<br /><br /><br />
+    </sun:panelGroup>
+                </facet>
+            </sun:title>
+<sun:hidden id="helpKey" value="$resource{help_uc.uc.licensePage}" />
+</sun:form>
+</define>
 </composition>
