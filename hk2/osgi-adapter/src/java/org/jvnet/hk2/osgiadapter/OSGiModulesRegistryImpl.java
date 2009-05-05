@@ -46,9 +46,9 @@ import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import com.sun.enterprise.module.common_impl.ModuleId;
 import com.sun.hk2.component.InhabitantsParser;
 
-import java.io.IOException;
-import java.io.File;
+import java.io.*;
 import java.util.*;
+import java.util.jar.Manifest;
 import java.util.logging.*;
 import java.net.URL;
 import java.net.URI;
@@ -85,6 +85,14 @@ public class OSGiModulesRegistryImpl
         // This must happen before we start iterating the existing bundles.
         bctx.addBundleListener(this);
 
+        try {
+            loadCachedData();
+        } catch (Exception e) {
+            Logger.logger.log(Level.WARNING, "Cannot load cached metadata, will recreate the cache", e);
+            cachedData.clear();
+        }
+        boolean writeCache = cachedData.isEmpty();
+
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
             if (b.getLocation().equals (Constants.SYSTEM_BUNDLE_LOCATION)) {
@@ -99,6 +107,13 @@ public class OSGiModulesRegistryImpl
                                 "to module because of exception: {2}",
                         new Object[]{b, b.getLocation(), e});
                 continue;
+            }
+        }
+        if (writeCache) {
+            try {
+                saveCache();
+            } catch (IOException e) {
+                Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
             }
         }
         ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
@@ -141,12 +156,53 @@ public class OSGiModulesRegistryImpl
         return m;
     }
 
+    Map<URI, ModuleDefinition> cachedData = new HashMap<URI, ModuleDefinition>();
+
+    /**
+     * Loads the inhabitants metadata from the cache. metadata is saved in a file
+     * called inhabitants
+     *
+     * @throws Exception if the file cannot be read correctly
+     */
+    private void loadCachedData() throws Exception {
+        String cacheLocation = System.getProperty("com.sun.hk2.cacheDir");
+        File io = new File(cacheLocation, "inhabitants");
+        if (!io.exists()) return;
+        ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io)));
+        cachedData = (Map<URI, ModuleDefinition>) stream.readObject();
+        stream.close();
+    }
+
+    /**
+     * Saves the inhabitants metadata to the cache in a file called inhabitants
+     * @throws IOException if the file cannot be saved successfully
+     */
+    public void saveCache() throws IOException {
+        String cacheLocation = System.getProperty("com.sun.hk2.cacheDir");
+        File io = new File(cacheLocation, "inhabitants");
+        if (io.exists()) io.delete();
+        io.createNewFile();
+        Map<URI, ModuleDefinition> data = new HashMap<URI, ModuleDefinition>();
+        for (Module m : modules.values()) {
+            data.put(m.getModuleDefinition().getLocations()[0], m.getModuleDefinition());
+        }
+        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(io)));
+        os.writeObject(data);
+        os.close();
+    }
+
     // Factory method
     private OSGiModuleDefinition makeModuleDef(Bundle bundle)
             throws IOException, URISyntaxException {
-        OSGiModuleDefinition md = new OSGiModuleDefinition(bundle);
-        return md;
+        URI key = OSGiModuleDefinition.toURI(bundle);
+        if (cachedData.containsKey(key)) {
+            return OSGiModuleDefinition.class.cast(cachedData.get(key));
+        } else {
+            return new OSGiModuleDefinition(bundle);
+        }
     }
+
+
 
     @Override
     protected synchronized void add(Module newModule) {

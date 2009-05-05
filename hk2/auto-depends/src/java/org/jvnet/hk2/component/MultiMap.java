@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * Map from a key to multiple values.
@@ -51,7 +52,7 @@ import java.util.Collection;
  * 
  * @author Kohsuke Kawaguchi
  */
-public final class MultiMap<K,V> {
+public final class MultiMap<K,V> implements Serializable {
     private final Map<K,List<V>> store;
 
     public final String toString() {

@@ -42,6 +42,7 @@ import org.jvnet.hk2.component.MultiMap;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,14 +66,14 @@ import java.util.StringTokenizer;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class ModuleMetadata {
+public final class ModuleMetadata implements Serializable {
 
     /**
      * META-INF/inhabitants/* files.
      */
     private final MultiMap<String, InhabitantsDescriptor> inhabitants = new MultiMap<String, InhabitantsDescriptor>();
 
-    public static final class InhabitantsDescriptor {
+    public static final class InhabitantsDescriptor implements Serializable {
         public final String systemId;
         private final byte[] data;
 
@@ -90,7 +91,7 @@ public final class ModuleMetadata {
         }
     }
 
-    public static final class Entry {
+    public static final class Entry implements Serializable {
         public final List<String> providerNames = new ArrayList<String>();
         public final List<URL> resources = new ArrayList<URL>();
 
