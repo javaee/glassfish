@@ -91,6 +91,7 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
             return;
         }
         force = true;
+        ((DeployCommandParameters)this).path = path;
 
         commandRunner.doCommand("deploy", this, report,
                 context.getInboundPayload(), context.getOutboundPayload());
