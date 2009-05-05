@@ -18,7 +18,7 @@
 </target>
 
 <target name="setup-jruby" depends="setJRubyCon" unless="local.jruby.present">
-   <unzip src="${jruby_path}/jruby-all-1.0-1.2.0RC2.zip" dest="${jruby_path}"/>
+   <unzip src="${jruby_path}/jruby-all-1.0-1.2.0.zip" dest="${jruby_path}"/>
    <chmod dir="${JRUBY_HOME}/bin" perm="ugo+rx" 
        includes="**/*"/>
 </target>
@@ -36,6 +36,7 @@
 </target>
 
 <target  name="runtest">
+   <sleep seconds="7"/>
    <antcall target="runtest-impl">
        <param name="testng.test.name" value="${testng.test.name}"/>
        <param name="testng.testclient" value="JRubyTestNG"/>
