@@ -108,7 +108,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             commandParams.name = this.name();
             final ExtendedDeploymentContext deploymentContext =
                     deployment.getContext(logger, appInfo.getSource(), 
-                        commandParams, report, null);
+                        commandParams, report);
             Named module = ConfigBeansUtilities.getModule(name());
             Application application = null;
             if (module instanceof Application) {

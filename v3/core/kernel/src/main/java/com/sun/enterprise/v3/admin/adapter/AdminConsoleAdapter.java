@@ -850,7 +850,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             parameters.origin = UndeployCommandParameters.Origin.unload;
             Deployment deployment = habitat.getComponent(Deployment.class);
             ActionReport report = new PlainTextActionReporter();
-            ExtendedDeploymentContext context = deployment.getContext(logger, archive, parameters, report, null);
+            ExtendedDeploymentContext context = deployment.getContext(logger, archive, parameters, report);
             
             ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
             if (info!=null) {

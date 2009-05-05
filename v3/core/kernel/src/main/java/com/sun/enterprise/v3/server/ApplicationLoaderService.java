@@ -172,7 +172,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     parameters.origin = DeployCommandParameters.Origin.deploy;
 
                     ActionReport report = new HTMLActionReporter();
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report, null);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report);
 
                     if (!sourceFile.isDirectory()) {
 
@@ -267,7 +267,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     archive = archiveFactory.openArchive(sourceFile, deploymentParams);
 
                     ActionReport report = new HTMLActionReporter();
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report, null);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report);
 
                     depContext.getAppProps().putAll(app.getDeployProperties());
                     depContext.setModulePropsMap(app.getModulePropertiesMap());
@@ -339,7 +339,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 parameters.origin = UndeployCommandParameters.Origin.unload;
 
                 try {
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters, dummy, null);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters, dummy);
                     appInfo.stop(depContext, depContext.getLogger());
                     appInfo.unload(depContext);
                 } catch (IOException e) {

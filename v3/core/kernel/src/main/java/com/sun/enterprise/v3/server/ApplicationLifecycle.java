@@ -826,6 +826,11 @@ public class ApplicationLifecycle implements Deployment {
         return appRegistry.get(appName);
     }
 
+    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
+        throws IOException {
+        return getContext(logger, source, params, report, null);
+    }
+
     public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report, ArchiveHandler handler)
         throws IOException {
 
@@ -837,6 +842,11 @@ public class ApplicationLifecycle implements Deployment {
             }
         }
         return getContext(logger, archive, params, report, handler);
+    }
+
+
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report) throws IOException {
+        return getContext(logger, source, params, report, null);  
     }
 
     public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler archiveHandler) throws IOException {
