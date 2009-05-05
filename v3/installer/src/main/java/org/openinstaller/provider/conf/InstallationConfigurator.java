@@ -221,7 +221,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 	    File.separator + "modules";
     
     success = unpackJars(modulesDir) 
-	    && unpackJars(modulesDir + File.separator + "web");
+	    && unpackJars(modulesDir + File.separator + "endorsed");
     
     // if jar extraction failed there is no point in continuing...
 
