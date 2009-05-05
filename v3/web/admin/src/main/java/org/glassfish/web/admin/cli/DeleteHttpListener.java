@@ -170,10 +170,8 @@ public class DeleteHttpListener implements AdminCommand {
         }
 
         public Object run(Protocols param) throws PropertyVetoException, TransactionFailure {
-            System.out.println("looking for " + name);
             List<Protocol> list = new ArrayList<Protocol>(param.getProtocol());
             for (Protocol old : list) {
-                System.out.println("old = " + old);
                 if (name.equals(old.getName())) {
                     param.getProtocol().remove(old);
                     break;
