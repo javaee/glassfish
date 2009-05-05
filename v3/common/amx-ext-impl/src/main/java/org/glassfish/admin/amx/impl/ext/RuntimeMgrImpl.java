@@ -44,8 +44,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Collection;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
+
 import org.glassfish.admin.amx.base.RuntimeMgr;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
+import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.intf.config.DomainConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
@@ -58,6 +63,9 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+
+import org.glassfish.admin.amx.impl.util.InjectedValues;
+
 
 /**
     AMX RealmsMgr implementation.
@@ -112,7 +120,19 @@ public final class RuntimeMgrImpl extends AMXImplBase
     public void stopDomain()
     {
         // FIXME:  this might not work with authenticaion; need direct API call
-        executeREST( "stop-domain" );
+        //executeREST( "stop-domain" );
+        ModulesRegistry registry = InjectedValues.getInstance().getModulesRegistry();
+        final Collection<Module> modules = registry.getModules("com.sun.enterprise.osgi-adapter");
+        if (modules.size() == 1) {
+            final Module mgmtAgentModule = modules.iterator().next();
+            mgmtAgentModule.stop();
+        }
+        else {
+            ImplUtil.getLogger().warning( "Cannot find primordial com.sun.enterprise.osgi-adapter" );
+        }
+        
+        ImplUtil.getLogger().warning( "Stopping server forcibly" );
+        System.exit(0);
     }
 
     private NetworkConfig networkConfig()

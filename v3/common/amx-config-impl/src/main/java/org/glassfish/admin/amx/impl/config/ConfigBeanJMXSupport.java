@@ -891,7 +891,7 @@ public class ConfigBeanJMXSupport {
             final ToDo toDo = info.method().getAnnotation(ToDo.class);
             if ( toDo != null )
             {
-                descriptor.setField( DESC_PREFIX + "toDo", toDo.priority() + ", " + toDo.details() );
+                descriptor.setField( DESC_CONFIG_PREFIX + "toDo", toDo.priority() + ", " + toDo.details() );
             }
             
             final PropertiesDesc props = info.method().getAnnotation(PropertiesDesc.class);
@@ -901,7 +901,7 @@ public class ConfigBeanJMXSupport {
                 for( final PropertyDesc p : props.props() )
                 {
                     final String value = p.defaultValue() + " | " + p.dataType().getName() + " | " + p.description();
-                    descriptor.setField( DESC_PREFIX + propType + "." + p.name(), value);
+                    descriptor.setField( DESC_CONFIG_PREFIX + propType + "." + p.name(), value);
                 }
             }
 

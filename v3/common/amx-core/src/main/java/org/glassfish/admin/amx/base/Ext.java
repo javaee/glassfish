@@ -52,7 +52,7 @@ public interface Ext extends AMXProxy, Singleton, Utility
     public RealmsMgr getRealmsMgr();
     
     @ManagedAttribute
-    public RuntimeMgr getRuntimeMgr();
+    public RuntimeMgr getRuntime();
     
     @ManagedAttribute
     public LoggingPropertiesMgr getLoggingPropertiesMgr();

@@ -80,7 +80,7 @@ public class DomainRootImpl extends AMXImplBase
 
     public void stopDomain()
     {
-        getDomainRootProxy().getExt().getRuntimeMgr().stopDomain();
+        getDomainRootProxy().getExt().getRuntime().stopDomain();
     }
 
     

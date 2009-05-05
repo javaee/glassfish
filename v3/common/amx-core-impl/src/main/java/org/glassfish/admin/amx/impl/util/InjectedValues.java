@@ -49,6 +49,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
 import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.module.ModulesRegistry;
 
 /**
     Utility class that gets various useful values injected into it for use
@@ -74,11 +75,15 @@ public final class InjectedValues
     
     @Inject
     UnprocessedConfigListener   mUnprocessedConfigListener;
+
+    @Inject
+    ModulesRegistry mModulesRegistry;
     
     public MBeanServer getMBeanServer() { return mMBeanServer; }
     public Habitat getHabitat()         { return mHabitat; }
     public ServerEnvironmentImpl getServerEnvironment() { return mServerEnvironment; }
     public UnprocessedConfigListener getUnprocessedConfigListener() { return mUnprocessedConfigListener; }
+    public ModulesRegistry getModulesRegistry() { return mModulesRegistry; }
 
     private static volatile InjectedValues INSTANCE = null;
     

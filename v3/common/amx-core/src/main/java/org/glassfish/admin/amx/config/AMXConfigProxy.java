@@ -60,43 +60,43 @@ import org.glassfish.admin.amx.annotation.Param;
 public interface AMXConfigProxy extends AMXProxy, AttributeResolver
 {
     /** prefix for all Descriptor fields for config */
-    public static final String DESC_PREFIX = "amx.configbean.";
+    public static final String DESC_CONFIG_PREFIX = "amx.configbean.";
     
     /** prefix for all Descriptor fields for config */
-    public static final String DESC_ANNOTATION_PREFIX = DESC_PREFIX + "annotation.";
+    public static final String DESC_ANNOTATION_PREFIX = DESC_CONFIG_PREFIX + "annotation.";
     
     /** Descriptor: type of item: @Attribute, @Element, @DuckTyped */
-    public static final String DESC_KIND = DESC_PREFIX + "kind";
+    public static final String DESC_KIND = DESC_CONFIG_PREFIX + "kind";
     
     /** Descriptor: class of Collection element eg String of something else */
-    public static final String DESC_ELEMENT_CLASS = DESC_PREFIX + "elementClass";
+    public static final String DESC_ELEMENT_CLASS = DESC_CONFIG_PREFIX + "elementClass";
     
     /** Descriptor: class of Collection element eg String of something else */
-    public static final String DESC_XML_NAME = DESC_PREFIX + "xmlName";
+    public static final String DESC_XML_NAME = DESC_CONFIG_PREFIX + "xmlName";
     
     /** Descriptor: classname of data type (@Attribute only) */
-    public static final String DESC_DATA_TYPE = DESC_PREFIX + "dataType";
+    public static final String DESC_DATA_TYPE = DESC_CONFIG_PREFIX + "dataType";
     
     /** Descriptor: eefault value, omitted if none */
-    public static final String DESC_DEFAULT_VALUE = DESC_PREFIX + "defaultValue";
+    public static final String DESC_DEFAULT_VALUE = DESC_CONFIG_PREFIX + "defaultValue";
     
     /** Descriptor: true | false: whether this is the primary key (name) */
-    public static final String DESC_KEY = DESC_PREFIX + "key";
+    public static final String DESC_KEY = DESC_CONFIG_PREFIX + "key";
     
     /** Descriptor: true | false if this is required (implied if 'key') */
-    public static final String DESC_REQUIRED = DESC_PREFIX + "required";
+    public static final String DESC_REQUIRED = DESC_CONFIG_PREFIX + "required";
     
     /** Descriptor:  true | false whether this is a reference to another element */
-    public static final String DESC_REFERENCE = DESC_PREFIX + "reference";
+    public static final String DESC_REFERENCE = DESC_CONFIG_PREFIX + "reference";
     
     /** Descriptor:  true | false whether variable expansion should be supplied */
-    public static final String DESC_VARIABLE_EXPANSION = DESC_PREFIX + "variableExpansion";
+    public static final String DESC_VARIABLE_EXPANSION = DESC_CONFIG_PREFIX + "variableExpansion";
     
     /** Descriptor:  true | false whether this field is required to be non-null */
-    public static final String DESC_NOT_NULL = DESC_PREFIX + "notNull";
+    public static final String DESC_NOT_NULL = DESC_CONFIG_PREFIX + "notNull";
     
     /** Descriptor:  true | false whether variable expansion should be supplied */
-    public static final String DESC_PATTERN_REGEX = DESC_PREFIX + "pattern.regexp";
+    public static final String DESC_PATTERN_REGEX = DESC_CONFIG_PREFIX + "pattern.regexp";
 
 	/**
 		The type of the Notification emitted when a config element
