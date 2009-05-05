@@ -378,8 +378,8 @@
         <ant dir="authPassthroughRequestIsSecure" target="all"/>
 		  -->
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
-		  <!--
         <ant dir="authPassthroughGetRemoteHost" target="all"/>
+		  <!--
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectFromJspWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectHostRequestHeaderWithoutPort" target="all"/>
