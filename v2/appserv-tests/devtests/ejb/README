@@ -24,6 +24,12 @@ cat `which ant` :
 
   % asadmin start-domain
 
+3a. If you need to start Derby:
+
+  % ant startDerby
+  or
+  % asadmin start-database
+
 4. Run all the tests
 
   % ant all
@@ -32,6 +38,12 @@ cat `which ant` :
 
   % asadmin stop-domain
 
+
+5a. If you need to stop Derby:
+
+  % ant stopDerby
+  or
+  % asadmin stop-database
 
   
 
