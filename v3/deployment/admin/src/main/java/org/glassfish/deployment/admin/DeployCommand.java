@@ -421,9 +421,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             //if name is null then cannot get the application's setting from domain.xml
         if (name != null) {
             if (contextroot == null) {            
-                contextroot = app.getContextRoot();
-                if (contextroot != null) {
-                    this.previousContextRoot = contextroot;
+                if (app.getContextRoot() != null) {
+                    this.previousContextRoot = app.getContextRoot();
                 }
             }
             if (libraries == null) {
