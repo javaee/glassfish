@@ -4,6 +4,7 @@
  */
 package org.glassfish.admin.amx.impl.config;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -556,6 +557,36 @@ public class ConfigBeanJMXSupport {
         }
         return CollectionUtil.toArray( opInfos, MBeanOperationInfo.class );
     }
+    
+    private static final Set<String> IGNORE_ANNOTATION_METHODS = SetUtil.newUnmodifiableStringSet( "toString", "hashCode", "annotationType");
+    private void addAnnotationsToDescriptor( final Descriptor d, final AttributeMethodInfo info ) {
+        final Annotation[] annotations = info.annotations();
+        
+        for( final Annotation a : annotations ) {
+            final String prefix = AMXConfigProxy.DESC_ANNOTATION_PREFIX + "@" + a.annotationType().getName() + ":";
+            
+            final Method[] values = a.getClass().getDeclaredMethods();
+            for( final Method m : values )
+            {
+                final String fieldName = m.getName();
+                if ( IGNORE_ANNOTATION_METHODS.contains(fieldName) )
+                {
+                    continue;
+                }
+                
+                //debug( "INVOKING: " + fieldName + ", returnType = " +  m.getReturnType() );
+                if ( m.getParameterTypes().length == 0 )
+                try
+                {
+                    final Object fieldValue = m.invoke(a);
+                    d.setField( prefix + fieldName, fieldValue );
+                }
+                catch( final Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     public MBeanAttributeInfo attributeToMBeanAttributeInfo(final AttributeMethodInfo info) {
         final Descriptor descriptor = descriptor(info.attribute());
@@ -570,6 +601,7 @@ public class ConfigBeanJMXSupport {
             descriptor.setField(DESC_PATTERN_REGEX, info.pattern() );
         }
         
+        addAnnotationsToDescriptor( descriptor, info );
         descriptor.setField(DESC_NOT_NULL, "" + info.notNull() );
 
         Class type = info.returnType();
@@ -698,6 +730,10 @@ public class ConfigBeanJMXSupport {
         public boolean notNull() {
             final NotNull n = mMethod.getAnnotation(NotNull.class);
             return n != null;
+        }
+        
+        public Annotation[] annotations() {
+            return method().getAnnotations();
         }
     }
 

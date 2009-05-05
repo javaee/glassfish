@@ -62,6 +62,9 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver
     /** prefix for all Descriptor fields for config */
     public static final String DESC_PREFIX = "amx.configbean.";
     
+    /** prefix for all Descriptor fields for config */
+    public static final String DESC_ANNOTATION_PREFIX = DESC_PREFIX + "annotation.";
+    
     /** Descriptor: type of item: @Attribute, @Element, @DuckTyped */
     public static final String DESC_KIND = DESC_PREFIX + "kind";
     
