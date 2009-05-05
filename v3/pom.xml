@@ -142,7 +142,7 @@
     	<glassfish-corba.version>3.0.0-b020</glassfish-corba.version>
 	<uc-pkg-client.version>1.0.8-18.2012</uc-pkg-client.version>
         <webservices.version>2.0-b10</webservices.version>
-        <jaxb.version>2.2-promoted-b17</jaxb.version>
+        <jaxb.version>2.2-promoted-b26</jaxb.version>
         <javax-persistence-api.version>2.0.0-M2.1</javax-persistence-api.version>
 	<eclipselink.version>2.0.0-M2.1</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
