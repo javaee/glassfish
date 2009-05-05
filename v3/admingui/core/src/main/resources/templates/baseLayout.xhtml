@@ -53,7 +53,7 @@
 	    getPreference(default="#{false}", root="glassfish/layout", key="hideRight", value="#{sessionScope.hideRight}");
 	}
     </ui:event>
-    <sun:head title="#{guiTitle}" debug="true" parseOnLoad="false">
+    <sun:head title="#{guiTitle}" debug="false" parseOnLoad="false">
         <link rel="stylesheet" type="text/css" href="#{request.contextPath}/style.css" />
         <sc:links/>
         <sun:script url="/resource/js/adminjsf.js" />
