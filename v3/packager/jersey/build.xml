@@ -25,7 +25,7 @@ own identifying information: Portions Copyright [yyyy]
 	<target name="create.package">
 		<echo message="Staging files"/>
 	
-	<unzip src="target/tmp/jersey.zip"
+	<unzip src="target/tmp/jersey-gfv3-core-project.zip"
            dest="target/stage/${install.dir.name}">
        </unzip>
 
@@ -34,7 +34,7 @@ own identifying information: Portions Copyright [yyyy]
 	       <antcall target="pack.compression" />
 	</if>
            		   
-       <zip file="target/jersey.zip" basedir="target/stage">
+       <zip file="target/jersey.zip" basedir="target/stage" excludes="**/jersey-core_proto.py, **/LICENSE.txt">
        </zip>
 
        <attachArtifact file="target/jersey.zip"/> 
