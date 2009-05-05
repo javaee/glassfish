@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="390"/>
+    <property name="TOTAL_EXPECTED" value="388"/>
 
     &commonSetup;
     &commonBuild;
@@ -373,17 +373,13 @@
         <ant dir="securityConstraintWithoutAnyAuthConstraint" target="all"/>
         <ant dir="proxyKeysize" target="all"/>
         <ant dir="proxyAuthCert" target="all"/>
-        <!-- XXX temporary commented out due to issue 7896
         <ant dir="authPassthroughGetScheme" target="all"/>
         <ant dir="authPassthroughRequestIsSecure" target="all"/>
-		  -->
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
         <ant dir="authPassthroughGetRemoteHost" target="all"/>
-		  <!--
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectFromJspWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectHostRequestHeaderWithoutPort" target="all"/>
-        -->
         <ant dir="sessionDestroyedDuringUndeploy" target="all"/>
         <ant dir="virtualServerAuthRealmProperty" target="all"/>
         <ant dir="formLoginJSecurityCheckDirectAccess" target="all"/>
@@ -405,8 +401,8 @@
         <ant dir="readLineIOException" target="all"/>
         <ant dir="keepAlive" target="all"/>
         <ant dir="listenerDisabled" target="all"/>
-        <!-- XXX temporary commented out due to issue 7896
         <ant dir="chunkingDisabled" target="all"/>
+        <!-- XXX temporary commented out due to issue 7896
         <ant dir="httpConnectorKeepAlive" target="all"/>
         -->
         <ant dir="doubleContentLength" target="all"/>
