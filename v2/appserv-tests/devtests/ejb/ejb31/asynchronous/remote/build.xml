@@ -49,7 +49,7 @@
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${jndiroot}"/>
-           <arg line="4"/>
+           <arg line="10"/>
         </java>
     </target>
 
