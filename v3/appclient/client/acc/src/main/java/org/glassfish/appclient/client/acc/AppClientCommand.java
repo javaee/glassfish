@@ -478,7 +478,7 @@ public class AppClientCommand {
     private String getUsage() {
         return getLocalString(
             "main.usage",
-            "appclient [ -client <appjar> | -jar <appjar> | <classfile> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [app-args]");
+            "appclient [ <classfile> | -client <appjar> | -jar <appjar> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [app-args]");
     }
 
     private void usage() {

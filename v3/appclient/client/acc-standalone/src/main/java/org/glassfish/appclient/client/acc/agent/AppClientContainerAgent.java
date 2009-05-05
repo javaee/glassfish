@@ -553,12 +553,12 @@ public class AppClientContainerAgent {
         return localStrings.getLocalString(
             AppClientContainerAgent.class,
             "main.usage",
-            "appclient [ -client <appjar> | <classfile> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [-targetserver host[:port][,host[:port]...] [app-args]"
+            "appclient [ <classfile> | -client <appjar> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [-targetserver host[:port][,host[:port]...] [app-args]"
             )
             + System.getProperty("line.separator")
             + localStrings.getLocalString(AppClientContainerAgent.class,
                 "main.usage.1",
-                "  or  :\n\tappclient [ <valid JVM options and valid ACC options> ] [ -jar <appjar> | <appClass-name> ] [app args]");
+                "  or  :\n\tappclient [ <valid JVM options and valid ACC options> ] [ <appClass-name> | -jar <appjar> ] [app args]");
     }
 
     private static void xmlMessage(String xmlFullName) throws UserError {
