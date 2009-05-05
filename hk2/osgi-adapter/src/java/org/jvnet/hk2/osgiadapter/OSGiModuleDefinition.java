@@ -50,6 +50,7 @@ import org.osgi.framework.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -65,13 +66,14 @@ import java.util.logging.Level;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiModuleDefinition implements ModuleDefinition {
+public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
 
     private String name;
+    private String bundleName;
     private URI location;
     private String version;
+    transient Manifest manifest = null;
     private String lifecyclePolicyClassName;
-    private Manifest manifest;
     private ModuleMetadata metadata = new ModuleMetadata();
 
     public OSGiModuleDefinition(File jar) throws IOException {
@@ -85,8 +87,10 @@ public class OSGiModuleDefinition implements ModuleDefinition {
         * manifest info. For now, just use the standard URI.
         */
         this.location = location;
-        manifest = jarFile.getManifest();
+        Manifest manifest = jarFile.getManifest();
         Attributes mainAttr = manifest.getMainAttributes();
+        bundleName = manifest.getMainAttributes().getValue(Constants.BUNDLE_NAME);
+
         name = mainAttr.getValue(Constants.BUNDLE_SYMBOLICNAME);
         // R3 bundles may not have any name, yet HK2 requires some name to be
         // assigned. So, we use location in such cases. We encounter this
@@ -104,7 +108,7 @@ public class OSGiModuleDefinition implements ModuleDefinition {
         this(new BundleJar(b), toURI(b));
     }
 
-    private static URI toURI(Bundle b) throws URISyntaxException {
+    static URI toURI(Bundle b) throws URISyntaxException {
         try {
             return new URI(b.getLocation());
         } catch (URISyntaxException ue) {
@@ -135,7 +139,7 @@ public class OSGiModuleDefinition implements ModuleDefinition {
     public ModuleDependency[] getDependencies() {
         List<ModuleDependency> mds = new ArrayList<ModuleDependency>();
         String requiredBundles =
-                manifest.getMainAttributes().getValue(Constants.REQUIRE_BUNDLE);
+                getManifest().getMainAttributes().getValue(Constants.REQUIRE_BUNDLE);
         if (requiredBundles != null) {
             Logger.logger.log(Level.INFO, name + " -> " + requiredBundles);
             // The string looks like
@@ -188,7 +192,14 @@ public class OSGiModuleDefinition implements ModuleDefinition {
         return lifecyclePolicyClassName;
     }
 
-    public Manifest getManifest() {
+    public synchronized Manifest getManifest() {
+        if (manifest==null) {
+            try {
+                manifest = new JarFile(new File(location)).getManifest();
+            } catch (IOException e) {
+                manifest = null;
+            }
+        }
         return manifest;
     }
 
@@ -201,9 +212,7 @@ public class OSGiModuleDefinition implements ModuleDefinition {
      */
     @Override
     public String toString() {
-        String bundleDescriptiveName =
-                manifest.getMainAttributes().getValue(Constants.BUNDLE_NAME);
-        return name + "(" + bundleDescriptiveName + ")" + ':' + version;
+        return name + "(" + bundleName + ")" + ':' + version;
     }
 
     private static class BundleJar extends Jar {
@@ -231,7 +240,7 @@ public class OSGiModuleDefinition implements ModuleDefinition {
         }
 
         private void parseInhabitantsDescriptors(ModuleMetadata result) {
-            if (b.getEntry(InhabitantsFile.PATH) == null) return;
+            /**if (b.getEntry(InhabitantsFile.PATH) == null) return;
             Enumeration<String> entries = b.getEntryPaths(InhabitantsFile.PATH);
             if (entries != null) {
                 while (entries.hasMoreElements()) {
@@ -249,6 +258,19 @@ public class OSGiModuleDefinition implements ModuleDefinition {
                     }
                 }
             }
+            */
+            final URL url = b.getEntry(InhabitantsFile.PATH + "/default");
+            if (url==null) return;
+            try {
+                result.addHabitat("default",
+                        new ModuleMetadata.InhabitantsDescriptor(
+                                url, loadFully(url)
+                        ));
+            } catch (IOException e) {
+                LogHelper.getDefaultLogger().log(Level.SEVERE,
+                        "Error reading inhabitants list in " + b.getLocation(), e);
+            }
+            
         }
 
         private void parseServiceDescriptors(ModuleMetadata result) {
