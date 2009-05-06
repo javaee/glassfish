@@ -33,19 +33,29 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6397218");
+        WebTest test = new WebTest(args);
         try {
-            new WebTest(args).invokeJsp();
+            test.invokeJsp();
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception e) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             e.printStackTrace();
+        } finally {
+            try {
+                if (test.sock != null) {
+                    test.sock.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
         }
 
         stat.printSummary(TEST_NAME);
     }
 
     private void invokeJsp() throws Exception {
+         
         sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/jsp/test.jsp" + " HTTP/1.0\n";
@@ -77,13 +87,6 @@ public class WebTest {
             try {
                 if (bis != null) {
                     bis.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
-            try {
-                if (sock != null) {
-                    sock.close();
                 }
             } catch (IOException ioe) {
                 // ignore
