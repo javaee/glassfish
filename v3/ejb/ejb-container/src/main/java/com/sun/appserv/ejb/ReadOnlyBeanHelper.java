@@ -41,7 +41,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 
-import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.ReadOnlyEJBLocalHome;
 import com.sun.ejb.containers.ReadOnlyEJBHome;
 
@@ -60,7 +59,7 @@ import com.sun.logging.*;
 public class ReadOnlyBeanHelper {
 
     protected static final Logger _logger =
-        EjbContainerUtilImpl.getInstance().getLogger();
+        LogDomains.getLogger(ReadOnlyBeanHelper.class, LogDomains.EJB_LOGGER);
 
     public static ReadOnlyBeanNotifier getReadOnlyBeanNotifier(String ejbName) {
         try {

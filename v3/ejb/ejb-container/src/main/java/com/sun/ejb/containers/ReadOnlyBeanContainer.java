@@ -108,7 +108,8 @@ public class ReadOnlyBeanContainer
     protected ReadOnlyBeanContainer(EjbDescriptor desc, ClassLoader loader)
         throws Exception
     {
-        super(ContainerType.READ_ONLY, desc, loader);
+        //super(ContainerType.READ_ONLY, desc, loader);
+        super(ContainerType.ENTITY, desc, loader);
         
         EjbEntityDescriptor ed = (EjbEntityDescriptor)desc;
         refreshPeriodInMillis =

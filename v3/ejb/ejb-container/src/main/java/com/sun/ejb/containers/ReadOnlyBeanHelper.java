@@ -61,7 +61,7 @@ import javax.ejb.EJBHome;
 public class ReadOnlyBeanHelper {
 
     protected static final Logger _logger =
-        EjbContainerUtilImpl.getInstance().getLogger();
+        LogDomains.getLogger(ReadOnlyBeanHelper.class, LogDomains.EJB_LOGGER);
     
     private static final boolean debug = false;
 

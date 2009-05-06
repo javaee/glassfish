@@ -159,8 +159,7 @@ final class EJBHomeInvocationHandler
             if( methodClass == java.lang.Object.class )  {
                 return InvocationHandlerUtil.invokeJavaObjectMethod
                     (this, method, args);    
-            }/* TODO
-             else if( methodClass == ReadOnlyEJBHome.class ) {
+            } else if( methodClass == ReadOnlyEJBHome.class ) {
                 if( method.getName().equals("_refresh_All") ) {
                     super._refresh_All();
                 } else {
@@ -168,7 +167,7 @@ final class EJBHomeInvocationHandler
                         (args[0]);
                 }
                 return null;
-            } TODO */
+            }
 
             // Use optimized version of get that takes param count as an 
             // argument.

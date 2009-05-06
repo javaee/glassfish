@@ -57,8 +57,7 @@ import java.util.logging.Logger;
  */    
 
 final class EJBLocalHomeInvocationHandler 
-    extends EJBLocalHomeImpl //TODO extends ReadOnlyEJBLocalHomeImpl
-        implements InvocationHandler {
+    extends ReadOnlyEJBLocalHomeImpl implements InvocationHandler {
 
     private static final Logger logger =
             EjbContainerUtilImpl.getInstance().getLogger();
@@ -127,10 +126,10 @@ final class EJBLocalHomeInvocationHandler
                 (this, method, args);    
         } else if( methodClass == IndirectlySerializable.class ) {
             return this.getSerializableObjectFactory();
-        }/*TODO else if( methodClass == ReadOnlyEJBLocalHome.class ) {
+        } else if( methodClass == ReadOnlyEJBLocalHome.class ) {
             // ReadOnlyBeanLocalNotifier getReadOnlyBeanLocalNotifier();
             return super.getReadOnlyBeanLocalNotifier();
-        }*/
+        }
 
         // Use optimized version of get that takes param count as an argument.
         InvocationInfo invInfo = (InvocationInfo)
