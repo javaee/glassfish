@@ -58,7 +58,7 @@ public class ServiceEngineRuntimeHelper implements ContractProvider {
 
     private static ServiceEngineRuntimeHelper _runtime;
     @Inject
-    private Habitat habitat;
+    private static Habitat habitat;
     @Inject
     private ArchivistFactory archivistFactory;
     @Inject
@@ -74,13 +74,14 @@ public class ServiceEngineRuntimeHelper implements ContractProvider {
 
     public static ServiceEngineRuntimeHelper getRuntime() {
         if (_runtime == null) {
-            throw new RuntimeException("ServiceEngineRuntimeHelper not initialized");
+            _runtime = habitat.getComponent(ServiceEngineRuntimeHelper.class);
+           if (_runtime == null)
+                throw new RuntimeException("ServiceEngineRuntimeHelper not initialized");
         }
         return _runtime;
     }
 
     public ServiceEngineRuntimeHelper() {
-        _runtime = this;
     }
 
     public Habitat getHabitat() {

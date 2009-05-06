@@ -565,7 +565,7 @@ public class JavaEEServiceEngineSUManager implements ServiceUnitManager, JBICons
                     XModuleType.RAR.equals(moduleType) ||
                     XModuleType.WAR.equals(moduleType) ) {
                 //J2EEModuleExploder.explodeJar(srcFile, destFile);
-                //ModuleExploder.explodeJar(srcFile,destFile);
+                ModuleExploder.explodeJar(srcFile,destFile);
             }
         } catch (Exception e) {
             IOException ioe = new IOException(e.getMessage());
