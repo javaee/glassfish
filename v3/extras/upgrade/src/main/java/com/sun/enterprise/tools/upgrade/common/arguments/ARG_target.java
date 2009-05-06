@@ -42,17 +42,19 @@ import java.io.File;
  * @author Hans Hrasna 
  */
 public class ARG_target extends ArgumentHandler {
-    
+
     /** Creates a new instance of ARG_target */
 	public ARG_target() {
         super();
 	}
+
+    @Override
 	public void setRawParameters(String p){
 		rawParameters = p;
         if (rawParameters != null) {
             File tmpF = new File(rawParameters);
             if (tmpF.exists()) {
-                super._isValidParameter = true;
+                _isValidParameter = true;
             }
             if (p.length() == 0){
                 rawParameters = tmpF.getAbsolutePath();
@@ -60,11 +62,17 @@ public class ARG_target extends ArgumentHandler {
         }
 	}
 
+    @Override
 	public boolean isValidParameter(){
+        if (!_isValidParameter) {
+            return false;
+        }
+
 		//- some cmds may need to override this.
         return commonInfo.getTarget().isValidPath(rawParameters);
 	}
 
+    @Override
 	public void exec(){
 		if (super._isValidParameter){
 			commonInfo.createUpgradeLogFile(rawParameters);

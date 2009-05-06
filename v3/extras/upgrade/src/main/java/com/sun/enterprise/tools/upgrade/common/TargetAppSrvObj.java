@@ -47,22 +47,25 @@ import java.io.File;
 import java.util.logging.*;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.logging.*;
-import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 
 /**
  *
  * @author rebeccas
  */
 public class TargetAppSrvObj extends BaseDomainInfoObj{
-	private String dtdFilename = null;
+    private static final Logger logger =
+        LogService.getLogger(LogService.UPGRADE_LOGGER);
+
     private StringManager sm;
-    static Logger _logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
 
     //- Value indicates if an in-place upgrade of domains is supported by
     //- the traget appserver.  This value is specific to each product release
     //- and should be set accordingly V3 does not support in-place upgrade.
     private boolean isInPlaceUpgradeAllowed = false;
+
+    // used only in interactive cases
+    private DirectoryMover directoryMover = null;
 	
 	/** Creates a new instance of TargetAppSrvObj */
 	public TargetAppSrvObj() {
@@ -70,36 +73,44 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
     }
 	
 	public boolean isValidPath(String s) {
-        boolean flag = false;
         File targetPathDir = new File(s);
-        if (targetPathDir.exists()) {
-            if (isInPlaceUpgradeAllowed()) {
-                // check if this is an existing domain
-                File domainXML = new File(s + "/" +
-                        super.CONFIG_DOMAIN_XML_FILE);
-                if (!domainXML.isFile() || !domainXML.exists()) {
-                    flag = true;
-                } else {
-                     _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.target.dir_domain_exist",
-                             targetPathDir.getAbsolutePath()));
-                }
+        
+        // fail if path doesn't exist
+        if (!targetPathDir.exists()) {
+            logger.log(Level.INFO, sm.getString(
+                "enterprise.tools.upgrade.target.dir_does_not_exist",
+                targetPathDir.getAbsolutePath()));
+            return false;
+        }
+        
+        if (isInPlaceUpgradeAllowed()) {
+            // check if this is an existing domain
+            File domainXML = new File(s + "/" +
+                super.CONFIG_DOMAIN_XML_FILE);
+            if (!domainXML.isFile() || !domainXML.exists()) {
+                return true;
             } else {
-                File tmpPath = new File(targetPathDir,
-                        CommonInfoModel.getInstance().getSource().getDomainName());
-                if (!tmpPath.exists()) {
-                    flag = true;
-                } else {
-                    _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.target.dir_domain_exist",
-                            tmpPath.getAbsolutePath()));
-                }
+                logger.log(Level.INFO, sm.getString(
+                    "enterprise.tools.upgrade.target.dir_domain_exist",
+                    targetPathDir.getAbsolutePath()));
             }
         } else {
-            _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.target.dir_does_not_exist",
-                    targetPathDir.getAbsolutePath()));
+            File tmpPath = new File(targetPathDir,
+                CommonInfoModel.getInstance().getSource().getDomainName());
+            if (!tmpPath.exists()) {
+                return true;
+            }
+            logger.log(Level.INFO, sm.getString(
+                "enterprise.tools.upgrade.target.dir_domain_exist",
+                tmpPath.getAbsolutePath()));
+            if (directoryMover != null) {
+                return directoryMover.moveDirectory(tmpPath);
+            }
         }
-        return flag;
+        return false;
     }
 
+    @Override
 	public void setInstallDir(String s){ 
 		super.installDir = s;
 		if (s != null){
@@ -108,10 +119,12 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 		CommonInfoModel.getInstance().createUpgradeLogFile(installDir);
 	}
 	
+    @Override
 	public String getDomainDir(){
 		return getInstallDir() + "/" + super.domainName;
 	}	
 	
+    @Override
 	public String getConfigXMLFile(){
 		return getDomainDir() + "/" + super.CONFIG_DOMAIN_XML_FILE;
 	}
@@ -127,10 +140,14 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 		}
 		return super.versionEdition;
 	}
-	
-	
+		
 	//- target specific ---------------------
     public boolean isInPlaceUpgradeAllowed(){
         return isInPlaceUpgradeAllowed;
     }
+
+    public void setDirectoryMover(DirectoryMover directoryMover) {
+        this.directoryMover = directoryMover;
+    }
+    
 }

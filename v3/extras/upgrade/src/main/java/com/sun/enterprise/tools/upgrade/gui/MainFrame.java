@@ -33,33 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.tools.upgrade.gui;
 
-import java.util.*;
-import javax.swing.*;
-import java.io.*;
 import com.sun.enterprise.tools.upgrade.gui.util.DialogEvent;
 import com.sun.enterprise.tools.upgrade.gui.util.DialogListener;
 import com.sun.enterprise.tools.upgrade.gui.util.Utils;
-import java.util.*;
 import com.sun.enterprise.tools.upgrade.common.*;
-import java.util.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
-
+import com.sun.enterprise.tools.upgrade.gui.util.DirectoryMoverImpl;
+import java.awt.GridBagConstraints;
+import java.io.*;
+import java.util.*;
+import java.util.logging.Logger;
 import javax.help.*;
+import javax.swing.*;
+
 /**
  * Insert the type's description here.
  *
  * @author:  Prakash Aradhya
  */
 public class MainFrame extends JFrame implements LogMessageListener, 
-        UpgradeUpdateListener{
+        UpgradeUpdateListener {
 
     //private fields in GUI panel
     private JButton backButton = null;
@@ -77,7 +78,7 @@ public class MainFrame extends JFrame implements LogMessageListener,
     private CommonInfoModel commonInfoModel = CommonInfoModel.getInstance();
     private Vector dialogListeners = new Vector();
     private StringManager stringManager = StringManager.getManager(MainFrame.class);
-    private static Logger logger = com.sun.enterprise.tools.upgrade.common.CommonInfoModel.getDefaultLogger();
+    private static Logger logger = CommonInfoModel.getDefaultLogger();
 
     //static fields in GUI panel
     private static final int DETAILS_COLLECTION_PANEL = 1;
@@ -117,9 +118,9 @@ public class MainFrame extends JFrame implements LogMessageListener,
             JDialogContentPane.setName("JDialogContentPane");
             JDialogContentPane.setLayout(new java.awt.GridBagLayout());
 
-            java.awt.GridBagConstraints imageconstraintsPanel = new java.awt.GridBagConstraints();
+            GridBagConstraints imageconstraintsPanel = new GridBagConstraints();
             imageconstraintsPanel.gridx = 0; imageconstraintsPanel.gridy = 0;
-            imageconstraintsPanel.fill = java.awt.GridBagConstraints.BOTH;
+            imageconstraintsPanel.fill = GridBagConstraints.BOTH;
             imageconstraintsPanel.weightx = 0;
             imageconstraintsPanel.weighty = 0;
             ImagePanel imagePanel = new ImagePanel(new java.awt.Insets(5,10,5,10));
@@ -127,26 +128,26 @@ public class MainFrame extends JFrame implements LogMessageListener,
             imagePanel.setImage(image);
             getJDialogContentPane().add(imagePanel, imageconstraintsPanel);
 
-            java.awt.GridBagConstraints constraintsnavigationPanel = new java.awt.GridBagConstraints();
+            GridBagConstraints constraintsnavigationPanel = new GridBagConstraints();
             constraintsnavigationPanel.gridx = 1; constraintsnavigationPanel.gridy = 0;
-            constraintsnavigationPanel.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsnavigationPanel.fill = GridBagConstraints.BOTH;
             constraintsnavigationPanel.weightx = 1.0;
             constraintsnavigationPanel.weighty = 1.0;
             getJDialogContentPane().add(getnavigationPanel(), constraintsnavigationPanel);
 
-            java.awt.GridBagConstraints constraintsSeparator = new java.awt.GridBagConstraints();
+            GridBagConstraints constraintsSeparator = new GridBagConstraints();
             constraintsSeparator.gridx = 0; constraintsSeparator.gridy = 1;
             constraintsSeparator.gridwidth = 2; constraintsSeparator.gridheight = 1;
-            constraintsSeparator.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsSeparator.fill = GridBagConstraints.HORIZONTAL;
             constraintsSeparator.weightx = 1.0;
             constraintsSeparator.insets = new java.awt.Insets(5, 0, 0, 0);
             javax.swing.JSeparator separatorPanel = new javax.swing.JSeparator();
             getJDialogContentPane().add(separatorPanel, constraintsSeparator);
 
-            java.awt.GridBagConstraints constraintsbuttonsPanel = new java.awt.GridBagConstraints();
+            GridBagConstraints constraintsbuttonsPanel = new GridBagConstraints();
             constraintsbuttonsPanel.gridx = 0; constraintsbuttonsPanel.gridy = 2;
             constraintsbuttonsPanel.gridwidth = 2; constraintsbuttonsPanel.gridheight = 1;
-            constraintsbuttonsPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsbuttonsPanel.fill = GridBagConstraints.HORIZONTAL;
             constraintsbuttonsPanel.weightx = 1.0;
             constraintsbuttonsPanel.insets = new java.awt.Insets(5, 0, 0, 0);
             getJDialogContentPane().add(getbuttonsPanel(), constraintsbuttonsPanel);
@@ -205,17 +206,17 @@ public class MainFrame extends JFrame implements LogMessageListener,
     public void setCurrentNavigationPanel() {
         getnavigationPanel().removeAll();
         this.getJDialogContentPane().invalidate();
-        java.awt.GridBagConstraints constraintsPanel = new java.awt.GridBagConstraints();
+        GridBagConstraints constraintsPanel = new GridBagConstraints();
         constraintsPanel.gridx = 0; constraintsPanel.gridy = 0;
-        constraintsPanel.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsPanel.fill = GridBagConstraints.BOTH;
         constraintsPanel.weightx = 1.0;
         constraintsPanel.weighty = 1.0;
-        if(this.PROGRESS_PANEL == currentNavigationPanel){
+        if (PROGRESS_PANEL == currentNavigationPanel){
             getnavigationPanel().add(getProgressPanel(), constraintsPanel);
             this.setFrameNavigationState(this.UPGRADE_STARTED);
-        }else if(this.DETAILS_COLLECTION_PANEL == currentNavigationPanel){
+        } else if (DETAILS_COLLECTION_PANEL == currentNavigationPanel){
             getnavigationPanel().add(getDataCollectionPanel(), constraintsPanel);
-            this.setFrameNavigationState(this.DATA_COLLECTION_PENDING);
+            this.setFrameNavigationState(DATA_COLLECTION_PENDING);
         }
         this.getJDialogContentPane().validate();
         this.repaint();
@@ -322,19 +323,19 @@ public class MainFrame extends JFrame implements LogMessageListener,
             placeHolderPanel2.add(getcancelButton());
             placeHolderPanel2.add(gethelpButton());
 
-            java.awt.GridBagConstraints constraints = new java.awt.GridBagConstraints();
+            GridBagConstraints constraints = new GridBagConstraints();
             constraints.gridx = 0; constraints.gridy = 0;
-            constraints.anchor = java.awt.GridBagConstraints.WEST;
+            constraints.anchor = GridBagConstraints.WEST;
             constraints.gridwidth = 1; constraints.gridheight = 1;
-            constraints.weightx = 1.0; constraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraints.weightx = 1.0; constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.insets = new java.awt.Insets(5, 10, 10, 20);
             getbuttonsPanel().add(placeHolderPanel1, constraints);
 
-            constraints = new java.awt.GridBagConstraints();
+            constraints = new GridBagConstraints();
             constraints.gridx = 1; constraints.gridy = 0;
-            constraints.anchor = java.awt.GridBagConstraints.EAST;
+            constraints.anchor = GridBagConstraints.EAST;
             constraints.gridwidth = 1; constraints.gridheight = 1;
-            constraints.weightx = 1.0; constraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraints.weightx = 1.0; constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.insets = new java.awt.Insets(5, 10, 10, 20);
             getbuttonsPanel().add(placeHolderPanel2, constraints);
         }
@@ -384,9 +385,9 @@ public class MainFrame extends JFrame implements LogMessageListener,
             navigationPanel.setName("navigationPanel");
             navigationPanel.setLayout(new java.awt.GridBagLayout());
 
-            java.awt.GridBagConstraints constraintsbeanNameBeanTypePanel = new java.awt.GridBagConstraints();
+            GridBagConstraints constraintsbeanNameBeanTypePanel = new GridBagConstraints();
             constraintsbeanNameBeanTypePanel.gridx = 0; constraintsbeanNameBeanTypePanel.gridy = 0;
-            constraintsbeanNameBeanTypePanel.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsbeanNameBeanTypePanel.fill = GridBagConstraints.BOTH;
             constraintsbeanNameBeanTypePanel.weightx = 1.0;
             constraintsbeanNameBeanTypePanel.weighty = 1.0;
             getnavigationPanel().add(getDataCollectionPanel(), constraintsbeanNameBeanTypePanel);
@@ -493,7 +494,10 @@ public class MainFrame extends JFrame implements LogMessageListener,
 				javax.swing.JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
-		
+
+        // in the GUI case, we'll allow users to fix domain name clashes
+        commonInfoModel.getTarget().setDirectoryMover(
+            new DirectoryMoverImpl(this));
 		ARG_target t = new ARG_target();
 		t.setRawParameters(dataCollectionPanel.getDestinationDirectoryPath());
 		if (t.isValidParameter()){
@@ -559,4 +563,8 @@ public class MainFrame extends JFrame implements LogMessageListener,
 			c.getAdminPassword().replaceAll(".","*") +  "\t -m " + 
 			c.getMasterPassword().replaceAll(".","*"));
 	}
+
+    public boolean moveDirectory(File dir) {
+        return true;
+    }
 }

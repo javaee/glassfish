@@ -228,6 +228,5 @@ public class UpgradeToolMain {
 			main.startGUI(args);
 		}
 
-        System.exit(0); //- force tool to exit after exceptions processed.
     }
 }

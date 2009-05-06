@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,78 +34,58 @@
  * holder.
  */
 
-package com.sun.enterprise.tools.upgrade.common.arguments;
+package com.sun.enterprise.tools.upgrade.gui.util;
 
-import java.util.Vector;
-import java.util.List;
-import java.util.logging.*;
-
-import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
-import com.sun.enterprise.tools.upgrade.logging.*;
-import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
-import com.sun.enterprise.util.i18n.StringManager;
-
+import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
+import java.awt.Component;
+import java.io.File;
+import javax.swing.JOptionPane;
 
 /**
+ * GUI version of interactive directory mover.
  *
- * @author Hans Hrasna
+ * @author Bobby Bissett
  */
-public abstract class ArgumentHandler {
-    protected Logger _logger = LogService.getLogger(LogService.UPGRADE_LOGGER);
-    protected CommonInfoModel commonInfo;
-    protected Vector parameters;
-    protected StringManager sm;
-    protected UpgradeUtils utils;
-	boolean _isRequiresParameter = true;
+public class DirectoryMoverImpl implements DirectoryMover {
+
+    private final Component parent;
+
+    // still todo -- move into resource bundle
+    String message = "The domain %s already exists. Would you like to rename it?";
+    String title = "Domain Name Conflict";
+
+    public DirectoryMoverImpl(Component parent) {
+        this.parent = parent;
+    }
     
-    /** Creates a new instance of ArgumentHandler */
-	String cmd = null;
-	String rawParameters = null;
-	boolean _isValidParameter = false;
-	
-	public ArgumentHandler() {
-		sm = StringManager.getManager(CommonInfoModel.class);
-		this.commonInfo = CommonInfoModel.getInstance();
-        utils = UpgradeUtils.getUpgradeUtils(commonInfo);
-	}
-	
-	public void setCmd(String c){
-		cmd = c;
-	}
-	public String getCmd(){
-		return cmd;
-	}
-	
-	public void setRawParameters(String p){
-		rawParameters = p;
-	}
-	
-	public String getRawParameter(){
-		return rawParameters;
-	}
-	
-	
-	//- process input parameters.
-	public void exec(){}
-	
-	//- One option generates child options to process
-	public List<ArgumentHandler> getChildren(){
-		return new Vector<ArgumentHandler>();
-	}
-	
-	/**
-	 *  Indicate if this cmd option requires a parameter.
-	 */
-	public boolean isRequiresParameter(){
-		//- some cmds may need to override this.
-		return _isRequiresParameter;
-	}
-	
-	/**
-	 * Verify that input param value is valid for further processing
-	 */
-	public boolean isValidParameter(){
-		//- some cmds may need to override this.
-		return _isValidParameter;
-	}
+    public boolean moveDirectory(File dir) {
+        int option = JOptionPane.showConfirmDialog(parent,
+            String.format(message, dir.getName()),
+            title,
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+
+        if (JOptionPane.OK_OPTION != option) {
+            return false;
+        }
+        rename(dir);
+        return true;
+    }
+
+    // simply add a .0, .1, .X as needed to move directory
+    // this code should move somewhere common when the CLI flow offers the option
+    private void rename(File dir) {
+        assert (dir.exists());
+        File tempFile = null;
+        int count = 0;
+        while (true) {
+            tempFile = new File(dir.getAbsolutePath() + "." + count);
+            if (tempFile.exists()) {
+                count ++;
+            } else {
+                break;
+            }
+        }
+        dir.renameTo(tempFile);
+    }
 }

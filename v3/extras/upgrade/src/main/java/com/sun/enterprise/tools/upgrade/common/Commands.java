@@ -45,7 +45,8 @@ package com.sun.enterprise.tools.upgrade.common;
 import java.io.*;
 import java.util.ArrayList;
 
-import com.sun.enterprise.cli.framework.CLIMain;
+//import com.sun.enterprise.cli.framework.CLIMain;
+import com.sun.enterprise.admin.cli.AsadminMain;
 import com.sun.enterprise.cli.framework.InputsAndOutputs;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -145,13 +146,14 @@ public class Commands {
             ((Thread)cor).start();
             CommonInfoModel.getDefaultLogger().info(stringManager.
                     getString("commands.executingCommandMsg") + commandOneString);
-            CLIMain.invokeCLI(commandOneString.toString(), io);
+//            CLIMain.invokeCLI(commandOneString.toString(), io);
+            AsadminMain.main(commandStrings);
             pos.flush();
             return true;
         }
-        catch(CommandException ce) {
-            throw ce;
-        }
+//        catch(CommandException ce) {
+//            throw ce;
+//        }
         catch(Exception e) {
             Throwable t = e.getCause();
             CommonInfoModel.getDefaultLogger().warning(stringManager.getString(
