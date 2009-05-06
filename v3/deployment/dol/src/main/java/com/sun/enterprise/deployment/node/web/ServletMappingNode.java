@@ -105,8 +105,8 @@ public class ServletMappingNode extends DeploymentDescriptorNode {
             urlPattern = value;
 
             XMLNode  parentNode = getParentNode();
-            if (parentNode instanceof WebBundleNode) {
-                ((WebBundleNode) parentNode).addServletMapping(servletName, 
+            if (parentNode instanceof WebCommonNode) {
+                ((WebCommonNode) parentNode).addServletMapping(servletName, 
                 urlPattern);
             } else {
                 DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.addDescriptorFailure",

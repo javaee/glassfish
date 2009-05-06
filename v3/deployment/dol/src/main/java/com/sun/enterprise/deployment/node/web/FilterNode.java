@@ -117,7 +117,7 @@ public class FilterNode extends DisplayableComponentNode {
         appendTextChild(myNode, WebTagNames.ASYNC_SUPPORTED, String.valueOf(descriptor.isAsyncSupported()));     
         Vector initParams = descriptor.getInitializationParameters();
         if (!initParams.isEmpty()) {
-            WebBundleNode.addInitParam(myNode, WebTagNames.INIT_PARAM, initParams.elements());
+            WebCommonNode.addInitParam(myNode, WebTagNames.INIT_PARAM, initParams.elements());
         }
         
         return myNode;
