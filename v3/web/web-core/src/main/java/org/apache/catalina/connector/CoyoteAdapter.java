@@ -326,7 +326,9 @@ public class CoyoteAdapter
             }
             // END S1AS 6188932
             
-            response.addHeader("Server",serverName);
+            if (serverName != null && !serverName.isEmpty()) {
+                response.addHeader("Server", serverName);
+            }
                 
             // Invoke the web container.
             Container container = connector.getContainer();
