@@ -46,7 +46,9 @@
     <page name="InstallHome"/>
     <page name="glassfish"/>
     <page name="updatetool"/>
-    <page name="JDKSelection"/>
+    <page name="JDKSelection">
+	<when><![CDATA[ !IS_MAC ]]></when>
+    </page>
     <page name="ReadyToInstall"/>
     <page name="Progress"/>
     <page name="RegistrationOptions">

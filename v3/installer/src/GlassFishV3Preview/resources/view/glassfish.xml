@@ -391,6 +391,15 @@ isPortFreeServer(InetAddress addr, int port) {
 
 
 run() {
+
+       if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+                ConfigHelper.setValue
+                        ("JDKSelection.directory.SELECTED_JDK",
+                        System.getProperty("java.home"));
+ 		List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
+		activeModes.add("IS_MAC");
+     }
+
 	// Group the options.
       radio1 = getComponentByName(content, "ANONYMOUS");
       radio2 = getComponentByName(content, "NON_ANONYMOUS");
