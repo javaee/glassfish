@@ -116,7 +116,8 @@ public class ContainerMapper extends StaticResourcesAdapter {
         mapper.setDefaultHostName(defaultHostName);
         mapper.addHost(defaultHostName,new String[]{},null);
         mapper.addContext(defaultHostName,ROOT,
-                new ContextRootInfo(this,null, null),new String[]{"index.html","index.htm}"},null);
+                new ContextRootInfo(this,null, null),
+                new String[]{"index.html","index.htm"},null);
         // Container deployed have the right to override the default setting.
         Mapper.setAllowReplacement(true);
     }
