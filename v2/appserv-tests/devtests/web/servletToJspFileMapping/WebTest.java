@@ -2,6 +2,10 @@ import java.io.*;
 import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
+/**
+ * Unit test for Bugtraq 4924326 ("Diff servlets that map to the same
+ * jsp-file use the same JMX registration name").
+ */
 public class WebTest {
 
     private static final String TEST_NAME = "web-servlet-jspfile-mapping";
@@ -22,43 +26,28 @@ public class WebTest {
     public static void main(String[] args) {
         stat.addDescription("Unit test for Bugtraq 4924326");
         WebTest webTest = new WebTest(args);
-        webTest.doTest();
+        try {
+            webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception ex) {
+            stat.addStatus(TEST_NAME, stat.FAIL);
+            ex.printStackTrace();
+        }
         stat.printSummary(TEST_NAME);
     }
 
-    public void doTest() {
+    public void doTest() throws Exception {
      
-        int code;
         String url = "http://" + host + ":" + port + "/" + contextRoot;
-
-        try {
-            code = invokeServlet(url + "/TestServlet1");
-            if (code != 200) {
-                System.out.println("Incorrect return code: " + code);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            }
-        } catch (Exception ex) {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-            ex.printStackTrace();
+        int code = invokeServlet(url + "/TestServlet1");
+        if (code != 200) {
+            throw new Exception("Incorrect return code: " + code);
         }
 
-        try { 
-            code = invokeServlet(url + "/TestServlet2");
-            if (code != 200) {
-                System.out.println("Incorrect return code: " + code);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            }
-        } catch (Exception ex) {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-            ex.printStackTrace();
+        code = invokeServlet(url + "/TestServlet2");
+        if (code != 200) {
+            throw new Exception("Incorrect return code: " + code);
         }
-        
-        return;
-        
     }
 
     private int invokeServlet(String url) throws Exception {
