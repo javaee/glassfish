@@ -44,6 +44,7 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.universal.Duration;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.glassfish.api.Param;
 
 /**
  * Stopwatch Service
@@ -56,6 +57,9 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 public class StopwatchCommand implements AdminCommand {
     @Inject
     ServerEnvironmentImpl env;
+
+    @Param(name="which", primary=true, optional=true, defaultValue="0")
+    String which;
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
@@ -73,7 +77,7 @@ public class StopwatchCommand implements AdminCommand {
                 Duration duration = new Duration(totalTime_ms);
                 startTime_ms = curr; // reset the stopwatch to zero elapsed time
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                report.setMessage(strings.get("stopwatch.timedisplay", duration.toString()));
+                report.setMessage("which = " + which + " , " + strings.get("stopwatch.timedisplay", duration.toString()));
             }
         }
         catch(Exception e) {
