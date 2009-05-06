@@ -391,9 +391,9 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 	    }
 	/* Add AS_JAVA to end of buffer and file. */ 
             if (isWindows)
-	       line = "set AS_JAVA=\"" + jdkHome + "\"";
+	       line = "set AS_JAVA=" + jdkHome;
             else
-	       line = "AS_JAVA=\"" + jdkHome + "\"";
+	       line = "AS_JAVA=" + jdkHome;
 	    sb.append(line+"\n");
             reader.close();
 
