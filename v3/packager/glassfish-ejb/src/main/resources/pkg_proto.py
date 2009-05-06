@@ -49,6 +49,7 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-ejb-lite" : {"type" : "require" },
+			"pkg:/glassfish-corba" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
