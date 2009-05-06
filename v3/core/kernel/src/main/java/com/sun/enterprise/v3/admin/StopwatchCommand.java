@@ -35,14 +35,13 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.universal.Duration;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -53,7 +52,10 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "stopwatch")
 @Scoped(PerLookup.class)
 @I18n("stopwatch")
+
 public class StopwatchCommand implements AdminCommand {
+    @Inject
+    ServerEnvironmentImpl env;
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
@@ -61,25 +63,17 @@ public class StopwatchCommand implements AdminCommand {
         try {
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             synchronized (lock) {
-                String message;
+                // only do this on the very first call.  Never repeat.
 
-                if (running) {
-                    running = false; // synch
-                    long curr = System.currentTimeMillis();
-                    long totalTime_ms = curr - startTime_ms;
-                    Duration duration = new Duration(totalTime_ms);
-                    startTime_ms = curr; // synch
-                    message = strings.get("stopwatch.timedisplay", duration.toString());
-                } else {
-                    running = true; // synch
-                    startTime_ms = System.currentTimeMillis(); //synch
-                    message = strings.get("stopwatch.startdisplay");
-                }
-                // theoretically we could end the synch block here.
-                // I'm not going to risk it now.  Possible pointless performance
-                // improvement for the future.
+                if(startTime_ms <= 0)
+                    startTime_ms = env.getStartupContext().getCreationTime();
+
+                long curr = System.currentTimeMillis();
+                long totalTime_ms = curr - startTime_ms;
+                Duration duration = new Duration(totalTime_ms);
+                startTime_ms = curr; // reset the stopwatch to zero elapsed time
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                report.setMessage(message);
+                report.setMessage(strings.get("stopwatch.timedisplay", duration.toString()));
             }
         }
         catch(Exception e) {
@@ -89,8 +83,8 @@ public class StopwatchCommand implements AdminCommand {
         }
     }
 
-    final private static LocalStringsImpl strings = new LocalStringsImpl(MotdCommand.class);
-    private static long startTime_ms = System.currentTimeMillis();
-    private static boolean running = false;
-    final private static Object lock = new Object();
+    private static final    LocalStringsImpl    strings         = new LocalStringsImpl(MotdCommand.class);
+    private static          long                startTime_ms    = 0;
+    private static          boolean             running         = false;
+    private static final    Object              lock            = new Object();
 }
