@@ -51,7 +51,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.myvs.http-listeners=http-listener-2"/>
+                   value="configs.config.server-config.http-service.virtual-server.myvs.network-listeners=http-listener-2"/>
         </antcall>
     </target>
 
@@ -75,7 +75,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.myvs.http-listeners=http-listener-1"/>
+                   value="configs.config.server-config.http-service.virtual-server.myvs.network-listeners=http-listener-1"/>
         </antcall>
     </target>
 
