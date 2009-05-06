@@ -58,7 +58,6 @@ public class WebTest {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
-
         if (responseCode != HttpURLConnection.HTTP_UNAUTHORIZED) {
             throw new Exception("Wrong response code. Expected: " +
                 HttpURLConnection.HTTP_UNAUTHORIZED + ", received: " +
