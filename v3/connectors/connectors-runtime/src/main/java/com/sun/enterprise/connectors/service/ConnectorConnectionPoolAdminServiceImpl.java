@@ -55,11 +55,7 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
-import com.sun.enterprise.connectors.ConnectorConnectionPool;
-import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
-import com.sun.enterprise.connectors.ConnectorRegistry;
-import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.connectors.PoolMetaData;
+import com.sun.enterprise.connectors.*;
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
 import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 import com.sun.enterprise.connectors.util.ConnectionDefinitionUtils;
@@ -1203,7 +1199,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             ManagedConnectionFactory mcf = null;
             mcf = obtainManagedConnectionFactory(poolName);
             if (mcf == null) {
-                InitialContext ic = new InitialContext();
+                /*TODO V3 use this later
+                 InitialContext ic = new InitialContext(); */
+                Context ic = _runtime.getNamingManager().getInitialContext();
                 ic.unbind(jndiNameForPool);
                 _logger.log(Level.WARNING, "rardeployment.mcf_creation_failure", poolName);
 
