@@ -102,6 +102,7 @@
                                                                                 
             <classpath>
                 <path refid="gfv3.classpath"/>
+                <path location="${ejb.build.dir}"/>
                 <path location="${client.build.dir}"/>
                 <path location="${client.build.dir}/dirDeployWithEjbSuffixClient.jar"/>
             </classpath>
