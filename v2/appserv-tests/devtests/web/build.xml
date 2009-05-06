@@ -356,6 +356,7 @@
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="largeCookieError" target="all"/>
         <ant dir="httpListenerDynamicConfig" target="all"/>
+        <ant dir="webappLoaderEmptyJar" target="all"/>
     </target>
 
     <target name="security">
