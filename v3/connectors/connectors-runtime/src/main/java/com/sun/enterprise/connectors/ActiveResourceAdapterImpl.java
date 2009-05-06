@@ -365,7 +365,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         try {
             mcf.setLogWriter(adapter);
         } catch (Exception e) {
-            Object[] params = new Object[]{mcf.getClass().getName(), e.getMessage()};
+            Object[] params = new Object[]{mcf.getClass().getName(), e.toString()};
             _logger.log(Level.WARNING, "rardeployment.logwriter_error", params);
             _logger.log(Level.FINE, "Unable to set LogWriter for ManagedConnectionFactory : " + mcf.getClass().getName(), e);
         }
