@@ -128,11 +128,14 @@ public class NoTxConnectorAllocator extends AbstractConnectorAllocator {
             mc.addConnectionEventListener(l);
             return resource;
         } catch (ResourceException ex) {
-            Object[] params = new Object[]{spec.getConnectionPoolName(), ex.getMessage()};
-            _logger.log(Level.SEVERE, "poolmgr.create_resource_error", params);
+            Object[] params = new Object[]{spec.getConnectionPoolName(), ex.toString()};
+            _logger.log(Level.WARNING,"poolmgr.create_resource_error",params);
+            _logger.log(Level.FINE,"Resource Exception while creating resource",ex);
 
-            if (ex.getCause() != null) {
-                _logger.log(Level.SEVERE, "poolmgr.create_resource_error", ex.getLinkedException());
+            if (ex.getLinkedException() != null) {
+                _logger.log(Level.WARNING,
+                        "poolmgr.create_resource_linked_error", ex
+                                .getLinkedException().toString());
             }
             throw new PoolingException(ex);
         }
