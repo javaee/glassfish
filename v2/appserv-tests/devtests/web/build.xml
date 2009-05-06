@@ -349,6 +349,7 @@
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="largeCookieError" target="all"/>
+        <ant dir="httpListenerDynamicConfig" target="all"/>
     </target>
 
     <target name="security">
