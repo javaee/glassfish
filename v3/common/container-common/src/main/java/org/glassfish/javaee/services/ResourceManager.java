@@ -297,13 +297,12 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                     logger.log(Level.WARNING, "resources.resource-manager.deploy-resource-failed", params);
                 }
             } else if (instance instanceof Property) {
-                final Property prop = (Property) instance;
-                np = new NotProcessed("ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue());
+                //Property is not handled here. It is handled as part of the
+                //Change event of a jdbc-connection-pool. 
             } else if (instance instanceof ResourceRef) {
                 //TODO V3 : is this for asadmin create-resource-ref? 
             } else {
-                np = new NotProcessed("ResourceManager: configuration " +
-                        Dom.unwrap(instance).getProxyType().getName() + " was added");
+                //For any other type of instance, dont do anything.
             }
             return np;
         }
