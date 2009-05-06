@@ -13,8 +13,9 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
+    private static final String TEST_NAME = "jsp-forward-unbuffered";
 
     private String host;
     private String port;
@@ -29,62 +30,46 @@ public class WebTest {
     public static void main(String[] args) {
         stat.addDescription("Unit test for Bugzilla 13499");
         WebTest webTest = new WebTest(args);
-        webTest.doTest1();
-        webTest.doTest2();
+        try {
+            webTest.doTest1();
+            webTest.doTest2();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception ex) {
+            stat.addStatus(TEST_NAME, stat.FAIL);
+            ex.printStackTrace();
+        }
 	stat.printSummary();
     }
 
-    public void doTest1() {
-     
-        String testName = "jsp-forward-unbuffered";
+    public void doTest1() throws Exception {
 
-        try { 
-            URL url = new URL("http://" + host  + ":" + port + contextRoot
-                              + "/from1.jsp");
-            System.out.println("Connecting to: " + url.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 200) { 
-                stat.addStatus("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode, stat.FAIL);
-            } else {
-                stat.addStatus(testName, stat.PASS);
-            }
-
-        } catch (Exception ex) {
-            System.out.println(testName + " test failed.");
-            stat.addStatus(testName, stat.FAIL);
-            ex.printStackTrace();
-        }
+        URL url = new URL("http://" + host  + ":" + port + contextRoot +
+                          "/from1.jsp");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) { 
+            throw new Exception("Wrong response code. Expected: 200" +
+                                ", received: " + responseCode);
+	}
     }
 
     /*
      * This test expects from2.jsp to throw an IllegalStateException due to
      * the newline output as a result of its first line.
      */
-    public void doTest2() {
+    public void doTest2() throws Exception {
 
-        String testName = "jsp-forward-unbuffered-illegalstateexception";
-     
-        try { 
-            URL url = new URL("http://" + host  + ":" + port + contextRoot
-                              + "/from2.jsp");
-            System.out.println("Connecting to: " + url.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 500) { 
-                stat.addStatus("Wrong response code. Expected: 500"
-                               + ", received: " + responseCode, stat.FAIL);
-            } else {
-                stat.addStatus(testName, stat.PASS);
-            }
-
-        } catch (Exception ex) {
-            System.out.println(testName + " test failed.");
-            stat.addStatus(testName, stat.FAIL);
-            ex.printStackTrace();
+        URL url = new URL("http://" + host  + ":" + port + contextRoot +
+                          "/from2.jsp");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 500) { 
+            throw new Exception("Wrong response code. Expected: 500" +
+                                ", received: " + responseCode);
         }
     }
 
