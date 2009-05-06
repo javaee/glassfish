@@ -147,7 +147,9 @@ public class LazyEnlistableResourceManagerImpl extends ResourceManagerImpl {
     	        //should return the resource to the pool
                     PoolManager mgr = ConnectorRuntime.getRuntime().getPoolManager();
     	            mgr.putbackDirectToPool( h, h.getResourceSpec().getConnectionPoolName());
-    	        _logger.log(Level.WARNING, "poolmgr.err_enlisting_res_in_getconn");
+                    _logger.log(Level.WARNING,
+                                "poolmgr.err_enlisting_res_in_getconn", h
+                                .getResourceSpec().getConnectionPoolName());
     	        if (_logger.isLoggable(Level.FINE) ) {
     	            _logger.fine("rm.enlistResource threw Exception. Returning resource to pool");
     	        }
