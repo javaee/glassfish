@@ -71,7 +71,7 @@
    <target name="run" depends="run.positive"/>
                                                                                 
     <target name="run.positive" depends="setHttpPort">
-        <property name="url" value="http://${http.host}:${depltest.port}/${contextRoot}"/>
+        <property name="url" value="http://${http.host}:${depltest.port}/${contextRoot}/servletonly"/>
         <antcall target="runclient">
             <param name="arg.list" value="${url} true"/>
             <param name="log.id" value="${log.id}"/>

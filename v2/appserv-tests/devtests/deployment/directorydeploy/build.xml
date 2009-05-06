@@ -21,14 +21,12 @@
             <ant dir="ejbwithsuffix" target="private-all">
                 <property name="build" value="${build}/ejbwithsuffix"/>
             </ant>
-<!--
             <ant dir="war" target="private-all">
                 <property name="build" value="${build}/war"/>
             </ant>
             <ant dir="warwithsuffix" target="private-all">
                 <property name="build" value="${build}/warwithsuffix"/>
             </ant>
--->
 	</target>
 
 </project>
