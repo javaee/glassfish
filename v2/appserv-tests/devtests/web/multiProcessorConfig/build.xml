@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-<!ENTITY run SYSTEM "file:./../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
@@ -29,12 +29,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-1.acceptor-threads=2"/>
+                   value="configs.config.server-config.network-config.transports.transport.tcp.acceptor-threads=2"/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.connection-pool.queue-size-in-bytes=0"/>
+                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size-bytes=0"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>
@@ -43,12 +43,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-1.acceptor-threads=1"/>
+                   value="configs.config.server-config.network-config.transports.transport.tcp.acceptor-threads="/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.queue-size-in-bytes=4096"/>
+                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size-bytes=4096"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>

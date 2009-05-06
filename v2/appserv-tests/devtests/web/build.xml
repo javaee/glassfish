@@ -211,9 +211,7 @@
         <ant dir="servletContextGetEmptyContextPath" target="all"/>
         <ant dir="servletEmptyLoadOnStartup" target="all"/>
         <ant dir="sessionExpired" target="all"/>
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="servletSSLRequestAttributes" target="all"/>
--->
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
         <ant dir="servlet-3.0/sessionCookieConfig" target="all"/>
@@ -321,10 +319,8 @@
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
 -->
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
--->
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
         <!-- XXX temporary commented out due to issue 7447
         <ant dir="classloaderMemoryLeak" target="all"/>
@@ -361,15 +357,11 @@
 -->
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="securityConstraintMapping" target="all"/>
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="sslCookie" target="all"/>
--->
         <ant dir="installationPathDisclosure" target="all"/>
         <ant dir="programmaticLogin" target="all"/>
         <ant dir="traceEnabled" target="all"/>
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="sslClientAuthUnprotectedResourceGetClientCert" target="all"/>
--->
         <ant dir="securityConstraintWithoutAnyAuthConstraint" target="all"/>
         <ant dir="proxyKeysize" target="all"/>
         <ant dir="proxyAuthCert" target="all"/>
@@ -384,9 +376,7 @@
         <ant dir="virtualServerAuthRealmProperty" target="all"/>
         <ant dir="formLoginJSecurityCheckDirectAccess" target="all"/>
         <ant dir="formLoginAccessSessionOnResumedRequest" target="all"/>
-        <!-- XXX temporary commented out due to issue 7896
         <ant dir="formLoginTransportGuaranteeConfidential" target="all"/>
-        -->
         <ant dir="jspForwardNormalizePath" target="all"/>
         <ant dir="servlet-3.0/authAnnotations" target="all"/>
         <ant dir="servlet-3.0/transportProtectedAnnotation" target="all"/>
@@ -395,17 +385,13 @@
     </target>
 
     <target name="http-connector">
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="redirectPort" target="all"/>
         <ant dir="redirectPortLoadBalancer" target="all"/>
--->
         <ant dir="readLineIOException" target="all"/>
         <ant dir="keepAlive" target="all"/>
         <ant dir="listenerDisabled" target="all"/>
         <ant dir="chunkingDisabled" target="all"/>
-        <!-- XXX temporary commented out due to issue 7896
         <ant dir="httpConnectorKeepAlive" target="all"/>
-        -->
         <ant dir="doubleContentLength" target="all"/>
         <ant dir="dosBrokenPost" target="all"/>
         <ant dir="defaultKeepAlive" target="all"/>
@@ -416,17 +402,13 @@
         <ant dir="caseSensitiveHostMapping" target="all"/>
         <ant dir="setResponseContentLengthToZeroKeepResponseHeaders" target="all"/>
         <ant dir="getLocalPort" target="all"/>
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="readerThreadsConfig" target="all"/>
         <ant dir="readerSelectorsConfig" target="all"/>
--->
         <ant dir="httpServletDoPost" target="all"/>
 <!-- XXX temporarily commented out due to issue 7420 
         <ant dir="keepAliveTimeoutZero" target="all"/>
 -->
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
--->
         <ant dir="httpResponseServerHeader" target="all"/>
 <!-- XXX temporarily commented out due to issue 7559 
         <ant dir="defaultResponseType" target="all"/>
@@ -434,9 +416,7 @@
 <!-- XXX temporarily commented out due to issue 6991 
         <ant dir="httpListenerAdminReconfig" target="all"/>
 -->
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="headerBufferSize" target="all"/>
--->
 <!-- XXX temporarily commented out due to issue 7559 
         <ant dir="defaultContentType" target="all"/>
 -->
@@ -444,9 +424,7 @@
         <!-- Fail on Hudson, removing it for now
         <ant dir="dosSlowClient" target="all"/>
         -->
-<!-- XXX temporary commented out due to issue 7896
         <ant dir="sslMultiSelector" target="all"/>
--->
         <ant dir="httpRequestIgnoreInvalidAcceptLanguageHeader" target="all"/>
         <ant dir="sslServerName" target="all"/>
         <!-- Exclude for prelude, since port unification not supported

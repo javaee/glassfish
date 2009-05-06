@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-<!ENTITY run SYSTEM "file:./../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
@@ -43,12 +43,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.enabled=true"/>
+                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.ssl.client-auth-enabled=true"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-2.ssl.client-auth-enabled=true"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>
@@ -83,12 +83,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.enabled=false"/>
+                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.ssl.client-auth-enabled=false"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-2.ssl.client-auth-enabled=false"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-<!ENTITY run SYSTEM "file:./../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
@@ -29,7 +29,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-1.property.maxKeepAliveRequests=0"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.max-connections=0"/>
         </antcall>
     </target>
 
@@ -37,7 +37,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-listener.http-listener-1.property.maxKeepAliveRequests=256"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.max-connections=250"/>
         </antcall>
     </target>
 
