@@ -60,13 +60,7 @@ public class WebServicesApplication implements ApplicationContainer {
 
         try {
             Application app = deploymentCtx.getModuleMetaData(Application.class);
-            if ((app.getStandaloneBundleDescriptor() instanceof WebBundleDescriptor)
-                    &&  ((!app.getStandaloneBundleDescriptor().getSpecVersion().equals("2.5")
-                    || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
-                    ) {
-                //JAXWS based apps
-                //do nothing
-            } else {
+           if (!isJAXWSbasedApp(app)) {
                 Iterator<String> iter = contextRoots.iterator();
                 String contextRoot = null;
                 while(iter.hasNext()) {
@@ -86,13 +80,7 @@ public class WebServicesApplication implements ApplicationContainer {
     private Collection<String> getContextRoots() {
         contextRoots = new ArrayList<String>();
         Application app = deploymentCtx.getModuleMetaData(Application.class);
-        if ((app.getStandaloneBundleDescriptor() instanceof WebBundleDescriptor)
-                            &&  ((!app.getStandaloneBundleDescriptor().getSpecVersion().equals("2.5")
-                                  || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
-                            ) {
-            //JAXWS based apps
-            //do nothing
-        } else {
+       if (!isJAXWSbasedApp(app)) {
             Set<BundleDescriptor> bundles = app.getBundleDescriptors();
             for(BundleDescriptor bundle : bundles) {
                 WebServicesDescriptor wsDesc = bundle.getWebServices();
@@ -133,5 +121,17 @@ public class WebServicesApplication implements ApplicationContainer {
 
     public ClassLoader getClassLoader() {
         return null;
+    }
+
+    private boolean isJAXWSbasedApp(Application app){
+        if ((app.getStandaloneBundleDescriptor() instanceof WebBundleDescriptor)
+                            &&  ((!app.getStandaloneBundleDescriptor().getSpecVersion().equals("2.5")
+                                  || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
+                            ) {
+            //JAXWS based apps
+            //do nothing
+            return true;
+        } else
+           return false;
     }
 }

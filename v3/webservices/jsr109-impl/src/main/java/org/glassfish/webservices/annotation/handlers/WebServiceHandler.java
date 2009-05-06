@@ -56,6 +56,7 @@ import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.XModuleType;
@@ -124,7 +125,7 @@ public class WebServiceHandler extends AbstractHandler {
         // let's get the main annotation of interest.
         javax.jws.WebService ann = (javax.jws.WebService) annInfo.getAnnotation();
 
-        BundleDescriptor bundleDesc;
+        BundleDescriptor bundleDesc = null;
 
         // Ensure that an EJB endpoint is packaged in EJBJAR and a servlet endpoint is packaged in a WAR
         try {

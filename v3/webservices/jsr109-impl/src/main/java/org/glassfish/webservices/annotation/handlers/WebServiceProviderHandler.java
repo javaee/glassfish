@@ -59,6 +59,8 @@ import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import org.glassfish.apf.context.AnnotationContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
+import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -127,7 +129,7 @@ public class WebServiceProviderHandler extends AbstractHandler implements Annota
         // let's get the main annotation of interest. 
         javax.xml.ws.WebServiceProvider ann = (javax.xml.ws.WebServiceProvider) annInfo.getAnnotation();        
         
-        BundleDescriptor bundleDesc;
+        BundleDescriptor bundleDesc = null;
         
         // let's see the type of web service we are dealing with...
         if (annElem.getAnnotation(javax.ejb.Stateless.class)!=null) {
@@ -136,10 +138,14 @@ public class WebServiceProviderHandler extends AbstractHandler implements Annota
             bundleDesc = ctx.getDescriptor().getEjbBundleDescriptor();
             bundleDesc.setSpecVersion("3.0");
         } else {
-            // this has to be a servlet since there is no @Servlet annotation yet
-            WebBundleContext ctx = (WebBundleContext)annCtx;
-            bundleDesc = ctx.getDescriptor();
-            bundleDesc.setSpecVersion("2.5");            
+            if(annCtx instanceof WebComponentContext) {
+                bundleDesc = ((WebComponentContext)annCtx).getDescriptor().getWebBundleDescriptor();
+            } else if (annCtx instanceof WebBundleContext) {
+                bundleDesc = ((WebBundleContext)annCtx).getDescriptor();
+            }  else if (annCtx instanceof EjbBundleContext)     {
+                bundleDesc = ((EjbBundleContext)annCtx).getDescriptor();
+            }
+            bundleDesc.setSpecVersion("2.5");
         }        
 
         // For WSProvider, portComponentName is the fully qualified class name
