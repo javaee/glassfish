@@ -37,10 +37,12 @@ package com.sun.enterprise.resource.naming;
 
 import com.sun.enterprise.resource.beans.AdministeredObjectResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 
 import java.util.Hashtable;
 import java.util.logging.Logger;
@@ -107,7 +109,13 @@ public class AdministeredObjectFactory implements ObjectFactory {
 
 	logger.fine("[AdministeredObjectFactory] ==> Got AdministeredObjectResource = " + aor);
 
-	return aor.createAdministeredObject(null);
+
+    //TODO V3 check whether AOR is a ResourceAdapterAssociation, bootstrap RAR and associate RA bean 
+    if(ConnectorsUtil.belongsToSystemRA(moduleName)){
+        loader = ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName).getClassLoader();
+    }
+
+	return aor.createAdministeredObject(loader);
     }
 
 }
