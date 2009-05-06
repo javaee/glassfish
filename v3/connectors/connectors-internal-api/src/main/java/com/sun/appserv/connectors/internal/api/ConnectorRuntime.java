@@ -80,6 +80,16 @@ public interface ConnectorRuntime extends ConnectorConstants{
             throws ConnectorRuntimeException;
 
     /**
+     * Creates Active resource Adapter which abstracts the rar module.
+     * During the creation of ActiveResourceAdapter, default pools and
+     * resources also are created.
+     *
+     * @param moduleName Name of the module
+     * @throws ConnectorRuntimeException if creation fails.
+     */
+    public void createActiveResourceAdapterForEmbeddedRar(String moduleName) throws ConnectorRuntimeException;
+
+    /**
      * Destroys/deletes the Active resource adapter object from the
      * connector container. Active resource adapter abstracts the rar
      * deployed. It checks whether any resources (pools and connector
@@ -123,6 +133,16 @@ public interface ConnectorRuntime extends ConnectorConstants{
     //TODO V3 no need to pass resources as it is taken care by ResourceManager ?
     public void shutdownAllActiveResourceAdapters(Collection<String> resources);
 
+    /**
+     * Given the module directory, creates a connector-class-finder (class-loader) for the module
+     * @param moduleDirectory rar module directory for which classloader is needed
+     * @param parent parent classloader<br>
+     * For standalone rars, pass null, as the parent should be common-class-loader
+     * that will be automatically taken care by ConnectorClassLoaderService.<br>
+     * For embedded rars, parent is necessary<br>
+     * @return classloader created for the module
+     */
+    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent);
 
     /**
      * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>

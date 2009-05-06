@@ -76,7 +76,6 @@ import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.ConnectorArchivist;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.util.XModuleType;
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
 import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
@@ -109,14 +108,11 @@ import org.jvnet.hk2.component.Singleton;
  *
  * @author Binod P.G, Srikanth P, Aditya Gore, Jagadish Ramu
  */
-
 @Service
 @Scoped(Singleton.class)
 public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api.ConnectorRuntime,
         PostConstruct, PreDestroy {
 
-    /* TODO V3 environment set to server as of now
-    private volatile int environment = CLIENT;*/
     private volatile int environment = SERVER;
     private static ConnectorRuntime _runtime;
     private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
@@ -143,16 +139,13 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ComponentEnvManager componentEnvManager;
 
     @Inject
-    private JavaEETransactionManager transactionManager;
-
-    @Inject
-    private ModulesRegistry registry;
+    private Habitat transactionManager;
 
     @Inject
     private WorkManagerFactory wmf;
 
     @Inject
-    private Resources allResources;
+    private Habitat allResources;
 
     @Inject
     private Habitat deployerHabitat;
@@ -167,16 +160,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ActiveRAFactory activeRAFactory;
 
     @Inject
-    private Applications applications;
-
-    @Inject
-    private ApplicationRegistry appRegistry;
+    private Habitat applications;
 
     @Inject
     private Habitat habitat;
-
-    @Inject
-    private ConnectionPoolProbeProviderUtil providerUtil;
 
     @Inject
     private ProcessEnvironment processEnvironment;
@@ -202,30 +189,20 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * Private constructor. It is private as it follows singleton pattern.
      */
-    //TODO V3 made public constructor as of now.
     public ConnectorRuntime() {
         _runtime = this;
     }
-    
+
+    public ConnectionPoolProbeProviderUtil getProbeProviderUtil(){
+        return habitat.getComponent(ConnectionPoolProbeProviderUtil.class);
+    }
     /**
      * Get probe provider for jdbc connection pool related events
      * @return JdbcConnPoolProbeProvider
      */
     public JdbcConnPoolProbeProvider getJdbcConnPoolProvider() {
-        return providerUtil.getJdbcConnPoolProvider();
+        return habitat.getComponent(ConnectionPoolProbeProviderUtil.class).getJdbcConnPoolProvider();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-/*
-    public void initialize(int environment) {
-        this.environment = environment;
-        //TODO V3
-        connectorService.initialize(getEnvironment());
-
-    }
-*/
 
     /**
      * Returns the execution environment.
@@ -371,16 +348,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
             String moduleDir) throws ConnectorRuntimeException {
         resourceAdapterAdmService.createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir, null);
     }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    /*public void createActiveResourceAdapter(String moduleDir,
-                                            String moduleName
-    ) throws ConnectorRuntimeException {
-        resourceAdapterAdmService.createActiveResourceAdapter(moduleDir, moduleName, null);
-    }*/
 
     /**
      * {@inheritDoc}
@@ -663,7 +630,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         adminObjectAdminService = (ConnectorAdminObjectAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.AOR);
         configParserAdmService = new ConnectorConfigurationParserServiceImpl();
-        providerUtil.createProbeProviders();
+        getProbeProviderUtil().createProbeProviders();
         initializeEnvironment(processEnvironment);
     }
 
@@ -851,7 +818,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws SystemException when unable to get the transaction
      */
     public Transaction getTransaction() throws SystemException {
-        return transactionManager.getTransaction();
+        return habitat.getComponent(JavaEETransactionManager.class).getTransaction();
     }
 
     /**
@@ -859,7 +826,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return TransactionManager
      */
     public JavaEETransactionManager getTransactionManager() {
-        return transactionManager;
+        return habitat.getComponent(JavaEETransactionManager.class);
     }
 
     /**
@@ -871,14 +838,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return connectorResourceAdmService.getResourceRebindEventNotifier();
     }
 
-/*
-    public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName){
-        return ConnectorsUtil.getJdbcConnectionPoolConfig(poolName, allResources);
-    }
-*/
-
     public ResourcePool getConnectionPoolConfig(String poolName) {
-        return ConnectorsUtil.getConnectionPoolConfig(poolName, allResources);
+        return ConnectorsUtil.getConnectionPoolConfig(poolName, allResources.getComponent(Resources.class));
     }
 
 
@@ -1012,11 +973,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     public Applications getApplications() {
-        return applications;
+        return applications.getComponent(Applications.class);
     }
 
     public ApplicationRegistry getAppRegistry() {
-        return appRegistry;
+        return habitat.getComponent(ApplicationRegistry.class);
     }
 
     public ApplicationArchivist getApplicationArchivist(){
@@ -1030,12 +991,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public void createActiveResourceAdapterForEmbeddedRar(String rarModuleName) throws ConnectorRuntimeException {
         connectorService.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
     }
-
-/*
-    public int getEnvironment(){
-        return environment;
-    }
-*/
 
     /**
      * Check whether ClassLoader is permitted to access this resource adapter.
@@ -1101,6 +1056,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public List<WorkSecurityMap> getWorkSecurityMap(String raName){
-        return ConnectorsUtil.getWorkSecurityMaps(raName, allResources);
+        return ConnectorsUtil.getWorkSecurityMaps(raName, allResources.getComponent(Resources.class));
     }
 }
