@@ -149,8 +149,9 @@ public class JDBCResourceManager implements ResourceManager {
             }
 
         } catch(TransactionFailure tfe) {
-            String msg = localStrings.getLocalString("create.jdbc.resource.fail", 
-                            "JDBC resource {0} create failed ", jndiName);
+            String msg = localStrings.getLocalString("create.jdbc.resource.fail",
+                            "JDBC resource {0} create failed ", jndiName) +
+                            " " + tfe.getLocalizedMessage();
             ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
             status.setException(tfe);
             return status;
