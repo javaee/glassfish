@@ -36,12 +36,11 @@
 
 package com.sun.enterprise.connectors.inbound;
 
-import com.sun.enterprise.connectors.ActiveOutboundResourceAdapter;
+import com.sun.enterprise.connectors.*;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 
 import javax.resource.spi.ResourceAdapter;

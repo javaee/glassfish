@@ -38,9 +38,9 @@ package com.sun.enterprise.connectors.util;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.connectors.*;
-import com.sun.enterprise.connectors.service.ConnectorService;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.*;
 
 import java.util.logging.*;
 import java.util.*;

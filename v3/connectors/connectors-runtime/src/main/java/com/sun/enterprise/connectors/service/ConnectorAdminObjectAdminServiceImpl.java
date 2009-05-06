@@ -36,9 +36,8 @@
 
 package com.sun.enterprise.connectors.service;
 
-import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ActiveOutboundResourceAdapter;
-import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.ActiveResourceAdapter;
 
 import java.util.*;
 import java.util.logging.*;

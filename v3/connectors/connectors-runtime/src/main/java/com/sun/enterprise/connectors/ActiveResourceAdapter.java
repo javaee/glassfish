@@ -90,6 +90,7 @@ public interface ActiveResourceAdapter {
     /**
      * Indicates whether a particular implementation of ActiveRA can handle the RAR in question.
      * @param desc ConnectorDescriptor
+     * @param moduleName resource adapter name
      * @return boolean indiating whether a ActiveRA can handle the RAR
      */
     public boolean handles(ConnectorDescriptor desc, String moduleName);

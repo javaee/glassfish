@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.*;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.logging.LogDomains;
 
@@ -93,6 +93,7 @@ public class ActiveRAFactory {
                             loader.loadClass(raClass).newInstance();
                 } else {
                     ra = (ResourceAdapter) Class.forName(raClass).newInstance();
+                    //ra = (ResourceAdapter) Thread.currentThread().getContextClassLoader().loadClass(raClass).newInstance();
                 }
             }
 

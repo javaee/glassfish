@@ -42,10 +42,9 @@ import com.sun.enterprise.deployment.MessageListener;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.connectors.util.*;
 import com.sun.enterprise.connectors.*;
-import com.sun.enterprise.connectors.inbound.ActiveInboundResourceAdapter;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.*;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
