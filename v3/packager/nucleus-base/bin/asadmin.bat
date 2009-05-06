@@ -13,4 +13,3 @@ set JAVA=java
 :run
 echo "java is %JAVA%"
 %JAVA% -jar "%~dp0..\modules\admin-cli.jar" %*
-endlocal
