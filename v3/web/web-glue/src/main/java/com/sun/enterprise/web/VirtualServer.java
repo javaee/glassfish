@@ -1746,12 +1746,18 @@ public class VirtualServer extends StandardHost {
             return false;
         }
 
-        String ssoProperty = vsBean.getSsoEnabled();
+        String ssoEnabled = null;
+        Property ssoProperty = vsBean.getProperty(Constants.SSO_ENABLED);
+        if (ssoProperty == null || ssoProperty.getValue() == null) {
+            ssoEnabled = vsBean.getSsoEnabled();
+        } else {
+            ssoEnabled = ssoProperty.getValue();
+        }
 
-        if (ssoProperty == null) {
+        if (ssoEnabled == null) {
             return globalSSOEnabled;
         } else {
-            return ConfigBeansUtilities.toBoolean(ssoProperty);
+            return ConfigBeansUtilities.toBoolean(ssoEnabled);
         }
     }
 
