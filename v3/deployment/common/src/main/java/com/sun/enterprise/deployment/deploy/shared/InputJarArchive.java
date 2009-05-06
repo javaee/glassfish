@@ -286,15 +286,15 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
                 jarFile = new JarFile(file);
             }
         } catch(IOException e) {
-            logger.log(Level.SEVERE, "enterprise.deployment.backend.fileOpenFailure", 
-                    new Object[]{uri});
+            logger.log(Level.WARNING,
+                "enterprise.deployment.backend.fileOpenFailure", 
+                new Object[]{uri});
             // add the additional information about the path
             // since the IOException from jdk doesn't include that info
             String additionalInfo = localStrings.getString(
                 "enterprise.deployment.invalid_zip_file", uri);
-            IOException ioe = new IOException(e.getLocalizedMessage() + " --  " + additionalInfo);
-            ioe.initCause(e);
-            throw ioe;
+            logger.log(Level.WARNING,
+                e.getLocalizedMessage() + " --  " + additionalInfo);
         }
         return jarFile;
     }       
