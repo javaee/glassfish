@@ -114,6 +114,9 @@ public class ContainerMapper extends StaticResourcesAdapter {
      */
     protected synchronized void configureMapper() {
         mapper.setDefaultHostName(defaultHostName);
+        mapper.addHost(defaultHostName,new String[]{},null);
+        mapper.addContext(defaultHostName,ROOT,
+                new ContextRootInfo(this,null, null),new String[]{"index.html","index.htm}"},null);
         // Container deployed have the right to override the default setting.
         Mapper.setAllowReplacement(true);
     }
@@ -129,14 +132,18 @@ public class ContainerMapper extends StaticResourcesAdapter {
     @Override
     public void service(Request req, Response res) throws Exception{
         try{
+             
             // If we have only one Adapter deployed, invoke that Adapter
             // directly.
             // TODO: Not sure that will works with JRuby.
             if (!mapMultipleAdapter && mapper instanceof V3Mapper){
+                // Remove the MappingData as we might delegate the request 
+                // to be serviced directly by the WebContainer
+                req.setNote(MAPPING_DATA, null);
                 Adapter a = ((V3Mapper)mapper).getAdapter();
                 if (a != null){
-                    a.service(req, res);
                     req.setNote(MAPPED_ADAPTER, a);
+                    a.service(req, res);
                     return;
                 }
             }
@@ -175,6 +182,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
                 logger.fine("Request: " + decodedURI.toString()
                     + " was mapped to Adapter: " + adapter);
             }
+
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
             if (adapter == null || adapter instanceof ContainerMapper) {
@@ -203,8 +211,8 @@ public class ContainerMapper extends StaticResourcesAdapter {
         } catch (Exception ex) {
             try {
                 res.setStatus(404);
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "Invalid URL: " + req.decodedURI(), ex);
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, "Invalid URL: " + req.decodedURI(), ex);
                 }
                 customizedErrorPage(req, res);
             } catch (Exception ex2) {
@@ -226,21 +234,20 @@ public class ContainerMapper extends StaticResourcesAdapter {
                         break;
                     }
                 }
+                
                 Adapter adapter = this;
                 if (match) {
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
                     ((SnifferAdapter)adapter).initialize(sniffer, this);
-                    unregister(ROOT);
-
                     ContextRootInfo c= new ContextRootInfo(adapter, null, null);
-                    register(ROOT,grizzlyService.hosts,adapter,null,null);
-
+   
                     for (String pattern : sniffer.getURLPatterns()) {
                         for (String host: grizzlyService.hosts ){
                             mapper.addWrapper(host,ROOT, pattern,c,
                                     ("*.jsp".equals(pattern) || "*.jspx".equals(pattern)) ? true:false);
                         }
                     }
+                    return;
                 }
             }
         }
@@ -254,8 +261,13 @@ public class ContainerMapper extends StaticResourcesAdapter {
         // the request is targetted to the CoyoteAdapter.
         mapper.map(req.serverName(), decodedURI, mappingData);
         ContextRootInfo contextRootInfo = null;
-        if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
-            contextRootInfo = (ContextRootInfo) mappingData.context;
+        if (mappingData.context != null && (mappingData.context instanceof ContextRootInfo 
+                || mappingData.wrapper instanceof ContextRootInfo )) {
+            if (mappingData.wrapper != null) {
+                contextRootInfo = (ContextRootInfo) mappingData.wrapper;
+            } else {
+                contextRootInfo = (ContextRootInfo) mappingData.context;
+            }
             return contextRootInfo.getAdapter();
         } else if (mappingData.context != null && mappingData.context.getClass()
             .getName().equals("com.sun.enterprise.web.WebModule")) {

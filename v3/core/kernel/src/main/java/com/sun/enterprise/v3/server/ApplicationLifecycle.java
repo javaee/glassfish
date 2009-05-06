@@ -413,14 +413,20 @@ public class ApplicationLifecycle implements Deployment {
                 report.failure(logger, msg, null);
                 throw new Exception(msg);
             }
-            Deployer deployer = getDeployer(engineInfo);
-            if (deployer==null) {
-                report.failure(logger, "Got a null deployer out of the " + engineInfo.getContainer().getClass() + " container, is it annotated with @Service ?");
-                return null;
-            }
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding deployer to the map " + deployer.getClass());
-            }
+             Deployer deployer = getDeployer(engineInfo);
+             if (deployer==null) {
+                if (!startContainers(Collections.singleton(engineInfo), logger, context)) {
+                    final String msg = "Aborting, Failed to start container " + containerName;
+                    report.failure(logger, msg, null);
+                    throw new Exception(msg);
+                }
+                deployer = getDeployer(engineInfo);
+
+                if (deployer == null) {
+                     report.failure(logger, "Got a null deployer out of the " + engineInfo.getContainer().getClass() + " container, is it annotated with @Service ?");
+                     return null;
+                } 
+             } 
             containerInfosByDeployers.put(deployer, engineInfo);
         }
 
