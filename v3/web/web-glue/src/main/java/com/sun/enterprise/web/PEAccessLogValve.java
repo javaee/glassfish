@@ -725,7 +725,7 @@ public final class PEAccessLogValve
          *
          * If both have been specified, the latter takes precedence.
          */
-        String accessLog = vsBean.getPropertyValue(Constants.ACCESS_LOG_PROPERTY);
+        String accessLog = vsBean.getAccessLog();
         if (accessLog==null && vsBean.getHttpAccessLog() != null) {
             accessLog = vsBean.getHttpAccessLog().getLogDirectory();
         }

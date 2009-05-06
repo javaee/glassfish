@@ -2775,6 +2775,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                 prop.getName())) {
                     accessLogBufferSize = prop;
                     globalAccessLogBufferSize = prop.getValue();
+                } else if (Constants.ACCESS_LOGGING_ENABLED.equals(
+                                prop.getName())) {
+                    accessLoggingEnabled = prop;
+                    globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(
+                            prop.getValue());
                 }
             }
         }
