@@ -69,7 +69,7 @@ public class Commands {
         ArrayList<String> tmpC = new ArrayList<String>();
         tmpC.add("start-domain");
         tmpC.add("--domaindir");
-        tmpC.add("\"" + commonInfo.getTarget().getInstallDir() + "\"");
+        tmpC.add(commonInfo.getTarget().getInstallDir());
 
         //- V3 allows for anonymous user credentials. skip passing credentials
         if (adminUser != null && adminUser.length() > 0){
@@ -78,61 +78,26 @@ public class Commands {
             String adminPassword = c.getAdminPassword();
             if(adminPassword != null && adminPassword.length() > 0){
                 tmpC.add("--passwordfile ");
-                tmpC.add("\"" + c.getPasswordFile() +"\"");
+                tmpC.add(c.getPasswordFile());
             }
         }
         tmpC.add(domainName);
 
         String command[] = new String[tmpC.size()];
         command = tmpC.toArray(command);
-
-        try {
-            boolean b = executeCommand(command);
-            return b;
-        } catch (CommandException ce) {
-            Throwable t = ce.getCause();
-            CommonInfoModel.getDefaultLogger().severe(stringManager.
-                    getString("upgrade.common.general_exception") + ce.getMessage());
-            if (t != null) {
-                String message = t.getMessage();
-                if(message != null){
-                    CommonInfoModel.getDefaultLogger().severe(stringManager.
-                            getString("upgrade.common.general_exception") + message);
-                    if ( message.indexOf(stringManager.
-                            getString("commands.DomainRunningFragment")) != -1 || 
-                        (stringManager.getString("commands.DomainRunningFragment").
-                            equalsIgnoreCase("No local string defined") && 
-                        message.indexOf("running") != -1 )) {
-                        CommonInfoModel.getDefaultLogger().severe(stringManager.
-                                getString("commands.DomainRunningMsg", domainName));   
-                    }
-                }
-            }
-        }
-        return false;
+        return executeCommand(command);
+        
     }
     
     public static boolean stopDomain(String domainName, CommonInfoModel commonInfo) {
-		String command[] = {"stop-domain", "--domaindir", "\"" + 
-				commonInfo.getTarget().getInstallDir() +"\"", domainName
+		String command[] = {"stop-domain", "--domaindir",  
+				commonInfo.getTarget().getInstallDir(),  domainName
         };	
 		
-        try {
-            boolean b = executeCommand(command);
-            return b;
-        } catch (CommandException ce) {
-            Throwable t = ce.getCause();
-            if (t != null && t.getMessage().indexOf("is not running") != -1) {
-                return true;
-            }
-            CommonInfoModel.getDefaultLogger().warning(stringManager.getString(
-				"upgrade.common.general_exception") + ce.getMessage());
-        }
-        return false;
+        return executeCommand(command);
     }
     
-    public static boolean executeCommand(String commandStrings[]) 
-            throws CommandException {
+    public static boolean executeCommand(String commandStrings[]){
         try {
             StringBuffer commandOneString = new StringBuffer();
             for(int i = 0; i < commandStrings.length; i++) {
@@ -146,14 +111,10 @@ public class Commands {
             ((Thread)cor).start();
             CommonInfoModel.getDefaultLogger().info(stringManager.
                     getString("commands.executingCommandMsg") + commandOneString);
-//            CLIMain.invokeCLI(commandOneString.toString(), io);
-            AsadminMain.main(commandStrings);
+            com.sun.enterprise.admin.cli.AsadminMain.main(commandStrings);
             pos.flush();
             return true;
         }
-//        catch(CommandException ce) {
-//            throw ce;
-//        }
         catch(Exception e) {
             Throwable t = e.getCause();
             CommonInfoModel.getDefaultLogger().warning(stringManager.getString(
