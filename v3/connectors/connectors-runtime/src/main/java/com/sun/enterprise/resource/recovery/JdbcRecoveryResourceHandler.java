@@ -265,8 +265,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                 ManagedConnection con = (ManagedConnection)obj;
                 con.destroy();
             } catch (Exception ex) {
-                //TODO V3 logstrings
-                _logger.log(Level.WARNING, "JDBC Resource could not be closed", ex);
+                _logger.log(Level.WARNING, "recovery.jdbc-resource.destroy-error", ex);
             }
         }
     }
