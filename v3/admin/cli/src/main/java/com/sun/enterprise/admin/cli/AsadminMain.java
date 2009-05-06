@@ -117,33 +117,6 @@ public class AsadminMain {
         }
         System.exit(exitCode);
     }
-
-    /*pkg-priv*/ static String[] getArgs() {
-        return copyOfArgs;
-    }
-    /*pkg-priv*/ static String getClassPath() {
-        return classPath;
-    }
-    /*pkg-priv*/ static String getClassName() {
-        return className;
-    }
-
-    private Map<String, String> getRemoteCommands() {
-        try {
-            ListCommandsCommand lcc = new ListCommandsCommand();
-            String[] remoteCommands = lcc.getRemoteCommands();
-            Map<String, String> remoteCommandsMap = new Hashtable<String, String>();
-            for (String rc : remoteCommands) {
-                remoteCommandsMap.put(rc, "remote command");
-            }
-            return remoteCommandsMap;
-        }
-        catch (CommandException ce) {
-            return null;
-        }
-    }
-    
-
     public int local(String[] args) throws InvalidCommandException{
         try {
             CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
@@ -190,6 +163,33 @@ public class AsadminMain {
             return ERROR;
         }
     }
+
+    /*pkg-priv*/ static String[] getArgs() {
+        return copyOfArgs;
+    }
+    /*pkg-priv*/ static String getClassPath() {
+        return classPath;
+    }
+    /*pkg-priv*/ static String getClassName() {
+        return className;
+    }
+
+    private Map<String, String> getRemoteCommands() {
+        try {
+            ListCommandsCommand lcc = new ListCommandsCommand();
+            String[] remoteCommands = lcc.getRemoteCommands();
+            Map<String, String> remoteCommandsMap = new Hashtable<String, String>();
+            for (String rc : remoteCommands) {
+                remoteCommandsMap.put(rc, "remote command");
+            }
+            return remoteCommandsMap;
+        }
+        catch (CommandException ce) {
+            return null;
+        }
+    }
+    
+
     private final static int ERROR = 1;
     private final static int CONNECTION_ERROR = 2;
     private final static int INVALID_COMMAND_ERROR = 3;
