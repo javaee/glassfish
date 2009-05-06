@@ -31,7 +31,10 @@ public class WebTest {
 
     public void doTest() {
         try { 
-            invoke();
+            invoke("http://" + host + ":" + port + contextRoot + "/mytest",
+                    TEST_NAME + "_urlPatternfromWeb");
+            invoke("http://" + host + ":" + port + contextRoot + "/wftest",
+                    TEST_NAME + "_urlPatternfomWebFragment");
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -39,17 +42,15 @@ public class WebTest {
         }
     }
 
-    private void invoke() throws Exception {
+    private void invoke(String url, String testName) throws Exception {
         
-        String url = "http://" + host + ":" + port + contextRoot
-                     + "/mytest";
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
 
         int code = conn.getResponseCode();
         if (code != 200) {
             System.out.println("Unexpected return code: " + code);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            stat.addStatus(testName, stat.FAIL);
         } else {
             InputStream is = null;
             BufferedReader input = null;
@@ -75,11 +76,11 @@ public class WebTest {
                 }
             }
             if (EXPECTED_RESPONSE.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
+                stat.addStatus(testName, stat.PASS);
             } else {
                 System.out.println("Wrong response. Expected: " + 
                         EXPECTED_RESPONSE + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
+                stat.addStatus(testName, stat.FAIL);
             }
         }    
     }
