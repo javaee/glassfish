@@ -287,8 +287,10 @@
         <ant dir="sessionJvmRoute" target="all"/>
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
+<!-- XXX temporarily commented out due to IT 8207
         <ant dir="singleSignOnCookieSecure" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
+-->
         <ant dir="webappDeployDashDashLibraries" target="all"/>
         <ant dir="webappLoaderIgnoreHiddenJarFiles" target="all"/>
         <ant dir="webappLoaderConsiderHiddenJarFiles" target="all"/>
@@ -373,8 +375,10 @@
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectFromJspWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectHostRequestHeaderWithoutPort" target="all"/>
+<!-- XXX temporarily commented out due to IT 8207
         <ant dir="sessionDestroyedDuringUndeploy" target="all"/>
         <ant dir="virtualServerAuthRealmProperty" target="all"/>
+-->
         <ant dir="formLoginJSecurityCheckDirectAccess" target="all"/>
         <ant dir="formLoginAccessSessionOnResumedRequest" target="all"/>
         <ant dir="formLoginTransportGuaranteeConfidential" target="all"/>
