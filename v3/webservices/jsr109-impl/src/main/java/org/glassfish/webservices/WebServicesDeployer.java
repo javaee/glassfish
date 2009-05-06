@@ -138,6 +138,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
                 //This is either a webapp with version 2.5 or EJB with webservices
                 //Proceed with JSR 109
                 generateArtifacts(dc);
+                doWebServicesDeployment(app,dc);
             }
             return new Boolean(true);
         } catch (Exception ex) {
@@ -319,27 +320,10 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
      * @parameters type type of metadata that this deployer has declared providing.
      */
     public Object loadMetaData(Class type, DeploymentContext dc) {
-        try {
-            Application app = dc.getModuleMetaData(Application.class);
-            if (app==null) {
-                // hopefully the DOL gave a good message of the failure...
-                logger.severe(format(rb.getString("failed.loading.dd")));
-                return false;
-            }
-            if (!isJAXWSbasedApp(app)) {
-                //This is either a webapp with version 2.5 or EJB with webservices
-                //Proceed with JSR 109
-                doWebServicesDeployment(app,dc) ;
-
-            }
-            return new Boolean(true);
-        } catch (Exception ex) {
-            // re-throw all the exceptions as runtime exceptions
-            RuntimeException re = new RuntimeException(ex.getMessage());
-            re.initCause(ex);
-            throw re;
-        }
-
+         //Moved the doWebServicesDeployment back to prepare after discussing with
+         //Jerome
+         //see this bug  https://glassfish.dev.java.net/issues/show_bug.cgi?id=8080
+         return true;
     }
 
     /**
