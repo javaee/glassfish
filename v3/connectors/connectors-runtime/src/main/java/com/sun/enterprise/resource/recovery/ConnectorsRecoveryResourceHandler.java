@@ -425,8 +425,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
             return;
 
         if (ConnectorAdminServiceUtils.isEmbeddedConnectorModule(rarModuleName)) {
-            // TODO V3 handle embedded rar later
-            // cr.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
+             cr.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
         } else {
             String moduleDir = ConfigBeansUtilities.getLocation(rarModuleName);
             ClassLoader loader = cr.createConnectorClassLoader(moduleDir, null);
