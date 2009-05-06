@@ -41,6 +41,7 @@ import javax.naming.*;
 
 
 import org.omg.CORBA.ORB;
+import org.glassfish.api.naming.NamingObjectProxy;
 
 import java.util.logging.*;
 import java.util.Hashtable;
@@ -108,7 +109,11 @@ public class RemoteSerialContextProviderImpl
                             (obj, new CompositeName(name), null, env);
                 }
 
-		    }
+		    } else if (obj instanceof NamingObjectProxy) {
+                //this call will make sure that the actual object is initialized
+                ((NamingObjectProxy) obj).create(new InitialContext());
+                return super.lookup(name);
+            }
 	    } catch(Exception e) {
 	        RemoteException re = new RemoteException("", e);
             throw re;

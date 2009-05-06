@@ -55,15 +55,8 @@ public class SerialContextProviderImpl implements SerialContextProvider {
         try {
             _logger.fine(" SerialContextProviderImpl :: lookup " + name);
 
-            Object obj = rootContext.lookup(name);
-            return obj;
+            return rootContext.lookup(name);
         } catch (NamingException ne) {
-            boolean isLoaded = checkAndLoadResource(name);
-            _logger.fine("CheckAndLoad Resource of " + name + " was " + isLoaded);
-            if (isLoaded) {
-                Object i = rootContext.lookup(name);
-                return i;
-            }
             throw ne;
         } catch (Exception e) {
             _logger.severe("Exception occurred : " + e.getMessage());
@@ -72,18 +65,6 @@ public class SerialContextProviderImpl implements SerialContextProvider {
 
         }
     }
-
-    private boolean checkAndLoadResource(String name) {
-        boolean res = false;
-        /*
-        ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
-        if(connectorRuntime.isServer()) {
-            res = connectorRuntime.checkAndLoadResource(name);
-        }
-        */
-        return res;
-    }
-
 
     /**
      * Bind the object to the specified name.
