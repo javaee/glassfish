@@ -63,7 +63,7 @@
         <war destfile="${web.war}" webxml="descriptor/web.xml">
             <classes dir="${build}">
                 <exclude name="**/Client.class"/>
-                <exclude name="**/*EJB.class"/>
+                <exclude name="**/*EJB.class, **.jar"/>
             </classes>
         </war>
 
