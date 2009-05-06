@@ -99,11 +99,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-cli</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
             <artifactId>server-mgmt</artifactId>
             <version>${project.version}</version>
         </dependency>
