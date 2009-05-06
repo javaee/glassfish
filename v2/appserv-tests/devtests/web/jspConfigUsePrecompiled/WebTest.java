@@ -45,6 +45,7 @@ public class WebTest {
     public void doTest() {     
         try { 
             run();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -59,15 +60,8 @@ public class WebTest {
         // Access JSP
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!EXPECTED.equals(bodyLine)) {
-            stat.addStatus("Wrong line: Expected: " + EXPECTED
-                           //XXX Do not print out message body as Grizzly error page contains mismatched BODY tag
-                           //+ ", received: " + bodyLine,
-                           + ", received: ",
-                           stat.FAIL);
-            return;
+            throw new Exception("Wrong line: Expected: " + EXPECTED);
         }
-
-        stat.addStatus(TEST_NAME, stat.PASS);
     }
 
     private String getBodyLine(String resource) throws Exception {
