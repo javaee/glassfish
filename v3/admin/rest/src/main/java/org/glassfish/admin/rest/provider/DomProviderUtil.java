@@ -69,6 +69,10 @@ public class DomProviderUtil {
      * returns just the name of the given fully qualified name.
      */
     protected String getName(String typeName, char delimiter) {
+        //elimiate last char from typeName if its a delimiter
+        if (typeName.length() - 1 == typeName.lastIndexOf(delimiter))
+            typeName = typeName.substring(0, typeName.length()-1);
+
         if ((typeName != null) && (typeName.length() > 0)) {
             int index = typeName.lastIndexOf(delimiter);
             if (index != -1) {
@@ -199,6 +203,25 @@ public class DomProviderUtil {
         String link = uriInfo.getAbsolutePath().toString();
         return link.endsWith("/")?
             (link + elementName):(link + "/" + elementName);
+    }
+
+
+    static protected String getStartXmlElement(String name) {
+        assert((name != null) && name.length() > 0);
+        String result ="<";
+        result = result + name;
+        result = result + ">";
+        return result;
+    }
+
+
+    static protected String getEndXmlElement(String name) {
+        assert((name != null) && name.length() > 0);
+        String result ="<";
+        result = result + "/";
+        result = result + name;
+        result = result + ">";
+        return result;
     }
 
 }

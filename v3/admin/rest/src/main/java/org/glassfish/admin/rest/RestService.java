@@ -66,6 +66,11 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
     public static com.sun.enterprise.config.serverbeans.Domain theDomain;
+
+    @Inject
+    org.glassfish.flashlight.MonitoringRuntimeDataRegistry monitoringRegistry;
+    public static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
+
     public static ConfigSupport configSupport;
     private final static String BASE_URI = "http://localhost:9998/";
 
@@ -123,6 +128,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
 //        System.out.println("************** rc:" + rc);
         System.out.println("************** domain:" + domain);
         theDomain = domain;
+        theMonitoringRegistry = monitoringRegistry;
         ConfigSupport cs = RestService.habitat.getComponent(ConfigSupport.class);
         configSupport = cs;
         System.out.println("************** configSupport:" + configSupport);
@@ -149,6 +155,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
    //uncomment if you need to run the generator:
         //r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
+        r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
 
 
         System.out.println("************** resources: " + r);

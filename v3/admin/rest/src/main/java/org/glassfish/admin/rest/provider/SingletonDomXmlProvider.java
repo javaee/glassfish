@@ -155,24 +155,5 @@ public class SingletonDomXmlProvider extends DomProviderUtil implements MessageB
     }
 
 
-    private String getStartXmlElement(String name) {
-        assert((name != null) && name.length() > 0);
-        String result ="<";
-        result = result + name;
-        result = result + ">";
-        return result; 
-    }
-
-
-    private String getEndXmlElement(String name) {
-        assert((name != null) && name.length() > 0);
-        String result ="<";
-        result = result + "/";
-        result = result + name;
-        result = result + ">";
-        return result; 
-    }
-
-
     private static String indent = "    ";
 }

@@ -96,7 +96,7 @@ public class SingletonDomHtmlProvider extends DomProviderUtil implements Message
 
      private String getHtml(Dom proxy) {
         String result;
-        result = "<html>" + "<body>" + "\n" ;
+        result = "<html>" + "<body>" + "<br>" ;
         result = result + "<h1>" + getTypeKey(proxy) + "</h1>" + "<hr>" + "<br>";
             result = result + getAttributes(proxy) + "<br><br>";
         result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>" + "<br>";

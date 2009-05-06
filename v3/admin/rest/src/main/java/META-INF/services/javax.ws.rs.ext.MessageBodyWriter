@@ -5,3 +5,6 @@ org.glassfish.admin.rest.provider.FormWriter
 org.glassfish.admin.rest.provider.SingletonDomJsonProvider
 org.glassfish.admin.rest.provider.SingletonDomXmlProvider
 org.glassfish.admin.rest.provider.SingletonDomHtmlProvider
+org.glassfish.admin.rest.provider.TreeNodeJsonProvider
+org.glassfish.admin.rest.provider.TreeNodeXmlProvider
+org.glassfish.admin.rest.provider.TreeNodeHtmlProvider

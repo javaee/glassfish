@@ -133,6 +133,11 @@
            <artifactId>jersey-core</artifactId>
            <version>${jersey.version}</version>
        </dependency>
+	<dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
    </dependencies>
     <build>
         <resources>
