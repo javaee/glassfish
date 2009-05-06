@@ -3,20 +3,22 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * This unit test tests consistency of URL encoding and decoding between
- * sendDirect and jsp:forward.
+ * Unit test for:
+ *
+ * - 4670099 ("Empty jar files causes server to abort loading the
+ *   other jar files in the dir") and
+ * - 4649821 ("JSP:<jsp:useBean> failed to read jar file from lib
+ *   directory")
  */
 public class WebTest {
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "web-getRequestURI";
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
+    private static final String TEST_NAME = "webapploader-empty-jar";
 
     private String host;
     private String port;
     private String contextRoot;
-    private boolean fail;
-    private Socket sock = null;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -40,53 +42,20 @@ public class WebTest {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
-        } finally {
-            try {
-                if (sock != null) {
-                    sock.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
         }
-
-        return;
     }
 
     private void invokeJSP() throws Exception {
-         
-        sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/jsp/stringBean.jsp" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = null;
-        BufferedReader bis = null;
-        String line = null;
-        try {
-            is = sock.getInputStream();
-            bis = new BufferedReader(new InputStreamReader(is));
-            while ((line = bis.readLine()) != null) {
-                System.out.println(line);
-            }
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
-            try {
-                if (bis != null) {
-                    bis.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
-        }
+
+        String url = "http://" + host + ":" + port + "/" + contextRoot +
+            "/jsp/stringBean.jsp";
+        System.out.println("Invoking " + url);
+        HttpURLConnection conn = (HttpURLConnection)
+            (new URL(url)).openConnection();
+        int code = conn.getResponseCode();
+        if (code != 200) {
+            throw new Exception("Unexpected response code: " + code);
+        }         
     }
 
 }
