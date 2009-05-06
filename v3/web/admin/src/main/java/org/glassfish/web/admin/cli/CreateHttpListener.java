@@ -261,7 +261,7 @@ public class CreateHttpListener implements AdminCommand {
             transport = (Transport) ConfigSupport.apply(new SingleConfigCode<Transports>() {
                 public Object run(Transports param) throws TransactionFailure {
                     Transport newTransport = param.createChild(Transport.class);
-                    newTransport.setName(listenerId + "-transport");
+                    newTransport.setName(listenerId);
                     newTransport.setAcceptorThreads(acceptorThreads);
                     param.getTransport().add(newTransport);
                     return newTransport;
@@ -278,7 +278,7 @@ public class CreateHttpListener implements AdminCommand {
             public Object run(Protocols param) throws TransactionFailure {
                 final Protocol protocol = param.createChild(Protocol.class);
                 protocol.setSecurityEnabled(securityEnabled.toString());
-                protocol.setName(listenerId + "-protocol");
+                protocol.setName(listenerId);
                 param.getProtocol().add(protocol);
                 listener.setProtocol(protocol.getName());
                 final Http http = protocol.createChild(Http.class);
