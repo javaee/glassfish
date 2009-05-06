@@ -11,6 +11,5 @@ goto run
 :UsePath
 set JAVA=java
 :run
-echo "java is %JAVA%"
  %JAVA% -jar "%~dp0..\glassfish\modules\admin-cli.jar" %*
 
