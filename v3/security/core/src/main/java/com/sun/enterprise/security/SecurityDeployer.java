@@ -175,11 +175,13 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 //we now register the security deployer for jar's and EAR's as well.
                 return;
             }
-            //TODO V3: shouldn't i iterate over all WBD's ?.
-            wbd =  iter.next();
+
+            while (iter.hasNext()) {
+                wbd =  iter.next();
             
-            // this should create all permissions
-            wsmf.createManager(wbd,false,serverContext);
+                // this should create all permissions
+                wsmf.createManager(wbd,false,serverContext);
+            }
             // for an application the securityRoleMapper should already be
             // created. I am just creating the web permissions and handing
             // it to the security component.
