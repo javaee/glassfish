@@ -45,10 +45,7 @@
       <jvmarg value="-DworkDir=${basedir}"/>
       <classpath>
         <path refid="test.compile.classpath"/>
-        <pathelement location="${inst}/lib/appserv-rt.jar"/>
-        <pathelement location="${inst}/lib/appserv-cmp.jar"/>
-        <pathelement location="${inst}/lib/webservices-rt.jar"/>
-        <pathelement location="${inst}/lib/webservices-tools.jar"/>
+        <path refid="gfv3.classpath"/>
         <pathelement path="${testsRoot}/util/build"/>
         <pathelement path="${build}"/>
       </classpath>
