@@ -199,12 +199,12 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     /**
      * Notify all {@link MapperUpdateListener}s about update happened.
      * 
-     * @param httpService {@link HttpService}
      * @param networkListener {@link NetworkListener}, which {@link Mapper} got changed
      * @param mapper new {@link Mapper} value
      */
-    public void notifyMapperUpdateListeners(HttpService httpService,
-            NetworkListener networkListener, Mapper mapper) {
+    public void notifyMapperUpdateListeners(NetworkListener networkListener,
+            Mapper mapper) {
+        final HttpService httpService = config.getHttpService();
         for(MapperUpdateListener listener : mapperUpdateListeners) {
             listener.update(httpService, networkListener, mapper);
         }

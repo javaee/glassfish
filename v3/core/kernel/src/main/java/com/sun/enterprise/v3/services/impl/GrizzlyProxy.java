@@ -64,7 +64,6 @@ public class GrizzlyProxy implements NetworkProxy {
     protected GrizzlyServiceListener grizzlyListener;
     final Logger logger;
     final NetworkListener networkListener;
-     HttpService httpService;
     private int portNumber;
 
 
@@ -140,7 +139,7 @@ public class GrizzlyProxy implements NetworkProxy {
         onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
         grizzlyService.getHabitat().addIndex(onePortMapper,
             Mapper.class.getName(), networkListener.getPort());
-        grizzlyService.notifyMapperUpdateListeners(httpService, networkListener, mapper);
+        grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
     }
 
     /**
