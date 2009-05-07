@@ -359,7 +359,9 @@
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="largeCookieError" target="all"/>
+<!-- XXX temporarily commented out, see IT 7919
         <ant dir="httpListenerDynamicConfig" target="all"/>
+-->
         <ant dir="webappLoaderEmptyJar" target="all"/>
     </target>
 
