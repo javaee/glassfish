@@ -45,47 +45,36 @@ import java.util.Hashtable;
 
 
 /**
- * my v3 main, basically some throw away code
+ *
  */
 public class AsadminMain {
     public static void main(String[] args) {
-        if(CLIConstants.debugMode) {
-            System.setProperty(CLIConstants.WALL_CLOCK_START_PROP, "" + System.currentTimeMillis());
-            CLILogger.getInstance().printDebugMessage("CLASSPATH= " +
-                    System.getProperty("java.class.path") +
-                    "\nCommands: " + Arrays.toString(args));
-        }
-
-        AsadminMain main = new AsadminMain();
-        int exitCode;
-
         if(args.length <= 0) {
-             String msg = strings.get("AsadminUsageMessage");
-             System.out.println(msg);
+             //String msg = AsadminMain.strings.get("AsadminUsageMessage");
+             //System.out.println(msg);
              System.exit(0);
         }
-        copyOfArgs = new String[args.length];
-        classPath = System.getProperty("java.class.path");
-        className = main.getClass().getName();
 
-
-        System.arraycopy(args, 0, copyOfArgs, 0, args.length);
+        int exitCode = ERROR;
 
         String command = args[0];
-        try {
-            exitCode = main.local(args);
-        }
-        catch(InvalidCommandException e) {
+        AsadminMain main = new AsadminMain(args);
+        exitCode = main.runCommand();
+
+        Throwable t = main.getErrorThrowable();
+
+        if(t instanceof InvalidCommandException) {
             // Transform 'asadmin help remote-command' to 'asadmin remote-command --help'.
             // Otherwise, you'll get a CommandNotFoundException: Command help not found.
-            if (args[0].equals("help")) {
-                exitCode = main.remote(new String[] {args[1], "--help"});
+            if (command.equals("help")) {
                 command = args[1];
+                exitCode = main.runCommandRemote(command, "--help");
             } else {
-                CLILogger.getInstance().printDebugMessage(e.getMessage());
-                exitCode = main.remote(args);
+                CLILogger.getInstance().printDebugMessage(t.getMessage());
+                exitCode = main.runCommandRemote(args);
             }
         }
+
         if(exitCode == SUCCESS) {
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandSuccessful", command));
@@ -117,43 +106,93 @@ public class AsadminMain {
         }
         System.exit(exitCode);
     }
-    public int local(String[] args) throws InvalidCommandException{
+    public AsadminMain(String... args) {
+        info = new CallingInfo(args, AsadminMain.class);
+        debug();
+    }
+
+    /*
+     * Does not throw Exceptions.
+     * call getErrorThrowable() to see if there was an error
+     * or if the return value is not == SUCCESS then that is an error.
+     * Get the error message with getErrorMessage()
+     */
+    public final synchronized int runCommand(){
+        if(info.copyOfArgs.length <= 0) {
+            return ERROR;
+        }
+
+        int exitValue = runCommandLocal();
+
+        if(exitValue == ERROR)
+            exitValue = runCommandRemote();
+
+        return exitValue;
+    }
+
+    public Throwable getErrorThrowable() {
+        return errorThrowable;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+    
+
+    private int runCommandLocal(){
+        String message;
+        errorThrowable = null;
+        errorMessage = "";
+
         try {
             CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
-            cli.invokeCommand(args);
+            cli.invokeCommand(info.copyOfArgs);
+        }
+        // special case to help debug
+        catch(NoClassDefFoundError e) {
+            errorThrowable = e;
+            message = e.toString();
+        }
+        catch(Exception e) {
+            errorThrowable = e;
+            message = e.getMessage();
+        }
+        catch (Throwable t) {
+            errorThrowable = t;
+            printStack(t);
+            message = t.getMessage();
+        }
+
+        if(errorThrowable != null) {
+            printError(errorThrowable.getMessage());
+            return ERROR;
+        }
+        else
             return SUCCESS;
-        }
-        catch(CommandException ce) {
-            CLILogger.getInstance().printError(ce.getMessage());
-            return ERROR;
-        }
-        catch(CommandValidationException cve) {
-            CLILogger.getInstance().printError(cve.getMessage());
-            return ERROR;
-        }
-        catch(NoClassDefFoundError ncdfe)
-        {
-            CLILogger.getInstance().printError(ncdfe.toString());
-            return ERROR;
-        }
-        catch(InvalidCommandException ice) {
-            throw ice;
-        }
-        catch (Throwable ex) {
-            CLILogger.getInstance().printExceptionStackTrace(ex);
-            CLILogger.getInstance().printError(ex.toString());
-            return ERROR;
-        }
     }
-    public int remote(String[] args) {
+
+    private void printError(String s) {
+        //TODO TODO --> use interactive flag!
+        CLILogger.getInstance().printError(s);
+    }
+
+    private void printStack(Throwable t) {
+        CLILogger.getInstance().printExceptionStackTrace(t);
+    }
+
+    public Throwable getError() {
+        return errorThrowable;
+    }
+    private int runCommandRemote(String... args) {
         try {
             CLIRemoteCommand rc = new CLIRemoteCommand(args);
             rc.runCommand();
             return SUCCESS;
         }
-        catch (Throwable ex) {
+        catch (Throwable ex) { // there is a good reason for Throwable.
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printMessage(ex.getMessage());
+            errorThrowable = ex;
             if (ex.getCause() instanceof java.net.ConnectException) {
                 return CONNECTION_ERROR;
             }
@@ -164,14 +203,24 @@ public class AsadminMain {
         }
     }
 
+    private void debug() {
+        if(CLIConstants.debugMode) {
+            System.setProperty(CLIConstants.WALL_CLOCK_START_PROP, "" + System.currentTimeMillis());
+            CLILogger.getInstance().printDebugMessage("CLASSPATH= " +
+                    System.getProperty("java.class.path") +
+                    "\nCommands: " + Arrays.toString(info.copyOfArgs));
+        }
+    }
+
+
     /*pkg-priv*/ static String[] getArgs() {
-        return copyOfArgs;
+        return info.copyOfArgs;
     }
     /*pkg-priv*/ static String getClassPath() {
-        return classPath;
+        return info.classPath;
     }
     /*pkg-priv*/ static String getClassName() {
-        return className;
+        return info.className;
     }
 
     private Map<String, String> getRemoteCommands() {
@@ -195,73 +244,28 @@ public class AsadminMain {
     private final static int INVALID_COMMAND_ERROR = 3;
     private final static int SUCCESS = 0;
     private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
-    private       static String[] copyOfArgs;
-    private       static String classPath;
-    private       static String className;
+
+    private static CallingInfo  info;
+    private Throwable           errorThrowable;
+    private         String      errorMessage = "";
+
+    private static class CallingInfo {
+        String[]    copyOfArgs;
+        String      classPath;
+        String      className;
+
+        private CallingInfo(String[] args, Class caller) {
+            classPath = System.getProperty("java.class.path");
+            className = caller.getClass().getName();
+
+            if(args != null && args.length > 0) {
+                copyOfArgs = new String[args.length];
+                System.arraycopy(args, 0, copyOfArgs, 0, args.length);
+            }
+            else {
+                copyOfArgs = new String[0];
+            }
+        }
+    }
 }
-
-
-
-    /** Turned off for now -- it takes ~200 msec on a laptop!
-    private final static boolean foundClass(String s) {
-        try {
-            Class.forName(s);
-            return true;
-        }
-        catch (Throwable t) {
-            System.out.println("Can not find class: " + s);
-            return false;
-        }
-    }
-    
-    private final static String[] requiredClassnames =
-            {
-        // one from launcher jar        
-        "com.sun.enterprise.admin.launcher.GFLauncher",
-        // one from universal jar
-        "com.sun.enterprise.universal.xml.MiniXmlParser",
-        // one from cli-framework jar
-        "com.sun.enterprise.cli.framework.CLIMain",
-        // one from glassfish bootstrap jar
-        "com.sun.enterprise.glassfish.bootstrap.ASMain",
-        // one from stax-api
-        "javax.xml.stream.XMLInputFactory",
-        // one from server-mgmt
-        "com.sun.enterprise.admin.servermgmt.RepositoryException",
-        // one from common-utils
-        "com.sun.enterprise.util.net.NetUtils",
-        // one from admin/util
-        "com.sun.enterprise.admin.util.TokenValueSet",
-        // here's one that server-mgmt is dependent on
-        "com.sun.enterprise.security.auth.realm.file.FileRealm",
-        // dol
-        "com.sun.enterprise.deployment.PrincipalImpl",
-        // kernel
-        //"com.sun.appserv.server.util.Version",
-    };
-    static {
-        // check RIGHT NOW to make sure all the classes we need are
-        // available
-        long start = System.currentTimeMillis();
-        boolean gotError = false;
-        for (String s : requiredClassnames) {
-            if(!foundClass(s))
-                gotError = true;
-        }
-        // final test -- see if sjsxp is available
-        try {
-            javax.xml.stream.XMLInputFactory.newInstance().getXMLReporter();
-        }
-        catch(Throwable t) {
-            gotError = true;
-            System.out.println("Can't access STAX classes");
-        }
-        if(gotError) {
-            // messages already sent to stdout...
-            System.exit(1);
-        }
-        long stop = System.currentTimeMillis();
-        System.out.println("Time to pre-load classes = " + (stop-start) + " msec");
-    }
-     */
 
