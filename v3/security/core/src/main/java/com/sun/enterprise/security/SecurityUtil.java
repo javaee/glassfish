@@ -235,7 +235,7 @@ public class SecurityUtil{
 	    //String msg = localStrings.getLocalString("enterprise.security.securityutil.classnotfound","Could not find PolicyConfigurationFactory class. Check javax.security.jacc.PolicyConfigurationFactory.provider property");
 	    throw new IASSecurityException(cnfe);
 	} catch(javax.security.jacc.PolicyContextException pce){
-	    throw new IASSecurityException(pce.toString());
+	    throw new IASSecurityException(pce);
 	}
     }
 

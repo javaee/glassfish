@@ -171,6 +171,9 @@ public class SecurityServicesUtil {
 
     public static SecurityServicesUtil getInstance() {
         // return my singleton service
+        if (habitat == null) {
+            return null;
+        }
         return habitat.getComponent(SecurityServicesUtil.class);
     }
 

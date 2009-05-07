@@ -107,7 +107,9 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
     private static javax.security.auth.callback.CallbackHandler handler = new com.sun.enterprise.security.auth.login.LoginCallbackHandler(false);
     
     public ProgrammaticLogin() {
-        resolveWebProgrammaticLogin();
+        if (SecurityServicesUtil.getInstance() != null) {
+            resolveWebProgrammaticLogin();
+        }
     }
     /**
      * Attempt to login.
@@ -152,7 +154,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
                     public java.lang.Object run() {
                     // if realm is null, LCD will log into the default realm
                         //V3:Commented if (isServer) {
-                        if (SecurityServicesUtil.getInstance().isServer()) {
+                        if ((SecurityServicesUtil.getInstance() != null) && SecurityServicesUtil.getInstance().isServer()) {
                             LoginContextDriver.login(user, password, realm);
                         } else {
                             //TODO:V3 commented int type = AppContainer.USERNAME_PASSWORD;
