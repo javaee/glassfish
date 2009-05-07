@@ -87,6 +87,13 @@ public abstract class ExtensionsArchivist  {
             throws IOException, SAXParseException {
 
         DeploymentDescriptorFile confDD = getConfigurationDDFile(descriptor);
+
+        // if this extension archivist has no runtime DD, just return the 
+        // original descriptor
+        if (confDD == null) {
+            return descriptor;
+        }
+
         if (archive.getURI() != null) {
             confDD.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
         }
