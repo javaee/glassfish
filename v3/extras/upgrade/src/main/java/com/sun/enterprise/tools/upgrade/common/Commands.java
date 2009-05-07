@@ -113,7 +113,7 @@ public class Commands {
             CommonInfoModel.getDefaultLogger().info(stringManager.
                     getString("commands.executingCommandMsg") + commandOneString);
             AsadminMain m = new AsadminMain(commandStrings);
-            exitValue = m.runCommand();
+            exitValue = m.runLocalCommand();
             pos.flush();
             return exitValue;
         }
