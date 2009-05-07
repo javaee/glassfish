@@ -53,16 +53,6 @@ connections, at run time.
 <p>
 There can be more than one pool for one connection-definition in one       
 resource-adapter.    
-<p>
-NOTE: some getters/setters use int/String. This will be corrected at a future time; these
-methods cannot use the AppServer template facility, whereby an Attribute value can be of 
-the form attr-name=${ATTR_VALUE}.  For an example of where/how this facility is used, see
-the &lt;http-listener> element, which looks like this:<br/>
-<pre>
-&lt;http-listener id="http-listener-1" address="0.0.0.0" port="${HTTP_LISTENER_PORT}" acceptor-threads="1" security-enabled="false" default-virtual server="server" server-name="" xpowered-by="true" enabled="true">
-</pre>
-The 'port' attribute above is set to the value "${HTTP_LISTENER_PORT}", which is a system
-property.  Obviously no method that uses 'String' could get or set a String.
  */
 public interface ConnectorConnectionPoolConfig
         extends NamedConfigElement, Description, PropertiesAccess,
@@ -70,48 +60,6 @@ public interface ConnectorConnectionPoolConfig
 {
 
     public static final String AMX_TYPE = "connector-connection-pool";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
-     */
-    public static final String STEADY_POOL_SIZE_KEY = "SteadyPoolSize";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
-     */
-    public static final String MAX_POOL_SIZE_KEY = "MaxPoolSize";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
-     */
-    public static final String MAX_WAIT_TIME_IN_MILLIS_KEY = "MaxWaitTimeInMillis";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
-     */
-    public static final String POOL_RESIZE_QUANTITY_KEY = "PoolResizeQuantity";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
-     */
-    public static final String IDLE_TIMEOUT_IN_SECONDS_KEY = "IdleTimeoutInSeconds";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.Boolean.
-     */
-    public static final String FAIL_ALL_CONNECTIONS_KEY = "FailAllConnections";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.Boolean.
-     */
-    public static final String IS_CONNECTION_VALIDATION_REQUIRED_KEY = "IsConnectionValidationRequired";
-    /**
-    Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
-
-
-    Indicates the level of transaction support that this pool
-    will have. Possible values are as defined in {@link TransactionSupportValues}.
-    This attribute will
-    override that transaction support attribute in the Resource
-    Adapter in a downward compatible way, i.e it can support a
-    lower/equal transaction level than specified in the RA, but
-    not a higher level.
-    @see ConnectorConnectionPoolConfig#setTransactionSupport
-     */
-    public static final String TRANSACTION_SUPPORT_KEY = "TransactionSupport";
 
     /**
     Specifies if the connection that is about to

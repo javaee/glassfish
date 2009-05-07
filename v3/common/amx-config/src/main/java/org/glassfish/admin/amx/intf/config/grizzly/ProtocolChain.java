@@ -40,10 +40,11 @@ import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.intf.config.ConfigElement;
 
 /**
-	Note: attribute getters/setters are not included in this interface; use generic approach.
+Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface ProtocolChain  extends Singleton, ConfigElement
+public interface ProtocolChain extends Singleton, ConfigElement
 {
-    public Map<String,ProtocolFilter> getProtocolFilter();
+
+    public Map<String, ProtocolFilter> getProtocolFilter();
 }
 

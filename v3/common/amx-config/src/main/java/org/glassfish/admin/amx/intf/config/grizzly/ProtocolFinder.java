@@ -38,9 +38,9 @@ package org.glassfish.admin.amx.intf.config.grizzly;
 import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 
 /**
-	Note: attribute getters/setters are not included in this interface; use generic approach.
+Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface ProtocolFinder  extends NamedConfigElement
+public interface ProtocolFinder extends NamedConfigElement
 {
 }
 

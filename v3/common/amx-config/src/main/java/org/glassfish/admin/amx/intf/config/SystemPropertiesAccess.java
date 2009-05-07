@@ -47,12 +47,6 @@ Properties are always Strings.  Property names are required to be unique.
 <p>
 New for Glassfish V3:  system properties are first-class MBeans and so this
 interface extends Container.
-
-@see ClusterConfig
-@see ConfigConfig
-@see DomainConfig
-@see ClusteredServerConfig
-@see StandaloneServerConfig
  */
 public interface SystemPropertiesAccess extends AMXConfigProxy
 {
@@ -64,17 +58,7 @@ public interface SystemPropertiesAccess extends AMXConfigProxy
      */
     final static String SYSTEM_PROPERTY_PREFIX = "system-" + PropertiesAccess.PROPERTY_PREFIX;
 
-//     /**
-//        @since Glassfish V3
-//      */
-//     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-// 	public SystemPropertyConfig createSystemPropertyConfig( String propertyName, String propertyValue);
-//     
-//     /**
-//        @since Glassfish V3
-//      */
-//     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-// 	public void            removeSystemPropertyConfig( String propertyName );
+
     /**
     Return all SystemPropertyConfig MBeans, keyed by property name.
     @since Glassfish V3

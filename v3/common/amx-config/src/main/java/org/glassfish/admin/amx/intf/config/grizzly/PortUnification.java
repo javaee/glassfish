@@ -39,10 +39,11 @@ import java.util.Map;
 import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 
 /**
-	Note: attribute getters/setters are not included in this interface; use generic approach.
+Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface PortUnification  extends NamedConfigElement
+public interface PortUnification extends NamedConfigElement
 {
-    public Map<String,ProtocolFinder>  getProtocolFinder();
+
+    public Map<String, ProtocolFinder> getProtocolFinder();
 }
 

@@ -39,7 +39,6 @@ import java.util.Map;
 
 /**
 Configuration for the &lt;virtual-server&gt; element.
-@deprecated  Grizzly variants now exist?
  */
 public interface VirtualServerConfig
         extends NamedConfigElement, PropertiesAccess
