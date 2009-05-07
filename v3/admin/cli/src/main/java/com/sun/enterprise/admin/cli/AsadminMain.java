@@ -68,10 +68,12 @@ public class AsadminMain {
             // Otherwise, you'll get a CommandNotFoundException: Command help not found.
             if (command.equals("help")) {
                 command = args[1];
-                exitCode = main.runCommandRemote(command, "--help");
+                AsadminMain help = new AsadminMain(command, "--help");
+                exitCode = help.runRemoteCommand();
             } else {
                 CLILogger.getInstance().printDebugMessage(t.getMessage());
-                exitCode = main.runCommandRemote(args);
+                AsadminMain help = new AsadminMain(args);
+                exitCode = help.runRemoteCommand();
             }
         }
 
@@ -122,10 +124,10 @@ public class AsadminMain {
             return ERROR;
         }
 
-        int exitValue = runCommandLocal();
+        int exitValue = runLocalCommand();
 
         if(exitValue == ERROR)
-            exitValue = runCommandRemote();
+            exitValue = runRemoteCommand();
 
         return exitValue;
     }
@@ -139,8 +141,7 @@ public class AsadminMain {
     }
     
 
-    private int runCommandLocal(){
-        String message;
+    public synchronized int runLocalCommand(){
         errorThrowable = null;
         errorMessage = "";
 
@@ -151,16 +152,16 @@ public class AsadminMain {
         // special case to help debug
         catch(NoClassDefFoundError e) {
             errorThrowable = e;
-            message = e.toString();
+            errorMessage = e.toString();
         }
         catch(Exception e) {
             errorThrowable = e;
-            message = e.getMessage();
+            errorMessage = e.getMessage();
         }
         catch (Throwable t) {
             errorThrowable = t;
             printStack(t);
-            message = t.getMessage();
+            errorMessage = t.getMessage();
         }
 
         if(errorThrowable != null) {
@@ -180,19 +181,19 @@ public class AsadminMain {
         CLILogger.getInstance().printExceptionStackTrace(t);
     }
 
-    public Throwable getError() {
-        return errorThrowable;
-    }
-    private int runCommandRemote(String... args) {
+    public synchronized int runRemoteCommand() {
         try {
-            CLIRemoteCommand rc = new CLIRemoteCommand(args);
+            CLIRemoteCommand rc = new CLIRemoteCommand(info.copyOfArgs);
             rc.runCommand();
             return SUCCESS;
         }
         catch (Throwable ex) { // there is a good reason for Throwable.
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printMessage(ex.getMessage());
+            
             errorThrowable = ex;
+            errorMessage = ex.getMessage();
+
             if (ex.getCause() instanceof java.net.ConnectException) {
                 return CONNECTION_ERROR;
             }
