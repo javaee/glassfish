@@ -69,7 +69,7 @@ public class GlassFishDocument extends DomDocument {
         ExistingSingletonInhabitant<ExecutorService> executorInhab =
                 new ExistingSingletonInhabitant<ExecutorService>(executor);
         
-        habitat.addIndex(executorInhab, ExecutorService.class.getName(), "transaction-executor");
+        habitat.addIndex(executorInhab, ExecutorService.class.getName(), "transactions-executor");
         habitat.addIndex(new ExistingSingletonInhabitant<DomDocument>(this), DomDocument.class.getName(), null);
 
         final DomDocument doc = this;

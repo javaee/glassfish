@@ -91,7 +91,6 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
             return;
         }
         force = true;
-        ((DeployCommandParameters)this).path = path;
 
         commandRunner.doCommand("deploy", this, report,
                 context.getInboundPayload(), context.getOutboundPayload());
@@ -128,8 +127,8 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
         }
 
         //if path not specified on the command line then get it from domain.xml
-        path = (path==null)?new File(ConfigBeansUtilities.getLocation(name)):path;
-        if (path == null) {
+        super.path = (path==null)?new File(ConfigBeansUtilities.getLocation(name)):path;
+        if (super.path == null) {
                 //if unable to get path from domain.xml then return error.
             report.setMessage(localStrings.getLocalString("redeploy.command.invalid.path", "Cannot determine the path of application."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
