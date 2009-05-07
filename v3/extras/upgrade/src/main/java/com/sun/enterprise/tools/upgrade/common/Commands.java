@@ -111,7 +111,8 @@ public class Commands {
             ((Thread)cor).start();
             CommonInfoModel.getDefaultLogger().info(stringManager.
                     getString("commands.executingCommandMsg") + commandOneString);
-            com.sun.enterprise.admin.cli.AsadminMain.main(commandStrings);
+            AsadminMain m = new AsadminMain(commandStrings);
+            int exitValue = m.runCommand();
             pos.flush();
             return true;
         }
