@@ -37,6 +37,7 @@
 package com.sun.enterprise.tools.upgrade.gui.util;
 
 import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
+import com.sun.enterprise.util.i18n.StringManager;
 import java.awt.Component;
 import java.io.File;
 import javax.swing.JOptionPane;
@@ -48,11 +49,12 @@ import javax.swing.JOptionPane;
  */
 public class DirectoryMoverImpl implements DirectoryMover {
 
-    private final Component parent;
+    private static final StringManager stringManager =
+        StringManager.getManager(DirectoryMoverImpl.class);
+    private static final String title =
+        stringManager.getString("upgrade.gui.util.domainNameConflict");
 
-    // still todo -- move into resource bundle
-    String message = "The domain %s already exists. Would you like to rename it?";
-    String title = "Domain Name Conflict";
+    private final Component parent;
 
     public DirectoryMoverImpl(Component parent) {
         this.parent = parent;
@@ -60,7 +62,8 @@ public class DirectoryMoverImpl implements DirectoryMover {
     
     public boolean moveDirectory(File dir) {
         int option = JOptionPane.showConfirmDialog(parent,
-            String.format(message, dir.getName()),
+            String.format(stringManager.getString(
+                "upgrade.gui.util.domainRenameOption", dir.getName())),
             title,
             JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.QUESTION_MESSAGE);
