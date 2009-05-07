@@ -100,10 +100,17 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      */
     public SAXParser getSAXParser (boolean validating) { 
         try {
-            // always use system SAXParser to parse DDs 
-            System.setProperty("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            System.clearProperty("javax.xml.parsers.SAXParserFactory"); 
+            // always use system SAXParser to parse DDs, see IT 8229
+            ClassLoader currentLoader =
+                Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(
+                getClass().getClassLoader());
+            SAXParserFactory spf = null;
+            try {
+                spf = SAXParserFactory.newInstance();
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentLoader);
+            }
 
             // set the namespace awareness
             spf.setNamespaceAware(true);

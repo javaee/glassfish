@@ -74,11 +74,17 @@ public class J2EEDocumentBuilder {
      */
     public static Document newDocument() {
         try {
-            // always use system default
-            System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-            DocumentBuilderFactory factory = 
-                DocumentBuilderFactory.newInstance();
-            System.clearProperty("javax.xml.parsers.DocumentBuilderFactory");
+            // always use system default, see IT 8229
+            ClassLoader currentLoader =
+                Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(
+                J2EEDocumentBuilder.class.getClassLoader());
+            DocumentBuilderFactory factory = null;
+            try {
+                factory = DocumentBuilderFactory.newInstance();
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentLoader);
+            }
 
             DocumentBuilder builder = factory.newDocumentBuilder();
             

@@ -130,10 +130,17 @@ public class DeploymentDescriptorFileFactory implements ContractProvider {
         // tree, figure out the top xml element name and return the 
         // appropriate DeploymentDescriptorFile
         
-        // always use system default to parse DD
-        System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        System.clearProperty("javax.xml.parsers.DocumentBuilderFactory");
+        // always use system default to parse DD, see IT 8229
+        ClassLoader currentLoader =
+            Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(
+            DeploymentDescriptorFileFactory.class.getClassLoader());
+        DocumentBuilderFactory factory = null;
+        try {
+            factory = DocumentBuilderFactory.newInstance();
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentLoader);
+        }
 
         factory.setValidating(false);
         DocumentBuilder docBuilder = factory.newDocumentBuilder();
