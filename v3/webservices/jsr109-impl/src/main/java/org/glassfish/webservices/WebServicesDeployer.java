@@ -153,165 +153,164 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
 
     protected void generateArtifacts(DeploymentContext dc) throws DeploymentException {
         
-        Application app = dc.getModuleMetaData(Application.class);
-        Set<BundleDescriptor> bundles = app.getBundleDescriptors();
-        for(BundleDescriptor bundle : bundles) {
-            WebServicesDescriptor wsDesc = bundle.getWebServices();
-            for (WebService ws : wsDesc.getWebServices()) {
+        BundleDescriptor bundle = dc.getModuleMetaData(BundleDescriptor.class);
 
-                // for modules this is domains/<domain-name>/j2ee-modules/<module-name>
-                // for apps this is domains/<domain-name>/j2ee-apps/<app-name>/<foo_war> (in case of embedded wars)
-                //  or domains/<domain-name>/j2ee-apps/<app-name>/<foo_jar> (in case of embedded jars)
-                File moduleDir = dc.getSourceDir();
+        WebServicesDescriptor wsDesc = bundle.getWebServices();
+        for (WebService ws : wsDesc.getWebServices()) {
 
-                //For modules this is domains/<domain-name>/generated/xml
-                //Check with Hong about j2ee-modules
-                File wsdlDir = dc.getScratchDir("xml");
-                wsdlDir.mkdirs();
+            // for modules this is domains/<domain-name>/j2ee-modules/<module-name>
+            // for apps this is domains/<domain-name>/j2ee-apps/<app-name>/<foo_war> (in case of embedded wars)
+            //  or domains/<domain-name>/j2ee-apps/<app-name>/<foo_jar> (in case of embedded jars)
+            File moduleDir = dc.getSourceDir();
+
+            //For modules this is domains/<domain-name>/generated/xml
+            //Check with Hong about j2ee-modules
+            File wsdlDir = dc.getScratchDir("xml");
+            wsdlDir.mkdirs();
 
 
-                //For modules this is domains/<domain-name>/generated/xml
-                //Check with Hong about j2ee-modules
-                File stubsDir = dc.getScratchDir("ejb");
-                stubsDir.mkdirs();
-                
-                /** TODO BM implement later
-                if(!dc.getModuleProps().getProperty("type").equals("web")) {
-                    String subDirName = DeploymentUtils.getRelativeEmbeddedModulePath(moduleDir.getAbsolutePath(), bundle.getModuleDescriptor().getArchiveUri());
+            //For modules this is domains/<domain-name>/generated/xml
+            //Check with Hong about j2ee-modules
+            File stubsDir = dc.getScratchDir("ejb");
+            stubsDir.mkdirs();
 
-                    moduleDir =new File(moduleDir, subDirName);
-                    wsdlDir =new File( wsdlDir,subDirName);
+            /** TODO BM implement later
+             if(!dc.getModuleProps().getProperty("type").equals("web")) {
+             String subDirName = DeploymentUtils.getRelativeEmbeddedModulePath(moduleDir.getAbsolutePath(), bundle.getModuleDescriptor().getArchiveUri());
 
-                }**/
+             moduleDir =new File(moduleDir, subDirName);
+             wsdlDir =new File( wsdlDir,subDirName);
 
-                File classesDir;
-                String webinfLibDir = null;
-                if (XModuleType.WAR.equals(bundle.getModuleType())) {
-                    classesDir = new File(moduleDir, "WEB-INF"+File.separator+"classes");
-                    webinfLibDir = moduleDir.getAbsolutePath() + File.separator + "WEB-INF"+File.separator+"lib";
-                } else if (XModuleType.EJB.equals(bundle.getModuleType())) {
-                    classesDir = moduleDir;
-                } else {
-                    // unknown module type with @WebService, just ignore...
-                    continue;
-                }
+             }**/
 
-                wsdlDir = new File(wsdlDir, bundle.getWsdlDir().replaceAll("/", "\\"+File.separator));
+            File classesDir;
+            String webinfLibDir = null;
+            if (XModuleType.WAR.equals(bundle.getModuleType())) {
+                classesDir = new File(moduleDir, "WEB-INF"+File.separator+"classes");
+                webinfLibDir = moduleDir.getAbsolutePath() + File.separator + "WEB-INF"+File.separator+"lib";
+            } else if (XModuleType.EJB.equals(bundle.getModuleType())) {
+                classesDir = moduleDir;
+            } else {
+                // unknown module type with @WebService, just ignore...
+                continue;
+            }
 
-                // Check if catalog file is present, if so get mapped WSDLs
-                String wsdlFileUri;
-                File wsdlFile;
-                try {
-                    checkCatalog(bundle, ws, moduleDir);
-                } catch (DeploymentException e) {
-                    logger.log(Level.SEVERE,"Error in resolving the catalog");
-                }
-                if (ws.hasWsdlFile()) {
-                    // If wsdl file is an http URL, download that WSDL and all embedded relative wsdls, schemas
-                    if (ws.getWsdlFileUri().startsWith("http")) {
-                        try {
-                            downloadWsdlsAndSchemas( new URL(ws.getWsdlFileUri()), wsdlDir);
-                        } catch(Exception e) {
-                            throw new DeploymentException(e.toString(), e);
-                        }
-                        wsdlFileUri = ws.getWsdlFileUri().substring(ws.getWsdlFileUri().lastIndexOf("/")+1);
-                        wsdlFile = new File(wsdlDir, wsdlFileUri);
+            wsdlDir = new File(wsdlDir, bundle.getWsdlDir().replaceAll("/", "\\"+File.separator));
 
-                        // at this point, we don't care we got it from and it simplifies
-                        // the rest of the deployment process to just think that is was
-                        // generated during deployment
-                        // ws.setWsdlFileUri(null);
-
-                    } else {
-                        wsdlFileUri = ws.getWsdlFileUri();
-                        if(wsdlFileUri.startsWith("/")) {
-                            wsdlFile = new File(wsdlFileUri);
-                        } else {
-                            wsdlFile = new File(moduleDir, wsdlFileUri);
-                        }
-                        if (!wsdlFile.exists()) {
-                            String errorMessage =  format(rb.getString("wsdl.notfound"),ws.getWsdlFileUri(),bundle.getModuleDescriptor().getArchiveUri())  ;
-                            logger.severe(errorMessage);
-                            throw new DeploymentException(errorMessage);
-
-                        }
-                    }
-
-                } else {
-                    //make required dirs in case they are not present
-                    wsdlFileUri = JAXBRIContext.mangleNameToClassName(ws.getName()) + ".wsdl";
-                    wsdlDir.mkdirs();
-                    wsdlFile = new File(wsdlDir, wsdlFileUri);
-                }
-                for (WebServiceEndpoint endpoint : ws.getEndpoints()) {
-
-                    String implClassName;
-                    boolean jaxwsEndPtFound = false;
-                    boolean jaxrpcEndPtFound = false;
-                    if (endpoint.implementedByEjbComponent()) {
-                        implClassName = endpoint.getEjbComponentImpl().getEjbClassName();
-                    } else {
-                        implClassName = endpoint.getWebComponentImpl().getWebComponentImplementation();
-                    }
-
-                    // check this is NOT a provider interface
-                    Class implClass;
+            // Check if catalog file is present, if so get mapped WSDLs
+            String wsdlFileUri;
+            File wsdlFile;
+            try {
+                checkCatalog(bundle, ws, moduleDir);
+            } catch (DeploymentException e) {
+                logger.log(Level.SEVERE,"Error in resolving the catalog");
+            }
+            if (ws.hasWsdlFile()) {
+                // If wsdl file is an http URL, download that WSDL and all embedded relative wsdls, schemas
+                if (ws.getWsdlFileUri().startsWith("http")) {
                     try {
-                        implClass = dc.getClassLoader().loadClass(implClassName);
+                        downloadWsdlsAndSchemas( new URL(ws.getWsdlFileUri()), wsdlDir);
                     } catch(Exception e) {
-                            throw new DeploymentException(format(rb.getString("impl.notfound"),
-                                     ws.getName()
-                                    , implClassName ,bundle.getModuleDescriptor().getArchiveUri()));
+                        throw new DeploymentException(e.toString(), e);
                     }
+                    wsdlFileUri = ws.getWsdlFileUri().substring(ws.getWsdlFileUri().lastIndexOf("/")+1);
+                    wsdlFile = new File(wsdlDir, wsdlFileUri);
 
-                    if (implClass!=null) {
-                        if(implClass.getAnnotation(javax.xml.ws.WebServiceProvider.class) != null) {
-                            // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
-                            // in the same service
-                            if(jaxrpcEndPtFound) {
-                                throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
-                                         ws.getName()  ));
-                            }
-                            //This is a JAXWS endpoint with @WebServiceProvider
-                            //Do not run wsgen for this endpoint
-                            jaxwsEndPtFound = true;
-                            continue;
+                    // at this point, we don't care we got it from and it simplifies
+                    // the rest of the deployment process to just think that is was
+                    // generated during deployment
+                    // ws.setWsdlFileUri(null);
+
+                } else {
+                    wsdlFileUri = ws.getWsdlFileUri();
+                    if(wsdlFileUri.startsWith("/")) {
+                        wsdlFile = new File(wsdlFileUri);
+                    } else {
+                        wsdlFile = new File(moduleDir, wsdlFileUri);
+                    }
+                    if (!wsdlFile.exists()) {
+                        String errorMessage =  format(rb.getString("wsdl.notfound"),ws.getWsdlFileUri(),bundle.getModuleDescriptor().getArchiveUri())  ;
+                        logger.severe(errorMessage);
+                        throw new DeploymentException(errorMessage);
+
+                    }
+                }
+
+            } else {
+                //make required dirs in case they are not present
+                wsdlFileUri = JAXBRIContext.mangleNameToClassName(ws.getName()) + ".wsdl";
+                wsdlDir.mkdirs();
+                wsdlFile = new File(wsdlDir, wsdlFileUri);
+            }
+            for (WebServiceEndpoint endpoint : ws.getEndpoints()) {
+
+                String implClassName;
+                boolean jaxwsEndPtFound = false;
+                boolean jaxrpcEndPtFound = false;
+                if (endpoint.implementedByEjbComponent()) {
+                    implClassName = endpoint.getEjbComponentImpl().getEjbClassName();
+                } else {
+                    implClassName = endpoint.getWebComponentImpl().getWebComponentImplementation();
+                }
+
+                // check this is NOT a provider interface
+                Class implClass;
+                try {
+                    implClass = dc.getClassLoader().loadClass(implClassName);
+                } catch(Exception e) {
+                    throw new DeploymentException(format(rb.getString("impl.notfound"),
+                            ws.getName()
+                            , implClassName ,bundle.getModuleDescriptor().getArchiveUri()));
+                }
+
+                if (implClass!=null) {
+                    if(implClass.getAnnotation(javax.xml.ws.WebServiceProvider.class) != null) {
+                        // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
+                        // in the same service
+                        if(jaxrpcEndPtFound) {
+                            throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
+                                    ws.getName()  ));
                         }
-                        if(implClass.getAnnotation(javax.jws.WebService.class) != null) {
+                        //This is a JAXWS endpoint with @WebServiceProvider
+                        //Do not run wsgen for this endpoint
+                        jaxwsEndPtFound = true;
+                        continue;
+                    }
+                    if(implClass.getAnnotation(javax.jws.WebService.class) != null) {
 
-                            // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
-                            // in the same service
-                            if(jaxrpcEndPtFound) {
-                                throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
-                                        ws.getName()  ));
-                            }
-                            // This is a JAXWS endpoint with @WebService; Invoke wsgen
-                            jaxwsEndPtFound = true;
-
-
-                            QName servicename = endpoint.getServiceName();
-
-
-                            Thread.currentThread().setContextClassLoader(dc.getClassLoader())  ;
-
-                        } else {
-                            // this is a jaxrpc endpoint
-                            // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint
-                            // in the same service
-                            if(jaxwsEndPtFound) {
-                                throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
-                                                ws.getName()  ));
-                            }
-                            // Set spec version to 1.1 to indicate later the wscompile should be run
-                            // We do this here so that jaxrpc endpoint having J2EE1.4 or JavaEE5
-                            // descriptors will work properly
-                            jaxrpcEndPtFound = true;
-                            ws.getWebServicesDescriptor().setSpecVersion("1.1");
+                        // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
+                        // in the same service
+                        if(jaxrpcEndPtFound) {
+                            throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
+                                    ws.getName()  ));
                         }
+                        // This is a JAXWS endpoint with @WebService; Invoke wsgen
+                        jaxwsEndPtFound = true;
+
+
+                        QName servicename = endpoint.getServiceName();
+
+
+                        Thread.currentThread().setContextClassLoader(dc.getClassLoader())  ;
+
+                    } else {
+                        // this is a jaxrpc endpoint
+                        // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint
+                        // in the same service
+                        if(jaxwsEndPtFound) {
+                            throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
+                                    ws.getName()  ));
+                        }
+                        // Set spec version to 1.1 to indicate later the wscompile should be run
+                        // We do this here so that jaxrpc endpoint having J2EE1.4 or JavaEE5
+                        // descriptors will work properly
+                        jaxrpcEndPtFound = true;
+                        ws.getWebServicesDescriptor().setSpecVersion("1.1");
                     }
                 }
             }
         }
+
     }
 
     /**
