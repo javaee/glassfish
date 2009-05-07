@@ -81,6 +81,11 @@
 	   <version>${project.version}</version>
 	   <type>pom</type>
         </dependency>
+        <dependency>
+           <groupId>org.glassfish.persistence</groupId>
+           <artifactId>glassfish-oracle-jdbc-driver-packages</artifactId>
+	   <version>${project.version}</version>
+        </dependency>
    <!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
         <dependency>        

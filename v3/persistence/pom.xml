@@ -50,6 +50,7 @@
     <name>GlassFish persistence related modules</name>  
     <modules>
         <module>common</module>
+        <module>oracle-jdbc-driver-packages</module>
         <module>jpa-connector</module>
         <module>eclipselink-wrapper</module>
         <module>cmp</module>
