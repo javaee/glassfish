@@ -53,7 +53,6 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-
 /**
  *
  * @author rajeshwar patil
@@ -64,82 +63,70 @@ import javax.ws.rs.WebApplicationException;
 @Produces(MediaType.TEXT_HTML)
 public class SingletonDomHtmlProvider extends DomProviderUtil implements MessageBodyWriter<Dom> {
 
-     @Context
-     protected UriInfo uriInfo;
+    @Context
+    protected UriInfo uriInfo;
 
-     public long getSize(final Dom proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.jvnet.hk2.config.Dom").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false;
-     }
-
-
-     public void writeTo(final Dom proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getHtml(proxy).getBytes());
-     }
-
-
-     private String getHtml(Dom proxy) {
-        String result;
-        result = "<html>" + "<body>" + "<br>" ;
-        result = result + "<h1>" + getTypeKey(proxy) + "</h1>" + "<hr>" + "<br>";
-            result = result + getAttributes(proxy) + "<br><br>";
-        result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>" + "<br>";
-            result = result + getResourcesLinks(proxy);
-        result = result + "</html>" + "</body>";
-        return result;
+    public long getSize(final Dom proxy, final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        return -1;
     }
 
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        try {
+            if (Class.forName("org.jvnet.hk2.config.Dom").equals(genericType)) {
+                return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
+            }
+        } catch (java.lang.ClassNotFoundException e) {
+            return false;
+        }
+        return false;
+    }
+
+    public void writeTo(final Dom proxy, final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders,
+            final OutputStream entityStream) throws IOException, WebApplicationException {
+        entityStream.write(getHtml(proxy).getBytes());
+    }
+
+    private String getHtml(Dom proxy) {
+        String result;
+        result = "<html><body>";
+        result = result + "<h1>" + getTypeKey(proxy) + "</h1>";
+        result = result + "<h2>Attributes:</h2>";
+        result = result + getAttributes(proxy) + "<br>";
+        result = result + "<h2>Child Resources:</h2>";
+        result = result + getResourcesLinks(proxy);
+        result = result + "</html></body>";
+        return result;
+    }
 
     private String getTypeKey(Dom proxy) {
-       return getName(proxy.typeName());
+        return getName(proxy.typeName());
     }
-
-
-    private String getResourcesKey() {
-        return "resources";
-    }
-
 
     private String getAttributes(Dom proxy) {
-        String result ="";
+        String result = "";
         Set<String> attributes = proxy.model.getAttributeNames();
         for (String attribute : attributes) { //for each attribute
-            result = result + indent + "<b>"; //indent
-            result = result + attribute + ":&nbsp;&nbsp;&nbsp;&nbsp;" + proxy.attribute(attribute);
-            result = result + "</b>" + "<br>";
+            result = result + attribute + "&nbsp;:&nbsp;" + proxy.attribute(attribute);
+            result = result + "<br>";
         }
-        
+
         return result;
     }
-
 
     private String getResourcesLinks(Dom proxy) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) { //for each element
             try {
-                    result = result + indent + "<b>"; //indent
-                    result = result + "<a href=" + getElementLink(uriInfo, elementName) + ">";
-                    result = result + elementName;
-                    result = result + "</a>";
-                    ///result = result + getElementLink(uriInfo, elementName);
-                    result = result + "</b>" + "<br>";
+                result = result + "<a href=" + getElementLink(uriInfo, elementName) + ">";
+                result = result + elementName;
+                result = result + "</a>";
+                ///result = result + getElementLink(uriInfo, elementName);
+                result = result + "<br>";
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -148,25 +135,20 @@ public class SingletonDomHtmlProvider extends DomProviderUtil implements Message
         return result;
     }
 
-
     private String getStartHtmlElement(String name) {
-        assert((name != null) && name.length() > 0);
-        String result ="<";
+        assert ((name != null) && name.length() > 0);
+        String result = "<";
         result = result + name;
         result = result + ">";
-        return result; 
+        return result;
     }
 
-
     private String getEndHtmlElement(String name) {
-        assert((name != null) && name.length() > 0);
-        String result ="<";
+        assert ((name != null) && name.length() > 0);
+        String result = "<";
         result = result + "/";
         result = result + name;
         result = result + ">";
-        return result; 
+        return result;
     }
-
-
-    private static String indent = "    ";
 }

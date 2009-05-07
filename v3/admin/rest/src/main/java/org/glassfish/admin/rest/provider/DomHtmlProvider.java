@@ -91,11 +91,11 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
 
      private String getHtml(List<Dom> proxy) {
         String result;
-        result = "<html>" + "<body>" + "<br>" ;
-        result = result + "<h1>" + getTypeKey() + "</h1>" + "<hr>" + "<br><br>";
-        result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>" + "<br>";
+        result = "<html><body>" ;
+        result = result + "<h1>" + getTypeKey() + "</h1>";
+        result = result + "<h2>Child Resources:</h2>" ;
             result = result + getResourcesLinks(proxy);
-        result = result + "</html>" + "</body>";
+        result = result + "</html></body>";
         return result;
     }
 
@@ -105,20 +105,17 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
     }
 
 
-    private String getResourcesKey() {
-        return "resources";
-    }
+
 
 
     private String getResourcesLinks(List<Dom> proxyList) {
         String result = "";
         for (Dom proxy: proxyList) { //for each element
             try {
-                    result = result + indent + "<b>"; //indent
                     result = result + "<a href=" + getElementLink(uriInfo, proxy.getKey()) + ">";
                     result = result + proxy.getKey();
                     result = result + "</a>";
-                    result = result + "</b>" + "<br>";
+                    result = result +  "<br>";
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -128,5 +125,4 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
     }
 
 
-    private static String indent = "    ";
 }
