@@ -824,7 +824,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
         for (final ObjectName objectName : objectNames)
         {
-            if (Util.getTypeProp(objectName).equals(type))
+            if (Util.getTypeProp(objectName).equalsIgnoreCase(type))
             {
                 m.put(Util.getNameProp(objectName), getProxy(objectName, intf));
             }

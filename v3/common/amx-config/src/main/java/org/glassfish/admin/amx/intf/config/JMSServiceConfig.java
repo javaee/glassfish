@@ -99,7 +99,7 @@ public interface JMSServiceConfig
     /**
     Calls Container.getContaineeMap( XTypes.JMS_HOST_CONFIG ).
     @return Map of JMSHostConfig MBean proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, JMSHostConfig> getJMSHost();
 }

@@ -35,11 +35,13 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+
 /**
 Referent: "the object of a reference", in this case a
 base marker  interface denoting that the item can be referred
 to by some kind of {@link RefConfig}.
  */
-public interface RefConfigReferent
+public interface RefConfigReferent extends AMXConfigProxy
 {
 }

@@ -37,7 +37,6 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
 
 /**
@@ -46,10 +45,8 @@ Configuration for the &lt;security-service&gt; element.
 public interface SecurityServiceConfig extends
         PropertiesAccess, ConfigElement, Singleton
 {
-
     public static final String AMX_TYPE = "security-service";
 
-    
     public String getAuditEnabled();
 
     public void setAuditEnabled(String value);
@@ -111,42 +108,13 @@ public interface SecurityServiceConfig extends
      */
     public void setActivateDefaultPrincipalToRoleMapping(String enabled);
 
-// -------------------- Operations --------------------
-    /**
-    Calls Container.getContaineeMap( XTypes.JACC_PROVIDER_CONFIG ).
-
-    @return Map of JACCProviderConfig MBean proxies , keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
-     */
     public Map<String, JACCProviderConfig> getJACCProvider();
 
-
-    /**
-    Calls Container.getContaineeMap( XTypes.AUTH_REALM_CONFIG ).
-
-    @return Map of AuthRealmConfig MBean proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
-     */
     public Map<String, AuthRealmConfig> getAuthRealm();
 
-
-    /**
-    Calls Container.getContaineeMap( XTypes.AUDIT_MODULE_CONFIG ).
-
-    @return Map of AuditModuleConfig MBean proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
-     */
     public Map<String, AuditModuleConfig> getAuditModule();
 
-
-    /**
-    Calls Container.getContaineeMap( XTypes.MESSAGE_SECURITY_CONFIG ).
-
-    @return Map of MessageSecurityConfig MBean proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
-     */
     public Map<String, MessageSecurityConfig> getMessageSecurity();
-
 }
 
 

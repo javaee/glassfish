@@ -63,74 +63,48 @@ public interface ModuleMonitoringLevelsConfig extends ConfigElement, PropertiesA
     Value indicating that monitoring is disabled.
      */
     public final static String OFF = "OFF";
-    /**
-    Names of all the modules which have a monitoring level.
-     */
-    public static final Set<String> ALL_LEVEL_NAMES = SetUtil.newUnmodifiableStringSet(
-            "JVM",
-            "ConnectorService",
-            "JMSService",
-            "ConnectorConnectionPool",
-            "EJBContainer",
-            "HTTPService",
-            "JDBCConnectionPool",
-            "ORB",
-            "ThreadPool",
-            "TransactionService",
-            "WebContainer");
 
     public String getJVM();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setJVM(final String value);
 
     public String getConnectorService();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setConnectorService(final String value);
 
     public String getJMSService();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setJMSService(final String value);
 
     public String getConnectorConnectionPool();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setConnectorConnectionPool(final String value);
 
     public String getEJBContainer();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setEJBContainer(final String value);
 
     public String getHTTPService();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setHTTPService(final String value);
 
     public String getJDBCConnectionPool();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setJDBCConnectionPool(final String value);
 
     public String getORB();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setORB(final String value);
 
     public String getThreadPool();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setThreadPool(final String value);
 
     public String getTransactionService();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setTransactionService(final String value);
 
     public String getWebContainer();
 
-    /** @param value one of the values in {@link ModuleMonitoringLevelValues} */
     public void setWebContainer(final String value);
 }

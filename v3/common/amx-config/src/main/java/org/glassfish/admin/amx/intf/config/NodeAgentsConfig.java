@@ -53,7 +53,7 @@ public interface NodeAgentsConfig
     /**
     Calls Container.getContaineeMap( XTypes.NODE_AGENT_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, NodeAgentConfig> getNodeAgent();
 }

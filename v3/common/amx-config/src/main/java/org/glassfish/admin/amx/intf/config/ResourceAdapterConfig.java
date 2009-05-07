@@ -35,29 +35,27 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	Configuration for the &lt;resource-adapter-config&gt; element.
-	@see ResourceAdapterConfigKeys
+Configuration for the &lt;resource-adapter-config&gt; element.
+@see ResourceAdapterConfigKeys
  */
-
 public interface ResourceAdapterConfig extends NamedConfigElement, PropertiesAccess, ObjectType
 {
+
     public static final String AMX_TYPE = "resource-adapter";
-	
-	/**
-		Key for use with {@link ResourcesConfig#createResourceAdapterConfig}.
-		Comma-separated list of ThreadPoolConfig names.
-		@see ResourceAdapterConfig
-	*/
-	public static final String THREAD_POOL_IDS_KEY       = "ThreadPoolIDs";
-    
-	String	getResourceAdapterName();
+    /**
+    Key for use with {@link ResourcesConfig#createResourceAdapterConfig}.
+    Comma-separated list of ThreadPoolConfig names.
+    @see ResourceAdapterConfig
+     */
+    public static final String THREAD_POOL_IDS_KEY = "ThreadPoolIDs";
 
-	String	getThreadPoolIDs();
+    String getResourceAdapterName();
 
-	/**
-		@see ResourceAdapterConfigKeys
-	 */
-	void	setThreadPoolIDs( final String threadPoolIDs );
+    String getThreadPoolIDs();
+
+    /**
+    @see ResourceAdapterConfigKeys
+     */
+    void setThreadPoolIDs(final String threadPoolIDs);
 }

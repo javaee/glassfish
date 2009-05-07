@@ -51,7 +51,7 @@ public interface ClustersConfig
     /**
     Calls Container.getContaineeMap( XTypes.CLUSTER_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ClusterConfig> getCluster();
 }

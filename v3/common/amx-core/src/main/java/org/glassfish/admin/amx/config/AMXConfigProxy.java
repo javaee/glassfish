@@ -52,10 +52,6 @@ import org.glassfish.admin.amx.annotation.Param;
 	All AMXConfigProxy s are required to implement NotificationEmitter.
 	A Config  must issue {@link javax.management.AttributeChangeNotification} when
 	changes are made to the configuration.
-    <p>
-    Note that most sub-interfaces generally provide an AMX_TYPE field because there
-    are enough exceptions that explicit mapping to the actual type cannot be purely
-    algorithmic.
  */
 public interface AMXConfigProxy extends AMXProxy, AttributeResolver
 {

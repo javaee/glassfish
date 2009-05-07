@@ -63,7 +63,7 @@ public interface IiopServiceConfig
     /**
     Calls Container.getContaineeMap( XTypes.IIOP_LISTENER_CONFIG ).
     @return Map of IiopListenerConfig MBean proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, IiopListenerConfig> getIIOPListener();
 

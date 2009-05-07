@@ -53,7 +53,7 @@ public interface HttpServiceConfig
 	
 	/**
 		@return Map of all VirtualServerConfig proxies, keyed by the name of the virtual server.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
+
 	 */
 	public Map<String,VirtualServerConfig>		getVirtualServer();
 

@@ -98,6 +98,9 @@ public final class RealmsMgrImpl extends AMXImplBase
         // this is ugly, the underlying API doesn't understand that there is more than one <security-service>,
         // each with one or more <auth-realm>
         final DomainConfig domainConfig = getDomainRootProxy().child(DomainConfig.class);
+        if ( domainConfig == null ) {
+            throw new IllegalStateException("Null Domain config");
+        }
         final ConfigConfig config = domainConfig.getConfigs().getConfig().values().iterator().next();
         final SecurityServiceConfig ss = config.getSecurityService();
         

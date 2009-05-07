@@ -60,21 +60,21 @@ public interface ClusterConfig
 	/**
 		Calls Container.getContaineeMap( XTypes.SERVER_REF_CONFIG ).
 		@return Map of ServerRefConfig MBean proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
+
 	 */
 	public Map<String,ServerRefConfig>	getServerRef();
 	
 	/**
 		Calls Container.getContaineeMap( XTypes.RESOURCE_REF_CONFIG ).
 		@return Map of ResourceRefConfig MBean proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
+
 	 */
 	public Map<String,ResourceRefConfig>	getResourceRef();
 	
 	/**
 		Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).
 		@return Map of DeployedItemRefConfig MBean proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
+
 	 */
 	public Map<String,DeployedItemRefConfig>	getDeployedItemRef();
 

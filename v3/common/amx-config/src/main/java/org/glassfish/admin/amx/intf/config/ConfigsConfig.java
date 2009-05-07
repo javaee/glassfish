@@ -53,7 +53,7 @@ public interface ConfigsConfig
     /**
     Calls Container.getContaineeMap( XTypes.CONFIG_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ConfigConfig> getConfig();
 }

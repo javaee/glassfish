@@ -55,14 +55,14 @@ public interface ServersConfig
     /**
     Calls Container.getContaineeMap( XTypes.STANDALONE_SERVER_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, StandaloneServerConfig> getStandaloneServer();
 
     /**
     Calls Container.getContaineeMap( XTypes.CLUSTERED_SERVER_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ClusteredServerConfig> getClusteredServer();
 // 	public void		removeStandaloneServerConfig( String name );

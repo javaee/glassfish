@@ -54,7 +54,7 @@ public interface ThreadPoolsConfig
     /**
     Calls Container.getContaineeMap( XTypes.THREAD_POOL_CONFIG ).
     @return Map of ThreadPoolConfig proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ThreadPoolConfig> getThreadPool();
 

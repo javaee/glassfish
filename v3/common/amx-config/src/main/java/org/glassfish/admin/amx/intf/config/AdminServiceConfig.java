@@ -54,7 +54,7 @@ public interface AdminServiceConfig
     /**
     Calls Container.getContaineeMap( XTypes.JMX_CONNECTOR_CONFIG ).
     @return Map of JMXConnectorConfig proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, JMXConnectorConfig> getJMXConnector();
 

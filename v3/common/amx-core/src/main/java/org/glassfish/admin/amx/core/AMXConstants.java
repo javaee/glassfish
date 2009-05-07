@@ -51,15 +51,22 @@ public final class AMXConstants {
     public static final String ATTR_CHILDREN = "Children";
     /** constant for the name of the Name attribute getName {@link AMXProxy#getChildren} */
     public static final String ATTR_NAME = "Name";
-    /** interfaces may contain a type field denoting the type to be used in the ObjectName;
+    
+    /** Proxy interfaces may contain a type field denoting the type to be used in the ObjectName;
      * this is an alternative to an annotation that may be desirable to avoid
      * a dependency on the amx-core module.  Some proxy interfaces also represent
      * MBeans whose type and other metadata is derived not from the proxy interface,
      * but from another authoritative source; this allows an explicit
-     * linkage, albeit one that has to be maintained.
+     * linkage that allows the AMXProxyHandler to deduce the correct type, given
+     * the interface (and avoids any further complexity, the KISS principle).
      * eg public static final String AMX_TYPE = "MyType";
+     * <p>
+     * A good example of this is the config MBeans which use lower case types with dashes. Other
+     * types may use classnames, or other variants; the proxy code can't assume any particular
+     * mapping from a proxy interface to the actual MBean type.
      */
     public static final String TYPE_FIELD = "AMX_TYPE";
+    
     /** implied name for singletons, used in ancestor type=name pairs */
     public static final String NO_NAME = "";
     /**

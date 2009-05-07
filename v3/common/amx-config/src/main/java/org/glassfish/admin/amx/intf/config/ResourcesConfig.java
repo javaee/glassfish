@@ -54,7 +54,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.CUSTOM_RESOURCE_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, CustomResourceConfig> getCustomResource();
 
@@ -86,7 +86,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.JNDI_RESOURCE_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, JNDIResourceConfig> getJNDIResource();
 
@@ -120,7 +120,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.PERSISTENCE_MANAGER_FACTORY_RESOURCE_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, PersistenceManagerFactoryResourceConfig> getPersistenceManagerFactoryResource();
 
@@ -151,7 +151,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.JDBC_RESOURCE_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, JDBCResourceConfig> getJDBCResource();
 
@@ -180,7 +180,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.JDBC_CONNECTION_POOL_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, JDBCConnectionPoolConfig> getJDBCConnectionPool();
 
@@ -282,7 +282,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.CONNECTOR_RESOURCE_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ConnectorResourceConfig> getConnectorResource();
 
@@ -311,7 +311,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.CONNECTOR_CONNECTION_POOL_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ConnectorConnectionPoolConfig> getConnectorConnectionPool();
 
@@ -352,7 +352,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.ADMIN_OBJECT_RESOURCE_CONFIG ).
     @return Map of items, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, AdminObjectResourceConfig> getAdminObjectResource();
 
@@ -382,7 +382,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.RESOURCE_ADAPTER_CONFIG ).
     @return Map of AMXs, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ResourceAdapterConfig> getResourceAdapter();
 
@@ -398,7 +398,7 @@ public interface ResourcesConfig
     /**
     Calls Container.getContaineeMap( XTypes.MAIL_RESOURCE_CONFIG ).
     @return Map of s, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, MailResourceConfig> getMailResource();
 // 	/**

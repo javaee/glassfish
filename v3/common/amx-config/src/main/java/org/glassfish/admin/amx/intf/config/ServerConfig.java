@@ -67,14 +67,14 @@ public interface ServerConfig
     /**
     Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).
     @return Map of all DeployedItemRefConfig MBean proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, DeployedItemRefConfig> getDeployedItemRef();
 
     /**
     Calls Container.getContaineeMap( XTypes.RESOURCE_REF_CONFIG ).
     @return Map of all ResourceRefConfig MBean proxies, keyed by name.
-    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+
      */
     public Map<String, ResourceRefConfig> getResourceRef();
 
