@@ -32,16 +32,12 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- */ 
+ */
 package org.glassfish.admin.amx.j2ee;
 
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-
-/**
- */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type = J2EETypes.MESSAGE_DRIVEN_BEAN, leaf = true)
 public interface MessageDrivenBean extends EJB
 {
-	public final static String	J2EE_TYPE	= J2EETypes.MESSAGE_DRIVEN_BEAN;
 }

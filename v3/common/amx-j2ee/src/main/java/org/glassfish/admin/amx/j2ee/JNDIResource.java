@@ -38,9 +38,7 @@ package org.glassfish.admin.amx.j2ee;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
-/**
- */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JNDI_RESOURCE, leaf=true)
 public interface JNDIResource extends J2EEResource
 {
 	public final static String	J2EE_TYPE	= J2EETypes.JNDI_RESOURCE;

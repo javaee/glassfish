@@ -36,20 +36,18 @@
 package org.glassfish.admin.amx.j2ee;
 
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.api.amx.AMXMBeanMetadata;
 
-
-/**
- */
+@AMXMBeanMetadata(type = J2EETypes.J2EE_APPLICATION)
 public interface J2EEApplication extends J2EEDeployedObject
 {
-	public final static String	J2EE_TYPE	= J2EETypes.J2EE_APPLICATION;
-	
-	/**
-		@return the ObjectNames of the modules, as Strings
- 		<p>
-		Note that the Attribute name is case-sensitive
-		"modules" as defined by JSR 77.
-	 */
- 	@ManagedAttribute
-	public String[]	getmodules();
+
+    /**
+    @return the ObjectNames of the modules, as Strings
+    <p>
+    Note that the Attribute name is case-sensitive
+    "modules" as defined by JSR 77.
+     */
+    @ManagedAttribute
+    public String[] getmodules();
 }

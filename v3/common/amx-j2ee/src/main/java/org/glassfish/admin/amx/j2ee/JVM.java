@@ -42,11 +42,9 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
 	Identifies a Java VM being utilized by a server.
  */
-@AMXMBeanMetadata(leaf=true,singleton=true)
+@AMXMBeanMetadata(type=J2EETypes.JVM, leaf=true,singleton=true)
 public interface JVM extends J2EEManagedObject
 {
-	public final static String	J2EE_TYPE	= J2EETypes.JVM;
-	
 	/**
 		Note that the Attribute name is case-sensitive
 		"javaVendor" as defined by JSR 77.

@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.core;
 
+import org.jvnet.hk2.config.Dom;
+
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.TypeCast;
@@ -636,6 +638,18 @@ public final class Util
     }
     
     /**
+        Generate the default MBean type from a String, eg from a classname.
+     */
+    public static String typeFromName(final String s) {
+        String simpleName = s;
+        final int idx = s.lastIndexOf(".");
+        if (idx >= 0) {
+            simpleName = s.substring(idx + 1);
+        }
+        return Dom.convertName(simpleName);
+    }
+
+    /**
         Deduce the type to be used in the path.  Presence of a TYPE_FIELD field always
         take precedence, then the AMXMBeanMetadata.
      */
@@ -656,7 +670,7 @@ public final class Util
             
             if ( typeValue.equals( AMXMBeanMetadata.NULL ) || typeValue.length() == 0)
             {
-                type = ClassUtil.stripPackageName( intf.getName() );
+                type = Util.typeFromName( intf.getName() );
             }
             else
             {
@@ -666,7 +680,7 @@ public final class Util
         else
         {
             // no annotation, use our default conversion
-            type = ClassUtil.stripPackageName( intf.getName() );
+            type = Util.typeFromName( intf.getName() );
         }
         return type;
     }

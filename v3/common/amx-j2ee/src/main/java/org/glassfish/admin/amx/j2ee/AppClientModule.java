@@ -39,8 +39,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
  */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.APP_CLIENT_MODULE, leaf=true)
 public interface AppClientModule extends J2EEModule
 {
-	public final static String	J2EE_TYPE	= J2EETypes.APP_CLIENT_MODULE;
 }

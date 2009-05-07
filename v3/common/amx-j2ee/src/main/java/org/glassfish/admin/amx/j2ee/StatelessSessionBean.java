@@ -40,9 +40,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
  */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.STATELESS_SESSION_BEAN, leaf=true)
 public interface StatelessSessionBean extends SessionBean
 {
-	public final static String	J2EE_TYPE	= J2EETypes.STATELESS_SESSION_BEAN;
-	
 }

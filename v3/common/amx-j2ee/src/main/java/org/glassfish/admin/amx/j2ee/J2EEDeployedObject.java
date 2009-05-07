@@ -41,26 +41,27 @@ import org.glassfish.admin.amx.annotation.ManagedAttribute;
  */
 public interface J2EEDeployedObject extends J2EEManagedObject, StateManageable
 {
-	/**
-		The deploymentDescriptor string must contain the original XML
-		deployment descriptor that was created for this module during
-		the deployment process.
-		<p>
-		Note that the Attribute name is case-sensitive
-		"deploymentDescriptor" as defined by JSR 77.
-	*/
- 	@ManagedAttribute
-	public String	getdeploymentDescriptor();
-	
-	/**
-		The J2EEServer this module is deployed on.
-		Get the ObjectNames, as String.
-		<p>
-		Note that the Attribute name is case-sensitive
-		"server" as defined by JSR 77.
-		
-		@return the ObjectName of the server, as a String
-	 */
- 	@ManagedAttribute
-	public String	getserver();
+
+    /**
+    The deploymentDescriptor string must contain the original XML
+    deployment descriptor that was created for this module during
+    the deployment process.
+    <p>
+    Note that the Attribute name is case-sensitive
+    "deploymentDescriptor" as defined by JSR 77.
+     */
+    @ManagedAttribute
+    public String getdeploymentDescriptor();
+
+    /**
+    The J2EEServer this module is deployed on.
+    Get the ObjectNames, as String.
+    <p>
+    Note that the Attribute name is case-sensitive
+    "server" as defined by JSR 77.
+
+    @return the ObjectName of the server, as a String
+     */
+    @ManagedAttribute
+    public String getserver();
 }

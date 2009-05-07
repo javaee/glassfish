@@ -72,7 +72,7 @@ public class DASJ2EEServerImpl extends J2EEServerImpl
         {
             final Constructor<C> c = clazz.getConstructor(ObjectName.class);
             final J2EEManagedObjectImplBase impl = c.newInstance(parent);
-            final String j2eeType = (String)intf.getField("J2EE_TYPE").get(c);
+            final String j2eeType = Util.deduceType(intf);
             on = new ObjectNameBuilder( getMBeanServer(), parent).buildChildObjectName( j2eeType, name);
             on = registerChild( impl, on);
         }
@@ -141,7 +141,7 @@ public class DASJ2EEServerImpl extends J2EEServerImpl
         final ObjectNameBuilder builder = getObjectNames();
 
         final JVMImpl jvm = new JVMImpl( getObjectName() );
-        final ObjectName jvmObjectName = builder.buildChildObjectName( JVM.J2EE_TYPE, null);
+        final ObjectName jvmObjectName = builder.buildChildObjectName( J2EETypes.JVM, null);
         registerChild( jvm, jvmObjectName );
         
         if ( DUMMY_HIERARCHY )

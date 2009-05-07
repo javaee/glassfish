@@ -32,23 +32,16 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- */ 
+ */
 package org.glassfish.admin.amx.j2ee;
 
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-;
-
-import java.util.Set;
-
-/**
- */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type = J2EETypes.JDBC_RESOURCE, leaf = true)
 public interface JDBCResource extends J2EEResource
 {
-	public final static String	J2EE_TYPE	= J2EETypes.JDBC_RESOURCE;
-	
- 	@ManagedAttribute
-	public String[]	getjdbcDataSources();
+
+    @ManagedAttribute
+    public String[] getjdbcDataSources();
 }

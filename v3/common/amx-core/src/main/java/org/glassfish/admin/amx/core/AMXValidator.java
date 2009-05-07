@@ -245,7 +245,7 @@ public final class AMXValidator {
         // test proxy methods
         try {
             final AMXProxy parent = proxy.parent();
-            if (parent == null && ! proxy.type().equals(DomainRoot.TYPE)) {
+            if (parent == null && ! proxy.type().equals( Util.deduceType(DomainRoot.class) )) {
                 throw new Exception("Null parent");
             }
 
@@ -261,7 +261,6 @@ public final class AMXValidator {
             final boolean invariantMBeanInfo  = extra.isInvariantMBeanInfo();
             final boolean supportsAdoption    = extra.supportsAdoption();
             final String[] subTypes           = extra.subTypes();
-
 
             final Set<AMXProxy> childrenSet = proxy.childrenSet();
             final Map<String, Map<String, AMXProxy>> childrenMaps = proxy.childrenMaps();

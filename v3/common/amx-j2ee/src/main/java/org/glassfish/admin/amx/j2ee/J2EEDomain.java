@@ -69,11 +69,10 @@ import org.glassfish.admin.amx.annotation.ManagedAttribute;
 	@see RMIIIOPResource
 	@see URLResource
  */
-@AMXMBeanMetadata(singleton=true)
+@AMXMBeanMetadata(type=J2EETypes.J2EE_DOMAIN, singleton=true)
 public interface J2EEDomain
 	extends J2EEManagedObject
 {
-	public final static String	J2EE_TYPE	= J2EETypes.J2EE_DOMAIN;
 	/**
 		Note that the Attribute name is case-sensitive
 		"servers" as defined by JSR 77.

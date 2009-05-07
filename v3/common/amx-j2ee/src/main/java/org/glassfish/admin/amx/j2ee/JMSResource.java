@@ -40,9 +40,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
  */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JMS_RESOURCE, leaf=true)
 public interface JMSResource extends J2EEResource
 {
-	public final static String	J2EE_TYPE	= J2EETypes.JMS_RESOURCE;
-
 }

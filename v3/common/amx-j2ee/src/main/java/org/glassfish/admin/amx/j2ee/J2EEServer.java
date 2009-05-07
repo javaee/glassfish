@@ -35,16 +35,17 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
+import org.glassfish.api.amx.AMXMBeanMetadata;
+
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 
 
 /**
  */
+@AMXMBeanMetadata(type=J2EETypes.J2EE_SERVER, singleton=true)
 public interface J2EEServer extends J2EELogicalServer
 {
-	public final static String		J2EE_TYPE	= J2EETypes.J2EE_SERVER;
-	
 	/**
 	    Restart the server.
 	    <b>Enterprise Edition only.</b>

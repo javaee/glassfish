@@ -40,10 +40,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
  */
+@AMXMBeanMetadata(type=J2EETypes.JCA_RESOURCE)
 public interface JCAResource extends J2EEResource
 {
-	public final static String	J2EE_TYPE	= J2EETypes.JCA_RESOURCE;
-
-
-
 }

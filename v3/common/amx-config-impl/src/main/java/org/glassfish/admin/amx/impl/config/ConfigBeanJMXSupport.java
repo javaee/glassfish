@@ -27,6 +27,7 @@ import javax.management.ObjectName;
 import javax.management.modelmbean.DescriptorSupport;
 import javax.validation.constraints.NotNull;
 import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.admin.amx.core.Util;
 import static org.glassfish.admin.amx.config.AMXConfigProxy.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
@@ -187,15 +188,6 @@ public class ConfigBeanJMXSupport {
         return info;
     }
 
-    public static String typeFromName(final String s) {
-        String simpleName = s;
-        final int idx = s.lastIndexOf(".");
-        if (idx >= 0) {
-            simpleName = s.substring(idx + 1);
-        }
-        return Dom.convertName(simpleName);
-    }
-
     public String getTypeString() {
         return getTypeString(mIntf);
     }
@@ -204,7 +196,7 @@ public class ConfigBeanJMXSupport {
         final Package pkg = intf.getPackage();
         String simple = intf.getName().substring(pkg.getName().length() + 1, intf.getName().length());
 
-        return typeFromName(simple);
+        return Util.typeFromName(simple);
     }
 
     public MBeanInfo getMBeanInfo() {
@@ -669,7 +661,7 @@ public class ConfigBeanJMXSupport {
         private final Element mElement;
 
         private ElementMethodInfo(final Method m, final Element e) {
-            super(m, e.value().length() == 0 ? typeFromName(JMXUtil.getAttributeName(m)) : e.value());
+            super(m, e.value().length() == 0 ? Util.typeFromName(JMXUtil.getAttributeName(m)) : e.value());
             mElement = e;
         }
 
@@ -701,7 +693,7 @@ public class ConfigBeanJMXSupport {
         private final Attribute mAttribute;
 
         private AttributeMethodInfo(final Method m, final Attribute a) {
-            super(m, a.value().length() == 0 ? typeFromName(JMXUtil.getAttributeName(m)) : a.value());
+            super(m, a.value().length() == 0 ? Util.typeFromName(JMXUtil.getAttributeName(m)) : a.value());
             mAttribute = a;
         }
 

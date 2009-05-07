@@ -40,9 +40,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
  */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JAVA_MAIL_RESOURCE, leaf=true)
 public interface JavaMailResource extends J2EEResource
 {
-	public final static String	J2EE_TYPE	= J2EETypes.JAVA_MAIL_RESOURCE;
-
 }

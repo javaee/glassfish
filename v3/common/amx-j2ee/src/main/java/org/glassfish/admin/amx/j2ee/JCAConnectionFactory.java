@@ -40,9 +40,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
  */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JCA_CONNECTION_FACTORY, leaf=true)
 public interface JCAConnectionFactory extends J2EEManagedObject
 {
-	public final static String	J2EE_TYPE	= J2EETypes.JCA_CONNECTION_FACTORY;
-
 }

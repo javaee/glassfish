@@ -65,9 +65,6 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(singleton=true)
 public interface DomainRoot extends AMXProxy
 {
-    /** more efficient access to type */
-    public static final String TYPE = "DomainRoot";
-    
     public static final String PARENT_PATH = "";
     public static final String PATH = PARENT_PATH + Pathnames.SEPARATOR;
     

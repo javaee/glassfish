@@ -44,9 +44,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	@see org.glassfish.admin.amx.monitor.ServletMonitor
 	@see org.glassfish.admin.amx.monitor.WebModuleVirtualServerMonitor
  */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.SERVLET, leaf=true)
 public interface Servlet extends J2EEManagedObject
-{
-	public final static String	J2EE_TYPE	= J2EETypes.SERVLET;
-	
+{	
 }

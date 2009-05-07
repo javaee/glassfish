@@ -40,8 +40,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
  */
+@AMXMBeanMetadata(type=J2EETypes.RESOURCE_ADAPTER)
 public interface ResourceAdapter extends J2EEManagedObject
-{
-	public final static String	J2EE_TYPE	= J2EETypes.RESOURCE_ADAPTER;
-	
+{	
 }

@@ -108,16 +108,15 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
     /** types that require a J2EEApplication ancestor, even if null */
     private static final Set<String> REQUIRES_J2EE_APP	=
         SetUtil.newUnmodifiableStringSet(
-            WebModule.J2EE_TYPE,
-            ResourceAdapterModule.J2EE_TYPE,
-            AppClientModule.J2EE_TYPE,
-            EJBModule.J2EE_TYPE,
-            StatefulSessionBean.J2EE_TYPE,
-            StatelessSessionBean.J2EE_TYPE,
-            EntityBean.J2EE_TYPE,
-            MessageDrivenBean.J2EE_TYPE,
-            Servlet.J2EE_TYPE,
-            ResourceAdapter.J2EE_TYPE
+            J2EETypes.WEB_MODULE,
+            J2EETypes.RESOURCE_ADAPTER_MODULE,
+            J2EETypes.APP_CLIENT_MODULE,
+            J2EETypes.STATEFUL_SESSION_BEAN,
+            J2EETypes.STATELESS_SESSION_BEAN,
+            J2EETypes.ENTITY_BEAN,
+            J2EETypes.MESSAGE_DRIVEN_BEAN,
+            J2EETypes.SERVLET,
+            J2EETypes.RESOURCE_ADAPTER
         );
    /** the required null J2EEApplication ancestor property */
    private static final String NULL_APP_PROP = Util.makeProp(J2EE_APPLICATION, null);

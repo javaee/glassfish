@@ -41,5 +41,4 @@ package org.glassfish.admin.amx.j2ee;
  */
 public interface EJB extends J2EEManagedObject
 {
-
 }

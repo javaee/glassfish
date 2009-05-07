@@ -49,6 +49,8 @@ import javax.management.*;
 
 import static org.glassfish.admin.amx.core.AMXConstants.*;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.Util;
+
 import org.glassfish.admin.amx.impl.config.AttributeResolverHelper;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.Issues;
@@ -732,7 +734,7 @@ public class AMXConfigImpl extends AMXImplBase
     {
         return new String[]
                 {
-                    ConfigBeanJMXSupport.typeFromName(attributeName), attributeName
+                    Util.typeFromName(attributeName), attributeName
                 };
     }
 

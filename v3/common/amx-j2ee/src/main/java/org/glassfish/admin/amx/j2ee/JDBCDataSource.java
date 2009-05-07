@@ -38,13 +38,7 @@ package org.glassfish.admin.amx.j2ee;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
-/**
- */
-@AMXMBeanMetadata(leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JDBC_DATA_SOURCE, leaf=true)
 public interface JDBCDataSource extends J2EEManagedObject
 {
-	public final static String	J2EE_TYPE	= J2EETypes.JDBC_DATA_SOURCE;
-
-
-
 }

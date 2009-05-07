@@ -39,12 +39,9 @@ import org.glassfish.admin.amx.annotation.ManagedAttribute;
 
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-/**
- */
+@AMXMBeanMetadata(type=J2EETypes.RESOURCE_ADAPTER_MODULE)
 public interface ResourceAdapterModule extends J2EEModule
 {
-	public final static String	J2EE_TYPE	= J2EETypes.RESOURCE_ADAPTER_MODULE;
-
 	/**
 		@return the ObjectNames of the resourceAdapters, as Strings
 	 */
