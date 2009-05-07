@@ -62,7 +62,7 @@ public class Commands {
     public Commands() {
     }
     
-    public static boolean startDomain(String domainName, CommonInfoModel commonInfo) {
+    public static int startDomain(String domainName, CommonInfoModel commonInfo) {
         Credentials c = commonInfo.getSource().getDomainCredentials();
 		String adminUser = c.getAdminUserName();
 
@@ -89,7 +89,7 @@ public class Commands {
         
     }
     
-    public static boolean stopDomain(String domainName, CommonInfoModel commonInfo) {
+    public static int stopDomain(String domainName, CommonInfoModel commonInfo) {
 		String command[] = {"stop-domain", "--domaindir",  
 				commonInfo.getTarget().getInstallDir(),  domainName
         };	
@@ -97,7 +97,8 @@ public class Commands {
         return executeCommand(command);
     }
     
-    public static boolean executeCommand(String commandStrings[]){
+    public static int executeCommand(String commandStrings[]){
+        int exitValue = 0;
         try {
             StringBuffer commandOneString = new StringBuffer();
             for(int i = 0; i < commandStrings.length; i++) {
@@ -112,16 +113,16 @@ public class Commands {
             CommonInfoModel.getDefaultLogger().info(stringManager.
                     getString("commands.executingCommandMsg") + commandOneString);
             AsadminMain m = new AsadminMain(commandStrings);
-            int exitValue = m.runCommand();
+            exitValue = m.runCommand();
             pos.flush();
-            return true;
+            return exitValue;
         }
         catch(Exception e) {
             Throwable t = e.getCause();
             CommonInfoModel.getDefaultLogger().warning(stringManager.getString(
 				"upgrade.common.general_exception") + (t==null?e.getMessage():t.getMessage()));
         }
-        return false;
+        return exitValue;
     }
     
     
