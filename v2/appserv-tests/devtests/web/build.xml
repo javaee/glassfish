@@ -265,9 +265,9 @@
         <ant dir="commonsDigesterClassNotFoundException" target="all"/>
         <ant dir="log4jLocallyBundled" target="all"/>
         <ant dir="log4jXmlInEarFile" target="all"/>
-        <!-- XXX temporary commented out due to issue 7548
+<!-- XXX temporarily commented out, see IT 7548
         <ant dir="singleengine" target="all"/>
-        -->
+-->
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="invokerServletDisabled" target="all"/>
         <ant dir="jmxUndeployEvent" target="all"/>
@@ -292,7 +292,7 @@
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
-<!-- XXX temporarily commented out due to IT 8207
+<!-- XXX temporarily commented out, see IT 8207
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
 -->
         <ant dir="webappDeployDashDashLibraries" target="all"/>
@@ -305,10 +305,10 @@
         <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
-<!-- XXX temporary commented out due to issue 7919
+<!-- XXX temporarily commented out, see IT 7919
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
 -->
-<!-- XXX temporary commented out due to issue 7424
+<!-- XXX temporarily commented out, see IT 7424
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
 -->
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
@@ -316,21 +316,25 @@
         <ant dir="virtualServerStateDynamicReconfig" target="all"/>
         <ant dir="virtualServerAlternateDocroot" target="all"/>
         <ant dir="virtualServerAlternateDocrootDynamicReconfig" target="all"/>
-        <!-- Uncomment once fix for IT 6731 has been ported to v3
+<!-- XXX temporarily commented out, see IT 6731
         <ant dir="virtualServerAlternateDocrootWelcomePageRedirect" target="all"/>
-        -->
+-->
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
-<!-- XXX temporary commented out due to issue 7919
+<!-- XXX temporarily commented out, see IT 7919
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
 -->
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
+<!-- XXX temporarily commented out, see IT 8219
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
+-->
+<!-- XXX temporarily commented out, see IT 8220
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
+-->
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
-        <!-- XXX temporary commented out due to issue 7447
+<!-- XXX temporarily commented out, see IT 7447
         <ant dir="classloaderMemoryLeak" target="all"/>
-        -->
+-->
         <ant dir="reconfigDefaultWebModule" target="all"/>
         <ant dir="extraClassPathRelative" target="all"/>
         <ant dir="extraClassPathJarUrl" target="all"/>
@@ -341,9 +345,9 @@
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
         <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
-        <!-- XXX temporary commented out due to issue 7391
+<!-- XXX temporarily commented out, see IT 7391
         <ant dir="pipelineQueueFull" target="all"/>
-        -->
+-->
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
@@ -360,7 +364,7 @@
     </target>
 
     <target name="security">
-<!-- XXX temporary commented out due to issue 7896
+<!-- XXX temporarily commented out, see IT 7896
         <ant dir="ssl" target="all"/>
 -->
         <ant dir="anonymousAccessForbidden" target="all"/>
@@ -406,7 +410,7 @@
         <ant dir="dosBrokenPost" target="all"/>
         <ant dir="defaultKeepAlive" target="all"/>
         <ant dir="multiServletRequests" target="all"/>
-<!-- XXX temporary commented out due to issue 7919
+<!-- XXX temporarily commented out, see IT 7919
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
 -->
         <ant dir="caseSensitiveHostMapping" target="all"/>
@@ -415,19 +419,19 @@
         <ant dir="readerThreadsConfig" target="all"/>
         <ant dir="readerSelectorsConfig" target="all"/>
         <ant dir="httpServletDoPost" target="all"/>
-<!-- XXX temporarily commented out due to issue 7420 
+<!-- XXX temporarily commented out, see IT 7420
         <ant dir="keepAliveTimeoutZero" target="all"/>
 -->
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
         <ant dir="httpResponseServerHeader" target="all"/>
-<!-- XXX temporarily commented out due to issue 7559 
+<!-- XXX temporarily commented out, see IT 7559
         <ant dir="defaultResponseType" target="all"/>
 -->
-<!-- XXX temporarily commented out due to issue 6991 
+<!-- XXX temporarily commented out, see IT 6991
         <ant dir="httpListenerAdminReconfig" target="all"/>
 -->
         <ant dir="headerBufferSize" target="all"/>
-<!-- XXX temporarily commented out due to issue 7559 
+<!-- XXX temporarily commented out, see IT 7559
         <ant dir="defaultContentType" target="all"/>
 -->
         <ant dir="headerBufferFull" target="all"/>
@@ -440,7 +444,7 @@
         <!-- Exclude for prelude, since port unification not supported
         <ant dir="wrongTransport" target="all"/>
         -->
-<!-- XXX temporarily commented out due to issue 7420
+<!-- XXX temporarily commented out, see IT 7420
         <ant dir="maxKeepAliveRequests" target="all"/>
 -->
         <ant dir="httpRequestWhitespaceTolerance" target="all"/>
