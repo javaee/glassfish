@@ -47,7 +47,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	the server is PE/SE/EE, since the feature assortment could vary with
 	release.
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="system-info", leaf=true, singleton=true)
 public interface SystemInfo extends AMXProxy, Singleton, Utility
 {
 	/**
