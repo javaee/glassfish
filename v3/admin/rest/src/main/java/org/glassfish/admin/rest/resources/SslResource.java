@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon Apr 20 11:28:36 PDT 2009
+* date=Mon May 04 14:01:01 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *

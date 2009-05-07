@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon Apr 20 11:28:36 PDT 2009
+* date=Mon May 04 14:01:01 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -18,12 +18,11 @@ import com.sun.grizzly.config.dom.ThreadPool;
 public class ListThreadPoolResource extends TemplateListOfResource<ThreadPool> {
 
 
-	@Path("{Classname}/")
-	public ThreadPoolResource getThreadPoolResource(@PathParam("Classname") String id) {
+	@Path("{Name}/")
+	public ThreadPoolResource getThreadPoolResource(@PathParam("Name") String id) {
 		ThreadPoolResource resource = resourceContext.getResource(ThreadPoolResource.class);
 		for (ThreadPool c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
-			if(c.getClassname().equals(id)){
+			if(c.getName().equals(id)){
 				resource.setEntity(c);
 			}
 		}

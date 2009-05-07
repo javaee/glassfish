@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon Apr 20 11:28:37 PDT 2009
+* date=Mon May 04 14:01:02 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -15,11 +15,5 @@ import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
 import com.sun.enterprise.config.serverbeans.SystemApplications;
 public class SystemApplicationsResource extends TemplateResource<SystemApplications> {
-//////
-//////	@Path("application/")
-//////	public ListApplicationResource getApplicationResource() {
-//////		ListApplicationResource resource = resourceContext.getResource(ListApplicationResource.class);
-//////		resource.setEntity(getEntity().getApplications() );
-//////		return resource;
-//////	}
+
 }
