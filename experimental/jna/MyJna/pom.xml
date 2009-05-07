@@ -30,9 +30,17 @@
 <dependency>
     <groupId>com.sun.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>3.0.5</version>
-</dependency> 
+    <version>3.0.9</version>
+</dependency>
+
+<!--dependency>
+    <groupId>net.java.dev.jna</groupId>
+    <artifactId>jna</artifactId>
+    <version>3.1.0</version>
+</dependency-->
+
   </dependencies>
+
     <repositories>
         <repository>
             <id>glassfish-repo-archive</id>
