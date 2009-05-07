@@ -61,17 +61,18 @@ public class StreamCommandRunner extends S1ASCommand {
     }
     
     private void execute(String[] args) throws CommandException {
-        AsadminMain main = new AsadminMain(args);
-
-        if(main.runLocalCommand() == 0) {
+        AsadminMain main = new AsadminMain();
+        int code;                   // a dead store per findbugs - tbd
+        try {
+            code = main.local(args);
             System.out.println("Ran: " + Arrays.toString(args) + " locally");
-        }
-        else if(main.runRemoteCommand() == 0) {
-            System.out.println("Ran: " + Arrays.toString(args) + " remotely");
-        }
-        else {
-            System.out.println("Error executing command: " + Arrays.toString(args)
-               + " " + main.getErrorMessage());
+        } catch(Exception e) {
+            try {
+                code = main.remote(args);
+                System.out.println("Ran: " + Arrays.toString(args) + " remotely");
+            } catch(Exception ee) {
+                System.out.println("Error executing command: " + Arrays.toString(args) + " " + ee.getMessage());
+            }
         }
     }
 }
