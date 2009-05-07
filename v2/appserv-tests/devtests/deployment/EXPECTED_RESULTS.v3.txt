@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 91
+PASS: 103
 FAIL: 0
 UNKNOWN: 0
 
@@ -96,3 +96,15 @@ UNKNOWN: 0
 [PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin deploydir
 [PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin redeploydir 
 [PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin undeploydir
+[PASSED] ejb : directorydeploy/ejb Test asadmin deploydir
+[PASSED] ejb : directorydeploy/ejb Test asadmin redeploydir
+[PASSED] ejb : directorydeploy/ejb Test asadmin undeploydir
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin deploydir
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin redeploydir 
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin undeploydir 
+[PASSED] war : directorydeploy/war Test asadmin deploydir
+[PASSED] war : directorydeploy/war Test asadmin redeploydir
+[PASSED] war : directorydeploy/war Test asadmin undeploydir
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin deploydir
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin redeploydir 
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin undeploydir
