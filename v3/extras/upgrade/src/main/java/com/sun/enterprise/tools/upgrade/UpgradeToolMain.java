@@ -185,9 +185,11 @@ public class UpgradeToolMain {
                 // preform upgrade
                 DomainsProcessor dProcessor = new DomainsProcessor(commonInfo);
                 TargetAppSrvObj _target = commonInfo.getTarget();
-                dProcessor.startDomain(_target.getDomainName());
+                int exitValue = dProcessor.startDomain(_target.getDomainName());
                 UpdateProgressManager.getProgressManager().processUpgradeUpdateEvent(100);
-               // dProcessor.stopDomain(_target.getDomainName());
+                if (exitValue == 0){
+                    dProcessor.stopDomain(_target.getDomainName());
+                }
             } catch (HarnessException he) {
                 _logger.log(Level.INFO, sm.getString(
                         "enterprise.tools.upgrade.generalException", he.getMessage()));
@@ -224,6 +226,7 @@ public class UpgradeToolMain {
         
 		if (isCLIcmd){
 			main.startCLI(args);
+            System.exit(0);
 		} else {
 			main.startGUI(args);
 		}

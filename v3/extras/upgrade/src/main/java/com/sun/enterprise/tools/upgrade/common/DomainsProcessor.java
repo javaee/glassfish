@@ -70,31 +70,31 @@ public class DomainsProcessor {
 	}
 	
 
-	public boolean startDomain(String domainName) throws HarnessException {
-		boolean flag = false;
+	public int startDomain(String domainName) throws HarnessException {
+		int exitValue = 0;
 		if(!domainStarted) {
-			if(Commands.startDomain(domainName, commonInfo)) {
+            exitValue = Commands.startDomain(domainName, commonInfo);
+			if(exitValue == 0) {
 				domainStarted = true;
-				flag = true;
 			} else {
 				throw new HarnessException(stringManager.
 					getString("upgrade.common.domain_start_failed",domainName));
 			}
 		}
-		return flag;
+		return exitValue;
 	}
 	
-	public boolean stopDomain(String domainName) throws HarnessException {
-		boolean flag = false;
+	public int stopDomain(String domainName) throws HarnessException {
+		int exitValue = 0;
 		if(domainStarted) {
-			if(Commands.stopDomain(domainName, commonInfo)) {
+            exitValue = Commands.stopDomain(domainName, commonInfo);
+			if(exitValue == 0) {
 				domainStarted = false;
-				flag = true;
 			} else {
 				throw new HarnessException(stringManager.getString(
 					"upgrade.common.domain_stop_failed",domainName));
 			}
 		}
-		return flag;
+		return exitValue;
 	}
 }
