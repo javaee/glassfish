@@ -251,9 +251,9 @@
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="commonsLogging" target="all"/>
         <ant dir="commonsLoggingLocalAndGlobal" target="all"/>
-        <!-- Commented out until IT 7125 has been fixed
+<!-- XXX temporarily commented out, see IT 7125
         <ant dir="commonsLoggingLocalOverrideGlobal" target="all"/>
-        -->
+-->
         <ant dir="contextXmlConfig" target="all"/> 
         <ant dir="contextPathXmlConfig" target="all"/>
         <ant dir="cookieValueWithSpaces" target="all"/>
@@ -366,9 +366,7 @@
     </target>
 
     <target name="security">
-<!-- XXX temporarily commented out, see IT 7896
         <ant dir="ssl" target="all"/>
--->
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="securityConstraintMapping" target="all"/>
         <ant dir="sslCookie" target="all"/>
