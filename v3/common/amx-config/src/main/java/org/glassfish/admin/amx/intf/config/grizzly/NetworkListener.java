@@ -42,6 +42,7 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface NetworkListener extends NamedConfigElement
 {
+    public static final String AMX_TYPE = "network-listener";
 
     public Protocol findProtocol();
 

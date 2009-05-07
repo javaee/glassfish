@@ -44,6 +44,7 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface ProtocolChain extends Singleton, ConfigElement
 {
+    public static final String AMX_TYPE = "protocol-chain";
 
     public Map<String, ProtocolFilter> getProtocolFilter();
 }

@@ -42,4 +42,5 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface Transport extends NamedConfigElement
 {
+    public static final String AMX_TYPE = "transport";
 }

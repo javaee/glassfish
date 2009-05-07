@@ -44,6 +44,7 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface Transports extends ConfigElement, Singleton
 {
+    public static final String AMX_TYPE = "transports";
 
     public Map<String, Transport> getTransport();
 

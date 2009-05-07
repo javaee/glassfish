@@ -48,11 +48,6 @@ public interface ClustersConfig
 
     public static final String AMX_TYPE = "clusters";
 
-    /**
-    Calls Container.getContaineeMap( XTypes.CLUSTER_CONFIG ).
-    @return Map of items, keyed by name.
-
-     */
     public Map<String, ClusterConfig> getCluster();
 }
 

@@ -42,5 +42,6 @@ import org.glassfish.admin.amx.intf.config.NamedConfigElement;
  */
 public interface ProtocolFilter  extends NamedConfigElement
 {
+    public static final String AMX_TYPE = "protocol-filter";
 }
 

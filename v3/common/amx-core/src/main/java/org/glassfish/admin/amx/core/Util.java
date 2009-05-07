@@ -636,7 +636,7 @@ public final class Util
     }
     
     /**
-        Deduce the type to be used in the path.  Presence of a type field always
+        Deduce the type to be used in the path.  Presence of a TYPE_FIELD field always
         take precedence, then the AMXMBeanMetadata.
      */
         public static String

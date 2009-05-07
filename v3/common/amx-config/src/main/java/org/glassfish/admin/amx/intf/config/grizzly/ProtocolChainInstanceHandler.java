@@ -42,6 +42,7 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface ProtocolChainInstanceHandler extends NamedConfigElement
 {
+    public static final String AMX_TYPE = "protocol-chain-instance-handler";
 
     public ProtocolChain getProtocolChain();
 }

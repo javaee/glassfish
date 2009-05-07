@@ -51,8 +51,4 @@ public interface Description
     Set the item description.
      */
     public void setDescription(String description);
-    /**
-    Optional key within the Map when creating an AMX implementing Description.
-     */
-    final static String DESCRIPTION_KEY = "Description";
 }
