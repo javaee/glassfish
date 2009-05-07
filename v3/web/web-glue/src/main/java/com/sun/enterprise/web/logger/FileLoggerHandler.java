@@ -88,6 +88,11 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
             if ( !getFilter().isLoggable(record) )
                 return;
         }
+        
+        // log-file hasn't been set XXX check log level
+        if (f==null) {
+            return; 
+        }
 
         try {
             if (webLogger.equals(record.getLoggerName()) || 
