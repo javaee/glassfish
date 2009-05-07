@@ -35,15 +35,11 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;property> element.
-*/
-
-@AMXCreateInfo(paramNames={"name", "value"})
-public interface SystemPropertyConfig extends AnyPropertyConfig 
+Configuration for the &lt;property> element.
+ */
+public interface SystemPropertyConfig extends AnyPropertyConfig
 {
+
     public static final String AMX_TYPE = "system-property";
-    
 }

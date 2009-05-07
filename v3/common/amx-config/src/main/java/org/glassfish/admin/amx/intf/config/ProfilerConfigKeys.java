@@ -36,13 +36,15 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-	 Keys for use with {@link JavaConfig#createProfilerConfig}.
-*/
+Keys for use with {@link JavaConfig#createProfilerConfig}.
+ */
 public final class ProfilerConfigKeys
 {
-	private ProfilerConfigKeys()	{}
-	
-	public static final String	CLASSPATH_KEY				=	"classpath";
-	public static final String	NATIVE_LIBRARY_PATH_KEY	=	"native-library-path";
-	public static final String	ENABLED_KEY				=	"enabled";
+
+    private ProfilerConfigKeys()
+    {
+    }
+    public static final String CLASSPATH_KEY = "classpath";
+    public static final String NATIVE_LIBRARY_PATH_KEY = "native-library-path";
+    public static final String ENABLED_KEY = "enabled";
 }

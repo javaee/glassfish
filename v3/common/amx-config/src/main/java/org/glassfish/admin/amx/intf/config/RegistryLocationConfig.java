@@ -33,29 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
-
-
 
 /**
 
-    Represents the &lt;registry-location> element.
-    
-    Specifies the registry where web service end point artifacts are  
-    published.  Contained in {@link WebServiceEndpointConfig}.
-    
-	@since Appserver 9.0
-	@see WebServiceEndpointConfig
-*/
+Represents the &lt;registry-location> element.
+
+Specifies the registry where web service end point artifacts are  
+published.  Contained in {@link WebServiceEndpointConfig}.
+
+@since Appserver 9.0
+@see WebServiceEndpointConfig
+ */
 public interface RegistryLocationConfig
-    extends ConfigElement, PropertiesAccess  
+        extends ConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "registry-location";
-    
+
     public String getConnectorResourceJNDIName();
-    public void   setConnectorResourceJNDIName( String name );
+
+    public void setConnectorResourceJNDIName(String name);
 }

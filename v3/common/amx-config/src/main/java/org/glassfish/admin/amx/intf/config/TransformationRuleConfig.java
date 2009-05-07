@@ -33,61 +33,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	Sub-element of {@link WebServiceEndpointConfig}.
-	
-	@since AppServer 9.0
+Sub-element of {@link WebServiceEndpointConfig}.
+
+@since AppServer 9.0
  */
 public interface TransformationRuleConfig extends NamedConfigElement, Enabled
 {
-    public static final String AMX_TYPE = "transformation-rule";
-	
-	/**
-		Key for use with {@link WebServiceEndpointConfig#createTransformationRuleConfig}
-		
-	*/
-	public final static String	APPLY_TO_KEY= "ApplyTo";
-	
-	
-	/** Key for use with {@link  WebServiceEndpointConfig#createTransformationRuleConfig} */
-	public final static String	RULE_FILE_LOCATION_KEY       =
-    "RuleFileLocation";
 
-	/** Key for use with
-	    {@link WebServiceEndpointConfig#createTransformationRuleConfig} */
-	public final static String	ENABLED_KEY		= "Enabled";
-    
-	public static final String  APPLY_TO_REQUEST   = "request";
-	public static final String  APPLY_TO_RESPONSE  = "response";
-	public static final String  APPLY_TO_BOTH      = "both";
-	
-	/**
-	 One of {@link #APPLY_TO_REQUEST}, {@link #APPLY_TO_RESPONSE}, {@link #APPLY_TO_BOTH}.
-	 */
-	public String   getApplyTo();
-	
-	/**
-	    @see #getApplyTo
-	 */
-	public void     setApplyTo( String value );
-	
-	/**
-	* Gets the transformation rule file location.
-	*
-	* @return File path for this transformation rule
-	*/
-	public String getRuleFileLocation();
-	
-	/**
-	* Sets the transformation rule file location.
-	* WARNING: Rule file must exist in the new location.
-	*
-	* @param name File path for this transformation rule
-	*/
-	public void setRuleFileLocation(String name);
+    public static final String AMX_TYPE = "transformation-rule";
+
+    /**
+    One of {@link #APPLY_TO_REQUEST}, {@link #APPLY_TO_RESPONSE}, {@link #APPLY_TO_BOTH}.
+     */
+    public String getApplyTo();
+
+    /**
+    @see #getApplyTo
+     */
+    public void setApplyTo(String value);
+
+    /**
+     * Gets the transformation rule file location.
+     *
+     * @return File path for this transformation rule
+     */
+    public String getRuleFileLocation();
+
+    /**
+     * Sets the transformation rule file location.
+     * WARNING: Rule file must exist in the new location.
+     *
+     * @param name File path for this transformation rule
+     */
+    public void setRuleFileLocation(String name);
 }

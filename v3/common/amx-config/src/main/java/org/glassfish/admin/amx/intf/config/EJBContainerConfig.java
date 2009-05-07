@@ -33,9 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
-
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
@@ -44,56 +42,66 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
-
-
 /**
-	 Configuration for the &lt;ejb-container&gt; element.
+Configuration for the &lt;ejb-container&gt; element.
  */
-public interface EJBContainerConfig extends 
-	AMXConfigProxy, PropertiesAccess, Singleton
+public interface EJBContainerConfig extends
+        AMXConfigProxy, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "ejb-container";
+
     
-    @ResolveTo(Integer.class)
-	String	getCacheIdleTimeoutInSeconds();
-	void	setCacheIdleTimeoutInSeconds( final String value );
+    String getCacheIdleTimeoutInSeconds();
 
-    @ResolveTo(Integer.class)
-	String	getCacheResizeQuantity();
-	void	setCacheResizeQuantity( final String value );
+    void setCacheIdleTimeoutInSeconds(final String value);
 
-	String	getCommitOption();
-	void	setCommitOption( final String value );
+    
+    String getCacheResizeQuantity();
 
-    @ResolveTo(Integer.class)
-	String	getMaxCacheSize();
-	void	setMaxCacheSize( final String value );
+    void setCacheResizeQuantity(final String value);
 
-    @ResolveTo(Integer.class)
-	String	getMaxPoolSize();
-	void	setMaxPoolSize( final String value );
+    String getCommitOption();
 
-    @ResolveTo(Integer.class)
-	String	getPoolIdleTimeoutInSeconds();
-	void	setPoolIdleTimeoutInSeconds( final String value );
+    void setCommitOption(final String value);
 
-    @ResolveTo(Integer.class)
-	String	getPoolResizeQuantity();
-	void	setPoolResizeQuantity( final String value );
+    
+    String getMaxCacheSize();
 
-    @ResolveTo(Integer.class)
-	String	getRemovalTimeoutInSeconds();
-	void	setRemovalTimeoutInSeconds( final String value );
+    void setMaxCacheSize(final String value);
 
-	String	getSessionStore();
-	void	setSessionStore( final String value );
+    
+    String getMaxPoolSize();
 
-    @ResolveTo(Integer.class)
-	String	getSteadyPoolSize();
-	void	setSteadyPoolSize( final String value );
+    void setMaxPoolSize(final String value);
 
-	String	getVictimSelectionPolicy();
-	void	setVictimSelectionPolicy( final String value );
+    
+    String getPoolIdleTimeoutInSeconds();
+
+    void setPoolIdleTimeoutInSeconds(final String value);
+
+    
+    String getPoolResizeQuantity();
+
+    void setPoolResizeQuantity(final String value);
+
+    
+    String getRemovalTimeoutInSeconds();
+
+    void setRemovalTimeoutInSeconds(final String value);
+
+    String getSessionStore();
+
+    void setSessionStore(final String value);
+
+    
+    String getSteadyPoolSize();
+
+    void setSteadyPoolSize(final String value);
+
+    String getVictimSelectionPolicy();
+
+    void setVictimSelectionPolicy(final String value);
 
 // 	/**
 // 		Creates ejb-timer-service element. Legal options include:
@@ -114,10 +122,8 @@ public interface EJBContainerConfig extends
 // 		Removes ejb-timer-service element from config
 // 	 */
 // 	void		removeEJBTimerService();
-
-
-	/**
-		@return Get the EJBTimerServiceConfig MBean.
-	 */
-	EJBTimerServiceConfig	getEJBTimerService();
+    /**
+    @return Get the EJBTimerServiceConfig MBean.
+     */
+    EJBTimerServiceConfig getEJBTimerService();
 }

@@ -33,48 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
-
-
-
-
 /**
-	 Configuration for the &lt;manager-properties&gt; element.
+Configuration for the &lt;manager-properties&gt; element.
  */
 public interface ManagerPropertiesConfig extends AMXConfigProxy, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "manager-properties";
+
     
-	public static final String	SESSION_FILE_NAME_KEY				=	"SessionFileName";
-	public static final String	MAX_SESSIONS_KEY					=	"MaxSessions";
-	public static final String	REAP_INTERVAL_IN_SECONDS_KEY		=	"ReapIntervalInSeconds";
-	public static final String	SESSION_ID_GENERATOR_CLASS_NAME_KEY	=	"SessionIdGeneratorClassName";
+    public String getMaxSessions();
+
+    public void setMaxSessions(final String value);
+
     
-    @ResolveTo(Integer.class)
-	public String	getMaxSessions();
-	public void	setMaxSessions( final String value );
+    public String getReapIntervalInSeconds();
 
-    @ResolveTo(Integer.class)
-	public String	getReapIntervalInSeconds();
-	public void	    setReapIntervalInSeconds( final String value );
+    public void setReapIntervalInSeconds(final String value);
 
-	public String	getSessionFileName();
-	public void	setSessionFileName( final String value );
+    public String getSessionFileName();
 
-	public String	getSessionIdGeneratorClassname();
-	public void	setSessionIdGeneratorClassname( final String value );
+    public void setSessionFileName(final String value);
 
+    public String getSessionIdGeneratorClassname();
 
-
-
-
-
-
-
+    public void setSessionIdGeneratorClassname(final String value);
 }

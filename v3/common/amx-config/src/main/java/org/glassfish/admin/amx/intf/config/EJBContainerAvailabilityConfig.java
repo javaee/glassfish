@@ -33,70 +33,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;ejb-container-availability&gt; element.
+Configuration for the &lt;ejb-container-availability&gt; element.
  */
 public interface EJBContainerAvailabilityConfig extends ConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "ejb-container-availability";
-	
-	public static final String		FILE			= "file";
-	public static final String		HA				= "ha";
+    public static final String FILE = "file";
+    public static final String HA = "ha";
+    public static final String EJB_CONTAINER_AVAILABILITY_ENABLED_KEY = "AvailabilityEnabled";
+    /**
+    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
+     */
+    public static final String SFSB_HA_PERSISTENCE_TYPE_KEY = "SFSBHAPersistenceType";
+    /**
+    See {@link #SFSB_HA_PERSISTENCE_TYPE_KEY}.
+     */
+    public static final String SFSB_PERSISTENCE_TYPE_KEY = "SFSBPersistenceType";
+    public static final String SFSB_CHECKPOINT_ENABLED_KEY = "SFSBCheckPointEnabled";
+    public static final String SFSB_QUICK_CHECKPOINT_ENABLED_KEY = "SFSBQuickCheckPointEnabled";
+    /**
+    The jndi-name for the JDBC Connection Pool used
+    potentially by both the Web Container and the EJB Stateful
+    Session Bean Container for use in checkpointing/passivation
+    when persistence-type = {@link SFSBPersistenceTypeValues#HA}.
+     */
+    public static final String SFSB_STORE_POOL_NAME_KEY = "SFSBStorePoolName";
+
     
-	
-	public static final String EJB_CONTAINER_AVAILABILITY_ENABLED_KEY	= "AvailabilityEnabled";
+    public String getAvailabilityEnabled();
 
-	/**
-		Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-	 */
-	public static final String SFSB_HA_PERSISTENCE_TYPE_KEY	= "SFSBHAPersistenceType";
-	
-	/**
-		See {@link #SFSB_HA_PERSISTENCE_TYPE_KEY}.
-	 */
-	public static final String SFSB_PERSISTENCE_TYPE_KEY		= "SFSBPersistenceType";
+    public void setAvailabilityEnabled(final String value);
 
-	public static final String SFSB_CHECKPOINT_ENABLED_KEY		= "SFSBCheckPointEnabled";
+    public String getSFSBHAPersistenceType();
 
-	public static final String SFSB_QUICK_CHECKPOINT_ENABLED_KEY		= "SFSBQuickCheckPointEnabled";
+    /**
+    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
+     */
+    public void setSFSBHAPersistenceType(final String value);
 
-	/**
-		The jndi-name for the JDBC Connection Pool used       
-        potentially by both the Web Container and the EJB Stateful    
-        Session Bean Container for use in checkpointing/passivation   
-        when persistence-type = {@link SFSBPersistenceTypeValues#HA}.
-	 */
-	public static final String SFSB_STORE_POOL_NAME_KEY		= "SFSBStorePoolName";
-    
-    
-    
-    @ResolveTo(Boolean.class)
-	public String	getAvailabilityEnabled();
-	public void	setAvailabilityEnabled( final String value );
+    public String getSFSBPersistenceType();
 
-	public String	getSFSBHAPersistenceType();
-	/**
-		Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-	 */
-	public void	setSFSBHAPersistenceType( final String value );
+    /**
+    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
+     */
+    public void setSFSBPersistenceType(final String value);
 
-	public String	getSFSBPersistenceType();
-	/**
-		Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-	 */
-	public void	setSFSBPersistenceType( final String value );
+    public String getSFSBStorePoolName();
 
-	public String	getSFSBStorePoolName();
-	public void	setSFSBStorePoolName( final String value );
-	
-	/** @deprecated do not use */
-	public String  getSFSBQuickCheckpointEnabled();
-	
-	/** @deprecated do not use */
-	public String  getSFSBCheckpointEnabled();
+    public void setSFSBStorePoolName(final String value);
+
+    /** @deprecated do not use */
+    public String getSFSBQuickCheckpointEnabled();
+
+    /** @deprecated do not use */
+    public String getSFSBCheckpointEnabled();
 }

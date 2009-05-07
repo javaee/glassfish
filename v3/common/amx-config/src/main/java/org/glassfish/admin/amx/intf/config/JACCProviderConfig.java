@@ -33,30 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 /**
-	 Configuration for the &lt;jacc-provider&gt; element.
-	
+Configuration for the &lt;jacc-provider&gt; element.
+
  */
 public interface JACCProviderConfig
-	extends PropertiesAccess, ConfigElement
+        extends PropertiesAccess, ConfigElement
 {
+
     public static final String AMX_TYPE = "jacc-provider";
-	public String	getName();
 
-	public String	getPolicyConfigurationFactoryProvider();
-	public void	setPolicyConfigurationFactoryProvider( String value );
+    public String getName();
 
-	public String	getPolicyProvider();
-	public void	setPolicyProvider( String value );
+    public String getPolicyConfigurationFactoryProvider();
 
+    public void setPolicyConfigurationFactoryProvider(String value);
 
+    public String getPolicyProvider();
 
-
-
+    public void setPolicyProvider(String value);
 }

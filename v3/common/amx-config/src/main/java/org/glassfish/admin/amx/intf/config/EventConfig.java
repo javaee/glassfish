@@ -33,53 +33,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
-
 /**
-    Represents the &lt;event-config> element.<p>
-    Contained in {@link ManagementRuleConfig}.
-      
-	@since Appserver 9.0
-	@see ManagementRuleConfig
-	@see ActionConfig
-*/
+Represents the &lt;event-config> element.<p>
+Contained in {@link ManagementRuleConfig}.
+
+@since Appserver 9.0
+@see ManagementRuleConfig
+@see ActionConfig
+ */
 public interface EventConfig
-    extends ConfigElement, Description, PropertiesAccess  
+        extends ConfigElement, Description, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "event-config";
-	/**
-	    @see EventTypeValues
-	 */
-	public String   getType();
-	/**
-	    Value must be one of the types given by {@link EventTypeValues}.
-	    @see EventTypeValues
-	 */
-	public void     setType( String type );
-	
-	/**               
-        Specifies whether the occurance of the event is to be logged  
-        or not. By default this would be true. If no action is        
-        specified, the event would be recorded.                    
-	 */
-	public String  getRecordEvent();
-	
-	/* @see #getRecordEvent */
-	public void     setRecordEvent( String recordIt );
-	
-	/**           
-        Specifies at what level to record the event occurance in      
-        server log file. Default value is INFO.
-	 */
-	public String   getLevel();
-	
-	/* @see #getLevel */
-	public void     setLevel( String level );
-	
+
+    /**
+    @see EventTypeValues
+     */
+    public String getType();
+
+    /**
+    Value must be one of the types given by {@link EventTypeValues}.
+    @see EventTypeValues
+     */
+    public void setType(String type);
+
+    /**
+    Specifies whether the occurance of the event is to be logged
+    or not. By default this would be true. If no action is
+    specified, the event would be recorded.
+     */
+    public String getRecordEvent();
+
+    /* @see #getRecordEvent */
+    public void setRecordEvent(String recordIt);
+
+    /**
+    Specifies at what level to record the event occurance in
+    server log file. Default value is INFO.
+     */
+    public String getLevel();
+
+    /* @see #getLevel */
+    public void setLevel(String level);
 }

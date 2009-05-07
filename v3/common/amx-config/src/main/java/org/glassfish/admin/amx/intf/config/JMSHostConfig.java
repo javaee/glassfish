@@ -33,46 +33,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
-
-
 /**
-	 Configuration for the &lt;jms-host&gt; element.
-*/
-
-public interface JMSHostConfig extends NamedConfigElement, PropertiesAccess 
+Configuration for the &lt;jms-host&gt; element.
+ */
+public interface JMSHostConfig extends NamedConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "jms-host";
-	
-	public static final String	HOST_KEY				= "Host";
 
-	public static final String	PORT_KEY				= "Port";
+    public String getAdminPassword();
 
-	public static final String	ADMIN_USER_NAME_KEY		= "AdminUserName";
+    public void setAdminPassword(String value);
 
-	public static final String	ADMIN_PASSWORD_KEY		= "AdminPassword";
+    public String getAdminUserName();
+
+    public void setAdminUserName(String value);
+
+    public String getHost();
+
+    public void setHost(String value);
+
     
-	public String	getAdminPassword();
-	public void	setAdminPassword( String value );
+    public String getPort();
 
-	public String	getAdminUserName();
-	public void	setAdminUserName( String value );
-
-	public String	getHost();
-	public void	setHost( String value );
-
-    @ResolveTo(Integer.class)
-	public String	getPort();
-	public void	setPort( String value );
-
-
-
-
+    public void setPort(String value);
 }

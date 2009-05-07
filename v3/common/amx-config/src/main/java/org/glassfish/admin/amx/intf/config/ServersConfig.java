@@ -33,94 +33,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
 
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
-
 /**
-    Configuration for the &lt;servers&gt; element; it is an internal "node" which
-    groups all resources under itself.
-    @since Glassfish V3
-*/
+Configuration for the &lt;servers&gt; element; it is an internal "node" which
+groups all resources under itself.
+@since Glassfish V3
+ */
 public interface ServersConfig
-	extends ConfigElement, ConfigCollectionElement, Singleton
+        extends ConfigElement, ConfigCollectionElement, Singleton
 {
+
     public static final String AMX_TYPE = "servers";
-    
-//     /**
-//         Create a new &lt;server&gt; given an existing config and node-agent.
-//         These are required parameters for the server instance to be created.
-// 
-//         @param name the name of the server to create
-//         @param nodeAgentName the node agent that the server will reference
-//         @param configName the config that the server will reference
-//         @param optional properties for this new server
-//           This is a Map object consisting of key/value for a given property, that can be applied to
-//           this server instance. The Map may also contain additional properties that can be applied to this server instance.
-//           <p>Note that Properties that relate to ports of listeners are stored as system-properties and have
-//           specific key names and must be specified to override values defined in the config to any of the relevant
-//           ports - this is particularly required when the instance being created is on the same machine as other
-//           instances in the domain.
-//           <p>Legal property keys are those found in {@link ServerConfigKeys}.
-// 
-//         @return A proxy to the StandaloneServerConfig MBean that manages the newly created server
-//      */
-//     public StandaloneServerConfig createStandaloneServerConfig(String name, String nodeAgentName,
-//             String configName, Map<String,String> optional);
-//             
-//     /**
-// 	 * Creates a new &lt;server&gt; that belongs to a cluster.
-// 
-//      @param name			Name of the server.
-//      @param nodeAgentName	Name of the node agent that should manage this instance
-//      @param clusterName	    Name of the cluster to which this server should belong.
-//         <p>Note that it is prefereable to pass in an existing nodeagent's name. A non-existent nodeagent name can be
-//         passed in but this nodeagent's hostname attribute will be marked as "localhost" as an assumption is made that the
-//         nodeagent is local. The nodeagent should be created through the create-node-agent command
-//         using the Command Line Interface(CLI) on the machine where this instance is intended to reside after this create()
-//         operation. Prior to starting this instance, that nodeagent will have to be started using the CLI command
-//         start-node-agent.
-//      @param optional Attributes and properties for this new server.
-//        <p>Note that Properties that relate to ports of listeners are stored as system-properties and have
-//        specific key names and must be specified to override values defined in the config to any of the relevant
-//        ports - this is particularly required when the instance being created is on the same machine as other
-//        instances in the domain.
-//        <p>Legal keys are those defined in {@link ServerConfigKeys}.
-// 
-//      @return	A proxy to the ClusteredServerConfig MBean.
-// 	 */
-// 	public ClusteredServerConfig createClusteredServerConfig(String name, 
-//             String clusterName, String nodeAgentName,
-//             java.util.Map<String,String> optional);
 
 
     /**
-		Calls Container.getContaineeMap( XTypes.STANDALONE_SERVER_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,StandaloneServerConfig>		getStandaloneServer();
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.CLUSTERED_SERVER_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ClusteredServerConfig>		getClusteredServer();
-	
+    Calls Container.getContaineeMap( XTypes.STANDALONE_SERVER_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, StandaloneServerConfig> getStandaloneServer();
+
+    /**
+    Calls Container.getContaineeMap( XTypes.CLUSTERED_SERVER_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ClusteredServerConfig> getClusteredServer();
 // 	public void		removeStandaloneServerConfig( String name );
 //     
 // 	public void		removeClusteredServerConfig( String name );
-
-
 }
 
 

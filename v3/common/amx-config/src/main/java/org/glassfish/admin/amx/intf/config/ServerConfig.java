@@ -35,91 +35,62 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 import java.util.Map;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
-	Base interface for server configuration for the &lt;server&gt; element.
-	Does not provide ability to access resource or application-ref; see
-	{@link StandaloneServerConfig} and {@link ClusteredServerConfig}.
+Base interface for server configuration for the &lt;server&gt; element.
+Does not provide ability to access resource or application-ref; see
+{@link StandaloneServerConfig} and {@link ClusteredServerConfig}.
  */
 public interface ServerConfig
-	extends PropertiesAccess, SystemPropertiesAccess, NamedConfigElement
+        extends PropertiesAccess, SystemPropertiesAccess, NamedConfigElement
 {
+
     public static final String AMX_TYPE = "server";
-	
-    /** Key for the system property that would be used to assign port value for the listener named http-listener-1**/
-        public static final String  HTTP_LISTENER_1_PORT_KEY = PropertiesAccess.PROPERTY_PREFIX +"HTTP_LISTENER_PORT";
-        
-    /** Key for the system property that would be used to assign port value for the listener named http-listener-2**/
-        public static final String  HTTP_LISTENER_2_PORT_KEY = PropertiesAccess.PROPERTY_PREFIX +"HTTP_SSL_LISTENER_PORT";
-        
-    /** Key for the system property that would be used to assign port value for the iiop listener named orb-listener-1**/
-        public static final String  ORB_LISTENER_1_PORT_KEY = PropertiesAccess.PROPERTY_PREFIX +"IIOP_LISTENER_PORT";
-        
-    /** Key for the system property that would be used to assign port value for the iiop listener named admin-listener-port **/
-        public static final String  ADMIN_LISTENER_PORT_KEY = PropertiesAccess.PROPERTY_PREFIX +"HTTP_ADMIN_LISTENER_PORT";
-        
-    /** Key for the system property that would be used to assign port value for the secure iiop listener named SSL**/
-        public static final String  SSL_PORT_KEY = PropertiesAccess.PROPERTY_PREFIX +"IIOP_SSL_LISTENER_PORT";
-        
-    /** Key for the system property that would be used to assign port value for the secure client-auth
-     * supporting SSL enabled iiop listenerlistener named SSL_MUTUALAUTH**/
-        public static final String  SSL_MUTUALAUTH_PORT_KEY = PropertiesAccess.PROPERTY_PREFIX +"IIOP_SSL_MUTUALAUTH_PORT";
-        
-    /** Key for the system property that would be used to assign port value for the secure iiop listener named JMX_SYSTEM_CONNECTOR**/
-        public static final String  JMX_SYSTEM_CONNECTOR_PORT_KEY= PropertiesAccess.PROPERTY_PREFIX +"JMX_SYSTEM_CONNECTOR_PORT";
-        
-    /** Key for the system property that would be used to assign port value for the secure iiop listener named JMX_SYSTEM_CONNECTOR**/
-        public static final String  JMS_PROVIDER_PORT_KEY   = PropertiesAccess.PROPERTY_PREFIX +"JMS_PROVIDER_PORT";
 
     /** cross-boundary: declared as generic AMXProxy, client must us as(NetworkConfig.class) */
     public AMXProxy getNetworkConfig();
-    
-    
-	/**
-		Get the name of the config element referenced by this server.
-        @since Glassfish V3
-	 */
-	public String		getConfigRef( );
-	
-	/**
-		Get the name of the node-agent element referenced by this server.
-        @since Glassfish V3
-	 */
-	public String		getNodeAgentRef( );
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).
-		@return Map of all DeployedItemRefConfig MBean proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,DeployedItemRefConfig>	getDeployedItemRef();
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.RESOURCE_REF_CONFIG ).
-		@return Map of all ResourceRefConfig MBean proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ResourceRefConfig>	getResourceRef();
 
-   
-	/**
-	    <b>EE only</b>
-	    Return the load balancer weight for this server.
-	    This is used by both IIOP and HTTP load balancer. Default value is 1.
-	    @since AppServer 9.0
-      */
-    @ResolveTo(Integer.class)
+    /**
+    Get the name of the config element referenced by this server.
+    @since Glassfish V3
+     */
+    public String getConfigRef();
+
+    /**
+    Get the name of the node-agent element referenced by this server.
+    @since Glassfish V3
+     */
+    public String getNodeAgentRef();
+
+    /**
+    Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).
+    @return Map of all DeployedItemRefConfig MBean proxies, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, DeployedItemRefConfig> getDeployedItemRef();
+
+    /**
+    Calls Container.getContaineeMap( XTypes.RESOURCE_REF_CONFIG ).
+    @return Map of all ResourceRefConfig MBean proxies, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ResourceRefConfig> getResourceRef();
+
+    /**
+    <b>EE only</b>
+    Return the load balancer weight for this server.
+    This is used by both IIOP and HTTP load balancer. Default value is 1.
+    @since AppServer 9.0
+     */
+    
     public String getLBWeight();
-        
-	/**
-	    <b>EE only</b>
-	    Set the load balancer weight for this server to the specified value.
-	    @since AppServer 9.0
-	*/
-	public void setLBWeight(final String weight);
+
+    /**
+    <b>EE only</b>
+    Set the load balancer weight for this server to the specified value.
+    @since AppServer 9.0
+     */
+    public void setLBWeight(final String weight);
 }

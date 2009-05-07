@@ -35,26 +35,23 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 /**
-	 Configuration for the &lt;jndi-resource&gt; element.
+Configuration for the &lt;jndi-resource&gt; element.
  */
-@AMXCreateInfo(paramNames={"jndi-name", "jndi-lookup-name", "res-type", "factory-class", "optional" })
 public interface JNDIResourceConfig extends ResourceConfig
 {
+
     public static final String AMX_TYPE = "jndi-resource";
-    
-	String	getJNDILookupName();
 
-	void	setJNDILookupName( final String jndiLookupName );
+    String getJNDILookupName();
 
-	String	getResType();
+    void setJNDILookupName(final String jndiLookupName);
 
-	void	setResType( final String resType );
+    String getResType();
 
-	String	getFactoryClass();
+    void setResType(final String resType);
 
-	void	setFactoryClass( final String factoryClass );
+    String getFactoryClass();
+
+    void setFactoryClass(final String factoryClass);
 }

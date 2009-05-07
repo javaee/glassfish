@@ -35,11 +35,10 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	Referent: "the object of a reference", in this case a marker 
-	interface denoting that the item may be referred to by a
-	{@link ResourceRefConfig}.
+Referent: "the object of a reference", in this case a marker 
+interface denoting that the item may be referred to by a
+{@link ResourceRefConfig}.
  */
 public interface ResourceRefConfigReferent extends RefConfigReferent
 {

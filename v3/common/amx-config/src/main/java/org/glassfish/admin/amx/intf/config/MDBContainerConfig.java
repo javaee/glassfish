@@ -38,37 +38,31 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
-
-
-
-
 /**
-	 Configuration for the &lt;mdb-container&gt; element.
+Configuration for the &lt;mdb-container&gt; element.
  */
 public interface MDBContainerConfig extends AMXConfigProxy, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "mbd-container";
+
     
-    @ResolveTo(Integer.class)
-	public String	getIdleTimeoutInSeconds();
-	public void	setIdleTimeoutInSeconds( final String value );
+    public String getIdleTimeoutInSeconds();
 
-    @ResolveTo(Integer.class)
-	public String	getMaxPoolSize();
-	public void	setMaxPoolSize( final String value );
+    public void setIdleTimeoutInSeconds(final String value);
 
-    @ResolveTo(Integer.class)
-	public String	getPoolResizeQuantity();
-	public void	setPoolResizeQuantity( final String value );
+    
+    public String getMaxPoolSize();
 
-    @ResolveTo(Integer.class)
-	public String	getSteadyPoolSize();
-	public void	setSteadyPoolSize( final String value );
+    public void setMaxPoolSize(final String value);
 
+    
+    public String getPoolResizeQuantity();
 
+    public void setPoolResizeQuantity(final String value);
 
+    
+    public String getSteadyPoolSize();
 
-
-
-
+    public void setSteadyPoolSize(final String value);
 }

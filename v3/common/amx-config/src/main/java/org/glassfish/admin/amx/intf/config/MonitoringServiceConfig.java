@@ -35,20 +35,20 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
 /**
-	 Configuration for the &lt;monitoring-service&gt; element.
+Configuration for the &lt;monitoring-service&gt; element.
  */
 public interface MonitoringServiceConfig
-			extends PropertiesAccess, ConfigElement, Singleton
+        extends PropertiesAccess, ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "monitoring-service";
-    
+
 // 	/**
 // 		Creates new module-monitoring-levels element.
 // 
@@ -62,9 +62,8 @@ public interface MonitoringServiceConfig
 // 		Removes module-monitoring-levels element.
 // 	 */
 // 	public void			removeModuleMonitoringLevels();
-
-	/**
-		@return the ModuleMonitoringLevelsConfig
-	 */
-	public ModuleMonitoringLevelsConfig	getModuleMonitoringLevels();
+    /**
+    @return the ModuleMonitoringLevelsConfig
+     */
+    public ModuleMonitoringLevelsConfig getModuleMonitoringLevels();
 }

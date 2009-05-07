@@ -35,99 +35,89 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
 /**
-	 Configuration for the &lt;java-config&gt; element.
-*/
-
+Configuration for the &lt;java-config&gt; element.
+ */
 public interface JavaConfig
-	extends ConfigElement, PropertiesAccess, Singleton, AnonymousElementList
+        extends ConfigElement, PropertiesAccess, Singleton, AnonymousElementList
 {
+
     public static final String AMX_TYPE = "java-config";
+
+    public String getBytecodePreprocessors();
+
+    public void setBytecodePreprocessors(String value);
+
+    public String getClasspathPrefix();
+
+    public void setClasspathPrefix(String value);
+
+    public String getClasspathSuffix();
+
+    public void setClasspathSuffix(String value);
+
     
-	public String	getBytecodePreprocessors();
-	public void	setBytecodePreprocessors( String value );
+    public String getDebugEnabled();
 
-	public String	getClasspathPrefix();
-	public void	setClasspathPrefix( String value );
+    public void setDebugEnabled(String value);
 
-	public String	getClasspathSuffix();
-	public void	setClasspathSuffix( String value );
+    public String getDebugOptions();
 
-    @ResolveTo(Boolean.class)
-	public String	getDebugEnabled();
-	public void	setDebugEnabled( String value );
+    public void setDebugOptions(String value);
 
-	public String	getDebugOptions();
-	public void	setDebugOptions( String value );
+    public String getEnvClasspathIgnored();
 
-	public String	getEnvClasspathIgnored();
-	public void	setEnvClasspathIgnored( String value );
+    public void setEnvClasspathIgnored(String value);
 
-	public String	getJavaHome();
-	public void	setJavaHome( String value );
+    public String getJavaHome();
 
-	public String	getJavacOptions();
-	public void	setJavacOptions( String value );
+    public void setJavaHome(String value);
 
+    public String getJavacOptions();
+
+    public void setJavacOptions(String value);
 
     /**
-        @since AppServer 9.0
+    @since AppServer 9.0
      */
-    public String   getSystemClasspath();
-    
+    public String getSystemClasspath();
+
     /**
-        @since AppServer 9.0
+    @since AppServer 9.0
      */
-    public void     setSystemClasspath( String classpath );
-    
-	public String[]	getJVMOptions();
-	
-	/**
-        Add jvm options.
-        <p>
-        If a JVM option contains a space or tab, you must enclose
-        it in quotes eg </code>"C:Program Files\dir"</code>
-        
-	 */
-	public void	setJVMOptions( String[] value );
+    public void setSystemClasspath(String classpath);
 
-	public String	getNativeLibraryPathPrefix();
-	public void	setNativeLibraryPathPrefix( String value );
+    public String[] getJVMOptions();
 
-	public String	getNativeLibraryPathSuffix();
-	public void	setNativeLibraryPathSuffix( String value );
+    /**
+    Add jvm options.
+    <p>
+    If a JVM option contains a space or tab, you must enclose
+    it in quotes eg </code>"C:Program Files\dir"</code>
 
-	public String	getRMICOptions();
-	public void	setRMICOptions( String value );
+     */
+    public void setJVMOptions(String[] value);
 
-	public String	getServerClasspath();
-	public void	setServerClasspath( String value );
+    public String getNativeLibraryPathPrefix();
+
+    public void setNativeLibraryPathPrefix(String value);
+
+    public String getNativeLibraryPathSuffix();
+
+    public void setNativeLibraryPathSuffix(String value);
+
+    public String getRMICOptions();
+
+    public void setRMICOptions(String value);
+
+    public String getServerClasspath();
+
+    public void setServerClasspath(String value);
 
 
-// -------------------- Operations --------------------
-// 	/**
-// 		Get the ProfilerConfig MBean.
-// 	 */
-// 	public ProfilerConfig	getProfilerConfig();
-// 
-// 	/**
-// 		Creates a profiler element.
-// 		Although a name is specified, only one profiler may exist.
-// 
-// 		@param name		identifier
-// 		@param optional	Map of optional attributes.  See {@link ProfilerConfigKeys}
-// 		@return A proxy to the ProfilerConfig MBean.
-// 	 */
-// 	public ProfilerConfig	createProfilerConfig( String name, Map<String,String> optional );
-
-	/**
-		Removes profiler element.  Even though only one can exist, the name must be specified.
-	 */
-	public void			removeProfilerConfig();
 }

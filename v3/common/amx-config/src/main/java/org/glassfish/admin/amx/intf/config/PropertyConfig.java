@@ -35,11 +35,11 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	 Configuration for the &lt;property> element.
-*/
-public interface PropertyConfig extends AnyPropertyConfig 
+Configuration for the &lt;property> element.
+ */
+public interface PropertyConfig extends AnyPropertyConfig
 {
+
     public static final String AMX_TYPE = "property";
 }

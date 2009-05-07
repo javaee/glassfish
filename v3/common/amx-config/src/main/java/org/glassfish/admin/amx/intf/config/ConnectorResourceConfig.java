@@ -35,20 +35,15 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 /**
-	 Configuration for the &lt;connector-resource&gt; element.
+Configuration for the &lt;connector-resource&gt; element.
  */
-@AMXCreateInfo(paramNames={"jndi-name","pool-name", "optional"})
 public interface ConnectorResourceConfig extends ResourceConfig
 {
+
     public static final String AMX_TYPE = "connector-resource";
-	public String	getPoolName();
 
-	public void	    setPoolName( final String poolName );
+    public String getPoolName();
 
-
-
+    public void setPoolName(final String poolName);
 }

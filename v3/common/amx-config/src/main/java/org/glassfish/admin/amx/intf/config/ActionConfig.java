@@ -33,29 +33,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 /**
-	 Represents the &lt;action&gt; element.
-	 <p>
-	@since Appserver 9.0
-	@see ManagementRuleConfig
-	@see EventConfig
-    @deprecated
-*/
+Represents the &lt;action&gt; element.
+<p>
+@since Appserver 9.0
+@see ManagementRuleConfig
+@see EventConfig
+@deprecated
+ */
 public interface ActionConfig extends ConfigElement
 {
+
     public static final String AMX_TYPE = "action-config";
-	/**                              
-        Identifies the classname of the action MBean as given
-        by CustomMBeanConfig.getName().
-	 */
-	public String   getActionMBeanName();
-	public void     setActionMBeanName( String name );
-	
+
+    /**
+    Identifies the classname of the action MBean as given
+    by CustomMBeanConfig.getName().
+     */
+    public String getActionMBeanName();
+
+    public void setActionMBeanName(String name);
 }

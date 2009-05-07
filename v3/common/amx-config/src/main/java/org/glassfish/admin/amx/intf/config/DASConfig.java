@@ -33,72 +33,74 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
-
 /**
-	
-	 Configuration for the &lt;das-config&gt; element.
-	
-	The name is confusing, this item actually lives inside an <admin-service>,
-	which is in turn inside a <config>
+
+Configuration for the &lt;das-config&gt; element.
+
+The name is confusing, this item actually lives inside an <admin-service>,
+which is in turn inside a <config>
  */
 public interface DASConfig extends ConfigElement, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "das-config";
+
     
-    @ResolveTo(Integer.class)
-	public String	getAdminSessionTimeoutInMinutes();
-	public void	setAdminSessionTimeoutInMinutes( String value );
+    public String getAdminSessionTimeoutInMinutes();
 
-	public String	getAutodeployDir();
-	public void	setAutodeployDir( String value );
+    public void setAdminSessionTimeoutInMinutes(String value);
 
-    @ResolveTo(Boolean.class)
-	public String	getAutodeployEnabled();
-	public void	setAutodeployEnabled( String value );
+    public String getAutodeployDir();
 
-    @ResolveTo(Boolean.class)
-	public String	getAutodeployJSPPrecompilationEnabled();
-	public void	setAutodeployJSPPrecompilationEnabled( String value );
+    public void setAutodeployDir(String value);
 
-    @ResolveTo(Integer.class)
-	public String	getAutodeployPollingIntervalInSeconds();
-	public void	setAutodeployPollingIntervalInSeconds( String value );
+    
+    public String getAutodeployEnabled();
 
-    @ResolveTo(Boolean.class)
-	public String	getAutodeployVerifierEnabled();
-	public void	setAutodeployVerifierEnabled( String value );
+    public void setAutodeployEnabled(String value);
+
+    
+    public String getAutodeployJSPPrecompilationEnabled();
+
+    public void setAutodeployJSPPrecompilationEnabled(String value);
+
+    
+    public String getAutodeployPollingIntervalInSeconds();
+
+    public void setAutodeployPollingIntervalInSeconds(String value);
+
+    
+    public String getAutodeployVerifierEnabled();
+
+    public void setAutodeployVerifierEnabled(String value);
 
     /**
-       @since Glassfish V3
+    @since Glassfish V3
      */
-    @ResolveTo(Integer.class)
-    public String  getAutodeployRetryTimeout();
     
+    public String getAutodeployRetryTimeout();
+
     /**
-       @since Glassfish V3
+    @since Glassfish V3
      */
-    public void setAutodeployRetryTimeout( String value );
+    public void setAutodeployRetryTimeout(String value);
 
-	/**
-		See {@link ValidationLevelValues}.  Read-only.
-	 */
-	public String	getDeployXMLValidation();
+    /**
+    See {@link ValidationLevelValues}.  Read-only.
+     */
+    public String getDeployXMLValidation();
 
-    @ResolveTo(Boolean.class)
-	public String	getDynamicReloadEnabled();
-	public void	setDynamicReloadEnabled( String value );
+    
+    public String getDynamicReloadEnabled();
 
-    @ResolveTo(Integer.class)
-	public String	getDynamicReloadPollIntervalInSeconds();
-	public void	setDynamicReloadPollIntervalInSeconds( String value );
+    public void setDynamicReloadEnabled(String value);
 
+    
+    public String getDynamicReloadPollIntervalInSeconds();
 
-
-
+    public void setDynamicReloadPollIntervalInSeconds(String value);
 }

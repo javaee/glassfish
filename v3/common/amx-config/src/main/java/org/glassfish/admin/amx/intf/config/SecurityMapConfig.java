@@ -33,37 +33,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
-
-
 /**
-    Represents the &lt;security-map> element.
-    <p>
-    Perform mapping from principal received during Servlet/EJB        
-    authentication, to credentials accepted by the EIS. This mapping  
-    is optional.It is possible to map multiple (server) principal to  
-    the same backend principal.    
-    
-	@since Appserver 9.0
-*/
+Represents the &lt;security-map> element.
+<p>
+Perform mapping from principal received during Servlet/EJB        
+authentication, to credentials accepted by the EIS. This mapping  
+is optional.It is possible to map multiple (server) principal to  
+the same backend principal.    
+
+@since Appserver 9.0
+ */
 public interface SecurityMapConfig
-    extends ConfigElement
+        extends ConfigElement
 {
+
     public static final String AMX_TYPE = "security-map";
-    
-	public String[]  getPrincipalNames();
-	public void      createPrincipal( String name );
-	public void      removePrincipal( String name );
-	
-	public String[]  getUserGroupNames();
-	public void      createUserGroup( String name );
-	public void      removeUserGroup( String name );
-	
-	public BackendPrincipalConfig       getBackendPrincipal(); 
+
+    public String[] getPrincipalNames();
+
+    public void createPrincipal(String name);
+
+    public void removePrincipal(String name);
+
+    public String[] getUserGroupNames();
+
+    public void createUserGroup(String name);
+
+    public void removeUserGroup(String name);
+
+    public BackendPrincipalConfig getBackendPrincipal();
 }

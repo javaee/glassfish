@@ -35,88 +35,26 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 import java.util.Properties;
 
-
 /**
-    Manipulates management rules.
-    
-	@since Appserver 9.0
-*/
+Manipulates management rules.
 
+@since Appserver 9.0
+ */
 public interface ManagementRulesConfig
-    extends ConfigElement, Enabled, Singleton
+        extends ConfigElement, Enabled, Singleton
 {
+
     public static final String AMX_TYPE = "management-rules";
-    
-	public Map<String,ManagementRuleConfig> getManagementRule();
-	
-	/** For use with createManagementRule() specifying description of the rule (String)*/
-	public static final String RULE_DESCRIPTION_KEY  = "Description";
-	
-	/** For use with createManagementRule() specifying whether the rule is to be enabled (String)*/
-	public static final String RULE_ENABLED_KEY      = "Enabled";
-	
-	/** For use with createManagementRule() specifying whether event logging is to be enabled (String)*/
-	public static final String EVENT_LOG_ENABLED_KEY  = "EventLogEnabled";
-	
-	/** For use with createManagementRule() specifying Event Level [default=INFO] (String)*/
-	public static final String EVENT_LEVEL_KEY  = "EventLevel";
+   
+    public static final String EVENT_DESCRIPTION_KEY = "EventDescription";
 
-	/**
-        <b>DO NOT USE; ignored if used.</b>
-        @deprecated ignored
-     */
-	public static final String EVENT_PROPERTIES_KEY  = "EventProperties";
-	
-	/** For use with createManagementRule() specifying Event description (String)*/
-	public static final String EVENT_DESCRIPTION_KEY  = "EventDescription";
 
-//     /**
-//         Use the newer method to be able to specify event properties.
-//         @deprecated use the new variant
-//      */
-// 	    public ManagementRuleConfig createManagementRuleConfig(
-//                 String  ruleName,
-//                 String  eventType,
-//                 String  actionMBeanName,
-//                 Map<String,String> optional );
-//                 
-//     /**
-//         Create new self management rule. In addition to the formal parameters, the following
-//         optional parameters may be specified:
-//         <ul>
-//         <li>{@link #RULE_DESCRIPTION_KEY}</li>
-//         <li>{@link #RULE_ENABLED_KEY}</li>
-//         <li>{@link #EVENT_DESCRIPTION_KEY}</li>
-//         <li>{@link #EVENT_LOG_ENABLED_KEY}</li>
-//         <li>{@link #EVENT_LEVEL_KEY}</li>
-//         </ul>
-//         
-//         @param ruleName          name of the management rule. Required.
-//         @param eventType         one of the values defined in {@link EventTypeValues}
-//         @param actionMBeanName   actionMbeanName associated with rule  (optional)
-//         @param optional optional additional values
-// 
-//         @return ObjectName of created management-rule
-//         @throws Exception
-//         @see EventTypeValues
-//      */
-// 
-//     public ManagementRuleConfig createManagementRuleConfig(
-//                 String  ruleName,
-//                 String  eventType,
-//                 String  actionMBeanName,
-//                 Properties  eventProperties,
-//                 Map<String,String> optional );
-// 	                                    
-// 	public void removeManagementRuleConfig( String name );
 }
 
 

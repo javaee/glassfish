@@ -35,81 +35,43 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
 /**
-    Configuration for the &lt;message-security-config&gt; element.
-*/
-public interface MessageSecurityConfig 
-	extends NamedConfigElement
+Configuration for the &lt;message-security-config&gt; element.
+ */
+public interface MessageSecurityConfig
+        extends NamedConfigElement
 {
+
     public static final String AMX_TYPE = "message-security";
-	
-	/** Key for use with {@link SecurityServiceConfig#createMessageSecurityConfig}.  Name of the default provider. */
-	public static final String	DEFAULT_PROVIDER_KEY			= "DefaultProvider";
-	/** Key for use with {@link SecurityServiceConfig#createMessageSecurityConfig}. Name of the default client provider */
-	public static final String	DEFAULT_CLIENT_PROVIDER_KEY		= "DefaultClientProvider";
-    
+    /** Key for use with {@link SecurityServiceConfig#createMessageSecurityConfig}.  Name of the default provider. */
+    public static final String DEFAULT_PROVIDER_KEY = "DefaultProvider";
+    /** Key for use with {@link SecurityServiceConfig#createMessageSecurityConfig}. Name of the default client provider */
+    public static final String DEFAULT_CLIENT_PROVIDER_KEY = "DefaultClientProvider";
     /** one of the legal values for auth-layer */
-    public static final String  AUTH_LAYER_HTTP_SERVLET    = "HttpServlet";
-    
+    public static final String AUTH_LAYER_HTTP_SERVLET = "HttpServlet";
     /** one of the legal values for auth-layer */
-    public static final String  AUTH_LAYER_SOAP    = "SOAP";
-    
+    public static final String AUTH_LAYER_SOAP = "SOAP";
+
     /**
-        One of the values defined by {@link MessageLayerValues}.
+    One of the values defined by {@link MessageLayerValues}.
      */
-	public String	getAuthLayer();
+    public String getAuthLayer();
 
-	public String	getDefaultClientProvider();
-	public void	setDefaultClientProvider( final String value );
+    public String getDefaultClientProvider();
 
-	public String	getDefaultProvider();
-	public void	setDefaultProvider( final String value );
-	
-	
-// 	/**
-// 	 Create a new &lt;provider-config&gt;
-// 	 <p>
-//     Client providers must implement the <em>com.sun.enterprise.security.jauth.ClientAuthModule</em>
-//     interface.
-//     <p>
-//     Server-side providers must implement the
-//     <emcom.sun.enterprise.security.jauth.ServerAuthModule</em interface.
-//     <p>
-//     A provider  may  implement both interfaces, but  it  must  implement  the
-//     interface  corresponding to its provider type.
-//     <p>
-//     For example, default providers include:
-//     <ul>
-//     <li>com.sun.xml.wss.provider.ClientSecurityAuthModule</li>
-//     <li>com.sun.xml.wss.provider.ServerSecurityAuthModule</li>
-//     </ul>
-// 
-// 	 @param providerId choose a self-explanatory and unique name for the provider
-// 	 @param providerType  either {@link ProviderConfig#PROVIDER_TYPE_CLIENT} or {@link ProviderConfig#PROVIDER_TYPE_SERVER}
-// 	 @param className classname for the provider
-// 	 @param reservedForFutureUse placeholder for future attributes
-// 
-// 	 @return The proxy to the ProviderConfig MBean.
-// 	*/
-// 	public ProviderConfig createProviderConfig(String providerId, String providerType, 
-// 	    String className, Map<String,String> reservedForFutureUse);
-// 
-// 
-// 	/**
-// 	 Removes an existing provider config.
-// 	     
-// 	 @param providerId the id of the provider config to be removed.
-// 	*/
-// 	public void removeProviderConfig(String providerId);
+    public void setDefaultClientProvider(final String value);
 
-	/**
-		@return A map of ProviderConfig MBean proxies keyed on provider-id.
-	 */
-	public Map<String,ProviderConfig>	getProvider();
+    public String getDefaultProvider();
+
+    public void setDefaultProvider(final String value);
+
+    /**
+    @return A map of ProviderConfig MBean proxies keyed on provider-id.
+     */
+    public Map<String, ProviderConfig> getProvider();
 }

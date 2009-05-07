@@ -33,44 +33,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
 /**
-	 Configuration for the &lt;transaction-service&gt; element.
-*/
-
+Configuration for the &lt;transaction-service&gt; element.
+ */
 public interface TransactionServiceConfig extends ConfigElement, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "transaction-service";
+
     
-    @ResolveTo(Boolean.class)
-	public String	getAutomaticRecovery();
-	public void	setAutomaticRecovery( String value );
+    public String getAutomaticRecovery();
 
-    @ResolveTo(Boolean.class)
-	public String	getHeuristicDecision();
-	public void	setHeuristicDecision( String value );
+    public void setAutomaticRecovery(String value);
 
-    @ResolveTo(Integer.class)
-	public String	getKeypointInterval();
-	public void	setKeypointInterval( String value );
+    
+    public String getHeuristicDecision();
 
-    @ResolveTo(Integer.class)
-	public String	getRetryTimeoutInSeconds();
-	public void	setRetryTimeoutInSeconds( String value );
+    public void setHeuristicDecision(String value);
 
-    @ResolveTo(Integer.class)
-	public String	getTimeoutInSeconds();
-	public void	setTimeoutInSeconds( String value );
+    
+    public String getKeypointInterval();
 
-	public String	getTxLogDir();
-	public void	setTxLogDir( String value );
+    public void setKeypointInterval(String value);
 
+    
+    public String getRetryTimeoutInSeconds();
 
+    public void setRetryTimeoutInSeconds(String value);
 
+    
+    public String getTimeoutInSeconds();
 
+    public void setTimeoutInSeconds(String value);
 
+    public String getTxLogDir();
+
+    public void setTxLogDir(String value);
 }

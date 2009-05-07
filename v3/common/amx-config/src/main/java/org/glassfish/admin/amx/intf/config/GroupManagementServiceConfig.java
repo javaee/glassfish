@@ -37,50 +37,54 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 
-
 /**
  * Configuration for the &lt;group-management-service&gt; for a &lt;config&gt; in
  * a domain. This element controls the behavior of the group management service
  * used for cluster monitoring and failure detection.
  * @since Appserver 9.0
-*/
-
+ */
 public interface GroupManagementServiceConfig
-    extends AMXProxy, ConfigElement, PropertiesAccess
+        extends AMXProxy, ConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "group-management-service";
-    
+
     /** Return the FD protocol tries.
      *  This is the maximum number of attempts to try before GMS confirms that a  
      *  failure is suspected in the group.
      *  @return positive integer specifying the number of such attempts
      */
-    @ResolveTo(Integer.class)
+    
     public String getFDProtocolMaxTries();
+
     /** Set the FD protocol tries to the specified positive integer value.
-      * Must be a positive integer.
-      * @param tries a positive integer specifying the number of attempts
-    */
+     * Must be a positive integer.
+     * @param tries a positive integer specifying the number of attempts
+     */
     public void setFDProtocolMaxTries(final String tries);
 
-
-    @ResolveTo(Integer.class)
+    
     public String getFDProtocolTimeoutMillis();
+
     public void setFDProtocolTimeoutMillis(final String duration);
 
-    @ResolveTo(Integer.class)
+    
     public String getMergeProtocolMaxIntervalMillis();
+
     public void setMergeProtocolMaxIntervalMillis(final String duration);
 
-    @ResolveTo(Integer.class)
+    
     public String getMergeProtocolMinIntervalMillis();
+
     public void setMergeProtocolMinIntervalMillis(final String duration);
 
-    @ResolveTo(Integer.class)
+    
     public String getPingProtocolTimeoutMillis();
+
     public void setPingProtocolTimeoutMillis(final String duration);
 
-    @ResolveTo(Integer.class)
+    
     public String getVSProtocolTimeoutMillis();
+
     public void setVSProtocolTimeoutMillis(final String duration);
 }

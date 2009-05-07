@@ -35,30 +35,29 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 /**
-	 Configuration for the &lt;profiler&gt; element.
-*/
-
-@AMXCreateInfo( paramNames={"name", "optional"} )
+Configuration for the &lt;profiler&gt; element.
+ */
 public interface ProfilerConfig extends NamedConfigElement, PropertiesAccess, Enabled, AnonymousElementList
 {
+
     public static final String AMX_TYPE = "profiler";
-    
-	public String	getClasspath();
-	public void		setClasspath( String classpath );
-	public String	getNativeLibraryPath();
-	public void		setNativeLibraryPath( String nativeLibraryPath );
-	
-	
-	public String[]	getJVMOptions();
-	/**
-	 * Overwrites existing jvm options with the new options.
-	 * If the intent is to append the new options the caller needs to first get 
-	 * the existing jvm options using <a>#getJVMOptions</a>, append new 
-	 * options and set the resulting whole using this method.
-	 */
-	public void		setJVMOptions( String[] jvmOptions );
+
+    public String getClasspath();
+
+    public void setClasspath(String classpath);
+
+    public String getNativeLibraryPath();
+
+    public void setNativeLibraryPath(String nativeLibraryPath);
+
+    public String[] getJVMOptions();
+
+    /**
+     * Overwrites existing jvm options with the new options.
+     * If the intent is to append the new options the caller needs to first get
+     * the existing jvm options using <a>#getJVMOptions</a>, append new
+     * options and set the resulting whole using this method.
+     */
+    public void setJVMOptions(String[] jvmOptions);
 }

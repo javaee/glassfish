@@ -37,68 +37,64 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 /**
-	 Represents the &lt;access-log&gt; element.
-	 <p>
-*/
-
+Represents the &lt;access-log&gt; element.
+<p>
+ */
 public interface AccessLogConfig extends ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "access-log";
+    public static final String FORMAT_KEY = "Format";
+    /**
+    Value is of class java.lang.String.
+    See {@link AccessLogConfig#setRotationPolicy}
+     */
+    public static final String ROTATION_POLICY_KEY = "RotationPolicy";
+    public static final String ROTATION_SUFFIX_KEY = "RotationSuffix";
+    public static final String ROTATION_ENABLED_KEY = "RotationEnabled";
+    public static final String ROTATION_INTERVAL_IN_MINUTES_KEY = "RotationIntervalInMinutes";
+    public static final String ROTATION_SIZE_LIMIT_IN_BYTES_KEY = "RotationSizeLimitInBytes";
+
+    public String getFormat();
+
+    public void setFormat(final String value);
+
     
-	public static final String FORMAT_KEY			=	"Format";
-	
-	/**
-		Value is of class java.lang.String.
-		See {@link AccessLogConfig#setRotationPolicy}
-	 */
-	public static final String ROTATION_POLICY_KEY	=	"RotationPolicy";
-	public static final String ROTATION_SUFFIX_KEY	=	"RotationSuffix";
-	public static final String ROTATION_ENABLED_KEY	=	"RotationEnabled";
-	public static final String ROTATION_INTERVAL_IN_MINUTES_KEY	=	"RotationIntervalInMinutes";
-	public static final String ROTATION_SIZE_LIMIT_IN_BYTES_KEY	=	"RotationSizeLimitInBytes";
+    public String getRotationEnabled();
+
+    public void setRotationEnabled(final String value);
+
     
-    
-	public String	getFormat();
-	public void	setFormat( final String value );
+    public String getRotationIntervalInMinutes();
 
-    @ResolveTo(Boolean.class)
-	public String	getRotationEnabled();
-	public void	setRotationEnabled( final String value );
+    public void setRotationIntervalInMinutes(final String value);
+    /**
+    Possible value for RotationPolicy.
+     */
+    public static final String ROTATION_POLICY_BY_TIME = "time";
+    /**
+    Possible value for RotationPolicy.
+     */
+    public static final String ROTATION_POLICY_BY_SIZE = "size";
+    /**
+    Possible value for RotationPolicy.
+     */
+    public static final String ROTATION_POLICY_ON_DEMAND = "on-demand";
 
-    @ResolveTo(Integer.class)
-	public String	getRotationIntervalInMinutes();
-	public void	setRotationIntervalInMinutes( final String value );
+    /**
+    Valid values are:
+    <ul>
+    <li>{@link #ROTATION_POLICY_BY_TIME}</li>
+    <li>{@link #ROTATION_POLICY_BY_SIZE}</li>
+    <li>{@link #ROTATION_POLICY_ON_DEMAND}</li>
+    </ul>
+     */
+    public void setRotationPolicy(final String value);
 
-	
-	/**
-		Possible value for RotationPolicy.
-	 */
-	public static final String	ROTATION_POLICY_BY_TIME		= "time";
-	/**
-		Possible value for RotationPolicy.
-	 */
-	public static final String	ROTATION_POLICY_BY_SIZE		= "size";
-	/**
-		Possible value for RotationPolicy.
-	 */
-	public static final String	ROTATION_POLICY_ON_DEMAND	= "on-demand";
-	
-	/**
-		Valid values are:
-		<ul>
-		<li>{@link #ROTATION_POLICY_BY_TIME}</li>
-		<li>{@link #ROTATION_POLICY_BY_SIZE}</li>
-		<li>{@link #ROTATION_POLICY_ON_DEMAND}</li>
-		</ul>
-	*/
-	public void	setRotationPolicy( final String value );
-	public String	getRotationPolicy();
+    public String getRotationPolicy();
 
-	public String	getRotationSuffix();
-	public void	setRotationSuffix( final String value );
+    public String getRotationSuffix();
 
-
-
+    public void setRotationSuffix(final String value);
 }

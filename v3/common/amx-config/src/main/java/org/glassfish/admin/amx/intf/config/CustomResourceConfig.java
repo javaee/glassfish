@@ -35,28 +35,19 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
-
-
-
 /**
-	 Configuration for the &lt;custom-resource&gt; element.
+Configuration for the &lt;custom-resource&gt; element.
  */
-@AMXCreateInfo(paramNames={"jndi-name", "res-type", "factory-class", "optional" })
 public interface CustomResourceConfig extends ResourceConfig
 {
+
     public static final String AMX_TYPE = "custom-resource";
-    
-	String	getResType();
 
-	void    setResType( final String resType );
+    String getResType();
 
-	String	getFactoryClass();
+    void setResType(final String resType);
 
-	void	setFactoryClass( final String classname );
+    String getFactoryClass();
 
-
-
+    void setFactoryClass(final String classname);
 }

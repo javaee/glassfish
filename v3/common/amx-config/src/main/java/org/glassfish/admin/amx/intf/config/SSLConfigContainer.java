@@ -33,33 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.core.AMXProxy;
-
-import java.util.Map;
+import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
 /**
-	An MBean implementing this interface can optionally contain an SslConfig.
-*/
+An MBean implementing this interface can optionally contain an SslConfig.
+ */
 public interface SSLConfigContainer extends AMXProxy
 {
-// 	/**
-// 	 * Creates a new SslConfig.
-// 	 *
-// 	 * @param certNickName - the name of the server certificate in the
-//      * certificate database or the PCKS# 11 token
-// 	 * @param optional optional values--see {@link SSLConfigKeys}
-// 	 * @return A proxy to the SslConfig MBean.
-// 	 @see SSLConfigKeys
-// 	 */
-// 	public SslConfig		createSSLConfig( String certNickName, Map<String,?> optional );
-// 
-// 	public void				removeSSL();
 
-	/**
-		Get the SslConfig.
-	 */
-	public SslConfig		getSSL();
+    /**
+    Get the SslConfig.
+     */
+    public Ssl getSSL();
 }

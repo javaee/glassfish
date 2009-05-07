@@ -33,48 +33,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
 /*
  * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/NodeAgentConfig.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
  * $Revision: 1.2 $
  * $Date: 2007/05/05 05:30:34 $
  */
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-
-
-
-
-
-
 /**
-	 Configuration for the &lt;node-agent&gt; element.
-*/
+Configuration for the &lt;node-agent&gt; element.
+ */
 public interface NodeAgentConfig
-	extends AMXConfigProxy, PropertiesAccess
+        extends AMXConfigProxy, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "node-agent";
+
+    /**
+     * @return A proxy to the JMXConnectorConfig MBean.
+     */
+    public JMXConnectorConfig getJMXConnector();
+
+    /**
+    @since Appserver 9.0
+     */
     
-	/**
-	 * @return A proxy to the JMXConnectorConfig MBean.
-	 */
-	public JMXConnectorConfig		getJMXConnector();
-	
-	/**
-	    @since Appserver 9.0
-	 */
-    @ResolveTo(Boolean.class)
-	public String  getStartServersInStartup();
-	
-	/**
-	    @since Appserver 9.0
-	 */
-	public void  setStartServersInStartup( String start );
-	
-	
-	public String   getSystemJMXConnectorName();
-	public void   setSystemJMXConnectorName( String name );
+    public String getStartServersInStartup();
+
+    /**
+    @since Appserver 9.0
+     */
+    public void setStartServersInStartup(String start);
+
+    public String getSystemJMXConnectorName();
+
+    public void setSystemJMXConnectorName(String name);
 }

@@ -35,18 +35,16 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.annotation.ManagedAttribute;
-
 /**
-	 Facts out commonality between PropertyConfig and SystemPropertyConfig.
-*/
-public interface AnyPropertyConfig extends NamedConfigElement, Description 
+Facts out commonality between PropertyConfig and SystemPropertyConfig.
+ */
+public interface AnyPropertyConfig extends NamedConfigElement, Description
 {
+
     /**
-        @return value of this property
+    @return value of this property
      */
-    @ManagedAttribute
-    String  getValue();
-    
-    void setValue( String value );
+    String getValue();
+
+    void setValue(String value);
 }

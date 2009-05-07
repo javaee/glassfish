@@ -35,8 +35,6 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 import java.util.Map;
 
 import javax.management.MBeanOperationInfo;
@@ -44,53 +42,40 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
-	All MBeans that have Properties must extend this interface.
-	<p>
-	Properties are always Strings.  Property names are required to be unique.
-	<p>
-	To specify properties when creating any type of {@link AMXConfig} which
-	(the AMXConfig must extend PropertiesAccess), add them to the optional
-	Map when creating it:
+All MBeans that have Properties must extend this interface.
+<p>
+Properties are always Strings.  Property names are required to be unique.
+<p>
+To specify properties when creating any type of {@link AMXConfig} which
+(the AMXConfig must extend PropertiesAccess), add them to the optional
+Map when creating it:
 <pre><code>
-    final Map<String,String> optional    = new HashMap<String,String>();
-    optional.put( PropertiesAccess.PROPERTY_PREFIX + "prop1", prop1Value );
-    optional.put( PropertiesAccess.PROPERTY_PREFIX + "prop2", prop2Value );
-    ...
+final Map<String,String> optional    = new HashMap<String,String>();
+optional.put( PropertiesAccess.PROPERTY_PREFIX + "prop1", prop1Value );
+optional.put( PropertiesAccess.PROPERTY_PREFIX + "prop2", prop2Value );
+...
 </code></pref>
-    <p>
-    New for Glassfish V3:  properties are first-class MBeans and so this
-    interface extends Container.
+<p>
+New for Glassfish V3:  properties are first-class MBeans and so this
+interface extends Container.
  */
 public interface PropertiesAccess extends AMXProxy
 {
-	/**
-		When a key is required for a property in a Map,
-		its name must consist of this prefix plus the actual name.  When
-		accessing a property directly, this prefix must not be used.
-	 */
+
+    /**
+    When a key is required for a property in a Map,
+    its name must consist of this prefix plus the actual name.  When
+    accessing a property directly, this prefix must not be used.
+     */
     final static String PROPERTY_PREFIX = "property.";
-    
-    
+
 //----------------------------------------------------------------------------------
-    
-//     /**
-//        @since Glassfish V3
-//      */
-//     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-// 	public PropertyConfig createPropertyConfig( String propertyName, String propertyValue);
-//     
-//     /**
-//        @since Glassfish V3
-//      */
-//     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-// 	public void            removePropertyConfig( String propertyName );
-    
-	/**
-		Return all PropertyConfig MBeans, keyed by property name. 
-        @since Glassfish V3
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public Map<String,PropertyConfig>  getProperty();
+    /**
+    Return all PropertyConfig MBeans, keyed by property name.
+    @since Glassfish V3
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public Map<String, PropertyConfig> getProperty();
 }
 
 

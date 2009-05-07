@@ -37,33 +37,12 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
-
-import org.glassfish.admin.amx.base.Singleton;
-
-@AMXCreateInfo( paramNames={} )
 public interface WebModuleConfigConfig extends ApplicationConfigConfig
 {
-    public static final String AMX_TYPE = "web-module-config";
-    
-    public Map<String, EnvEntryConfig> getEnvEntry();
-    
-    public Map<String, ContextParamConfig> getContextParam();
-    
-//     /**
-//         @param name
-//         @param value
-//         @param type
-//         @param description may be null
-//      */
-//     public EnvEntryConfig createEnvEntryConfig( String name, String value, String type, String description);
-//     public void removeEnvEntryConfig( String name );
-//     
-//     /**
-//         @param name
-//         @param value
-//         @param description may be null
-//      */
-//     public ContextParamConfig createContextParamConfig( String name, String value, String description);
-//     public void removeContextParamConfig( String name );
 
+    public static final String AMX_TYPE = "web-module-config";
+
+    public Map<String, EnvEntryConfig> getEnvEntry();
+
+    public Map<String, ContextParamConfig> getContextParam();
 }

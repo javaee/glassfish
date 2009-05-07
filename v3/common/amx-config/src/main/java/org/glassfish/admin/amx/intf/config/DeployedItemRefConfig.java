@@ -37,57 +37,55 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
-
-
-
-
 /**
-	Represents an &lt;application-ref&gt; element
-	found within a &lt;server&gt element.
-*/
+Represents an &lt;application-ref&gt; element
+found within a &lt;server&gt element.
+ */
 public interface DeployedItemRefConfig extends RefConfig
 {
+
     public static final String AMX_TYPE = "application-ref";
+
     /**
-        @return comma-delimited list of virtual servers
+    @return comma-delimited list of virtual servers
      */
     String getVirtualServers();
-    
+
     /**
-        See {@link #getVirtualServers}.
+    See {@link #getVirtualServers}.
      */
     void setVirtualServers(final String virtualServers);
 
     /**
-        <b>EE only</b>
-        Return the String flag that causes any and all load-balancers using
-        this application to consider this application unavailable to
-        them. Defaults to unavailable (false).
+    <b>EE only</b>
+    Return the String flag that causes any and all load-balancers using
+    this application to consider this application unavailable to
+    them. Defaults to unavailable (false).
      */
-    @ResolveTo(Boolean.class)
+    
     public String getLBEnabled();
 
     /**
-        <b>EE only</b>
-        Set the String flag that causes any and all load-balancers using
-        this application to consider this application unavailable to
-        them. 
-     */    
+    <b>EE only</b>
+    Set the String flag that causes any and all load-balancers using
+    this application to consider this application unavailable to
+    them.
+     */
     public void setLBEnabled(final String lbEnabled);
-    
+
     /**
-        The time, in minutes, that it takes this application to reach 
-        a quiescent state after having been disabled.
-        @since AppServer 9.0
+    The time, in minutes, that it takes this application to reach
+    a quiescent state after having been disabled.
+    @since AppServer 9.0
      */
-    @ResolveTo(Integer.class)
-    public String   getDisableTimeoutInMinutes();
     
+    public String getDisableTimeoutInMinutes();
+
     /**
-        @see #getDisableTimeoutInMinutes
-        @since AppServer 9.0
+    @see #getDisableTimeoutInMinutes
+    @since AppServer 9.0
      */
-    public void     setDisableTimeoutInMinutes( final String timeout );
+    public void setDisableTimeoutInMinutes(final String timeout);
 }
 
 

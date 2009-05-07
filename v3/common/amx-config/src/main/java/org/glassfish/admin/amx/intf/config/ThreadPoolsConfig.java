@@ -33,51 +33,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
 
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
-
 /**
-    Configuration for the &lt;thread-pools&gt; element; it is an internal "node" which
-    groups all resources under itself.
-    @since Glassfish V3
-*/
+Configuration for the &lt;thread-pools&gt; element; it is an internal "node" which
+groups all resources under itself.
+@since Glassfish V3
+ */
 public interface ThreadPoolsConfig
-	extends ConfigElement, ConfigCollectionElement, Singleton
+        extends ConfigElement, ConfigCollectionElement, Singleton
 {
+
     public static final String AMX_TYPE = "thread-pools";
-	/**
-		Calls Container.getContaineeMap( XTypes.THREAD_POOL_CONFIG ).
-		@return Map of ThreadPoolConfig proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ThreadPoolConfig>	getThreadPool();
-		
-// 	/**
-// 		Create a new &lt;thread-pool>
-// 		
-// 		@param name			name of the &lt;thread-pool> (thread-pool-id)
-// 		@param optional		Map of optional attributes and properties whose keys
-// 		are defined here. (eg:- MIN_THREAD_POOL_SIZE_KEY)
-// 		@return A proxy to the ThreadPoolConfig MBean.
-// 		@see ThreadPoolConfigKeys
-// 	 */
-// 	public ThreadPoolConfig	createThreadPoolConfig( String name, Map<String,String> optional );
-// 
-// 	/**
-// 		Removes a thread-pool element.
-// 
-// 		@param name			name of the &lt;thread-pool> (thread-pool-id)
-// 	 */
-// 	public void			removeThreadPoolConfig( String name );
+
+    /**
+    Calls Container.getContaineeMap( XTypes.THREAD_POOL_CONFIG ).
+    @return Map of ThreadPoolConfig proxies, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ThreadPoolConfig> getThreadPool();
 
 }
 

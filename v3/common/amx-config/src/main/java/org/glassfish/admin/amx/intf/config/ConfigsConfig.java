@@ -33,67 +33,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
-import org.glassfish.admin.amx.annotation.ManagedOperation;
-
 
 /**
-    Configuration for the &lt;configs&gt; element; it is an internal "node" which
-    groups all resources under itself.
-    @since Glassfish V3
-*/
+Configuration for the &lt;configs&gt; element; it is an internal "node" which
+groups all resources under itself.
+@since Glassfish V3
+ */
 public interface ConfigsConfig
-	extends ConfigElement, ConfigCollectionElement, Singleton
+        extends ConfigElement, ConfigCollectionElement, Singleton
 {
+
     public static final String AMX_TYPE = "configs";
-	/**
-		Calls Container.getContaineeMap( XTypes.CONFIG_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ConfigConfig>		getConfig();
-	
-// 	/**
-// 		Create a new &lt;config&gt; element. Legal keys in the optional Map include:
-// 		<ul>
-// 		<li>{@link ConfigConfigKeys#DYNAMIC_RECONFIGURATION_ENABLED_KEY}</li>
-// 		<li>{@link ConfigConfigKeys#SRC_CONFIG_NAME_KEY}</li>
-// 		</ul>
-// 		<p>
-// 		A new config is created by copying an existing one.  Unless a specific
-// 		config is specified via {@link ConfigConfigKeys#SRC_CONFIG_NAME_KEY},
-// 		the default config as given by {@link ConfigConfigKeys#DEFAULT_SRC_CONFIG_NAME}
-// 		will be copied.
-// 		<p>
-// 		Depending on the context in which the config is to be used, it may or may 
-// 		not conflict with values found in other configs.
-// 
-// 		@param name		name of the &lt;config>
-// 		@param optional		optional attributes for config creation
-// 		@return Returns a proxy to the ConfigConfig MBean.
-// 		@see ConfigConfigKeys
-// 	*/
-//     @ManagedOperation
-// 	public ConfigConfig	createConfigConfig( String name, Map<String,String> optional );
-// 
-// 	/**
-// 		Remove a config.  This will fail if any <server> or <cluster>
-// 		refers to it.
-// 
-// 		@param name The config name.
-// 	*/
-//     @ManagedOperation
-// 	public void		removeConfigConfig( String name );
-// 
+
+    /**
+    Calls Container.getContaineeMap( XTypes.CONFIG_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ConfigConfig> getConfig();
 }
 
 

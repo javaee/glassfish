@@ -35,95 +35,54 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;web-container-availability> element.
+Configuration for the &lt;web-container-availability> element.
  */
 public interface WebContainerAvailabilityConfig extends ConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "web-container-availability";
+
+    public String getAvailabilityEnabled();
+
+    public void setAvailabilityEnabled(final String value);
+
+    public String getHTTPSessionStorePoolName();
+
+    public void setHTTPSessionStorePoolName(final String value);
+
     
-	public static final String		MEMORY			= "memory";
-	public static final String		FILE			= "file";
-	public static final String		HA				= "ha";
+    public String getPersistenceFrequency();
+
+    /**
+    See {@link SessionSaveFrequencyValues}.
+     */
+    public void setPersistenceFrequency(final String value);
+
+    /**
+    See {@link SessionSaveScopeValues}.
+     */
+    public String getPersistenceScope();
+
+    /**
+    See {@link SessionSaveScopeValues}.
+     */
+    public void setPersistenceScope(final String value);
+
     
+    public String getPersistenceStoreHealthCheckEnabled();
+
+    public void setPersistenceStoreHealthCheckEnabled(final String value);
+
+    public String getPersistenceType();
+
+    /**
+    See {@link PersistenceTypeValues}.
+     */
+    public void setPersistenceType(final String value);
+
     
-	
-	public static final String WEB_CONTAINER_AVAILABILITY_ENABLED_KEY	= "AvailabilityEnabled";
+    public String getSSOFailoverEnabled();
 
-	/**
-		See {@link PersistenceTypeValues}.
-	 */
-	public static final String PERSISTENCE_TYPE_KEY					= "PersistenceType";
-
-	/**
-		See {@link SessionSaveFrequencyValues}.
-	 */
-	public static final String PERSISTENCE_FREQUENCY_KEY				= "PersistenceFrequency";
-
-	/**
-		See {@link SessionSaveScopeValues}.
-	 */
-	public static final String PERSISTENCE_SCOPE_KEY					= "PersistenceScope";
-
-	public static final String PERSISTENCE_STORE_HEALTH_CHECK_ENABLED_KEY = "PersistenceStoreHealthCheckEnabled";
-
-	public static final String SSO_FAILOVER_ENABLED_KEY				= "SSOFailoverEnabled";
-
-	public static final String HTTP_SESSION_STORE_POOL_NAME_KEY		= "HTTPSessionStorePoolName";
-    
-    
-	
-	public static final String		WEB_METHOD	= "web-method";
-	public static final String		TIME_BASED	= "time-based";
-	public static final String		ON_DEMAND	= "on-demand";
-    
-    
-	public static final String		SESSION				= "session";
-	public static final String		MODIFIED_SESSION	= "modified-session";
-	public static final String		MODIFIED_ATTRIBUTE	= "modified-attribute";
-    
-    
-    
-	public String	getAvailabilityEnabled();
-	public void	setAvailabilityEnabled( final String value );
-
-	public String	getHTTPSessionStorePoolName();
-	public void	setHTTPSessionStorePoolName( final String value );
-
-    @ResolveTo(Integer.class)
-	public String	getPersistenceFrequency();
-	/**
-		See {@link SessionSaveFrequencyValues}.
-	 */
-	public void	setPersistenceFrequency( final String value );
-
-
-	/**
-		See {@link SessionSaveScopeValues}.
-	 */
-	public String	getPersistenceScope();
-	
-	/**
-		See {@link SessionSaveScopeValues}.
-	 */
-	public void	setPersistenceScope( final String value );
-
-    @ResolveTo(Boolean.class)
-	public String	getPersistenceStoreHealthCheckEnabled();
-	public void	setPersistenceStoreHealthCheckEnabled( final String value );
-
-	public String	getPersistenceType();
-	/**
-		See {@link PersistenceTypeValues}.
-	 */
-	public void	setPersistenceType( final String value );
-
-    @ResolveTo(Boolean.class)
-	public String	getSSOFailoverEnabled();
-	public void	setSSOFailoverEnabled( final String value );
-
-
-
+    public void setSSOFailoverEnabled(final String value);
 }

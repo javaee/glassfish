@@ -33,83 +33,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
-
 
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
-
-
-
-
-
+import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
 /**
-	 Configuration for the &lt;iiop-service&gt; element.
+Configuration for the &lt;iiop-service&gt; element.
  */
 public interface IiopServiceConfig
-	extends ConfigElement, Singleton
+        extends ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "iiop-service";
-// 	/**
-// 		Creates ssl-client-config element.
-// 
-// 		@param params
-// 		@return Returns a proxy to the SslConfig MBean.
-// 	 */
-// 	public SslConfig	createIIOPSSLClientConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes ssl-client-config element.
-// 	 */
-// 	public void			removeIIOPSSLClient();
 
-	/**
-		Get the SslConfig MBean that corresponds to ssl-client-config
-		element of this iiop service.
-	 */
-	public SslConfig	getIIOPSSLClient();
+    /**
+    Get the SslConfig MBean that corresponds to ssl-client-config
+    element of this iiop service.
+     */
+    public Ssl getIIOPSSLClient();
 
-	public String		getClientAuthenticationRequired();
+    public String getClientAuthenticationRequired();
 
-	public void		setClientAuthenticationRequired( final String value );
+    public void setClientAuthenticationRequired(final String value);
 
+    /**
+    Calls Container.getContaineeMap( XTypes.IIOP_LISTENER_CONFIG ).
+    @return Map of IiopListenerConfig MBean proxies, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, IiopListenerConfig> getIIOPListener();
 
-
-	/**
-		Calls Container.getContaineeMap( XTypes.IIOP_LISTENER_CONFIG ).
-		@return Map of IiopListenerConfig MBean proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,IiopListenerConfig>		getIIOPListener();
-	
-	
-// 	/**
-// 		Create an <iiop-listener>. Most fields will default to reasonable values.
-// 		Caller should modify them after creation, if desired.
-// 		
-// 		@param name 	the name (id) of the newly created listener
-// 		@param address	IP address of the listener
-// 		@param optional	optional parameters
-// 		@see IIOPListenerConfigKeys
-// 	 */
-// 	public IiopListenerConfig	createIIOPListenerConfig( String name, String address, Map<String,String> optional );
-// 
-// 	/**
-// 		Removes an iiop listener.
-// 
-// 		@param name the name (id) of the iiop listener to be removed.
-// 	 */
-// 	public void			removeIIOPListenerConfig( String name );
-
-
-	/**
-		Get a proxy to an ORBConfig
-	 */
-	ORBConfig					getORB();
+    /**
+    Get a proxy to an ORBConfig
+     */
+    ORBConfig getORB();
 }
 
 

@@ -35,20 +35,20 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	Factors out the meaning of the "Enabled" Attribute.
+Factors out the meaning of the "Enabled" Attribute.
  */
 public interface Enabled
 {
-	/**
-		Return true if the item is enabled, false otherwise.
-	 */
-    @ResolveTo(Boolean.class)
-	public String	getEnabled();
-	
-	/**
-		Mark the item as enabled.
-	 */
-	public void		setEnabled( String enabled );
+
+    /**
+    Return true if the item is enabled, false otherwise.
+     */
+    
+    public String getEnabled();
+
+    /**
+    Mark the item as enabled.
+     */
+    public void setEnabled(String enabled);
 }

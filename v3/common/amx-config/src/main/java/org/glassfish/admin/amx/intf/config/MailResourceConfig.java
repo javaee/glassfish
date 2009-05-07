@@ -35,46 +35,54 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;mail-resource&gt; element.
+Configuration for the &lt;mail-resource&gt; element.
  */
-@AMXCreateInfo(paramNames={"jndi-name", "host", "user", "from", "optional" })
 public interface MailResourceConfig extends ResourceConfig
 {
+
     public static final String AMX_TYPE = "mail-resource";
-	
-	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-	public static final String STORE_PROTOCOL_KEY           = "StoreProtocol";
-	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-	public static final String STORE_PROTOCOL_CLASS_KEY     = "StoreProtocolClass";
-	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-	public static final String TRANSPORT_PROTOCOL_KEY       = "TransportProtocol";
-	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-	public static final String TRANSPORT_PROTOCOL_CLASS_KEY = "TransportProtocolClass";
-	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-	public static final String DEBUG_KEY                    = "Debug";
+    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
+    public static final String STORE_PROTOCOL_KEY = "StoreProtocol";
+    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
+    public static final String STORE_PROTOCOL_CLASS_KEY = "StoreProtocolClass";
+    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
+    public static final String TRANSPORT_PROTOCOL_KEY = "TransportProtocol";
+    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
+    public static final String TRANSPORT_PROTOCOL_CLASS_KEY = "TransportProtocolClass";
+    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
+    public static final String DEBUG_KEY = "Debug";
+
+    public String getStoreProtocol();
+
+    public String getStoreProtocolClass();
+
+    public String getTransportProtocol();
+
+    public String getTransportProtocolClass();
+
+    public String getHost();
+
+    public String getUser();
+
+    public String getFrom();
+
     
-    
-	public String	getStoreProtocol();
-	public String	getStoreProtocolClass();
-	public String	getTransportProtocol();
-	public String	getTransportProtocolClass();
-	public String	getHost();
-	public String	getUser();
-	public String	getFrom();
-    @ResolveTo(Boolean.class)
-	public String	getDebug();
+    public String getDebug();
 
+    public void setStoreProtocol(final String storeProtocol);
 
-	public void	    setStoreProtocol( final String storeProtocol );
-	public void	    setStoreProtocolClass( final String storeProtocolClass );
-	public void	    setTransportProtocol( final String transportProtocol );
-	public void	    setTransportProtocolClass( final String transportProtocolClass );
-	public void	    setHost( final String host );
-	public void	    setUser( final String user );
-	public void	    setFrom( final String from );
-	public void	    setDebug( final String debug );
+    public void setStoreProtocolClass(final String storeProtocolClass);
 
+    public void setTransportProtocol(final String transportProtocol);
+
+    public void setTransportProtocolClass(final String transportProtocolClass);
+
+    public void setHost(final String host);
+
+    public void setUser(final String user);
+
+    public void setFrom(final String from);
+
+    public void setDebug(final String debug);
 }

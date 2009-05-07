@@ -40,196 +40,137 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
-
-
 /**
-	 Configuration for the &lt;module-log-levels&gt; element.
-	 
-	 Values are those defined in {@link LogLevelValues}.
-*/
+Configuration for the &lt;module-log-levels&gt; element.
 
+Values are those defined in {@link LogLevelValues}.
+ */
 public interface ModuleLogLevelsConfig extends PropertiesAccess, ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "module-log-levels";
-	/**
 
-CANNOT support this generically
-		Get a Map keyed by Attribute name of all log levels.
-		Attribute names correspond to the various get methods eg
-		"Admin" for {@link #getAdmin}, "CMP" for {@link #getCMP}, etc.
-		<p>
-		The possible levels are as defined in {@link LogLevelValues}.
-	public Map<String,String>		getAllLevels();
-	 */
-	
-	
-	/**
-CANNOT support this generically
+    public String getNodeAgent();
 
-		Change all log levels to the specified value.
-		
-		@param value one of the values in {@link LogLevelValues}
-	public void		changeAll( final String value );
-	 */
-	
-	/**
-	    @since AppServer 9.0
-	 */
-	public String getNodeAgent();
-	/**
-	    @since AppServer 9.0
-	 */
-	public void setNodeAgent( String level );
-	
-	/**
-	    @since AppServer 9.0
-	 */
-	public String getUtil();
-	/**
-	    @since AppServer 9.0
-	 */
-	public void setUtil( String level );
-	
-	/**
-	    @since AppServer 9.0
-	 */
-	public String getSelfManagement();
-	/**
-	    @since AppServer 9.0
-	 */
-	public void setSelfManagement( String level );
-	
-	/**
-	    @since AppServer 9.0
-	 */
-	public String getSynchronization();
-	/**
-	    @since AppServer 9.0
-	 */
-	public void setSynchronization( String level );
-	
-	/**
-	    @since AppServer 9.0
-	 */
-	public String getGroupManagementService();
-	/**
-	    @since AppServer 9.0
-	 */
-	public void setGroupManagementService( String level );
-	
-	
-	/**
-	    @since AppServer 9.0
-	 */
-	public String getManagementEvent();
-	/**
-	    @since AppServer 9.0
-	 */
-	public void setManagementEvent( String level );
-	
-	
-	public String	getAdmin();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setAdmin( String value );
+    public void setNodeAgent(String level);
 
-	public String	getClassloader();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setClassloader( String value );
+    public String getUtil();
 
-	public String	getCMPContainer();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setCMPContainer( String value );
+    public void setUtil(String level);
 
-	public String	getCMP();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setCMP( String value );
+    public String getSelfManagement();
 
-	public String	getConfiguration();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setConfiguration( String value );
+    public void setSelfManagement(String level);
 
-	public String	getConnector();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setConnector( String value );
+    public String getSynchronization();
 
-	public String	getCORBA();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setCORBA( String value );
+    public void setSynchronization(String level);
 
-	public String	getDeployment();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setDeployment( String value );
+    public String getGroupManagementService();
 
-	public String	getEJBContainer();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setEJBContainer( String value );
+    public void setGroupManagementService(String level);
 
-	public String	getJavamail();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setJavamail( String value );
+    public String getManagementEvent();
 
-	public String	getJAXR();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setJAXR( String value );
+    public void setManagementEvent(String level);
 
-	public String	getJAXRPC();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setJAXRPC( String value );
+    public String getAdmin();
 
-	public String	getJDO();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setJDO( String value );
+    public void setAdmin(String value);
 
-	public String	getJMS();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setJMS( String value );
+    public String getClaoader();
 
-	public String	getJTA();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setJTA( String value );
+    public void setClaoader(String value);
 
-	public String	getJTS();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setJTS( String value );
+    public String getCMPContainer();
 
-	public String	getMDBContainer();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setMDBContainer( String value );
+    public void setCMPContainer(String value);
 
-	public String	getNaming();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setNaming( String value );
+    public String getCMP();
 
-	public String	getResourceAdapter();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setResourceAdapter( String value );
+    public void setCMP(String value);
 
-	public String	getRoot();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setRoot( String value );
+    public String getConfiguration();
 
-	public String	getSAAJ();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setSAAJ( String value );
+    public void setConfiguration(String value);
 
-	public String	getSecurity();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setSecurity( String value );
+    public String getConnector();
 
-	public String	getServer();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setServer( String value );
+    public void setConnector(String value);
 
-	public String	getVerifier();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setVerifier( String value );
+    public String getCORBA();
 
-	public String	getWebContainer();
-	/** @param value any value defined in {@link LogLevelValues} */
-	public void	setWebContainer( String value );
+    public void setCORBA(String value);
 
+    public String getDeployment();
 
+    public void setDeployment(String value);
 
+    public String getEJBContainer();
 
+    public void setEJBContainer(String value);
 
+    public String getJavamail();
+
+    public void setJavamail(String value);
+
+    public String getJAXR();
+
+    public void setJAXR(String value);
+
+    public String getJAXRPC();
+
+    public void setJAXRPC(String value);
+
+    public String getJDO();
+
+    public void setJDO(String value);
+
+    public String getJMS();
+
+    public void setJMS(String value);
+
+    public String getJTA();
+
+    public void setJTA(String value);
+
+    public String getJTS();
+
+    public void setJTS(String value);
+
+    public String getMDBContainer();
+
+    public void setMDBContainer(String value);
+
+    public String getNaming();
+
+    public void setNaming(String value);
+
+    public String getResourceAdapter();
+
+    public void setResourceAdapter(String value);
+
+    public String getRoot();
+
+    public void setRoot(String value);
+
+    public String getSAAJ();
+
+    public void setSAAJ(String value);
+
+    public String getSecurity();
+
+    public void setSecurity(String value);
+
+    public String getServer();
+
+    public void setServer(String value);
+
+    public String getVerifier();
+
+    public void setVerifier(String value);
+
+    public String getWebContainer();
+
+    public void setWebContainer(String value);
 }

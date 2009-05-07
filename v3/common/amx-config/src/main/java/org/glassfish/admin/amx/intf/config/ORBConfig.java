@@ -33,37 +33,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
-
-
-
-
 /**
-	 Configuration for the &lt;orb&gt; config element.
-*/
-
+Configuration for the &lt;orb&gt; config element.
+ */
 public interface ORBConfig extends AMXConfigProxy, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "orb";
+
     
-    @ResolveTo(Integer.class)
-	public String	getMaxConnections();
-	public void	setMaxConnections( String value );
+    public String getMaxConnections();
 
-    @ResolveTo(Integer.class)
-	public String	getMessageFragmentSize();
-	public void	setMessageFragmentSize( String value );
+    public void setMaxConnections(String value);
 
-	public String	getUseThreadPoolIds();
-	public void	setUseThreadPoolIds( String value );
+    
+    public String getMessageFragmentSize();
 
+    public void setMessageFragmentSize(String value);
 
+    public String getUseThreadPoolIds();
 
-
-
+    public void setUseThreadPoolIds(String value);
 }

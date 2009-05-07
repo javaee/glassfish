@@ -33,31 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
-
 /**
-	 Configuration for the &lt;request-policy&gt; element.
-*/
-
+Configuration for the &lt;request-policy&gt; element.
+ */
 public interface RequestPolicyConfig extends ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "request-policy";
-    
+
     /** "before-content" or "after-content" */
-	public String	getAuthRecipient();
-	public void	setAuthRecipient( final String value );
+    public String getAuthRecipient();
+
+    public void setAuthRecipient(final String value);
 
     /** "sender " or "content" */
-	public String	getAuthSource();
-	public void	setAuthSource( final String value );
+    public String getAuthSource();
 
-
-
-
+    public void setAuthSource(final String value);
 }

@@ -36,26 +36,23 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-    Mixin interface.
-
-    @since AppServer 9.0
+@since AppServer 9.0
  */
-public interface JavaWebStart 
+public interface JavaWebStart
 {
-    public static final String AMX_TYPE = "java-web-start";
-    
     /**              
-        Indicates whether Java Web Start access is     
-        permitted to eligible application client(s.
-        
-        @since Appserver 9.0
-      */
-    @ResolveTo(Boolean.class)
-	public String  getJavaWebStartEnabled();
-	
+    Indicates whether Java Web Start access is
+    permitted to eligible application client(s.
+
+    @since Appserver 9.0
+     */
+    
+    public String getJavaWebStartEnabled();
+
     /**
-        @see #getJavaWebStartEnabled
-        @since Appserver 9.0
-      */
-	public void     setJavaWebStartEnabled( String enabled );
+    @see #getJavaWebStartEnabled
+    @since Appserver 9.0
+     */
+    public void setJavaWebStartEnabled(String enabled);
 }
+

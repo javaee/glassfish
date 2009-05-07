@@ -33,23 +33,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
 /**
-    Configuration for the &lt;backend-principal> element.
-	@since Appserver 9.0
-	@see SecurityMapConfig
-*/
+Configuration for the &lt;backend-principal> element.
+@since Appserver 9.0
+@see SecurityMapConfig
+ */
 public interface BackendPrincipalConfig
-    extends ConfigElement
+        extends ConfigElement
 {
+
     public static final String AMX_TYPE = "backend-principal";
-    
-	public String  getUserName( );
-	public void    setUserName( String username );
-	
-	public String getPassword();
-	public void   setPassword( String newPassword );
+
+    public String getUserName();
+
+    public void setUserName(String username);
+
+    public String getPassword();
+
+    public void setPassword(String newPassword);
 }

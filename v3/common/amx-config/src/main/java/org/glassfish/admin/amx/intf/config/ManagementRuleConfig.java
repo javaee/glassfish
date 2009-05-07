@@ -35,27 +35,24 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
-
 /**
-    Represents the &lt;management-rule> element.
-    
-	@since Appserver 9.0
-	@see ManagementRulesConfig
-*/
+Represents the &lt;management-rule> element.
+
+@since Appserver 9.0
+@see ManagementRulesConfig
+ */
 public interface ManagementRuleConfig
-    extends NamedConfigElement, Description, Enabled
+        extends NamedConfigElement, Description, Enabled
 {
+
     public static final String AMX_TYPE = "management-rule";
-    
-    public EventConfig  getEvent();
-    
+
+    public EventConfig getEvent();
+
     /**
-        @return the ActionConfig, or null if none
+    @return the ActionConfig, or null if none
      */
-    public ActionConfig  getAction();
+    public ActionConfig getAction();
 //     public ActionConfig  createActionConfig( String actionMBeanName );
 //     public void          removeAction();
 }

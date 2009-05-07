@@ -35,14 +35,12 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 /**
-	Configuration for the &lt;server&gt; element that belongs to 
-	a cluster.
+Configuration for the &lt;server&gt; element that belongs to 
+a cluster.
  */
 public interface ClusteredServerConfig extends ServerConfig
 {
+
     public static final String AMX_TYPE = "server";
 }

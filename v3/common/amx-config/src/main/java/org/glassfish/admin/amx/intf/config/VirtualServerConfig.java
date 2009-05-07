@@ -35,85 +35,45 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 import java.util.Map;
 
-
 /**
-	 Configuration for the &lt;virtual-server&gt; element.
-     @deprecated  Grizzly variants now exist?
-*/
-@AMXCreateInfo(paramNames={"id", "hosts", "optional"})
+Configuration for the &lt;virtual-server&gt; element.
+@deprecated  Grizzly variants now exist?
+ */
 public interface VirtualServerConfig
-	extends NamedConfigElement, PropertiesAccess
+        extends NamedConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "virtual-server";
-    
-	/** comma-separated list of http-listeners */
-	public final static String	HTTP_LISTENERS_KEY		= "http-listeners";
-	public final static String	DEFAULT_WEB_MODULE_KEY	= "default-web-module";
-	public final static String	LOG_FILE_KEY			= "log-file";
-	public final static String	DOC_ROOT_KEY			= "docroot";
 
-	public static final String	DOC_ROOT_PROPERTY_KEY	= PropertiesAccess.PROPERTY_PREFIX + "docroot";
-	public static final String	ACCESS_LOG_PROPERTY_KEY = PropertiesAccess.PROPERTY_PREFIX + "accesslog";
-	
-	
-	/**
-		Possible values:
-		<ul>
-		<li>{@link #STATE_DISABLED}</li>
-		<li>{@link #STATE_OFF}</li>
-		<li>{@link #STATE_ON}</li>
-		</ul>
-	*/
-	public final static String	STATE_KEY				= "State";
-	
-	/** One possible value for {@link #STATE_KEY} */
-	public static final String	STATE_DISABLED	= "disabled";
-	/** One possible value for {@link #STATE_KEY} */
-	public static final String	STATE_OFF	= "off";
-	/** One possible value for {@link #STATE_KEY} */
-	public static final String	STATE_ON	= "on";
-    
-    
-	public String	getDefaultWebModule();
-	public void	setDefaultWebModule( String value );
+    public String getDefaultWebModule();
 
-	public String	getHosts();
-	public void	setHosts( String value );
+    public void setDefaultWebModule(String value);
 
-	public String	getHTTPListeners();
-	public void	setHTTPListeners( String value );
+    public String getHosts();
+
+    public void setHosts(String value);
+
+    public String getHTTPListeners();
+
+    public void setHTTPListeners(String value);
 
     //** default: "${com.sun.aas.instanceRoot}/logs/server.log" */
-	public String	getLogFile();
-	public void	setLogFile( String value );
+    public String getLogFile();
 
-	public String	getState();
-	public void	setState( String value );
-	
-	public String	getDocRoot();
-	public void	setDocRoot( String value );
+    public void setLogFile(String value);
 
+    public String getState();
 
-	/**
-		Get the HTTPAccessLogConfig MBean.
-	 */
-	public HTTPAccessLogConfig	getHTTPAccessLog();
+    public void setState(String value);
 
-// 	/**
-// 		Creates new http-access-log element.
-// 	 
-// 		@param	ipOnly
-// 		@param	logDirectory
-// 		@param	reserved
-// 		@return A proxy to the HTTPAccessLogConfig MBean.
-// 	 */
-// 	public HTTPAccessLogConfig createHTTPAccessLogConfig(
-//         @ResolveTo(Boolean .class) final String	ipOnly,
-// 		final String	logDirectory,
-// 		final Map<String,String>		reserved );
-// 	void removeHTTPAccessLog();
+    public String getDocRoot();
+
+    public void setDocRoot(String value);
+
+    /**
+    Get the HTTPAccessLogConfig MBean.
+     */
+    public HTTPAccessLogConfig getHTTPAccessLog();
 }

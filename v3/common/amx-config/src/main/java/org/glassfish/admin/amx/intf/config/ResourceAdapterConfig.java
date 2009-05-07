@@ -40,7 +40,7 @@ package org.glassfish.admin.amx.intf.config;
 	Configuration for the &lt;resource-adapter-config&gt; element.
 	@see ResourceAdapterConfigKeys
  */
-@AMXCreateInfo(paramNames={"name", "optional"})
+
 public interface ResourceAdapterConfig extends NamedConfigElement, PropertiesAccess, ObjectType
 {
     public static final String AMX_TYPE = "resource-adapter";

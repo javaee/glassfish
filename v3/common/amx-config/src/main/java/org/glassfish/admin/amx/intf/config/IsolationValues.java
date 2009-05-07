@@ -45,11 +45,12 @@ package org.glassfish.admin.amx.intf.config;
  */
 public final class IsolationValues
 {
-	private IsolationValues()	{}
-	
-	public static final String		READ_UNCOMMITTED	= "read-uncommitted";
-	public static final String		READ_COMMITTED		= "read-committed";
-	public static final String		REPEATABLE_READ		= "repeatable-read";
-	public static final String		SERIALIZABLE		= "serializable";
-	
+
+    private IsolationValues()
+    {
+    }
+    public static final String READ_UNCOMMITTED = "read-uncommitted";
+    public static final String READ_COMMITTED = "read-committed";
+    public static final String REPEATABLE_READ = "repeatable-read";
+    public static final String SERIALIZABLE = "serializable";
 }

@@ -99,7 +99,7 @@ public interface ClusterConfig
 	 * Return the port used by GMS for group events.	
 	 * @since AppServer 9.0
 	*/
-    @ResolveTo(Integer.class)
+    
 	public String getHeartbeatPort();
 	/**
 	 * @since AppServer 9.0
@@ -109,7 +109,7 @@ public interface ClusterConfig
 	/**
 	 * @since AppServer 9.0
 	*/
-    @ResolveTo(Boolean.class)
+    
 	public String getHeartbeatEnabled();
 	/**
 	 * @since AppServer 9.0

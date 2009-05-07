@@ -35,81 +35,73 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
-
 /**
-	 Configuration for the &lt;jms-service&gt; element.
-*/
-
+Configuration for the &lt;jms-service&gt; element.
+ */
 public interface JMSServiceConfig
-	extends ConfigElement, PropertiesAccess, Singleton
+        extends ConfigElement, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "jms-service";
+
+    public String getAddressListBehavior();
+
+    public void setAddressListBehavior(final String value);
+
+    public String getAddressListIterations();
+
+    public void setAddressListIterations(final String value);
+
+    public String getDefaultJMSHost();
+
+    public void setDefaultJMSHost(final String value);
+
     
-	public String	getAddressListBehavior();
-	public void	    setAddressListBehavior( final String value );
+    public String getInitTimeoutInSeconds();
 
-	public String	getAddressListIterations();
-	public void	    setAddressListIterations( final String value );
+    public void setInitTimeoutInSeconds(final String value);
 
-	public String	getDefaultJMSHost();
-	public void	    setDefaultJMSHost( final String value );
+    public String getMQScheme();
 
-    @ResolveTo(Integer.class)
-	public String	getInitTimeoutInSeconds();
-	public void	    setInitTimeoutInSeconds( final String value );
+    public void setMQScheme(final String value);
 
-	public String	getMQScheme();
-	public void	    setMQScheme( final String value );
+    public String getMQService();
 
-	public String	getMQService();
-	public void	    setMQService( final String value );
+    public void setMQService(final String value);
 
-    @ResolveTo(Integer.class)
-	public String	getReconnectAttempts();
-	public void	    setReconnectAttempts( final String value );
+    
+    public String getReconnectAttempts();
 
-    @ResolveTo(Boolean.class)
-	public String	getReconnectEnabled();
-	public void	    setReconnectEnabled( final String value );
+    public void setReconnectAttempts(final String value);
 
-	public String	getReconnectIntervalInSeconds();
-	public void	    setReconnectIntervalInSeconds( final String value );
+    
+    public String getReconnectEnabled();
 
-	public String	getStartArgs();
-	public void	    setStartArgs( final String value );
+    public void setReconnectEnabled(final String value);
 
-	public String	getType();
-	public void	    setType( final String value );
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.JMS_HOST_CONFIG ).
-		@return Map of JMSHostConfig MBean proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,JMSHostConfig>			getJMSHost();
-// 	/**
-// 		Creates a new jms-host element.
-// 
-// 		@param name The name (id) of the jms-host.
-// 		@param optional A map of optional params keyed on the attribute keys
-// 		defined here. (eg:- HOST_KEY).
-// 		@return A proxy to the JMSHostConfig MBean.
-// 		@see JMSHostConfigKeys
-// 	 */
-// 	public JMSHostConfig	createJMSHostConfig( String name, Map<String,String> optional );
-// 
-// 	/**
-// 		Removes a jms-host element.
-// 
-// 		@param name The name (id) of the jms-host.
-// 	 */
-// 	public void			removeJMSHostConfig( String name );
+    public String getReconnectIntervalInSeconds();
+
+    public void setReconnectIntervalInSeconds(final String value);
+
+    public String getStartArgs();
+
+    public void setStartArgs(final String value);
+
+    public String getType();
+
+    public void setType(final String value);
+
+    /**
+    Calls Container.getContaineeMap( XTypes.JMS_HOST_CONFIG ).
+    @return Map of JMSHostConfig MBean proxies, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, JMSHostConfig> getJMSHost();
 }
 
 

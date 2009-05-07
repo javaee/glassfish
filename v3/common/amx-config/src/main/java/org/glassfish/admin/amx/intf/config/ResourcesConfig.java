@@ -33,34 +33,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
 
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
-
 /**
-    Configuration for the &lt;resources&gt; element; it is an internal "node" which
-    groups all resources under itself.
-    @since Glassfish V3
-*/
+Configuration for the &lt;resources&gt; element; it is an internal "node" which
+groups all resources under itself.
+@since Glassfish V3
+ */
 public interface ResourcesConfig
-	extends ConfigElement, ConfigCollectionElement, Singleton
+        extends ConfigElement, ConfigCollectionElement, Singleton
 {
+
     public static final String AMX_TYPE = "resources";
-	/**
-		Calls Container.getContaineeMap( XTypes.CUSTOM_RESOURCE_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,CustomResourceConfig>	getCustomResource();
-	
+
+    /**
+    Calls Container.getContaineeMap( XTypes.CUSTOM_RESOURCE_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, CustomResourceConfig> getCustomResource();
+
 
 // 	/**
 // 		Creates a new custom resource.	
@@ -86,16 +83,13 @@ public interface ResourcesConfig
 // 		@param name The name of the custom resource. 
 // 	 */
 // 	public void	removeCustomResourceConfig( String name );
+    /**
+    Calls Container.getContaineeMap( XTypes.JNDI_RESOURCE_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, JNDIResourceConfig> getJNDIResource();
 
-
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.JNDI_RESOURCE_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,JNDIResourceConfig>	getJNDIResource();
-	
 // 	/**
 // 		Creates a new &lt;external-jndi-resource&gt;. Optional values include:
 // 		<ul>
@@ -123,17 +117,13 @@ public interface ResourcesConfig
 // 		to be removed.
 // 	*/
 // 	public void		removeJNDIResourceConfig( String jndiName );
+    /**
+    Calls Container.getContaineeMap( XTypes.PERSISTENCE_MANAGER_FACTORY_RESOURCE_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, PersistenceManagerFactoryResourceConfig> getPersistenceManagerFactoryResource();
 
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.PERSISTENCE_MANAGER_FACTORY_RESOURCE_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,PersistenceManagerFactoryResourceConfig>
-	    getPersistenceManagerFactoryResource();
-	
-	
 // 	/**
 // 		Create a new persistence manager factory resource. Optional values include:
 // 		<ul>
@@ -158,15 +148,13 @@ public interface ResourcesConfig
 // 		@param jndiName
 // 	*/
 // 	public void		removePersistenceManagerFactoryResourceConfig( String jndiName );
+    /**
+    Calls Container.getContaineeMap( XTypes.JDBC_RESOURCE_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, JDBCResourceConfig> getJDBCResource();
 
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.JDBC_RESOURCE_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,JDBCResourceConfig>	getJDBCResource();
-	
 // 	/**
 // 		Create a new &lt;jdbc-resource&gt;  Optional parameters include:
 // 		<ul>
@@ -189,15 +177,13 @@ public interface ResourcesConfig
 // 		@param jndiName
 // 	 */
 // 	public void             removeJDBCResourceConfig( String jndiName );
-	
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.JDBC_CONNECTION_POOL_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,JDBCConnectionPoolConfig>	getJDBCConnectionPool();
-	
+    /**
+    Calls Container.getContaineeMap( XTypes.JDBC_CONNECTION_POOL_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, JDBCConnectionPoolConfig> getJDBCConnectionPool();
+
 // 		/**
 // 		Create a new &lt;jdbc-connection-pool&gt;.
 // 		
@@ -220,7 +206,7 @@ public interface ResourcesConfig
 // 		@param	reserved		reserved for future use
 // 		@return a JDBCConnectionPoolConfig
 // 	 */
-//     @AMXCreateInfo(paramNames={
+//     
 //         "name", 
 //         "connectionValidationMethod",
 //         "datasource-clasname",
@@ -242,16 +228,16 @@ public interface ResourcesConfig
 //                             String name,
 // 							String connectionValidationMethod,
 // 							String datasourceClassname,
-// 							@ResolveTo(Boolean.class) String failAllConnections,
-// 							@ResolveTo(Integer.class) String idleTimeoutSeconds,
-// 							@ResolveTo(Boolean.class) String connectionValidationRequired,
-// 							@ResolveTo(Boolean.class) String isolationLevelGuaranteed,
+// 							
+// 							
+// 							
+// 							
 // 							String	transactionIsolationLevel,
-// 							@ResolveTo(Integer.class) String maxPoolSize,
-// 							@ResolveTo(Integer.class) String maxWaitTimeMillis,
-// 							@ResolveTo(Integer.class) String poolResizeQuantity,
+// 							
+// 							
+// 							
 // 							String	resType,
-// 							@ResolveTo(Boolean.class) String steadyPoolSize,
+// 							
 // 							String	databaseName,
 // 							String	databaseUserName,
 // 							String	databasePassword,
@@ -283,7 +269,7 @@ public interface ResourcesConfig
 // 		@param optional				optional parameters
 // 		@return a JDBCConnectionPoolConfig
 // 	*/
-//     @AMXCreateInfo(paramNames={"name","datasource-classname", "optional"})
+//     
 // 	public JDBCConnectionPoolConfig       createJDBCConnectionPoolConfig(  String name, 
 // 	                            String datasourceClassname, Map<String,String> optional);
 // 
@@ -293,15 +279,13 @@ public interface ResourcesConfig
 // 		@param jdbcConnectionPoolName 
 // 	 */
 // 	public void		removeJDBCConnectionPoolConfig( String jdbcConnectionPoolName );
-	
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.CONNECTOR_RESOURCE_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ConnectorResourceConfig>	getConnectorResource();
-	
+    /**
+    Calls Container.getContaineeMap( XTypes.CONNECTOR_RESOURCE_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ConnectorResourceConfig> getConnectorResource();
+
 // 	/**
 // 		Creates a new &lt;connector-resource&gt;
 // 		Legal optional keys include:
@@ -324,15 +308,13 @@ public interface ResourcesConfig
 // 	@param jndiName
 // 	*/
 // 	public void removeConnectorResourceConfig( String jndiName );
-	
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.CONNECTOR_CONNECTION_POOL_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ConnectorConnectionPoolConfig>	getConnectorConnectionPool();
-	
+    /**
+    Calls Container.getContaineeMap( XTypes.CONNECTOR_CONNECTION_POOL_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ConnectorConnectionPoolConfig> getConnectorConnectionPool();
+
 // 	/**
 // 	Creates a new &lt;connector-connection-pool&gt;
 // 	Valid keys in optional map include:
@@ -367,14 +349,13 @@ public interface ResourcesConfig
 // 		@param name	pool name.
 // 	*/
 // 	public void removeConnectorConnectionPoolConfig( String name );
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.ADMIN_OBJECT_RESOURCE_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,AdminObjectResourceConfig>	getAdminObjectResource();
-	
+    /**
+    Calls Container.getContaineeMap( XTypes.ADMIN_OBJECT_RESOURCE_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, AdminObjectResourceConfig> getAdminObjectResource();
+
 // 	/**
 // 		Creates a new &lt;admin-object-resource&gt;.
 // 		<ul>
@@ -398,15 +379,13 @@ public interface ResourcesConfig
 // 		@param jndiName	JNDI name of the resource.
 // 	 */
 // 	public void             removeAdminObjectResourceConfig( String jndiName );
-	
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.RESOURCE_ADAPTER_CONFIG ).
-		@return Map of AMXs, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ResourceAdapterConfig>	getResourceAdapter();
-	
+    /**
+    Calls Container.getContaineeMap( XTypes.RESOURCE_ADAPTER_CONFIG ).
+    @return Map of AMXs, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ResourceAdapterConfig> getResourceAdapter();
+
 // 	/**
 // 		Legal options include:
 // 		<ul>
@@ -416,15 +395,12 @@ public interface ResourcesConfig
 // 	public ResourceAdapterConfig	createResourceAdapterConfig( String resourceAdapterName, Map<String,String> optional );
 //     
 // 	public void			removeResourceAdapterConfig( String resourceAdapterName );
-	
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.MAIL_RESOURCE_CONFIG ).
-		@return Map of s, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,MailResourceConfig>	getMailResource();
-	
+    /**
+    Calls Container.getContaineeMap( XTypes.MAIL_RESOURCE_CONFIG ).
+    @return Map of s, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, MailResourceConfig> getMailResource();
 // 	/**
 // 		Create a new &lt;mail-resource>. Optional keys are:
 // 		<ul>
@@ -457,7 +433,6 @@ public interface ResourcesConfig
 // 		@param jndiName
 // 	*/                
 // 	public void             removeMailResourceConfig( String jndiName );
-    
 //    /**
 //     */
 // 	public ResourceConfig				getResourceConfig( String name );
@@ -467,7 +442,7 @@ public interface ResourcesConfig
 //                         	        String name,
 //                         	        String implClassname,
 //                         	        String objectName,
-//                         	        @ResolveTo(Boolean.class) String enabled,
+//                         	        
 //                         	        Map<String,String> reserved );
 //                         	        
 // 	public void                  removeCustomMBeanConfig( String name );

@@ -36,12 +36,12 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-	 Configuration for the &lt;system-applications> element; it is an internal "node" which
-    groups all resources under itself.
-    @since Glassfish V3
-*/
+Configuration for the &lt;system-applications> element; it is an internal "node" which
+groups all resources under itself.
+@since Glassfish V3
+ */
 public interface SystemApplicationsConfig extends ApplicationsConfigBase
 {
+
     public static final String AMX_TYPE = "system-applications";
-    
 }

@@ -33,44 +33,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
 package org.glassfish.admin.amx.intf.config;
-
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
-
 /**
-	Configuration for the &lt;ejb-timer-service&gt; element.
-*/
-
+Configuration for the &lt;ejb-timer-service&gt; element.
+ */
 public interface EJBTimerServiceConfig extends AMXConfigProxy, PropertiesAccess, Singleton
 {
+
     public static final String AMX_TYPE = "ejb-timer-service";
+
     
-	public static final String		MINIMUM_DELIVERY_INTERVAL_IN_MILLIS_KEY		=	"MinimumDeliveryIntervalInMillis";
-	public static final String		MAX_REDELIVERIES_KEY						=	"MaxRedeliveries";
-	public static final String		TIMER_DATASOURCE_KEY						=	"TimerDatasource";
-	public static final String		REDELIVERY_INTERVAL__INTERNAL_IN_MILLIS_KEY	=	"RedeliveryIntervalIntervalInMillis";
+    String getMaxRedeliveries();
+
+    void setMaxRedeliveries(final String value);
+
     
-    @ResolveTo(Integer.class)
-	String	getMaxRedeliveries();
-	void	setMaxRedeliveries( final String value );
+    String getMinimumDeliveryIntervalInMillis();
 
-    @ResolveTo(Integer.class)
-	String	getMinimumDeliveryIntervalInMillis();
-	void	setMinimumDeliveryIntervalInMillis( final String value );
+    void setMinimumDeliveryIntervalInMillis(final String value);
 
-    @ResolveTo(Integer.class)
-	String	getRedeliveryIntervalInternalInMillis();
-	void	setRedeliveryIntervalInternalInMillis( final String value );
+    
+    String getRedeliveryIntervalInternalInMillis();
 
-	String	getTimerDatasource();
-	void	setTimerDatasource( final String value );
+    void setRedeliveryIntervalInternalInMillis(final String value);
 
+    String getTimerDatasource();
 
-
+    void setTimerDatasource(final String value);
 }

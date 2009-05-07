@@ -33,62 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
-
-
 
 import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
 
-
-
 /**
-	 Configuration for the &lt;session-manager&gt; element.
+Configuration for the &lt;session-manager&gt; element.
  */
 public interface SessionManagerConfig
-	extends ConfigElement, Singleton
+        extends ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "session-manager";
-// 	/**
-// 		Creates new manager-properties element.
-// 	 
-// 		@param params Map of optional attributes whose keys are defined in
-// 		ManagerPropertiesParams interface.
-// 		@return A proxy to the ManagerPropertiesConfig MBean.
-// 		@see ManagerPropertiesConfigKeys
-// 	 */
-// 	public ManagerPropertiesConfig createManagerPropertiesConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes manager-properties element.
-// 	 */
-// 	public void removeManagerProperties();
 
-	/**
-		Get the ManagerPropertiesConfig MBean.
-	 */
-	public ManagerPropertiesConfig getManagerProperties();
+    public ManagerPropertiesConfig getManagerProperties();
 
-// 	/**
-// 		Creates new manager-properties element.
-// 	 
-// 		@param params Map of optional attributes whose keys are defined in
-// 		ManagerPropertiesParams interface.
-// 		@return A proxy to the StorePropertiesConfig MBean.
-// 		@see StorePropertiesConfigKeys
-// 	 */
-// 	public StorePropertiesConfig createStorePropertiesConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes store-properties element.
-// 	 */
-// 	public void removeStoreProperties();
-
-	/**
-		Get the StorePropertiesConfig MBean.
-	 */
-	public StorePropertiesConfig getStoreProperties();
+    public StorePropertiesConfig getStoreProperties();
 }

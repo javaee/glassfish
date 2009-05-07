@@ -33,65 +33,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
-
 
 import java.util.Map;
 
-
 /**
-    Configuration for the &lt;clusters&gt; element; it is an internal "node" which
-    groups all resources under itself.
-    @since Glassfish V3
-*/
+Configuration for the &lt;clusters&gt; element; it is an internal "node" which
+groups all resources under itself.
+@since Glassfish V3
+ */
 public interface ClustersConfig
-	extends ConfigElement, ConfigCollectionElement
+        extends ConfigElement, ConfigCollectionElement
 {
-    public static final String AMX_TYPE = "clusters";
-    
-	/**
-		Calls Container.getContaineeMap( XTypes.CLUSTER_CONFIG ).
-		@return Map of items, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,ClusterConfig>	getCluster();
-	
-//         /**
-// 		Create a new ClusterConfig.  The 'referencedConfigName' must be non-null
-// 		and must not be "default-config" or "server-config".  If it is desired
-// 		to create a new ClusterConfig which uses a copy of default-config,
-// 		use the createClusterConfig( name, reserved ) form.
-// 
-// 		@param name the name of the cluster to create.
-// 		@param referencedConfigName the non-null name of the config to reference.
-// 		@param optional	optional values, properties only
-// 
-// 		@return a ClusterConfig
-// 	 */
-// 	public ClusterConfig createClusterConfig(String name, String referencedConfigName,
-//                 Map<String,String> optional);
-//                 
-// 	/**
-//             Create a new ClusterConfig which refers to a copy of the default-config.
-// 
-//             @param name the name of the cluster to create.
-//             @param optional	optional values, properties only
-// 
-//             @return a ClusterConfig
-// 	 */ 
-// 	public ClusterConfig createClusterConfig(String name, Map<String,String> optional);
-// 
-// 	/**
-//           Remove an existing &lt;cluster&gt;.
-//           @param name the name of the cluster to remove.
-// 	 */
-// 	public void removeClusterConfig(String name);
 
+    public static final String AMX_TYPE = "clusters";
+
+    /**
+    Calls Container.getContaineeMap( XTypes.CLUSTER_CONFIG ).
+    @return Map of items, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, ClusterConfig> getCluster();
 }
+
+
 
 
 

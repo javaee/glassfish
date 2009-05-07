@@ -35,25 +35,23 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	 Represents the &lt;admin-object-resource&gt; element.
-	 <p>
+Represents the &lt;admin-object-resource&gt; element.
+<p>
  */
-@AMXCreateInfo(paramNames={"jndi-name","res-type", "res-adapter", "optional"})
 public interface AdminObjectResourceConfig extends ResourceConfig
 {
+
     public static final String AMX_TYPE = "admin-object-resource";
-    
-	public String	getResType();
-	/**
 
-	 */
-	public String	getResAdapter();
+    public String getResType();
 
+    /**
 
-	public void	    setResType( final String resType );
+     */
+    public String getResAdapter();
 
-	public void 	setResAdapter( final String resAdapter );
+    public void setResType(final String resType);
 
+    public void setResAdapter(final String resAdapter);
 }

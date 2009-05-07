@@ -40,7 +40,7 @@ package org.glassfish.admin.amx.intf.config;
 	 Configuration for the &lt;resource-ref&gt; element.
 */
 
-@AMXCreateInfo(paramNames={"name", "optional"})
+
 public interface ResourceRefConfig extends RefConfig
 {
     public static final String AMX_TYPE = "resource-ref";

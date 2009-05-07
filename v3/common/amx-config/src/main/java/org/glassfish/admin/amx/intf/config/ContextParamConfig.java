@@ -35,20 +35,23 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-@AMXCreateInfo(paramNames={"param-name", "param-value", "description", "ignore-descriptor-item"})
 public interface ContextParamConfig extends NamedConfigElement
 {
+
     public static final String AMX_TYPE = "context-param";
-    
+
     public String getDescription();
+
     public void setDescription(String value);
-    
+
     /** same as getName */
     public String getParamName();
-    
+
     public String getParamValue();
+
     public void setParamValue(String value);
-    
+
     public String getIgnoreDescriptorItem();
+
     public void setIgnoreDescriptorItem(String ignore);
 }

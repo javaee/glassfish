@@ -33,28 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
-
-
 /**
-	 Configuration for the &lt;store-properties&gt; element.
+Configuration for the &lt;store-properties&gt; element.
  */
 public interface StorePropertiesConfig extends AMXConfigProxy, PropertiesAccess, Singleton
 {
-    public static final String AMX_TYPE = "store-properties";
-    
-	public static final String	DIRECTORY_KEY						=	"Directory";
-	public static final String	REAP_INTERVAL_IN_SECONDS_KEY		=	"ReapIntervalInSeconds";
-    
-	public String	getDirectory();
-	public void	setDirectory( final String value );
 
-    @ResolveTo(Integer.class)
-	public String	getReapIntervalInSeconds();
-	public void	setReapIntervalInSeconds( final String value );
+    public static final String AMX_TYPE = "store-properties";
+
+    public String getDirectory();
+
+    public void setDirectory(final String value);
+
+    
+    public String getReapIntervalInSeconds();
+
+    public void setReapIntervalInSeconds(final String value);
 }

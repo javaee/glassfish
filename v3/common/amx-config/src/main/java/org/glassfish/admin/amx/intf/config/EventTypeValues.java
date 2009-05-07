@@ -35,20 +35,22 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-    Possible event types as defined in DTD by ENTITY &lt;event-type>.
-	@since Appserver 9.0
-	@see EventConfig
-*/
+Possible event types as defined in DTD by ENTITY &lt;event-type>.
+@since Appserver 9.0
+@see EventConfig
+ */
 public final class EventTypeValues
 {
-    public static final String LOG  = "log";
-    public static final String TIMER  = "timer";
-    public static final String TRACE  = "trace";
-    public static final String MONITOR  = "monitor";
-    public static final String CLUSTER  = "cluster";
-    public static final String LIFECYCLE  = "lifecycle";
-    public static final String NOTIFICATION  = "notification";
+
+    private EventTypeValues()
+    {
+    }
+    public static final String LOG = "log";
+    public static final String TIMER = "timer";
+    public static final String TRACE = "trace";
+    public static final String MONITOR = "monitor";
+    public static final String CLUSTER = "cluster";
+    public static final String LIFECYCLE = "lifecycle";
+    public static final String NOTIFICATION = "notification";
 }

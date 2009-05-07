@@ -35,20 +35,16 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;jdbc-resource&gt; element.
+Configuration for the &lt;jdbc-resource&gt; element.
  */
-@AMXCreateInfo(paramNames={"jndi-name", "pool-name", "optional" })
 public interface JDBCResourceConfig
-	extends ResourceConfig
+        extends ResourceConfig
 {
+
     public static final String AMX_TYPE = "jdbc-resource";
-    
-	public String	getPoolName();
-	public void	setPoolName( String value );
 
+    public String getPoolName();
 
-
+    public void setPoolName(String value);
 }

@@ -36,55 +36,54 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-    Mixin interface indicating that there is at least one anonymous non-singleton
-    leaf element present eg a &lt;jvm-options>.  Supports any number of such elements.
-    <p>
-    Examples:<br>
-    <pre>
-    setJVMOptions( new String[] { COLLECTION_OP_REPLACE, "-client", "-Xmx" } // replaces all with these
-    setJVMOptions( new String[] { "-client", "-Xmx" }   // adds these 
-    setJVMOptions( new String[] { COLLECTION_OP_REMOVE, "-client", "-Xmx" }   // removes these
-    </pre>
-*/
+Mixin interface indicating that there is at least one anonymous non-singleton
+leaf element present eg a &lt;jvm-options>.  Supports any number of such elements.
+<p>
+Examples:<br>
+<pre>
+setJVMOptions( new String[] { COLLECTION_OP_REPLACE, "-client", "-Xmx" } // replaces all with these
+setJVMOptions( new String[] { "-client", "-Xmx" }   // adds these 
+setJVMOptions( new String[] { COLLECTION_OP_REMOVE, "-client", "-Xmx" }   // removes these
+</pre>
+ */
 public interface AnonymousElementList
-{    
+{
+
     /** indicates that the values are to be added to the existing ones */
-    public static final String OP_ADD     = "add";
-    
+    public static final String OP_ADD = "add";
     /** indicates that the values are to be remove from the existing ones */
-    public static final String OP_REMOVE  = "remove";
-    
+    public static final String OP_REMOVE = "remove";
     /** indicates that all values are to be replaced with the specified ones */
     public static final String OP_REPLACE = "replace";
-    
+
     /**
-        Return all values of the element list specified by the element name, which must be an
-        anonymous non-singleton simple element eg:
-        <pre>
-        &lt;jvm-options>--client&lt;/jvm-options>
-        &lt;jvm-options>-Dfoo=bar&lt;/jvm-options>
-        
-        &lt;some-elem>-Dfoo=bar&lt;/some-elem>
-        &lt;some-elem>-Dfoo=bar&lt;/some-elem>
-        ...
-        </pre>
-        For example getCollection( "JVMOptions" ) for certain AMXConfig that have &lt;jvm-options> elements.
-        This is the generic operation; an AMXConfig can choose to implement an Attribute as
-        well eg getJVMOptions().  Either the AMX Attribute name (if present) may be used,
-        or the XML element name may be used. It is suggested that all such element names
-        have a String[] getter so they can at least be treated as read-only Attributes.
+    Return all values of the element list specified by the element name, which must be an
+    anonymous non-singleton simple element eg:
+    <pre>
+    &lt;jvm-options>--client&lt;/jvm-options>
+    &lt;jvm-options>-Dfoo=bar&lt;/jvm-options>
+
+    &lt;some-elem>-Dfoo=bar&lt;/some-elem>
+    &lt;some-elem>-Dfoo=bar&lt;/some-elem>
+    ...
+    </pre>
+    For example getCollection( "JVMOptions" ) for certain AMXConfig that have &lt;jvm-options> elements.
+    This is the generic operation; an AMXConfig can choose to implement an Attribute as
+    well eg getJVMOptions().  Either the AMX Attribute name (if present) may be used,
+    or the XML element name may be used. It is suggested that all such element names
+    have a String[] getter so they can at least be treated as read-only Attributes.
      */
-    public String[] getAnonymousElementList( final String elementName );
-    
+    public String[] getAnonymousElementList(final String elementName);
+
     /**
-        Modify the collection as specified.  To perform a set()-style operation, use
-        modifyCollection(name, COLLECTION_OP_REPLACE, new String[] {...}).
-        @param elementName the name of the collection eg "JVMOptions"
-        @param cmd the operation to perform
-        @param args values used by the command
-        @return the entire list
+    Modify the collection as specified.  To perform a set()-style operation, use
+    modifyCollection(name, COLLECTION_OP_REPLACE, new String[] {...}).
+    @param elementName the name of the collection eg "JVMOptions"
+    @param cmd the operation to perform
+    @param args values used by the command
+    @return the entire list
      */
-    public String[] modifyAnonymousElementList( final String elementName, final String cmd, final String[] args);
+    public String[] modifyAnonymousElementList(final String elementName, final String cmd, final String[] args);
 }
 
 

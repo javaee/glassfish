@@ -35,64 +35,47 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
-
-
 /**
-	 Configuration for a &lt;thread-pool&gt; element.
-*/
-
-@AMXCreateInfo(paramNames={"name", "optional"})
+Configuration for a &lt;thread-pool&gt; element.
+ */
 public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
 {
+
     public static final String AMX_TYPE = "thread-pool";
+
     
-	/**
-		Key for use with {@link ConfigConfig#createThreadPoolConfig}.
-	 */
-	public static final String		MIN_THREAD_POOL_SIZE_KEY			= "MinThreadPoolSize";
-	/**
-		Key for use with {@link ConfigConfig#createThreadPoolConfig}.
-	 */
-	public static final String		MAX_THREAD_POOL_SIZE_KEY			= "MaxThreadPoolSize";
-	/**
-		Key for use with {@link ConfigConfig#createThreadPoolConfig}.
-	 */
-	public static final String		IDLE_THREAD_TIMEOUT_IN_SECONDS_KEY	= "IdleThreadTimeoutSeconds";
-	/**
-		Key for use with {@link ConfigConfig#createThreadPoolConfig}.
-	 */
-	public static final String		NUM_WORK_QUEUES_KEY					= "NumWorkQueues";
+    public String getIdleThreadTimeoutSeconds();
+
+    public void setIdleThreadTimeoutSeconds(String value);
+
     
+    public String getMinThreadPoolSize();
+
+    public void setMinThreadPoolSize(String value);
+
     
-    @ResolveTo(Integer.class)
-	public String	getIdleThreadTimeoutSeconds();
-	public void	setIdleThreadTimeoutSeconds( String value );
+    public String getMaxThreadPoolSize();
 
-    @ResolveTo(Integer.class)
-	public String	getMinThreadPoolSize();
-	public void	setMinThreadPoolSize( String value );
+    public void setMaxThreadPoolSize(String value);
 
-    @ResolveTo(Integer.class)
-	public String	getMaxThreadPoolSize();
-	public void	setMaxThreadPoolSize( String value );
+    
+    public String getThreadIncrement();  // unused.  delete?
 
-    @ResolveTo(Integer.class)
-	public String	getThreadIncrement();  // unused.  delete?
-	public void	setThreadIncrement( String value );  // unused.  delete?
+    public void setThreadIncrement(String value);  // unused.  delete?
 
-    @ResolveTo(Integer.class)
-	public String	getNumWorkQueues();  // unused.  delete?
-	public void	setNumWorkQueues( String value );  // unused.  delete?
+    
+    public String getNumWorkQueues();  // unused.  delete?
 
-	public String getName();
+    public void setNumWorkQueues(String value);  // unused.  delete?
 
-    @ResolveTo(Integer.class)
-	public String	getMaxQueueSize();
-	public void	setMaxQueueSize( String value );
+    public String getName();
 
-    public String   getClassname();
-    public void     setClassname( String classname );
+    
+    public String getMaxQueueSize();
+
+    public void setMaxQueueSize(String value);
+
+    public String getClassname();
+
+    public void setClassname(String classname);
 }

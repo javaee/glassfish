@@ -37,28 +37,28 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 /**
-	 Configuration for the &lt;keep-alive&gt; element.
-*/
-
+Configuration for the &lt;keep-alive&gt; element.
+ */
 public interface KeepAliveConfig extends ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "keep-alive";
 
-	public static final String THREAD_COUNT_KEY				=	"ThreadCount";
-	public static final String MAX_CONNECTIONS_KEY			=	"MaxConnections";
-	public static final String TIMEOUT_IN_SECONDS_KEY		=	"TimeoutInSeconds";
     
-    @ResolveTo(Integer.class)
-	public String	getMaxConnections();
-	public void	setMaxConnections( final String value );
+    public String getMaxConnections();
 
-    @ResolveTo(Integer.class)
-	public String	getThreadCount();
-	public void	setThreadCount( final String value );
+    public void setMaxConnections(final String value);
 
-    @ResolveTo(Integer.class)
-	public String	getTimeoutInSeconds();
-	public void	setTimeoutInSeconds( final String value );
+    
+    public String getThreadCount();
+
+    public void setThreadCount(final String value);
+
+    
+    public String getTimeoutInSeconds();
+
+    public void setTimeoutInSeconds(final String value);
 }
+
+

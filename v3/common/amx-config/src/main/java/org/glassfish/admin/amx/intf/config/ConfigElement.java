@@ -33,15 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
 /**
-    Marker interface indicating that this item represents
-    a configuration element in domain.xml.
+Marker interface indicating that this item represents
+a configuration element in domain.xml.
  */
 public interface ConfigElement extends AMXConfigProxy
 {

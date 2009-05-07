@@ -33,20 +33,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
 
 /**
-	@see ConnectorConnectionPoolConfigKeys#TRANSACTION_SUPPORT_KEY
-	@see ConnectorConnectionPoolConfig#setTransactionSupport
+@see ConnectorConnectionPoolConfigKeys#TRANSACTION_SUPPORT_KEY
+@see ConnectorConnectionPoolConfig#setTransactionSupport
  */
 public final class TransactionSupportValues
 {
-	private TransactionSupportValues()	{}
-	
-	public static final String XA		= "XATransaction";
-	public static final String LOCAL	= "LocalTransaction";
-	public static final String NONE		= "NoTransaction";
+
+    private TransactionSupportValues()
+    {
+    }
+    public static final String XA = "XATransaction";
+    public static final String LOCAL = "LocalTransaction";
+    public static final String NONE = "NoTransaction";
 }
 
 

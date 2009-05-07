@@ -35,14 +35,14 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	Base interface representing a reference.
-	@see RefConfigReferent
-*/
+Base interface representing a reference.
+@see RefConfigReferent
+ */
 public interface RefConfig extends ConfigElement, Enabled
 {
-	public String	getRef();
-	public void	setRef( String value );
 
+    public String getRef();
+
+    public void setRef(String value);
 }

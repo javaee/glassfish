@@ -33,27 +33,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
-
 /**
-	 Abstract base interface for an element which extends the @Configured type 'ApplicationConfig'.
-     <p>
-	 This base interface should be extended by sub-interfaces representing configuration, eg
-     WebAppConfigConfig; there can be new such sub-interfaces defined by modules not yet written.
-     <p>
-     The actual type  is defined by the interface and these are {@link Singleton} because
-     the type alone makes the item unique within its scope (there can be only one such element
-     of any given type).
-     @see ApplicationConfig
-     @since Glassfish V3
-    
-*/
+Abstract base interface for an element which extends the @Configured type 'ApplicationConfig'.
+<p>
+This base interface should be extended by sub-interfaces representing configuration, eg
+WebAppConfigConfig; there can be new such sub-interfaces defined by modules not yet written.
+<p>
+The actual type  is defined by the interface and these are {@link Singleton} because
+the type alone makes the item unique within its scope (there can be only one such element
+of any given type).
+@see ApplicationConfig
+@since Glassfish V3
+
+ */
 public interface ApplicationConfigConfig extends Singleton, AMXConfigProxy
 {
 }

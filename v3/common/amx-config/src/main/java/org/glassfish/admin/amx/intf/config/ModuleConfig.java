@@ -33,11 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import java.util.List;
@@ -50,9 +46,9 @@ import java.util.Map;
  */
 public interface ModuleConfig extends AMXConfigProxy, PropertiesAccess
 {
+
     /**
      * get the sniffer
      */
     public Map<String, EngineConfig> getEngine();
-
 }

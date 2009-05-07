@@ -33,74 +33,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
-
-
 
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.base.Singleton;
 
-
-
-
 /**
-	 Configuration for the &lt;domain&gt; element.
-	<p>
-	All configuration resides in a tree rooted at this .
-*/
+Configuration for the &lt;domain&gt; element.
+<p>
+All configuration resides in a tree rooted at this .
+ */
 public interface DomainConfig
-	extends PropertiesAccess, SystemPropertiesAccess,
-	ConfigElement, Singleton
+        extends PropertiesAccess, SystemPropertiesAccess, ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "domain";
-    
-	/** @since Glassfish V3 */
-    @ManagedAttribute
-	public ResourcesConfig          getResources();
-    
-	/** @since Glassfish V3 */
-    @ManagedAttribute
-	public ConfigsConfig            getConfigs();
-    
-	/** @since Glassfish V3 */
-    @ManagedAttribute
-	public ApplicationsConfig       getApplications();
-    
-	/** @since Glassfish V3 */
-    @ManagedAttribute
-	public SystemApplicationsConfig getSystemApplications();
-    
-	/** @since Glassfish V3 */
-    @ManagedAttribute
-	public ServersConfig            getServers();
-    
-	/** @since Glassfish V3 */
-    @ManagedAttribute
-	public ClustersConfig           getClusters();
-    
-	/** @since Glassfish V3 */
-    @ManagedAttribute
-	public NodeAgentsConfig         getNodeAgents();
-	
 
-	//---------------------------------------------------------------------------------------
-	
+    /** @since Glassfish V3 */
     @ManagedAttribute
-	public String	getApplicationRoot();
-	public void		setApplicationRoot( final String value );
+    public ResourcesConfig getResources();
 
+    /** @since Glassfish V3 */
     @ManagedAttribute
-	public String	getLocale();
-	public void		setLocale( final String value );
+    public ConfigsConfig getConfigs();
+
+    /** @since Glassfish V3 */
+    @ManagedAttribute
+    public ApplicationsConfig getApplications();
+
+    /** @since Glassfish V3 */
+    @ManagedAttribute
+    public SystemApplicationsConfig getSystemApplications();
+
+    /** @since Glassfish V3 */
+    @ManagedAttribute
+    public ServersConfig getServers();
+
+    /** @since Glassfish V3 */
+    @ManagedAttribute
+    public ClustersConfig getClusters();
+
+    /** @since Glassfish V3 */
+    @ManagedAttribute
+    public NodeAgentsConfig getNodeAgents();
+
+
+    //---------------------------------------------------------------------------------------
+    @ManagedAttribute
+    public String getApplicationRoot();
+
+    public void setApplicationRoot(final String value);
 
     @ManagedAttribute
-	public String	getLogRoot();
-	public void		setLogRoot( final String value );
-	
-	
+    public String getLocale();
 
+    public void setLocale(final String value);
+
+    @ManagedAttribute
+    public String getLogRoot();
+
+    public void setLogRoot(final String value);
 }
 
 

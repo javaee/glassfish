@@ -35,31 +35,19 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 import org.glassfish.admin.amx.base.Singleton;
 
-
 /**
-	 Configuration for the &lt;web-container&gt; element.
-*/
-public interface WebContainerConfig 
-	extends PropertiesAccess, ConfigElement, Singleton
+Configuration for the &lt;web-container&gt; element.
+ */
+public interface WebContainerConfig
+        extends PropertiesAccess, ConfigElement, Singleton
 {
-    public static final String AMX_TYPE = "web-container";
-	/**
-		Get the SessionConfig.
-	 */
-	public SessionConfig	getSession();
 
-// 	/**
-// 		Creates session-config element.
-// 
-// 		@return A proxy to the SessionConfig MBean.
-// 	 */
-// 	public SessionConfig	createSession();
-// 
-// 	/**
-// 		Removes session-config element.
-// 	 */
-// 	public void				removeSession();
+    public static final String AMX_TYPE = "web-container";
+
+    /**
+    Get the SessionConfig.
+     */
+    public SessionConfig getSession();
 }

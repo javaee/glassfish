@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -46,122 +45,72 @@ import java.util.Map;
  */
 public interface WebServiceEndpointConfig extends NamedConfigElement
 {
-    public static final String AMX_TYPE = "web-service-endpoint";
-	
-	/**
-		Key for use with {@link WebServiceEndpointConfigCR#createWebServiceEndpointConfig}
-		
-	*/
-	public final static String	JBI_ENABLED_KEY= "JBIEnabled";
-	
-	
-	/** Key for use with @link { WebServiceEndpointConfigCR#createWebServiceEndpointConfig} */
-	public final static String	MONITORING_LEVEL_KEY       =
-    "MonitoringLevel";
 
-	/** Key for use with @link { WebServiceEndpointConfigCR#createWebServiceEndpointConfig} */
-	public final static String	MAX_HISTORY_SIZE_KEY		= "MaxHistorySize";
-    
-    
+    public static final String AMX_TYPE = "web-service-endpoint";
+
     /**
-    * Get the web service name.
-    */
+     * Get the web service name.
+     */
     public String getName();
 
     /**
-    * visibility of this endoint as a service in JBI
-    */
-    @ResolveTo(Boolean.class)
+     * visibility of this endoint as a service in JBI
+     */
+    
     public String getJBIEnabled();
 
     /**
-    * visibility of this endoint as a service in JBI
-    */
-    public void setJBIEnabled( String enabled );
+     * visibility of this endoint as a service in JBI
+     */
+    public void setJBIEnabled(String enabled);
 
     /**
-    * Get the web service' monitoring level can be OFF, LOW or HIGH.
+     * Get the web service' monitoring level can be OFF, LOW or HIGH.
     @see ModuleMonitoringLevelValues
-    */
+     */
     public String getMonitoringLevel();
 
     /**
-    * Sets the web service' monitoring level can be OFF, LOW or HIGH.
+     * Sets the web service' monitoring level can be OFF, LOW or HIGH.
     @see ModuleMonitoringLevelValues
-    */
-    public void setMonitoringLevel( String level );
+     */
+    public void setMonitoringLevel(String level);
 
     /**
-    * Gets the web service' max history size. Number of statistics stored in
-    * memory.
-    */
-    @ResolveTo(Integer.class)
+     * Gets the web service' max history size. Number of statistics stored in
+     * memory.
+     */
+    
     public String getMaxHistorySize();
 
     /**
-    * Sets the web service' max history size. Number of statistics stored in
-    * memory.
-    *
-    * @param maxSize max size of stored statistics in memory
-    */
-    public void setMaxHistorySize(String maxSize);
-    
-    /**
-        @since Appserver 9.0
+     * Sets the web service' max history size. Number of statistics stored in
+     * memory.
+     *
+     * @param maxSize max size of stored statistics in memory
      */
-    public Map<String,RegistryLocationConfig> getRegistryLocation();
-    
-    
-//     /**
-//         @since Appserver 9.0
-//      */
-//     public RegistryLocationConfig createRegistryLocationConfig( String jndiName );
-//     
-//     /**
-//         @since Appserver 9.0
-//      */
-//     public void removeRegistryLocationConfig( String jndiName );
-    
+    public void setMaxHistorySize(String maxSize);
 
     /**
-    * Get the transformation rules (not in any specific order) defined for this
-    * end point.
-    *
-    * @return Map of transformation rules added to web service.
-    */
-    public Map<String,TransformationRuleConfig> getTransformationRule();
+    @since Appserver 9.0
+     */
+    public Map<String, RegistryLocationConfig> getRegistryLocation();
+
+
     /**
-    * Get the transformation rules (in the same order as in domain.xml) 
-    * defined for this end point.
-    *
-    * @return Map of transformation rules added to web service.
-    */
+     * Get the transformation rules (not in any specific order) defined for this
+     * end point.
+     *
+     * @return Map of transformation rules added to web service.
+     */
+    public Map<String, TransformationRuleConfig> getTransformationRule();
+
+    /**
+     * Get the transformation rules (in the same order as in domain.xml)
+     * defined for this end point.
+     *
+     * @return Map of transformation rules added to web service.
+     */
     public List<TransformationRuleConfig> getTransformationRuleConfigList();
 
-
-//     /**
-//     * Removes the specified transformation rule for this end point.
-//     *
-//     * @param name Name of the transformation rule
-//     */
-//     public void removeTransformationRuleConfig(String name);
-// 
-//     /**
-//     * Creates a transformation rule for this web service.
-//     *
-//     * @param name  this transformation rule's name
-//     * @param ruleFileLocation File path location of this transformation rule
-//     * @param applyTo Operation(s) for which this
-//     * transformation rule is applied. Possible values are "request", "response"
-//     * or "both"
-//     * @param enabled If true transformation rule is applied
-//     *
-//     * @return TransformationRule new transformation rule with the
-//     * specified parameters
-//     */
-//     public TransformationRuleConfig createTransformationRuleConfig(
-//          String name,  String ruleFileLocation, 
-//          @ResolveTo(Boolean.class) String enabled,
-//          String applyTo,
-//          Map<String,String> reserved);
 }

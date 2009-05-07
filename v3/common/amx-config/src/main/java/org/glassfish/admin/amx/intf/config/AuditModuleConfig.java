@@ -33,25 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/**
-*/
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;audit-module&gt; element.
-*/
-@AMXCreateInfo(paramNames={"name","classname"})
-public interface AuditModuleConfig extends NamedConfigElement, PropertiesAccess 
+Configuration for the &lt;audit-module&gt; element.
+ */
+public interface AuditModuleConfig extends NamedConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "audit-module";
-    
     /** boolean property */
     public static final String AUDIT_ON_PROPERTY = "auditOn";
-		
-	public String	getClassname();
-	public void	setClassname( String value );
+
+    public String getClassname();
+
+    public void setClassname(String value);
 }

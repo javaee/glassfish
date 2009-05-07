@@ -37,12 +37,12 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 
-
 /**
-	Marker interface for a ConfigElement that has a name.
+Marker interface for a ConfigElement that has a name.
  */
 public interface NamedConfigElement extends ConfigElement
 {
+
     @ManagedAttribute
     public String getName();
 }

@@ -33,17 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
 /**
-    Configuration for the &lt;applications&gt; element; it is an internal "node" which
-    groups all applications under itself.
-    @since Glassfish V3
-*/
+Configuration for the &lt;applications&gt; element; it is an internal "node" which
+groups all applications under itself.
+@since Glassfish V3
+ */
 public interface ApplicationsConfig extends ApplicationsConfigBase
 {
+
     public static final String AMX_TYPE = "applications";
 }
 

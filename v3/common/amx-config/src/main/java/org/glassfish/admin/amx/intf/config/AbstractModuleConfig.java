@@ -38,22 +38,23 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
-	Functionality that all modules share.  
+Functionality that all modules share.  
  */
 public interface AbstractModuleConfig
-	extends AMXProxy, Enabled, Description, ObjectType, NamedConfigElement,
-	DeployedItemRefConfigReferent, PropertiesAccess
+        extends AMXProxy, Enabled, Description, ObjectType, NamedConfigElement,
+        DeployedItemRefConfigReferent, PropertiesAccess
 {
-	/**
-	    The file system path to this module, typically something like
-	    <code>${com.sun.aas.instanceRoot}/applications/...</code>
-	 */
-	public String	getLocation();
-	
-	/**
-		Indicates whether the application has been     
-        deployed to a directory or not.              
-	 */
-    @ResolveTo(Boolean.class)
-	public boolean	getDirectoryDeployed();
+
+    /**
+    The file system path to this module, typically something like
+    <code>${com.sun.aas.instanceRoot}/applications/...</code>
+     */
+    public String getLocation();
+
+    /**
+    Indicates whether the application has been
+    deployed to a directory or not.
+     */
+    
+    public boolean getDirectoryDeployed();
 }

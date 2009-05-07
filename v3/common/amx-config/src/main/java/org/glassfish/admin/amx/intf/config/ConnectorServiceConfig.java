@@ -36,13 +36,15 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-	 Configuration for the &lt;connector-service&gt; element.
+Configuration for the &lt;connector-service&gt; element.
  */
 public interface ConnectorServiceConfig extends ConfigElement
 {
+
     public static final String AMX_TYPE = "connector-service";
+
     
-    @ResolveTo(Integer.class)
-	public String	getShutdownTimeoutInSeconds();
-	public void	setShutdownTimeoutInSeconds( final String value );
+    public String getShutdownTimeoutInSeconds();
+
+    public void setShutdownTimeoutInSeconds(final String value);
 }

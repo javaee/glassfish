@@ -100,7 +100,7 @@ public interface ApplicationConfig
 
 		@see #setAvailabilityEnabled
 	 */
-    @ResolveTo(Boolean.class)
+    
 	public String	getAvailabilityEnabled();
 
 	/**

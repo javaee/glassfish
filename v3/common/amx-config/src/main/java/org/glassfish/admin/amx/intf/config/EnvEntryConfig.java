@@ -35,23 +35,27 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-@AMXCreateInfo(paramNames={"env-entry-name", "env-entry-value", "env-entry-type", "description", "ignore-descriptor-item" })
 public interface EnvEntryConfig extends NamedConfigElement
 {
+
     public static final String AMX_TYPE = "env-entry";
-    
+
     public String getDescription();
+
     public void setDescription(String value);
-    
+
     public String getEnvEntryName();
     //public void setType(String value);
-    
+
     public String getEnvEntryType();
+
     public void setEnvEntryType(String value);
-    
+
     public String getEnvEntryValue();
+
     public void setEnvEntryValue(String value);
-    
+
     public String getIgnoreDescriptorItem();
+
     public void setIgnoreDescriptorItem(String ignore);
 }

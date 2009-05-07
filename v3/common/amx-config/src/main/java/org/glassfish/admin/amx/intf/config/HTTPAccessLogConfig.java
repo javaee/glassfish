@@ -35,24 +35,21 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;http-access-log&gt; element.
-     @deprecated  Grizzly variants now exist
-*/
-
-public interface HTTPAccessLogConfig extends ConfigElement 
+Configuration for the &lt;http-access-log&gt; element.
+@deprecated  Grizzly variants now exist
+ */
+public interface HTTPAccessLogConfig extends ConfigElement
 {
+
     public static final String AMX_TYPE = "http-access-log";
+
     
-    @ResolveTo(Boolean.class)
-	public String	getIPOnly();
-	public void	setIPOnly( final String value );
+    public String getIPOnly();
 
-	public String	getLogDirectory();
-	public void	setLogDirectory( final String value );
+    public void setIPOnly(final String value);
 
+    public String getLogDirectory();
 
-
+    public void setLogDirectory(final String value);
 }

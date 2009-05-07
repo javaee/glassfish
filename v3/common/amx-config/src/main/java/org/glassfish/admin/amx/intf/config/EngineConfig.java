@@ -33,13 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-
-
 
 /**
  * Config AMX MBean for Engine's config
@@ -48,7 +44,9 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
  */
 public interface EngineConfig extends AMXConfigProxy, Description, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "engine";
+
     /**
      * get the sniffer
      */
@@ -58,5 +56,4 @@ public interface EngineConfig extends AMXConfigProxy, Description, PropertiesAcc
      * set the sniffer
      */
     public void setSniffer(String value);
-
 }

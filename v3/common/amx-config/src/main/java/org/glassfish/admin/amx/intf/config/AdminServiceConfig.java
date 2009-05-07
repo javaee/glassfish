@@ -33,9 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
-
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
@@ -45,70 +43,46 @@ import org.glassfish.admin.amx.base.Singleton;
 import java.util.Map;
 
 /**
-	 Configuration for the &lt;admin-service&gt; element.
+Configuration for the &lt;admin-service&gt; element.
  */
 public interface AdminServiceConfig
-	extends AMXConfigProxy, PropertiesAccess, Singleton
-{  
+        extends AMXConfigProxy, PropertiesAccess, Singleton
+{
+
     public static final String AMX_TYPE = "admin-service";
-    
-	/**
-		Calls Container.getContaineeMap( XTypes.JMX_CONNECTOR_CONFIG ).
-		@return Map of JMXConnectorConfig proxies, keyed by name.
-		@see org.glassfish.admin.amx.base.Container#getContaineeMap
-	 */
-	public Map<String,JMXConnectorConfig>		getJMXConnector();
 
-	public String   getSystemJMXConnectorName();
+    /**
+    Calls Container.getContaineeMap( XTypes.JMX_CONNECTOR_CONFIG ).
+    @return Map of JMXConnectorConfig proxies, keyed by name.
+    @see org.glassfish.admin.amx.base.Container#getContaineeMap
+     */
+    public Map<String, JMXConnectorConfig> getJMXConnector();
 
-	public void     setSystemJMXConnectorName( String value );
+    public String getSystemJMXConnectorName();
 
-	public String   getType();
+    public void setSystemJMXConnectorName(String value);
 
-	/** Possible value for Type.  See {@link #setType} */
-	public final static String	TYPE_DAS			= "das";
-	/** Possible value for Type.  See {@link #setType} */
-	public final static String	TYPE_SERVER			= "server";
-	/** Possible value for Type.  See {@link #setType} */
-	public final static String	TYPE_DAS_AND_SERVER	= "das-and-server";
-	
-	/**
-		Valid values are:
-		<ul>
-		<li>{@link #TYPE_DAS}</li>
-		<li>{@link #TYPE_SERVER}</li>
-		<li>{@link #TYPE_DAS_AND_SERVER}</li>
-		</ul>
-		@param value
-	*/
-	public void     setType( String value );
+    public String getType();
+    /** Possible value for Type.  See {@link #setType} */
+    public final static String TYPE_DAS = "das";
+    /** Possible value for Type.  See {@link #setType} */
+    public final static String TYPE_SERVER = "server";
+    /** Possible value for Type.  See {@link #setType} */
+    public final static String TYPE_DAS_AND_SERVER = "das-and-server";
+
+    /**
+    Valid values are:
+    <ul>
+    <li>{@link #TYPE_DAS}</li>
+    <li>{@link #TYPE_SERVER}</li>
+    <li>{@link #TYPE_DAS_AND_SERVER}</li>
+    </ul>
+    @param value
+     */
+    public void setType(String value);
 
     /** may return null if not present */
-	public DASConfig	getDAS();
-	
-//   /**
-// 		Creates a new jmx-connector element.
-// 
-// 		@param name		The name (id) of the jmx-connector.
-// 		@param address	The IP address or host-name.
-// 		@param port		The port of the jmx-connector-server.
-// 		@param authRealmName	The name of the auth-realm that represents the 
-// 		special administrative realm. All authentication (from administraive 
-// 		GUI and CLI) will be handled by this realm.
-// 		@param optional	Map of optional attributes
-// 		@return A proxy to the JMXConnectorConfig MBean.
-// 		@see JMXConnectorConfigKeys
-//         @since Appserver 9.0
-// 	 */
-// 	public JMXConnectorConfig	createJMXConnectorConfig( String name, String address, 
-// 		@ResolveTo(Integer.class) String port, String authRealmName, Map<String,String> optional );
-// 
-// 	/**
-// 		Removes a jmx-connector element.
-// 
-// 		@param name	The name (id) of the jmx-connector.
-// 	 */
-// 	public void			removeJMXConnectorConfig( String name );
+    public DASConfig getDAS();
 }
 
 

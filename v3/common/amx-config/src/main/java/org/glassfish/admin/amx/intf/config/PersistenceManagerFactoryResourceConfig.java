@@ -34,30 +34,21 @@
  * holder.
  */
 package org.glassfish.admin.amx.intf.config;
+
 /**
-	 Configuration for the &lt;persistence-manager-factory-resource&gt; element.
+Configuration for the &lt;persistence-manager-factory-resource&gt; element.
  */
-@AMXCreateInfo(paramNames={"jndi-name", "optional" })
 public interface PersistenceManagerFactoryResourceConfig
-	extends ResourceConfig
+        extends ResourceConfig
 {
+
     public static final String AMX_TYPE = "persistence-manager-factory-resource";
-    
-	/** Key for use with {@link ResourcesConfig#createPersistenceManagerFactoryResourceConfig}. */
-    public static final String    FACTORY_CLASS_KEY               = "FactoryClass";
-        
-	/** Key for use with {@link ResourcesConfig#createPersistenceManagerFactoryResourceConfig}. */
-    public static final String    JDBC_RESOURCE_JNDI_NAME_KEY     = "JDBCResourceJNDIName";
-    
-    
-	public String	getFactoryClass();
 
-	public void		setFactoryClass( final String factoryClass );
+    public String getFactoryClass();
 
-	public String	getJDBCResourceJNDIName();
+    public void setFactoryClass(final String factoryClass);
 
-	public void 	setJDBCResourceJNDIName( final String jdbcResourceJNDIName);
+    public String getJDBCResourceJNDIName();
 
-
-
+    public void setJDBCResourceJNDIName(final String jdbcResourceJNDIName);
 }

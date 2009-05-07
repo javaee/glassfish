@@ -35,16 +35,17 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	Values for use with {@link ResourcesConfig#createJDBCConnectionPoolConfig} and
-	{@link JDBCConnectionPoolConfig#setConnectionValidationMethod}.
+Values for use with {@link ResourcesConfig#createJDBCConnectionPoolConfig} and
+{@link JDBCConnectionPoolConfig#setConnectionValidationMethod}.
  */
 public final class ConnectionValidationMethodValues
 {
-	private	ConnectionValidationMethodValues()	{}
-	
-	public static final String	AUTO_COMMIT	= "auto-commit";
-	public static final String	META_DATA	= "meta-data";
-	public static final String	TABLE		= "table";
+
+    private ConnectionValidationMethodValues()
+    {
+    }
+    public static final String AUTO_COMMIT = "auto-commit";
+    public static final String META_DATA = "meta-data";
+    public static final String TABLE = "table";
 }

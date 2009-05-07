@@ -33,39 +33,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
-
-
 /**
-	 Configuration for the &lt;auth-realm&gt; element.
-*/
-@AMXCreateInfo(paramNames={"name", "classname" })
-public interface AuthRealmConfig extends PropertiesAccess, NamedConfigElement 
+Configuration for the &lt;auth-realm&gt; element.
+ */
+public interface AuthRealmConfig extends PropertiesAccess, NamedConfigElement
 {
+
     public static final String AMX_TYPE = "auth-realm";
-    
-	/**
-	    Classname of the default implementing class.
-	 */
-	public static final String DEFAULT_REALM_CLASSNAME  =
-	    "com.sun.enterprise.security.auth.realm.file.FileRealm";
-	    
-	public static final String KEY_FILE_PROPERTY_KEY    = PropertiesAccess.PROPERTY_PREFIX + "file";
-	
-	public static final String JAAS_CONTEXT_PROPERTY_KEY    = PropertiesAccess.PROPERTY_PREFIX + "jaas-context";
-	
-	/**
-	    When using {@link #DEFAULT_REALM_CLASSNAME} implementation, append
-	    a file name to this prefix and specify it via {@link #KEY_FILE_PROPERTY_KEY}.
-	 */
-	public static final String KEY_FILE_PREFIX         = "${com.sun.aas.instanceRoot}/config/";
-	
-	public String	getClassname();
-	public void	setClassname( String value );
+    /**
+    Classname of the default implementing class.
+     */
+    public static final String DEFAULT_REALM_CLASSNAME =
+            "com.sun.enterprise.security.auth.realm.file.FileRealm";
+    public static final String KEY_FILE_PROPERTY_KEY = PropertiesAccess.PROPERTY_PREFIX + "file";
+    public static final String JAAS_CONTEXT_PROPERTY_KEY = PropertiesAccess.PROPERTY_PREFIX + "jaas-context";
+    /**
+    When using {@link #DEFAULT_REALM_CLASSNAME} implementation, append
+    a file name to this prefix and specify it via {@link #KEY_FILE_PROPERTY_KEY}.
+     */
+    public static final String KEY_FILE_PREFIX = "${com.sun.aas.instanceRoot}/config/";
+
+    public String getClassname();
+
+    public void setClassname(String value);
 }

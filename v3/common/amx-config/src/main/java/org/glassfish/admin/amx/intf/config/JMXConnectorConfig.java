@@ -35,39 +35,35 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 /**
-	 Configuration for the &lt;jmx-connector&gt; element.
-*/
+Configuration for the &lt;jmx-connector&gt; element.
+ */
 public interface JMXConnectorConfig
-	extends Enabled, NamedConfigElement, PropertiesAccess, SSLConfigContainer
+        extends Enabled, NamedConfigElement, PropertiesAccess, SSLConfigContainer
 {
+
     public static final String AMX_TYPE = "jmx-connector";
+    public static final String ACCEPT_ALL_KEY = "AcceptAll";
+    public static final String SECURITY_ENABLED_KEY = "SecurityEnabled";
+
+    public String getProtocol();
+
+    public void setProtocol(String value);
+
+    public String getAddress();
+
     
-	public static final String	ACCEPT_ALL_KEY			= "AcceptAll";
+    public String getPort();
 
-	public static final String	SECURITY_ENABLED_KEY	= "SecurityEnabled";
     
-	public String	getProtocol();
+    public String getAcceptAll();
 
-	public void		setProtocol( String value );
+    public void setAcceptAll(final String value);
 
-	public String	getAddress();
+    public String getAuthRealmName();
 
-    @ResolveTo(Integer.class)
-	public String	getPort();
+    
+    public String getSecurityEnabled();
 
-    @ResolveTo(Boolean.class)
-	public String	getAcceptAll();
-
-	public void		setAcceptAll( final String value );
-
-	public String	getAuthRealmName();
-
-    @ResolveTo(Boolean.class)
-	public String	getSecurityEnabled();
-
-	public void		setSecurityEnabled( final String value );
-
+    public void setSecurityEnabled(final String value);
 }

@@ -57,8 +57,8 @@ public interface HealthCheckerConfigCR {
 //     */
 //     public HealthCheckerConfig createHealthCheckerConfig(
 //         String url, 
-//         @ResolveTo(Integer.class) String intervalInSeconds,
-//         @ResolveTo(Integer.class) String timeoutInSeconds);
+//         
+//         
 // 
 //     /**
 //       Removes a health checker config from the container config element

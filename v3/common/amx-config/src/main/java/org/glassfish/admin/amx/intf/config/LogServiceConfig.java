@@ -51,7 +51,7 @@ public interface LogServiceConfig
 {
     public static final String AMX_TYPE = "log-service";
     
-    @ResolveTo(Boolean.class)
+    
 	public String	getAlarms();
 	public void	setAlarms( String value );
 
@@ -67,23 +67,23 @@ public interface LogServiceConfig
     /**
         @since AppServer 9.0
      */
-    @ResolveTo(Integer.class)
+    
 	public String	getLogRotationTimeLimitInMinutes();
 	public void	setLogRotationTimeLimitInMinutes( String value );
 	
-    @ResolveTo(Integer.class)
+    
 	public String	getLogRotationLimitInBytes();
 	public void	setLogRotationLimitInBytes( String value );
 
-    @ResolveTo(Boolean.class)
+    
 	public String	getLogToConsole();
 	public void	setLogToConsole( String value );
 
-    @ResolveTo(Boolean.class)
+    
 	public String	getUseSystemLogging();
 	public void	setUseSystemLogging( String value );
 	
-    @ResolveTo(Integer.class)
+    
 	public String  getRetainErrorStatisticsForHours();
 	public void    setRetainErrorStatisticsForHours( String hours );
 	

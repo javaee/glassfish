@@ -33,34 +33,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/Description.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
-
 package org.glassfish.admin.amx.intf.config;
 
-
 /**
-	Everything having a settable description should extend this
-	interface.
+Everything having a settable description should extend this
+interface.
  */
 public interface Description
 {
-	/**
-		Return the item description.
-	 */
-	public String	getDescription();
-	
-	/**
-		Set the item description.
-	 */
-	public void		setDescription( String description );
-	
-	/**
-		Optional key within the Map when creating an AMX implementing Description.
-	 */
+
+    /**
+    Return the item description.
+     */
+    public String getDescription();
+
+    /**
+    Set the item description.
+     */
+    public void setDescription(String description);
+    /**
+    Optional key within the Map when creating an AMX implementing Description.
+     */
     final static String DESCRIPTION_KEY = "Description";
 }

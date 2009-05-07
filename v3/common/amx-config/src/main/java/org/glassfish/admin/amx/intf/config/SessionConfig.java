@@ -33,9 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.intf.config;
-
 
 import org.glassfish.admin.amx.base.Singleton;
 
@@ -43,11 +41,12 @@ import org.glassfish.admin.amx.base.Singleton;
 import java.util.Map;
 
 /**
-	 Configuration for the &lt;session-config&gt; element.
-*/
+Configuration for the &lt;session-config&gt; element.
+ */
 public interface SessionConfig
-	extends ConfigElement, Singleton
+        extends ConfigElement, Singleton
 {
+
     public static final String AMX_TYPE = "session-config";
 // 	/**
 // 		Creates new session-manager element.
@@ -61,10 +60,10 @@ public interface SessionConfig
 // 	 */
 // 	public void			removeSessionManager();
 
-	/**
-		Get the SessionManagerConfig MBean.
-	 */
-	public SessionManagerConfig	getSessionManager();
+    /**
+    Get the SessionManagerConfig MBean.
+     */
+    public SessionManagerConfig getSessionManager();
 
 // 	/**
 // 		Creates new session-properties element.
@@ -78,9 +77,8 @@ public interface SessionConfig
 // 		Removes session-properties element.
 // 	 */
 // 	public void			removeSessionProperties();
-
-	/**
-		Get the SessionPropertiesConfig MBean.
-	 */
-	public SessionPropertiesConfig	getSessionProperties();
+    /**
+    Get the SessionPropertiesConfig MBean.
+     */
+    public SessionPropertiesConfig getSessionProperties();
 }

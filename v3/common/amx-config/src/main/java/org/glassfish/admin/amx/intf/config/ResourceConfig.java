@@ -36,11 +36,12 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-	Base interface for all XXXResource classes.
+Base interface for all XXXResource classes.
  */
 public interface ResourceConfig
-	extends NamedConfigElement, Enabled, Description,
-	    PropertiesAccess, ObjectType, ResourceRefConfigReferent
+        extends NamedConfigElement, Enabled, Description,
+        PropertiesAccess, ObjectType, ResourceRefConfigReferent
 {
-	public String	getJNDIName();
+
+    public String getJNDIName();
 }

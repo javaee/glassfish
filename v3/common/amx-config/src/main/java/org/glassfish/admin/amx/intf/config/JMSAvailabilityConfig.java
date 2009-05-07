@@ -35,59 +35,52 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 /**
-    Represents the &lt;jms-availability> element.
-	@since AppServer 9.0
-	@see AvailabilityServiceConfig
-*/
-
-public interface JMSAvailabilityConfig extends ConfigElement, PropertiesAccess 
+Represents the &lt;jms-availability> element.
+@since AppServer 9.0
+@see AvailabilityServiceConfig
+ */
+public interface JMSAvailabilityConfig extends ConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "jms-availability";
+
+    /**
+    This String flag controls whether the MQ cluster associated
+    with the application server cluster is HA enabled or not. If
+    this attribute is "false", then the MQ cluster pointed to by
+    the jms-service element is considered non-HA. JMS Messages
+    are not persisted to a highly available store. If this
+    attribute is "true" the MQ cluster pointed to by the
+    jms-service element is a HA cluster and the MQ cluster uses
+    the database pointed to by mq-store-pool-name to save
+    persistent JMS messages and other broker cluster
+    configuration information. Individual applications will not
+    be able to control or override MQ cluster availability
+    levels. They inherit the availability attribute defined in
+    this element. If this attribute is missing, availability is
+    turned off by default [i.e. the MQ cluster associated with
+    the AS cluster would behave as a non-HA cluster]
+     */
     
-	/**                      
-        This String flag controls whether the MQ cluster associated  
-        with the application server cluster is HA enabled or not. If  
-        this attribute is "false", then the MQ cluster pointed to by  
-        the jms-service element is considered non-HA. JMS Messages    
-        are not persisted to a highly available store. If this        
-        attribute is "true" the MQ cluster pointed to by the          
-        jms-service element is a HA cluster and the MQ cluster uses   
-        the database pointed to by mq-store-pool-name to save         
-        persistent JMS messages and other broker cluster              
-        configuration information. Individual applications will not   
-        be able to control or override MQ cluster availability        
-        levels. They inherit the availability attribute defined in    
-        this element. If this attribute is missing, availability is   
-        turned off by default [i.e. the MQ cluster associated with    
-        the AS cluster would behave as a non-HA cluster]
-	 */
-    @ResolveTo(Boolean.class)
-	public String	getAvailabilityEnabled();
-	
-	/**
-	    @see #getAvailabilityEnabled
-	 */
-	public void	setAvailabilityEnabled( String value );
+    public String getAvailabilityEnabled();
+
+    /**
+    @see #getAvailabilityEnabled
+     */
+    public void setAvailabilityEnabled(String value);
 
     /**                             
-        This is the jndi-name for the JDBC Connection Pool used by    
-        the MQ broker cluster for use in saving persistent JMS        
-        messages and other broker cluster configuration information.  
-        It will default to value of store-pool-name under             
-        availability-service (ultimately "jdbc/hastore").
+    This is the jndi-name for the JDBC Connection Pool used by
+    the MQ broker cluster for use in saving persistent JMS
+    messages and other broker cluster configuration information.
+    It will default to value of store-pool-name under
+    availability-service (ultimately "jdbc/hastore").
      */
-	public String	getMQStorePoolName();
-	
-	/**
-	    @see #getMQStorePoolName
-	 */
-	public void	setMQStorePoolName( String name );
+    public String getMQStorePoolName();
 
-
-
-
+    /**
+    @see #getMQStorePoolName
+     */
+    public void setMQStorePoolName(String name);
 }

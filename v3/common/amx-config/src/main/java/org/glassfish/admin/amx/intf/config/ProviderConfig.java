@@ -35,82 +35,38 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
-
 import java.util.Map;
 
 /**
-	 Configuration for the &lt;provider-config&gt; element.
-*/
-
+Configuration for the &lt;provider-config&gt; element.
+ */
 public interface ProviderConfig
-	extends NamedConfigElement, PropertiesAccess
+        extends NamedConfigElement, PropertiesAccess
 {
+
     public static final String AMX_TYPE = "provider-config";
-    
-	/** Key for use with {@link #createRequestPolicyConfig} and {@link #createResponsePolicyConfig}*/
-	public static final String	AUTH_SOURCE_KEY		=	"AuthSource";
-	
-	/** Key for use with {@link #createRequestPolicyConfig} and {@link #createResponsePolicyConfig}*/
-	public static final String	AUTH_RECIPIENT_KEY	=	"AuthRecipient";
 
-    /**  */
-    public static final String PROVIDER_TYPE_CLIENT = "client";
-    
-    /**  */
-    public static final String PROVIDER_TYPE_SERVER = "server";
-    
-	public String	getClassName();
-	public void	setClassName( final String value );
+    public String getClassName();
 
-	public String	getProviderId();
+    public void setClassName(final String value);
+
+    public String getProviderId();
 
     /** Returns {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
-	public String	getProviderType();
-    
+    public String getProviderType();
+
     /** Use {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
-	public void	setProviderType( final String value );
+    public void setProviderType(final String value);
 
-// -------------------- Operations --------------------
-// 	/**
-// 		Creates new request-policy-config element.
-// 
-// 		@param optional Map of optional attributes whose keys are defined here.
-// 		(eg:- AUTH_RECIPIENT_KEY)
-// 		@return A proxy to the RequestPolicyConfig MBean.
-// 	 */
-// 	public RequestPolicyConfig	createRequestPolicyConfig( Map<String,String> optional );
-// 
-// 	/**
-// 		Removes request-policy-config element.
-// 	 */
-// 	public void					removeRequestPolicy();
+    /**
+    Get the RequestPolicyConfig MBean.
+     */
+    RequestPolicyConfig getRequestPolicy();
 
-	/**
-		Get the RequestPolicyConfig MBean.
-	 */
-	RequestPolicyConfig	getRequestPolicy();
-
-// 	/**
-// 		Creates new response-policy-config element.
-// 
-// 		@param optional Map of optional attributes whose keys are defined here.
-// 		(eg:- AUTH_RECIPIENT_KEY)
-// 		@return A proxy to the ResponsePolicyConfig MBean.
-// 	 */
-// 	public ResponsePolicyConfig		createResponsePolicyConfig( Map<String,String> optional );
-// 
-// 	/**
-// 		Removes response-policy-config element.
-// 	 */
-// 	public void						removeResponsePolicy();
-
-	/**
-		Get the ResponsePolicyConfig MBean.
-	 */
-	ResponsePolicyConfig			getResponsePolicy();
-
-
-
+    /**
+    Get the ResponsePolicyConfig MBean.
+     */
+    ResponsePolicyConfig getResponsePolicy();
 }
+
+

@@ -40,30 +40,30 @@ import java.util.Map;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 
-
 /**
-	All MBeans that have system Properties must extend this interface.
-	<p>
-	Properties are always Strings.  Property names are required to be unique.
-    <p>
-    New for Glassfish V3:  system properties are first-class MBeans and so this
-    interface extends Container.
-	
-	@see ClusterConfig
-	@see ConfigConfig
-	@see DomainConfig
-	@see ClusteredServerConfig
-	@see StandaloneServerConfig
+All MBeans that have system Properties must extend this interface.
+<p>
+Properties are always Strings.  Property names are required to be unique.
+<p>
+New for Glassfish V3:  system properties are first-class MBeans and so this
+interface extends Container.
+
+@see ClusterConfig
+@see ConfigConfig
+@see DomainConfig
+@see ClusteredServerConfig
+@see StandaloneServerConfig
  */
 public interface SystemPropertiesAccess extends AMXConfigProxy
 {
-	/**
-		When a key is required for a system property in a Map,
-		its name must consist of this prefix plus the actual name.  When
-		accessing a property directly, this prefix must not be used.
-	 */
+
+    /**
+    When a key is required for a system property in a Map,
+    its name must consist of this prefix plus the actual name.  When
+    accessing a property directly, this prefix must not be used.
+     */
     final static String SYSTEM_PROPERTY_PREFIX = "system-" + PropertiesAccess.PROPERTY_PREFIX;
-    
+
 //     /**
 //        @since Glassfish V3
 //      */
@@ -75,14 +75,12 @@ public interface SystemPropertiesAccess extends AMXConfigProxy
 //      */
 //     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 // 	public void            removeSystemPropertyConfig( String propertyName );
-
-    
-	/**
-		Return all SystemPropertyConfig MBeans, keyed by property name. 
-        @since Glassfish V3
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public Map<String,SystemPropertyConfig>  getSystemProperty();
+    /**
+    Return all SystemPropertyConfig MBeans, keyed by property name.
+    @since Glassfish V3
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public Map<String, SystemPropertyConfig> getSystemProperty();
 }
 
 
