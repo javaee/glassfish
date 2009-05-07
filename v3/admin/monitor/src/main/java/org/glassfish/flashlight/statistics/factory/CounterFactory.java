@@ -23,6 +23,7 @@ public class CounterFactory {
             count = new CounterImpl ();
             count.setCount(seed[0]);
         }
+        count.setEnabled(true);
         return count;
     }
 }
