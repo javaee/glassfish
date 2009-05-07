@@ -54,6 +54,9 @@ import java.util.Set;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.jersey.api.container.ContainerFactory;
 import org.glassfish.api.container.RequestDispatcher;
+import com.sun.logging.LogDomains;
+import java.util.logging.Logger;
+
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -73,6 +76,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
 
     public static ConfigSupport configSupport;
     private final static String BASE_URI = "http://localhost:9998/";
+    public final static Logger logger = LogDomains.getLogger(RestService.class, LogDomains.ADMIN_LOGGER);
 
     public Lifecycle getLifecycle() {
         // This service stays running for the life of the app server, hence SERVER.
@@ -153,8 +157,9 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
    //uncomment if you need to run the generator:
-        //r.add(GeneratorResource.class);
+     //   r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
+        r.add(DefaultConfigResource.class);
         r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
 
 

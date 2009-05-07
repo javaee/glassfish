@@ -35,8 +35,11 @@
  */
 package org.glassfish.admin.rest;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Map;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
@@ -46,20 +49,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import com.sun.jersey.api.core.ResourceContext;
-import java.io.InputStream;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import com.sun.jersey.api.core.ResourceContext;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.TransactionFailure;
 
@@ -79,7 +81,6 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     public TemplateResource() {
     }
 
-
     public void setEntity(E p) {
         entity = p;
     }
@@ -89,29 +90,43 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     }
 
     @GET
-    @Produces({"application/json","text/html","application/xml","application/x-www-form-urlencoded"})
+    @Produces({MediaType.APPLICATION_FORM_URLENCODED,
+        MediaType.TEXT_HTML,
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     public Dom get(@QueryParam("expandLevel")
             @DefaultValue("1") int expandLevel) {
+        if (getEntity() == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
 
+        }
 
         return Dom.unwrap(getEntity());
 
     }
-    public ConfigBean getConfigBean(){
+
+    public ConfigBean getConfigBean() {
         return (ConfigBean) Dom.unwrap(getEntity());
     }
 
-    @POST
-    @Produces("text/html")
-    public Dom updateDataItem(Hashtable<String, String> data) {
-       data.remove("submit");
-       for (String name : data.keySet()) {
+    @POST //create
+    @Produces(MediaType.TEXT_HTML)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    public Dom updateDataItem(HashMap<String, String> data) {
+        data.remove("submit");
+        for (String name : data.keySet()) {
             System.out.println("updateDataItem name=" + name);
             System.out.println("value=" + data.get(name));
         }
+
+
+        boolean redirectProcessed = processRedirectsAnnotation(RestRedirect.OpType.POST, data);
+        if (redirectProcessed){
+        return Dom.unwrap(getEntity());
+        }
         //data.get("submit");
-        Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>> ();
-        mapOfChanges.put(getConfigBean (), data);
+        Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
+        mapOfChanges.put(getConfigBean(), data);
 
         try {
             RestService.configSupport.apply(mapOfChanges); //throws TransactionFailure
@@ -122,24 +137,81 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         return Dom.unwrap(getEntity());
     }
 
-    @PUT
+    @PUT  //update
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response updateEntity(HashMap<String, String> data) {
-        return updateConfig(data); 
+        return updateConfig(data);
         ///return Dom.unwrap(getEntity());
     }
 
-
-
     @DELETE
-    public void delete() {
-             System.out.println("Delete IS CALLED for" + getEntity());
-       
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public void delete(HashMap<String, String> data) {
+
+        System.out.println("Delete IS CALLED for" + getEntity());
+        for (String name : data.keySet()) {
+            System.out.println("name=" + name);
+            //System.out.println("value=" + data.get(name));
+        }
+        processRedirectsAnnotation(RestRedirect.OpType.DELETE, data);
+
+    }
+    /*
+     * see if we can understand the configbeans annotations like:
+     * @RestRedirects(
+    {
+    @RestRedirect(opType= RestRedirect.OpType.DELETE, commandName="undeploy"),
+    @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
+    }
+     *
+     * */
+
+    private boolean processRedirectsAnnotation(RestRedirect.OpType type , HashMap<String, String> data) {
+
+        Class<? extends ConfigBeanProxy> cbp = null;
+        try {
+            cbp = (Class<? extends ConfigBeanProxy>) getConfigBean().model.classLoaderHolder.get().loadClass(getConfigBean().model.targetTypeName);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        RestRedirects restRedirects = cbp.getAnnotation(RestRedirects.class);
+        if (restRedirects != null) {
+            System.out.println("Annotation restRedirects are not null:===" + restRedirects);
+
+            RestRedirect[] values = restRedirects.value();
+            for (RestRedirect r : values) {
+                System.out.println("command name=" + r.commandName());
+                System.out.println("command type=" + r.opType());
+                if (r.opType().equals(type)) {
+                    CommandRunner cr = RestService.habitat.getComponent(CommandRunner.class);
+                    ActionReport ar = RestService.habitat.getComponent(ActionReport.class);
+                    Properties p = new Properties();
+                    CommandModel cm = cr.getModel(r.commandName(), RestService.logger);
+                    java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
+                    for (CommandModel.ParamModel pm : params) {
+                        System.out.println("command param is" + pm.getName());
+                        System.out.println("command param type is" + pm.getType());
+                        System.out.println("command param name is" + pm.getParam().name());
+                        System.out.println("command param shortname is" + pm.getParam().shortName());
+
+                    }
+
+                    p.putAll(data);
+
+
+                    cr.doCommand(r.commandName(), p, ar);
+                    System.out.println("exec command" + ar.getActionExitCode());
+                    return true;//processed
+                }
+            }
+        }
+        return false;//not processed
+
     }
 
     public Response updateConfig(HashMap<String, String> data) {
         if (data.containsKey("error")) {
-            return  Response.status(415).entity(data.get("error")).build();//unsupported media
+            return Response.status(415).entity(data.get("error")).build();//unsupported media
         } else {
             for (String name : data.keySet()) {
                 System.out.println("name=" + name);
@@ -147,8 +219,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             }
 
 
-            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>> ();
-            mapOfChanges.put(getConfigBean (), data);
+            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
+            mapOfChanges.put(getConfigBean(), data);
 
             try {
                 RestService.configSupport.apply(mapOfChanges); //throws TransactionFailure

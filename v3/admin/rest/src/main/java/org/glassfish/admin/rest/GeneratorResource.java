@@ -49,10 +49,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 
 /**
  *
@@ -100,6 +103,32 @@ public class GeneratorResource {
 
     }
 
+    private void processRedirectsAnnotation(ConfigModel model) {
+
+        Class<? extends ConfigBeanProxy> cbp = null;
+        System.out.println("\n\nAnnotation"+model.targetTypeName );
+        try {
+            cbp = (Class<? extends ConfigBeanProxy>)model.classLoaderHolder.get().loadClass(model.targetTypeName);
+           // cbp = (Class<? extends ConfigBeanProxy>)this.getClass().getClassLoader().loadClass(model.targetTypeName) ;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace(); 
+        }
+        System.out.println("re Annotation"+model.targetTypeName );
+        RestRedirects restRedirects = cbp.getAnnotation(RestRedirects.class);
+        System.out.println("re Annotation restRedirects"+restRedirects );
+        if (restRedirects != null) {
+            System.out.println("LUDO: NOT NULL                Annotation restRedirects"+restRedirects );
+
+            RestRedirect[] values = restRedirects.value();
+            for (RestRedirect r: values) {
+               System.out.println( r.commandName());
+               System.out.println( r.opType());
+            }
+        }
+
+
+    }
+
     private void genHeader(BufferedWriter out) throws IOException {
         out.write("/**\n");
         out.write("* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
@@ -113,8 +142,8 @@ public class GeneratorResource {
         out.write("*\n");
         out.write("**/\n");
     }
-    private HashMap genSingleFiles = new HashMap();
-    private HashMap genListFiles = new HashMap();
+    private HashMap<String, String> genSingleFiles = new HashMap<String, String>();
+    private HashMap<String, String> genListFiles = new HashMap<String, String>();
 
     public void generateList(ConfigModel model) throws IOException {
 
@@ -212,6 +241,7 @@ public class GeneratorResource {
     }
 
     public void generateSingle(ConfigModel model) throws IOException {
+        processRedirectsAnnotation(model);
 
         String serverConfigName = model.targetTypeName.substring(model.targetTypeName.lastIndexOf(".") + 1,
                 model.targetTypeName.length());
