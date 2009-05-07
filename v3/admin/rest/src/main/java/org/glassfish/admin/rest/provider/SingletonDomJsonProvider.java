@@ -119,7 +119,7 @@ public class SingletonDomJsonProvider extends DomProviderUtil implements Message
 
     private String getAttributes(Dom proxy) {
         String result ="";
-        Set<String> attributes = proxy.getAttributeNames();
+        Set<String> attributes = proxy.model.getAttributeNames();
         for (String attribute : attributes) {
             result = result + quote(attribute) + " : " + quote(proxy.attribute(attribute));
             result = result + ",";

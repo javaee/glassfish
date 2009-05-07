@@ -42,7 +42,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
@@ -57,18 +57,18 @@ import javax.ws.rs.ext.Provider;
  */
 @Consumes("application/x-www-form-urlencoded")
 @Provider
-public class FormReader implements MessageBodyReader<Hashtable<String, String>> {
+public class FormReader implements MessageBodyReader<HashMap<String, String>> {
     
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(Hashtable.class);
+        return type.equals(HashMap.class);
     }
 
-    public Hashtable<String, String> readFrom(Class<Hashtable<String, String>> type, Type genericType,
+    public HashMap<String, String> readFrom(Class<HashMap<String, String>> type, Type genericType,
             Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
             InputStream in) throws IOException {
         String formData = readAsString(in);
 
-        Hashtable<String, String> map = new Hashtable<String, String>();
+        HashMap<String, String> map = new HashMap<String, String>();
         StringTokenizer tokenizer = new StringTokenizer(formData, "&");
         String token;
         while (tokenizer.hasMoreTokens()) {

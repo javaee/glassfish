@@ -118,7 +118,7 @@ public class SingletonDomHtmlProvider extends DomProviderUtil implements Message
 
     private String getAttributes(Dom proxy) {
         String result ="";
-        Set<String> attributes = proxy.getAttributeNames();
+        Set<String> attributes = proxy.model.getAttributeNames();
         for (String attribute : attributes) { //for each attribute
             result = result + indent + "<b>"; //indent
             result = result + attribute + ":&nbsp;&nbsp;&nbsp;&nbsp;" + proxy.attribute(attribute);

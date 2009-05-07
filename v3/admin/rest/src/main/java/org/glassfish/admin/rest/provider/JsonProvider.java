@@ -88,7 +88,7 @@ public class JsonProvider implements MessageBodyWriter<Dom> {
     }
 
     private void introspect(OutputStream out, Dom proxy) throws IOException {
-        Set<String> ss = proxy.getAttributeNames();
+        Set<String> ss = proxy.model.getAttributeNames();
 
         boolean first = true;
         out.write("{".getBytes());

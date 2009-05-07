@@ -124,7 +124,7 @@ public class SingletonDomXmlProvider extends DomProviderUtil implements MessageB
 
     private String getAttributes(Dom proxy) {
         String result ="";
-        Set<String> attributes = proxy.getAttributeNames();
+        Set<String> attributes = proxy.model.getAttributeNames();
         for (String attribute : attributes) {
             result = result + attribute + "=" + quote(proxy.attribute(attribute));
             result = result + " ";

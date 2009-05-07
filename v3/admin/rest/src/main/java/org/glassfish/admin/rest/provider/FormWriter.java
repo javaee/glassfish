@@ -91,7 +91,7 @@ public class FormWriter implements MessageBodyWriter<Dom> {
                 "<form name='pair' action='"+uriInfo.getAbsolutePath()+"' method='POST'>\n" +
                 "<table>\n";
 
-        Set<String> ss = data.getAttributeNames();
+        Set<String> ss = data.model.getAttributeNames();
 
             for (String name : ss) {
             ret = ret +
