@@ -52,11 +52,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+
 import com.sun.jersey.api.container.ContainerFactory;
 import org.glassfish.api.container.RequestDispatcher;
 import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
-
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -69,11 +70,9 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
     public static com.sun.enterprise.config.serverbeans.Domain theDomain;
-
     @Inject
     org.glassfish.flashlight.MonitoringRuntimeDataRegistry monitoringRegistry;
     public static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
-
     public static ConfigSupport configSupport;
     private final static String BASE_URI = "http://localhost:9998/";
     public final static Logger logger = LogDomains.getLogger(RestService.class, LogDomains.ADMIN_LOGGER);
@@ -115,40 +114,24 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
 
     private void start() throws Exception {
 
-        System.out.println("************** start:");
-//        ResourceConfig rc = null;
-//        ClassLoader orig = Thread.currentThread().getContextClassLoader();
-
-//        try {
-//            Thread.currentThread().setContextClassLoader(org.glassfish.admin.rest.tests.AccessLogResource.class.getClassLoader());
-//
-//            rc = new MyApplication();//getResourceConfig();
-//        } catch (Exception e) {
-//        } finally {
-//            Thread.currentThread().setContextClassLoader(orig);
-//
-//
-//        }
-//        System.out.println("************** rc:" + rc);
-        System.out.println("************** domain:" + domain);
         theDomain = domain;
         theMonitoringRegistry = monitoringRegistry;
         ConfigSupport cs = RestService.habitat.getComponent(ConfigSupport.class);
         configSupport = cs;
-        System.out.println("************** configSupport:" + configSupport);
 
 
 
+        RequestDispatcher rd = habitat.getComponent(RequestDispatcher.class);
+        ResourceConfig rc = getResourceConfig();
+        //        Adapter adap=new MyAdapter();//ContainerFactory.createContainer(Adapter.class, getResourceConfig());
+        Adapter adap = ContainerFactory.createContainer(Adapter.class, rc);
+            ((GrizzlyAdapter)adap).setResourcesContextPath("/rest-resources");
+        Collection<String> virtualserverName = new ArrayList<String>();
+        virtualserverName.add("__asadmin");
+        rd.registerEndpoint("/rest-resources", virtualserverName, adap, null);
+        System.out.println("************** listening to REST requests at http://localhost:4848/rest-resources/domain");
 
-
-//        RequestDispatcher rd = habitat.getComponent(RequestDispatcher.class);
-//        Adapter adap=new MyAdapter();//ContainerFactory.createContainer(Adapter.class, getResourceConfig());
-//     //   theDomain.getConfigs().getConfig().iterator().next().getHttpService().getVirtualServer().
-//        Collection<String> foo= new ArrayList<String>();
-//        foo.add("server");
-//        rd.registerEndpoint("/", foo, adap, null);
-
-        GrizzlyServerFactory.create(BASE_URI, getResourceConfig());
+        // GrizzlyServerFactory.create(BASE_URI, getResourceConfig());
 
 
     }
@@ -156,8 +139,8 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
     public static ResourceConfig getResourceConfig() {
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
-   //uncomment if you need to run the generator:
-     //   r.add(GeneratorResource.class);
+        //uncomment if you need to run the generator:
+        //   r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
         r.add(DefaultConfigResource.class);
         r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
