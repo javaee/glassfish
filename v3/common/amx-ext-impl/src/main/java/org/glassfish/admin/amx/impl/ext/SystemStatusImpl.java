@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.impl.ext;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import org.glassfish.admin.amx.intf.config.JDBCConnectionPoolConfig;
+import org.glassfish.admin.amx.intf.config.JDBCConnectionPool;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
@@ -50,12 +50,12 @@ import java.util.ArrayList;
 import java.beans.PropertyChangeEvent;
 
 
-import org.glassfish.admin.amx.intf.config.ResourcesConfig;
+import org.glassfish.admin.amx.intf.config.Resources;
 import org.glassfish.admin.amx.base.SystemStatus;
 import static org.glassfish.admin.amx.base.SystemStatus.*;
 import org.glassfish.admin.amx.base.UnprocessedConfigChange;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
-import org.glassfish.admin.amx.intf.config.DomainConfig;
+import org.glassfish.admin.amx.intf.config.Domain;
 import org.jvnet.hk2.config.*;
 
 import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
@@ -92,9 +92,9 @@ public final class SystemStatusImpl extends AMXImplBase
         }
             
         // check pool name
-        final ResourcesConfig rc = getDomainRootProxy().child(DomainConfig.class).getResources();
+        final Resources rc = getDomainRootProxy().child(Domain.class).getResources();
         
-        final JDBCConnectionPoolConfig  cfg = rc.getJDBCConnectionPool().get(poolName);
+        final JDBCConnectionPool  cfg = rc.getJDBCConnectionPool().get(poolName);
         if (cfg == null)
         {
             result.put( REASON_FAILED_KEY, "The pool name " + poolName + " does not exist");

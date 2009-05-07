@@ -39,7 +39,7 @@ import org.glassfish.admin.amx.impl.config.AMXConfigLoader;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
-import org.glassfish.admin.amx.intf.config.DomainConfig;
+import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.intf.config.AMXConfigConstants;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
@@ -109,13 +109,13 @@ public final class AMXConfigStartupService
         public ObjectName
     getDomainConfig()
     {
-        return getDomainRoot().child(DomainConfig.class).extra().objectName();
+        return getDomainRoot().child(Domain.class).extra().objectName();
     }
     
-        public DomainConfig
+        public Domain
     getDomainConfigProxy()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getProxy(getDomainConfig(), DomainConfig.class);
+        return ProxyFactory.getInstance( mMBeanServer ).getProxy(getDomainConfig(), Domain.class);
     }
     
         public synchronized ObjectName
@@ -134,7 +134,7 @@ public final class AMXConfigStartupService
     
     public synchronized void unloadAMXMBeans()
     {
-        final DomainConfig domainConfig = getDomainConfigProxy();
+        final Domain domainConfig = getDomainConfigProxy();
         if ( domainConfig!= null )
         {
             ImplUtil.unregisterAMXMBeans( domainConfig );

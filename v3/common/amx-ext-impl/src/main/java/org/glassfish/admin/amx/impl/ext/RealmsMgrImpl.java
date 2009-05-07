@@ -45,17 +45,17 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.util.ListUtil;
 import org.glassfish.admin.amx.base.DomainRoot;
 
-import org.glassfish.admin.amx.intf.config.AuthRealmConfig;
-import org.glassfish.admin.amx.intf.config.SecurityServiceConfig;
-import org.glassfish.admin.amx.intf.config.ConfigConfig;
-import org.glassfish.admin.amx.intf.config.PropertyConfig;
+import org.glassfish.admin.amx.intf.config.AuthRealm;
+import org.glassfish.admin.amx.intf.config.SecurityService;
+import org.glassfish.admin.amx.intf.config.Config;
+import org.glassfish.admin.amx.intf.config.Property;
 
 import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.User;
-import org.glassfish.admin.amx.intf.config.ConfigsConfig;
-import org.glassfish.admin.amx.intf.config.DomainConfig;
+import org.glassfish.admin.amx.intf.config.Configs;
+import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.base.RealmsMgr;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.util.CollectionUtil;
@@ -97,21 +97,21 @@ public final class RealmsMgrImpl extends AMXImplBase
         
         // this is ugly, the underlying API doesn't understand that there is more than one <security-service>,
         // each with one or more <auth-realm>
-        final DomainConfig domainConfig = getDomainRootProxy().child(DomainConfig.class);
+        final Domain domainConfig = getDomainRootProxy().child(Domain.class);
         if ( domainConfig == null ) {
             throw new IllegalStateException("Null Domain config");
         }
-        final ConfigConfig config = domainConfig.getConfigs().getConfig().values().iterator().next();
-        final SecurityServiceConfig ss = config.getSecurityService();
+        final Config config = domainConfig.getConfigs().getConfig().values().iterator().next();
+        final SecurityService ss = config.getSecurityService();
         
-        final Map<String,AuthRealmConfig> authRealmConfigs = ss.getAuthRealm();
+        final Map<String,AuthRealm> authRealmConfigs = ss.getAuthRealm();
         
         final List<String> goodRealms = new ArrayList<String>();
-        for( final AuthRealmConfig authRealm : authRealmConfigs.values() )
+        for( final AuthRealm authRealm : authRealmConfigs.values() )
         {
-            final Map<String,PropertyConfig> propConfigs = authRealm.getProperty();
+            final Map<String,Property> propConfigs = authRealm.getProperty();
             final Properties props = new Properties();
-            for (final PropertyConfig p : propConfigs.values() )
+            for (final Property p : propConfigs.values() )
             {
                 final String value = p.resolveAttribute( "Value" );
                 props.setProperty( p.getName(), value );
@@ -325,15 +325,15 @@ public final class RealmsMgrImpl extends AMXImplBase
     public boolean getAnonymousLogin() {
         final DomainRoot domainRoot = getDomainRootProxy();
 
-        final DomainConfig domainConfig = domainRoot.child(DomainConfig.class);
-        final ConfigsConfig cc = domainConfig.getConfigs();
-        final Map<String,ConfigConfig> configs = cc.childrenMap(ConfigConfig.class);
+        final Domain domainConfig = domainRoot.child(Domain.class);
+        final Configs cc = domainConfig.getConfigs();
+        final Map<String,Config> configs = cc.childrenMap(Config.class);
 
         // find the ADMIN_REALM
-        AuthRealmConfig adminFileAuthRealm = null;
-        for( final ConfigConfig config : configs.values() )
+        AuthRealm adminFileAuthRealm = null;
+        for( final Config config : configs.values() )
         {
-            for( final AuthRealmConfig auth : config.getSecurityService().childrenMap(AuthRealmConfig.class).values() )
+            for( final AuthRealm auth : config.getSecurityService().childrenMap(AuthRealm.class).values() )
             {
                 if ( auth.getName().equals(ADMIN_REALM) )
                 {
@@ -356,8 +356,8 @@ public final class RealmsMgrImpl extends AMXImplBase
             return false;
         }
 
-        final Map<String,PropertyConfig>  props = adminFileAuthRealm.getProperty();
-        final PropertyConfig keyfileProp = props.get("file");
+        final Map<String,Property>  props = adminFileAuthRealm.getProperty();
+        final Property keyfileProp = props.get("file");
         if ( keyfileProp == null ) {
             throw new IllegalStateException( "Cannot find property 'file'" );
         }

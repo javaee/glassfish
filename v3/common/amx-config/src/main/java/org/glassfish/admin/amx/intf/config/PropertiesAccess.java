@@ -71,11 +71,11 @@ public interface PropertiesAccess extends AMXProxy
 
 //----------------------------------------------------------------------------------
     /**
-    Return all PropertyConfig MBeans, keyed by property name.
+    Return all Property MBeans, keyed by property name.
     @since Glassfish V3
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
-    public Map<String, PropertyConfig> getProperty();
+    public Map<String, Property> getProperty();
 }
 
 

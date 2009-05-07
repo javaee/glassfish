@@ -56,9 +56,9 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.intf.config.ConfigConfig;
-import org.glassfish.admin.amx.intf.config.ThreadPoolConfig;
-import org.glassfish.admin.amx.intf.config.ThreadPoolsConfig;
+import org.glassfish.admin.amx.intf.config.Config;
+import org.glassfish.admin.amx.intf.config.ThreadPool;
+import org.glassfish.admin.amx.intf.config.ThreadPools;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListeners;
@@ -82,7 +82,7 @@ public class GrizzlyHandlers {
      )
     public static void getNetworkListeners(HandlerContext handlerCtx){
 
-        ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
+        Config config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
         Map<String, NetworkListener> nls = config.getNetworkConfig().as(NetworkConfig.class).getNetworkListeners().getNetworkListener();
         List result = new ArrayList();
         for(NetworkListener nl : nls.values()){
@@ -120,7 +120,7 @@ public class GrizzlyHandlers {
      )
     public static void getprotocols(HandlerContext handlerCtx){
 
-        ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
+        Config config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
         Map<String, Protocol> pMap = config.getNetworkConfig().as(NetworkConfig.class).getProtocols().getProtocol();
         List result = new ArrayList();
         for(Protocol protocol : pMap.values()){
@@ -146,11 +146,11 @@ public class GrizzlyHandlers {
             @HandlerOutput(name="result", type=java.util.List.class)}
      )
     public static void getThreadPools(HandlerContext handlerCtx){
-        ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
-        Map<String, ThreadPoolConfig> pMap = config.getThreadPools().getThreadPool();
+        Config config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
+        Map<String, ThreadPool> pMap = config.getThreadPools().getThreadPool();
         List result = new ArrayList();
 
-        for(ThreadPoolConfig tpc : pMap.values()){
+        for(ThreadPool tpc : pMap.values()){
             try{
                 Map<String, Object> attrs = tpc.attributesMap();
                 HashMap oneRow = new HashMap();
@@ -176,7 +176,7 @@ public class GrizzlyHandlers {
             @HandlerInput(name="selectedRows", type=List.class, required=true)}
      )
     public static void deleteGrizzlyElement(HandlerContext handlerCtx){
-         ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
+         Config config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
          String type = (String) handlerCtx.getInputValue("type");
          AMXConfigProxy amxP = null;
          if (type.equals("thread-pool")){
@@ -218,7 +218,7 @@ public class GrizzlyHandlers {
         try{
             String fromDefault = (String) handlerCtx.getInputValue("fromDefault");
             Map attrs = null;
-            ConfigConfig config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
+            Config config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
             NetworkListeners nls = config.getNetworkConfig().as(NetworkConfig.class).getNetworkListeners();
             if ( GuiUtil.isEmpty(fromDefault) || fromDefault.equals("false")){
                 String name = (String) handlerCtx.getInputValue("name");

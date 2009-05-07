@@ -60,11 +60,11 @@ public interface SystemPropertiesAccess extends AMXConfigProxy
 
 
     /**
-    Return all SystemPropertyConfig MBeans, keyed by property name.
+    Return all SystemProperty MBeans, keyed by property name.
     @since Glassfish V3
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
-    public Map<String, SystemPropertyConfig> getSystemProperty();
+    public Map<String, SystemProperty> getSystemProperty();
 }
 
 

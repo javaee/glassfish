@@ -51,7 +51,7 @@ import com.sun.enterprise.module.Module;
 import org.glassfish.admin.amx.base.RuntimeMgr;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
-import org.glassfish.admin.amx.intf.config.DomainConfig;
+import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListeners;
@@ -137,7 +137,7 @@ public final class RuntimeMgrImpl extends AMXImplBase
 
     private NetworkConfig networkConfig()
     {
-        return  getDomainRootProxy().child(DomainConfig.class).getConfigs().getConfig().get("server-config").getNetworkConfig().as(NetworkConfig.class);
+        return  getDomainRootProxy().child(Domain.class).getConfigs().getConfig().get("server-config").getNetworkConfig().as(NetworkConfig.class);
     }
     
     private static final String ADMIN_LISTENER_NAME = "admin-listener";

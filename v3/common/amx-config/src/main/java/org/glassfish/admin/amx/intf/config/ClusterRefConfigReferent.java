@@ -40,6 +40,6 @@ Referent: "the object of a reference", in this case a marker
 interface denoting that the item may be referred to by a
 {@link ClusterRefConfig}.
  */
-public interface ClusterRefConfigReferent extends RefConfigReferent
+public interface ClusterRefConfigReferent extends RefReferent
 {
 }

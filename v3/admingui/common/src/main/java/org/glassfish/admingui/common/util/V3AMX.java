@@ -22,14 +22,12 @@ import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.proxy.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-import org.glassfish.admin.amx.intf.config.ConfigConfig;
-import org.glassfish.admin.amx.intf.config.ConfigsConfig;
-import org.glassfish.admin.amx.intf.config.DeployedItemRefConfig;
-import org.glassfish.admin.amx.intf.config.DomainConfig;
-
-
-import org.glassfish.admin.amx.intf.config.VirtualServerConfig;
-import org.glassfish.admin.amx.intf.config.HttpServiceConfig;
+import org.glassfish.admin.amx.intf.config.Config;
+import org.glassfish.admin.amx.intf.config.Configs;
+import org.glassfish.admin.amx.intf.config.DeployedItemRef;
+import org.glassfish.admin.amx.intf.config.Domain;
+import org.glassfish.admin.amx.intf.config.VirtualServer;
+import org.glassfish.admin.amx.intf.config.HttpService;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
@@ -42,14 +40,14 @@ import org.jvnet.hk2.component.Habitat;
 public class V3AMX {
     private static V3AMX v3amx  ;
     private final DomainRoot domainRoot;
-    private final DomainConfig domainConfig;
+    private final Domain     domainConfig;
     private final ProxyFactory proxyFactory;
     private final MBeanServerConnection mbeanServer;
 
     private V3AMX(DomainRoot dd, MBeanServerConnection msc) {
         proxyFactory = ProxyFactory.getInstance(msc);
         domainRoot = dd;
-        domainConfig =  domainRoot.getDomain().as(DomainConfig.class);
+        domainConfig =  domainRoot.getDomain().as(Domain.class);
         mbeanServer = msc;
     }
 
@@ -86,7 +84,7 @@ public class V3AMX {
     }
 
 
-    public DomainConfig getDomainConfig(){
+    public Domain getDomainConfig(){
         return domainConfig;
     }
 
@@ -94,7 +92,7 @@ public class V3AMX {
         return domainRoot;
     }
 
-    public ConfigsConfig getConfigsConfig(){
+    public Configs getConfigs(){
         return domainConfig.getConfigs();
     }
 
@@ -110,10 +108,10 @@ public class V3AMX {
         return mbeanServer;
     }
 
-    public static ConfigConfig getServerConfig(String configName){
+    public static Config getServerConfig(String configName){
         if ((configName == null) || configName.equals(""))
                 configName = "server-config";
-        return V3AMX.getInstance().getConfigsConfig().getConfig().get(configName);
+        return V3AMX.getInstance().getConfigs().getConfig().get(configName);
     }
 
     public static void setAttribute(String objectName, Attribute attributeName) {
@@ -168,7 +166,7 @@ public class V3AMX {
         try{
 //            ObjectName serverObj = new ObjectName("v3:pp=/domain/servers,type=server,name=" + serverName);
             //Map<String,NetworkListener> nls = V3AMX.getServerConfig(configName).child(NetworkConfig.class).child(NetworkListeners.class).childrenMap(NetworkListener.class);
-            ConfigConfig config = V3AMX.getServerConfig(configName);
+            Config config = V3AMX.getServerConfig(configName);
             Map<String, NetworkListener> nls = config.getNetworkConfig().as(NetworkConfig.class).getNetworkListeners().getNetworkListener();
             for (NetworkListener listener : nls.values()){
                 String port = (String) listener.attributesMap().get("Port");
@@ -196,7 +194,7 @@ public class V3AMX {
         try{
             String objectNameStr ="v3:pp=/domain/servers,type=server,name=server";
             AMXProxy  server = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
-            DeployedItemRefConfig appRef = server.childrenMap("application-ref").get(appName).as(DeployedItemRefConfig.class);
+            DeployedItemRef appRef = server.childrenMap("application-ref").get(appName).as(DeployedItemRef.class);
             NetworkListener listener = null;
             if (appRef == null) { // no application-ref found for this application, shouldn't happen for PE. TODO: think about EE
                 listener = getListener();
@@ -222,7 +220,7 @@ public class V3AMX {
 
     // returns a  http-listener that is linked to a non-admin VS
     private static NetworkListener getListener() {
-        Map<String, VirtualServerConfig> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
+        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
         return getOneVsWithNetworkListener(new ArrayList(vsMap.keySet()));
     }
 
@@ -235,13 +233,13 @@ public class V3AMX {
             return null;
         }
         NetworkListener secureListener = null;
-        HttpServiceConfig hConfig = V3AMX.getServerConfig("server-config").getHttpService();
-        Map<String, VirtualServerConfig> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
+        HttpService hConfig = V3AMX.getServerConfig("server-config").getHttpService();
+        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
         for (String vsName : vsList) {
             if (vsName.equals("__asadmin")) {
                 continue;
             }
-            VirtualServerConfig vs = vsMap.get(vsName);
+            VirtualServer vs = vsMap.get(vsName);
             String listener = (String) vs.attributesMap().get("NetworkListeners");
             if (GuiUtil.isEmpty(listener)) {
                 continue;

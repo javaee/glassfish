@@ -61,7 +61,7 @@ import java.util.Map;
 */
 
 public interface ApplicationConfig
-    extends AbstractModuleConfig, Libraries
+    extends AbstractModule, Libraries
 {
 	/**
 	The ContextRoot must match the pattern for the hpath production  
@@ -108,9 +108,9 @@ public interface ApplicationConfig
 	*/       
 	public void		setAvailabilityEnabled( String enabled );
 	
-    public Map<String,WebServiceEndpointConfig> getWebServiceEndpoint();
+    public Map<String,WebServiceEndpoint> getWebServiceEndpoint();
     
-    public Map<String,ModuleConfig> getModule();
+    public Map<String,Module> getModule();
 }
 
 

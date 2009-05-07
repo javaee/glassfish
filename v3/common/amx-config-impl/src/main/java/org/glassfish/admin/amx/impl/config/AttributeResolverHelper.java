@@ -37,7 +37,7 @@ package org.glassfish.admin.amx.impl.config;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.intf.config.SystemPropertyConfig;
+import org.glassfish.admin.amx.intf.config.SystemProperty;
 import org.glassfish.admin.amx.intf.config.SystemPropertiesAccess;
 
 import org.jvnet.hk2.config.TranslationException;
@@ -98,11 +98,11 @@ public class AttributeResolverHelper extends VariableResolver
             {
                 if ( amx instanceof SystemPropertiesAccess )
                 {
-                    final Map<String,SystemPropertyConfig> props = ((SystemPropertiesAccess)amx).getSystemProperty();
+                    final Map<String,SystemProperty> props = ((SystemPropertiesAccess)amx).getSystemProperty();
                     
                     // look by calling getName().  We can't just look in the map, because the ObjectName
                     // might not allow some characters that might be allowed in the name field
-                    for( final SystemPropertyConfig prop : props.values() )
+                    for( final SystemProperty prop : props.values() )
                     {
                         if ( prop.getName().equals( varName ) )
                         {
