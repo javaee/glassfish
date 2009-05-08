@@ -43,6 +43,5 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface FileCache extends Singleton, ConfigElement
 {
-    public static final String AMX_TYPE = "file-cache";
 }
 

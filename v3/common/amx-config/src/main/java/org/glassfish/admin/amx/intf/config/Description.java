@@ -41,14 +41,7 @@ interface.
  */
 public interface Description
 {
-
-    /**
-    Return the item description.
-     */
     public String getDescription();
 
-    /**
-    Set the item description.
-     */
     public void setDescription(String description);
 }

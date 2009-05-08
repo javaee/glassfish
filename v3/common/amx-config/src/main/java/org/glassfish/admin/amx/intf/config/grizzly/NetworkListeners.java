@@ -44,7 +44,5 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface NetworkListeners extends Singleton, ConfigElement
 {
-    public static final String AMX_TYPE = "network-listeners";
-
     public Map<String, NetworkListener> getNetworkListener();
 }

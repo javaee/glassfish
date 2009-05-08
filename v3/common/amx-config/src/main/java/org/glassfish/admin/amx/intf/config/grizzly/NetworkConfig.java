@@ -43,7 +43,6 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface NetworkConfig extends Singleton, ConfigElement
 {
-    public static final String AMX_TYPE = "network-config";
 
     public Protocols getProtocols();
 

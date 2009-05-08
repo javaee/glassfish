@@ -44,7 +44,5 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface Protocols extends Singleton, ConfigElement
 {
-    public static final String AMX_TYPE = "protocols";
-
     public Map<String, Protocol> getProtocol();
 }

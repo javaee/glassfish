@@ -39,7 +39,7 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
 /**
-An MBean implementing this interface can optionally contain an SslConfig.
+An MBean implementing this interface can optionally contain an {@link Ssl}.
  */
 public interface SSLContainer extends AMXConfigProxy
 {

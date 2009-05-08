@@ -43,8 +43,6 @@ Note: attribute getters/setters are not included in this interface; use generic 
  */
 public interface PortUnification extends NamedConfigElement
 {
-    public static final String AMX_TYPE = "port-unification";
-
     public Map<String, ProtocolFinder> getProtocolFinder();
 }
 
