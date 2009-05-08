@@ -167,9 +167,7 @@
         <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
         <ant dir="requestDispatcherMaxDepth" target="all"/>
         <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
-<!-- XXX temporarily commented out, see IT 8264
         <ant dir="javaxServletErrorRequestUriStaticResource" target="all"/>
--->
         <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>

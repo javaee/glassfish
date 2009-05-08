@@ -3,8 +3,8 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for CR 4882996:
- * request.getAttribute("javax.servlet.error.request_uri") is not working ..
+ * Unit test for CR 4882996
+ * (request.getAttribute("javax.servlet.error.request_uri") is not working).
  *
  * The following response body lines must be returned in order for this unit
  * test to succeed:
@@ -37,6 +37,7 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
         try {
             webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -69,12 +70,36 @@ public class WebTest {
         try {
             is = sock.getInputStream();
             bis = new BufferedReader(new InputStreamReader(is));
-            int i=0; 
             while ((line = bis.readLine()) != null) {
-                System.out.println(i++ + ": " + line);
+                System.out.println(line);
                 if (line.equals(contextRoot + "/junk")) {
                     break;
                 }
+            }
+            if (line == null) {
+                throw new Exception("Unexpected response");
+            }
+            line = bis.readLine();
+            System.out.println(line);
+            if (line == null || !line.equals("404")) {
+                throw new Exception("Unexpected response");
+            }
+            line = bis.readLine();
+            System.out.println(line);
+            if (line == null || !line.equals(
+                    contextRoot + "/404handler.jsp")) {
+                throw new Exception("Unexpected response");
+            }
+            line = bis.readLine();
+            System.out.println(line);
+            if (line == null ||
+                    (!line.equals("http://" + host + ":" + port +
+                            contextRoot + "/404handler.jsp") &&
+                    !line.equals("http://" + 
+                            InetAddress.getLocalHost().getHostName() + 
+                            ":" + port + contextRoot +
+                            "/404handler.jsp"))) {
+                throw new Exception("Unexpected response");
             }
         } finally {
             try {
@@ -92,24 +117,5 @@ public class WebTest {
                 // ignore
             }
         }
-
-        if (line != null
-                && ((line = bis.readLine()) != null)
-                && line.equals("404")
-                && ((line = bis.readLine()) != null)
-                && line.equals(contextRoot + "/404handler.jsp")
-                && ((line = bis.readLine()) != null)
-                && (
-                    line.equals("http://" + host + ":" + port
-                               + contextRoot + "/404handler.jsp") ||
-                    line.equals("http://" + 
-                                InetAddress.getLocalHost().getHostName() + 
-                                ":" + port + contextRoot + "/404handler.jsp") 
-                               )) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        }
     }
-
 }
