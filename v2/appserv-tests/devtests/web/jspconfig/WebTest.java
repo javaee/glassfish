@@ -5,30 +5,21 @@ import java.net.*;
 
 import com.sun.ejte.ccl.reporter.*;
 
-public class WebTest
-{
+public class WebTest {
     
-    private static int count = 0;
-    private static int EXPECTED_COUNT = 5;
-    private static boolean fail = false;
-    
-    static SimpleReporterAdapter stat=
+    private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
 
-    public static void main(String args[])
-    {
+    private static final String TEST_NAME = "jsp-config";
 
-        // The stat reporter writes out the test info and results
-        // into the top-level quicklook directory during a run.
-      
+    public static void main(String args[]) {
+
         stat.addDescription("Standalone jsp-config war test");
 
         String host = args[0];
         String portS = args[1];
         String contextRoot = args[2];
-
         int port = new Integer(portS).intValue();
-        String name;
         
         try {
             goGet(host, port, "JSP-CONFIG", contextRoot + "/test.jsp" );
@@ -36,20 +27,13 @@ public class WebTest
             goGet2(host, port, "ELIgnored", contextRoot + "/foo/bar/test.jsp" );
             goGet2(host, port, "ELIgnored", contextRoot + "/foo/bar/baz/test.jsp" );
             goGet2(host, port, "ELIgnored", contextRoot + "/foo/bar/baz/test2.jsp" );
-            
-            if (count != EXPECTED_COUNT){
-                stat.addStatus("Test UNPREDICTED-FAILURE", stat.FAIL);
-            }           
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Throwable t) {
-            System.out.println(t.getMessage());
-            stat.addStatus("Test UNPREDICTED-FAILURE", stat.FAIL);
+            t.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
-        if (! fail) {
-            stat.addStatus("web-jspconfig PASS", stat.PASS);
-        }
-
-        stat.printSummary("web/jsp-config---> expect 1 PASS");
+        stat.printSummary();
     }
 
     private static void goGet(String host, int port,
@@ -79,17 +63,11 @@ public class WebTest
                 if (index != -1) {
                     index = line.indexOf(":");
                     String status = line.substring(index+1);
-                    
-                    if (! status.equalsIgnoreCase("PASS")){
-                        fail = true;
-                        stat.addStatus("web-jspconfig: Test " + count, stat.FAIL);                       
+                    if (!status.equalsIgnoreCase("PASS")){
+                        throw new Exception("Wrong response");
                     }
-                    count++;
                 } 
             }
-        } catch( Exception ex){
-            ex.printStackTrace();   
-            throw new Exception("Test UNPREDICTED-FAILURE");
         } finally {
             try {
                 if (os != null) os.close();
@@ -120,26 +98,17 @@ public class WebTest
         InputStream is = s.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
         String line = null;
-
-        try{
-            int index;
-            while ((line = bis.readLine()) != null) {
-                index = line.indexOf(result);
-                System.out.println(line);
-                if (index != -1) {
-                    index = line.indexOf(":");
-                    boolean ELAllowed = line.charAt(index+1) == 't';
-                    boolean ELSeen = line.indexOf("${") >= 0;
-                    if ((ELSeen && !ELAllowed) || (!ELSeen && ELAllowed)) {
-                        fail = true;
-                        stat.addStatus("web-jspconfig: Test "+count, stat.FAIL);
-                    }
-                    count++;
+        while ((line = bis.readLine()) != null) {
+            int index = line.indexOf(result);
+            System.out.println(line);
+            if (index != -1) {
+                index = line.indexOf(":");
+                boolean ELAllowed = line.charAt(index+1) == 't';
+                boolean ELSeen = line.indexOf("${") >= 0;
+                if ((ELSeen && !ELAllowed) || (!ELSeen && ELAllowed)) {
+                    throw new Exception("Wrong response");
                 }
             }
-        } catch( Exception ex){
-            ex.printStackTrace();   
-            throw new Exception("Test UNPREDICTED-FAILURE");
         }
     }
 }
