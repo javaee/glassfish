@@ -38,7 +38,6 @@ import org.glassfish.loader.util.ASClassLoaderUtil;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -134,8 +133,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
                     force = ((DeployCommandParameters) parameters).force;
                 }
                 if (!force) {
-                    throw new RuntimeException("More than one deployer is trying to access the final class loader during prepare phase," +
-                            " use --force=true to force deployment");
+                    logger.warning("More than one deployer tried to access the final class loader during prepare phase.");
                 }
             } else {
                 finalClassLoaderAccessedDuringPrepare=true;
