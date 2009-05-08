@@ -42,13 +42,12 @@ public class ASMain {
 
     private final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
 
-    // We add both KnopflerFish and Knopflerfish for backward compatibility
-    // between tp2 and v3 trunk.
-    private enum Platform {HK2, Felix, Knopflerfish, KnopflerFish, Equinox, Static}
+    // Supported platform we know about, not limited to.
+    public enum Platform {Felix, Knopflerfish, Equinox, Static}
 
     public static void main(final String args[]) {
         setStartupContextProperties(args);
-        Platform platform = Platform.Felix; // default is Felix
+        String platform = Platform.Felix.toString(); // default is Felix
 
         // first check the system props
         String temp = System.getProperty(PLATFORM_PROPERTY_KEY);
@@ -58,43 +57,41 @@ public class ASMain {
         }
 
         if (temp != null && temp.trim().length() != 0) {
-            platform = Platform.valueOf(temp.trim());
+            platform = temp.trim();
         }
 
-        // Set the system property if downstream code wants to know about it
-        System.setProperty(PLATFORM_PROPERTY_KEY, platform.toString());
 
-        AbstractMain delegate=null;
-        switch (platform) {
-            case Felix:
-                logger.info("Launching GlassFish on Apache Felix OSGi platform");
-                delegate = new ASMainFelix();
-                break;
-            case Equinox:
-                logger.info("Launching GlassFish on Equinox OSGi platform");
-                delegate = new ASMainEquinox();
-                break;
-            case Knopflerfish:
-            case KnopflerFish:
-                logger.info("Launching GlassFish on Knopflerfish OSGi platform");
-                delegate = new ASMainKnopflerFish();
-                break;
-            case HK2:
-                throw new RuntimeException("GlassFish does not run on the HK2 platform anymore");
-            case Static:
-                delegate = new ASMainStatic();
-                break;
-            default:
-                throw new RuntimeException("Platform not yet supported");
-        }
+        AbstractMain delegate=getMain(platform);
         if (delegate!=null) {
+
+            logger.info("Launching GlassFish on " + platform + " platform");            
+            // Set the system property if downstream code wants to know about it
+            System.setProperty(PLATFORM_PROPERTY_KEY, platform);
+            
             try {
                 delegate.run(logger, args);
             } catch(Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
 
+        } else {
+            logger.severe("Cannot launch GlassFish on the unkown " + platform + " platform");
         }
+    }
+
+    /**
+     * use META-INF/services services definition to look up all possible platform implementations
+     * and return the one
+     * @param platform the platform name {@see AbstractMain#getName()}
+     * @return an platform provider or null if not found
+     */
+    private static AbstractMain getMain(String platform) {
+        ServiceLoader<AbstractMain> loader =  ServiceLoader.load(AbstractMain.class, ASMain.class.getClassLoader());
+        for (AbstractMain main : loader) {
+            if (main.getName().equalsIgnoreCase(platform))
+                return main;
+        }
+        return null;
     }
 
     /**

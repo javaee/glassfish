@@ -37,6 +37,8 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import org.kohsuke.MetaInfServices;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -49,6 +51,7 @@ import java.util.logging.Logger;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
+@MetaInfServices(AbstractMain.class)
 public class ASMainEquinox extends ASMainOSGi {
     /* if equinox is installed under glassfish/eclipse this would be the
      *  glassfish/eclipse/plugins dir that contains the equinox jars
@@ -60,6 +63,10 @@ public class ASMainEquinox extends ASMainOSGi {
         return "equinox-cache/gf/";
     }
 
+    public String getName() {
+        return ASMain.Platform.Equinox.toString();
+    }
+
     protected void setFwDir() {
         String fwPath = System.getenv("EQUINOX_HOME");
         if (fwPath == null) {
@@ -68,13 +75,14 @@ public class ASMainEquinox extends ASMainOSGi {
         fwDir = new File(fwPath);
         if (!fwDir.exists()) {
             fwDir = new File(glassfishDir, "osgi/eclipse");
-            if (fwDir.exists()){//default Eclipse equinox structure from a equinoz zip distro
-                pluginsDir = new File(fwDir,"plugins");
-                if (!pluginsDir.exists()){
-                    pluginsDir =null;//no luck
-                }
+        }
+        if (fwDir.exists()){//default Eclipse equinox structure from a equinoz zip distro
+            pluginsDir = new File(fwDir,"plugins");
+            if (!pluginsDir.exists()){
+                pluginsDir =null;//no luck
             }
         }
+
         if (!fwDir.exists()) {
             throw new RuntimeException("Can't locate Equinox at " + fwPath);
         }
@@ -91,18 +99,52 @@ public class ASMainEquinox extends ASMainOSGi {
         }
     }
 
+    @Override
+    long getSettingsLastModification() {
+        File settings = getSettingsFile();
+        if (settings.exists()) {
+            return settings.lastModified();
+        }
+        return 0L;
+    }
+
+    private File getSettingsFile() {
+        File settings = new File(fwDir, "configuration");
+        return new File(settings, "config.ini");
+    }
+
+    @Override
+    public void flushAndCreate(File cacheDir, long lastModified) throws IOException {
+        super.flushAndCreate(cacheDir, lastModified);
+        // I need to copy the configuration our eclipse directory into the cache so
+        // eclipse use that as its caching directory.
+        File settings = getSettingsFile();
+        copyFile(settings, new File(cacheDir, "config.ini"));
+    }
+
+    @Override
+    void setUpCache(File sourceDir, File cacheDir) throws IOException {
+        super.setUpCache(sourceDir, cacheDir);
+        /*
+        * Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html
+        * for details about the configuration options used here.
+        */
+       System.setProperty("osgi.configuration.area", cacheDir.getCanonicalPath());
+        
+    }
+
     protected void launchOSGiFW() throws Exception {
         /*
          * Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html
          * for details about the configuration options used here.
          */
-        System.setProperty("osgi.configuration.area",
-                new File(fwDir, "configuration").getCanonicalPath());
+        //System.setProperty("osgi.configuration.area",
+        //        new File(fwDir, "configuration").getCanonicalPath());
         // Equinox does not allow us to provide a separate location for
         // cache. The cache dir is always created in configuration area.
         // So, for the moment, we don't try to reuse the cache during
         // server restart.
-        System.setProperty("osgi.clean", "true"); // clean framework cache at startup
+        //System.setProperty("osgi.clean", "false"); // clean framework cache at startup
 //        File cacheProfileDir = new File(domainDir, "equinox-cache/gf/");
 //        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         Class mc = launcherCL.loadClass(getFWMainClassName());

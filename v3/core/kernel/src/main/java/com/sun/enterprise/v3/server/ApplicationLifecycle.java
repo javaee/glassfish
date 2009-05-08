@@ -452,9 +452,10 @@ public class ApplicationLifecycle implements Deployment {
             if (provider.getMetaData()!=null) {
                  for (Class dependency : provider.getMetaData().requires()) {
                      if (!typeByProvider.containsKey(dependency)) {
-                         report.failure(logger, "ApplicationMetaDataProvider " + provider + " requires "
-                                 + dependency + " but no other ApplicationMetaDataProvider provides it", null);
-                         return null;
+                         // at this point, I only log problems, because it maybe that what I am deploying now
+                         // will not require this application metadata.
+                         logger.warning("ApplicationMetaDataProvider " + provider + " requires "
+                                 + dependency + " but no other ApplicationMetaDataProvider provides it");
                      }
                  }
             }

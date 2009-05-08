@@ -58,17 +58,23 @@ import java.util.List;
 import java.util.Collection;
 
 import org.jvnet.hk2.component.Habitat;
+import org.kohsuke.MetaInfServices;
 
 /**
  * Main class for static invocation, no OSGi mode, all classes loaded
  * by a single class loader.
  */
+@MetaInfServices(AbstractMain.class)
 public class ASMainStatic extends AbstractMain {
 
     private File out;
     
     protected String getPreferedCacheDir() {
         return "static-cache/gf/";
+    }
+
+    public String getName() {
+        return ASMain.Platform.Static.toString();
     }
 
     @Override

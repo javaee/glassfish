@@ -9,6 +9,9 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 
 /**
  * Top level abstract main class
@@ -32,6 +35,14 @@ public abstract class AbstractMain {
     abstract long getSettingsLastModification();
 
     protected abstract String getPreferedCacheDir();
+
+    /**
+     * Returns the plaform name, this will uniquely define this instance as a
+     * provider for that platform.
+     *
+     * @return the platform name
+     */
+    public abstract String getName();
 
     abstract boolean createCache(File cacheDir) throws IOException;
 
@@ -229,5 +240,40 @@ public abstract class AbstractMain {
             }
         }
         return dir.delete();
-    }    
+    }
+
+    /**
+     * This method is used to copy a given file to another file
+     * using the buffer sixe specified
+     *
+     * @param fin  the source file
+     * @param fout the destination file
+     */
+    public static void copyFile(File fin, File fout) throws IOException {
+
+        InputStream inStream = new BufferedInputStream(new FileInputStream(fin));
+        FileOutputStream fos = new FileOutputStream(fout);
+        copy(inStream, fos, fin.length());
+    }
+
+
+    public static void copy(InputStream in, FileOutputStream out, long size) throws IOException {
+
+        try {
+            copyWithoutClose(in, out, size);
+        } finally {
+            if (in != null)
+                in.close();
+            if (out != null)
+                out.close();
+        }
+    }
+
+    public static void copyWithoutClose(InputStream in, FileOutputStream out, long size) throws IOException {
+
+        ReadableByteChannel inChannel = Channels.newChannel(in);
+        FileChannel outChannel = out.getChannel();
+        outChannel.transferFrom(inChannel, 0, size);
+
+    }
 }

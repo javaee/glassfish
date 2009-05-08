@@ -36,6 +36,8 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
+import org.kohsuke.MetaInfServices;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -45,11 +47,16 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
+@MetaInfServices(AbstractMain.class)
 public class ASMainFelix extends ASMainOSGi {
     private static final String FELIX_HOME = "FELIX_HOME";
 
     protected String getPreferedCacheDir() {
         return "felix-cache/gf/";
+    }
+
+    public String getName() {
+        return ASMain.Platform.Felix.toString();
     }
 
     protected void setFwDir() {

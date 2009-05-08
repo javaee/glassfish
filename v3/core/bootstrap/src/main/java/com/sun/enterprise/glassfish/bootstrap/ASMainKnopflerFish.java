@@ -37,6 +37,8 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import org.kohsuke.MetaInfServices;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -46,9 +48,14 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
+@MetaInfServices(AbstractMain.class)
 public class ASMainKnopflerFish extends ASMainOSGi {
     protected String getPreferedCacheDir() {
         return "knopfler-cache/gf";
+    }
+
+    public String getName() {
+        return ASMain.Platform.Knopflerfish.toString();
     }
 
     protected void setFwDir() {
