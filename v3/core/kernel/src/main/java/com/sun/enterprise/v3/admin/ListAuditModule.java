@@ -100,10 +100,6 @@ public class ListAuditModule implements AdminCommand {
         Config config = configList.get(0);
         SecurityService securityService = config.getSecurityService();
 
-        report.getTopMessagePart().setMessage(
-            localStrings.getLocalString(
-                "list.audit.module.success", 
-                "list-audit-modules successful"));
         report.getTopMessagePart().setChildrenType("audit-module");
         for (AuditModule am : securityService.getAuditModule()) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
