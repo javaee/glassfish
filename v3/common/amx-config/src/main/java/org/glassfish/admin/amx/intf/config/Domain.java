@@ -53,7 +53,7 @@ public interface Domain
     public Configs getConfigs();
 
     /** @since Glassfish V3 */
-    public ApplicationsConfig getApplications();
+    public Applications getApplications();
 
     /** @since Glassfish V3 */
     public SystemApplications getSystemApplications();
