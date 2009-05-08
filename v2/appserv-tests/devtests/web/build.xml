@@ -384,6 +384,7 @@
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
 <!-- XXX temporarily commented out, see IT 8263
         <ant dir="authPassthroughGetRemoteHost" target="all"/>
+-->
 <!-- XXX temporarily commented out, see IT 8248
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectFromJspWithHttpsServerName" target="all"/>
