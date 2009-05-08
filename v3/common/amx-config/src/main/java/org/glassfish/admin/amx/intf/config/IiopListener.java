@@ -52,14 +52,6 @@ import org.glassfish.admin.amx.base.Singleton;
 public interface IiopListener
 	extends PropertiesAccess, NamedConfigElement, Enabled, SSLContainer
 {
-    public static final String AMX_TYPE = "iiop-listener";
-	public final static String	PORT_KEY				= "Port";
-
-	public final static String	ENABLED_KEY				= "Enabled";
-
-	public final static String	SECURITY_ENABLED_KEY	= "SecurityEnabled";
-    
-    
 	public String	getAddress();
 	public void	setAddress( String value );
 

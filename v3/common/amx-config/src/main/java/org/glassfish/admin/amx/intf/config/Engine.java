@@ -44,9 +44,6 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
  */
 public interface Engine extends AMXConfigProxy, Description, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "engine";
-
     /**
      * get the sniffer
      */

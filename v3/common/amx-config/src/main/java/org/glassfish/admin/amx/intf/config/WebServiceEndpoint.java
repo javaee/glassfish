@@ -46,8 +46,6 @@ import java.util.Map;
 public interface WebServiceEndpoint extends NamedConfigElement
 {
 
-    public static final String AMX_TYPE = "web-service-endpoint";
-
     /**
      * Get the web service name.
      */

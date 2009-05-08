@@ -47,8 +47,6 @@ public interface Event
         extends ConfigElement, Description, PropertiesAccess
 {
 
-    public static final String AMX_TYPE = "event-config";
-
     /**
     @see EventTypeValues
      */

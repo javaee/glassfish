@@ -45,8 +45,6 @@ Configuration for the &lt;security-service&gt; element.
 public interface SecurityService extends
         PropertiesAccess, ConfigElement, Singleton
 {
-    public static final String AMX_TYPE = "security-service";
-
     public String getAuditEnabled();
 
     public void setAuditEnabled(String value);

@@ -41,11 +41,6 @@ Configuration for the &lt;jmx-connector&gt; element.
 public interface JMXConnector
         extends Enabled, NamedConfigElement, PropertiesAccess, SSLContainer
 {
-
-    public static final String AMX_TYPE = "jmx-connector";
-    public static final String ACCEPT_ALL_KEY = "AcceptAll";
-    public static final String SECURITY_ENABLED_KEY = "SecurityEnabled";
-
     public String getProtocol();
 
     public void setProtocol(String value);

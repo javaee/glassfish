@@ -41,11 +41,7 @@ import org.glassfish.admin.amx.base.Singleton;
 Configuration for the &lt;transaction-service&gt; element.
  */
 public interface TransactionService extends ConfigElement, PropertiesAccess, Singleton
-{
-
-    public static final String AMX_TYPE = "transaction-service";
-
-    
+{    
     public String getAutomaticRecovery();
 
     public void setAutomaticRecovery(String value);

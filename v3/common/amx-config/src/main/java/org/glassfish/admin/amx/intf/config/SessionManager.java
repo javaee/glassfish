@@ -46,9 +46,6 @@ Configuration for the &lt;session-manager&gt; element.
 public interface SessionManager
         extends ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "session-manager";
-
     public ManagerProperties getManagerProperties();
 
     public StoreProperties getStoreProperties();

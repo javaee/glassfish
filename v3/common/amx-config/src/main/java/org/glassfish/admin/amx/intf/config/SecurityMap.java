@@ -49,8 +49,6 @@ public interface SecurityMap
         extends ConfigElement
 {
 
-    public static final String AMX_TYPE = "security-map";
-
     public String[] getPrincipalNames();
 
     public void createPrincipal(String name);

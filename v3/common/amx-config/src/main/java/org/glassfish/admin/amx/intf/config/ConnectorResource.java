@@ -41,8 +41,6 @@ Configuration for the &lt;connector-resource&gt; element.
 public interface ConnectorResource extends Resource
 {
 
-    public static final String AMX_TYPE = "connector-resource";
-
     public String getPoolName();
 
     public void setPoolName(final String poolName);

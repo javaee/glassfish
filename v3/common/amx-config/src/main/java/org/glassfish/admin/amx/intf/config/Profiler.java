@@ -41,8 +41,6 @@ Configuration for the &lt;profiler&gt; element.
 public interface Profiler extends NamedConfigElement, PropertiesAccess, Enabled, AnonymousElementList
 {
 
-    public static final String AMX_TYPE = "profiler";
-
     public String getClasspath();
 
     public void setClasspath(String classpath);

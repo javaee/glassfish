@@ -40,9 +40,6 @@ Configuration for the &lt;connector-service&gt; element.
  */
 public interface ConnectorService extends ConfigElement
 {
-
-    public static final String AMX_TYPE = "connector-service";
-
     
     public String getShutdownTimeoutInSeconds();
 

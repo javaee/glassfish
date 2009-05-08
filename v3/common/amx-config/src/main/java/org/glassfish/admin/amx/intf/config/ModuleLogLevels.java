@@ -47,9 +47,6 @@ Values are those defined in {@link LogLevelValues}.
  */
 public interface ModuleLogLevels extends PropertiesAccess, ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "module-log-levels";
-
     public String getNodeAgent();
 
     public void setNodeAgent(String level);

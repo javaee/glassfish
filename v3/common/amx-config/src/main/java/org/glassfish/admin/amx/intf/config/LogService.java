@@ -49,9 +49,6 @@ import java.util.Map;
 public interface LogService
 	extends PropertiesAccess, ConfigElement, Singleton
 {
-    public static final String AMX_TYPE = "log-service";
-    
-    
 	public String	getAlarms();
 	public void	setAlarms( String value );
 

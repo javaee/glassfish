@@ -36,10 +36,8 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;property> element.
+Configuration for the &lt;system-property> element.
  */
 public interface SystemProperty extends AnyProperty
 {
-
-    public static final String AMX_TYPE = "system-property";
 }

@@ -42,9 +42,6 @@ Represents the &lt;jms-availability> element.
  */
 public interface JMSAvailability extends ConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "jms-availability";
-
     /**
     This String flag controls whether the MQ cluster associated
     with the application server cluster is HA enabled or not. If

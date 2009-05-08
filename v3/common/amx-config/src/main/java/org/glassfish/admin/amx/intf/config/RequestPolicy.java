@@ -42,8 +42,6 @@ Configuration for the &lt;request-policy&gt; element.
  */
 public interface RequestPolicy extends ConfigElement, Singleton
 {
-    public static final String AMX_TYPE = "request-policy";
-
     /** "before-content" or "after-content" */
     public String getAuthRecipient();
 

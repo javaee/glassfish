@@ -571,7 +571,13 @@ public class ConfigBeanJMXSupport {
                 try
                 {
                     final Object fieldValue = m.invoke(a);
-                    d.setField( prefix + fieldName, fieldValue );
+                    // make sure all metadata is safe across the wire: convert to String
+                    Object actualValue = fieldValue;
+                    if ( actualValue != null && ! actualValue.getClass().getName().startsWith("java.lang") )
+                    {
+                        actualValue = "" + fieldValue;
+                    }
+                    d.setField( prefix + fieldName, actualValue );
                 }
                 catch( final Exception e ) {
                     e.printStackTrace();

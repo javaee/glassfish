@@ -37,9 +37,6 @@ package org.glassfish.admin.amx.intf.config;
 
 public interface EnvEntry extends NamedConfigElement
 {
-
-    public static final String AMX_TYPE = "env-entry";
-
     public String getDescription();
 
     public void setDescription(String value);

@@ -43,9 +43,6 @@ Configuration for the &lt;backend-principal> element.
 public interface BackendPrincipal
         extends ConfigElement
 {
-
-    public static final String AMX_TYPE = "backend-principal";
-
     public String getUserName();
 
     public void setUserName(String username);

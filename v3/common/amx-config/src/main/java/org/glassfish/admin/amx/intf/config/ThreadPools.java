@@ -48,9 +48,6 @@ groups all resources under itself.
 public interface ThreadPools
         extends ConfigElement, ConfigCollectionElement, Singleton
 {
-
-    public static final String AMX_TYPE = "thread-pools";
-
     /**
     Calls Container.getContaineeMap( XTypes.THREAD_POOL_CONFIG ).
     @return Map of ThreadPool proxies, keyed by name.

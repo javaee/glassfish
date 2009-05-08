@@ -44,8 +44,6 @@ found within a &lt;server&gt element.
 public interface DeployedItemRef extends Ref
 {
 
-    public static final String AMX_TYPE = "application-ref";
-
     /**
     @return comma-delimited list of virtual servers
      */

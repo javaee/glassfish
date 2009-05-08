@@ -37,9 +37,6 @@ package org.glassfish.admin.amx.intf.config;
 
 public interface ContextParam extends NamedConfigElement
 {
-
-    public static final String AMX_TYPE = "context-param";
-
     public String getDescription();
 
     public void setDescription(String value);

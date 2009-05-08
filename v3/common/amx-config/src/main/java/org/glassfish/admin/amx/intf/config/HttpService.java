@@ -49,8 +49,6 @@ import java.util.Map;
 public interface HttpService
 	extends ConfigElement, PropertiesAccess, Singleton
 {
-    public static final String AMX_TYPE = "http-service";
-	
 	/**
 		@return Map of all VirtualServer proxies, keyed by the name of the virtual server.
 

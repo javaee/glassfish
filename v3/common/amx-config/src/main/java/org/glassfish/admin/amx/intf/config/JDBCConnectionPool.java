@@ -51,8 +51,6 @@ property.  Obviously no method that uses 'String' could get or set a String.
 public interface JDBCConnectionPool
         extends NamedConfigElement, Description, PropertiesAccess, ResourceRefReferent
 {
-
-    public static final String AMX_TYPE = "jdbc-connection-pool";
     /**
     Key for use with {@link ResourcesConfig#createJDBCConnectionPoolConfig(String, String, Map)}
 

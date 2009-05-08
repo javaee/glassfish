@@ -47,8 +47,6 @@ public interface JMSService
         extends ConfigElement, PropertiesAccess, Singleton
 {
 
-    public static final String AMX_TYPE = "jms-service";
-
     public String getAddressListBehavior();
 
     public void setAddressListBehavior(final String value);

@@ -45,9 +45,5 @@ import java.util.Map;
  */
 public interface Module extends AMXConfigProxy, PropertiesAccess
 {
-
-    /**
-     * get the sniffer
-     */
     public Map<String, Engine> getEngine();
 }

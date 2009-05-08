@@ -49,8 +49,6 @@ public interface AdminService
         extends AMXConfigProxy, PropertiesAccess, Singleton
 {
 
-    public static final String AMX_TYPE = "admin-service";
-
     /**
     Calls Container.getContaineeMap( XTypes.JMX_CONNECTOR_CONFIG ).
     @return Map of JMXConnector proxies, keyed by name.

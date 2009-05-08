@@ -43,9 +43,6 @@ Configuration for the &lt;manager-properties&gt; element.
  */
 public interface ManagerProperties extends AMXConfigProxy, PropertiesAccess, Singleton
 {
-
-    public static final String AMX_TYPE = "manager-properties";
-
     
     public String getMaxSessions();
 

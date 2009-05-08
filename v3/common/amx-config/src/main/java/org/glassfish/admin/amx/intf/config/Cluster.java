@@ -49,9 +49,7 @@ import java.util.Map;
 public interface Cluster
 	extends PropertiesAccess, SystemPropertiesAccess,
 	NamedConfigElement
-{
-    public static final String AMX_TYPE = "cluster";
-    
+{    
 	/**
 		Get the name of the config element referenced by this cluster.
 	 */

@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,7 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.openmbean.OpenType;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
@@ -92,6 +94,18 @@ public final class AMXValidator {
         mDomainRoot = mProxyFactory.getDomainRootProxy();
     }
 
+    private static final class IllegalClassException extends Exception {
+        private final Class<?> mClass;
+
+        public IllegalClassException(final Class<?> clazz) {
+            super( "Class " + clazz.getName() + " not allowed for AMX MBeans" );
+            mClass = clazz;
+        }
+        public Class<?> clazz() { return mClass; }
+        
+        public String toString() { return super.getMessage(); }
+    }
+    
     private static final class ValidationFailureException extends Exception {
 
         private final ObjectName mObjectName;
@@ -162,6 +176,64 @@ public final class AMXValidator {
     private String toString(final Throwable t) {
         return ExceptionUtil.toString(ExceptionUtil.getRootCause(t));
     }
+    
+    private static boolean isObviousOpenType( final Class<?> c ) {
+        if ( c.isPrimitive() || OpenType.ALLOWED_CLASSNAMES_LIST.contains(c.getName()) ) {
+            return true;
+        }
+        
+        // quick checks for other common cases
+        if ( c.isArray() && isObviousOpenType( c.getComponentType() )  ) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+        "best effort"<p>
+        Attributes that cannot be sent to generic clients are not allowed.
+        More than OpenTypes are allowed eg messy stuff like JSR 77 Stats and Statistics.
+     */
+    private void checkLegalForRemote(final Object value) throws IllegalClassException
+    {
+        if ( value == null) return;
+        final Class<?> clazz = value.getClass();
+        if ( isObviousOpenType(clazz) ) {
+            return;
+        }
+        
+        // would these always be disallowed?
+        if ( clazz.isSynthetic() || clazz.isLocalClass() || clazz.isAnonymousClass() || clazz.isMemberClass() ) {
+            throw new IllegalClassException( clazz );
+        }
+        
+        if ( clazz.isArray() ) {
+            if ( ! isObviousOpenType( clazz.getComponentType() ) ) {
+                final Object[] a = (Object[])value;
+                for( final Object o : a ) {
+                    checkLegalForRemote(o);
+                }
+            }
+        }
+        else if ( Collection.class.isAssignableFrom(clazz) ) {
+            final Collection<?> items = (Collection)value;
+            for( final Object o : items ) {
+                checkLegalForRemote(o);
+            }
+        }
+        else if ( Map.class.isAssignableFrom(clazz) ) {
+            final Map<?,?> items = (Map)value;
+            for( final Object key : items.keySet() ) {
+                checkLegalForRemote(key);
+                checkLegalForRemote(items.get(key));
+            }
+        }
+        else
+        {
+            throw new IllegalClassException( clazz );
+        }
+    }
 
     private List<String> _validate(final AMXProxy proxy) {
         final List<String> problems = new ArrayList<String>();
@@ -230,6 +302,8 @@ public final class AMXValidator {
         for (final String attrName : attributeNames) {
             try {
                 final Object result = proxy.extra().getAttribute(attrName);
+                
+                checkLegalForRemote(result);
             } catch (final Throwable t) {
                 problems.add("Attribute failed: '" + attrName + "': " + toString(t));
             }

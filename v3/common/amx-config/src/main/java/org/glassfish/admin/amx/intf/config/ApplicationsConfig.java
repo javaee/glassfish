@@ -42,8 +42,6 @@ groups all applications under itself.
  */
 public interface ApplicationsConfig extends ApplicationsConfigBase
 {
-
-    public static final String AMX_TYPE = "applications";
 }
 
 

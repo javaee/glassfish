@@ -43,8 +43,6 @@ Sub-element of {@link WebServiceEndpointConfig}.
 public interface TransformationRule extends NamedConfigElement, Enabled
 {
 
-    public static final String AMX_TYPE = "transformation-rule";
-
     /**
     One of {@link #APPLY_TO_REQUEST}, {@link #APPLY_TO_RESPONSE}, {@link #APPLY_TO_BOTH}.
      */

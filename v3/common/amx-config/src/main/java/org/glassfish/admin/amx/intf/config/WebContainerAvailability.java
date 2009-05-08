@@ -40,9 +40,6 @@ Configuration for the &lt;web-container-availability> element.
  */
 public interface WebContainerAvailability extends ConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "web-container-availability";
-
     public String getAvailabilityEnabled();
 
     public void setAvailabilityEnabled(final String value);

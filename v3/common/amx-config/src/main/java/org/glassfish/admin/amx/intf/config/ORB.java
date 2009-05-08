@@ -42,11 +42,7 @@ import org.glassfish.admin.amx.base.Singleton;
 Configuration for the &lt;orb&gt; config element.
  */
 public interface ORB extends AMXConfigProxy, PropertiesAccess, Singleton
-{
-
-    public static final String AMX_TYPE = "orb";
-
-    
+{    
     public String getMaxConnections();
 
     public void setMaxConnections(String value);

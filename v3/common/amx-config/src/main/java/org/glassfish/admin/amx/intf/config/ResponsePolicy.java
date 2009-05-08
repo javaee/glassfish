@@ -42,9 +42,6 @@ Configuration for the &lt;response-policy&gt; element.
  */
 public interface ResponsePolicy extends ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "response-policy";
-
     public String getAuthRecipient();
 
     public void setAuthRecipient(final String value);

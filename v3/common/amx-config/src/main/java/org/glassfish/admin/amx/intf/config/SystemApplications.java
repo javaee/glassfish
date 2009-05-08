@@ -42,6 +42,4 @@ groups all resources under itself.
  */
 public interface SystemApplications extends ApplicationsConfigBase
 {
-
-    public static final String AMX_TYPE = "system-applications";
 }

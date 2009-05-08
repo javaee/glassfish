@@ -40,9 +40,6 @@ Configuration for the &lt;jms-host&gt; element.
  */
 public interface JMSHost extends NamedConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "jms-host";
-
     public String getAdminPassword();
 
     public void setAdminPassword(String value);

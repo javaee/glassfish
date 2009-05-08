@@ -40,8 +40,6 @@ Configuration for the &lt;auth-realm&gt; element.
  */
 public interface AuthRealm extends PropertiesAccess, NamedConfigElement
 {
-
-    public static final String AMX_TYPE = "auth-realm";
     /**
     Classname of the default implementing class.
      */

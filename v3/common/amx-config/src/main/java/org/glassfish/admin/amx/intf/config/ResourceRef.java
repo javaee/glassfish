@@ -43,7 +43,5 @@ package org.glassfish.admin.amx.intf.config;
 
 public interface ResourceRef extends Ref
 {
-    public static final String AMX_TYPE = "resource-ref";
-
 
 }

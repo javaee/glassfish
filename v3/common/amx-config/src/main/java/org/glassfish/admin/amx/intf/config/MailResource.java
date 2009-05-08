@@ -40,19 +40,6 @@ Configuration for the &lt;mail-resource&gt; element.
  */
 public interface MailResource extends Resource
 {
-
-    public static final String AMX_TYPE = "mail-resource";
-    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-    public static final String STORE_PROTOCOL_KEY = "StoreProtocol";
-    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-    public static final String STORE_PROTOCOL_CLASS_KEY = "StoreProtocolClass";
-    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-    public static final String TRANSPORT_PROTOCOL_KEY = "TransportProtocol";
-    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-    public static final String TRANSPORT_PROTOCOL_CLASS_KEY = "TransportProtocolClass";
-    /** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
-    public static final String DEBUG_KEY = "Debug";
-
     public String getStoreProtocol();
 
     public String getStoreProtocolClass();

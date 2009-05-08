@@ -47,9 +47,6 @@ groups all resources under itself.
 public interface NodeAgents
         extends ConfigElement, ConfigCollectionElement
 {
-
-    public static final String AMX_TYPE = "node-agents";
-
     /**
     Calls Container.getContaineeMap( XTypes.NODE_AGENT_CONFIG ).
     @return Map of items, keyed by name.

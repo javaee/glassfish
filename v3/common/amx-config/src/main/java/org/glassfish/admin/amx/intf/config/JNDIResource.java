@@ -41,8 +41,6 @@ Configuration for the &lt;jndi-resource&gt; element.
 public interface JNDIResource extends Resource
 {
 
-    public static final String AMX_TYPE = "jndi-resource";
-
     String getJNDILookupName();
 
     void setJNDILookupName(final String jndiLookupName);

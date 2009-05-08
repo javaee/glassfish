@@ -40,8 +40,6 @@ Configuration for the &lt;audit-module&gt; element.
  */
 public interface AuditModule extends NamedConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "audit-module";
     /** boolean property */
     public static final String AUDIT_ON_PROPERTY = "auditOn";
 

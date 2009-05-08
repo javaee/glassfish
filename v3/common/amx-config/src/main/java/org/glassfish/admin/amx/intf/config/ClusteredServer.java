@@ -41,6 +41,4 @@ a cluster.
  */
 public interface ClusteredServer extends Server
 {
-
-    public static final String AMX_TYPE = "server";
 }

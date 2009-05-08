@@ -46,9 +46,6 @@ which is in turn inside a <config>
  */
 public interface DAS extends ConfigElement, PropertiesAccess, Singleton
 {
-
-    public static final String AMX_TYPE = "das-config";
-
     
     public String getAdminSessionTimeoutInMinutes();
 

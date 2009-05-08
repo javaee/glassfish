@@ -46,9 +46,6 @@ Configuration for the &lt;java-config&gt; element.
 public interface JavaConfig
         extends ConfigElement, PropertiesAccess, Singleton, AnonymousElementList
 {
-
-    public static final String AMX_TYPE = "java-config";
-
     public String getBytecodePreprocessors();
 
     public void setBytecodePreprocessors(String value);

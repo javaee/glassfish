@@ -44,9 +44,6 @@ Configuration for the &lt;session-properties&gt; element.
 public interface SessionProperties extends AMXConfigProxy, PropertiesAccess, Singleton
 {
 
-    public static final String AMX_TYPE = "session-properties";
-
-    
     public String getTimeoutInSeconds();
 
     public void setTimeoutInSeconds(final String value);

@@ -59,8 +59,6 @@ public interface ConnectorConnectionPool
         ResourceRefReferent
 {
 
-    public static final String AMX_TYPE = "connector-connection-pool";
-
     /**
     Specifies if the connection that is about to
     be returned is to be validated by the container.

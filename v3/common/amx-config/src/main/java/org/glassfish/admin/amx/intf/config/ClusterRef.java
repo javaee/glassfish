@@ -40,9 +40,6 @@ package org.glassfish.admin.amx.intf.config;
  */
 public interface ClusterRef extends Ref, HealthCheckerCR
 {
-
-    public static final String AMX_TYPE = "cluster-ref";
-
     /**
     @since Appserver 9.0
      */

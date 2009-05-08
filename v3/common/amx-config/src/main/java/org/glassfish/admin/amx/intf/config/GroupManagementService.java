@@ -46,9 +46,6 @@ import org.glassfish.admin.amx.core.AMXProxy;
 public interface GroupManagementService
         extends AMXProxy, ConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "group-management-service";
-
     /** Return the FD protocol tries.
      *  This is the maximum number of attempts to try before GMS confirms that a  
      *  failure is suspected in the group.

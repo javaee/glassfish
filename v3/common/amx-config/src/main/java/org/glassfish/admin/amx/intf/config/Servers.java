@@ -48,10 +48,6 @@ groups all resources under itself.
 public interface Servers
         extends ConfigElement, ConfigCollectionElement, Singleton
 {
-
-    public static final String AMX_TYPE = "servers";
-
-
     /**
     Calls Container.getContaineeMap( XTypes.STANDALONE_SERVER_CONFIG ).
     @return Map of items, keyed by name.

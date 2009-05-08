@@ -39,9 +39,6 @@ import java.util.Map;
 
 public interface WebModuleConfig extends ApplicationConfigConfig
 {
-
-    public static final String AMX_TYPE = "web-module-config";
-
     public Map<String, EnvEntry> getEnvEntry();
 
     public Map<String, ContextParam> getContextParam();

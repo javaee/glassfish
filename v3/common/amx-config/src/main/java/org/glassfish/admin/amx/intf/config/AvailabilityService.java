@@ -43,8 +43,6 @@ Configuration for the &lt;availability-service&gt; element.
 public interface AvailabilityService
         extends ConfigElement, PropertiesAccess
 {
-    public static final String AMX_TYPE = "availability-service";
-    
     /**
     Get the EJBContainerAvailability MBean.
      */

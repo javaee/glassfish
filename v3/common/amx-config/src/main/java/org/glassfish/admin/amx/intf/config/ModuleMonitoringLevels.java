@@ -49,8 +49,6 @@ Each monitoring level can be one of the values defined in
  */
 public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess, Singleton
 {
-
-    public static final String AMX_TYPE = "module-monitoring-levels";
     /**
     Value indicating the maximum level of monitoring is enabled.
      */

@@ -43,9 +43,6 @@ Configuration for the &lt;virtual-server&gt; element.
 public interface VirtualServer
         extends NamedConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "virtual-server";
-
     public String getDefaultWebModule();
 
     public void setDefaultWebModule(String value);

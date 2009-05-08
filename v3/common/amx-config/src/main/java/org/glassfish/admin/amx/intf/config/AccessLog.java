@@ -43,19 +43,6 @@ Represents the &lt;access-log&gt; element.
  */
 public interface AccessLog extends ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "access-log";
-    public static final String FORMAT_KEY = "Format";
-    /**
-    Value is of class java.lang.String.
-    See {@link AccessLog#setRotationPolicy}
-     */
-    public static final String ROTATION_POLICY_KEY = "RotationPolicy";
-    public static final String ROTATION_SUFFIX_KEY = "RotationSuffix";
-    public static final String ROTATION_ENABLED_KEY = "RotationEnabled";
-    public static final String ROTATION_INTERVAL_IN_MINUTES_KEY = "RotationIntervalInMinutes";
-    public static final String ROTATION_SIZE_LIMIT_IN_BYTES_KEY = "RotationSizeLimitInBytes";
-
     public String getFormat();
 
     public void setFormat(final String value);

@@ -44,8 +44,6 @@ Configuration for the &lt;store-properties&gt; element.
 public interface StoreProperties extends AMXConfigProxy, PropertiesAccess, Singleton
 {
 
-    public static final String AMX_TYPE = "store-properties";
-
     public String getDirectory();
 
     public void setDirectory(final String value);

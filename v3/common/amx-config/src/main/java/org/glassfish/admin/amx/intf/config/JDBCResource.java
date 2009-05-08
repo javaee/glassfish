@@ -41,9 +41,6 @@ Configuration for the &lt;jdbc-resource&gt; element.
 public interface JDBCResource
         extends Resource
 {
-
-    public static final String AMX_TYPE = "jdbc-resource";
-
     public String getPoolName();
 
     public void setPoolName(String value);

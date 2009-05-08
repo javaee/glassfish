@@ -33,11 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/NodeAgent.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:34 $
- */
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
@@ -48,23 +43,10 @@ Configuration for the &lt;node-agent&gt; element.
 public interface NodeAgent
         extends AMXConfigProxy, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "node-agent";
-
-    /**
-     * @return A proxy to the JMXConnector MBean.
-     */
     public JMXConnector getJMXConnector();
 
-    /**
-    @since Appserver 9.0
-     */
-    
     public String getStartServersInStartup();
 
-    /**
-    @since Appserver 9.0
-     */
     public void setStartServersInStartup(String start);
 
     public String getSystemJMXConnectorName();

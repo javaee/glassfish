@@ -44,9 +44,6 @@ Represents the &lt;management-rule> element.
 public interface ManagementRule
         extends NamedConfigElement, Description, Enabled
 {
-
-    public static final String AMX_TYPE = "management-rule";
-
     public Event getEvent();
 
     /**

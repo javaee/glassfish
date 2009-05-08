@@ -48,7 +48,6 @@ import org.glassfish.admin.amx.base.Singleton;
 public interface DiagnosticService
     extends PropertiesAccess, ConfigElement, Singleton
 {
-    public static final String AMX_TYPE = "diagnostic-service";
     /**
         @return true if the diagnostic service is computing the checksum for the data
      */

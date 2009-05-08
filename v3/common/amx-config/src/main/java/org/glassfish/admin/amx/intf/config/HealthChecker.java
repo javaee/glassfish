@@ -44,12 +44,6 @@ Base interface for such a Health Checker.
  */
 public interface HealthChecker extends AMXConfigProxy
 {
-
-    public static final String AMX_TYPE = "health-checker";
-    public static final String URL_KEY = "url";
-    public static final String INTERVAL_IN_SECONDS_KEY = "interval-in-seconds";
-    public static final String TIMEOUT_IN_SECONDS_KEY = "timeout-in-seconds";
-
     /**
     Returns the relative URL to ping to determine the health state of a
     listener.

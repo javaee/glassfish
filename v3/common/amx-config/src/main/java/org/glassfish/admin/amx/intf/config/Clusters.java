@@ -45,9 +45,6 @@ groups all resources under itself.
 public interface Clusters
         extends ConfigElement, ConfigCollectionElement
 {
-
-    public static final String AMX_TYPE = "clusters";
-
     public Map<String, Cluster> getCluster();
 }
 

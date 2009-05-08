@@ -40,9 +40,6 @@ Configuration for the &lt;custom-resource&gt; element.
  */
 public interface CustomResource extends Resource
 {
-
-    public static final String AMX_TYPE = "custom-resource";
-
     String getResType();
 
     void setResType(final String resType);

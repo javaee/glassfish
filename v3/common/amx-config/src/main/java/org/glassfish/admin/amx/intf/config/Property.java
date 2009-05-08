@@ -40,6 +40,4 @@ Configuration for the &lt;property> element.
  */
 public interface Property extends AnyProperty
 {
-
-    public static final String AMX_TYPE = "property";
 }

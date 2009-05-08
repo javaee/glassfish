@@ -48,8 +48,6 @@ public interface Configs
         extends ConfigElement, ConfigCollectionElement, Singleton
 {
 
-    public static final String AMX_TYPE = "configs";
-
     /**
     Calls Container.getContaineeMap( XTypes.CONFIG_CONFIG ).
     @return Map of items, keyed by name.

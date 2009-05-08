@@ -41,8 +41,6 @@ Configuration for the &lt;resource-adapter-config&gt; element.
  */
 public interface ResourceAdapter extends NamedConfigElement, PropertiesAccess, ObjectType
 {
-
-    public static final String AMX_TYPE = "resource-adapter";
     /**
     Key for use with {@link ResourcesConfig#createResourceAdapterConfig}.
     Comma-separated list of ThreadPoolConfig names.

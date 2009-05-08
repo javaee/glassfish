@@ -41,9 +41,6 @@ Configuration for the &lt;persistence-manager-factory-resource&gt; element.
 public interface PersistenceManagerFactoryResource
         extends Resource
 {
-
-    public static final String AMX_TYPE = "persistence-manager-factory-resource";
-
     public String getFactoryClass();
 
     public void setFactoryClass(final String factoryClass);

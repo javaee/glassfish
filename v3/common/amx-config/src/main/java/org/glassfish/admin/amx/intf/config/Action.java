@@ -45,9 +45,6 @@ Represents the &lt;action&gt; element.
  */
 public interface Action extends ConfigElement
 {
-
-    public static final String AMX_TYPE = "action-config";
-
     /**
     Identifies the classname of the action MBean as given
     by CustomMBeanConfig.getName().

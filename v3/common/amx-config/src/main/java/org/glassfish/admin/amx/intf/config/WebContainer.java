@@ -43,11 +43,5 @@ Configuration for the &lt;web-container&gt; element.
 public interface WebContainer
         extends PropertiesAccess, ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "web-container";
-
-    /**
-    Get the Session.
-     */
     public Session getSession();
 }

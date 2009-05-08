@@ -40,29 +40,6 @@ Configuration for the &lt;ejb-container-availability&gt; element.
  */
 public interface EJBContainerAvailability extends ConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "ejb-container-availability";
-    public static final String FILE = "file";
-    public static final String HA = "ha";
-    public static final String EJB_CONTAINER_AVAILABILITY_ENABLED_KEY = "AvailabilityEnabled";
-    /**
-    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-     */
-    public static final String SFSB_HA_PERSISTENCE_TYPE_KEY = "SFSBHAPersistenceType";
-    /**
-    See {@link #SFSB_HA_PERSISTENCE_TYPE_KEY}.
-     */
-    public static final String SFSB_PERSISTENCE_TYPE_KEY = "SFSBPersistenceType";
-    public static final String SFSB_CHECKPOINT_ENABLED_KEY = "SFSBCheckPointEnabled";
-    public static final String SFSB_QUICK_CHECKPOINT_ENABLED_KEY = "SFSBQuickCheckPointEnabled";
-    /**
-    The jndi-name for the JDBC Connection Pool used
-    potentially by both the Web Container and the EJB Stateful
-    Session Bean Container for use in checkpointing/passivation
-    when persistence-type = {@link SFSBPersistenceTypeValues#HA}.
-     */
-    public static final String SFSB_STORE_POOL_NAME_KEY = "SFSBStorePoolName";
-
     
     public String getAvailabilityEnabled();
 

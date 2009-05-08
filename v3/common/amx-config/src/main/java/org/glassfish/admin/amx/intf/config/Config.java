@@ -45,26 +45,6 @@ public interface Config
         extends PropertiesAccess, SystemPropertiesAccess,
         NamedConfigElement
 {
-
-    public static final String AMX_TYPE = "config";
-    /**
-    Key for use with {@link ConfigsConfig#createConfigConfig},
-    value must be {@link java.lang.Boolean}.
-     */
-    public static final String DYNAMIC_RECONFIGURATION_ENABLED_KEY = "DynamicReconfigurationEnabled";
-    /**
-    Key for use with {@link ConfigsConfig#createConfigConfig}. Specifies
-    the name of the config which should be *copied*.  Default is
-    {@link #DEFAULT_SRC_CONFIG_NAME}.
-     */
-    public static final String SRC_CONFIG_NAME_KEY = "SrcConfigKey";
-    /**
-    Default config which will be copied by
-    {@link ConfigsConfig#createConfigConfig}.
-    @see #SRC_CONFIG_NAME_KEY
-     */
-    public static final String DEFAULT_SRC_CONFIG_NAME = "default-config";
-
     /**
     Configuration of the config element itself.
      */
@@ -106,15 +86,6 @@ public interface Config
      */
     public Map<String, ThreadPool> getThreadPool();
 
-// 	/**
-//         @deprecated use {@link ThreadPools#createThreadPoolConfig}
-// 	 */
-// 	public ThreadPool	createThreadPoolConfig( String name, Map<String,String> optional );
-// 
-// 	/**
-//         @deprecated use {@link ThreadPools#removeThreadPoolConfig}
-// 	 */
-// 	public void			removeThreadPoolConfig( String name );
     /**
     Return the DiagnosticService.  May be null.
     @since AppServer 9.0

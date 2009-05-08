@@ -43,8 +43,6 @@ public interface JACCProvider
         extends PropertiesAccess, ConfigElement
 {
 
-    public static final String AMX_TYPE = "jacc-provider";
-
     public String getName();
 
     public String getPolicyConfigurationFactoryProvider();

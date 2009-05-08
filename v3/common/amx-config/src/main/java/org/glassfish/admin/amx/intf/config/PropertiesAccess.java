@@ -37,8 +37,6 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
-import javax.management.MBeanOperationInfo;
-import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
@@ -74,7 +72,6 @@ public interface PropertiesAccess extends AMXProxy
     Return all Property MBeans, keyed by property name.
     @since Glassfish V3
      */
-    @ManagedOperation(impact = MBeanOperationInfo.INFO)
     public Map<String, Property> getProperty();
 }
 

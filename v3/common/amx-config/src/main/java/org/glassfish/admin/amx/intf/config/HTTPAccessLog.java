@@ -41,9 +41,6 @@ Configuration for the &lt;http-access-log&gt; element.
  */
 public interface HTTPAccessLog extends ConfigElement
 {
-
-    public static final String AMX_TYPE = "http-access-log";
-
     
     public String getIPOnly();
 

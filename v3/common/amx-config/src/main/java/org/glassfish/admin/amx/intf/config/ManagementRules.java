@@ -49,12 +49,7 @@ Manipulates management rules.
 public interface ManagementRules
         extends ConfigElement, Enabled, Singleton
 {
-
-    public static final String AMX_TYPE = "management-rules";
-   
     public static final String EVENT_DESCRIPTION_KEY = "EventDescription";
-
-
 }
 
 

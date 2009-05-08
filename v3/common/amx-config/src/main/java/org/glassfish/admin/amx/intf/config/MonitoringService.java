@@ -46,24 +46,5 @@ Configuration for the &lt;monitoring-service&gt; element.
 public interface MonitoringService
         extends PropertiesAccess, ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "monitoring-service";
-
-// 	/**
-// 		Creates new module-monitoring-levels element.
-// 
-// 		@param params	Map of optional attributes whose keys are defined in
-// 		ModuleMonitoringLevelsParams class.
-// 		@return	the newly-created ModuleMonitoringLevels
-// 	 */
-// 	public ModuleMonitoringLevels	createModuleMonitoringLevelsConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes module-monitoring-levels element.
-// 	 */
-// 	public void			removeModuleMonitoringLevels();
-    /**
-    @return the ModuleMonitoringLevels
-     */
     public ModuleMonitoringLevels getModuleMonitoringLevels();
 }

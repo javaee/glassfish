@@ -47,9 +47,6 @@ Configuration for the &lt;iiop-service&gt; element.
 public interface IiopService
         extends ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "iiop-service";
-
     /**
     Get the SslConfig MBean that corresponds to ssl-client-config
     element of this iiop service.

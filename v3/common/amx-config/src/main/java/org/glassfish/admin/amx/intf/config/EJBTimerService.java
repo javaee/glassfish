@@ -44,9 +44,6 @@ Configuration for the &lt;ejb-timer-service&gt; element.
 public interface EJBTimerService extends AMXConfigProxy, PropertiesAccess, Singleton
 {
 
-    public static final String AMX_TYPE = "ejb-timer-service";
-
-    
     String getMaxRedeliveries();
 
     void setMaxRedeliveries(final String value);

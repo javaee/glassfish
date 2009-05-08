@@ -48,9 +48,6 @@ Configuration for the &lt;ejb-container&gt; element.
 public interface EJBContainer extends
         AMXConfigProxy, PropertiesAccess, Singleton
 {
-
-    public static final String AMX_TYPE = "ejb-container";
-
     
     String getCacheIdleTimeoutInSeconds();
 

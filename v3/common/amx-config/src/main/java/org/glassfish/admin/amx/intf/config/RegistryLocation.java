@@ -48,9 +48,6 @@ published.  Contained in {@link WebServiceEndpointConfig}.
 public interface RegistryLocation
         extends ConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "registry-location";
-
     public String getConnectorResourceJNDIName();
 
     public void setConnectorResourceJNDIName(String name);

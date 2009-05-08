@@ -46,37 +46,11 @@ Configuration for the &lt;session-config&gt; element.
 public interface Session
         extends ConfigElement, Singleton
 {
-
-    public static final String AMX_TYPE = "session-config";
-// 	/**
-// 		Creates new session-manager element.
-// 
-// 		@return A proxy to the SessionManager MBean.
-// 	 */
-// 	public SessionManager	createSessionManager();
-// 
-// 	/**
-// 		Removes session-manager element.
-// 	 */
-// 	public void			removeSessionManager();
-
     /**
     Get the SessionManager MBean.
      */
     public SessionManager getSessionManager();
 
-// 	/**
-// 		Creates new session-properties element.
-// 
-// 		@param	params Map of optional attrbutes and properties.
-// 		@return A proxy to the SessionProperties MBean.
-// 	 */
-// 	public SessionProperties	createSessionPropertiesConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes session-properties element.
-// 	 */
-// 	public void			removeSessionProperties();
     /**
     Get the SessionProperties MBean.
      */

@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.base.Singleton;
 
 /**
@@ -47,49 +46,37 @@ public interface Domain
         extends PropertiesAccess, SystemPropertiesAccess, ConfigElement, Singleton
 {
 
-    public static final String AMX_TYPE = "domain";
-
     /** @since Glassfish V3 */
-    @ManagedAttribute
     public Resources getResources();
 
     /** @since Glassfish V3 */
-    @ManagedAttribute
     public Configs getConfigs();
 
     /** @since Glassfish V3 */
-    @ManagedAttribute
     public ApplicationsConfig getApplications();
 
     /** @since Glassfish V3 */
-    @ManagedAttribute
     public SystemApplications getSystemApplications();
 
     /** @since Glassfish V3 */
-    @ManagedAttribute
     public Servers getServers();
 
     /** @since Glassfish V3 */
-    @ManagedAttribute
     public Clusters getClusters();
 
     /** @since Glassfish V3 */
-    @ManagedAttribute
     public NodeAgents getNodeAgents();
 
 
     //---------------------------------------------------------------------------------------
-    @ManagedAttribute
     public String getApplicationRoot();
 
     public void setApplicationRoot(final String value);
 
-    @ManagedAttribute
     public String getLocale();
 
     public void setLocale(final String value);
 
-    @ManagedAttribute
     public String getLogRoot();
 
     public void setLogRoot(final String value);

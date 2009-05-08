@@ -43,9 +43,6 @@ Configuration for the &lt;mdb-container&gt; element.
  */
 public interface MDBContainer extends AMXConfigProxy, PropertiesAccess, Singleton
 {
-
-    public static final String AMX_TYPE = "mbd-container";
-
     
     public String getIdleTimeoutInSeconds();
 

@@ -41,11 +41,7 @@ import org.glassfish.admin.amx.base.Singleton;
 Configuration for the &lt;keep-alive&gt; element.
  */
 public interface KeepAlive extends ConfigElement, Singleton
-{
-
-    public static final String AMX_TYPE = "keep-alive";
-
-    
+{    
     public String getMaxConnections();
 
     public void setMaxConnections(final String value);

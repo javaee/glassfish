@@ -38,6 +38,9 @@ package org.glassfish.admin.amx.intf.config;
 import java.util.Map;
 import org.glassfish.admin.amx.core.AMXProxy;
 
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
+
+
 /**
 Base interface for server configuration for the &lt;server&gt; element.
 Does not provide ability to access resource or application-ref; see
@@ -46,11 +49,7 @@ Does not provide ability to access resource or application-ref; see
 public interface Server
         extends PropertiesAccess, SystemPropertiesAccess, NamedConfigElement
 {
-
-    public static final String AMX_TYPE = "server";
-
-    /** cross-boundary: declared as generic AMXProxy, client must us as(NetworkConfig.class) */
-    public AMXProxy getNetworkConfig();
+    public NetworkConfig getNetworkConfig();
 
     /**
     Get the name of the config element referenced by this server.

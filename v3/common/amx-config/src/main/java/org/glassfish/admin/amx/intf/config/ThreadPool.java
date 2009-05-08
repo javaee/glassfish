@@ -40,10 +40,6 @@ Configuration for a &lt;thread-pool&gt; element.
  */
 public interface ThreadPool extends PropertiesAccess, NamedConfigElement
 {
-
-    public static final String AMX_TYPE = "thread-pool";
-
-    
     public String getIdleThreadTimeoutSeconds();
 
     public void setIdleThreadTimeoutSeconds(String value);

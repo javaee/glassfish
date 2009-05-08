@@ -43,9 +43,6 @@ Configuration for the &lt;provider-config&gt; element.
 public interface Provider
         extends NamedConfigElement, PropertiesAccess
 {
-
-    public static final String AMX_TYPE = "provider-config";
-
     public String getClassName();
 
     public void setClassName(final String value);

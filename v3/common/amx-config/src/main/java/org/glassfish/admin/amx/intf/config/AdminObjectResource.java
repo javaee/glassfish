@@ -42,8 +42,6 @@ Represents the &lt;admin-object-resource&gt; element.
 public interface AdminObjectResource extends Resource
 {
 
-    public static final String AMX_TYPE = "admin-object-resource";
-
     public String getResType();
 
     /**

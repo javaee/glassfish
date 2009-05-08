@@ -46,17 +46,6 @@ Configuration for the &lt;message-security-config&gt; element.
 public interface MessageSecurity
         extends NamedConfigElement
 {
-
-    public static final String AMX_TYPE = "message-security";
-    /** Key for use with {@link SecurityServiceConfig#createMessageSecurityConfig}.  Name of the default provider. */
-    public static final String DEFAULT_PROVIDER_KEY = "DefaultProvider";
-    /** Key for use with {@link SecurityServiceConfig#createMessageSecurityConfig}. Name of the default client provider */
-    public static final String DEFAULT_CLIENT_PROVIDER_KEY = "DefaultClientProvider";
-    /** one of the legal values for auth-layer */
-    public static final String AUTH_LAYER_HTTP_SERVLET = "HttpServlet";
-    /** one of the legal values for auth-layer */
-    public static final String AUTH_LAYER_SOAP = "SOAP";
-
     /**
     One of the values defined by {@link MessageLayerValues}.
      */
