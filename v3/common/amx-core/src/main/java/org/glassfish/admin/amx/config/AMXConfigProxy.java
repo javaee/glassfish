@@ -134,13 +134,6 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver
     @ManagedOperation
     public void removeChild(
             @Param(name = "childType") String childType);
-            
-    /**
-        Get simple attributes; those that are not Element kind.
-    @Description("Get simple attributes; those that are not Elements or synthetic")
-    @ManagedOperation
-    public Map<String,Object> simpleAttributesMap();
-     */
 }
 
 

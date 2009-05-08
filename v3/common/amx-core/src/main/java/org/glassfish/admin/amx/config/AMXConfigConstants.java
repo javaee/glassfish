@@ -65,7 +65,7 @@ public final class AMXConfigConstants
     /** Descriptor: classname of data type (@Attribute only) */
     public static final String DESC_DATA_TYPE = DESC_CONFIG_PREFIX + "dataType";
 
-    /** Descriptor: eefault value, omitted if none */
+    /** Descriptor: default value, omitted if none */
     public static final String DESC_DEFAULT_VALUE = DESC_CONFIG_PREFIX + "defaultValue";
 
     /** Descriptor: true | false: whether this is the primary key (name) */
