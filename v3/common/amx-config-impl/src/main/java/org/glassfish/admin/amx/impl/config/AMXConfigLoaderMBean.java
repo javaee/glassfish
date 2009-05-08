@@ -40,10 +40,13 @@ import org.glassfish.admin.amx.impl.mbean.AMXSupport;
 
 import javax.management.MBeanRegistration;
 import javax.management.NotificationListener;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 	<b>INTERNAL USE ONLY</b>
  */
+@Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 public interface AMXConfigLoaderMBean extends AMXSupport, MBeanRegistration, NotificationListener
 {
 }

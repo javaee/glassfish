@@ -26,6 +26,8 @@ import javax.management.MBeanParameterInfo;
 import javax.management.ObjectName;
 import javax.management.modelmbean.DescriptorSupport;
 import javax.validation.constraints.NotNull;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.Util;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
@@ -53,6 +55,7 @@ import org.jvnet.hk2.config.Element;
  * storing author useful information about each @Configured interface.
  * @author llc
  */
+@Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 public class ConfigBeanJMXSupport {
 
     /** bugs: these @Configured do not set @Attribute(key=true)

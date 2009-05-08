@@ -44,6 +44,8 @@ import org.jvnet.hk2.config.TranslationException;
 import org.jvnet.hk2.config.VariableResolver;
 
 import java.util.Map;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 
 /**
@@ -68,6 +70,7 @@ import java.util.Map;
     {@link org.glassfish.admin.amx.intf.config.AttributeResolver#resolveAttribute}
     @see org.glassfish.admin.amx.intf.config.AttributeResolver
  */
+@Taxonomy( stability=Stability.UNCOMMITTED )
 public class AttributeResolverHelper extends VariableResolver
 {
     private static void debug( final String s ) { System.out.println("##### " + s); }

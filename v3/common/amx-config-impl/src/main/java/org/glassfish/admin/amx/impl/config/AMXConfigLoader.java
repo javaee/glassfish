@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
@@ -67,6 +69,7 @@ import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
     Responsible for loading AMXConfigProxy MBeans
  * @author llc
  */
+@Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 public final class AMXConfigLoader extends MBeanImplBase
     implements AMXConfigLoaderMBean, TransactionListener
 {

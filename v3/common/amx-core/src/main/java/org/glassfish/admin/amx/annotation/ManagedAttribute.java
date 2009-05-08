@@ -45,6 +45,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target({METHOD})
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public @interface ManagedAttribute {
 }
 

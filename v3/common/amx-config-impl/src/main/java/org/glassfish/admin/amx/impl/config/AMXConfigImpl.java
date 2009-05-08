@@ -48,6 +48,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.management.*;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import static org.glassfish.admin.amx.core.AMXConstants.*;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -88,10 +90,11 @@ import org.jvnet.hk2.config.WriteableView;
 Base class from which all AMX Config MBeans should derive (but not "must").
 <p>
  */
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public class AMXConfigImpl extends AMXImplBase
 {
-
     private final ConfigBean mConfigBean;
+
     /** MBeanInfo derived from the AMXConfigProxy interface, always the same */
     private static MBeanInfo configMBeanInfo;
 
@@ -103,6 +106,7 @@ public class AMXConfigImpl extends AMXImplBase
         }
         return configMBeanInfo;
     }
+
     /**
      * We save time and space by creating exactly one MBeanInfo for any given config interface;
      * it can be shared among all instances since it is invariant.
@@ -131,22 +135,22 @@ public class AMXConfigImpl extends AMXImplBase
         {
             JMXUtil.remove(spiAttrInfos, ATTR_CHILDREN);
         }
-        
+
         // Add in the AMX_SPI attributes, replacing any with the same name
         for (final MBeanAttributeInfo attrInfo : spiAttrInfos)
         {
             // remove existing info
             final String attrName = attrInfo.getName();
             final MBeanAttributeInfo priorAttrInfo = JMXUtil.remove(attrInfos, attrName);
-            
+
             // special case the Name attribute to preserve its metadata
-            if ( attrName.equals(ATTR_NAME) && priorAttrInfo != null)
+            if (attrName.equals(ATTR_NAME) && priorAttrInfo != null)
             {
-                final Descriptor mergedD = JMXUtil.mergeDescriptors( attrInfo.getDescriptor(),  priorAttrInfo.getDescriptor() );
-                
-                final MBeanAttributeInfo newAttrInfo = new MBeanAttributeInfo( attrName,
-                    attrInfo.getType(), attrInfo.getDescription(), attrInfo.isReadable(), attrInfo.isWritable(), attrInfo.isIs(), mergedD);
-                
+                final Descriptor mergedD = JMXUtil.mergeDescriptors(attrInfo.getDescriptor(), priorAttrInfo.getDescriptor());
+
+                final MBeanAttributeInfo newAttrInfo = new MBeanAttributeInfo(attrName,
+                        attrInfo.getType(), attrInfo.getDescription(), attrInfo.isReadable(), attrInfo.isWritable(), attrInfo.isIs(), mergedD);
+
                 attrInfos.add(newAttrInfo);
             }
             else
@@ -228,34 +232,33 @@ public class AMXConfigImpl extends AMXImplBase
 
         return (successList);
     }
-    
+
     /**
-        Exact match, could be extended to use regexp for value and/or field name.
+    Exact match, could be extended to use regexp for value and/or field name.
      */
-    protected Set<String> attributeNamesByDescriptorField( final String fieldName, final String value)
+    protected Set<String> attributeNamesByDescriptorField(final String fieldName, final String value)
     {
         final Set<String> attrNames = new HashSet<String>();
-        for( final MBeanAttributeInfo attrInfo : getMBeanInfo().getAttributes() )
+        for (final MBeanAttributeInfo attrInfo : getMBeanInfo().getAttributes())
         {
             final Descriptor desc = attrInfo.getDescriptor();
-            if ( value.equals( desc.getFieldValue( fieldName ) ) )
+            if (value.equals(desc.getFieldValue(fieldName)))
             {
                 attrNames.add(attrInfo.getName());
             }
         }
         return attrNames;
     }
-    
-    public Map<String,Object> simpleAttributesMap()
+
+    public Map<String, Object> simpleAttributesMap()
     {
         final String elementKind = org.jvnet.hk2.config.Element.class.getName();
-       final Set<String> elementNames = attributeNamesByDescriptorField( DESC_KIND, elementKind);
-       
-       final Set<String> remaining = getSelf().attributeNames();
-       remaining.removeAll(elementNames);
-       return getSelf().attributesMap( remaining );
+        final Set<String> elementNames = attributeNamesByDescriptorField(DESC_KIND, elementKind);
+
+        final Set<String> remaining = getSelf().attributeNames();
+        remaining.removeAll(elementNames);
+        return getSelf().attributesMap(remaining);
     }
-    
 
     /**
     The actual name could be different than the 'name' property in the ObjectName if it
@@ -348,66 +351,64 @@ public class AMXConfigImpl extends AMXImplBase
     }
 
 //========================================================================================
-
     /**
-        Convert incoming parameters to HK2 data structures and sub-element Maps.
+    Convert incoming parameters to HK2 data structures and sub-element Maps.
      */
-        static private void
-    toAttributeChanges(
-        final Map<String, Object> values,
-        final List<ConfigSupport.AttributeChanges> changes,
-        final Map<String,Map<String,Object>> subs)
+    static private void toAttributeChanges(
+            final Map<String, Object> values,
+            final List<ConfigSupport.AttributeChanges> changes,
+            final Map<String, Map<String, Object>> subs)
     {
         if (values != null)
         {
             for (final String nameAsProvided : values.keySet())
             {
                 final Object value = values.get(nameAsProvided);
-                
+
                 final String xmlName = ConfigBeanJMXSupport.toXMLName(nameAsProvided);
 
                 // auto-convert specific basic types to String
                 if (value == null ||
                     (value instanceof String) ||
-                    (value instanceof Number) || 
-                    (value instanceof Boolean) )
+                    (value instanceof Number) ||
+                    (value instanceof Boolean))
                 {
                     //System.out.println( "toAttributeChanges: " + xmlName + " = " + value );
                     final String valueString = value == null ? null : "" + value;
                     final ConfigSupport.SingleAttributeChange change = new ConfigSupport.SingleAttributeChange(xmlName, valueString);
-                    changes.add( change );
+                    changes.add(change);
                 }
-                else if ( value instanceof Map )
+                else if (value instanceof Map)
                 {
                     //System.out.println( "toAttributeChanges: Map?!!!!!!!!!!!!!" );
-                     // sub-element
-                     final Map<String,Object> m = TypeCast.checkMap( Map.class.cast(value), String.class, Object.class);
-                     subs.put( xmlName, m);
+                    // sub-element
+                    final Map<String, Object> m = TypeCast.checkMap(Map.class.cast(value), String.class, Object.class);
+                    subs.put(xmlName, m);
                 }
-                else if ( value instanceof String[] )
+                else if (value instanceof String[])
                 {
                     //System.out.println( "toAttributeChanges: MultipleAttributeChanges" );
                     changes.add(new ConfigSupport.MultipleAttributeChanges(xmlName, (String[]) value));
                 }
                 else
                 {
-                    throw new IllegalArgumentException( "Value of class " + value.getClass().getName() + " not supported for attribute " + nameAsProvided );
+                    throw new IllegalArgumentException("Value of class " + value.getClass().getName() + " not supported for attribute " + nameAsProvided);
                 }
             }
         }
     }
 
     private ObjectName finishCreate(
-            final Class<? extends ConfigBeanProxy>     elementClass,
+            final Class<? extends ConfigBeanProxy> elementClass,
             final List<ConfigSupport.AttributeChanges> changes,
-            final Map<String, Map<String,Object>>      subs )
+            final Map<String, Map<String, Object>> subs)
             throws ClassNotFoundException, TransactionFailure
     {
-        if ( subs.keySet().size() != 0 )
+        if (subs.keySet().size() != 0)
         {
-            cdebug( "Ignoring sub-elements: " + CollectionUtil.toString(subs.keySet(),", "));
+            cdebug("Ignoring sub-elements: " + CollectionUtil.toString(subs.keySet(), ", "));
         }
-        
+
         ConfigBean newConfigBean = null;
         final SubElementsCallback callback = new SubElementsCallback(subs);
         try
@@ -428,7 +429,7 @@ public class AMXConfigImpl extends AMXImplBase
         amxLoader.handleConfigBean(newConfigBean, true);
         final ObjectName objectName = ConfigBeanRegistry.getInstance().getObjectName(newConfigBean);
 
-       // final AMXConfigProxy newAMX = AMXConfigProxy.class.cast(getProxyFactory().getProxy(objectName, AMXConfigProxy.class));
+        // final AMXConfigProxy newAMX = AMXConfigProxy.class.cast(getProxyFactory().getProxy(objectName, AMXConfigProxy.class));
 
         return objectName;
     }
@@ -464,11 +465,11 @@ public class AMXConfigImpl extends AMXImplBase
             final Object value = params[i + 1];
 
             // interpret an Object[] as meaning to create a sub-map
-            if ( value == null || value instanceof String)
+            if (value == null || value instanceof String)
             {
                 m.put(name, value);
             }
-            else if ( value instanceof Object[] )
+            else if (value instanceof Object[])
             {
                 m.put(name, paramsToMap((Object[]) value));
             }
@@ -481,7 +482,6 @@ public class AMXConfigImpl extends AMXImplBase
         return m;
     }
 
-
     public ObjectName createChild(final String type, final Object[] params)
     {
         if ((params.length % 2) != 0)
@@ -491,27 +491,26 @@ public class AMXConfigImpl extends AMXImplBase
 
         return createChild(type, paramsToMap(params));
     }
-    
+
     /*
     public ObjectName test()
     {
-        final Object[] args = {
-            "name", "test1",
-            "idle-thread-timeout-seconds", "900",
-            "MAX-QUEUE-SIZE", "3",
-            "min-thread-pool-size", "10",
-            "min-thread-pool-size", "30",
-            "classname", "com.sun.grizzly.http.StatsThreadPool"
-        };
-        return createChild( "thread-pool", args );
+    final Object[] args = {
+    "name", "test1",
+    "idle-thread-timeout-seconds", "900",
+    "MAX-QUEUE-SIZE", "3",
+    "min-thread-pool-size", "10",
+    "min-thread-pool-size", "30",
+    "classname", "com.sun.grizzly.http.StatsThreadPool"
+    };
+    return createChild( "thread-pool", args );
     }
-    */
-    
+     */
     private ObjectName createChild(final Class<? extends ConfigBeanProxy> intf, final Map<String, Object> params)
             throws ClassNotFoundException, TransactionFailure
     {
         //cdebug( "createChild: " + intf.getName() + ", params =  " + MapUtil.toString(params) );
-        
+
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(intf);
         if (!spt.isSingleton())
         {
@@ -525,28 +524,28 @@ public class AMXConfigImpl extends AMXImplBase
             {
                 final String xmlName = ConfigBeanJMXSupport.toXMLName(reqName);
                 // allow either the Attribute name or the xml name at this stage
-                if ( ! ( params.containsKey(reqName) || params.containsKey( xmlName ))  )
+                if (!(params.containsKey(reqName) || params.containsKey(xmlName)))
                 {
                     throw new IllegalArgumentException("Required attribute missing: " + reqName);
                 }
             }
         }
 
-        final List<ConfigSupport.AttributeChanges> changes = new  ArrayList<ConfigSupport.AttributeChanges>();
-        final Map<String, Map<String,Object>> subs = new HashMap<String,Map<String,Object>>();
+        final List<ConfigSupport.AttributeChanges> changes = new ArrayList<ConfigSupport.AttributeChanges>();
+        final Map<String, Map<String, Object>> subs = new HashMap<String, Map<String, Object>>();
         toAttributeChanges(params, changes, subs);
 
         return finishCreate(intf, changes, subs);
     }
 
     /**
-        Callback to create sub-elements (recursively) on a newly created child element.
+    Callback to create sub-elements (recursively) on a newly created child element.
      */
     private static final class SubElementsCallback implements ConfigSupport.TransactionCallBack<WriteableView>
     {
-        private final Map<String, Map<String,Object>> mSubs;
+        private final Map<String, Map<String, Object>> mSubs;
 
-        public SubElementsCallback( final Map<String, Map<String,Object>> subs )
+        public SubElementsCallback(final Map<String, Map<String, Object>> subs)
         {
             mSubs = subs;
         }
@@ -554,16 +553,16 @@ public class AMXConfigImpl extends AMXImplBase
         public void performOn(final WriteableView item) throws TransactionFailure
         {
             // create each sub-element, recursively
-            for( final String type : mSubs.keySet() )
+            for (final String type : mSubs.keySet())
             {
-                final Map<String,Object> attrs = mSubs.get(type);
-                
-                cdebug( "Ignoring sub-element creation for: " + type );
-                
+                final Map<String, Object> attrs = mSubs.get(type);
+
+                cdebug("Ignoring sub-element creation for: " + type);
+
                 // FIXME TODO: create a child of the specified type, set all its attributes,
                 // recursively create any children the same way, etc
-                
-                for( final String attrName : attrs.keySet() )
+
+                for (final String attrName : attrs.keySet())
                 {
                     /*
                     final String attrValue = mProperties.get(propertyName);
@@ -578,10 +577,11 @@ public class AMXConfigImpl extends AMXImplBase
                     //modelProp = NameMappingHelper.getConfigModel_Property( "value");
                     childW.setter( modelProp, propertyValue, String.class);
                     }
-                    */
+                     */
                 }
             }
         }
+
     }
 
     public void removeChild(final String type)
@@ -752,8 +752,8 @@ public class AMXConfigImpl extends AMXImplBase
             throw new IllegalArgumentException("Can't find ConfigBean @Configured class for AMX type " + type);
         }
         // return spt.getConfigBeanProxyClassFor(type);
-        
-        return ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor( spt, type );
+
+        return ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor(spt, type);
     }
 
     @Override
@@ -830,8 +830,8 @@ public class AMXConfigImpl extends AMXImplBase
 
     private static final class MyTransactionListener implements TransactionListener
     {
-
         private final List<PropertyChangeEvent> mChangeEvents = new ArrayList<PropertyChangeEvent>();
+
         private final ConfigBean mTarget;
 
         MyTransactionListener(final ConfigBean target)
@@ -871,6 +871,7 @@ public class AMXConfigImpl extends AMXImplBase
         {
             return mChangeEvents;
         }
+
     };
 
     /**
@@ -1048,9 +1049,10 @@ public class AMXConfigImpl extends AMXImplBase
 
     private class Applyer
     {
-
         final Transaction mTransaction;
+
         final ConfigBean mConfigBean;
+
         final WriteableView mWriteable;
 
         public Applyer(final ConfigBean cb) throws TransactionFailure
@@ -1089,6 +1091,7 @@ public class AMXConfigImpl extends AMXImplBase
                 mConfigBean.getLock().unlock();
             }
         }
+
     }
 
     protected ConfigModel.Property getConfigModel_Property(final String xmlName)
@@ -1103,10 +1106,12 @@ public class AMXConfigImpl extends AMXImplBase
 
     private final class ModifyCollectionApplyer extends Applyer
     {
-
         private volatile List<String> mResult;
+
         private final String mElementName;
+
         private final String mCmd;
+
         private final String[] mValues;
 
         public ModifyCollectionApplyer(
@@ -1129,11 +1134,11 @@ public class AMXConfigImpl extends AMXImplBase
             final ConfigModel.Property prop = getConfigModel_Property(mElementName);
             mResult = handleCollection(mWriteable, prop, mCmd, ListUtil.asStringList(mValues));
         }
+
     }
 
     private final class MakeChangesApplyer extends Applyer
     {
-
         private final Map<String, Object> mChanges;
 
         public MakeChangesApplyer(
@@ -1167,6 +1172,7 @@ public class AMXConfigImpl extends AMXImplBase
                 }
             }
         }
+
     }
 
     private void apply(
@@ -1321,39 +1327,35 @@ public class AMXConfigImpl extends AMXImplBase
 
         return successfulAttrs;
     }
-    
-    
-    
-    
-    
+
     /*
     public MBeanNotificationInfo[] getNotificationInfo()
     {
-        final MBeanNotificationInfo[] superInfos = super.getNotificationInfo();
+    final MBeanNotificationInfo[] superInfos = super.getNotificationInfo();
 
-        // create a NotificationInfo for AttributeChangeNotification
-        final String description = "";
-        final String[] notifTypes = new String[]
-        {
-            AttributeChangeNotification.ATTRIBUTE_CHANGE
-        };
-        final MBeanNotificationInfo attributeChange = new MBeanNotificationInfo(
-                notifTypes,
-                AttributeChangeNotification.class.getName(),
-                description);
+    // create a NotificationInfo for AttributeChangeNotification
+    final String description = "";
+    final String[] notifTypes = new String[]
+    {
+    AttributeChangeNotification.ATTRIBUTE_CHANGE
+    };
+    final MBeanNotificationInfo attributeChange = new MBeanNotificationInfo(
+    notifTypes,
+    AttributeChangeNotification.class.getName(),
+    description);
 
-        final MBeanNotificationInfo[] selfInfos =
-                new MBeanNotificationInfo[]
-        {
-            attributeChange
-        };
+    final MBeanNotificationInfo[] selfInfos =
+    new MBeanNotificationInfo[]
+    {
+    attributeChange
+    };
 
-        final MBeanNotificationInfo[] allInfos =
-                JMXUtil.mergeMBeanNotificationInfos(superInfos, selfInfos);
+    final MBeanNotificationInfo[] allInfos =
+    JMXUtil.mergeMBeanNotificationInfos(superInfos, selfInfos);
 
-        return allInfos;
+    return allInfos;
     }
-    */
+     */
 }
 
 

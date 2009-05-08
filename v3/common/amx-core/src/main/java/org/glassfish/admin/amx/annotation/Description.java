@@ -43,6 +43,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 // target of anything
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public @interface Description {
     public String value() default "";
 }

@@ -48,6 +48,7 @@ import static java.lang.annotation.ElementType.METHOD;
 @Retention(RUNTIME)
 @Target({METHOD})
 @Documented
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public @interface ManagedOperation {
     public int impact() default MBeanOperationInfo.UNKNOWN;
 }

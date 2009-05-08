@@ -34,6 +34,8 @@ import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.impl.config.AMXConfigLoader;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
@@ -48,6 +50,7 @@ import org.jvnet.hk2.config.Transactions;
     Startup service that loads support for AMX config MBeans.  How this is to be
     triggered is not yet clear.
  */
+@Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 @Service
 public final class AMXConfigStartupService
     implements  org.jvnet.hk2.component.PostConstruct,

@@ -38,6 +38,8 @@ package org.glassfish.admin.amx.impl.config;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
@@ -45,6 +47,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
     A registry of ConfigBeanJMXSupport, for efficiency in execution time and scalability
     for large numbers of MBeans which share the same underlying type of @Configured.
  */
+@Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 final class ConfigBeanJMXSupportRegistry
 {
     private ConfigBeanJMXSupportRegistry() {}

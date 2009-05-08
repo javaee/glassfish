@@ -8,6 +8,8 @@ package org.glassfish.admin.amx.impl.config;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.jvnet.hk2.config.ConfigBean;
 
 /**
@@ -16,6 +18,7 @@ import org.jvnet.hk2.config.ConfigBean;
  * field of the ConfigBean.
  * @author llc
  */
+@Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 public final class ConfigBeanRegistry {
     private static void debug( final String s ) { System.out.println(s); }
     
