@@ -48,6 +48,7 @@ import java.util.Collection;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 
+import com.sun.enterprise.security.ssl.SSLUtils;
 import org.glassfish.admin.amx.base.RuntimeMgr;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
@@ -58,7 +59,6 @@ import org.glassfish.admin.amx.intf.config.grizzly.NetworkListeners;
 import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.component.ComponentException;
@@ -74,14 +74,18 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
 public final class RuntimeMgrImpl extends AMXImplBase
   // implements RuntimeMgr
 {
-        
         private final ApplicationRegistry appRegistry;
+        private final Habitat mHabitat;
         
 		public
 	RuntimeMgrImpl( final ObjectName parent )
 	{
         super( parent, RuntimeMgr.class);
-        appRegistry = Globals.getDefaultHabitat().getComponent(ApplicationRegistry.class);
+        
+        mHabitat = InjectedValues.getInstance().getHabitat();
+        
+        appRegistry = mHabitat.getComponent(ApplicationRegistry.class);
+        
     }
     
         /**
@@ -232,6 +236,20 @@ public final class RuntimeMgrImpl extends AMXImplBase
         return result;
     }
 
+
+    public String[] getSupportedCipherSuites()
+    {
+        try{
+            final SSLUtils sslUtils = mHabitat.getComponent(SSLUtils.class);
+        return sslUtils.getSupportedCipherSuites();
+        }
+        catch( final Exception ex)
+        {
+            //TODO log exception
+            ex.printStackTrace();
+            return new String[0];
+        }
+    }
 }
 
 

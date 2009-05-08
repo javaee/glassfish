@@ -91,7 +91,11 @@ public interface RuntimeMgr extends AMXProxy, Utility, Singleton
         @see #PROPERTY_MAP_KEY
         @see #REASON_FAILED_KEY
      */
+    @ManagedOperation
     public Map<String,Object>  getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName );
+    
+    @ManagedAttribute
+    public String[] getSupportedCipherSuites();
 }
 
 
