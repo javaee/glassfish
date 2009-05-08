@@ -102,6 +102,10 @@ public final class AMXConfigConstants
     of the  created or removed config.
      */
     public static final String CONFIG_OBJECT_NAME_KEY = "ConfigObjectName";
+    
+    
+    /** feature stating that the AMXConfig is ready for use after having been started.  Data is the ObjectName of the DomainConfig MBean */
+    public static final String AMX_CONFIG_READY_FEATURE   = "AMXConfigReady";
 
 }
 

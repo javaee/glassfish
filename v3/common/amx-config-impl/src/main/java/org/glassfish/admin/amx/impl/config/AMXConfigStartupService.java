@@ -34,13 +34,12 @@ import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
 
-import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.impl.config.AMXConfigLoader;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import org.glassfish.admin.amx.intf.config.Domain;
-import org.glassfish.admin.amx.intf.config.AMXConfigConstants;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
 import org.jvnet.hk2.config.Transactions;

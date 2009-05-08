@@ -39,6 +39,7 @@ import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -197,10 +198,6 @@ public class AMXConfigImpl extends AMXImplBase
         getConfigBeanJMXSupport();
     }
 
-    public void delegateFailed(Throwable t)
-    {
-    }
-
     @Override
     protected void setAttributeManually(final Attribute attr)
             throws AttributeNotFoundException, InvalidAttributeValueException
@@ -231,6 +228,34 @@ public class AMXConfigImpl extends AMXImplBase
 
         return (successList);
     }
+    
+    /**
+        Exact match, could be extended to use regexp for value and/or field name.
+     */
+    protected Set<String> attributeNamesByDescriptorField( final String fieldName, final String value)
+    {
+        final Set<String> attrNames = new HashSet<String>();
+        for( final MBeanAttributeInfo attrInfo : getMBeanInfo().getAttributes() )
+        {
+            final Descriptor desc = attrInfo.getDescriptor();
+            if ( value.equals( desc.getFieldValue( fieldName ) ) )
+            {
+                attrNames.add(attrInfo.getName());
+            }
+        }
+        return attrNames;
+    }
+    
+    public Map<String,Object> simpleAttributesMap()
+    {
+        final String elementKind = org.jvnet.hk2.config.Element.class.getName();
+       final Set<String> elementNames = attributeNamesByDescriptorField( DESC_KIND, elementKind);
+       
+       final Set<String> remaining = getSelf().attributeNames();
+       remaining.removeAll(elementNames);
+       return getSelf().attributesMap( remaining );
+    }
+    
 
     /**
     The actual name could be different than the 'name' property in the ObjectName if it

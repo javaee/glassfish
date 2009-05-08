@@ -116,6 +116,7 @@ public interface AMXProxy extends AMX_SPI {
 		@return Map keyed by Attribute name.
 	 */
 	public Map<String,Object>		attributesMap();
+	public Map<String,Object>		attributesMap(final Set<String> attrNames );
     
 	/**
 		Get all available Attributes names, no trip to server needed.

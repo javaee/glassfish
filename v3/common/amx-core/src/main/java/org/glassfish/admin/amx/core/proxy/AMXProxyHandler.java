@@ -66,6 +66,7 @@ import java.util.List;
 import org.glassfish.admin.amx.base.Tools;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.PathnameParser;
+import org.glassfish.admin.amx.util.TypeCast;
 
 /**
 Extends MBeanProxyHandler by also supporting the functionality required of an AMX.
@@ -426,6 +427,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
             if (methodName.equals("equals"))
             {
                 result = equals(arg);
+            }
+            else if (methodName.equals(METHOD_ATTRIBUTES_MAP))
+            {
+                result = attributesMap( TypeCast.checkedStringSet( Set.class.cast(arg) ) );
             }
             else if (methodName.equals(METHOD_CHILDREN_MAP))
             {
@@ -922,39 +927,24 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     {
         return getMBeanInfo();
     }
-
-    public Map<String, Object> attributesMap()
+    
+    
+    public Map<String, Object> attributesMap( final Set<String> attrNames )
     {
-        Map<String, Object> result = Collections.emptyMap();
-
         try
         {
-            final Set<String> names = attributeNames();
-
-            final String[] namesArray = names.toArray(new String[names.size()]);
+            final String[] namesArray = attrNames.toArray(new String[attrNames.size()]);
             final AttributeList attrs = getAttributes(namesArray);
-
-            result = JMXUtil.attributeListToValueMap(attrs);
+            return JMXUtil.attributeListToValueMap(attrs);
         }
         catch (Exception e)
         {
             throw new RuntimeException(e);
         }
-        return (result);
     }
-
-    public Map<String, Object> attributesMap(final String... args)
+    public Map<String, Object> attributesMap()
     {
-        final Map<String, Object> all = attributesMap();
-        final Map<String, Object> m = new HashMap<String, Object>();
-        for (final String name : args)
-        {
-            if (all.containsKey(name))
-            {
-                m.put(name, all.get(name));
-            }
-        }
-        return m;
+        return attributesMap( attributeNames() );
     }
 
     public MBeanAttributeInfo getAttributeInfo(final String name)
@@ -973,7 +963,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     {
         final String[] names = JMXUtil.getAttributeNames(getMBeanInfo().getAttributes());
 
-        return SetUtil.newUnmodifiableStringSet(names);
+        return SetUtil.newStringSet(names);
     }
 
     public static <T> T getDescriptorField(final MBeanInfo info, final String name, final T defaultValue)

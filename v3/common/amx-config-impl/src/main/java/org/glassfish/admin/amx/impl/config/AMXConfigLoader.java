@@ -55,10 +55,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
 import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
-import org.glassfish.admin.amx.intf.config.AMXConfigConstants;
 import org.glassfish.admin.mbeanserver.AMXLoader;
 import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
 import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
