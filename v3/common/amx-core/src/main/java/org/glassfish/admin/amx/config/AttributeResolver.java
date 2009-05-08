@@ -42,62 +42,63 @@ import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.Param;
 
 /**
-	Interface implemented by MBeans which can resolve a variable to a value.
-    Variable attributes are strings  of the form ${...} and
-	are returned as the values of certain Attributes.  This interface is intended for use
-    only with config MBeans.
-    <p>
+Interface implemented by MBeans which can resolve a variable to a value.
+Variable attributes are strings  of the form ${...} and
+are returned as the values of certain Attributes.  This interface is intended for use
+only with config MBeans.
+<p>
  */
 public interface AttributeResolver
 {
-	/**
-        Resolve an attribute <em>value</em> to a literal.  The value should have been
-        previously obtained from an Attribute of the same AMXConfig MBean.
-        <p>
-        If the String is not a template string, return the string unchanged.
-        <p>
-        If the String is a template string, resolve its value if it can be resolved, or 'null'
-        if it cannot be resolved.
-        <p>
-        Examples:</br>
-        <pre>
-        "${com.sun.aas.installRoot}" => "/glassfish"
-        "${does-not-exist}" => null
-        "${com.myco.moonIsBlue}" => "true"
-        "8080" => "8080"
-        "hello" => "hello"
-        </pre>
-		
-		@param template	any String
-		@return resolved value
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    @Description("Resolve a (possible) ${...} attribute *value* to a real value")
-	public String	resolveAttributeValue( @Param(name="value") String value );
-    
-    /** calls getAttribute(), then returns the resolved value or null */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    @Description("Get and resolve a (possible) ${...} attribute to a real value")
-	public String	resolveAttribute( @Param(name="attributeName") String attributeName );
-    
-    /** Get the Attribute and resolve it to a Boolean or null */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    @Description("Get and resolve a (possible)  ${...} attribute to a Boolean, returns null if not found")
-	public Boolean	resolveBoolean( @Param(name="attributeName") String attributeName);
-    
-    /** Get the Attribute and resolve it to a Long or null */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    @Description("Get and resolve a (possible)  ${...} attribute to a Long, returns null if not found")
-	public Long	resolveLong( @Param(name="attributeName") String attributeName);
-    
     /**
-        Calls getAttributes(), then returns all resolved values.  If the attributes
-        have been annotated with @ResolveTo, then the value is of the correct type
-        (eg String, Boolean, Integer).
+    Resolve an attribute <em>value</em> to a literal.  The value should have been
+    previously obtained from an Attribute of the same AMXConfig MBean.
+    <p>
+    If the String is not a template string, return the string unchanged.
+    <p>
+    If the String is a template string, resolve its value if it can be resolved, or 'null'
+    if it cannot be resolved.
+    <p>
+    Examples:</br>
+    <pre>
+    "${com.sun.aas.installRoot}" => "/glassfish"
+    "${does-not-exist}" => null
+    "${com.myco.moonIsBlue}" => "true"
+    "8080" => "8080"
+    "hello" => "hello"
+    </pre>
+
+    @param template	any String
+    @return resolved value
      */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Resolve a (possible) ${...} attribute *value* to a real value")
+    public String resolveAttributeValue(@Param(name = "value") String value);
+
+    /** calls getAttribute(), then returns the resolved value or null */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Get and resolve a (possible) ${...} attribute to a real value")
+    public String resolveAttribute(@Param(name = "attributeName") String attributeName);
+
+    /** Get the Attribute and resolve it to a Boolean or null */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Get and resolve a (possible)  ${...} attribute to a Boolean, returns null if not found")
+    public Boolean resolveBoolean(@Param(name = "attributeName") String attributeName);
+
+    /** Get the Attribute and resolve it to a Long or null */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Get and resolve a (possible)  ${...} attribute to a Long, returns null if not found")
+    public Long resolveLong(@Param(name = "attributeName") String attributeName);
+
+    /**
+    Calls getAttributes(), then returns all resolved values.  If the attributes
+    have been annotated with @ResolveTo, then the value is of the correct type
+    (eg String, Boolean, Integer).
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Get and resolve attributes to values")
-	public AttributeList	resolveAttributes( @Param(name="attributeNames") String[] attributeNames );
+    public AttributeList resolveAttributes(@Param(name = "attributeNames") String[] attributeNames);
+
 }
 
 

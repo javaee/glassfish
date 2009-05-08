@@ -40,7 +40,6 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
 
-import java.util.Map;
 
 /**
 Configuration for the &lt;ejb-container&gt; element.

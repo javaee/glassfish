@@ -28,7 +28,7 @@ import javax.management.modelmbean.DescriptorSupport;
 import javax.validation.constraints.NotNull;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.Util;
-import static org.glassfish.admin.amx.config.AMXConfigProxy.*;
+import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.util.ClassUtil;
@@ -555,7 +555,7 @@ public class ConfigBeanJMXSupport {
         final Annotation[] annotations = info.annotations();
         
         for( final Annotation a : annotations ) {
-            final String prefix = AMXConfigProxy.DESC_ANNOTATION_PREFIX + "@" + a.annotationType().getName() + ":";
+            final String prefix = DESC_ANNOTATION_PREFIX + "@" + a.annotationType().getName() + ":";
             
             final Method[] values = a.getClass().getDeclaredMethods();
             for( final Method m : values )

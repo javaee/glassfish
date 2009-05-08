@@ -48,6 +48,7 @@ import java.util.concurrent.ConcurrentMap;
 import javax.management.*;
 
 import static org.glassfish.admin.amx.core.AMXConstants.*;
+import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 
@@ -66,6 +67,7 @@ import org.glassfish.admin.amx.util.TypeCast;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 import static org.glassfish.admin.amx.intf.config.AnonymousElementList.*;
+
 import static org.glassfish.admin.amx.impl.config.ConfigBeanJMXSupport.*;
 
 import org.jvnet.hk2.config.ConfigBean;
@@ -683,16 +685,16 @@ public class AMXConfigImpl extends AMXImplBase
 
     public void sendConfigCreatedNotification(final ObjectName configObjectName)
     {
-        sendNotification(AMXConfigProxy.CONFIG_CREATED_NOTIFICATION_TYPE,
-                AMXConfigProxy.CONFIG_REMOVED_NOTIFICATION_TYPE,
-                AMXConfigProxy.CONFIG_OBJECT_NAME_KEY, configObjectName);
+        sendNotification(CONFIG_CREATED_NOTIFICATION_TYPE,
+                CONFIG_REMOVED_NOTIFICATION_TYPE,
+                CONFIG_OBJECT_NAME_KEY, configObjectName);
     }
 
     public void sendConfigRemovedNotification(final ObjectName configObjectName)
     {
-        sendNotification(AMXConfigProxy.CONFIG_REMOVED_NOTIFICATION_TYPE,
-                AMXConfigProxy.CONFIG_REMOVED_NOTIFICATION_TYPE,
-                AMXConfigProxy.CONFIG_OBJECT_NAME_KEY, configObjectName);
+        sendNotification(CONFIG_REMOVED_NOTIFICATION_TYPE,
+                CONFIG_REMOVED_NOTIFICATION_TYPE,
+                CONFIG_OBJECT_NAME_KEY, configObjectName);
     }
 
     private final ConfigBeanJMXSupport getConfigBeanJMXSupport()
