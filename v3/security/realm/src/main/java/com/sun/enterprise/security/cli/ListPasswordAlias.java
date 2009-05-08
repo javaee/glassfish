@@ -103,11 +103,20 @@ public class ListPasswordAlias implements AdminCommand {
 
             PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
             Enumeration e = pa.getAliases();
+
+            if (! e.hasMoreElements()) {
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                report.setMessage(localStrings.getLocalString(
+                    "list.password.alias.nothingtolist",
+                    "Nothing to list"));
+            }
+            
             while (e.hasMoreElements()) {
                 ActionReport.MessagePart part =
                     report.getTopMessagePart().addChild();
                 part.setMessage((String)e.nextElement());
             }
+            
         } catch (Exception ex) {
             ex.printStackTrace();
             report.setMessage(localStrings.getLocalString(
@@ -116,9 +125,5 @@ public class ListPasswordAlias implements AdminCommand {
             report.setFailureCause(ex);
             return;
         }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString(
-            "list.password.alias.success",
-            "List password aliases executed successfully"));
     }
 }
