@@ -167,7 +167,9 @@
         <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
         <ant dir="requestDispatcherMaxDepth" target="all"/>
         <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
+<!-- XXX temporarily commented out, see IT 8264
         <ant dir="javaxServletErrorRequestUriStaticResource" target="all"/>
+-->
         <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
@@ -380,6 +382,7 @@
         <ant dir="authPassthroughGetScheme" target="all"/>
         <ant dir="authPassthroughRequestIsSecure" target="all"/>
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
+<!-- XXX temporarily commented out, see IT 8263
         <ant dir="authPassthroughGetRemoteHost" target="all"/>
 <!-- XXX temporarily commented out, see IT 8248
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
