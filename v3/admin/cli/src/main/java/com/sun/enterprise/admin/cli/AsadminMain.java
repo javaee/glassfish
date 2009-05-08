@@ -103,6 +103,14 @@ public class AsadminMain {
         System.exit(exitCode);
     }
     public AsadminMain(String... args) {
+        this(null, args);
+    }
+
+    public AsadminMain(InputsAndOutputs io, String... args) {
+        
+        if(io != null)
+            InputsAndOutputs.setInstance(io);
+
         info = new CallingInfo(args, AsadminMain.class);
         debug();
     }
@@ -113,7 +121,7 @@ public class AsadminMain {
      * or if the return value is not == SUCCESS then that is an error.
      * Get the error message with getErrorMessage()
      */
-    public final synchronized int runCommand(){
+    public final int runCommand(){
         if(info.copyOfArgs.length <= 0) {
             exitCode = ERROR;
         }
@@ -132,13 +140,13 @@ public class AsadminMain {
     }
     
 
-    public synchronized int runLocalCommand(){
+    public int runLocalCommand(){
         errorThrowable = null;
         errorMessage = "";
 
         try {
             CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
-            cli.invokeCommand(info.copyOfArgs);
+            cli.invokeCommand(info.copyOfArgs, this);
         }
         // special case to help debug
         catch(NoClassDefFoundError e) {
@@ -163,17 +171,7 @@ public class AsadminMain {
         else
             return SUCCESS;
     }
-    
-    private void printError(String s) {
-        //TODO TODO --> use interactive flag!
-        CLILogger.getInstance().printError(s);
-    }
-
-    private void printStack(Throwable t) {
-        CLILogger.getInstance().printExceptionStackTrace(t);
-    }
-
-    public synchronized int runRemoteCommand() {
+    public int runRemoteCommand() {
         try {
             CLIRemoteCommand rc = new CLIRemoteCommand(info.copyOfArgs);
             rc.runCommand();
@@ -196,6 +194,25 @@ public class AsadminMain {
         }
     }
 
+    String[] getArgs() {
+        return info.copyOfArgs;
+    }
+    String getClassPath() {
+        return info.classPath;
+    }
+    String getClassName() {
+        return info.className;
+    }
+
+    private void printError(String s) {
+        //TODO TODO --> use interactive flag!
+        CLILogger.getInstance().printError(s);
+    }
+
+    private void printStack(Throwable t) {
+        CLILogger.getInstance().printExceptionStackTrace(t);
+    }
+
     private void debug() {
         if(CLIConstants.debugMode) {
             System.setProperty(CLIConstants.WALL_CLOCK_START_PROP, "" + System.currentTimeMillis());
@@ -203,17 +220,6 @@ public class AsadminMain {
                     System.getProperty("java.class.path") +
                     "\nCommands: " + Arrays.toString(info.copyOfArgs));
         }
-    }
-
-
-    /*pkg-priv*/ static String[] getArgs() {
-        return info.copyOfArgs;
-    }
-    /*pkg-priv*/ static String getClassPath() {
-        return info.classPath;
-    }
-    /*pkg-priv*/ static String getClassName() {
-        return info.className;
     }
 
     private Map<String, String> getRemoteCommands() {
@@ -238,7 +244,7 @@ public class AsadminMain {
     private final static int SUCCESS = 0;
     private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
 
-    private static  CallingInfo info;
+    private         CallingInfo info;
     private         Throwable   errorThrowable;
     private         String      errorMessage = "";
     private         int         exitCode = -1;
@@ -262,4 +268,3 @@ public class AsadminMain {
         }
     }
 }
-

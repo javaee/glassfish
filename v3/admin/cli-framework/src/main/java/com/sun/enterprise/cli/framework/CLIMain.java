@@ -96,15 +96,24 @@ public class CLIMain
     
 
     /**
-     *  This is the important bulk of reading the xml, validating, creating 
+     *  This is the important bulk of reading the xml, validating, creating
      *  command vi command factory and invoke the command.
      */
-    public void invokeCommand(String[] args) 
+    public void invokeCommand(String[] args)
+        throws CommandException, CommandValidationException, InvalidCommandException
+    {
+        invokeCommand(args, null);
+    }
+
+
+    /**
+     */
+    public void invokeCommand(String[] args, Object caller)
         throws CommandException, CommandValidationException, InvalidCommandException
     {
         ValidCommand validCommand = null;
 
-        try 
+        try
         {
             //read CLI descriptor
             final CLIDescriptorsReader cliDescriptorsReader = CLIDescriptorsReader.getInstance();
@@ -118,7 +127,7 @@ public class CLIMain
                     //set args[0] to the default command.
                 args = new String[] {cliDescriptorsReader.getDefaultCommand()};
             }
-            else 
+            else
             {
                 //check if command is -V, as stated in the CLIP that
                 //-V is supported and it is the same as version command
@@ -133,7 +142,7 @@ public class CLIMain
             }
             setCommandLocalizedProperty(cliDescriptorsReader.getProperties());
 
-                //check if command is help then throw the HelpException to 
+                //check if command is help then throw the HelpException to
                 //display the manpage or usage-text
             if (args[0].matches(HelpCommandAndOptions))
                 throw new HelpException(args);
@@ -149,12 +158,14 @@ public class CLIMain
             final Command command = CommandFactory.createCommand(
                                                    validCommand, clp.getOptionsMap(),
                                                    clp.getOperands());
-            
+
             //validate the Command with the validCommand object
             new CommandValidator().validateCommandAndOptions(validCommand,
                                                              command.getOptions(),
                                                              command.getOperands());
-	    
+
+
+            command.setCaller(caller);
 
             //invoke the command
             command.runCommand();
@@ -172,7 +183,7 @@ public class CLIMain
         }
 
     }
-    
+
 
     /**
      *  This method invokes the help command class.  

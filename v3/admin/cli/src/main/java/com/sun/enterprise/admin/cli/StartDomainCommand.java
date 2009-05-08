@@ -47,7 +47,6 @@ public class StartDomainCommand extends AbstractCommand {
             runCommandNotEmbedded();
     }
 
-    
     private void runCommandNotEmbedded() throws CommandException, CommandValidationException {
         try {
             validateOptions();
@@ -69,9 +68,17 @@ public class StartDomainCommand extends AbstractCommand {
             boolean isRestart = Boolean.getBoolean(RESTART_FLAG);
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
-            info.setRespawnInfo(AsadminMain.getClassName(),
-                                AsadminMain.getClassPath(),
-                                AsadminMain.getArgs());
+
+            Object obj = getCaller();
+
+            if(obj != null && obj instanceof AsadminMain) {
+                AsadminMain main = (AsadminMain) obj;
+
+                info.setRespawnInfo(main.getClassName(),
+                                main.getClassPath(),
+                                main.getArgs());
+            }
+            
             launcher.setup();
             // CLI calls this method only to ensure that domain.xml is parsed
             // once. This is a performance optimization.

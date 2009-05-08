@@ -67,6 +67,7 @@ abstract public class Command implements ICommand
     protected Vector operands;
     protected String usageStr = null;
     protected Hashtable properties;
+    private   Object   caller; // used to get info needed by start-domain from AsadminMain
     
     /** Creates new Command */
     public Command() 
@@ -244,6 +245,20 @@ abstract public class Command implements ICommand
         //assert
         assert(!optionNameExist(optionName));
         return (Integer.valueOf(getOption(optionName)).intValue());
+    }
+
+    /*
+     * return the reference to the calling class which was saved during
+     * construction.
+     * Start-domain currently is the only caller
+     */
+
+    protected Object getCaller() {
+        return caller;
+    }
+
+    void setCaller(Object caller) {
+        this.caller = caller;
     }
 
 
