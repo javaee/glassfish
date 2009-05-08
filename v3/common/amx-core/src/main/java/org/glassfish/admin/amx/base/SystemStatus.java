@@ -38,6 +38,8 @@ package org.glassfish.admin.amx.base;
 import java.util.Map;
 import java.util.List;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.base.SystemInfo;
 import org.glassfish.admin.amx.base.Utility;
@@ -51,6 +53,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     <b>WARNING: some of these routines may be relocated.</b>
     @see SystemInfo
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="system-status",leaf=true, singleton=true)
 public interface SystemStatus extends AMXProxy, Utility, Singleton
 {

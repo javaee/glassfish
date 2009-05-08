@@ -48,6 +48,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
     @since GlassFish V3
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="realms", leaf=true, singleton=true)
 public interface RealmsMgr extends AMXProxy, Utility, Singleton
 {

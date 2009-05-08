@@ -43,6 +43,8 @@ import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 Extending this interface implies that the class is part of the  API
@@ -53,6 +55,7 @@ A Config  must issue {@link javax.management.AttributeChangeNotification} when
 changes are made to the configuration.
 @see AMXConfigConstants
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface AMXConfigProxy extends AMXProxy, AttributeResolver
 {
     /**

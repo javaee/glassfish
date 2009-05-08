@@ -35,10 +35,14 @@
  */
 package org.glassfish.admin.amx.base;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 
 /**
     Interface for AMX debug support remotely.
  */
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public interface AMXDebugSupportMBean
 {
     public static final String OBJECT_NAME  = "amx-support:name=debug";

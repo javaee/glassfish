@@ -40,6 +40,8 @@ import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.Param;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 Interface implemented by MBeans which can resolve a variable to a value.
@@ -48,6 +50,7 @@ are returned as the values of certain Attributes.  This interface is intended fo
 only with config MBeans.
 <p>
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface AttributeResolver
 {
     /**

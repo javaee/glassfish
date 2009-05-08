@@ -35,8 +35,12 @@
  */
 package org.glassfish.admin.amx.config;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 /**
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class AMXConfigConstants
 {
     private AMXConfigConstants()

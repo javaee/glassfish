@@ -39,7 +39,6 @@ import org.jvnet.hk2.config.Dom;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.SetUtil;
-import org.glassfish.admin.amx.util.TypeCast;
 import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
@@ -57,10 +56,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.management.MBeanServer;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 	Utility routines pertinent to the MBean API.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class Util
 {
     private static void debug( final String s ) { System.out.println(s); }

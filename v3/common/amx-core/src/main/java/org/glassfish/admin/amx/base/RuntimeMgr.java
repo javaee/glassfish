@@ -40,6 +40,8 @@ import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.api.amx.AMXMBeanMetadata;
@@ -47,6 +49,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
     @since GlassFish V3
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="runtime", leaf=true, singleton=true)
 public interface RuntimeMgr extends AMXProxy, Utility, Singleton
 {

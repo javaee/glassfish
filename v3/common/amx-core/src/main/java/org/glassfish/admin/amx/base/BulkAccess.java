@@ -39,6 +39,8 @@ import javax.management.Attribute;
 import javax.management.ObjectName;
 
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 
@@ -59,6 +61,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	to do this is to use {@link Util#toObjectNames} followed by
 	conversion of the Set to an ObjectName[].
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="bulk", leaf=true, singleton=true)
 public interface BulkAccess extends AMXProxy, Singleton, Utility
 {

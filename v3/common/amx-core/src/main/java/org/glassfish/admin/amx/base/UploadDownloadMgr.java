@@ -41,12 +41,15 @@ import java.io.IOException;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
 	Manages uploading or downloading of files to/from the server. Generally
 	for internal use only.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="updown",leaf=true, singleton=true)
 public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 {

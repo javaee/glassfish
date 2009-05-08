@@ -69,6 +69,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.management.Descriptor;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.client.AppserverConnectionSource;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXConstants;
@@ -80,6 +82,7 @@ import org.glassfish.admin.amx.core.AMXConstants;
 	
 	@see org.glassfish.admin.amx.client.AppserverConnectionSource
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class ProxyFactory implements NotificationListener
 {
 	private final ConnectionSource	mConnectionSource;

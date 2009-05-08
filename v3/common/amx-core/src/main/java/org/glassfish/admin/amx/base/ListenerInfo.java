@@ -35,10 +35,14 @@
  */
 package org.glassfish.admin.amx.base;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 
 /**
 	Provide information about who's listening.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface ListenerInfo
 {
 	/**

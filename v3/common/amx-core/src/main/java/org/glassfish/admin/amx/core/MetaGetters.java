@@ -36,8 +36,8 @@
 package org.glassfish.admin.amx.core;
 
 import javax.management.MBeanInfo;
-import javax.management.ObjectName;
-import java.util.Set;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 
 /**
@@ -45,6 +45,7 @@ import java.util.Set;
     These operations do not make a trip to the server.
     See {@link AMXProxy#extra}.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface MetaGetters
 {
     public MBeanInfo mbeanInfo();

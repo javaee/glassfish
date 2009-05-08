@@ -36,6 +36,8 @@
 package org.glassfish.admin.amx.base;
 
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -44,6 +46,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
 	Provides information about the updates from the Update Center Server.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="update-status", leaf=true, singleton=true)
 public interface UpdateStatus extends AMXProxy, Singleton, Utility
 {

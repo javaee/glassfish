@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.Util;
@@ -19,6 +21,7 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
     Tracks the entire MBean parent/child hierarachy so that individual MBeans need not do so.
     Can supply parents and children of any MBean, used by all AMX implementations.
  */
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public final class MBeanTracker implements NotificationListener, MBeanRegistration, MBeanTrackerMBean
 {
     private static void debug(final Object o)

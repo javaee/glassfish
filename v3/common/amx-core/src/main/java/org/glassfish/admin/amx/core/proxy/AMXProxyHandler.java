@@ -63,6 +63,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Tools;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.PathnameParser;
@@ -71,6 +73,7 @@ import org.glassfish.admin.amx.util.TypeCast;
 /**
 Extends MBeanProxyHandler by also supporting the functionality required of an AMX.
  */
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public final class AMXProxyHandler extends MBeanProxyHandler
         implements AMXProxy, Extra
 {

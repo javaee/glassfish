@@ -35,10 +35,10 @@
  */
 package org.glassfish.admin.amx.base;
 
-import java.util.Map;
-import java.util.List;
 import java.beans.PropertyChangeEvent;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.ObjectUtil;
 
@@ -48,6 +48,7 @@ import org.glassfish.admin.amx.util.ObjectUtil;
 	Class representing a change to a configuration attribute.
     A PropertyChangeEvent is unsuitable, as its 'source' is transient.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class UnprocessedConfigChange
 {
     private final String  mName;

@@ -38,7 +38,6 @@ package org.glassfish.admin.amx.base;
 
 import javax.management.MBeanOperationInfo;
 import javax.management.ObjectName;
-import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -47,6 +46,8 @@ import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.Param;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 
 
@@ -55,6 +56,7 @@ import org.glassfish.admin.amx.annotation.Param;
     
     @since GlassFish V3
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="tools",leaf=true, singleton=true)
 public interface Tools extends AMXProxy, Utility, Singleton
 {

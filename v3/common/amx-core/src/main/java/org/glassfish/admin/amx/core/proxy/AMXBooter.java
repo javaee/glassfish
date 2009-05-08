@@ -39,9 +39,10 @@ import java.util.Set;
 import java.io.IOException;
 
 import javax.management.MBeanServerConnection;
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.base.DomainRoot;
@@ -53,6 +54,7 @@ import org.glassfish.admin.mbeanserver.AMXLoader;
 /**
 	AMX must be "booted" before use.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class AMXBooter
 {
     private AMXBooter() {}

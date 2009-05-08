@@ -39,6 +39,8 @@ package org.glassfish.admin.amx.base;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
@@ -46,6 +48,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     The Pathnames MBean--utilities for working with pathnames and MBeans.
     @since GlassFish V3
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="paths", leaf=true, singleton=true)
 public interface Pathnames extends AMXProxy, Utility, Singleton
 {

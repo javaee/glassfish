@@ -62,6 +62,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     </pre>
     Of course, these two MBeans would normally be found in different MBeanServers.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(singleton=true)
 public interface DomainRoot extends AMXProxy
 {

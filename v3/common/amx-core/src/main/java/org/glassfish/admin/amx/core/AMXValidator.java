@@ -51,6 +51,8 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.OpenType;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
@@ -70,6 +72,7 @@ Validation of key behavioral requirements of AMX MBeans.
 These tests do not validate any MBean-specific semantics, only general requirements for
 all AMX MBeans.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class AMXValidator {
     private static void debug(final Object o)
     {

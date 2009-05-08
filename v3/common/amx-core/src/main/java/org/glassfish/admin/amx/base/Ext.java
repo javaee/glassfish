@@ -45,6 +45,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     "Ex" = extensions: any additional MBeans, especially those that are derivative
     and/or have other dependencies than amx-core.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="ext", singleton=true)
 public interface Ext extends AMXProxy, Singleton, Utility
 {

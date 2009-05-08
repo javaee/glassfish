@@ -34,10 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.amx.core;
- 
+
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 /**
     Runtime exception used in proxying code and similar situations on the client side.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class AMXException extends RuntimeException {
     public AMXException( final String msg, final Throwable t ) {
         super(msg, t);

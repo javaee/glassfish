@@ -35,11 +35,10 @@
  */
 package org.glassfish.admin.amx.core;
 
-import javax.management.ObjectName;
 import javax.management.MBeanServerConnection;
-import java.util.Map;
-import java.util.Set;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
 
@@ -47,6 +46,7 @@ import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 	Extra information available about each {@link AMXProxy}.  Most
 	of these fields are for advanced use and/or direct use of JMX.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface Extra extends StdAttributesAccess, MetaGetters, AMXProxy
 {
 	/**

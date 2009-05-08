@@ -37,6 +37,8 @@ package org.glassfish.admin.amx.base;
 
 import java.util.Map;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -45,6 +47,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
     Manages logging.properties.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="logging-props", leaf=true, singleton=true)
 public interface LoggingPropertiesMgr extends AMXProxy, Utility, Singleton
 {

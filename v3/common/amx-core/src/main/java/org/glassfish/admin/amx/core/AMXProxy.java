@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.Map;
 
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 
 /**
@@ -53,6 +55,7 @@ import javax.management.ObjectName;
     {@link #parent} returns and AMXProxy, but {@link #getParent} returns an ObjectName.  The same
     convention is followed for children()/getChildren().
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface AMXProxy extends AMX_SPI {
     /** MBean MUST return an ObjectName.  May be null for DomainRoot only. */
     public AMXProxy parent();

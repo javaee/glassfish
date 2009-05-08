@@ -43,11 +43,14 @@ import javax.management.InvalidAttributeValueException;
 import javax.management.MBeanException;
 import javax.management.ReflectionException;
 import java.io.IOException;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 	Direct access to JMX attributes and methods,
     These are "straight JMX" with no intervening processing whatsoever.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface StdAttributesAccess
 {
     /** Direct access to the MBeanServer, calls conn.getAttribute(objectName, name) */

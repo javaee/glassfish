@@ -35,11 +35,15 @@
  */
 package org.glassfish.admin.amx.base;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 
 /**
 	Marker interface which indicates that this MBean is a utility object.
 	Utilities objects are usually singletons, but are not required to be so.
  */
+@Taxonomy(stability = Stability.UNCOMMITTED)
 public interface Utility
 {
 }
