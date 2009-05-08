@@ -39,7 +39,6 @@ package com.sun.enterprise.tools.upgrade.logging;
 import java.util.*;
 import java.util.logging.*;
 import com.sun.enterprise.tools.upgrade.common.*;
-import com.sun.enterprise.server.logging.UniformLogFormatter;
 
 /**
  *
@@ -47,13 +46,13 @@ import com.sun.enterprise.server.logging.UniformLogFormatter;
  *
  */
 
-public class LogFormatter  extends UniformLogFormatter  {
+public class LogFormatter  extends SimpleFormatter  {
 
 	private static List listenerList = new ArrayList();
 
     public String format(LogRecord rec) {
         notifyRegisteredListeners(rec.getMessage(), rec);
-        return super.format(rec);
+        return "";
     }
 
     private void notifyRegisteredListeners(String msg, LogRecord record) {

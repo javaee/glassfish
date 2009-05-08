@@ -59,19 +59,8 @@ public class UpgradeToolMain {
             System.exit(1);
         }
 
-        String upgradeLogPath =domainRoot+"/"+"upgrade.log";
-        try{
-            File f = new File(domainRoot);
-            if(!f.exists()){
-                System.out.println("Configuration Error: AS_DEFS_DOMAINS_PATH: " + 
-                        domainRoot + " does not exist.");
-                System.exit(1);
-            }
-            LogService.initialize(upgradeLogPath);
-        }catch(Exception e){
-            System.out.println("Could not create upgrade.log file: " + 
-                    e.getLocalizedMessage());
-        }
+        LogService.initialize();
+ 
     }
     
     static Logger _logger=LogService.getLogger(LogService.UPGRADE_LOGGER);

@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.tools.upgrade.logging;
 
-import java.io.*;
 import java.util.logging.*;
 import com.sun.enterprise.tools.upgrade.common.*;
 
@@ -49,17 +48,15 @@ public class LogService {
     public static final String UPGRADE_LOGGER = "com.sun.enterprise.tools.upgrade";
    
     private static LogFormatter formatter;
-    private static FileHandler loghandler;
+    private static StreamHandler loghandler;
     //Default log level
     private static final Level DEFAULT_LEVEL = Level.INFO;
     private static Level logLevel = null;
 
-    public static void initialize(String fileName) throws IOException {
+    public static void initialize(){
         LogManager.getLogManager().reset();
         formatter = new LogFormatter();
-        boolean append = true;
-        int limit = 1000000;
-        loghandler = new FileHandler(fileName, limit, 1, append);
+        loghandler = new StreamHandler(System.out, formatter);
         logLevel = getLogLevel();
         loghandler.setLevel(logLevel);
         loghandler.setFormatter(formatter);
@@ -84,6 +81,7 @@ public class LogService {
     public static Logger getLogger(String name) {
         Logger logger = Logger.getLogger(name);
         logger.setLevel(logLevel);
+
         Handler[] h = logger.getHandlers();
         for (int i = 0; i < h.length; i++) {
             logger.removeHandler(h[i]);
