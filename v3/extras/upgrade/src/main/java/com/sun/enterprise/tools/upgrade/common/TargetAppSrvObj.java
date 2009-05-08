@@ -116,7 +116,6 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 		if (s != null){
 			super.domainRoot = super.extractDomainRoot(s);
 		}
-		CommonInfoModel.getInstance().createUpgradeLogFile(installDir);
 	}
 	
     @Override

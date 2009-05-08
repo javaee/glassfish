@@ -59,8 +59,6 @@ public class CommonInfoModel{
     private StringManager stringManager = 
             StringManager.getManager(CommonInfoModel.class);
     private static Logger logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
-	// has default logger been created yet?
-	private boolean isUpgradeLogFile = false;
     
 	//- make this a singleton.
 	public static CommonInfoModel getInstance(){
@@ -81,20 +79,6 @@ public class CommonInfoModel{
 	public TargetAppSrvObj getTarget(){
 		return tAppSrvObj;
 	}
-	
-	
-	public void createUpgradeLogFile(String targetDomainRoot) {	
-        //If target domains root is already set, avoid overwriting.
-		if (targetDomainRoot != null && !isUpgradeLogFile)
-        try {
-            String logPath = targetDomainRoot + "/" +  UpgradeConstants.ASUPGRADE_LOG;
-            logger.info(stringManager.getString("upgrade.common.log_redirect") + logPath);
-            LogService.initialize(logPath);
-			isUpgradeLogFile = true;
-        } catch(Exception e) {
-            logger.warning(e.getLocalizedMessage());
-        }
-    }
 	
 	/**
      * @return a logger to use in the Module implementation classes

@@ -75,7 +75,6 @@ public class ARG_target extends ArgumentHandler {
     @Override
 	public void exec(){
 		if (super._isValidParameter){
-			commonInfo.createUpgradeLogFile(rawParameters);
 			commonInfo.getTarget().setInstallDir(rawParameters);
 		}
 	}
