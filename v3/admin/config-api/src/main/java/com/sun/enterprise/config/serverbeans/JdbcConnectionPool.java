@@ -138,7 +138,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="8")
-    @Min(value=1)
+    @Min(value=0)
     @Max(value=Integer.MAX_VALUE)
     String getSteadyPoolSize();
 
