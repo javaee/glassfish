@@ -199,7 +199,7 @@ public class StandardWrapper
      * The initialization parameters for this servlet, keyed by
      * parameter name.
      */
-    private HashMap<String, String> parameters = new HashMap<String, String>();
+    private Map<String, String> parameters = new HashMap<String, String>();
 
 
     /**
@@ -306,39 +306,8 @@ public class StandardWrapper
                                                          ServletRequest.class,
                                                          ServletResponse.class};
 
-
-    /**
-     * The ServletRegistration object through which this wrapper may be
-     * further configured
-     */
-    private ServletRegistration servletRegistration = null;
-
-
     // ------------------------------------------------------------- Properties
 
-
-    /**
-     * Sets the ServletRegistration through which this wrapper may be
-     * further configured.
-     *
-     * @param regis the ServletRegistration
-     */
-    public void setServletRegistration(ServletRegistration regis) {
-        servletRegistration = regis;
-    }
-
-
-    /**
-     * Gets the ServletRegistration through which this wrapper may be
-     * further configured.
-     *
-     * @return the ServletRegistration
-     */
-    public ServletRegistration getServletRegistration() {
-        return servletRegistration;
-    }
-
-  
     /**
      * Return the available date/time for this servlet, in milliseconds since
      * the epoch.  If this date/time is Long.MAX_VALUE, it is considered to mean
@@ -928,6 +897,13 @@ public class StandardWrapper
 
         if (notifyContainerListeners) {
             fireContainerEvent("addMapping", mapping);
+        }
+    }
+
+
+    public Iterable<String> getMappings() {
+        synchronized (mappings) {
+            return (Iterable<String>) mappings.clone();
         }
     }
 
@@ -1726,6 +1702,13 @@ public class StandardWrapper
      */
     public String getInitParameter(String name) {
         return findInitParameter(name);
+    }
+
+
+    public Map<String, String> getInitParameters() {
+        synchronized (parameters) {
+            return Collections.unmodifiableMap(parameters);
+        }
     }
 
 

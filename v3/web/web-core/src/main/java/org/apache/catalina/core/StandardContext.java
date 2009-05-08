@@ -57,6 +57,7 @@ package org.apache.catalina.core;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.jar.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -695,6 +696,12 @@ public class StandardContext
     private String sessionCookieName = Globals.SESSION_COOKIE_NAME;
 
     private boolean sessionCookieConfigInitialized = false;
+
+    private ConcurrentHashMap<String, ServletRegistration> servletRegisMap =
+        new ConcurrentHashMap<String, ServletRegistration>();
+
+    private ConcurrentHashMap<String, FilterRegistration> filterRegisMap =
+        new ConcurrentHashMap<String, FilterRegistration>();
 
 
     // ----------------------------------------------------- Context Properties
@@ -2254,7 +2261,7 @@ public class StandardContext
                 (StandardWrapper) wrapper, this);
         }
       
-        wrapper.setServletRegistration(regis);
+        servletRegisMap.put(wrapperName, regis);
     }
 
 
@@ -2401,7 +2408,7 @@ public class StandardContext
             regis = new FilterRegistrationImpl(filterDef, this);
         }
 
-        filterDef.setFilterRegistration(regis);
+        filterRegisMap.put(filterDef.getFilterName(), regis);
   
         synchronized (filterDefs) {
             filterDefs.put(filterDef.getFilterName(), filterDef);
@@ -2523,7 +2530,7 @@ public class StandardContext
             addFilterDef(filterDef, true);
 
             return (FilterRegistration.Dynamic)
-                filterDef.getFilterRegistration();
+                filterRegisMap.get(filterName);
         }
     }
 
@@ -2572,7 +2579,7 @@ public class StandardContext
             addFilterDef(filterDef, true);
 
             return (FilterRegistration.Dynamic)
-                filterDef.getFilterRegistration();
+                filterRegisMap.get(filterName);
         }
     }
 
@@ -2607,7 +2614,7 @@ public class StandardContext
             addFilterDef(filterDef, true);
 
             return (FilterRegistration.Dynamic)
-                filterDef.getFilterRegistration();
+                filterRegisMap.get(filterName);
         }
     }
 
@@ -2644,12 +2651,17 @@ public class StandardContext
      * Gets the FilterRegistration corresponding to the filter with the
      * given <tt>filterName</tt>.
      */
-    public FilterRegistration findFilterRegistration(String filterName) {
-        synchronized (filterDefs) {
-            FilterDef filterDef = filterDefs.get(filterName);
-            return (filterDef != null) ? filterDef.getFilterRegistration() :
-                                         null;
-        }
+    public FilterRegistration getFilterRegistration(String filterName) {
+        return filterRegisMap.get(filterName);
+    }
+
+
+    /**
+     * Gets a Map of the FilterRegistration objects corresponding to all
+     * currently registered filters.
+     */
+    public Map<String, FilterRegistration> getFilterRegistrations() {
+        return Collections.unmodifiableMap(filterRegisMap);
     }
 
 
@@ -3139,15 +3151,17 @@ public class StandardContext
      */
     public ServletRegistration.Dynamic addServlet(
             String servletName, String className) {
-        if (findChild(servletName) == null) {
-            Wrapper wrapper = createWrapper();
-            wrapper.setName(servletName);
-            wrapper.setServletClassName(className);
-            addChild(wrapper, true);
-            return (ServletRegistration.Dynamic)
-                wrapper.getServletRegistration();
-        } else {
-            return null;
+        synchronized (children) {
+            if (findChild(servletName) == null) {
+                Wrapper wrapper = createWrapper();
+                wrapper.setName(servletName);
+                wrapper.setServletClassName(className);
+                addChild(wrapper, true);
+                return (ServletRegistration.Dynamic)
+                    servletRegisMap.get(servletName);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -3169,15 +3183,17 @@ public class StandardContext
     public ServletRegistration.Dynamic addServlet(String servletName,
             Class <? extends Servlet> servletClass) {
         // Make sure servlet name is unique for this context
-        if (findChild(servletName) == null) {
-            Wrapper wrapper = createWrapper();
-            wrapper.setName(servletName);
-            wrapper.setServletClass(servletClass);
-            addChild(wrapper, true);
-            return (ServletRegistration.Dynamic)
-                wrapper.getServletRegistration();
-        } else {
-            return null;
+        synchronized (children) {
+            if (findChild(servletName) == null) {
+                Wrapper wrapper = createWrapper();
+                wrapper.setName(servletName);
+                wrapper.setServletClass(servletClass);
+                addChild(wrapper, true);
+                return (ServletRegistration.Dynamic)
+                    servletRegisMap.get(servletName);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -3278,7 +3294,7 @@ public class StandardContext
             addChild(wrapper, true);
 
             return (ServletRegistration.Dynamic)
-                wrapper.getServletRegistration();
+                servletRegisMap.get(servletName);
         }
     }
 
@@ -3331,9 +3347,17 @@ public class StandardContext
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
      */
-    public ServletRegistration findServletRegistration(String servletName) {
-        Wrapper wrapper = (Wrapper) findChild(servletName);
-        return (wrapper != null) ? wrapper.getServletRegistration() : null;
+    public ServletRegistration getServletRegistration(String servletName) {
+        return servletRegisMap.get(servletName);
+    }
+
+
+    /**
+     * Gets a Map of the ServletRegistration objects corresponding to all
+     * currently registered servlets.
+     */
+    public Map<String, ServletRegistration> getServletRegistrations() {
+        return Collections.unmodifiableMap(servletRegisMap);
     }
 
 

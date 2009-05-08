@@ -408,22 +408,4 @@ public interface Wrapper extends Container {
      */
     public boolean isAsyncSupported();
 
-
-    /**
-     * Sets the ServletRegistration through which the wrapped servlet
-     * may be further configured.
-     *
-     * @param regis the ServletRegistration
-     */
-    public void setServletRegistration(ServletRegistration regis);
-
-
-    /**
-     * Gets the ServletRegistration through which the wrapped servlet
-     * may be further configured.
-     *
-     * @return the ServletRegistration
-     */
-    public ServletRegistration getServletRegistration();
-
 }

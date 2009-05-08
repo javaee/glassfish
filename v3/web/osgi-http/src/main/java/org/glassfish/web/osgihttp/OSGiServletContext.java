@@ -263,7 +263,12 @@ public class OSGiServletContext implements ServletContext {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
 
-    public ServletRegistration findServletRegistration(String servletName)
+    public ServletRegistration getServletRegistration(String servletName)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public Map<String, ServletRegistration> getServletRegistrations()
     {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
@@ -274,7 +279,12 @@ public class OSGiServletContext implements ServletContext {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
 
-    public FilterRegistration findFilterRegistration(String filterName)
+    public FilterRegistration getFilterRegistration(String filterName)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public Map<String, FilterRegistration> getFilterRegistrations()
     {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }

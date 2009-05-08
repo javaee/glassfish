@@ -485,12 +485,26 @@ public final class ApplicationContextFacade
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
      */
-    public ServletRegistration findServletRegistration(String servletName) {
+    public ServletRegistration getServletRegistration(String servletName) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (ServletRegistration) doPrivileged(
-                "findServletRegistration", new Object[] {servletName});
+                "getServletRegistration", new Object[] {servletName});
         } else {
-            return context.findServletRegistration(servletName);
+            return context.getServletRegistration(servletName);
+        }
+    }
+
+
+    /**
+     * Gets a Map of the ServletRegistration objects corresponding to all
+     * currently registered servlets.
+     */
+    public Map<String, ServletRegistration> getServletRegistrations() {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (Map<String, ServletRegistration>) doPrivileged(
+                "getServletRegistrations", null);
+        } else {
+            return context.getServletRegistrations();
         }
     }
 
@@ -560,12 +574,26 @@ public final class ApplicationContextFacade
      * Gets the FilterRegistration corresponding to the filter with the
      * given <tt>filterName</tt>.
      */
-    public FilterRegistration findFilterRegistration(String filterName) {
+    public FilterRegistration getFilterRegistration(String filterName) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (FilterRegistration) doPrivileged(
-                "findFilterRegistration", new Object[] {filterName});
+                "getFilterRegistration", new Object[] {filterName});
         } else {
-            return context.findFilterRegistration(filterName);
+            return context.getFilterRegistration(filterName);
+        }
+    }
+
+
+    /**
+     * Gets a Map of the FilterRegistration objects corresponding to all
+     * currently registered filters.
+     */
+    public Map<String, FilterRegistration> getFilterRegistrations() {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (Map<String, FilterRegistration>) doPrivileged(
+                "getFilterRegistrations", null);
+        } else {
+            return context.getFilterRegistrations();
         }
     }
 

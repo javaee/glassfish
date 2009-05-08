@@ -59,6 +59,16 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
+    public String getName() {
+        return filterDef.getFilterName();
+    }
+
+
+    public String getClassName() {
+        return filterDef.getFilterClassName();
+    }
+
+
     public boolean setInitParameter(String name, String value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
@@ -71,8 +81,18 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
+    public String getInitParameter(String name) {
+        return filterDef.getInitParameter(name);
+    }
+
+
     public Set<String> setInitParameters(Map<String, String> initParameters) {
         return filterDef.setInitParameters(initParameters);
+    }
+
+
+    public Map<String, String> getInitParameters() {
+        return filterDef.getInitParameters();
     }
 
 
@@ -106,6 +126,11 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
+    public Iterable<String> getServletNameMappings() {
+        return null; // XXX
+    }
+
+
     public void addMappingForUrlPatterns(
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... urlPatterns) {
@@ -134,5 +159,9 @@ public class FilterRegistrationImpl implements FilterRegistration {
         }
     }
 
+
+    public Iterable<String> getUrlPatternMappings() {
+        return null; // XXX
+    }
 }
 

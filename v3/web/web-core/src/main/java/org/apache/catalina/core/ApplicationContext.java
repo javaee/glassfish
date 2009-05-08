@@ -1072,8 +1072,17 @@ public class ApplicationContext
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
      */
-    public ServletRegistration findServletRegistration(String servletName) {
-        return context.findServletRegistration(servletName);
+    public ServletRegistration getServletRegistration(String servletName) {
+        return context.getServletRegistration(servletName);
+    }
+
+
+    /**
+     * Gets a Map of the ServletRegistration objects corresponding to all
+     * currently registered servlets.
+     */
+    public Map<String, ServletRegistration> getServletRegistrations() {
+        return context.getServletRegistrations();
     }
 
 
@@ -1122,8 +1131,17 @@ public class ApplicationContext
      * Gets the FilterRegistration corresponding to the filter with the
      * given <tt>filterName</tt>.
      */
-    public FilterRegistration findFilterRegistration(String filterName) {
-        return context.findFilterRegistration(filterName);
+    public FilterRegistration getFilterRegistration(String filterName) {
+        return context.getFilterRegistration(filterName);
+    }
+
+
+    /**
+     * Gets a Map of the FilterRegistration objects corresponding to all
+     * currently registered filters.
+     */
+    public Map<String, FilterRegistration> getFilterRegistrations() {
+        return context.getFilterRegistrations();
     }
 
 
