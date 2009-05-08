@@ -465,7 +465,7 @@ public class ApplicationContext
                 // WEB-INF/lib/[*.jar]/META-INF/resources
                 URL u = context.getLoader().getClassLoader().getResource(
                     Globals.META_INF_RESOURCES + path);
-                return (u != null ? u.getPath() : null);
+                return (u != null ? u.getPath() : file.getAbsolutePath());
             } catch (Exception e) {
                 return null;
             }
