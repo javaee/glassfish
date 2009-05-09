@@ -1,4 +1,0 @@
-This test case will check whether the BootStrapContext, WorkManager, XATerminator
-objects are Serializable. It is possible that any of ResourceAdapter implementation class
-can have reference to these objects and serialization of such an object is possible only when
-BootStrapContext, WorkManager, XATerminator implementations of app.server is serializable.

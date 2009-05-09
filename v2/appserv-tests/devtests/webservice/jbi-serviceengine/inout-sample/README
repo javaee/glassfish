@@ -1,9 +1,0 @@
-This is a two way message exchage sample. 
-
-This sample exercises JavaEE SE as both Consumer & Provider.
-
-Execution path:
- 				
-	Client <-----> Servlet <-----> Java SE Consumer <---> NMR <----> Java SE Provider <---> EndPoint
-
-

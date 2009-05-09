@@ -1,2 +1,0 @@
-<%@ include file="test.jsp" %>
-

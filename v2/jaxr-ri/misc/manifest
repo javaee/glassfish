@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Specification-Title: Java API for XML Registries
-Specification-Version: 1.0
-Implementation-Title:  JAXR Implementation
-Implementation-Version: 1.0.6 
-Implementation-Vendor: Sun Microsystems Inc
-Implementation-Vendor-Id: com.sun
-Extension-Name: com.sun.xml.registry
-Class-Path: jaxr-api.jar saaj-impl.jar jaxb-impl.jar 

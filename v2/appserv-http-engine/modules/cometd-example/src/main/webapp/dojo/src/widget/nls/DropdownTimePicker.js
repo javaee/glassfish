@@ -1,3 +1,0 @@
-({
-		selectTime: "Select time"
-})

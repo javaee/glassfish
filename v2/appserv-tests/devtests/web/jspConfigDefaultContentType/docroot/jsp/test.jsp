@@ -1,2 +1,0 @@
-${pageContext.response.contentType}
-
