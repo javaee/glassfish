@@ -293,7 +293,7 @@
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
-<!-- XXX temporarily commented out, see IT 8207
+<!-- XXX temporarily commented out, see IT 8269
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
 -->
         <ant dir="webappDeployDashDashLibraries" target="all"/>
