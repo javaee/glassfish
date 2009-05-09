@@ -154,4 +154,16 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
     public boolean isUserVisible() {
         return true;
     }
+
+    /**
+     * @return the set of the sniffers that should not co-exist for the
+     * same module. For example, ejb and appclient sniffers should not
+     * be returned in the sniffer list for a certain module.
+     * This method will be used to validate and filter the retrieved sniffer
+     * lists for a certain module
+     *
+     */
+    public String[] getIncompatibleSnifferTypes() {
+        return new String[] {"connector", "appclient"};
+    }
 }

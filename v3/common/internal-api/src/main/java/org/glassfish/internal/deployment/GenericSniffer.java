@@ -154,6 +154,7 @@ public abstract class GenericSniffer implements Sniffer {
         return false;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other instanceof Sniffer) {
             Sniffer otherSniffer = (Sniffer)other;
@@ -228,5 +229,17 @@ public abstract class GenericSniffer implements Sniffer {
      */
     protected List<String> getDeploymentConfigurationPaths() {
         return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * @return the set of the sniffers that should not co-exist for the
+     * same module. For example, ejb and appclient sniffers should not
+     * be returned in the sniffer list for a certain module.
+     * This method will be used to validate and filter the retrieved sniffer
+     * lists for a certain module
+     *
+     */
+    public String[] getIncompatibleSnifferTypes() {
+        return new String[0];
     }
 }

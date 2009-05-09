@@ -135,4 +135,14 @@ public interface Sniffer {
      * archive for the deployment configuration(s)
      */
     public Map<String,String> getDeploymentConfigurations(final ReadableArchive source) throws IOException;
+
+    /** 
+     * @return the set of the sniffers that should not co-exist for the 
+     * same module. For example, ejb and appclient sniffers should not 
+     * be returned in the sniffer list for a certain module.
+     * This method will be used to validate and filter the retrieved sniffer
+     * lists for a certain module
+     * 
+     */
+    public String[] getIncompatibleSnifferTypes();
 }

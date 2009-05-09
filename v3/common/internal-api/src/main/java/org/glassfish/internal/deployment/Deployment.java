@@ -163,6 +163,10 @@ public interface Deployment {
     public List<EngineInfo> setupContainerInfos(
             DeploymentContext context) throws Exception;
 
+    public List<EngineInfo> setupContainerInfos(final ArchiveHandler handler,
+            Collection<Sniffer> sniffers, DeploymentContext context)
+             throws Exception;
+
     public boolean isRegistered(String appName);
 
     public ApplicationInfo get(String appName);

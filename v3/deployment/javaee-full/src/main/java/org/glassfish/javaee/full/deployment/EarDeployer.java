@@ -42,11 +42,14 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.container.Sniffer;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.*;
+import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -107,6 +110,9 @@ public class EarDeployer implements Deployer {
     ApplicationRegistry appRegistry;
 
     @Inject
+    protected SnifferManager snifferManager;
+
+    @Inject
     ArchiveFactory archiveFactory;
 
     @Inject
@@ -115,7 +121,7 @@ public class EarDeployer implements Deployer {
     @Inject
     private DownloadableArtifacts artifacts;
 
-    final static Logger logger = LogDomains.getLogger(EarDeployer.class, LogDomains.DPL_LOGGER);
+    final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     
     public MetaData getMetaData() {
         return new MetaData(false, null, new Class[] { Application.class});
@@ -140,7 +146,7 @@ public class EarDeployer implements Deployer {
         try {
             doOnAllBundles(application, new BundleBlock<ModuleInfo>() {
                 public ModuleInfo doBundle(ModuleDescriptor bundle) throws Exception {
-                    ModuleInfo info = prepareBundle(bundle, subContext(application, context, bundle.getArchiveUri()));
+                    ModuleInfo info = prepareBundle(bundle, application, subContext(application, context, bundle.getArchiveUri()));
                     appInfo.addModule(info);
                     return info;
                 }
@@ -304,7 +310,7 @@ public class EarDeployer implements Deployer {
         
     }
 
-    private ModuleInfo prepareBundle(final ModuleDescriptor md, final ExtendedDeploymentContext bundleContext)
+    private ModuleInfo prepareBundle(final ModuleDescriptor md, Application application, final ExtendedDeploymentContext bundleContext)
         throws Exception {
 
         List<EngineInfo> orderedContainers = null;
@@ -320,8 +326,11 @@ public class EarDeployer implements Deployer {
         };
 
         try {
+            // let's get the list of sniffers
+            Collection<Sniffer> sniffers = 
+                getSniffersForModule(bundleContext, md, application);
             // let's get the list of containers interested in this module
-            orderedContainers = deployment.setupContainerInfos(bundleContext);
+            orderedContainers = deployment.setupContainerInfos(null, sniffers, bundleContext);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -473,5 +482,59 @@ public class EarDeployer implements Deployer {
             modulePropsMap.put(moduleUri, moduleProps);
         }
         return moduleProps;
+    }
+
+
+    private String getTypeFromModuleType(XModuleType moduleType) {
+        if (moduleType.equals(XModuleType.WAR)) {
+            return "web";
+        } else if (moduleType.equals(XModuleType.EJB)) {
+            return "ejb";
+        } else if (moduleType.equals(XModuleType.CAR)) {
+            return "appclient";
+        } else if (moduleType.equals(XModuleType.RAR)) {
+            return "connector";
+        }
+        return null;
+    }
+
+    // get the list of sniffers for sub module and filter out the 
+    // incompatible ones
+    private Collection<Sniffer> getSniffersForModule(
+        DeploymentContext bundleContext, 
+        ModuleDescriptor md, Application application) {
+        ReadableArchive source = bundleContext.getSource();
+        Collection<Sniffer> sniffers = snifferManager.getSniffers(source, bundleContext.getClassLoader());
+        String type = getTypeFromModuleType(md.getModuleType());
+        Sniffer mainSniffer = null;
+        for (Sniffer sniffer : sniffers) {
+            if (sniffer.getModuleType().equals(type)) { 
+                mainSniffer = sniffer; 
+            }
+        }
+
+        if (mainSniffer == null) {
+            return new ArrayList();
+        }
+
+        String [] incompatibleTypes = mainSniffer.getIncompatibleSnifferTypes();
+        
+        List<Sniffer> sniffersToRemove = new ArrayList<Sniffer>();
+        for (Sniffer sniffer : sniffers) {
+            for (String incompatType : incompatibleTypes) {
+                if (sniffer.getModuleType().equals(incompatType)) {
+                    logger.warning(type + " module [" + 
+                        md.getArchiveUri() + 
+                        "] contains characteristics of other module type: " +
+                        incompatType);
+
+                    sniffersToRemove.add(sniffer);
+                }
+            }
+        }
+
+        sniffers.removeAll(sniffersToRemove);
+
+        return sniffers;
     }
 }

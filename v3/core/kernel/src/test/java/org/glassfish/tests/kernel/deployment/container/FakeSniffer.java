@@ -57,4 +57,9 @@ public class FakeSniffer implements Sniffer {
     public Map<String, String> getDeploymentConfigurations(ReadableArchive source) throws IOException {
         return null;
     }
+
+    public String[] getIncompatibleSnifferTypes() {
+        return new String[0];
+    }
+
 }
