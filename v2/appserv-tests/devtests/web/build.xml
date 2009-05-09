@@ -414,7 +414,9 @@
         <ant dir="doubleContentLength" target="all"/>
         <ant dir="dosBrokenPost" target="all"/>
         <ant dir="defaultKeepAlive" target="all"/>
+<!-- XXX temporarily commented out, see IT 8282 
         <ant dir="multiServletRequests" target="all"/>
+-->
 <!-- XXX temporarily commented out, see IT 7919
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
 -->
