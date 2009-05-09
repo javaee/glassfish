@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="393"/>
+    <property name="TOTAL_EXPECTED" value="394"/>
 
     &commonSetup;
     &commonBuild;
@@ -185,6 +185,7 @@
         <ant dir="servlet-3.0/servletContextSetInitParameter" target="all"/>
         <ant dir="servlet-3.0/servletContextGetResourceInLocalJar" target="all"/>
         <ant dir="servlet-3.0/servletContextGetResourcePathsFromLocalJar" target="all"/>
+        <ant dir="servlet-3.0/servletContextGetRealPathFromLocalJar" target="all"/>
         <ant dir="servletResourceInjectionServletInstance" target="all"/>
         <ant dir="servletResourceInjectionServletInstanceLoadOnStartup" target="all"/>
         <ant dir="servletResourceInjectionContextListener" target="all"/>
