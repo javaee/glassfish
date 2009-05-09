@@ -2514,6 +2514,42 @@ public class StandardContext
 
 
     /**
+     * Gets an Iterable over the current servlet name mappings of the Filter
+     * with the given name.
+     */
+    public Iterable<String> getServletNameFilterMappings(String filterName) {
+        HashSet<String> mappings = new HashSet();
+        synchronized (filterMaps) {
+            for (FilterMap fm : filterMaps) {
+                if (filterName.equals(fm.getFilterName()) &&
+                        fm.getServletName() != null) {
+                    mappings.add(fm.getServletName());
+                }
+            }
+        }
+        return mappings;
+    }
+
+
+    /**
+     * Gets an Iterable over the current URL pattern mappings of the Filter
+     * with the given name.
+     */
+    public Iterable<String> getUrlPatternFilterMappings(String filterName) {
+        HashSet<String> mappings = new HashSet();
+        synchronized (filterMaps) {
+            for (FilterMap fm : filterMaps) {
+                if (filterName.equals(fm.getFilterName()) &&
+                        fm.getURLPattern() != null) {
+                    mappings.add(fm.getURLPattern());
+                }
+            }
+        }
+        return mappings;
+    }
+
+
+    /**
      * Adds the filter with the given name and class name to this servlet
      * context.
      */

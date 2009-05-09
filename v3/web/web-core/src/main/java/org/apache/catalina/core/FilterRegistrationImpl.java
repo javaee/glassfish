@@ -127,7 +127,7 @@ public class FilterRegistrationImpl implements FilterRegistration {
 
 
     public Iterable<String> getServletNameMappings() {
-        return null; // XXX
+        return ctx.getServletNameFilterMappings(getName());
     }
 
 
@@ -161,7 +161,7 @@ public class FilterRegistrationImpl implements FilterRegistration {
 
 
     public Iterable<String> getUrlPatternMappings() {
-        return null; // XXX
+        return ctx.getUrlPatternFilterMappings(getName());
     }
 }
 
