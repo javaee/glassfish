@@ -49,6 +49,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * list-components command
@@ -133,19 +135,24 @@ public class ListComponentsCommand  implements AdminCommand {
 
     private String getSniffers(final List<Engine> engineList, 
         final boolean format) {
+        Set<String> snifferSet = new LinkedHashSet<String>();
+        for (Engine engine : engineList) {
+            final String engType = engine.getSniffer();
+            if (displaySnifferEngine(engType)) {
+                snifferSet.add(engine.getSniffer());
+            }
+        }
+
         StringBuffer se = new StringBuffer();
 
-        if (!engineList.isEmpty()) {
+        if (!snifferSet.isEmpty()) {
             if (format) {
                 se.append("<");
             }
-            for (Engine engine : engineList) {
-                final String engType = engine.getSniffer();
-                if (displaySnifferEngine(engType)) {
-                    se.append(engine.getSniffer() + ", ");
-                }
+            for (String sniffer : snifferSet) {
+                se.append(sniffer + ", ");
             }
-                //eliminate the last "," and end the list with ">"
+            //eliminate the last "," and end the list with ">"
             if (se.length()>2) {
                 se.replace(se.length()-2, se.length(), (format)?">":"");
             } else if (format) {
