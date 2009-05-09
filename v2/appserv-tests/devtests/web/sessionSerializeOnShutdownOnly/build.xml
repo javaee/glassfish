@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="runfirst,restart,checkForSession,redeploy,checkForNoSession,undeploy"/>
+    <target name="all" depends="runfirst,restart-server-instance-common,checkForSession,redeploy,checkForNoSession,undeploy"/>
 
     <target name="clean" depends="init-common">
         <delete dir="build" failonerror="false"/>
@@ -52,19 +52,6 @@
             <arg line="${as.props}"/>
             <arg line="--name=${appname}-web"/>
             <arg line="${assemble.dir}/${appname}-web.war"/>
-        </exec>
-    </target>
-
-    <target name="restart" depends="init-common">
-        <echo message="Redeploying ${assemble.dir}/${appname}-web.war from ${basedir}."
-              level="verbose"/>
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="stop-domain"/>
-            <arg line="${as.props}"/>
-        </exec>
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="start-domain"/>
-            <arg line="${as.props}"/>
         </exec>
     </target>
 
