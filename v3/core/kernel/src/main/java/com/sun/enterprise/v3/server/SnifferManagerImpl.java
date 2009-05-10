@@ -45,6 +45,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.internal.deployment.SnifferManager;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.*;
 
@@ -62,6 +63,8 @@ public class SnifferManagerImpl implements SnifferManager {
     volatile List<Sniffer> sniffers;
 
     volatile List<CompositeSniffer> compositeSniffers;
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SnifferManagerImpl.class);
 
 
     @Inject
@@ -208,5 +211,23 @@ public class SnifferManagerImpl implements SnifferManager {
             }
         }
         return appSniffers;
+    }
+
+    public void validateSniffers(Collection<Sniffer> snifferCol, DeploymentContext context) {
+        for (Sniffer sniffer : snifferCol) {
+            String[] incompatTypes = sniffer.getIncompatibleSnifferTypes();    
+            for (String type : incompatTypes) { 
+                for (Sniffer sniffer2 : snifferCol) {
+                    if (sniffer2.getModuleType().equals(type)) {
+                        throw new IllegalArgumentException(
+                            localStrings.getLocalString(
+                            "invalidarchivepackaging",
+                            "Invalid archive packaging {2}",
+                            new Object[] {sniffer.getModuleType(), type,
+                            context.getSourceDir().getPath()}));
+                    }
+                }
+            }
+        }
     }
 }

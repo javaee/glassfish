@@ -368,6 +368,8 @@ public class ApplicationLifecycle implements Deployment {
             return null;
         }
 
+        snifferManager.validateSniffers(sniffers, context);
+
         Map<Deployer, EngineInfo> containerInfosByDeployers = new LinkedHashMap<Deployer, EngineInfo>();
 
         for (Sniffer sniffer : sniffers) {
