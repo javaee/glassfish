@@ -39,7 +39,10 @@ import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
+import java.io.*;
+import java.text.*;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.Hashtable;
 
@@ -68,9 +71,7 @@ public class AsadminMain {
         classPath = System.getProperty("java.class.path");
         className = main.getClass().getName();
 
-
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
-
         String command = args[0];
         try {
             exitCode = main.local(args);
@@ -115,8 +116,10 @@ public class AsadminMain {
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
         }
+        writeCommandToDebugLog(args, exitCode);
         System.exit(exitCode);
     }
+
     public int local(String[] args) throws InvalidCommandException{
         try {
             CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
@@ -188,7 +191,72 @@ public class AsadminMain {
             return null;
         }
     }
-    
+
+    private static void writeCommandToDebugLog(String[] args, int exit) {
+        File log = getDebugLogfile();
+
+        if(log == null)
+            return;
+
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(log, true));
+            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            Date date = new Date();
+            out.write(dateFormat.format(date));
+            out.write(" EXIT: " + exit);
+
+            out.write(" asadmin ");
+
+            if(args != null) {
+               for (int i = 0; args != null && i < args.length; ++i) {
+                    out.write(args[i] + " ");
+               }
+            }
+        } catch (IOException e) {
+            //It is just a debug file.
+        }
+        finally {
+            if(out != null) {
+                try {
+                    out.write("\n");
+                    out.close();
+                }
+                catch(Exception e) {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    private static File getDebugLogfile() {
+        String fname =  getEnvOrSysProp(CLIConstants.CLI_RECORD_ALL_COMMANDS_PROP);
+
+        if(fname == null)
+            return null;
+
+        File f = new File(fname);
+
+        if(!f.exists())
+            try { f.createNewFile(); } catch(Exception e) { /* ignore */ }
+
+        if(f.isFile() && f.canWrite())
+            return f;
+        else
+            return null;
+    }
+
+    private static String getEnvOrSysProp(String index) {
+        String s1 = System.getProperty(index);
+        String s2 = System.getenv(index);
+
+        // System Prop trumps environmental variable
+        if(s1 != null)
+            return s1;
+        else
+            return s2;
+    }
+
 
     private final static int ERROR = 1;
     private final static int CONNECTION_ERROR = 2;
