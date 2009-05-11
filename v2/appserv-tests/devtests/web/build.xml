@@ -412,7 +412,7 @@
         <ant dir="doubleContentLength" target="all"/>
         <ant dir="dosBrokenPost" target="all"/>
         <ant dir="defaultKeepAlive" target="all"/>
-<!-- XXX temporarily commented out, see IT 8282 
+<!-- XXX temporarily commented out, see IT 8282
         <ant dir="multiServletRequests" target="all"/>
 -->
 <!-- XXX temporarily commented out, see IT 7919
@@ -437,7 +437,9 @@
 <!-- XXX temporarily commented out, see IT 6991
         <ant dir="httpListenerAdminReconfig" target="all"/>
 -->
+<!-- XXX temporarily commented out, see IT 8287
         <ant dir="headerBufferSize" target="all"/>
+-->
 <!-- XXX temporarily commented out, see IT 7559
         <ant dir="defaultContentType" target="all"/>
 -->
@@ -445,7 +447,9 @@
         <!-- Fail on Hudson, removing it for now
         <ant dir="dosSlowClient" target="all"/>
         -->
+<!-- XXX temporarily commented out, see IT 8287
         <ant dir="sslMultiSelector" target="all"/>
+-->
         <ant dir="httpRequestIgnoreInvalidAcceptLanguageHeader" target="all"/>
         <ant dir="sslServerName" target="all"/>
         <!-- Exclude for prelude, since port unification not supported
