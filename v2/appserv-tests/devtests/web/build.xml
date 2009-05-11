@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="394"/>
+    <property name="TOTAL_EXPECTED" value="395"/>
 
     &commonSetup;
     &commonBuild;
