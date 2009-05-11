@@ -175,7 +175,8 @@ public class ContextConfig
      * The <code>Digester</code> we will use to process web application
      * context files.
      */
-    protected static Digester contextDigester = null;
+    protected static final Digester contextDigester =
+        createContextDigester();
     // END GlassFish 2439
 
 
@@ -185,7 +186,8 @@ public class ContextConfig
      */
     // BEGIN OF SJSAS 8.1 6172288  
     // private static Digester webDigester = null;
-    protected static Digester webDigester = null;
+    protected static final Digester webDigester =
+        createWebDigester();
     // END OF SJSAS 8.1 6172288  
     
     
@@ -605,43 +607,45 @@ public class ContextConfig
     }
 
     /**
-     * Create (if necessary) and return a Digester configured to process the
+     * Create and return a Digester configured to process the
      * web application deployment descriptor (web.xml).
      */
     // BEGIN OF SJSAS 8.1 6172288  
     // private static Digester createWebDigester() {
     public static Digester createWebDigester() {
     // END OF SJSAS 8.1 6172288  
-        Digester webDigester =
-            createWebXmlDigester(xmlNamespaceAware, xmlValidation);
-        return webDigester;
+        return createWebXmlDigester(xmlNamespaceAware, xmlValidation);
     }
 
 
     /*
-     * Create (if necessary) and return a Digester configured to process the
+     * Create and return a Digester configured to process the
      * web application deployment descriptor (web.xml).
      */
     public static Digester createWebXmlDigester(boolean namespaceAware,
                                                 boolean validation) {
-
-        DigesterFactory df = org.glassfish.internal.api.Globals.get(DigesterFactory.class);
-        return df.newDigester(xmlValidation,xmlNamespaceAware,webRuleSet);
+        DigesterFactory df = org.glassfish.internal.api.Globals.get(
+            DigesterFactory.class);
+        Digester digester = df.newDigester(xmlValidation,
+            xmlNamespaceAware, webRuleSet);
+        digester.getParser();
+        return digester;
     }
 
 
     // START GlassFish 2439 
     /**
-     * Create (if necessary) and return a Digester configured to process the
+     * Create and return a Digester configured to process the
      * context configuration descriptor for an application.
      */
-    protected Digester createContextDigester() {
+    protected static Digester createContextDigester() {
         Digester digester = new Digester();
         digester.setValidating(false);
         RuleSet contextRuleSet = new ContextRuleSet("", false);
         digester.addRuleSet(contextRuleSet);
         RuleSet namingRuleSet = new NamingRuleSet("Context/");
         digester.addRuleSet(namingRuleSet);
+        digester.getParser();
         return digester;
     }
     // END GlassFish 2439
@@ -823,8 +827,11 @@ public class ContextConfig
                         + " " + resourceName + " " + file ,
                     e);
         }
-        if (source == null)
+
+        if (source == null) {
             return;
+        }
+
         synchronized (contextDigester) {
             try {
                 source.setByteStream(stream);
@@ -1018,16 +1025,6 @@ public class ContextConfig
      */
     protected void init() {
         // Called from StandardContext.init()
-
-        if (webDigester == null){
-            webDigester = createWebDigester();
-            webDigester.getParser();
-        }
-        
-        if (contextDigester == null){
-            contextDigester = createContextDigester();
-            contextDigester.getParser();
-        }
 
         if (log.isLoggable(Level.FINE))
             log.fine(sm.getString("contextConfig.init"));
