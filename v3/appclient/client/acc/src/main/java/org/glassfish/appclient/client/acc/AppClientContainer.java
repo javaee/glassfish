@@ -171,7 +171,6 @@ import org.xml.sax.SAXParseException;
  * AppClientContainerBuilder builder = AppClientContainer.newBuilder(...);<br>
  * builder.clientCredentials(myUser, myPass).logger(myLogger);<br>
  * </code>
- * �
  *
  * @author tjquinn
  */
