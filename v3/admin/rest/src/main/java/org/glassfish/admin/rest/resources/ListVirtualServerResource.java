@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon May 04 14:01:02 PDT 2009
+* date=Mon May 11 13:27:46 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -29,4 +29,39 @@ public class ListVirtualServerResource extends TemplateListOfResource<VirtualSer
 		return resource;
 	}
 
+@Path("commands/create-virtual-server ")
+@GET
+@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
+public List<org.jvnet.hk2.config.Dom> execCreateVirtualServer(
+	 @QueryParam("hosts")  @DefaultValue("")  String Hosts 
+ ,
+	 @QueryParam("httplisteners")  @DefaultValue("")  String Httplisteners 
+ ,
+	 @QueryParam("networklisteners")  @DefaultValue("")  String Networklisteners 
+ ,
+	 @QueryParam("defaultwebmodule")  @DefaultValue("")  String Defaultwebmodule 
+ ,
+	 @QueryParam("state")  @DefaultValue("")  String State 
+ ,
+	 @QueryParam("logfile")  @DefaultValue("")  String Logfile 
+ ,
+	 @QueryParam("property")  @DefaultValue("")  String Property 
+ ,
+	 @QueryParam("virtual_server_id")  @DefaultValue("")  String Virtual_server_id 
+ 	) {
+	java.util.Properties p = new java.util.Properties();
+	p.put("hosts", Hosts);
+	p.put("httplisteners", Httplisteners);
+	p.put("networklisteners", Networklisteners);
+	p.put("defaultwebmodule", Defaultwebmodule);
+	p.put("state", State);
+	p.put("logfile", Logfile);
+	p.put("property", Property);
+	p.put("virtual_server_id", Virtual_server_id);
+	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
+	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
+	cr.doCommand("create-virtual-server", p, ar);
+	System.out.println("exec command =" + ar.getActionExitCode());
+	return get(1);
+}
 }

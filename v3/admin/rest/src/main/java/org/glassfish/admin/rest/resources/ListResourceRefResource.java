@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon May 04 14:01:02 PDT 2009
+* date=Mon May 11 13:27:47 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -29,4 +29,24 @@ public class ListResourceRefResource extends TemplateListOfResource<ResourceRef>
 		return resource;
 	}
 
+@Path("commands/create-resource-ref ")
+@GET
+@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
+public List<org.jvnet.hk2.config.Dom> execCreateResourceRef(
+	 @QueryParam("enabled")  @DefaultValue("true")  String Enabled 
+ ,
+	 @QueryParam("target")  @DefaultValue("")  String Target 
+ ,
+	 @QueryParam("reference_name")  @DefaultValue("")  String Reference_name 
+ 	) {
+	java.util.Properties p = new java.util.Properties();
+	p.put("enabled", Enabled);
+	p.put("target", Target);
+	p.put("reference_name", Reference_name);
+	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
+	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
+	cr.doCommand("create-resource-ref", p, ar);
+	System.out.println("exec command =" + ar.getActionExitCode());
+	return get(1);
+}
 }
