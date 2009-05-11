@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
+    <target name="all" depends="setup,build,deploy,run,undeploy,stopDomain,restore"/>
 
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
@@ -88,7 +88,7 @@
 
     <target name="restore" depends="init-common">
         <antcall target="removeJarFromApplibs"/>
-        <antcall target="restart-server-instance-common"/>
+        <antcall target="startDomain"/>
     </target>
 
     <target name="removeJarFromApplibs" depends="init-common">
