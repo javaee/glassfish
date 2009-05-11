@@ -179,9 +179,13 @@ public class WebServiceHandler extends AbstractHandler {
                 // this has to be a servlet since there is no @Servlet annotation yet
                 if(annCtx instanceof WebComponentContext) {
                     bundleDesc = ((WebComponentContext)annCtx).getDescriptor().getWebBundleDescriptor();
-                } else {
-                    bundleDesc = ((WebBundleContext)annCtx).getDescriptor();
+                } else if ( !(annCtx instanceof WebBundleContext)) {
+                    return getInvalidAnnotatedElementHandlerResult(
+                            annInfo.getProcessingContext().getHandler(), annInfo);
                 }
+
+                bundleDesc = ((WebBundleContext)annCtx).getDescriptor();
+
                 bundleDesc.setSpecVersion("2.5");
             }
         }catch (Exception e) {

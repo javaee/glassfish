@@ -138,14 +138,16 @@ public class WebServiceProviderHandler extends AbstractHandler implements Annota
             bundleDesc = ctx.getDescriptor().getEjbBundleDescriptor();
             bundleDesc.setSpecVersion("3.0");
         } else {
-            if(annCtx instanceof WebComponentContext) {
-                bundleDesc = ((WebComponentContext)annCtx).getDescriptor().getWebBundleDescriptor();
-            } else if (annCtx instanceof WebBundleContext) {
+             if(annCtx instanceof WebComponentContext) {
+                    bundleDesc = ((WebComponentContext)annCtx).getDescriptor().getWebBundleDescriptor();
+                } else if ( !(annCtx instanceof WebBundleContext)) {
+                    return getInvalidAnnotatedElementHandlerResult(
+                            annInfo.getProcessingContext().getHandler(), annInfo);
+                }
+
                 bundleDesc = ((WebBundleContext)annCtx).getDescriptor();
-            }  else if (annCtx instanceof EjbBundleContext)     {
-                bundleDesc = ((EjbBundleContext)annCtx).getDescriptor();
-            }
-            bundleDesc.setSpecVersion("2.5");
+
+                bundleDesc.setSpecVersion("2.5");
         }        
 
         // For WSProvider, portComponentName is the fully qualified class name
