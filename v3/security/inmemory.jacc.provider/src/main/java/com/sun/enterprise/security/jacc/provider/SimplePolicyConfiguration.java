@@ -103,8 +103,7 @@ public class SimplePolicyConfiguration implements PolicyConfiguration {
                     className = packageName +"."+ "GlassfishRoleMapper";
                 }
 
-                //ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                ClassLoader loader = SimplePolicyConfiguration.class.getClassLoader();
+                ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 Class clazz = loader.loadClass(className);
                 final Constructor ctx = clazz.getConstructor(new Class[]{Logger.class});
 
