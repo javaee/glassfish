@@ -43,6 +43,8 @@ import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.security.webservices.ClientPipeCloser;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -169,7 +171,7 @@ import org.xml.sax.SAXParseException;
  * AppClientContainerBuilder builder = AppClientContainer.newBuilder(...);<br>
  * builder.clientCredentials(myUser, myPass).logger(myLogger);<br>
  * </code>
- * «
+ * ï¿½
  *
  * @author tjquinn
  */
@@ -223,6 +225,9 @@ public class AppClientContainer {
 
     @Inject
     private ComponentEnvManager componentEnvManager;
+
+    @Inject
+    private ConnectorRuntime runtime;
 
     private Builder builder;
 

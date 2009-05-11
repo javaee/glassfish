@@ -294,6 +294,19 @@
             <version>${project.version}</version>
         </dependency>
         
+	 <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>work-management</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+ 	<dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-inbound-runtime</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        
         <dependency>
             <groupId>org.glassfish.orb</groupId>
             <artifactId>orb-connector</artifactId>
