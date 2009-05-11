@@ -53,7 +53,7 @@ import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 /**
  * @author rajeshwar patil
  */
-@Path("__monitoring/{path:.*}")
+@Path("__monitoring{path:.*}")
 public class MonitoringResource {
 
     @PathParam("path")
@@ -66,7 +66,7 @@ public class MonitoringResource {
         List<TreeNode> list = new ArrayList<TreeNode>();
         MonitoringRuntimeDataRegistry monitoringRegistry = RestService.theMonitoringRegistry;
 
-        if ((path == null) || (path.equals(""))) {
+        if (path == null) {
             //FIXME - Return appropriate message to the user
             //return Response.status(400).entity("match pattern is invalid or null").build();
             return list;
@@ -76,6 +76,29 @@ public class MonitoringResource {
             //FIXME - Return appropriate message to the user
             //return Response.status(404).entity("monitoring facility not installed").build();
             return list;
+        }
+
+        if ((path.equals("")) || (path.equals("/"))) {
+            //Return the sub-resource list of root nodes
+
+            //FIXME - No MonitoringRuntimeDataRegistry API available to get hold of
+            //all the root nodes. We need this in case of clustering. We need to
+            //get hold of root nodes for all the server instances.
+            TreeNode serverNode = monitoringRegistry.get("server");
+            if (serverNode != null) {
+                list.add(serverNode);
+                return list;
+            } else {
+                //No root node available, so nothing to list
+                //FIXME - Return appropriate message to the user
+                ///return Response.status(404).entity("No monitoring data. Please check monitoring levels are configured").build();
+                return list;
+            }
+        }
+
+        //ignore the starting slash
+        if (path.startsWith("/")) {
+            path = path.substring(1);
         }
 
         String dottedName = path.replace('/', '.');
