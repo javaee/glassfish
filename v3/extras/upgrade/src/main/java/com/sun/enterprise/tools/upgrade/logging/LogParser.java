@@ -1,3 +1,39 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
 package com.sun.enterprise.tools.upgrade.logging;
 
 import java.io.BufferedReader;
@@ -7,119 +43,70 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * POC log parser to pick out domain upgrade results.
+ * Log parsing code to look for potential error messages.
  */
 public class LogParser {
 
+    private static final Logger logger =
+        LogService.getLogger(LogService.UPGRADE_LOGGER);
+
+    // separator used in GF logs
     private static final String SEP = "|";
 
     // holds the "upgrade failed" cases
     private static final Set<String> FAIL_LEVELS = new HashSet<String>();
 
     static {
-        // example for Level.SEVERE
         FAIL_LEVELS.add(String.format("%s%s%s",
             SEP, Level.SEVERE.getName(), SEP));
+        FAIL_LEVELS.add(String.format("%s%s%s",
+            SEP, Level.WARNING.getName(), SEP));
     }
 
-    public static void main(String[] args) {
-        // usage check
-        if (args.length == 0) {
-            System.err.println("Pass log file as command line argument.");
-            return;
-        }
-
-        // grab file to parse
-        String fileName = args[0];
-        File logFile = new File(fileName);
-        if (!logFile.exists()) {
-            System.err.println(
-                String.format("File %s does not exist.", fileName));
-            return;
-        } else if (logFile.isDirectory()) {
-            System.err.println(
-                String.format("File %s is a directory.", fileName));
-            return;
-        }
-
-        /*
-         * This is the logger name for which to check. The usage
-         * inside the server would be:
-         *
-         * Logger upLogger =
-         *     Logger.getLogger("com.sun.enterprise.tools.upgrade");
-         * upLogger.log(Level.SEVERE, "V3: This is a SEVERE message");
-         *
-         */
-        String loggerName = "com.sun.enterprise.tools.upgrade";
-        if (args.length > 1) {
-            loggerName = args[1];
-        }
-
-        LogParser m = new LogParser();
-        m.parseLog(logFile, loggerName);
-    }
-
-    /*
-     * Iterate through the file and hand off each line to another
-     * method. This method will check to see if there were any
-     * failures reported.
+    /**
+     * Iterate through a file and check for messages that could
+     * represent some failure, for instance entries logged as
+     * Level.SEVERE.
+     *
+     * @param logFile File object representing the log to parse.
+     * @return True if any potential errors were found
      */
-    void parseLog(File logFile, String loggerName) {
-
-        System.err.println(String.format("Parsing '%s'",
-            logFile.getAbsolutePath()));
-        System.err.println(String.format("Logger name is '%s'", loggerName));
-        final String loggerToken = String.format("%s%s%s",
-            SEP, loggerName, SEP);
-
+    public boolean parseLog(File logFile) throws IOException {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(String.format("Parsing '%s'",
+                logFile.getAbsolutePath()));
+        }
         BufferedReader reader = null;
-        boolean fail = false;
-
         try {
             reader = new BufferedReader(new FileReader(logFile));
             String line = reader.readLine();
             while (line != null) {
-                if (parseForError(loggerToken, line)) {
-                    fail = true;
+                if (parseForError(line)) {
+                    return true;
                 }
                 line = reader.readLine();
             }
-        } catch (IOException bad) {
-            System.err.println(bad.getMessage());
         } finally {
-            try {
-                reader.close();
-            } catch (IOException ex) {
-                System.err.println(String.format("Whoa: %s", ex.getMessage()));
-            }
+            reader.close();
         }
-
-        if (fail) {
-            System.err.println("Upgrade faile. See above errors.");
-        }
-        System.out.println("\nFinished.");
+        return false;
     }
 
     /*
-     * Checks each line to see if if came from the upgrade logger
-     * or not. If so, checks to see if anythin was logged at a level
+     * Checks each line to see if anything was logged at a level
      * that is in the 'FAIL_LEVELS' set. E.g., Level.SEVERE messages
      * might be considered an upgrade failure.
      */
-    private boolean parseForError(String loggerToken, String line) {
-
-        // look for our logger first
-        if (line.indexOf(loggerToken) == -1) {
-            return false;
-        }
-
-        // now check for failures
+    private boolean parseForError(String line) {
         for (String levelToken : FAIL_LEVELS) {
             if (line.indexOf(levelToken) != -1) {
-                System.err.println(getMessage(line));
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine(String.format("Found error message: %s",
+                        getMessage(line)));
+                }
                 return true;
             }
         }
