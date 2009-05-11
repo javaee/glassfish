@@ -88,6 +88,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -142,7 +143,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private Habitat transactionManager;
 
     @Inject
-    private WorkManagerFactory wmf;
+    private Habitat wmf;
 
     @Inject
     private Habitat allResources;
@@ -861,7 +862,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException {
         //TODO V3 can't we make work-manager to return proxy by default ?
-        return wmf.getWorkManagerProxy(poolId, moduleName);
+        return habitat.getComponent(WorkManagerFactory.class).getWorkManagerProxy(poolId, moduleName);
     }
 
     /**
@@ -875,7 +876,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     public void removeWorkManagerProxy(String moduleName) {
-        wmf.removeWorkManager(moduleName);
+        habitat.getComponent(WorkManagerFactory.class).removeWorkManager(moduleName);
     }
 
     public void addAdminObject(String appName, String connectorName,
@@ -1048,7 +1049,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
-    public ClassLoader getConnectorClassLoader() {
+    public DelegatingClassLoader getConnectorClassLoader() {
         return clh.getConnectorClassLoader(null);
     }
 
@@ -1057,5 +1058,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public List<WorkSecurityMap> getWorkSecurityMap(String raName){
         return ConnectorsUtil.getWorkSecurityMaps(raName, allResources.getComponent(Resources.class));
+    }
+
+    public int getShutdownTimeout() {
+        return ConnectorsUtil.getShutdownTimeout(
+                habitat.getComponent(com.sun.enterprise.config.serverbeans.ConnectorService.class));
     }
 }

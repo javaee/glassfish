@@ -591,4 +591,32 @@ public class ConnectorsUtil {
             throw new ConnectorRuntimeException("unable to provide thread pool manager");
         }
     }
+
+    /**
+     * Gets the shutdown-timeout attribute from domain.xml
+     * via the connector server config bean.
+     * @param connectorService connector-service configuration
+     * @return int shutdown timeout
+     */
+    public static int getShutdownTimeout(ConnectorService connectorService)  {
+        int shutdownTimeout;
+
+        try {
+            if (connectorService == null) {
+                //Connector service element is not specified in
+                //domain.xml and hence going with the default time-out
+                shutdownTimeout =
+                        ConnectorConstants.DEFAULT_RESOURCE_ADAPTER_SHUTDOWN_TIMEOUT;
+                _logger.log(Level.FINE, "Shutdown timeout set to "+  shutdownTimeout + "through default");
+            } else {
+                shutdownTimeout = Integer.parseInt(connectorService.getShutdownTimeoutInSeconds());
+                _logger.log(Level.FINE, "Shutdown timeout set to " + shutdownTimeout + " from domain.xml");
+            }
+        } catch (Exception e) {
+            _logger.log(Level.WARNING, "error_reading_connectorservice_elt", e);
+            //Going ahead with the default timeout value
+            shutdownTimeout = ConnectorConstants.DEFAULT_RESOURCE_ADAPTER_SHUTDOWN_TIMEOUT;
+        }
+        return shutdownTimeout;
+    }
 }
