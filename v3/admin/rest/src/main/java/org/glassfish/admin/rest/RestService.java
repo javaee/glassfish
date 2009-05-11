@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest;
 
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -44,7 +45,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 
 import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
+//import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ import com.sun.jersey.api.container.ContainerFactory;
 import org.glassfish.api.container.RequestDispatcher;
 import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -74,8 +76,10 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
     org.glassfish.flashlight.MonitoringRuntimeDataRegistry monitoringRegistry;
     public static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
     public static ConfigSupport configSupport;
-    private final static String BASE_URI = "http://localhost:9998/";
+    //private final static String BASE_URI = "http://localhost:9998/";
     public final static Logger logger = LogDomains.getLogger(RestService.class, LogDomains.ADMIN_LOGGER);
+    @Inject
+    ServerEnvironmentImpl env;
 
     public Lifecycle getLifecycle() {
         // This service stays running for the life of the app server, hence SERVER.
@@ -103,6 +107,9 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
         System.out.println("********************* Instrumenting Rest Resources ******************************");
         try {
             start();
+//            String rootFolder = env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/";
+//
+//            InstallTestClient.doit(rootFolder);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -113,6 +120,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
     }
 
     private void start() throws Exception {
+    //    System.getProperties().put("com.sun.grizzly.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
 
         theDomain = domain;
         theMonitoringRegistry = monitoringRegistry;
@@ -125,7 +133,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
         ResourceConfig rc = getResourceConfig();
         //        Adapter adap=new MyAdapter();//ContainerFactory.createContainer(Adapter.class, getResourceConfig());
         Adapter adap = ContainerFactory.createContainer(Adapter.class, rc);
-            ((GrizzlyAdapter)adap).setResourcesContextPath("/rest-resources");
+        ((GrizzlyAdapter) adap).setResourcesContextPath("/rest-resources");
         Collection<String> virtualserverName = new ArrayList<String>();
         virtualserverName.add("__asadmin");
         rd.registerEndpoint("/rest-resources", virtualserverName, adap, null);
@@ -140,7 +148,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
         //uncomment if you need to run the generator:
-        //   r.add(GeneratorResource.class);
+           r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
         r.add(DefaultConfigResource.class);
         r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);

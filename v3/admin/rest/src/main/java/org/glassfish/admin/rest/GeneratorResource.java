@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Set;
 import javax.ws.rs.Path;
 
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandRunner;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
@@ -71,8 +73,6 @@ public class GeneratorResource {
     public GeneratorResource() {
     }
 
-
-
     @GET
     @Produces({"text/plain"})
     public String get() {
@@ -80,9 +80,9 @@ public class GeneratorResource {
         Domain entity = RestService.theDomain;
 
         File loc =
-        new File(System.getProperty("user.home")+"/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
+                new File(System.getProperty("user.home") + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
         loc.mkdirs();
-        genDir= loc.getAbsolutePath();
+        genDir = loc.getAbsolutePath();
         //        DomDocument dodo = RestService.habitat.getComponent(DomDocument.class);
         //        Dom root = dodo.getRoot();
         // System.out.println(" root "+ root );
@@ -99,30 +99,30 @@ public class GeneratorResource {
         } catch (Exception ex) {
             Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "Code Generation done at : "+genDir;
+        return "Code Generation done at : " + genDir;
 
     }
 
     private void processRedirectsAnnotation(ConfigModel model) {
 
         Class<? extends ConfigBeanProxy> cbp = null;
-        System.out.println("\n\nAnnotation"+model.targetTypeName );
+        System.out.println("\n\nAnnotation" + model.targetTypeName);
         try {
-            cbp = (Class<? extends ConfigBeanProxy>)model.classLoaderHolder.get().loadClass(model.targetTypeName);
-           // cbp = (Class<? extends ConfigBeanProxy>)this.getClass().getClassLoader().loadClass(model.targetTypeName) ;
+            cbp = (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+            // cbp = (Class<? extends ConfigBeanProxy>)this.getClass().getClassLoader().loadClass(model.targetTypeName) ;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
-        System.out.println("re Annotation"+model.targetTypeName );
+        System.out.println("re Annotation" + model.targetTypeName);
         RestRedirects restRedirects = cbp.getAnnotation(RestRedirects.class);
-        System.out.println("re Annotation restRedirects"+restRedirects );
+        System.out.println("re Annotation restRedirects" + restRedirects);
         if (restRedirects != null) {
-            System.out.println("LUDO: NOT NULL                Annotation restRedirects"+restRedirects );
+            System.out.println("LUDO: NOT NULL                Annotation restRedirects" + restRedirects);
 
             RestRedirect[] values = restRedirects.value();
-            for (RestRedirect r: values) {
-               System.out.println( r.commandName());
-               System.out.println( r.opType());
+            for (RestRedirect r : values) {
+                System.out.println(r.commandName());
+                System.out.println(r.opType());
             }
         }
 
@@ -155,7 +155,7 @@ public class GeneratorResource {
         }
         genListFiles.put(serverConfigName, serverConfigName);
         String beanName = getBeanName(serverConfigName);
-        File file = new File(genDir+"/List" + beanName + "Resource.java");
+        File file = new File(genDir + "/List" + beanName + "Resource.java");
         // File file = new File("/Users/ludo/tmp/" + beanName + "Resource.java");
         try {
             file.createNewFile();
@@ -229,6 +229,7 @@ public class GeneratorResource {
         out.write("\t\t}\n");
         out.write("\t\treturn resource;\n");
         out.write("\t}\n\n");
+        generateCommand("List" + beanName, out);
 
         out.write("}\n");
 
@@ -251,7 +252,7 @@ public class GeneratorResource {
         }
         genSingleFiles.put(serverConfigName, serverConfigName);
         String beanName = getBeanName(serverConfigName);
-        File file = new File(genDir+"/" + beanName + "Resource.java");
+        File file = new File(genDir + "/" + beanName + "Resource.java");
         // File file = new File("/Users/ludo/tmp/" + beanName + "Resource.java");
         try {
             file.createNewFile();
@@ -294,7 +295,7 @@ public class GeneratorResource {
             out.write("}\n");
         }
 
-
+        generateCommand(beanName, out);
 
         Set<String> elem = model.getElementNames();
 
@@ -428,6 +429,71 @@ public class GeneratorResource {
 
     }
 
+    private void generateCommand(String resourceName, BufferedWriter out) throws IOException {
+
+        for (int i = 0; i < MappingConfigBeansToCommands.length; i++) {
+            if (resourceName.equals(MappingConfigBeansToCommands[i][0])) {
+                CommandRunner cr = RestService.habitat.getComponent(CommandRunner.class);
+                CommandModel cm = null;
+                try {
+                    cm = cr.getModel(MappingConfigBeansToCommands[i][1], RestService.logger);
+                } catch (Exception e) {
+                    System.out.println("Error Command Unknown: " + MappingConfigBeansToCommands[i][1]);
+                    return;
+                }
+                if (cm == null) {
+                    System.out.println("Error Command Unknown: " + MappingConfigBeansToCommands[i][1]);
+                    return;
+                }
+                java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
+                boolean first = true;
+                for (CommandModel.ParamModel pm : params) {
+                    System.out.println("command param for " + pm.getName());
+                    System.out.println("command param name is" + pm.getParam().name());
+                }
+                ///\"" + a + "
+                out.write("@Path(\"commands/" + MappingConfigBeansToCommands[i][1] + " \")\n");
+                out.write("@GET\n");
+                String ret = "org.jvnet.hk2.config.Dom";
+                if (resourceName.startsWith("List")) {
+                    ret = "List<org.jvnet.hk2.config.Dom>";
+                }
+                out.write("@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})\n");
+                out.write("public " + ret + " exec" + getBeanName(MappingConfigBeansToCommands[i][1]) + "(\n");
+
+                for (CommandModel.ParamModel pm : params) {
+                    if (first == false) {
+                        out.write(" ,\n");
+
+                    }
+                    first = false;
+                    out.write("\t @QueryParam(\"" + pm.getName() + "\") ");
+                    out.write(" @DefaultValue(\"" + pm.getParam().defaultValue() + "\") ");
+                    out.write(" String " + getBeanName(pm.getName()) + " \n");
+
+                }
+
+                out.write(" \t) {\n");
+
+                out.write("\tjava.util.Properties p = new java.util.Properties();\n");
+                for (CommandModel.ParamModel pm : params) {
+                    out.write("\tp.put(\"" + pm.getName() + "\", " + getBeanName(pm.getName()) + ");\n");
+                }
+
+                out.write("\torg.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);\n");
+                out.write("\torg.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);\n");
+                out.write("\tcr.doCommand(\"" + MappingConfigBeansToCommands[i][1] + "\", p, ar);\n");
+                out.write("\tSystem.out.println(\"exec command =\" + ar.getActionExitCode());\n");
+
+                out.write("\treturn get(1);\n");
+                out.write("}\n");
+
+
+            }
+        }
+
+    }
+
     private String getBeanName(String elementName) {
         String ret = "";
         boolean nextisUpper = true;
@@ -451,4 +517,101 @@ public class GeneratorResource {
 
         return ret;
     }
+
+    /*
+     * temporary mapping to add Admin Commands to some of our configbeans
+     *
+     * */
+    
+    private static String MappingConfigBeansToCommands[][] = {
+
+        {"Domain", "stop-domain"},
+        {"Domain", "restart-domain"},
+        {"Domain", "uptime"},
+        {"Domain", "version"},
+        {"Domain", "rotate-log"},
+        {"Domain", "get-host-and-port"},
+        {"ListApplication", "deploy"},
+        {"Application", "redeploy"},
+        {"ListAdminObjectResource", "create-admin-object"},
+        {"ListCustomResource", "create-custom-resource"},
+        {"ListJdbcResource", "create-jdbc-resource"},
+        //  {"ListExternalJndiResource", ""},
+        {"ListJdbcConnectionPool", "create-jdbc-connection-pool"},
+        {"ListConnectorResource", "create-connector-resource"},
+        {"ListMailResource", "create-javamail-resource"},
+        //{"ListWorkSecurityMap", ""},
+        {"ListResourceAdapterConfig", "create-resource-adapter-config"},
+        {"ListConnectorConnectionPool", "create-connector-connection-pool"},
+        //{"ListPersistenceManagerFactoryResource", ""},
+
+        {"ListAuthRealm", "create-auth-realm"},
+        {"ListAuditModule", "create-audit-module"},
+        //{"", "create-connector-work-security-map"},
+        //  {"", "create-file-user"},
+        {"ListHttpListener", "create-http-listener"},
+        {"ListIiopListener", "create-iiop-listener"},
+        {"ListJmsHost", "create-jms-host"},
+        //    {"", "create-jmsResource"},
+        //    {"", "create-jmsdest"},
+        //   {"", "create-jvm-options"},
+        {"ListMessageSecurityConfig", "create-message-security-provider"},
+        //    {"", "create-password-alias"},
+        {"JavaConfig", "create-profiler"},
+        {"ListResourceRef", "create-resource-ref"},
+        ////    {"", "create-ssl"},
+        {"ListSystemProperty", "create-system-properties"},
+        {"ListVirtualServer", "create-virtual-server"},
+        {"ConnectionPool", "ping-connection-pool"},/*
+    addResources
+    change-admin-password
+    disable
+    enable
+    generate-jvm-report
+    get
+    get-client-stubs
+    // get-host-and-port
+    //redeploy
+    //undeploy
+    // ping-connection-pool
+
+    // create-admin-object
+    //create-connector-connection-pool
+    // create-connectorResource
+    //create-customResource
+    //create-javamailResource
+    //create-jdbc-connection-pool
+    //create-jdbcResource
+    // createResource-adapter-config
+    delete-admin-object
+    delete-audit-module
+    delete-auth-realm
+    delete-connector-connection-pool
+    delete-connectorResource
+    delete-connector-work-security-map
+    delete-customResource
+    delete-file-user
+    delete-http-listener
+    delete-iiop-listener
+    delete-javamailResource
+    delete-jdbc-connection-pool
+    delete-jdbcResource
+    delete-jms-host
+    monitor
+    delete-jmsResource
+    delete-jmsdest
+    delete-jvm-options
+    delete-message-security-provider
+    delete-password-alias
+    delete-profiler
+    deleteResource-adapter-config
+    deleteResource-ref
+    update-file-user
+    delete-ssl
+    update-password-alias
+    delete-system-property
+    delete-virtual-server
+
+
+     **/};
 }
