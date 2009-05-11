@@ -44,6 +44,7 @@ import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
@@ -63,6 +64,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
  * The Network Service is responsible for starting grizzly and register the
@@ -106,6 +108,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     ConcurrentLinkedQueue<MapperUpdateListener> mapperUpdateListeners =
             new ConcurrentLinkedQueue<MapperUpdateListener>();
+
+    private DynamicConfigListener configListener;
 
     public GrizzlyService() {
         futures = new ArrayList<Future<Result<Thread>>>();
@@ -262,7 +266,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 DynamicConfigListener.class,
                 habitat,
                 null);
-        DynamicConfigListener configListener = womb.get(null);
+        configListener = womb.get(null);
 
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
         bean.addListener(configListener);
@@ -366,13 +370,27 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         proxies.add(proxy);
         futures.add(future);
 
+        addChangeListener(listener);
+        addChangeListener(listener.findThreadPool());
+        addChangeListener(listener.findTransport());
+        final Protocol protocol = listener.findProtocol();
+        addChangeListener(protocol);
+        addChangeListener(protocol.getHttp());
+        addChangeListener(protocol.getHttp().getFileCache());
+        addChangeListener(protocol.getSsl());
+
         return future;
     }
-    
-    
+
+    private void addChangeListener(ConfigBeanProxy bean) {
+        if(bean != null) {
+            ((ObservableBean) ConfigSupport.getImpl(bean)).addListener(configListener);
+        }
+    }
+
     /*
-     * Registers all proxies
-     */
+    * Registers all proxies
+    */
     public void registerNetworkProxy() {
         registerNetworkProxy(ALL_PORTS);
     }

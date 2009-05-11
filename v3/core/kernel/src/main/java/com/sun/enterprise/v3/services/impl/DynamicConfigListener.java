@@ -25,8 +25,14 @@ package com.sun.enterprise.v3.services.impl;
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collection;
 
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.Protocol;
+import com.sun.grizzly.config.dom.Ssl;
+import com.sun.grizzly.config.dom.ThreadPool;
+import com.sun.grizzly.config.dom.Transport;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
@@ -49,50 +55,74 @@ public class DynamicConfigListener implements ConfigListener {
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(
-                events, new Changed() {
-
-            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type,
+            events, new Changed() {
+                public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type,
                     Class<T> tClass, T t) {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "NetworkConfig changed " + type
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, "NetworkConfig changed " + type
                             + " " + tClass + " " + t);
-                }
-
-                if (t instanceof NetworkListener) {
-                    NetworkListener listener = (NetworkListener) t;
-                    int listenerPort = -1;
-                        try {
-                            listenerPort = Integer.parseInt(
-                                    listener.getPort());
-                        } catch (NumberFormatException e) {
-                            logger.log(Level.WARNING,
-                                    "Can not parse network-listener port number: " +
-                                    listener.getPort());
+                    }
+                    if (t instanceof NetworkListener) {
+                        return processNetworkListener(type, (NetworkListener) t);
+                    } else if (t instanceof Http) {
+                        return processProtocol(type, (Protocol) ((Http) t).getParent());
+                    } else if (t instanceof Ssl) {
+                        return processProtocol(type, (Protocol) ((Ssl) t).getParent());
+                    } else if (t instanceof Protocol) {
+                        return processProtocol(type, (Protocol) t);
+                    } else if (t instanceof ThreadPool) {
+                        ThreadPool pool = (ThreadPool) t;
+                        NotProcessed notProcessed = null;
+                        for (NetworkListener listener : (Collection<NetworkListener>) pool.findNetworkListeners()) {
+                            notProcessed = processNetworkListener(type, listener);
                         }
-
-                    if (type == TYPE.ADD) {
-                        grizzlyService.createNetworkProxy(listener);
-                        grizzlyService.registerNetworkProxy(listenerPort);
-                    } else if (type == TYPE.REMOVE) {
-                        grizzlyService.removeNetworkProxy(listenerPort);
-                    } else if (type == TYPE.CHANGE) {
-                        // Restart GrizzlyProxy on the port
-                        // Port number or id could be changed - so try to find
-                        // corresponding proxy both ways
-                        boolean isRemovedOld =
-                                grizzlyService.removeNetworkProxy(listenerPort) ||
-                                grizzlyService.removeNetworkProxy(listener.getName());
-
-                        grizzlyService.createNetworkProxy(listener);
-                        grizzlyService.registerNetworkProxy(listenerPort);
+                        return notProcessed;
+                    } else if (t instanceof Transport) {
+                        Transport transport = (Transport) t;
+                        NotProcessed notProcessed = null;
+                        for (NetworkListener listener : (Collection<NetworkListener>) transport.findNetworkListeners()) {
+                            notProcessed = processNetworkListener(type, listener);
+                        }
+                        return notProcessed;
                     }
                     return null;
                 }
-
-                return null;
-            }
-        }, logger);
+            }, logger);
         return unp;
+    }
+
+    private <T extends ConfigBeanProxy> NotProcessed processNetworkListener(Changed.TYPE type,
+        NetworkListener listener) {
+        int listenerPort = -1;
+        try {
+            listenerPort = Integer.parseInt(listener.getPort());
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Can not parse network-listener port number: " + listener.getPort());
+        }
+        if (type == Changed.TYPE.ADD) {
+            grizzlyService.createNetworkProxy(listener);
+            grizzlyService.registerNetworkProxy(listenerPort);
+        } else if (type == Changed.TYPE.REMOVE) {
+            grizzlyService.removeNetworkProxy(listenerPort);
+        } else if (type == Changed.TYPE.CHANGE) {
+            // Restart GrizzlyProxy on the port
+            // Port number or id could be changed - so try to find
+            // corresponding proxy both ways
+            boolean isRemovedOld =
+                grizzlyService.removeNetworkProxy(listenerPort) ||
+                    grizzlyService.removeNetworkProxy(listener.getName());
+            grizzlyService.createNetworkProxy(listener);
+            grizzlyService.registerNetworkProxy(listenerPort);
+        }
+        return null;
+    }
+
+    private NotProcessed processProtocol(Changed.TYPE type, Protocol protocol) {
+        NotProcessed notProcessed = null;
+        for (NetworkListener listener : (Collection<NetworkListener>) protocol.findNetworkListeners()) {
+            notProcessed = processNetworkListener(type, listener);
+        }
+        return notProcessed;
     }
 
     public void setGrizzlyService(GrizzlyService grizzlyService) {
