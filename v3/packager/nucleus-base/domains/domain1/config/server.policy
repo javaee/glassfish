@@ -33,7 +33,7 @@ grant codeBase "file:${com.sun.aas.installRoot}/modules/-" {
 };
 
 // Felix classes get all permissions by default
-grant codeBase "file:${com.sun.aas.installRoot}/felix/bin/-" {
+grant codeBase "file:${com.sun.aas.installRoot}/osgi/felix/bin/-" {
     permission java.security.AllPermission;
 };
 
