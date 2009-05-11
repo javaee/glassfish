@@ -88,9 +88,9 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
      private String getHtml(List<TreeNode> proxy) {
         String result;
         result = "<html>" + "<body>" + "\n" ;
-        result = result + "<h1>" + getTypeKey() + "</h1>" + "<hr>" + "<br>";
-            result = result + getAttributes(proxy) + "<br><br>";
-        result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>" + "<br>";
+        result = result + "<h1>" + getTypeKey() + "</h1>";
+            result = result + getAttributes(proxy) + "<br>";
+        result = result + "<h2>" + getResourcesKey() + "</h2>";
             result = result + getResourcesLinks(proxy);
         result = result + "</html>" + "</body>";
         return result;
@@ -107,9 +107,8 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                result = result + indent + "<b>"; //indent
                 result = result + node.getName() + ":&nbsp;&nbsp;&nbsp;&nbsp;" + htmlForNodeValue(node.getValue());
-                result = result + "</b>" + "<br>";
+                result = result +  "<br>";
             }
         }
 
@@ -130,11 +129,10 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
             if (node.hasChildNodes()) {
                 try {
                     elementName = node.getName();
-                    result = result + indent + "<b>"; //indent
                     result = result + "<a href=" + getElementLink(uriInfo, elementName) + ">";
                     result = result + elementName;
                     result = result + "</a>";
-                    result = result + "</b>" + "<br>";
+                    result = result +  "<br>";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -155,6 +153,4 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
         return result;
     }
 
-
-    private static String indent = "    ";
 }

@@ -91,7 +91,7 @@ public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWrite
 
      private String getHtml(List<Dom> proxy) {
         String result;
-        result = "<html><body>" ;
+        result = "<html><head><title>GlassFish REST Access to "+getTypeKey()+"</title></head><body>";
         result = result + "<h1>" + getTypeKey() + "</h1>";
         result = result + "<h2>Child Resources:</h2>" ;
             result = result + getResourcesLinks(proxy);

@@ -92,7 +92,7 @@ public class SingletonDomHtmlProvider extends DomProviderUtil implements Message
 
     private String getHtml(Dom proxy) {
         String result;
-        result = "<html><body>";
+        result = "<html><head><title>GlassFish REST Access to "+getTypeKey(proxy)+"</title></head><body>";
         result = result + "<h1>" + getTypeKey(proxy) + "</h1>";
         result = result + "<h2>Attributes:</h2>";
         result = result + getAttributes(proxy) + "<br>";
