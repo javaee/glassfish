@@ -102,18 +102,22 @@ public class AdministeredObjectFactory implements ObjectFactory {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (runtime.checkAccessibility(moduleName, loader) == false) {
-	    throw new NamingException("Only the application that has the embedded resource" +
+	        throw new NamingException("Only the application that has the embedded resource" +
 	                               "adapter can access the resource adapter");
 
-	}
+	    }
 
 	logger.fine("[AdministeredObjectFactory] ==> Got AdministeredObjectResource = " + aor);
 
-
-    //TODO V3 check whether AOR is a ResourceAdapterAssociation, bootstrap RAR and associate RA bean 
+    //TODO V3 check whether AOR is a ResourceAdapterAssociation, bootstrap RAR and associate RA bean
+    //TODO V3 add system rars to connector descriptor 
     if(ConnectorsUtil.belongsToSystemRA(moduleName)){
+        //make sure that system rar is started and hence added to connector classloader chain
+        String moduleLocation = ConnectorsUtil.getSystemModuleLocation(moduleName);
+        runtime.createActiveResourceAdapter(moduleLocation, moduleName, null);
         loader = ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName).getClassLoader();
     }
+        
 
 	return aor.createAdministeredObject(loader);
     }

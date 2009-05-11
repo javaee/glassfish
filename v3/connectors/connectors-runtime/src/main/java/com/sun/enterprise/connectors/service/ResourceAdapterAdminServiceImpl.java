@@ -55,6 +55,8 @@ import java.util.Set;
 import java.util.List;
 
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.internal.api.DelegatingClassLoader;
+import org.glassfish.internal.api.ConnectorClassFinder;
 
 
 /**
@@ -246,6 +248,15 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
             if (connectorRuntime.isServer()) {
                 loader = connectorRuntime.createConnectorClassLoader(moduleDir, null);
+                // create a classloader for system rar and add it to connector class loader
+                // this is different than v2 as we dont add system rars to class loader chain
+                DelegatingClassLoader ccl = connectorRuntime.getConnectorClassLoader();
+                boolean systemRarCLAdded = ccl.addDelegate((ConnectorClassFinder)loader);
+                if(_logger.isLoggable(Level.FINE)){
+                    _logger.log(Level.FINE, "System RAR [ "+moduleName+" ] added to " +
+                        "classloader chain : " + systemRarCLAdded);
+                }
+
                 if (loader == null) {
                     ConnectorRuntimeException cre =
                             new ConnectorRuntimeException("Failed to obtain the class loader");
@@ -407,6 +418,19 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
         if (acr != null) {
             acr.destroy();
+            // remove the system rar from class loader chain.
+            if(ConnectorsUtil.belongsToSystemRA(moduleName)) {
+                ConnectorClassFinder ccf =
+                        (ConnectorClassFinder)ConnectorRegistry.getInstance().
+                                getActiveResourceAdapter(moduleName).getClassLoader();
+                ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
+                DelegatingClassLoader ccl = connectorRuntime.getConnectorClassLoader();
+                boolean systemRarCLRemoved = ccl.removeDelegate(ccf);
+                if(_logger.isLoggable(Level.FINE)){
+                    _logger.log(Level.FINE, "System RAR [ "+moduleName+" ] removed from " +
+                        "classloader chain : " + systemRarCLRemoved);
+                }
+            }
             boolean status = _registry.removeActiveResourceAdapter(moduleName);
             return status;
         }
