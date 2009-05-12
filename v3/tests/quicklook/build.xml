@@ -70,7 +70,6 @@
         <antcall target="runtest">
         <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
-	<antcall target="disable-security-manager"/>
         <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
