@@ -12,7 +12,7 @@
     &commonBuild;
     &run;
 
-    <target name="all" depends="init-sharedlib,build,run,undeploy,clean-lib"/>
+    <target name="all" depends="init-sharedlib,build,run,undeploy,stopDomain,clean-lib"/>
 
     <target name="clean" depends="init-common">
 	<ant dir="webapp1" target="clean"/>
@@ -28,7 +28,7 @@
 	<delete file="${env.S1AS_HOME}/lib/TestSharedLib2.jar"/>
 	<delete file="${env.S1AS_HOME}/lib/TestSharedLib3.jar"/>
 	<delete file="${env.S1AS_HOME}/lib/TestSharedLib4.jar"/>
-        <antcall target="restart-server-instance-common"/>
+        <antcall target="startDomain"/>
     </target>
 
     <target name="init-sharedlib" depends="init-common">
