@@ -79,9 +79,6 @@ public class DataCollectionPanel extends javax.swing.JPanel {
 	private Logger logger = com.sun.enterprise.tools.upgrade.common.
 		CommonInfoModel.getDefaultLogger();
 	
-	//- flag to track state change of user input and notification event.
-	private static boolean _processDialogEventToggle = true;
-	
 	/**
 	 * Data Collection Panel Constructor
 	 */
@@ -402,27 +399,10 @@ public class DataCollectionPanel extends javax.swing.JPanel {
 	}
 	
 	private void processDialogEvent(){
-		if (isDataCollectionComplete() == _processDialogEventToggle){
-			DialogEvent de = new DialogEvent(this, DialogEvent.CHANGE_ACTION);
-			for(int i=0 ; i<this.dialogListeners.size(); i++){
-				((DialogListener)dialogListeners.elementAt(i)).dialogProcessed(de);
-			}
-			_processDialogEventToggle = !_processDialogEventToggle;
-		}
+        DialogEvent de = new DialogEvent(this, DialogEvent.CHANGE_ACTION);
+        for (int i = 0; i < this.dialogListeners.size(); i++) {
+            ((DialogListener) dialogListeners.elementAt(i)).dialogProcessed(de);
+        }
 	}
 	
-	private boolean isDataCollectionComplete(){
-		boolean flag = false;
-		//- Don't check every key stroke; check when moved out of component.
-		String tmp_adminPWTextField = new String(this.adminPWTextField.getPassword());
-		String tmp_masterPWTextField = new String(this.masterPWTextField.getPassword());
-		if (tmp_masterPWTextField.length() > 0 &&
-			tmp_adminPWTextField.length() > 0 &&
-			this.adminUserTextField.getText().length() > 0 &&
-			this.sourceDirTextField.getText().length() > 0 &&
-			this.destDirTextField.getText().length() > 0 ){
-			flag = true;
-		}
-		return flag;
-	}		
 }

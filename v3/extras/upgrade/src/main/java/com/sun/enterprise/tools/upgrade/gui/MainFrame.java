@@ -46,7 +46,6 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
-import com.sun.enterprise.tools.upgrade.gui.util.DirectoryMoverImpl;
 import java.awt.GridBagConstraints;
 import java.io.*;
 import java.util.*;
@@ -466,13 +465,10 @@ public class MainFrame extends JFrame implements LogMessageListener,
     }
     
 	private void setNextButtonStateForDataCollectionPanel(){
-		if (this.dataCollectionPanel.getMasterPassword().length() > 0 &&
-			this.dataCollectionPanel.getAdminPassword().length() > 0 &&
-			this.dataCollectionPanel.getAdminUserName().length() > 0 &&
-			this.dataCollectionPanel.getSourceDirectoryPath().length() > 0 &&
-			this.dataCollectionPanel.getDestinationDirectoryPath().length() > 0 ){
+		if (dataCollectionPanel.getSourceDirectoryPath().length() > 0 &&
+			dataCollectionPanel.getDestinationDirectoryPath().length() > 0 ) {
 			getnextButton().setEnabled(true);
-		}else {
+		} else {
 			getnextButton().setEnabled(false);
 		}
 	}
@@ -495,9 +491,6 @@ public class MainFrame extends JFrame implements LogMessageListener,
 			return false;
 		}
 
-        // in the GUI case, we'll allow users to fix domain name clashes
-        commonInfoModel.getTarget().setDirectoryMover(
-            new DirectoryMoverImpl(this));
 		ARG_target t = new ARG_target();
 		t.setRawParameters(dataCollectionPanel.getDestinationDirectoryPath());
 		if (t.isValidParameter()){

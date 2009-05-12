@@ -64,8 +64,6 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
     //- and should be set accordingly V3 does not support in-place upgrade.
     private boolean isInPlaceUpgradeAllowed = false;
 
-    // used only in interactive cases
-    private DirectoryMover directoryMover = null;
 	
 	/** Creates a new instance of TargetAppSrvObj */
 	public TargetAppSrvObj() {
@@ -103,9 +101,6 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
             logger.log(Level.INFO, sm.getString(
                 "enterprise.tools.upgrade.target.dir_domain_exist",
                 tmpPath.getAbsolutePath()));
-            if (directoryMover != null) {
-                return directoryMover.moveDirectory(tmpPath);
-            }
         }
         return false;
     }
@@ -143,10 +138,6 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 	//- target specific ---------------------
     public boolean isInPlaceUpgradeAllowed(){
         return isInPlaceUpgradeAllowed;
-    }
-
-    public void setDirectoryMover(DirectoryMover directoryMover) {
-        this.directoryMover = directoryMover;
     }
     
 }
