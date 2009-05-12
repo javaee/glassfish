@@ -93,20 +93,22 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
 
     protected boolean scanForPURootsInLibDir(ReadableArchive parentArchive, String libLocation) {
         boolean puRootPresent = false;
-        Enumeration<String> entries = parentArchive.entries(libLocation);
-        while (entries.hasMoreElements() && !puRootPresent) {
-            String entryName = entries.nextElement();
-            if (entryName.endsWith(JAR_SUFFIX) && // a jar in lib dir
-                    entryName.indexOf(SEPERATOR_CHAR, libLocation.length() + 1 ) == -1 ) { // && not WEB-INf/lib/foo/bar.jar
-                try {
-                    ReadableArchive jarInLib = parentArchive.getSubArchive(entryName);
-                    puRootPresent = isEntryPresent(jarInLib, META_INF_PERSISTENCE_XML);
-                    jarInLib.close();
-                } catch (IOException e) {
-                    // Something went wrong while reading the jar. Do not attempt to scan it
-                } // catch
-            } // if (entryName.endsWith(JAR_SUFFIX))
-        } // while
+        if (libLocation != null && !libLocation.isEmpty()) { // if an application disables lib dir by specifyig <library-directory></library-directory>, do not attempt to scan lib dir 
+            Enumeration<String> entries = parentArchive.entries(libLocation);
+            while (entries.hasMoreElements() && !puRootPresent) {
+                String entryName = entries.nextElement();
+                if (entryName.endsWith(JAR_SUFFIX) && // a jar in lib dir
+                        entryName.indexOf(SEPERATOR_CHAR, libLocation.length() + 1 ) == -1 ) { // && not WEB-INf/lib/foo/bar.jar
+                    try {
+                        ReadableArchive jarInLib = parentArchive.getSubArchive(entryName);
+                        puRootPresent = isEntryPresent(jarInLib, META_INF_PERSISTENCE_XML);
+                        jarInLib.close();
+                    } catch (IOException e) {
+                        // Something went wrong while reading the jar. Do not attempt to scan it
+                    } // catch
+                } // if (entryName.endsWith(JAR_SUFFIX))
+            } // while
+        }
         return puRootPresent;
     }
 
