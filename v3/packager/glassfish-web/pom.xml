@@ -89,7 +89,7 @@
 		    <artifactId>jstl-api</artifactId>
 		</exclusion>
 	    </exclusions-->   
-        </dependency>
+       </dependency>
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
@@ -111,12 +111,6 @@
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-       	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-api</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>  
  	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-nucleus</artifactId>
@@ -189,12 +183,6 @@
            <version>${project.version}</version>
            <type>zip</type>
        </dependency>	
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-web-management</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-	</dependency>
     </dependencies>
 
     <profiles>

@@ -75,6 +75,11 @@
             <artifactId>jdbc-ra</artifactId>
             <version>${project.version}</version>
             <type>distribution-fragment</type> 
+        </dependency>
+        <dependency>        
+           <groupId>org.glassfish.jdbc</groupId>
+           <artifactId>jdbc-admin</artifactId>
+           <version>${project.version}</version>
   	</dependency>
 
     	<!-- now, listing package dependencies so that their content
@@ -97,12 +102,6 @@
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-       	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-api</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>  
  	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-nucleus</artifactId>
@@ -177,19 +176,7 @@
        </dependency>	
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-web-management</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-web</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-jdbc-management</artifactId>
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency>

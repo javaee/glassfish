@@ -37,9 +37,6 @@ own identifying information: Portions Copyright [yyyy]
 				    <subtract>
 				    <subtract>
 				    <subtract>
-				    <subtract>
-				    <subtract>
-				    <subtract>
 					<subtract>
 					<subtract>
 					<subtract>
@@ -59,10 +56,6 @@ own identifying information: Portions Copyright [yyyy]
 				     </subGraph>
 			         </subtract>
                                      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api">	
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>
@@ -114,15 +107,7 @@ own identifying information: Portions Copyright [yyyy]
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web-management">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
 			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jdbc-management">	
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>

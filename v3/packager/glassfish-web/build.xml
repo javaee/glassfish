@@ -38,13 +38,15 @@ own identifying information: Portions Copyright [yyyy]
 				    <subtract>
 				    <subtract>
 				    <subtract>
-				    <subtract>
-				    <subtract>
+					<subtract>
+					<subtract>
+					<subtract>
+					<subtract>
+					<subtract>
 					<subtract>
 					<subtract>
 					<subtract>
 						<subtract>
-							<subtract>
 				    <fullGraph/>
 			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
 	                                 <scope level="compile,runtime"/>
@@ -56,10 +58,6 @@ own identifying information: Portions Copyright [yyyy]
 				     </subGraph>
 			         </subtract>
                                      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api">	
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>
@@ -111,10 +109,22 @@ own identifying information: Portions Copyright [yyyy]
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
 			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web-management">	
+			     <subGraph groupID="javax.servlet" artifactID="servlet-api">	
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
-			 </subtract>
+			     </subtract>
+			      <subGraph groupID="javax.servlet.jsp" artifactID="jsp-api">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			      <subGraph groupID="javax.servlet.jsp.jstl" artifactID="jstl-api">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="javax.el" artifactID="el-api">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
 		</scope>					 
        </graphDef>
 

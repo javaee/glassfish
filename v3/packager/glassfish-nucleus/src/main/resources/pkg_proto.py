@@ -48,7 +48,8 @@ pkg = {
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
-                        "pkg:/glassfish-api" : {"type" : "require" },
+			"pkg:/felix" : {"type" : "require" },
+                        "pkg:/glassfish-hk2" : {"type" : "require" },
                         "pkg:/glassfish-grizzly" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish", "bin" ],

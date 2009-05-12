@@ -125,7 +125,17 @@
             <artifactId>deployment-autodeploy</artifactId>
             <version>${project.version}</version>
         </dependency>
-       <dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+	    <version>${project.version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-ee-api</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
+        <dependency>
            <!-- base distribution image, move assembly here later -->
            <groupId>org.glassfish.packager</groupId>
            <artifactId>nucleus-base</artifactId>
@@ -168,12 +178,6 @@
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-       	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-api</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-       </dependency>     
     </dependencies>
 
     <profiles>
