@@ -83,12 +83,8 @@ public class ProgressPanel extends javax.swing.JPanel {
         FlowLabel flowTextAreaLabel = new FlowLabel();
         flowProgressLabel = new FlowLabel();
         progressBar = new ProgressBar();
-        resultTextArea = new JTextArea(){
-            public boolean isFocusTraversable()
-            {
-                return false;
-            }
-        };
+        resultTextArea = new JTextArea();
+        resultTextArea.setFocusable(false);
         resultTextArea.setEditable(false);
         resultTextArea.setLineWrap(true);
         jscrollpane = new JScrollPane(resultTextArea, 20, 30);
