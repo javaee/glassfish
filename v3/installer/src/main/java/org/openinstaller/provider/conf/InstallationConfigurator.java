@@ -626,36 +626,43 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
 }
 
 void unconfigureUpdatetool(String installDir) throws Exception {
-
     boolean isWindows = false;
     if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
         isWindows=true;
     }
+    /* Try to shutdown the notifer. */
     try {
-
+            String shutdownCommand;
+            if (isWindows)
+                 shutdownCommand = installDir + "\\updatetool\\bin\\updatetool.exe";
+            else
+                shutdownCommand = installDir + "/updatetool/bin/updatetool";
+            String[] shutdownCommandArray = { shutdownCommand, "--n","--shutdown"};
+            LOGGER.log(Level.INFO, "Shutting down notifier process");
+            ExecuteCommand shutdownExecuteCommand = new ExecuteCommand(shutdownCommandArray);
+            shutdownExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
+            shutdownExecuteCommand.setCollectOutput(true);
+            shutdownExecuteCommand.execute();
+       } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Exception while unregistering notifier: " + e.getMessage());
+       }
+    /* Now unregister notifer. */
+    try {
             String configCommand;
-        
             if (isWindows) {
                  configCommand = installDir + "\\updatetool\\bin\\updatetoolconfig.bat";
             }
             else {
                 configCommand = installDir + "/updatetool/bin/updatetoolconfig";
             }
-
-            String[] configCommandArray = { configCommand, 
-                "--unregister" };
-            
+            String[] configCommandArray = { configCommand, "--unregister" };
             LOGGER.log(Level.INFO, "Unregistering notifier process");
-            
             ExecuteCommand configExecuteCommand = new ExecuteCommand(configCommandArray);
             configExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
             configExecuteCommand.setCollectOutput(true);
-        
             configExecuteCommand.execute();
-
             productError = productError +configExecuteCommand.getErrors();
        } catch (Exception e) {
-
             LOGGER.log(Level.INFO, "Exception while unregistering notifier: " + e.getMessage()); 
        }
 }
@@ -692,6 +699,7 @@ void unconfigureGlassfish(String installDir) throws Exception {
             stopWrapperFile.delete();
 	}
         if (domainsDir.exists()) {
+    	    stopDomain(installDir);
             deleteDirectory(domainsDir);
 	}
 	// delete modules dir content explicitly since it will contain
@@ -709,6 +717,34 @@ void unconfigureGlassfish(String installDir) throws Exception {
     }
 
 }
+
+
+/* Try to stop domain, so that uninstall can cleanup files effectively.
+Currently only tries to stop the default domain.
+*/ 
+public void stopDomain(String installDir) {
+        ExecuteCommand asadminExecuteCommand = null;
+        try {
+            String asadminCommand;
+    	    if (System.getProperty("os.name").indexOf("Windows") !=-1 ) 
+                asadminCommand = installDir + "\\glassfish\\bin\\asadmin.bat";
+            else 
+                asadminCommand = installDir + "/glassfish/bin/asadmin";
+
+            String[] asadminCommandArray = { asadminCommand, "stop-domain","domain1"};
+            LOGGER.log(Level.INFO, "Stopping default domain domain1");
+
+            asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
+            asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
+            asadminExecuteCommand.setCollectOutput(true);
+            asadminExecuteCommand.execute();
+            LOGGER.log(Level.INFO, "Asadmin output: " + asadminExecuteCommand.getAllOutput()); 
+       } catch (Exception e) {
+            LOGGER.log(Level.INFO, "In exception, asadmin output: " + asadminExecuteCommand.getAllOutput()); 
+            LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage());
+       }
+}
+
 
 /* Validates to make sure that the asadmin command line does not
 include duplicate port values. Currently HTTP and Admin ports are

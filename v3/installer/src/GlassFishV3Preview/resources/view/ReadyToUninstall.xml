@@ -68,7 +68,8 @@ run(){
   toOperateOn = wizard.getComponentByName((Container)content, "TO_OPERATE_ON");
   theOperations = (java.util.List )Scripting.getInterpreter().get("gOperations");
   String theProductList = "<HTML><body><font face='Sans-Serif' size='3'>";
-  theProductList = theProductList +(String)TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME")+"<ul>";
+  theProductList += "Please stop <b>all</b> the processes pertaining to this installation before proceeding with the uninstallation.<p>";
+  theProductList += (String)TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME")+"<ul>";
   //  FIXME: This is temporary solution to remove duplicate operation entries.
   theSeenSet = new HashSet();
   for (Operation op : theOperations) {
