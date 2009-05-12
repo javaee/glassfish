@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../../../../config/common.xml">
-<!ENTITY run SYSTEM "file:./../../../../../../config/run.xml">
+<!ENTITY commonSetup SYSTEM "./../../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../../../../config/run.xml">
 ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
