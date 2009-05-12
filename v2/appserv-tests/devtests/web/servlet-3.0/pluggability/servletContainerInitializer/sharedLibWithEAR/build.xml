@@ -16,7 +16,7 @@
 
     <!-- The deploy, run, undeploy cycle is done twice to test the corner case
          that was uncovered by SQE tests -->
-    <target name="all" depends="init-sharedlib,build,deploy,run,undeploy,deploy,run,undeploy,clean-lib"/>
+    <target name="all" depends="init-sharedlib,build,deploy,run,undeploy,deploy,run,undeploy,stopDomain,clean-lib"/>
 
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
@@ -26,7 +26,7 @@
 	<delete file="${env.S1AS_HOME}/lib/TestSharedLib1.jar"/>
 	<delete file="${env.S1AS_HOME}/lib/TestSharedLib2.jar"/>
 	<delete file="${env.S1AS_HOME}/lib/TestSharedLib3.jar"/>
-        <antcall target="restart-server-instance-common"/>
+        <antcall target="startDomain"/>
     </target>
 
     <target name="init-sharedlib" depends="init-common">
