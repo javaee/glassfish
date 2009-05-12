@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-<!ENTITY testproperties SYSTEM "./build.properties">
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
@@ -11,6 +12,7 @@
     &commonSetup;
     &commonBuild;
     &testproperties;
+    &run;
 
     <target name="all" depends="setup,build,deploy,run,undeploy,stopDomain,restore"/>
 
