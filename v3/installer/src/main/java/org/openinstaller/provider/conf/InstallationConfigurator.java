@@ -637,7 +637,7 @@ void unconfigureUpdatetool(String installDir) throws Exception {
                  shutdownCommand = installDir + "\\updatetool\\bin\\updatetool.exe";
             else
                 shutdownCommand = installDir + "/updatetool/bin/updatetool";
-            String[] shutdownCommandArray = { shutdownCommand, "--n","--shutdown"};
+            String[] shutdownCommandArray = { shutdownCommand, "--notifier","--shutdown"};
             LOGGER.log(Level.INFO, "Shutting down notifier process");
             ExecuteCommand shutdownExecuteCommand = new ExecuteCommand(shutdownCommandArray);
             shutdownExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
