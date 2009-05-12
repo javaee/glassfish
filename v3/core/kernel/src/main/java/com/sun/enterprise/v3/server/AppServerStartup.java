@@ -107,10 +107,17 @@ public class AppServerStartup implements ModuleStartup {
     private Thread serverThread;
 
     public void start() {
+        logger.logp(Level.INFO, "AppServerStartup", "start", "Starting GlassFish Kernel", new Object[0]);
+
+        // See issue #5596 to know why we set context CL as common CL.
+        Thread.currentThread().setContextClassLoader(
+                cch.getCommonClassLoader());
+        run();
+
         final CountDownLatch latch = new CountDownLatch(1);
 
-        // wait indefinitely for shutdown to be called by starting
-        // a non-daemon thread.
+        // spwan a non-daemon thread that waits indefinitely for shutdown request.
+        // This stops the VM process from exiting.
         serverThread = new Thread("GlassFish Kernel Main Thread"){
             @Override
             public void run() {
@@ -121,10 +128,6 @@ public class AppServerStartup implements ModuleStartup {
                 // thread has started.
                 latch.countDown();
 
-                // See issue #5596 to know why we set context CL as common CL.
-                Thread.currentThread().setContextClassLoader(
-                        cch.getCommonClassLoader());
-                AppServerStartup.this.run();
                 try {
                     synchronized (this) {
                         wait(); // Wait indefinitely until shutdown is requested

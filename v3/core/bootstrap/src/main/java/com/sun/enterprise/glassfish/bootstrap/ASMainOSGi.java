@@ -107,13 +107,16 @@ public abstract class ASMainOSGi extends AbstractMain {
                 new File(glassfishDir, "modules/").getAbsolutePath());
         // Set the autostart bundle list. This is used by bootstrap bundle to
         // locate the bundles and start them. The path is relative to bundles dir
+        // Please note, we install fileinstall after osgi-adapter, as we don't
+        // want fileinstall to start bundles from autodeploy-bundles dir
+        // before kernel is started.
         if (System.getProperty("org.jvnet.hk2.osgimain.autostartBundles") == null) {
             final String bundlePaths =
                     "org.apache.felix.shell.jar, " +
                     "org.apache.felix.shell.remote.jar, " +
                     "org.apache.felix.configadmin.jar, " +
-                    "org.apache.felix.fileinstall.jar, " +
-                    "osgi-adapter.jar";
+                    "osgi-adapter.jar, " +
+                    "org.apache.felix.fileinstall.jar";
             System.setProperty("org.jvnet.hk2.osgimain.autostartBundles", bundlePaths);
         }
     }
