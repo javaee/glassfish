@@ -82,6 +82,20 @@
     <echo message="${message1}"/>
 </target>
 
+<target name="enable-security-manager" depends="setOSConditions,asenv-unix,asenv-windows">
+    <exec executable="${ASADMIN}">
+	<arg line="create-jvm-options"/>
+	<arg line="-Djava.security.manager"/>
+    </exec>
+</target>
+
+<target name="disable-security-manager" depends="setOSConditions,asenv-unix,asenv-windows">
+    <exec executable="${ASADMIN}">
+	<arg line="delete-jvm-options"/>
+	<arg line="-Djava.security.manager"/>
+    </exec>
+</target>
+
 <target name="jrubyHomeCon"  depends="setOSConditions,asenv-unix,asenv-windows">
  <echo message="asconf ${asenv_conf}"/>
       <loadfile property="asconf_jruby" srcfile="${asenv_conf}" failonerror="false">

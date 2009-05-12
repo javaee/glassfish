@@ -80,7 +80,18 @@ testing the v3 web distribution.<br>
   <li>mvn -Dglassfish.home={V3 Installation Dir} <span
  style="font-weight: bold;">-P test_wd test</span> | tee run.log</li>
 </ul>
-<span style="font-weight: bold;">3. To Run QL in V3 Debug Profile:</span><br>
+<span style="font-weight: bold;">3. To Run QL in Web Profile with
+Security Manager Turned On:</span><br>
+<br>
+The web profile (-P test_wd_security) should be used for
+testing the v3 web distribution.<br>
+<ul style="font-style: italic;">
+  <li>mvn -Dglassfish.home={V3 Installation Dir} <span
+ style="font-weight: bold;">-P test_wd_security test</span> | tee
+run.log</li>
+</ul>
+<br>
+<span style="font-weight: bold;">4. To Run QL in V3 Debug Profile:</span><br>
 <br>
 Usually, user wants to run QL against a running v3 instance started
 in debug mode. The dev_debug profile can be used (-P dev_debug) in this
@@ -98,7 +109,7 @@ Note: The tests require restart domain (admincli) will be skipped in
 this scenario.<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
- style="font-weight: bold;">4.
+ style="font-weight: bold;">5.
 To Run Individual Test Suite from
 Directory Level:</span><br>
 <br>
@@ -120,7 +131,7 @@ Installation Dir} all</span><br>
     </li>
   </ul>
 </ul>
-<span style="font-weight: bold;">5. To Run JRuby Tests</span><span
+<span style="font-weight: bold;">6. To Run JRuby Tests</span><span
  style="font-weight: bold;"> in QL:</span><br>
 <br>
 The JRuby tests need JRuby/Rails gems environment and JRuby/Rails will
@@ -144,7 +155,7 @@ test | tee run.log</li>
     <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
   </ul>
 </ul>
-<span style="font-weight: bold;">6. Using Local Maven Repository in
+<span style="font-weight: bold;">7. Using Local Maven Repository in
 Non-Default Directory:</span><br>
 Section 1 and 2 assume the use of default local maven repository
 directory, ${user.home}/.m2/repository. If you local maven repository

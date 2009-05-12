@@ -40,6 +40,7 @@
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
+     <import file="${basedir}/gfproject/v3-targets.xml"/>
     
     <description>Builds, tests, and runs the project V3 Quicklook</description>
     <target name="all_wd" depends="clean">
@@ -51,6 +52,25 @@
         <antcall target="runtest">
         <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
+        <antcall target="quicklook-summary"/>
+        <antcall target="stop-server"/>
+        <antcall target="stop-derby"/>
+        <antcall target="testng-summary"/>
+	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
+        <record name="allrun.output" action="stop"/>
+    </target>
+
+    <target name="all_wd_security" depends="clean">
+        <record name="allrun.output" action="start"/>
+        <antcall target="start-derby"/>        
+        <antcall target="start-server-felix"/>
+	<antcall target="enable-security-manager"/>
+	<antcall target="build-deploy"/>
+        <ant dir="admincli" target="build-deploy"/>
+        <antcall target="runtest">
+        <param name="testng.xml" value="testng.xml"/> </antcall>
+        <antcall target="undeploy"/>
+	<antcall target="disable-security-manager"/>
         <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
@@ -98,7 +118,6 @@
         <ant dir="amx" target="build"/>
         <ant dir="admin" target="build"/>
         <ant dir="adminconsole" target="build"/>
-        <ant dir="classloader/hellojsf" target="build-deploy"/>
         <ant dir="web/helloworld" target="build-deploy"/>
         <ant dir="web/jsfastrologer" target="build-deploy"/>
         <ant dir="web/jsfinjection" target="build-deploy"/>
@@ -109,10 +128,6 @@
         <ant dir="ejb/slsbnicmt" target="build-deploy"/>
         <ant dir="ejb/sfulnoi" target="build-deploy"/>
         <ant dir="bean-validator/simple-bv-servlet" target="build-deploy"/>
-        <!-- ant dir="web/strutsbasic" target="build"/ -->
-        <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
-        <!--<ant dir="ejb30/hello" target="build"/>
-        <ant dir="adminweb/basic" target="build"/>-->
         <record name="build.output" action="stop"/>
     </target>
 
@@ -138,8 +153,6 @@
         <ant dir="ejb/slsbnicmt" target="undeploy"/>
         <ant dir="ejb/sfulnoi" target="undeploy"/>
         <ant dir="bean-validator/simple-bv-servlet" target="undeploy"/>
-        <!-- ant dir="web/strutsbasic" target="undeploy"/ -->
-        <!-- ant dir="persistence/servlet-jpa-app" target="undeploy"/ -->   
         <record name="undeploy.output" action="stop"/>
     </target>
 
