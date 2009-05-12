@@ -62,6 +62,11 @@ public class WebModuleConfig {
      * by the web application (i.e compiled JSP class files etc) resides.
      */
     private String _baseDir = null;
+
+    /**
+     * The work directory
+     */
+    private String workDir = null;
             
     /**
      * The directory under which the work directory for files generated
@@ -203,17 +208,26 @@ public class WebModuleConfig {
     }
 
     /**
-     * Return the work directory for this web application.
-     *
-     * The work directory is either
-     *   generated/j2ee-apps/$appID/$moduleID
-     * or
-     *   generated/j2ee-modules/$moduleID
+     * Sets the work directory for this web application.
      */
-    public String getWorkDir() {
-        return getWebDir(_baseDir);
+    public synchronized void setWorkDir(String workDir) {
+        this.workDir = workDir;
     }
 
+    /**
+     * Gets the work directory for this web application.
+     *
+     * The work directory is either
+     *   generated/jsp/$appID/$moduleID
+     * or
+     *   generated/jsp/$moduleID
+     */
+    public synchronized String getWorkDir() {
+        if (workDir == null) {
+            workDir = getWebDir(_baseDir);
+        }
+        return workDir;
+    }
 
     // START S1AS 6178005
     /**
@@ -225,21 +239,19 @@ public class WebModuleConfig {
         return getWebDir(stubBaseDir);
     }
     // END S1AS 6178005
-
     
     /**
-     * Set the base work directory for this web application.
+     * Sets the parent of the work directory for this web application.
      *
-     * The actual work directory is a subdirectory (using the name of the
-     * web application) of this base directory.
+     * The actual work directory is a subdirectory named after
+     * the web application.
      *
      * @param baseDir The new base directory under which the actual work
-     *                directory will be created
+     * directory will be created
      */
     public void setWorkDirBase(String baseDir) {
         _baseDir = baseDir;
     }
-
 
     // START S1AS 6178005
     /**
@@ -252,7 +264,6 @@ public class WebModuleConfig {
     }
     // END S1AS 6178005
 
-
     /**
      * Return the object representation of the deployment descriptor specified
      * for the web application.
@@ -260,7 +271,6 @@ public class WebModuleConfig {
     public WebBundleDescriptor getDescriptor() {
         return _wbd;
     }
-
 
     /**
      * Set the deployment descriptor object describing the contents of the
@@ -271,15 +281,13 @@ public class WebModuleConfig {
     public void setDescriptor(WebBundleDescriptor wbd) {
         _wbd = wbd;
     }
-    
-    
+        
     /**
      * Return the objectType property
      */
     public String getObjectType() {
         return _objectType;
     }
-
 
     /**
      * Set the objectType property.
@@ -289,8 +297,7 @@ public class WebModuleConfig {
     public void setObjectType(String objectType) {
         _objectType = objectType;
     }
-    
-    
+        
     /*
      * Appends this web module's id to the given base directory path, and
      * returns it.
@@ -305,7 +312,19 @@ public class WebModuleConfig {
 
         StringBuilder dir = new StringBuilder(baseDir);
         dir.append(File.separator);
-        dir.append(FileUtils.makeLegalNoBlankFileName(_wbd.getModuleID()));
+
+        Application app = _wbd.getApplication();
+        if (app != null && !app.isVirtual()) {
+            dir.append(FileUtils.makeFriendlyFilename(
+                app.getRegistrationName()));
+            dir.append(File.separator);
+            dir.append(FileUtils.makeFriendlyFilename(
+                _wbd.getModuleDescriptor().getArchiveUri()));
+        } else {
+            dir.append(FileUtils.makeLegalNoBlankFileName(
+                _wbd.getModuleID()));
+        }
+
         return dir.toString();
     }
 }

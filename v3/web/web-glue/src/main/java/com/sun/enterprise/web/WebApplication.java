@@ -49,6 +49,7 @@ import com.sun.logging.LogDomains;
 import java.util.Iterator;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.plugin.common.EnvEntry;
 import org.glassfish.web.plugin.common.ContextParam;
@@ -80,9 +81,13 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         if (appContext!=null) {
             wmInfo.setAppClassLoader(appContext.getClassLoader());
+            if (appContext instanceof DeploymentContext) {
+                wmInfo.setWorkDir(
+                    ((DeploymentContext)appContext).getScratchDir(
+                    "jsp").getPath());
+            }
             applyApplicationConfig(appContext);
         }
-
 
         // TODO : dochez : add action report here...
         List<Result<WebModule>> results = container.loadWebModule(
