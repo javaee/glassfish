@@ -47,7 +47,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -82,6 +82,42 @@ public class SmartFileTest {
         for(String path : FILENAMES) {
             System.out.println(path + " --> " + SmartFile.sanitize(path));
         }
+    }
+
+    /**
+     * Test of sanitizePaths method, of class SmartFile.
+     */
+    @Test
+    public void sanitizePaths() {
+        String sep = File.pathSeparator;
+
+        // where are we now?
+        String here = SmartFile.sanitize(".");
+
+        String cp1before = "/a/b/c" + sep + "qqq" + sep + "z/e";
+        String cp1expected = "/a/b/c" + sep + here + "/qqq" + sep + here + "/z/e";
+
+        if(sep.equals(";")) {
+            // Windows -- drive letter is needed...
+            String drive = here.substring(0, 2);
+            cp1expected = drive + "/a/b/c;" + here + "/qqq;" + here + "/z/e";
+        }
+        
+        System.out.println("******** Sanitized ClassPath Test ******************");
+
+        String cp = System.getProperty("java.class.path");
+        System.out.println("Current Classpath: " + cp + "\nSanitized Classpath: "
+                + SmartFile.sanitizePaths(cp));
+
+        System.out.println("here: " + here);
+        System.out.println("before: " + cp1before);
+        System.out.println("after: " + SmartFile.sanitizePaths(cp1before));
+        System.out.println("Expected: " + cp1expected);
+        System.out.println("***************************************************");
+
+	// All the QL and devtests are very unstable right now.
+	// I'll uncomment this later whn things are rock solid.
+        //assertEquals(cp1expected, SmartFile.sanitizePaths(cp1before));
     }
 
     private static final String[] FILENAMES = new String[]

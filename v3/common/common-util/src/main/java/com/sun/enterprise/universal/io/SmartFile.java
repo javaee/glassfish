@@ -94,6 +94,35 @@ public class SmartFile {
         SmartFile sf = new SmartFile(filename);
         return sf.path;
     }
+    /**
+     * Sanitize a "Classpath-like" list of Paths.
+     * @param pathsString A string of paths, each separated by File.pathSeparator
+     * @return The sanitized paths
+     */
+
+    public static String sanitizePaths(String pathsString) {
+        if(!ok(pathsString))
+            return pathsString;
+
+        try {
+            String[] paths = pathsString.split(File.pathSeparator);
+            StringBuilder sb = new StringBuilder();
+
+            // TODO - possible enhancement -- add the strings to a Set to get rid of dupes
+            for(int i = 0; i < paths.length; i++) {
+                String path = paths[i];
+
+                if(i > 0)
+                    sb.append(File.pathSeparator);
+
+                sb.append(SmartFile.sanitize(path));
+            }
+            return sb.toString();
+        }
+        catch(Exception e) {
+            return pathsString;
+        }
+    }
     
     private SmartFile(File f) {
         if(f == null)
@@ -187,6 +216,10 @@ public class SmartFile {
 
     private boolean hasDots(List<String> elems) {
         return elems.contains(".") || elems.contains("..");
+    }
+
+    private static boolean ok(String s) {
+        return s != null && s.length() > 0;
     }
 
     private String path;
