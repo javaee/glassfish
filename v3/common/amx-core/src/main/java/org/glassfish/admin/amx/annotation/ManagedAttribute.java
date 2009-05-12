@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.annotation;
 
+import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -44,6 +45,7 @@ import java.lang.annotation.Target;
    @author Lloyd Chambers
  */
 @Retention(RUNTIME)
+@Documented
 @Target({METHOD})
 @Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 public @interface ManagedAttribute {

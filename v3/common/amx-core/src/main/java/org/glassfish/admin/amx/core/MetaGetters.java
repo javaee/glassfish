@@ -35,7 +35,10 @@
  */
 package org.glassfish.admin.amx.core;
 
+import javax.management.Descriptor;
+import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
@@ -78,7 +81,18 @@ public interface MetaGetters
     
     /** From Descriptor: return the group value */
     public String  group();
+    
+    /** MBeanInfo descriptor */
+    public Descriptor  descriptor();
+    
+    /** Get MBeanOperationInfo for specified attribute name. */
+    public MBeanAttributeInfo attributeInfo(  final String attrName);
+    
+    /** Get MBeanOperationInfo for specified operation. */
+    public MBeanOperationInfo operationInfo(final String operationName);
 }
+
+
 
 
 

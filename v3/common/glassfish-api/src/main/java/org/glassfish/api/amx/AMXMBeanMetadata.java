@@ -35,6 +35,7 @@
  */
 package org.glassfish.api.amx;
 
+import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import java.lang.annotation.Retention;
@@ -53,6 +54,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target({TYPE, ANNOTATION_TYPE})
+@Documented
 public @interface AMXMBeanMetadata {
     /**
        If true, states that the MBeanInfo is immutable; that once MBeanInfo is

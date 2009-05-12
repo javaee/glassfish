@@ -25,6 +25,8 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.ObjectName;
 import javax.management.modelmbean.DescriptorSupport;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
@@ -39,11 +41,13 @@ import org.glassfish.admin.amx.util.MapUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.quality.ToDo;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Units;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
@@ -422,8 +426,9 @@ public class ConfigBeanJMXSupport {
         return Element.class.getName().equals(value);
     }
 
-    public static DescriptorSupport descriptor(final Attribute a) {
+    public static DescriptorSupport descriptor(final AttributeMethodInfo info) {
         final DescriptorSupport d = new DescriptorSupport();
+        final Attribute a = info.attribute();
 
         d.setField(DESC_KIND, Attribute.class.getName());
 
@@ -435,7 +440,7 @@ public class ConfigBeanJMXSupport {
         d.setField(DESC_REQUIRED, a.required());
         d.setField(DESC_REFERENCE, a.reference());
         d.setField(DESC_VARIABLE_EXPANSION, a.variableExpansion());
-        d.setField(DESC_DATA_TYPE, a.dataType().getName());
+        d.setField(DESC_DATA_TYPE, info.inferDataType().getName());
 
         return d;
     }
@@ -578,7 +583,7 @@ public class ConfigBeanJMXSupport {
                     Object actualValue = fieldValue;
                     if ( actualValue != null && ! actualValue.getClass().getName().startsWith("java.lang") )
                     {
-                        actualValue = "" + fieldValue;
+                        actualValue = SmartStringifier.toString(actualValue);
                     }
                     d.setField( prefix + fieldName, actualValue );
                 }
@@ -590,7 +595,7 @@ public class ConfigBeanJMXSupport {
     }
 
     public MBeanAttributeInfo attributeToMBeanAttributeInfo(final AttributeMethodInfo info) {
-        final Descriptor descriptor = descriptor(info.attribute());
+        final Descriptor descriptor = descriptor(info);
 
         final String name = info.attrName();
         final String xmlName = info.xmlName();
@@ -600,6 +605,21 @@ public class ConfigBeanJMXSupport {
         if ( info.pattern() != null )
         {
             descriptor.setField(DESC_PATTERN_REGEX, info.pattern() );
+        }
+        
+        if ( info.units() != null )
+        {
+            descriptor.setField(DESC_UNITS, info.units() );
+        }
+        
+        if ( info.min() != null )
+        {
+            descriptor.setField(DESC_MIN, info.min() );
+        }
+        
+        if ( info.max() != null )
+        {
+            descriptor.setField(DESC_MAX, info.max() );
         }
         
         addAnnotationsToDescriptor( descriptor, info );
@@ -696,6 +716,30 @@ public class ConfigBeanJMXSupport {
             return mElement.key();
         }
     }
+    
+    private static boolean isIntegral(final String s ) {
+        if ( s.equals("0") || s.equals("1") ) return true;
+        
+        try {
+            Long.parseLong(s);
+            return true;
+        }
+        catch( Exception e )
+        {
+        }
+        return false;
+    }
+    
+    private static final Map<String,String> UNITS_SUFFIXES = MapUtil.newMap(
+        "Millis", Units.MILLISECONDS,
+        "Milliseconds", Units.MILLISECONDS,
+        "Seconds", Units.SECONDS,
+        "Hours", Units.HOURS,
+        "Days", Units.DAYS,
+        "Bytes", Units.BYTES,
+        "Kilobytes", Units.KILOBYTES,
+        "Megabytes", Units.MEGABYTES
+    );
 
     public static final class AttributeMethodInfo extends MethodInfo {
 
@@ -726,6 +770,78 @@ public class ConfigBeanJMXSupport {
         public String pattern() {
             final javax.validation.constraints.Pattern pat = mMethod.getAnnotation(javax.validation.constraints.Pattern.class);
             return pat == null ? null : pat.regexp();
+        }
+        
+        public String units() {
+            final Units units = mMethod.getAnnotation(Units.class);
+            return units == null ? inferUnits() : units.units();
+        }
+
+        public Long min() {
+            final Min min = mMethod.getAnnotation(Min.class);
+            return min == null ? null : min.value();
+        }
+
+        public Long max() {
+            final Max max = mMethod.getAnnotation(Max.class);
+            return max == null ? null : max.value();
+        }
+        
+        /** infer the data type, using specified value if present */
+        public String inferUnits()
+        {
+            if ( Number.class.isAssignableFrom( inferDataType() ) )
+            {
+                final String attrName = attrName();
+                for( final String key : UNITS_SUFFIXES. keySet() )
+                {
+                    if ( attrName.endsWith(key) )
+                    {
+                        return UNITS_SUFFIXES.get(key);
+                    }
+                }
+                return Units.COUNT;
+            }
+            return null;
+        }
+        
+        /** infer the data type, using specified value if present */
+        public Class<?> inferDataType()
+        {
+            Class<?> dataType = attribute().dataType();
+            if ( dataType != String.class )
+            {
+                //  explicitly specified as non-String, use it
+                return dataType;
+            }
+            
+            // infer a Boolean, strictly "true" or "false"
+            final Object defaultValue = attribute().defaultValue();
+            if ( defaultValue.equals("true") || defaultValue.equals("false") )
+            {
+                return Boolean.class;
+            }
+            
+            // infer a number
+            if ( max() != null ) {
+                if ( max().equals( Long.MAX_VALUE ) ) {
+                    return Long.class;
+                }
+                else if ( max().equals( Integer.MAX_VALUE ) ) {
+                    return Integer.class;
+                }
+                else {
+                    return Integer.class;
+                }
+            }
+            else if ( min() != null ) {
+                return min().equals( Long.MIN_VALUE ) ? Long.class : Integer.class;
+            }
+            else if ( isIntegral(""+defaultValue) ) {
+                return Long.class;
+            }
+            
+            return dataType;
         }
         
         public boolean notNull() {

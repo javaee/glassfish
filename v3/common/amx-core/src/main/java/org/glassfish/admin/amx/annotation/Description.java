@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -44,6 +45,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 // target of anything
 @Taxonomy(stability = Stability.NOT_AN_INTERFACE)
+@Documented
 public @interface Description {
     public String value() default "";
 }

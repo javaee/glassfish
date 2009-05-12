@@ -36,6 +36,7 @@
  */
 package org.glassfish.admin.amx.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
@@ -48,6 +49,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
   @author llc
  */
 @Retention(RUNTIME)
+@Documented
 @Target( {METHOD, TYPE, ANNOTATION_TYPE, FIELD, PACKAGE})
 public @interface Taxonomy  {
     public Stability stability() default Stability.UNSPECIFIED;

@@ -141,7 +141,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(dataType=Boolean.class)
     String getEnabled();
 
     /**
@@ -175,7 +175,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(dataType=Boolean.class)
     String getAvailabilityEnabled();
 
     /**
@@ -192,7 +192,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(dataType=Boolean.class)
     String getDirectoryDeployed();
 
     /**

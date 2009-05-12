@@ -1012,10 +1012,37 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     
     public String java() {
         final Tools tools  = getDomainRootProxy().getTools();
-        
         return tools.java( getObjectName() );
     }
+    
+    public Descriptor descriptor() {
+        return getMBeanInfo().getDescriptor();
+    }
+    
+    public MBeanAttributeInfo attributeInfo(final String attrName) {
+        for( final MBeanAttributeInfo info: getMBeanInfo().getAttributes() )
+        {
+            if ( info.getName().equals(attrName) )
+            {
+                return info;
+            }
+        }
+        return null;
+    }
+    
+    public MBeanOperationInfo operationInfo(final String operationName) {
+        for( final MBeanOperationInfo info: getMBeanInfo().getOperations() )
+        {
+            if ( info.getName().equals(operationName) )
+            {
+                return info;
+            }
+        }
+        return null;
+    }
 }
+
+
 
 
 

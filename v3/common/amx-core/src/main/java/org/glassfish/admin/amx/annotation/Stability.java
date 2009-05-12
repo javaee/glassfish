@@ -37,6 +37,7 @@
 package org.glassfish.admin.amx.annotation;
 
 
+
 /**
   Taxonomy values.
   See http://opensolaris.org/os/community/arc/policies/interface-taxonomy/

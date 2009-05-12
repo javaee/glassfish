@@ -19,10 +19,13 @@ import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
  * @author llc
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-public final class AMXConfigHelper
+public class AMXConfigHelper
 {
-    private AMXConfigHelper()
+    private final AMXConfigProxy mAMX;
+    
+    public AMXConfigHelper(final AMXConfigProxy amx)
     {
+        mAMX = amx;
     }
 
     
@@ -33,12 +36,10 @@ public final class AMXConfigHelper
         @param fieldName name of the field in the Descriptor for each Attribute
         @param value value of the field in the Descriptor for each Attribute
      */
-    public static Set<String> attributeNamesByDescriptorField(
-        final AMXConfigProxy amx,
-        final String fieldName, final String value)
+    public  Set<String> attributeNamesByDescriptorField(final String fieldName, final String value)
     {
         final Set<String> attrNames = new HashSet<String>();
-        for (final MBeanAttributeInfo attrInfo : amx.extra().mbeanInfo().getAttributes())
+        for (final MBeanAttributeInfo attrInfo : mAMX.extra().mbeanInfo().getAttributes())
         {
             final Descriptor desc = attrInfo.getDescriptor();
             if (value.equals(desc.getFieldValue(fieldName)))
@@ -49,22 +50,98 @@ public final class AMXConfigHelper
         return attrNames;
     }
     
-    public static Set<String> simpleAttributes(final AMXConfigProxy amx)
+    public Set<String> simpleAttributes()
     {
         final String elementKind = org.jvnet.hk2.config.Element.class.getName();
-        final Set<String> elementNames = attributeNamesByDescriptorField(amx, DESC_KIND, elementKind);
-        final Set<String> remaining = amx.attributeNames();
+        final Set<String> elementNames = attributeNamesByDescriptorField(DESC_KIND, elementKind);
+        final Set<String> remaining = mAMX.attributeNames();
         remaining.removeAll(elementNames);
         return remaining;
     }
-
+    
     /**
         Get simple attributes; those that are not Element kind.
      */
-    public static Map<String, Object> simpleAttributesMap(final AMXConfigProxy amx)
+    public Map<String, Object> simpleAttributesMap()
     {
-        return amx.attributesMap( simpleAttributes(amx) );
+        return simpleAttributesMap();
+    }
+    
+    public final Descriptor attributeDescriptor(final String attrName) 
+    {
+        final MBeanAttributeInfo info = mAMX.extra().attributeInfo(attrName);
+        return info == null ? null : info.getDescriptor();
+    }
+    
+    public final Object attributeDescriptorField(final String attrName, final String fieldName) 
+    {
+        final Descriptor desc = attributeDescriptor(attrName);
+        return desc == null ? null : desc.getFieldValue(fieldName);
+    }
+    
+    /**
+        Return the units (if any) for the specified attribute.
+     */
+    public String units( final String attrName ) {
+        return  (String)attributeDescriptorField( attrName, DESC_UNITS);
+    }
+    
+    /**
+        Return the units (if any) for the specified attribute.
+     */
+    public Long min( final String attrName ) {
+        return  (Long)attributeDescriptorField( attrName, DESC_MIN);
+    }
+    
+    /**
+        Return the units (if any) for the specified attribute.
+     */
+    public Long max( final String attrName ) {
+        return  (Long)attributeDescriptorField( attrName, DESC_MAX);
+    }
+    
+    /**
+        Return the dataType (if any) for the specified attribute eg java.lang.Boolean.
+     */
+    public String dataType( final String attrName ) {
+        return (String)attributeDescriptorField( attrName, DESC_DATA_TYPE);
+    }
+    
+    /**
+        Return the regex pattern (if any) for the specified attribute.
+     */
+    public String regexPattern( final String attrName ) {
+        return (String)attributeDescriptorField( attrName, DESC_PATTERN_REGEX);
+    }
+    
+    /**
+        Return whether the attribute is required.
+     */
+    public Boolean required( final String attrName ) {
+        return Boolean.parseBoolean( "" + attributeDescriptorField( attrName, DESC_NOT_NULL) );
+    }
+    
+    /**
+        Return the xml name of the attribute.
+     */
+    public String xmlName( final String attrName ) {
+        return (String)attributeDescriptorField( attrName, DESC_XML_NAME);
+    }
+    
+    /**
+        Return the xml name of the attribute.
+     */
+    public String defaultValue( final String attrName ) {
+        return (String)attributeDescriptorField( attrName, DESC_DEFAULT_VALUE);
     }
 }
+
+
+
+
+
+
+
+
 
 

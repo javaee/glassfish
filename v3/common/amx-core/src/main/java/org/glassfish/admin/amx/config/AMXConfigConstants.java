@@ -83,8 +83,17 @@ public final class AMXConfigConstants
     /** Descriptor:  true | false whether this field is required to be non-null */
     public static final String DESC_NOT_NULL = DESC_CONFIG_PREFIX + "notNull";
 
+    /** Descriptor:  units of attribute quantities */
+    public static final String DESC_UNITS = DESC_CONFIG_PREFIX + "units";
+
     /** Descriptor:  true | false whether variable expansion should be supplied */
-    public static final String DESC_PATTERN_REGEX = DESC_CONFIG_PREFIX + "pattern.regexp";
+    public static final String DESC_PATTERN_REGEX = DESC_CONFIG_PREFIX + "pattern";
+
+    /** Descriptor:  minimum value, as a String */
+    public static final String DESC_MIN = DESC_CONFIG_PREFIX + "min";
+    
+    /** Descriptor:  maximum value, as a String */
+    public static final String DESC_MAX = DESC_CONFIG_PREFIX + "max";
 
     /**
     The type of the Notification emitted when a config element
