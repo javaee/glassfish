@@ -12,7 +12,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
+    <target name="all" depends="setup,build,deploy,run,undeploy,stopDomain,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -66,6 +66,7 @@
 
     <target name="restore" depends="init-common">
         <delete file="/tmp/abc.jar" failonerror="true"/>
+        <antcall target="startDomain"/>
     </target>
 
     <target name="usage">
