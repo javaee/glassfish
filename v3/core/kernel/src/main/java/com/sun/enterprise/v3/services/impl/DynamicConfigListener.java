@@ -93,26 +93,28 @@ public class DynamicConfigListener implements ConfigListener {
 
     private <T extends ConfigBeanProxy> NotProcessed processNetworkListener(Changed.TYPE type,
         NetworkListener listener) {
-        int listenerPort = -1;
-        try {
-            listenerPort = Integer.parseInt(listener.getPort());
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Can not parse network-listener port number: " + listener.getPort());
-        }
-        if (type == Changed.TYPE.ADD) {
-            grizzlyService.createNetworkProxy(listener);
-            grizzlyService.registerNetworkProxy(listenerPort);
-        } else if (type == Changed.TYPE.REMOVE) {
-            grizzlyService.removeNetworkProxy(listenerPort);
-        } else if (type == Changed.TYPE.CHANGE) {
-            // Restart GrizzlyProxy on the port
-            // Port number or id could be changed - so try to find
-            // corresponding proxy both ways
-            boolean isRemovedOld =
-                grizzlyService.removeNetworkProxy(listenerPort) ||
-                    grizzlyService.removeNetworkProxy(listener.getName());
-            grizzlyService.createNetworkProxy(listener);
-            grizzlyService.registerNetworkProxy(listenerPort);
+        if (!"admin-listener".equals(listener.getName())) {
+            int listenerPort = -1;
+            try {
+                listenerPort = Integer.parseInt(listener.getPort());
+            } catch (NumberFormatException e) {
+                logger.log(Level.WARNING, "Can not parse network-listener port number: " + listener.getPort());
+            }
+            if (type == Changed.TYPE.ADD) {
+                grizzlyService.createNetworkProxy(listener);
+                grizzlyService.registerNetworkProxy(listenerPort);
+            } else if (type == Changed.TYPE.REMOVE) {
+                grizzlyService.removeNetworkProxy(listenerPort);
+            } else if (type == Changed.TYPE.CHANGE) {
+                // Restart GrizzlyProxy on the port
+                // Port number or id could be changed - so try to find
+                // corresponding proxy both ways
+                boolean isRemovedOld =
+                    grizzlyService.removeNetworkProxy(listenerPort) ||
+                        grizzlyService.removeNetworkProxy(listener.getName());
+                grizzlyService.createNetworkProxy(listener);
+                grizzlyService.registerNetworkProxy(listenerPort);
+            }
         }
         return null;
     }
