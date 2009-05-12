@@ -525,15 +525,15 @@ public class CLIRemoteCommand {
     private void initializePort() throws CommandException {
         String port = params.get("port");
         if(ok(port)) {
+            String badPortMsg = strings.get("badport", port);
             try {
                 hostPort = Integer.parseInt(port);
 
                 if(hostPort < 1 || hostPort > 65535)
-                    throw new CommandException(strings.get("badport", hostPort));
+                    throw new CommandException(badPortMsg);
             }
             catch(NumberFormatException e) {
-                // this makes the default port below fire
-                port = null;
+                throw new CommandException(badPortMsg);
             }
         }
 
