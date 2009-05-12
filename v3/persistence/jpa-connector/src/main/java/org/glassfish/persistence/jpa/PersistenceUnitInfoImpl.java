@@ -373,7 +373,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         // TODO caller of this method are _getJarFiles() and getPersitenceUnitRootUrl(). Both of them can be implemented using helper methods in PersistenceUnitDescriptor to better encapsulate
         if (absolutePuRootFile == null) {
             absolutePuRootFile = new File(providerContainerContractInfo.getApplicationLocation(),
-                    getAbsolutePuRoot().replace('/', File.separatorChar));
+                    getAbsolutePuRootWithinApplication().replace('/', File.separatorChar));
             if (!absolutePuRootFile.exists()) {
                 throw new RuntimeException(
                         absolutePuRootFile.getAbsolutePath() + " does not exist!");
@@ -390,7 +390,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
      * Returned path always uses '/' as path separator.
      * @return the absolute path of the root of this persistence unit
      */
-    private String getAbsolutePuRoot() {
+    private String getAbsolutePuRootWithinApplication() {
         // TODO shift this into PersistenceUnitDescriptor to better encapsulate 
         RootDeploymentDescriptor rootDD = persistenceUnitDescriptor.getParent().
                 getParent();

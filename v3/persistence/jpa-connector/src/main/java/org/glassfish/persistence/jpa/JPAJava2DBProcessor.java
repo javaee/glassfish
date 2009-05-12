@@ -125,14 +125,6 @@ public class JPAJava2DBProcessor {
     private static final String TOPLINK_DROP_JDBC_DDL_FILE       = "toplink.drop-ddl-jdbc-file-name"; // NOI18N
     private static final String ECLIPSELINK_DROP_JDBC_DDL_FILE   = "eclipselink.drop-ddl-jdbc-file-name"; // NOI18N
 
-    private static final String TOPLINK_WEAVING       = "toplink.weaving"; // NOI18N
-    private static final String ECLIPSELINK_WEAVING   = "persistence.tools.weaving"; // NOI18N
-
-    private static final String TOPLINK_TARGET_SERVER = "toplink.target-server"; //NOI18N
-    private static final String ECLIPSELINK_TARGET_SERVER = "eclipselink.target-server"; //NOI18N
-
-    private static final String  FALSE = "false"; //NOI18N
-
     private static Logger logger = LogDomains.getLogger(JPAJava2DBProcessor.class, LogDomains.DPL_LOGGER);
 
     /**

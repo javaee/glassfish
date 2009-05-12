@@ -37,6 +37,7 @@
 package org.glassfish.persistence.jpa;
 
 import javax.persistence.spi.ClassTransformer;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.naming.NamingException;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -94,4 +95,13 @@ public interface ProviderContainerContractInfo {
      * @return DeploymentContext associated with this instance.
      */
     DeploymentContext getDeploymentContext();
+
+    /**
+     * Register the give emf with underlying container
+     * @param unitName Name of correspoding PersistenceUnit 
+     * @param persistenceRootUri URI within application (excluding META-INF) for root of corresponding PersistenceUnit
+     * @param emf
+     */
+    void registerEMF(String unitName, String persistenceRootUri, EntityManagerFactory emf);
+
 }

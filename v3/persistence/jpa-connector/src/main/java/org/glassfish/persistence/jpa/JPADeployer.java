@@ -37,6 +37,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.naming.NamingException;
 import javax.persistence.spi.ClassTransformer;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.*;
 import java.lang.instrument.ClassFileTransformer;
@@ -216,6 +217,12 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
         public DeploymentContext getDeploymentContext() {
             return deploymentContext;
         }
+
+        public void registerEMF(String unitName, String persistenceRootUri, EntityManagerFactory emf) {
+            Application application = deploymentContext.getModuleMetaData(Application.class);
+            application.addEntityManagerFactory(unitName, persistenceRootUri, emf);
+        }
+
 
     } // class ProviderContainerContractInfoImpl
 

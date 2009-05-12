@@ -115,10 +115,6 @@ public class JPAApplication implements ApplicationContainer {
 
    }
 
-    JPAApplication() {
-        //TODO Needs to be removed once the hacks in JPADeployer are fixed 
-    }
-
     private void setSystemPropertyToEnableDoPrivilegedInEclipseLink() {
         final String PROPERTY_NAME = "eclipselink.security.usedoprivileged";
         // Need not invoke in doPrivileged block as the whole call stack consist of trusted code when this code
@@ -140,9 +136,7 @@ public class JPAApplication implements ApplicationContainer {
     }
 
     public boolean stop(ApplicationContext stopContext) {
-        if (!loadedEMFs.isEmpty()) { //TODO added to support prepare hack
-            closeAllEMFs();
-        }
+        closeAllEMFs();
         return true;
     }
 
@@ -245,9 +239,7 @@ public class JPAApplication implements ApplicationContainer {
         logger.logp(Level.FINE, "JPAApplication", "loadPU", // NOI18N
                     "emf = {0}", emf); // NOI18N
 
-        Application application = providerContainerContractInfo.getDeploymentContext()
-                .getModuleMetaData(Application.class);
-        application.addEntityManagerFactory(pInfo.getPersistenceUnitName(), pud.getPuRoot(), emf);
+        providerContainerContractInfo.registerEMF(pInfo.getPersistenceUnitName(), pud.getPuRoot(), emf);
 
         if (isJava2DB) {
             java2dbEMFs.add(emf);
