@@ -79,11 +79,20 @@ public class UpgradeToolMain {
         new ASenvPropertyReader();
 
         //- Default location of all traget server domains
-        String targetDomainRoot = System.getProperty(AS_DOMAIN_ROOT);
-        if(targetDomainRoot == null) {
-           targetDomainRoot = new File("").getAbsolutePath();
-        } else {
-            targetDomainRoot = new File(targetDomainRoot).getAbsolutePath();
+        String rawTargetDomainRoot = System.getProperty(AS_DOMAIN_ROOT);
+        if(rawTargetDomainRoot == null) {
+            rawTargetDomainRoot = "";
+        }
+        String targetDomainRoot = null;
+        try {
+            targetDomainRoot = new File(rawTargetDomainRoot).getCanonicalPath();
+        } catch (IOException ioe) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine(String.format(
+                    "Will not create canonical path for target: %s",
+                    ioe.getLocalizedMessage()));
+            }
+            targetDomainRoot = new File(rawTargetDomainRoot).getAbsolutePath();
         }
 		commonInfo.getTarget().setInstallDir(targetDomainRoot);
     }
