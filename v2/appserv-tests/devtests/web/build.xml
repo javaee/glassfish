@@ -418,7 +418,9 @@
 <!-- XXX temporarily commented out, see IT 7919
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
 -->
+<!-- XXX temporarily commented out, see IT 8282
         <ant dir="caseSensitiveHostMapping" target="all"/>
+-->
         <ant dir="setResponseContentLengthToZeroKeepResponseHeaders" target="all"/>
         <ant dir="getLocalPort" target="all"/>
 <!-- XXX temporarily commented out, see IT 8287
