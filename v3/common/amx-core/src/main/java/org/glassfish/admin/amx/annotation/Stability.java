@@ -321,6 +321,13 @@ public enum Stability  {
      */
     PRIVATE( "Private" ),
     
+     
+    /**
+        Not a formal term. Indicates that the interface, while visible, is experimental,
+        and can be removed at any time.
+     */
+    EXPERIMENTAL( "Experimental" ),
+    
     /**
         Interrim classification; a real one should be chosen asap.
      */

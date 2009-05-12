@@ -33,36 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-
-package org.glassfish.admin.amx.logging;
-
-import javax.management.openmbean.CompositeData;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
-
-
 /**
-	@since AS 9.0
+    Specific AMX MBean proxy interfaces for config MBeans (domain.xml elements).  These interfaces
+    offer for the convenience of using more specialized proxies as created by {@link ProxyFactory},
+    but {@link AMXConfigProxy} can be used generically for all config MBeans.
+    @see AMXProxy
+    @see AMXConfigProxy
  */
-@Taxonomy(stability = Stability.EXPERIMENTAL)
-public final class LogUtil
-{
-    private LogUtil()   {}
-    
-    /**
-        Instantiate a {@link LogQueryResult}
-        using a CompositeData as returned from
-        {@link LogQuery#queryServerLog}.
-     */
-        public static final LogQueryResult
-    createLogQueryResult( final CompositeData data )
-    {
-        return null;
-    }
-}
+@Taxonomy(stability = Stability.UNCOMMITTED)
+package org.glassfish.admin.amx.intf.config;
 
-
+import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.admin.amx.annotation.Stability;
 
 
 

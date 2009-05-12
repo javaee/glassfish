@@ -35,12 +35,16 @@
  */
 package org.glassfish.admin.amx.logging;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 
 /**
 	Indices into log record fields as returned by
 	{@link LogQuery#queryServerLog}.  Also 
 	@since AppServer 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public final class LogRecordFields
 {
 	private LogRecordFields()	{}

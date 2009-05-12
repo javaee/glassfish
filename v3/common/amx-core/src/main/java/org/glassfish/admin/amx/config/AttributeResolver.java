@@ -71,7 +71,7 @@ public interface AttributeResolver
     "hello" => "hello"
     </pre>
 
-    @param template	any String
+    @param value	any String
     @return resolved value
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)

@@ -39,6 +39,8 @@ package org.glassfish.admin.amx.logging;
 
 import java.util.Map;
 import java.util.logging.Level;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 
 /**
@@ -47,6 +49,7 @@ import java.util.logging.Level;
 	
 	@since AS 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public interface LogAnalyzer
 {
 	/**

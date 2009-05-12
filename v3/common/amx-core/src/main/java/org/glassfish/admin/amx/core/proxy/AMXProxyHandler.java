@@ -73,7 +73,7 @@ import org.glassfish.admin.amx.util.TypeCast;
 /**
 Extends MBeanProxyHandler by also supporting the functionality required of an AMX.
  */
-@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
+@Taxonomy(stability = Stability.PRIVATE)
 public final class AMXProxyHandler extends MBeanProxyHandler
         implements AMXProxy, Extra
 {

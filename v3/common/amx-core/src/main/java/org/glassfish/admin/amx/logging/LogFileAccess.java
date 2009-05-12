@@ -37,12 +37,16 @@
 
 package org.glassfish.admin.amx.logging;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 
 /**
 	Provides access to log files.
 	
 	@since AS 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public interface LogFileAccess
 {
     /**

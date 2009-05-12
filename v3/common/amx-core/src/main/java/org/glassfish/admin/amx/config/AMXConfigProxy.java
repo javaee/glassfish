@@ -45,14 +45,13 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.admin.amx.core.AMXConstants;
 
 /**
-Extending this interface implies that the class is part of the  API
-for configuration.
-<p>
-All AMXConfigProxy s are required to implement NotificationEmitter.
-A Config  must issue {@link javax.management.AttributeChangeNotification} when
-changes are made to the configuration.
+Extending this proxy interface implies that the class is part of the MBean API for configuration,
+that the interface is a dynamic proxy to a config MBean.
+@see AMXProxy
+@see AMXConstants
 @see AMXConfigConstants
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
@@ -92,13 +91,8 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver
     Required attributes must be specified, and should all be 'String' (The Map value is declared
     with a type of of 'Object' anticipating future extensions).
     Use the ATTR_NAME key for the name.
-    <p>
-    Properties can be included in the 'params' Map using the {@link PropertiesAccess#PROPERTY_PREFIX}
-    prefix on the property name.
-    System properties can be included in the 'params' Map using the
-    SYSTEM_PROPERTY_PREFIX prefix on the property name.
 
-    @param elementType the XML element type
+    @param childType the XML element type
     @param params Map containing  attributes which are required by the @Configured and any
     optional attributes (as desired).
     @return proxy interface to the newly-created AMXConfigProxy
@@ -134,6 +128,7 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver
     @ManagedOperation
     public void removeChild(
             @Param(name = "childType") String childType);
+
 }
 
 

@@ -47,6 +47,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 
 /**
@@ -81,6 +83,7 @@ final String    logRecordString	= (String){@link Util#getAMXNotificationValue}( 
 </pre></code>
 	@since AS 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public interface LogRecordEmitter extends NotificationEmitter, ListenerInfo
 {
 	/**

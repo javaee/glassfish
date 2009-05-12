@@ -77,10 +77,6 @@ import org.glassfish.admin.amx.core.AMXConstants;
 
 /**
 	Factory for {@link AMXProxy} proxies.
-	Usually proxies are obtained by starting with the DomainRoot obtained via
-	{@link AppserverConnectionSource#getDomainRootProxy}.
-	
-	@see org.glassfish.admin.amx.client.AppserverConnectionSource
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public final class ProxyFactory implements NotificationListener

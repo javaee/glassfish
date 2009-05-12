@@ -37,6 +37,9 @@
 
 package org.glassfish.admin.amx.logging;
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+
 /**
 	Interface which can be applied over the CompositeData returned
 	from {@link LogQuery#queryServerLog}.
@@ -45,6 +48,7 @@ package org.glassfish.admin.amx.logging;
 	@see LogQueryEntry
 	@see LogQuery
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public interface LogQueryResult
 {
     /**

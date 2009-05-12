@@ -38,6 +38,8 @@ package org.glassfish.admin.amx.logging;
 
 import java.util.Date;
 import java.util.Map;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 	An individual result representing a log entry found
@@ -46,6 +48,7 @@ import java.util.Map;
 	@since AS 9.0
 	@see LogQueryResult
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public interface LogQueryEntry
 {
     /**

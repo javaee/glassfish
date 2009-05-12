@@ -33,36 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-
-package org.glassfish.admin.amx.logging;
-
-import javax.management.openmbean.CompositeData;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
-
-
 /**
-	@since AS 9.0
+    Core AMX utilities.
  */
-@Taxonomy(stability = Stability.EXPERIMENTAL)
-public final class LogUtil
-{
-    private LogUtil()   {}
-    
-    /**
-        Instantiate a {@link LogQueryResult}
-        using a CompositeData as returned from
-        {@link LogQuery#queryServerLog}.
-     */
-        public static final LogQueryResult
-    createLogQueryResult( final CompositeData data )
-    {
-        return null;
-    }
-}
+@Taxonomy(stability = Stability.UNCOMMITTED)
+package org.glassfish.admin.amx.util;
 
-
+import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.admin.amx.annotation.Stability;
 
 
 

@@ -36,6 +36,8 @@
 package org.glassfish.admin.amx.logging;
 
 
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
@@ -48,6 +50,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 	</ul>
 	@since AS 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public interface Logging
 	extends LogRecordEmitter, LogQuery, LogFileAccess, LogAnalyzer, AMXProxy
 {

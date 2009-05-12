@@ -39,12 +39,15 @@ import org.glassfish.admin.amx.util.SetUtil;
 
 import java.util.Collections;
 import java.util.Set;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 	Names of log level modules.
 	@see Logging
     @since AppServer 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public class LogModuleNames
 {
 	protected LogModuleNames()	{}

@@ -41,12 +41,15 @@ import javax.management.Attribute;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
 	Provides access to log messages already present in the log file.
 	
 	@since AS 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public interface LogQuery
 {
     /**

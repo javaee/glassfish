@@ -40,11 +40,14 @@ import org.glassfish.admin.amx.util.ObjectUtil;
 
 import java.io.Serializable;
 import java.util.List;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 
 /**
     <b>INTERNAL USE ONLY--not part of the API</b>
 	@since AS 9.0
  */
+@Taxonomy(stability = Stability.EXPERIMENTAL)
 public final class LogQueryResultImpl
     implements LogQueryResult
 {
