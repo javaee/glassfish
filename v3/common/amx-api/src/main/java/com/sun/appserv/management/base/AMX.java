@@ -72,7 +72,9 @@ import javax.management.NotificationEmitter;
     @see com.sun.appserv.management.config.PropertiesAccess
     @see com.sun.appserv.management.monitor.MonitoringStats
     @see com.sun.appserv.management.j2ee.J2EEDomain
+    @deprecated  going away soon
  */
+@Deprecated
 public interface AMX extends NotificationEmitter, AMXMBeanLogging, PathnameSupport
 {
     /**
