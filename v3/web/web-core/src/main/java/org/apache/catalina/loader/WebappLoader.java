@@ -1191,8 +1191,12 @@ public class WebappLoader
         while (loader != null) {
             if (!(loader instanceof URLClassLoader)) {
                 String cp=getClasspath( loader );
-                if( cp==null ) {
-                    log.info( "Unknown loader " + loader + " " + loader.getClass());
+                if (cp == null) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Unknown loader " + loader +
+                            " of type " + loader.getClass() +
+                            " for container " + container);
+                    }
                     break;
                 } else {
                     if (n > 0) 
