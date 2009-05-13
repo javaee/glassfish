@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-jms",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Java Message Service",
-                        "pkg.description" : "GlassFish Java Message Service description placeholder. "+conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish JMS",
+                        "pkg.description" : "The Java Message Service is a messaging standard that allows application components based on the Java EE to create, send, receive, and read messages. It enables distributed communication that is loosely coupled, reliable, and asynchronous. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 

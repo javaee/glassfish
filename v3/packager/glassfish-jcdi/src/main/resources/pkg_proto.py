@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish JCDI",
-                        "pkg.description" : "GlassFish JCDI description placeholder. "+conf.glassfish_description_long,
+                        "pkg.description" : "Java Contexts and Dependency Injection (JCDI) specifies services for the Java EE platform.  It layers an enhanced lifecycle and interaction model over existing Java component types including Java Beans and Enterprise Java Beans.  JCDI also enables transactional components such as Enterprise Java Beans to participate in the presentation tier of web frameworks. "+ conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 

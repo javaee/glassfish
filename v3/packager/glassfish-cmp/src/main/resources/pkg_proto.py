@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-cmp",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Container Managed Persistence",
-                        "pkg.description" : "Placeholder for GlassFish CMP package description. "+conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish CMP",
+                        "pkg.description" : "Support for CMP entity beans. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 

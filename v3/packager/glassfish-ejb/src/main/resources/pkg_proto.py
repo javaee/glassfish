@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish EJB Container",
-                        "pkg.description" : "EJB Container Description Placeholder  "+conf.glassfish_description_long,
+                        "pkg.description" : "Full implementation of the EJB 3.1 API, including support for remote session beans, asynchronous session bean invocations, the EJB Timer Service, and message-driven beans. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 

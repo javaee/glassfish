@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-appclient",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Application Client Container",
-                        "pkg.description" : "Placeholder for GlassFish Application Client package description. "+conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Appclient",
+                        "pkg.description" : "Java EE Application Client Container. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 

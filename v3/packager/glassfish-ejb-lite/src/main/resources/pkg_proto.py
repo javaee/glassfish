@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish EJB Lite Container",
-                        "pkg.description" : "Runtime module for EJB container implementation. This module contains (partial) implementation of some of the EJB 3.1 features. Refer to JSR 318 (http://www.jcp.org/en/jsr/detail?id=318) for more details on EJB 3.1.  "+conf.glassfish_description_long,
+                        "pkg.description" : "EJB 3.1 Lite is a lightweight subset of EJB 3.1 that includes support for local session beans (stateful / stateless / singleton) and .war-based packaging/deployment.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
