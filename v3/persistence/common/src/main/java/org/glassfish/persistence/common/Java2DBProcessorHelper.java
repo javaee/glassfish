@@ -127,15 +127,6 @@ public class Java2DBProcessorHelper {
     
     private String appDeployedLocation;
     private String appGeneratedLocation;
-    private String jndiName;
-    /**
-     * The string name of the create jdbc ddl file.
-     */
-    private String createJdbcFileName;
-    /**
-     * The string name of the drop jdbc ddl file.
-     */
-    private String dropJdbcFileName;
 
     /**
      * Creates a new instance of Java2DBProcessorHelper.
@@ -239,16 +230,16 @@ public class Java2DBProcessorHelper {
                     continue;
                 }
 
-                String name = key.substring(PROCESSOR_TYPE.length());
-                String jndiName = deploymentContextProps.getProperty(RESOURCE_JNDI_NAME + name);
+                String bundleName = key.substring(PROCESSOR_TYPE.length());
+                String jndiName = deploymentContextProps.getProperty(RESOURCE_JNDI_NAME + bundleName);
                 String fileName = null;
                 if (create) {
-                    if (getCreateTables(name)) {
-                        fileName = deploymentContextProps.getProperty(CREATE_JDBC_FILE_NAME + name);
+                    if (getCreateTables(bundleName)) {
+                        fileName = deploymentContextProps.getProperty(CREATE_JDBC_FILE_NAME + bundleName);
                     }
                 } else {
-                    if (getDropTables(name)) {
-                        fileName = deploymentContextProps.getProperty(DROP_JDBC_FILE_NAME + name);
+                    if (getDropTables(bundleName)) {
+                        fileName = deploymentContextProps.getProperty(DROP_JDBC_FILE_NAME + bundleName);
                     }
                 } 
                 if (logger.isLoggable(Level.FINE)) {
@@ -259,7 +250,7 @@ public class Java2DBProcessorHelper {
                         continue; // DDL execution is not required
                 }
 
-                File file = getDDLFile(getGeneratedLocation(name) + fileName, true);
+                File file = getDDLFile(getGeneratedLocation(bundleName) + fileName, true);
                 if(file.exists()) {
                     executeDDLStatement(file, jndiName);
                 } else {
@@ -356,82 +347,80 @@ public class Java2DBProcessorHelper {
     /**
      * Returns createJdbcFileName
      */
-    public String getCreateJdbcFileName(String name) {
-        return deploymentContextProps.getProperty(CREATE_JDBC_FILE_NAME + name);
+    public String getCreateJdbcFileName(String bundleName) {
+        return deploymentContextProps.getProperty(CREATE_JDBC_FILE_NAME + bundleName);
     }
 
     /**
      * Sets createJdbcFileName
      */
-    public void setCreateJdbcFileName(String s, String name) {
-        createJdbcFileName = s;
-        deploymentContextProps.setProperty(CREATE_JDBC_FILE_NAME + name, createJdbcFileName);
+    public void setCreateJdbcFileName(String createJdbcFileName, String bundleName) {
+        deploymentContextProps.setProperty(CREATE_JDBC_FILE_NAME + bundleName, createJdbcFileName);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("---> " + CREATE_JDBC_FILE_NAME + name + " " + createJdbcFileName);
+            logger.fine("---> " + CREATE_JDBC_FILE_NAME + bundleName + " " + createJdbcFileName);
         }
     }
 
     /**
      * Returns dropJdbcFileName
      */
-    public String getDropJdbcFileName(String name) {
-        return deploymentContextProps.getProperty(DROP_JDBC_FILE_NAME + name);
+    public String getDropJdbcFileName(String bundleName) {
+        return deploymentContextProps.getProperty(DROP_JDBC_FILE_NAME + bundleName);
     }
 
     /**
      * Sets dropJdbcFileName
      */
-    public void setDropJdbcFileName(String s, String name) {
-        dropJdbcFileName = s;
-        deploymentContextProps.setProperty(DROP_JDBC_FILE_NAME + name, dropJdbcFileName);
+    public void setDropJdbcFileName(String dropJdbcFileName, String bundleName) {
+        deploymentContextProps.setProperty(DROP_JDBC_FILE_NAME + bundleName, dropJdbcFileName);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("---> " + DROP_JDBC_FILE_NAME + name + " " + dropJdbcFileName);
+            logger.fine("---> " + DROP_JDBC_FILE_NAME + bundleName + " " + dropJdbcFileName);
         }
     }
 
     /**
      * Returns jndiName
      */
-    public String getJndiName(String name) {
-        return deploymentContextProps.getProperty(RESOURCE_JNDI_NAME + name);
+    public String getJndiName(String bundleName) {
+        return deploymentContextProps.getProperty(RESOURCE_JNDI_NAME + bundleName);
     }
 
     /**
      * Sets jndiName
      */
-    public void setJndiName(String s, String name) {
-        jndiName = (s == null)? DEFAULT_RESOURCE_NAME : s;
-        deploymentContextProps.setProperty(RESOURCE_JNDI_NAME + name, jndiName);
+    public void setJndiName(String jndiName, String bundleName) {
+        jndiName = (jndiName == null) ? DEFAULT_RESOURCE_NAME : jndiName;
+        deploymentContextProps.setProperty(RESOURCE_JNDI_NAME + bundleName, jndiName);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("---> " + RESOURCE_JNDI_NAME + name + " " + jndiName);
+            logger.fine("---> " + RESOURCE_JNDI_NAME + bundleName + " " + jndiName);
         }
     }
 
     /**
      * Sets this processor type
      */
-    public void setProcessorType(String s, String name) {
-        deploymentContextProps.setProperty(PROCESSOR_TYPE + name, s);
+    public void setProcessorType(String processorType, String bundleName) {
+        deploymentContextProps.setProperty(PROCESSOR_TYPE + bundleName, processorType);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("---> " + PROCESSOR_TYPE + name + " " + s);
+            logger.fine("---> " + PROCESSOR_TYPE + bundleName + " " + processorType);
         }
     }
 
     /**
      * Returns appGeneratedLocation or user defined value if the latter is specified
      */
-    public String getGeneratedLocation(String name) {
-        String userFileLocation = deploymentContextProps.getProperty(JDBC_FILE_LOCATION + name);
+    public String getGeneratedLocation(String bundleName) {
+        String userFileLocation = deploymentContextProps.getProperty(JDBC_FILE_LOCATION + bundleName);
         return (userFileLocation != null)? userFileLocation : appGeneratedLocation;
     }
 
     /**
      * Sets the substitute for the internal location of the generated files
      */
-    public void setGeneratedLocation(String s, String name) {
-        deploymentContextProps.setProperty(JDBC_FILE_LOCATION + name, s);
+    public void setGeneratedLocation(String generatedLocation, String bundleName) {
+        deploymentContextProps.setProperty(JDBC_FILE_LOCATION + bundleName, generatedLocation);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("---> " + JDBC_FILE_LOCATION + name + " " + s);
+            logger.fine("---> " + JDBC_FILE_LOCATION + bundleName + " " + generatedLocation);
         }
     }
 
@@ -463,12 +452,11 @@ public class Java2DBProcessorHelper {
             logger.fine("---> cliDropAndCreateTables " + cliDropAndCreateTables);
         }
 
-        boolean createTables =
+        return
                 (cliCreateTables != null && cliCreateTables.equals(Boolean.TRUE))
                 || (cliDropAndCreateTables != null && cliDropAndCreateTables.equals(Boolean.TRUE))
                 || (cliCreateTables == null && cliDropAndCreateTables == null && param);
 
-        return createTables;
     }
 
     /**
@@ -484,44 +472,43 @@ public class Java2DBProcessorHelper {
             logger.fine("---> param " + param);
             logger.fine("---> cliDropTables " + cliDropTables);
         }
-        boolean dropTables =
+        return
                 (cliDropTables != null && cliDropTables.equals(Boolean.TRUE))
                 || (cliDropTables == null && param);
 
-       return dropTables;
     }
 
     /**
      * Calculate createTables value based on the parameter stored on deploy
      */
-    public boolean getCreateTables(String name) {
-        return getCreateTables(Boolean.valueOf(deploymentContextProps.getProperty(CREATE_TABLE_VALUE + name)));
+    public boolean getCreateTables(String bundleName) {
+        return getCreateTables(Boolean.valueOf(deploymentContextProps.getProperty(CREATE_TABLE_VALUE + bundleName)));
     }
 
     /**
      * Store user defined value for create tables for future reference.
      */
-    public void setCreateTablesValue(boolean param, String name) {
-        deploymentContextProps.setProperty(CREATE_TABLE_VALUE + name, ""+param);
+    public void setCreateTablesValue(boolean createTablesValue, String bundleName) {
+        deploymentContextProps.setProperty(CREATE_TABLE_VALUE + bundleName, ""+createTablesValue);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("---> " + CREATE_TABLE_VALUE + name + " " + param);
+            logger.fine("---> " + CREATE_TABLE_VALUE + bundleName + " " + createTablesValue);
         }
     }
 
     /**
      * Calculate dropTables value based on the parameter stored on deploy
      */
-    public boolean getDropTables(String name) {
-        return getDropTables(Boolean.valueOf(deploymentContextProps.getProperty(DROP_TABLE_VALUE + name)));
+    public boolean getDropTables(String bundleName) {
+        return getDropTables(Boolean.valueOf(deploymentContextProps.getProperty(DROP_TABLE_VALUE + bundleName)));
     }
 
     /**
      * Store user defined value for drop tables for future reference.
      */
-    public void setDropTablesValue(boolean param, String name) {
-        deploymentContextProps.setProperty(DROP_TABLE_VALUE + name, ""+param);
+    public void setDropTablesValue(boolean dropTablesValue, String bundleName) {
+        deploymentContextProps.setProperty(DROP_TABLE_VALUE + bundleName, ""+dropTablesValue);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("---> " + DROP_TABLE_VALUE + name + " " + param);
+            logger.fine("---> " + DROP_TABLE_VALUE + bundleName + " " + dropTablesValue);
         }
     }
 
@@ -594,17 +581,17 @@ public class Java2DBProcessorHelper {
      * go through transaction enlistment/delistment.
      * The deployment processing is required to use only those connections.
      *
-     * @param name JNDI name of a resource for the connection.
+     * @param jndiName JNDI name of a resource for the connection.
      * @return a Connection.
      * @throws SQLException if can not get a Connection.
      */
-    public static Connection getConnection(String name) throws Exception {
+    public static Connection getConnection(String jndiName) throws Exception {
         // TODO - pass Habitat or ConnectorRuntime as an argument.
         // TODO - remove duplication with DeploymentHelper
 
         Habitat habitat = Globals.getDefaultHabitat();
         ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
-        DataSource ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(name, false));
+        DataSource ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(jndiName, false));
         return ds.getConnection();
     }
 
