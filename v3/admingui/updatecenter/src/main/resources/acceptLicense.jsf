@@ -66,8 +66,10 @@
                 getLicenseText(selectedRows="#{selectedRows}" license=>$page{licenseText});
             />
             "<pre><font size="2" />
-                <sun:textArea id="lic" rows="$int{20}" columns="$int{90}" text="#{licenseText}" disabled="#{true}" />
-            "</pre> 
+                //<sun:textArea id="lic" rows="$int{20}" columns="$int{90}" text="#{pageSession.licenseText}" disabled="#{true}" />
+                //use the following due to support IE as well. issue# 8088
+                "<div style=" background-color:#eee; color:#444; border:1px solid #444;  overflow:auto; width:800px; height:300px; " /> #{pageSession.licenseText} </div>
+"</pre> 
         </sun:property>
         
     </sun:propertySheetSection>

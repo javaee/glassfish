@@ -348,8 +348,6 @@
             }
             
             function checkEmailAdr(componentId){
-                alert('here');
-                alert(componentId);
                 var component = document.getElementById(componentId);
                 var emailAdr = component.getProps().value;
                 if (( emailAdr.indexOf("@") == -1) || (emailAdr.indexOf("@") != emailAdr.lastIndexOf("@")) ||

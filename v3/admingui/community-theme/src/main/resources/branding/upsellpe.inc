@@ -1,1 +1,1 @@
-<sun:frame name="upselling" title="$resource{i18n.display.contentArea}" scrolling="auto" url="#{request.scheme}://www.sun.com/software/products/appsrvr/promotions/appserver9_1pe.html#instance_urn=$session{productInstanceURN}" marginHeight="$int{10}" marginWidth="$int{20}" longdesc=""/>
+"<iframe id="upsell" scrolling="auto" frameborder="0" height="200" width="100%" src="#{request.scheme}://www.sun.com/software/products/appsrvr/promotions/v3_prelude.html#instance_urn=$session{productInstanceURN}"></iframe>

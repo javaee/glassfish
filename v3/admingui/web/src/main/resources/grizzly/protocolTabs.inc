@@ -1,8 +1,9 @@
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
+
  Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- 
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +11,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
+
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +20,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -33,37 +34,26 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!-- grizzly/protocolTabs.jsf -->
 
-    <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
+<sun:tabSet id="protocolTabs" immediate="$boolean{true}" selected="#{sessionScope.protocolTabs}">
+    <sun:tab id="protocolGeneral" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.protocolTab}" >
         <!command
-            getDefaultBeanAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setSessionAttribute(key="protocolTabs" value="protocolGeneral");
+        redirect(page="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
         />
-    </sun:button>
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                prepareSuccessfulMsg();
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                             );
-                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{Name}&configName=$pageSession{configName}");
-                />
-            </sun:button>
+    </sun:tab>
+    <sun:tab id="httpTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" >
+        <!command
+        setSessionAttribute(key="protocolTabs" value="httpTab");
+        redirect(page="#{request.contextPath}/web/grizzly/http.jsf?configName=#{pageSession.configName}&name=#{pageSession.Name}");
+        />
+    </sun:tab>
+    <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" >
+        <!command
+        setSessionAttribute(key="protocolTabs" value="fileCacheTab");
+        redirect(page="#{request.contextPath}/web/grizzly/fileCache.jsf?configName=#{configName}&name=#{pageSession.Name}");
+        />
+    </sun:tab>
 
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{pageSession.valueMap}" 
-                     );
-                    redirect(page="#{parentPage}?configName=#{configName}")
-                />
-            </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
+</sun:tabSet>

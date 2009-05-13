@@ -81,7 +81,7 @@
 
        
         <sun:property id="max"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxQueue}" helpText="$resource{i18n_web.threadPool.maxQueueHelp}">
-            <sun:textField id="max" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxQueueSize']}" />
+            <sun:textField id="max" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['MaxQueueSize']}" />
         </sun:property>
 
         <sun:property id="maxThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxThread}" helpText="$resource{i18n_web.threadPool.maxThreadHelp}">

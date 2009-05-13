@@ -7,8 +7,10 @@ package org.glassfish.admingui.common.util;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.faces.context.FacesContext;
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -26,11 +28,12 @@ import org.glassfish.admin.amx.intf.config.Config;
 import org.glassfish.admin.amx.intf.config.Configs;
 import org.glassfish.admin.amx.intf.config.DeployedItemRef;
 import org.glassfish.admin.amx.intf.config.Domain;
+
+
 import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admin.amx.intf.config.HttpService;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
-import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -40,14 +43,14 @@ import org.jvnet.hk2.component.Habitat;
 public class V3AMX {
     private static V3AMX v3amx  ;
     private final DomainRoot domainRoot;
-    private final Domain     domainConfig;
+    private final Domain domain;
     private final ProxyFactory proxyFactory;
     private final MBeanServerConnection mbeanServer;
 
     private V3AMX(DomainRoot dd, MBeanServerConnection msc) {
         proxyFactory = ProxyFactory.getInstance(msc);
         domainRoot = dd;
-        domainConfig =  domainRoot.getDomain().as(Domain.class);
+        domain =  domainRoot.getDomain().as(Domain.class);
         mbeanServer = msc;
     }
 
@@ -84,8 +87,8 @@ public class V3AMX {
     }
 
 
-    public Domain getDomainConfig(){
-        return domainConfig;
+    public Domain getDomain(){
+        return domain;
     }
 
     public DomainRoot getDomainRoot(){
@@ -93,7 +96,7 @@ public class V3AMX {
     }
 
     public Configs getConfigs(){
-        return domainConfig.getConfigs();
+        return domain.getConfigs();
     }
 
     public ProxyFactory getProxyFactory(){
@@ -139,9 +142,13 @@ public class V3AMX {
             }else
                 objectName = (ObjectName) name;
             AttributeList attrList = new AttributeList();
+            removeElement(attrMap);
             for(String key : attrMap.keySet()){
                 if (skipAttr.contains(key))
                     continue;
+                if (!(attrMap.get(key) instanceof String)){
+                    continue;
+                }
                 Attribute attr = new Attribute(key, (String)attrMap.get(key));
                 attrList.add(attr);
             }
@@ -263,10 +270,39 @@ public class V3AMX {
         return secureListener;
     }
 
+    /* A utility method to remove Element before calling create or set attribute of a proxy */
+    static public void removeElement(Map<String, Object> attrs){
+        Set<Map.Entry <String, Object>> attrSet = attrs.entrySet();
+        Iterator<Map.Entry<String, Object>> iter = attrSet.iterator();
+        while (iter.hasNext()){
+             Map.Entry<String, Object> oneEntry = iter.next();
+             Object val = oneEntry.getValue();
+             if ( val instanceof ObjectName || val instanceof ObjectName[]){
+                 iter.remove();
+            }
+        }
+    }
+
+
+    static public void removeSpecifiedAttr(Map<String, Object> attrs,  List removeList){
+        if (removeList==null || removeList.size() <=0 )
+            return;
+        Set<Map.Entry <String, Object>> attrSet = attrs.entrySet();
+        Iterator<Map.Entry<String, Object>> iter = attrSet.iterator();
+        while (iter.hasNext()){
+             Map.Entry<String, Object> oneEntry = iter.next();
+             if (removeList.contains(oneEntry.getKey())){
+                 iter.remove();
+            }
+        }
+    }
+
+
     final private static List skipAttr = new ArrayList();
     static{
         skipAttr.add("Parent");
         skipAttr.add("Name");
+        skipAttr.add("Children");
     }
 
 

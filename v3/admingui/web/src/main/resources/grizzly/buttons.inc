@@ -46,7 +46,10 @@
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
                 prepareSuccessfulMsg();
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}" );
+                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                    skipAttrs="#{pageSession.skipAttrsList}"
+                    convertToFalse="#{pageSession.convertToFalseList}"
+                );
                 redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
@@ -54,8 +57,9 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
-                    createBean(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{pageSession.valueMap}"  );
+                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                            attrs="#{pageSession.valueMap}"
+                            convertToFalse="#{pageSession.convertToFalseList}" );
                     redirect(page="#{parentPage}?configName=#{configName}")
                 />
             </sun:button>

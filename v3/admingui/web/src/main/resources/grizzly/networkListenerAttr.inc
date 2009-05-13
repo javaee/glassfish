@@ -41,7 +41,7 @@
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
-            <sun:textField id="name"  rendered="#{Edit}" required="#{true}" columns="$int{10}" text="#{pageSession.valueMap['Name']}" />
+            <sun:textField id="name"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
         </sun:property>
 
         <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}">
@@ -64,9 +64,6 @@
             <sun:dropDown id="protocol" selected="#{pageSession.valueMap['Protocol']}" labels="$pageSession{protocolList}"  values="$pageSession{protocolList}" >
             <!beforeCreate
                 getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolList}");
-println("valueMap=#{pageSession.valueMap}");
-println("protocolList=#{pageSession.protocolList}");
-
 />
            </sun:dropDown>
         </sun:property>

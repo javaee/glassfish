@@ -53,8 +53,10 @@ import javax.faces.component.ActionSource;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 
 
 /**
@@ -125,6 +127,10 @@ public class MBeanTreeAdaptor extends TreeAdaptorBase {
 		    "'methodName' must be specified!");
 	}
 	_methodName = (String) val;
+
+    val = desc.getEvaluatedOption(ctx, "useV3AMX", parent);
+    if ((val != null ) && val.equals("true"))
+        _useV3AMX = true;
 
 	// Get Parameters
 	_paramsArray = null;
@@ -214,19 +220,28 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	    }
             
             try{
-                Set<AMX> amxBeans = AMXRoot.getInstance().getQueryMgr().queryPatternSet(new ObjectName(_objectName));
-                if (amxBeans.isEmpty()){
-                    System.out.println("Tree:  Cannot find AMX Object: " + _objectName);
-                    return null;
-                }else{
-                    AMX amxBean = (AMX) amxBeans.toArray()[0];
-                    //TODO: as we are using AMX to get the list of subnodes, AMX API NEVER require a parameter for this kind of operations.
-                    //If there is such case, we may want to add code to support that instead of hard coding null here.
-                    //for v3 prelude, i just leave it as null.
-                    Method m = amxBean.getClass().getDeclaredMethod( _methodName,  (java.lang.Class[]) null);
-                    Map mapOfBeans = (Map)  m.invoke(amxBean, (java.lang.Object[]) null);
-                    if (mapOfBeans != null){
-                        _children = new ArrayList(mapOfBeans.values());
+                if (_useV3AMX == true ){
+                        AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(_objectName));
+                        ObjectName[] children = amx.getChildren();
+                        _children = new ArrayList();
+                        for(int i=0; i< children.length; i++){
+                            _children.add(children[i]);
+                        }
+                }else {
+                    Set<AMX> amxBeans = AMXRoot.getInstance().getQueryMgr().queryPatternSet(new ObjectName(_objectName));
+                    if (amxBeans.isEmpty()){
+                        System.out.println("Tree:  Cannot find AMX Object: " + _objectName);
+                        return null;
+                    }else{
+                        AMX amxBean = (AMX) amxBeans.toArray()[0];
+                        //TODO: as we are using AMX to get the list of subnodes, AMX API NEVER require a parameter for this kind of operations.
+                        //If there is such case, we may want to add code to support that instead of hard coding null here.
+                        //for v3 prelude, i just leave it as null.
+                        Method m = amxBean.getClass().getDeclaredMethod( _methodName,  (java.lang.Class[]) null);
+                        Map mapOfBeans = (Map)  m.invoke(amxBean, (java.lang.Object[]) null);
+                        if (mapOfBeans != null){
+                            _children = new ArrayList(mapOfBeans.values());
+                        }
                     }
                 }
             }catch (Exception ex3){
@@ -580,6 +595,8 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
      *	The name of the method which describes the TreeNode name.
      */
     private String	_nameMethod	=   null;
+
+    private boolean _useV3AMX = false;
 
     /**
      *	This sub-nodes of the top-level Node.

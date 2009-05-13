@@ -77,7 +77,9 @@
 <dynamicTreeNode id="threadPools"
     treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
     objectName="v3:pp=/domain/configs/config[server-config],type=thread-pools"
-    methodName="getChildren"
+    useV3AMX="true"
+    methodName=""
+    attributeName="name"
     childImageURL="/resource/web/images/threadPool.gif"
     childExpanded="$boolean{false}"
     childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
@@ -95,18 +97,41 @@
     imageURL="/resource/web/images/httpservice.gif"
     >
 
-    <sun:treeNode
-        id="networkListeners"
+    <dynamicTreeNode id="networkListeners"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="v3:pp=/domain/configs/config[server-config]/network-config,type=network-listeners"
+        useV3AMX="true"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/web/images/http.gif"
+        childExpanded="$boolean{false}"
+        childURL="/web/grizzly/networkListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
         text="$resource{i18n.tree.grizzly.networkListeners}"
-        url="/web/grizzly/networkListeners.jsf?configName=server-config"
-        imageURL="/resource/web/images/http.gif"
-    />
-    <sun:treeNode
-        id="protocols"
+        url="/web/grizzly/networkListeners.jsf?configName=#{configName}"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>
+
+    <dynamicTreeNode id="protocols"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="v3:pp=/domain/configs/config[server-config]/network-config,type=protocols"
+        useV3AMX="true"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/web/images/http.gif"
+        childExpanded="$boolean{false}"
+        childURL="/web/grizzly/protocolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
         text="$resource{i18n.tree.grizzly.protocols}"
-        url="/web/grizzly/protocols.jsf?configName=server-config"
-        imageURL="/resource/web/images/http.gif"
-    />
+        url="/web/grizzly/protocols.jsf?configName=#{configName}"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>
+
+
     <!-- no support for transport for now.
     <sun:treeNode
         id="transports"

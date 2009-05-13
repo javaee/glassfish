@@ -58,10 +58,8 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.Config;
 import org.glassfish.admin.amx.intf.config.ThreadPool;
-import org.glassfish.admin.amx.intf.config.ThreadPools;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkListeners;
 import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
@@ -206,33 +204,6 @@ public class GrizzlyHandlers {
     }
 
 
-    @Handler(id="getNetworkListenerAttr",
-    input={
-        @HandlerInput(name="configName",   type=String.class, required=true),
-        @HandlerInput(name="name",   type=String.class),
-        @HandlerInput(name="fromDefault",   type=String.class)},
-    output={
-        @HandlerOutput(name="valueMap",        type=Map.class)})
-        
-        public static void getNetworkListenerAttr(HandlerContext handlerCtx) {
-        try{
-            String fromDefault = (String) handlerCtx.getInputValue("fromDefault");
-            Map attrs = null;
-            Config config = V3AMX.getServerConfig((String) handlerCtx.getInputValue("configName"));
-            NetworkListeners nls = config.getNetworkConfig().as(NetworkConfig.class).getNetworkListeners();
-            if ( GuiUtil.isEmpty(fromDefault) || fromDefault.equals("false")){
-                String name = (String) handlerCtx.getInputValue("name");
-                NetworkListener nl = nls.getNetworkListener().get(name);
-                attrs = nl.attributesMap();
-            } else {
-                attrs = nls.getDefaultValues("network-listener", true);
-            }
-            handlerCtx.setOutputValue("valueMap", attrs);
-        }catch (Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
-
     @Handler(id="getBeanAttrs",
     input={
         @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
@@ -245,7 +216,8 @@ public class GrizzlyHandlers {
             AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
             handlerCtx.setOutputValue("valueMap", amx.attributesMap());
         }catch (Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
+            ex.printStackTrace();
+            handlerCtx.setOutputValue("valueMap", new HashMap());
         }
     }
 
@@ -259,26 +231,26 @@ public class GrizzlyHandlers {
 
         public static void getDefaultBeanAttrs(HandlerContext handlerCtx) {
         try{
-	    
-            boolean calltest=false;
-
             String parentName = (String) handlerCtx.getInputValue("parentObjectNameStr");
-            if (calltest){
-		AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
-		
-		String type = "file-cache";
-        System.out.println("type = " + type);
-        System.out.println("objectName = " + parentName);
-		Map mm = amx.getDefaultValues(type, true);
-        System.out.println(mm);
-	    }
+//            boolean calltest=false;
+//            if (calltest){
+//                AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
+//
+//                String type = "file-cache";
+//                System.out.println("type = " + type);
+//                System.out.println("objectName = " + parentName);
+//                Map mm = amx.getDefaultValues(type, true);
+//                System.out.println(mm);
+//            }
             String childType = (String) handlerCtx.getInputValue("childType");
             AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
             Map valueMap = amx.getDefaultValues(childType, true);
             handlerCtx.setOutputValue("valueMap", valueMap);
         }catch (Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
+            ex.printStackTrace();
+            handlerCtx.setOutputValue("valueMap", new HashMap());
         }
+
     }
 
 
@@ -286,7 +258,8 @@ public class GrizzlyHandlers {
     input={
         @HandlerInput(name="objectNameStr",   type=String.class, required=true),
         @HandlerInput(name="attrs",   type=Map.class),
-        @HandlerInput(name="skipAttrs",   type=List.class) } )
+        @HandlerInput(name="skipAttrs",   type=List.class),
+        @HandlerInput(name="convertToFalse",   type=List.class)} )
         public static void saveBeanAttributes(HandlerContext handlerCtx) {
         try{
             Map attrs = (Map) handlerCtx.getInputValue("attrs");
@@ -299,6 +272,19 @@ public class GrizzlyHandlers {
                     }
                 }
             }
+
+            List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
+            if (convertToFalse != null){
+                for(String sk : convertToFalse){
+                    if (attrs.keySet().contains(sk)){
+                        if (attrs.get(sk) == null){
+                            attrs.remove(sk);
+                            attrs.put(sk, "false");
+                        }
+                    }
+                }
+            }
+
             V3AMX.setAttributes( objectNameStr, attrs);
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -306,53 +292,66 @@ public class GrizzlyHandlers {
     }
 
 
-    @Handler(id="createBean",
+    @Handler(id="createProxy",
     input={
         @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
         @HandlerInput(name="childType",   type=String.class, required=true),
         @HandlerInput(name="attrs",   type=Map.class),
-        @HandlerInput(name="skipAttrs",   type=List.class)})
-        public static void createBean(HandlerContext handlerCtx) {
+        @HandlerInput(name="skipAttrs",   type=List.class),
+        @HandlerInput(name="onlyUseAttrs",   type=List.class),
+        @HandlerInput(name="convertToFalse",   type=List.class)},
+    output={
+        @HandlerOutput(name="result",        type=String.class)})
+
+        public static void createProxy(HandlerContext handlerCtx) {
         try{
             final String childType = (String) handlerCtx.getInputValue("childType");
-            Map attrs = (Map) handlerCtx.getInputValue("attrs");
+            Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
             String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
             AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
-            List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
-            if (skipAttrs != null){
-                for(String sk : skipAttrs){
+
+
+            
+
+            List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
+            if (convertToFalse != null){
+                for(String sk : convertToFalse){
                     if (attrs.keySet().contains(sk)){
-                        attrs.remove(sk);
+                        if (attrs.get(sk) == null){
+                            attrs.put(sk, "false");
+                        }
                     }
                 }
             }
+
+            //Should specify either skipAttrs or onlyUseAttrs
+            List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
+            V3AMX.removeSpecifiedAttr(attrs, skipAttrs);
+
+            List<String> onlyUseAttrs = (List) handlerCtx.getInputValue("onlyUseAttrs");
+            if (onlyUseAttrs != null){
+                Map newAttrs = new HashMap();
+                for(String key : onlyUseAttrs){
+                    if (attrs.keySet().contains(key)){
+                        newAttrs.put(key, attrs.get(key) );
+                    }
+                }
+                attrs = newAttrs;
+            }
+
             System.out.println("========createChild========");
             System.out.println(amx.toString());
             System.out.println("childType = " + childType);
             System.out.println(attrs);
-            amx.createChild( childType,attrs);
+
+            V3AMX.removeElement(attrs);
+            AMXConfigProxy child = amx.createChild( childType,attrs);
+            handlerCtx.setOutputValue("result", child.objectName().toString());
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
-
-    @Handler(id="createObjectName",
-    input={
-        @HandlerInput(name="value",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="result",        type=String.class)})
-
-        public static void createObjectName(HandlerContext handlerCtx) {
-        try{
-            String value = (String) handlerCtx.getInputValue("value");
-            String value1 = value.replaceAll("<", "[");
-            String result  = value1.replaceAll(">", "]");
-            handlerCtx.setOutputValue("result",result);
-        }catch (Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
     
     @Handler(id="getChildrenByType",
     input={
@@ -374,7 +373,27 @@ public class GrizzlyHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-    
+
+    @Handler(id="fixCheckbox",
+    input={
+        @HandlerInput(name="attrs",   type=Map.class, required=true),
+        @HandlerInput(name="keys",   type=List.class)})
+
+        public static void fixCheckbox(HandlerContext handlerCtx) {
+        List<String> keyList = (List) handlerCtx.getInputValue("keys");
+        if (keyList == null || keyList.size() < 1)
+            return;
+        Map attrs = (Map) handlerCtx.getInputValue("attrs");
+        for(String key : keyList){
+            if(attrs.get(key) == null){
+                attrs.remove(key);
+                attrs.put(key, "false");
+            }
+        }
+    }
+
+
+
     //mbean Attribute Name
     private static List httpServiceSkipPropsList = new ArrayList();
     

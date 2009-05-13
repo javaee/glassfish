@@ -59,18 +59,29 @@
           }
         </f:verbatim>
       </sun:script>
+      "<div style="min-height: 500px; overflow: auto;">
+
       <sun:form id="form"> 
         <!-- #include "/shared/treeBreadcrumbs.inc" -->
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
-            <sun:commonTask rendered="$session{showRegistration}"
-                            text="#{registrationNodeText}"
-                            toolTip="#{registrationNodeText}"
-                            infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=#{registrationNodePage}.html" 
-                            onClick="admingui.nav.selectTreeNodeById('form:tree:#{registrationNodePage}');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/#{registrationNodePage}.jsf'; return false;"
-                            onKeyPress="admingui.nav.selectTreeNodeById('form:tree:#{registrationNodePage}');
-                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/#{registrationNodePage}.jsf'; return false;">
+            <sun:commonTask rendered="#{sessionScope.registrationNodePage == 'registration'}"
+                            text="$resource{i18n.tree.registration}"
+                            toolTip="registration"
+                            infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=registration.html"
+                            onClick="admingui.nav.selectTreeNodeById('form:tree:registration');
+                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/registration.jsf'; return false;"
+                            onKeyPress="admingui.nav.selectTreeNodeById('form:tree:registration');
+                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/registration.jsf'; return false;">
+            </sun:commonTask>
+            <sun:commonTask
+                            text="$resource{i18n.tree.support}"
+                            toolTip="$resource{i18n.tree.support}"
+                            infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=support.html"
+                            onClick="admingui.nav.selectTreeNodeById('form:tree:support');
+                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/support.jsf'; return false;"
+                            onKeyPress="admingui.nav.selectTreeNodeById('form:tree:support');
+                            parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/support.jsf'; return false;">
             </sun:commonTask>
             <sun:commonTask
               text="$resource{i18n.commonTasks.task.subscriptions}"
@@ -107,5 +118,15 @@
 #include "/sysnet/regReminder.inc"
         <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
       </sun:form>
+      "</div>
+      "<div style="height: 3px">&#160;</div>
+      <!--  Customizing pe bottom frame -->
+          <event>
+          <!afterCreate
+              getClientId(component="$this{component}" clientId=>$attribute{homeId})
+              getUIComponent(clientId="#{homeId}"  component=>$attribute{component})
+              includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
+          />
+          </event>
 </define>
 </composition>

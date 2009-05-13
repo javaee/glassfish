@@ -85,7 +85,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.protocolCol}"  sort="Protocol" rowHeader="$boolean{true}" id="pro">
-        <sun:hyperlink id="link" text="#{td.value.Protocol}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?Name=#{td.value.Protocol}" />
+        <sun:hyperlink id="link" text="#{td.value.Protocol}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{td.value.Protocol}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.threadPoolCol}" sort="ThreadPool" rowHeader="$boolean{true}" id="threadPool">

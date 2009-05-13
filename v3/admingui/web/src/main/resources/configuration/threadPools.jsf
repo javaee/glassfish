@@ -75,7 +75,7 @@
             <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.threadPool.threadPoolIdCol}" sort="name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.threadPool.Name}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}"
             url="#{pageSession.editLink}&name=#{td.value.Name}" />
     </sun:tableColumn>

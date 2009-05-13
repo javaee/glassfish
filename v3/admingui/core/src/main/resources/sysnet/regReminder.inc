@@ -38,7 +38,7 @@
 #Text Link: # b9d2e9
 #Background: # 5382a1 
 
-<sun:markup rendered="#{askRegistration}" tag="div" id="popup" style="height: 286px; width: 423px; z-index: 9999; background-image: url('#{request.contextPath}/resource/images/regReminderBackground.png'); background-color: #FFFFFF; background-repeat: no-repeat; position: absolute; top: 100px; left: 50px; display: none; font-family:Arial, Helvetica, sans-serif;">
+<sun:markup rendered="#{askRegistration}" tag="div" id="popup" style="height: 286px; width: 423px; z-index: 9999; background-image: url('#{request.contextPath}/resource/images/regReminderBackground.png'); background-color: #FFFFFF; background-repeat: no-repeat; position: absolute; top: 100px; margin: auto;  display: none; font-family:Arial, Helvetica, sans-serif;">
     <!beforeCreate
         setAttribute(key="contextRoot" value="#{request.contextPath}");
     />
@@ -64,16 +64,14 @@
 		</div>
 		<div class="bulletList">
 		    $resource{i18n.reg.whyRegisterList}
-		    (<a href="#" onclick="javascript: var whyWin = window.open('$attribute{contextRoot}/resource/sysnet/sample.html','Why','scrollbars,resizable,width=950,height=600,top='+((screen.height - (screen.height/1.618)) - (600/2))+',left='+((screen.width-950)/2) ); whyWin.focus();">Sample</a>)
 		</div>
 	    </div>
 
 		<div style="text-align: center;">
     </f:verbatim>
-              onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.parent.location='sysnet/#{registrationNodePage}.jsf'" onKeyPress="javascript: return true;">
         <sun:button text="$resource{i18n.button.register}" 
-              onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.parent.location='sysnet/#{registrationNodePage}.jsf' 
-               admingui.nav.selectTreeNodeById('form:registration'); target='main'" onKeyPress="javascript: return true;">
+              onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.location='#{request.contextPath}/sysnet/#{registrationNodePage}.jsf' 
+               admingui.nav.selectTreeNodeById('form:registration'); return false;" onKeyPress="javascript: return false;">
         </sun:button>
         <sun:button text="$resource{i18n.button.regRemind}" onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}" onKeyPress="javascript: return true;">
             <!command
@@ -120,7 +118,7 @@
 
 		// Center it
 		var popup = document.getElementById('${popupId}');
-		var width = document.documentElement.offsetWidth;
+		var width = document.getElementById('content').offsetWidth;
 		popup.style.left = ((width - 423) / 2 + "px");
 
 		// Show it

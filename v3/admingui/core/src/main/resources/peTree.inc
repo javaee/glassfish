@@ -84,12 +84,21 @@
 
 	<!--  ===================================== Registration  ======================  -->
 	<sun:treeNode id="registration"
-	    rendered="$session{showRegistration}"
-	    text="#{registrationNodeText}"
-	    url="/sysnet/#{registrationNodePage}.jsf"
+	    rendered="#{sessionScope.registrationNodePage == 'registration'}"
+	    text="$resource{i18n.tree.registration}"
+	    url="#{request.contextPath}/sysnet/registration.jsf"
 	    >
 	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/#{registrationNodePage}.gif" url="/sysnet/#{registrationNodePage}.jsf"  border="0" immediate="true" />
+		<sun:imageHyperlink imageURL="/resource/images/registration.gif" url="#{request.contextPath}/sysnet/registration.jsf"  border="0" immediate="true" />
+	    </facet>
+	</sun:treeNode>
+
+    <sun:treeNode id="support"
+	    text="$resource{i18n.tree.support}"
+	    url="#{request.contextPath}/sysnet/support.jsf"
+	    >
+	    <!facet image>
+		<sun:imageHyperlink imageURL="/resource/images/support.gif" url="#{request.contextPath}/sysnet/support.jsf"  border="0" immediate="true" />
 	    </facet>
 	</sun:treeNode>
 

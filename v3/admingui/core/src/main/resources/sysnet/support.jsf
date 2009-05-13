@@ -33,20 +33,10 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!initPage
-    if ($session{registrationNodePage} = registration){
-        redirect("registration.jsf");
-    }
-/>
+
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.support.PageTitle}" >
 <!define name="content">
 
-<!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-    getSupportImages(count="5", imageList=>$page{imageList});
-    getIssueQueryString(query=>$page{IssueQuery});
-/>
 
     <sun:script url="/resource/js/adminjsf.js" />
     <sun:script>
@@ -77,20 +67,29 @@
 
 <sun:form id="propertyForm">
 
+
+<!beforeCreate
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    getSupportImages(count="5", imageList=>$page{imageList});
+    getIssueQueryString(query=>$page{IssueQuery});
+/>
+
 <!-- Bread Crumbs -->
+<!--
 <sun:markup tag="div" id="breadcrumbs" style="border: 1px solid #E5E9ED; background-color: #E5E9ED;">
 <sun:breadcrumbs id="boom" style="background-color: #E5E9ED;">
-    <sun:hyperlink text="#{registrationNodeText}">
+    <sun:hyperlink text="$resource{i18n.tree.support}">
 	<!command
 	    redirect("#{request.contextPath}/sysnet/support.jsf");
 	/>
     </sun:hyperlink>
 </sun:breadcrumbs>
 </sun:markup>
-
+-->
     <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18n.support.PageTitle}" helpText="$resource{i18n.support.PageTitleHelp}">
-    </sun:title>
+    //<sun:title id="propertyContentPage" title="$resource{i18n.support.PageTitle}" helpText="$resource{i18n.support.PageTitleHelp}">
+    //</sun:title>
             <sun:hidden id="helpKey" value="$resource{help.support}" />
 </sun:form>
 <f:verbatim>   

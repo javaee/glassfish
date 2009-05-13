@@ -60,6 +60,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import com.sun.jsftemplating.util.Util;
 
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.config.PropertiesAccess;
@@ -447,9 +448,15 @@ public class CommonHandlers {
     }
     
     /**
-     * <p> This handler returns the requestParameter value based on the key.  If it doesn't
-     *  exists, then it will look at the request Attribute.<p>
-     * If not request Attribute is specified, it will return the default if default is specified.
+     *	<p> This handler returns the requestParameter value based on the key.
+     *	    If it doesn't exists, then it will look at the request
+     *	    attribute.  If there is no request attribute, it will return the
+     *	    default, if specified.</p>
+     *
+     *	<p> This method will "html escape" any &lt;, &gt;, or &amp; characters
+     *	    that appear in a String from the QUERY_STRING.  This is to help
+     *	    prevent XSS vulnerabilities.</p>
+     *
      * 	<p> Input value: "key" -- Type: <code>String</code></p>
      *
      *	<p> Output value: "value" -- Type: <code>String</code></p>
@@ -463,21 +470,25 @@ public class CommonHandlers {
         @HandlerOutput(name="value", type=Object.class)}
     )
     public static void getRequestValue(HandlerContext handlerCtx) {
-        
         String key = (String) handlerCtx.getInputValue("key");
         Object defaultValue = handlerCtx.getInputValue("default");
         Object value = handlerCtx.getFacesContext().getExternalContext().getRequestParameterMap().get(key);
-        if (value == null){
+        if ((value == null) || "".equals(value)) {
             value = handlerCtx.getFacesContext().getExternalContext().getRequestMap().get(key);
             if ((value == null) && (defaultValue != null)){
                 value = defaultValue;
             }
-        }else{
-            if ( (value instanceof String) && "".equals(value))
-                value = handlerCtx.getFacesContext().getExternalContext().getRequestMap().get(key);
+        } else {
+	    // For URLs, the following could be used, but it URLEncodes  the
+	    // values, which are not ideal for displaying in HTML... so I will
+	    // instead call htmlEscape()
+	    //value = GuiUtil.encode(value, "#=@%+;-&_.?:/()", "UTF-8");
+
+	    // Only need to do this for QUERY_STRING values...
+	    value = Util.htmlEscape((String) value);
         }
         handlerCtx.setOutputValue("value", value);
-   } 
+    }
    
     /**
      *	This method adds two long integers together.  The 2 longs should be
