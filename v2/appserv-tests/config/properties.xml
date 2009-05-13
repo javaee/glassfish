@@ -21,7 +21,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
    <property name="authrealmname" value="file"/>
    <property name="apptype" value="application"/>
     <!-- pointbase properties -->
-    <property name="db.root" value="${env.S1AS_HOME}/javadb"/>
+    <property name="db.root" value="${env.S1AS_HOME}/../javadb"/>
     <property name="db.dir" value="${env.APS_HOME}/build"/>
     <property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar:${env.APS_HOME}/sqetests/connector/lib/cci-derby-proc.jar"/>
 
