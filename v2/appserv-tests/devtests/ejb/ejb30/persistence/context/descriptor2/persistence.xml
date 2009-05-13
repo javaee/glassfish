@@ -6,8 +6,5 @@
     >
     <persistence-unit name ="em2">
       <class>com.sun.s1asdev.ejb.ejb30.persistence.context.Person</class>
-      <properties>
-        <property name="eclipselink.weaving" value="false"/>
-      </properties>
     </persistence-unit>
 </persistence>
