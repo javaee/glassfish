@@ -68,7 +68,7 @@ public class AsadminMain {
              System.exit(0);
         }
         copyOfArgs = new String[args.length];
-        classPath = System.getProperty("java.class.path");
+        classPath = SmartFile.sanitizePaths(System.getProperty("java.class.path"));
         className = main.getClass().getName();
 
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
