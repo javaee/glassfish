@@ -39,6 +39,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+
+import  org.glassfish.j2ee.statistics.Statistic;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -55,13 +62,6 @@ public class DomProviderUtil {
      */
     protected String getName(String typeName) {
         return getName(typeName, '.');
-        /*if ((typeName != null) && (typeName.length() > 0)) {
-            int index = typeName.lastIndexOf('.');
-            if (index != -1) {
-                return typeName.substring(index + 1);
-            }
-        }
-        return typeName;*/
     }
 
 
@@ -224,4 +224,32 @@ public class DomProviderUtil {
         return result;
     }
 
+
+    static protected Map getStatistics(Statistic statistic) throws 
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        HashMap results = new HashMap();
+        Class classObject = statistic.getClass();
+        Method[] methods = 	classObject.getDeclaredMethods();
+        for (Method method: methods) {
+             int modifier = method.getModifiers();
+             //consider only the public methods
+             if (Modifier.isPublic(modifier)) {
+                 String name = method.getName();
+                 //considier only the get* methods
+                 if (name.startsWith("get")) {
+                     name = name.substring("get".length());
+                     Class<?> returnType = method.getReturnType();
+                     //consider only the methods that return primitives or String objects)
+                     if (returnType.isPrimitive() || returnType.getName().equals("java.lang.String")) {
+                         results.put(name, method.invoke(statistic, null));
+                     } else {
+                         //control should never reach here
+                         //we do not expect statistic object to return object
+                         //as value for any of it's stats.
+                     }
+                 }
+             }
+        }
+        return results;
+    }
 }

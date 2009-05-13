@@ -40,6 +40,8 @@ import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -51,6 +53,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.j2ee.statistics.Statistic;
 
 /**
  * @author rajeshwar patil
@@ -87,19 +90,15 @@ public class TreeNodeXmlProvider extends DomProviderUtil implements MessageBodyW
 
      private String getXml(List<TreeNode> proxy) {
         String result;
-        result ="<" ;
-        result = result + getTypeKey();
+        result ="<" + getTypeKey();
 
         String attributes = getAttributes(proxy);
-        if ((attributes != null) && (attributes.length() > 1)) {
-            result = result + " ";
-            result = result + getAttributes(proxy);
+        if ((attributes != null) && (attributes.length() > 0)) {
+            result = result + attributes;
         }
 
-        result = result + ">";
-        result = result + "\n";
-             result = result + getResourcesLinks(proxy);
-        result = result + getEndXmlElement(getTypeKey());
+        result = result + getResourcesLinks(proxy);
+        result = result + "\n" + getEndXmlElement(getTypeKey());
         return result;
     }
 
@@ -111,16 +110,27 @@ public class TreeNodeXmlProvider extends DomProviderUtil implements MessageBodyW
 
     private String getAttributes(List<TreeNode> nodeList) {
         String result ="";
+        //account for primitive values
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                result = result + node.getName() + "=" + quote(xmlForNodeValue(node.getValue()));
-                result = result + " ";
+                if (node instanceof Statistic) continue; //FIXME (1) - DELETE this check once the monitoring issue is fixed.
+                result = result + " " + node.getName() + "=" + quote(xmlForPrimitiveValue(node.getValue()));
             }
         }
 
-        int endIndex = result.length() - 1;
-        if (endIndex > 0) result = result.substring(0, endIndex );
+        result = result + ">";
+
+        //account for statistic values
+        for (TreeNode node : nodeList) {
+            //process only the leaf nodes, if any
+            if (!node.hasChildNodes()) {
+                result = result + xmlForStatisticValue(/*node.getValue()*/node);//FIXME (1) - Temporary hack; UNCOMMENT once the bug is fixed by monitoring team.
+                                                                                //getValue() on leaf node will return one of the following -
+                                                                                //Statistic object, String object or the object for primitive type
+            }
+        }
+
         return result;
     }
 
@@ -128,16 +138,16 @@ public class TreeNodeXmlProvider extends DomProviderUtil implements MessageBodyW
     private String getResourcesLinks(List<TreeNode> nodeList) {
         String result = "";
         String elementName;
-        for (TreeNode node: nodeList) { //for each element
+        for (TreeNode node: nodeList) {
             //process only the non-leaf nodes, if any
             if (node.hasChildNodes()) {
                 try {
+                        result = result + "\n";
                         result = result + indent; //indent
                         result = result + getStartXmlElement(getResourceKey());
                         elementName = node.getName();
                         result = result + getElementLink(uriInfo, elementName);
                         result = result + getEndXmlElement(getResourceKey());
-                        result = result + "\n";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -149,20 +159,48 @@ public class TreeNodeXmlProvider extends DomProviderUtil implements MessageBodyW
 
 
     private String getResourceKey() {
-        return "resource";
+        return "child-resource";
     }
 
 
-    private String xmlForNodeValue(Object value) {
+    private String xmlForPrimitiveValue(Object value) {
         String result ="";
-
-        //FIXME
-        //check  the value for type Statistics and handle appropriately
-
         result =  value.toString();
         return result;
     }
 
 
+    private String xmlForStatisticValue(Object value) {
+        String result ="";
+
+        try {
+            if (value instanceof Statistic) {
+                Statistic statisticObject = (Statistic)value;
+                Map map = getStatistics(statisticObject);
+                Set<String> attributes = map.keySet();
+                Object attributeValue;
+
+                result = result + "\n";
+                result = result + indent;
+                result = result + "<" + statisticObject.getName();
+                for (String attributeName: attributes) {
+                    attributeValue = map.get(attributeName);
+                    result = " " + result + attributeName + "=" +
+                         quote(attributeValue.toString());
+                }
+                result = result + ">";
+                result = result + getEndXmlElement(statisticObject.getName());
+
+                return result;
+            }
+        } catch (Exception exception) {
+            //log exception message as warning
+        }
+
+        return result;
+    }
+
+
     private static String indent = "    ";
+
 }

@@ -53,7 +53,7 @@ import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 /**
  * @author rajeshwar patil
  */
-@Path("__monitoring{path:.*}")
+@Path("monitoring{path:.*}")
 public class MonitoringResource {
 
     @PathParam("path")
@@ -102,16 +102,12 @@ public class MonitoringResource {
         }
 
         String dottedName = path.replace('/', '.');
-        System.out.println("Dotted Name: " + dottedName);
 
         String root;
         int index =  dottedName.indexOf('.');
         if (index != -1) {
             root = dottedName.substring(0, dottedName.indexOf('.'));
-            System.out.println("root: " + root);
-
             dottedName = dottedName.substring(dottedName.indexOf('.') + 1 );
-            System.out.println("dottedName: " + dottedName);
         } else {
             root = dottedName;
             dottedName = "";
@@ -141,7 +137,7 @@ public class MonitoringResource {
         }
 
         if (currentNode.hasChildNodes()) {
-            print(currentNode.getChildNodes());
+            //print(currentNode.getChildNodes());
             list.addAll(currentNode.getChildNodes());
         } else {
             Object result = currentNode.getValue();

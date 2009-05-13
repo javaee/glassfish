@@ -40,6 +40,8 @@ import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -51,6 +53,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.flashlight.datatree.TreeNode;
+import  org.glassfish.j2ee.statistics.Statistic;
 
 /**
  * @author rajeshwar patil
@@ -114,7 +117,9 @@ public class TreeNodeJsonProvider extends DomProviderUtil implements MessageBody
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                result = result + quote(node.getName()) + " : " + jsonForNodeValue(node.getValue());
+                result = result + quote(node.getName()) + " : " + jsonForNodeValue(/*node.getValue()*/node);//FIXME (1) - Temporary hack; UNCOMMENT once the bug is fixed by monitoring team.
+                                                                                                            //getValue() on leaf node will return one of the following -
+                                                                                                            //Statistic object, String object or the object for primitive type
                 result = result + ",";
             }
         }
@@ -126,7 +131,7 @@ public class TreeNodeJsonProvider extends DomProviderUtil implements MessageBody
 
 
     private String getResourcesKey() {
-        return quote("resources");
+        return quote("child-resources");
     }
 
 
@@ -155,14 +160,47 @@ public class TreeNodeJsonProvider extends DomProviderUtil implements MessageBody
     private String jsonForNodeValue(Object value) {
         String result ="";
 
+        try {
+            if (value instanceof Statistic) {
+                Statistic statisticObject = (Statistic)value;
+                Map map = getStatistics(statisticObject);
+                Set<String> attributes = map.keySet();
+                Object attributeValue;
+                result = result + "{";
+                for (String attributeName: attributes) {
+                    
+                    attributeValue = map.get(attributeName);
+                    result = result + quote(attributeName) + " : " + jsonValue(attributeValue);
+                    result = result + ",";
+                }
+
+                int endIndex = result.length() - 1;
+                if (endIndex > 0) result = result.substring(0, endIndex);
+
+                result = result + "}";
+                return result;
+            }
+        } catch (Exception exception) {
+            //log exception message as warning
+        }
+
+        value =  ((TreeNode)value).getValue(); //FIXME (1) - Temporary hack; DELETE once the bug is fixed by monitoring team.
+                                               //getValue() on leaf node will return one of the following -
+                                               //Statistic object, String object or the object for primitive type
+        result = result + jsonValue(value);
+
+        return result;
+    }
+
+
+    private String jsonValue(Object value) {
+        String result ="";
+
         if (value.getClass().getName().equals("java.lang.String")) {
             result = quote(value.toString());
         } else {
             result =  value.toString();
         }
-
-        //FIXME
-        //check  the value for type Statistics and handle appropriately
 
         return result;
     }

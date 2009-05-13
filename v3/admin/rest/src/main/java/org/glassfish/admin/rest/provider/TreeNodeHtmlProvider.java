@@ -39,7 +39,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.Map;
+
+//import javax.management.j2ee.statistics.Statistics; //?
+import  org.glassfish.j2ee.statistics.Statistic;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -87,12 +93,12 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
 
      private String getHtml(List<TreeNode> proxy) {
         String result;
-        result = "<html>" + "<body>" + "\n" ;
-        result = result + "<h1>" + getTypeKey() + "</h1>";
-            result = result + getAttributes(proxy) + "<br>";
-        result = result + "<h2>" + getResourcesKey() + "</h2>";
+        result = "<html><body>";
+        result = result + "<h1>" + getTypeKey() + "</h1>" + "<hr>";
+            result = result + getAttributes(proxy) + "<br><br>";
+        result = result + "<h2>" + getResourcesKey() + "</h2>" + "<hr>";
             result = result + getResourcesLinks(proxy);
-        result = result + "</html>" + "</body>";
+        result = result + "</html></body>";
         return result;
     }
 
@@ -107,8 +113,10 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                result = result + node.getName() + ":&nbsp;&nbsp;&nbsp;&nbsp;" + htmlForNodeValue(node.getValue());
-                result = result +  "<br>";
+                result = result + node.getName() + " : " + htmlForNodeValue(/*node.getValue()*/node); //FIXME (1) - Temporary hack; UNCOMMENT once the bug is fixed by monitoring team.
+                                                                                                      //getValue() on leaf node will return one of the following -
+                                                                                                      //Statistic object, String object or the object for primitive type
+                result = result + "<br>";
             }
         }
 
@@ -117,7 +125,7 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
 
 
     private String getResourcesKey() {
-        return quote("resources");
+        return "Child Resources";
     }
 
 
@@ -132,7 +140,7 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
                     result = result + "<a href=" + getElementLink(uriInfo, elementName) + ">";
                     result = result + elementName;
                     result = result + "</a>";
-                    result = result +  "<br>";
+                    result = result + "<br>";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -146,11 +154,37 @@ public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBody
     private String htmlForNodeValue(Object value) {
         String result ="";
 
-        //FIXME
-        //check  the value for type Statistics and handle appropriately
+        try {
+            if (value instanceof Statistic) {
+                Statistic statisticObject = (Statistic)value;
+                Map map = getStatistics(statisticObject);
+                Set<String> attributes = map.keySet();
+                Object attributeValue;
+                for (String attributeName: attributes) {
+                    result = result + "<br>";
+                    result = result + indent;
+                    attributeValue = map.get(attributeName);
+                    //for html output, string value of the object should suffice,
+                    //irrespective of the type of object
+                    result = result + attributeName + " : " +
+                         attributeValue.toString();
+                }
+                return result;
+            }
+        } catch (Exception exception) {
+            //log exception message as warning
+        }
 
+        value =  ((TreeNode)value).getValue(); //FIXME (1) - Temporary hack; DELETE once the bug is fixed by monitoring team.
+                                               //getValue() on leaf node will return one of the following -
+                                               //Statistic object, String object or the object for primitive type
+
+        //for html output, string value of the object should suffice,
+        //irrespective of the type of object
         result =  value.toString();
         return result;
     }
 
+
+    private static String indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 }
