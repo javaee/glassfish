@@ -87,14 +87,14 @@ public class AMXConfigHelper
     }
     
     /**
-        Return the units (if any) for the specified attribute.
+        Return the minimum value (if any) for the specified numeric attribute.
      */
     public Long min( final String attrName ) {
         return  (Long)attributeDescriptorField( attrName, DESC_MIN);
     }
     
     /**
-        Return the units (if any) for the specified attribute.
+        Return the maximum value (if any) for the specified numeric attribute.
      */
     public Long max( final String attrName ) {
         return  (Long)attributeDescriptorField( attrName, DESC_MAX);
@@ -114,11 +114,20 @@ public class AMXConfigHelper
         return (String)attributeDescriptorField( attrName, DESC_PATTERN_REGEX);
     }
     
+    public boolean key(final String attrName) {
+        return Boolean.parseBoolean( "" + attributeDescriptorField( attrName, DESC_KEY) );
+    }
+    
+    public boolean notNull(final String attrName) {
+        return Boolean.parseBoolean( "" + attributeDescriptorField( attrName, DESC_NOT_NULL) );
+    }
+    
     /**
         Return whether the attribute is required.
      */
     public Boolean required( final String attrName ) {
-        return Boolean.parseBoolean( "" + attributeDescriptorField( attrName, DESC_NOT_NULL) );
+        return notNull(attrName) || key(attrName) ||
+            Boolean.parseBoolean( "" + attributeDescriptorField( attrName, DESC_REQUIRED) );
     }
     
     /**
