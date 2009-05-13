@@ -87,13 +87,13 @@
     </target>
 
     <target name="restore" depends="init-common">
-        <antcall target="remove-jar"/>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="${appserver.instance.name}.web-container.session-config.session-manager.manager-properties.session-id-generator-classname="/>
         </antcall>
         <antcall target="stopDomain"/>
+        <antcall target="remove-jar"/>
         <antcall target="startDomain"/>
     </target>
 
