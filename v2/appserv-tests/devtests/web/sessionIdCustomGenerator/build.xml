@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="config,build,deploy,run,undeploy,stopDomain,restore"/>
+    <target name="all" depends="config,build,deploy,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -93,6 +93,7 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.web-container.session-config.session-manager.manager-properties.session-id-generator-classname="/>
         </antcall>
+        <antcall target="stopDomain"/>
         <antcall target="startDomain"/>
     </target>
 
