@@ -38,10 +38,12 @@
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+        getRequestValue(key="appID" value="#{requestScope.appID}");
+        getRequestValue(key="contextRoot" value="#{requestScope.contextRoot}");
         getTargetURLList(
-            AppID="$requestParameter{appID}",
-            contextRoot="$requestParameter{contextRoot}",
-            URLList=>$pageSession{urlList});
+            AppID="#{requestScope.appID}",
+            contextRoot="#{requestScope.contextRoot}",
+            URLList="#{pageSession.urlList}");
     />
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.webApplicationLinks.PageTitle}" >

@@ -38,13 +38,11 @@
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
         <!command
             setSessionAttribute(key="appGeneralTabs" value="general");
-#println("AAAAAXxxxxxxxxx #{appName},   #{pageSession.appName}");
             redirect(page="#{request.contextPath}/applications/#{generalPage}?appName=#{appName}");
         />       
     </sun:tab>
     <sun:tab id="editDDTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
         <!command
-#println("BBBBBBXxxxxxxxxx #{appName},   #{pageSession.appName}");
             setSessionAttribute(key="appGeneralTabs" value="editDDTab");
             redirect(page="#{request.contextPath}/applications/#{editDDPage}?appName=#{appName}");
         />

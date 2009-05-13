@@ -49,6 +49,7 @@
     getRequestValue(key="name" value=>$page{name} );
     setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.auditModule.EditPageTitle}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.EditPageTitleHelp}");
+    setPageSessionAttribute(key="helpKey" value="$resource{help.auditModuleEdit}");
     />
     </event>
 

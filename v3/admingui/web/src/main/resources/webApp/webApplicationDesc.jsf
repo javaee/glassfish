@@ -39,13 +39,13 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
     setPageSessionAttribute(key="showSubComponentColumn" value="$boolean{false}");
-    setPageSessionAttribute(key="name" value="$requestParameter{appName}");
+    getRequestValue(key="appName" value="#{pagesSession.name}");
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.descriptorPageTitle}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.descriptorPageTitleHelp}");
     setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
     setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
     setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
-    getDescriptors(appName="$requestParameter{appName}"  descriptors=>$attribute{descriptors});
+    getDescriptors(appName="#{pageSession.name}"  descriptors="#{requestScope.descriptors}");
     />
 #include "/shared/restart.inc"    
 <sun:html id="html2">

@@ -41,9 +41,9 @@
             decodeString(str="$attribute{alertDetail}", output=>$attribute{alertDetail});
           }
           if (!$attribute{alertSummary}){
-            setAttribute(key="alertType" value="$requestParameter{alertType}");
-            setAttribute(key="alertSummary" value="$requestParameter{alertSummary}");
-            setAttribute(key="alertDetail" value="$requestParameter{alertDetail}");
+            getRequestValue(key="alertType" value="#{requestScope.alertType}");
+            getRequestValue(key="alertSummary" value="#{requestScope.alertSummary}");
+            getRequestValue(key="alertDetail" value="#{requestScope.alertDetail}");
           }
 	  htmlEscape(value="#{alertType}" result="#{requestScope.alertType}");
 	  htmlEscape(value="#{alertSummary}" result="#{requestScope.alertSummary}");
@@ -56,18 +56,18 @@
             summary="#{alertSummary}"
             detail="#{alertDetail}" >
     <!beforeCreate
+
         if ($attribute{alertSummary}){
             decodeString(str="$attribute{alertSummary}", output=>$attribute{alertSummary});
             decodeString(str="$attribute{alertDetail}", output=>$attribute{alertDetail});
           }
           if (!$attribute{alertSummary}){
-            setAttribute(key="alertType" value="$requestParameter{alertType}");
-            setAttribute(key="alertSummary" value="$requestParameter{alertSummary}");
-            setAttribute(key="alertDetail" value="$requestParameter{alertDetail}");
+            getRequestValue(key="alertType" value="#{requestScope.alertType}");
+            getRequestValue(key="alertSummary" value="#{requestScope.alertSummary}");
+            getRequestValue(key="alertDetail" value="#{requestScope.alertDetail}");
           }
           
       />
       
 </sun:alert>
-
 
