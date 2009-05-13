@@ -168,8 +168,14 @@ public class WebBundleDescriptor extends BundleDescriptor
         if (getLocaleEncodingMappingListDescriptor() == null) {
             setLocaleEncodingMappingListDescriptor(webBundleDescriptor.getLocaleEncodingMappingListDescriptor());
         }
-        if (getJspConfigDescriptor() == null) {
-            setJspConfigDescriptor(webBundleDescriptor.getJspConfigDescriptor());
+
+        if (webBundleDescriptor.getJspConfigDescriptor() != null) {
+            JspConfigDescriptor jspConfigDesc = getJspConfigDescriptor();
+            if (jspConfigDesc == null) {
+                jspConfigDesc = new JspConfigDescriptor();
+                setJspConfigDescriptor(jspConfigDesc);
+            }
+            jspConfigDescriptor.add(webBundleDescriptor.getJspConfigDescriptor());
         }
 
         // WebServices

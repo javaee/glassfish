@@ -46,6 +46,16 @@ public class JspConfigDescriptor extends Descriptor {
     private Set list = null;
     private Vector<JspGroupDescriptor> jspGroups = null;
 
+    public void add(JspConfigDescriptor jspConfigDesc) {
+        if (jspConfigDesc.list != null) {
+            getTagLibSet().addAll(jspConfigDesc.list);
+        }
+
+        if (jspConfigDesc.jspGroups != null) {
+            getJspGroupSet().addAll(jspConfigDesc.jspGroups);
+        }
+    }
+
     /**
      * return the set of tag lib elements
      */
