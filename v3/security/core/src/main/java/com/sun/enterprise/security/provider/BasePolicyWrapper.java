@@ -655,22 +655,30 @@ public class BasePolicyWrapper extends java.security.Policy {
             return pcf;
         } else {
             PolicyConfigurationFactory pcfimpl = null;
-            try {
-                pcfimpl = PolicyConfigurationFactory.getPolicyConfigurationFactory();
-                if (!(pcfimpl instanceof PolicyConfigurationFactoryImpl)) {
-                    throw new PolicyContextException(
-                            "Wrong PolicyConfigurationFactory class, " +
-                            pcfimpl.getClass().getName() + ", Expected " +
-                            PolicyConfigurationFactoryImpl.class.getName());
+
+            pcfimpl = (PolicyConfigurationFactory) AccessController.doPrivileged(new PrivilegedAction() {
+
+                public Object run() {
+                    try {
+                        PolicyConfigurationFactory localPcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
+                        return localPcf;
+                    } catch (ClassNotFoundException ex) {
+                        logger.log(Level.SEVERE, null, ex);
+                        throw new RuntimeException(ex);
+                    } catch (PolicyContextException ex) {
+                        logger.log(Level.SEVERE, null, ex);
+                        throw new RuntimeException(ex);
+                    }
                 }
-                return (PolicyConfigurationFactoryImpl) pcfimpl;
-            } catch (ClassNotFoundException cnfe) {
-                logger.severe("jaccfactory.notfound");
-                throw new RuntimeException(cnfe);
-            } catch (PolicyContextException pce) {
-                logger.severe("jaccfactory.notfound");
-                throw new RuntimeException(pce);
+            });
+
+            if (!(pcfimpl instanceof PolicyConfigurationFactoryImpl)) {
+                throw new RuntimeException(
+                        "Wrong PolicyConfigurationFactory class, " +
+                        pcfimpl.getClass().getName() + ", Expected " +
+                        PolicyConfigurationFactoryImpl.class.getName());
             }
+            return (PolicyConfigurationFactoryImpl) pcfimpl;
         }
     }
 }
