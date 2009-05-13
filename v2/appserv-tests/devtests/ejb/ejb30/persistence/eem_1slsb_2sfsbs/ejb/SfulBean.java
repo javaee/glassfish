@@ -50,7 +50,6 @@ public class SfulBean
 
     public Map<String, Boolean> doTests() {
         Person person = new Person(name);
-        person.data = "data: " + name;
         
         String delegateName = "delgname_" + name;
         String delegateData= "delgdata: " + name;

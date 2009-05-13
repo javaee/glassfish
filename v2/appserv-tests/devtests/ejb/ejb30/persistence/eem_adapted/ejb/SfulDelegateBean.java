@@ -38,8 +38,7 @@ public class SfulDelegateBean {
 
     public Person createPerson(String name, String data) {
 
-        Person person = new Person(name);
-        person.data = data;
+        Person person = new Person(name, data);
         
         extendedEM.persist(person);
         return person;

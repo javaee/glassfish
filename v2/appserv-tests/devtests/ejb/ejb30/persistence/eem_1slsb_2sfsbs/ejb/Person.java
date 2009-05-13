@@ -21,6 +21,15 @@ public class Person implements java.io.Serializable {
         this.data = "data: " + name;
     }
 
+    public Person(String name, String data) {
+        this.name = name;
+        this.data = data;
+    }
+
+    public String getData() {
+        return data;
+    }
+
     @Override 
     public String toString() {
         return "Person: (name=" + name + "; data= " + data + ")";

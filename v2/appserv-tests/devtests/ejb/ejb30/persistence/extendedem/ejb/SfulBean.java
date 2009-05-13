@@ -20,7 +20,7 @@ public class SfulBean
             type=PersistenceContextType.EXTENDED) EntityManager extendedEM;
 
     private @PersistenceContext(
-            unitName="ejb-ejb30-persistence-extendedem-par3.jar#em")
+            unitName="lib/ejb-ejb30-persistence-extendedem-par3.jar#em")
             EntityManager txEM;
 
     private transient Person _p;

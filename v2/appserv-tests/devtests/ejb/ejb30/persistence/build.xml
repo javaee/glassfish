@@ -12,7 +12,9 @@
     &reporting;
 
     <target name="all">
+<!--
         <antcall target="context"/>
+-->
         <antcall target="eem_1slsb_2sfsbs"/>
         <antcall target="eem_3sfsbs"/>
         <antcall target="eem_adapted"/>

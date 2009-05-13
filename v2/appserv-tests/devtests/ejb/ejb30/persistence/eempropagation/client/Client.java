@@ -16,10 +16,10 @@ public class Client {
 
     public static void main (String[] args) {
 
-        stat.addDescription("ejb-ejb30-persistence-extendedem");
+        stat.addDescription("ejb-ejb30-persistence-eempropagation");
         Client client = new Client(args);
         client.doTest();
-        stat.printSummary("ejb-ejb30-persistence-extendedemID");
+        stat.printSummary("ejb-ejb30-persistence-eempropagationID");
     }
 
     public Client (String[] args) {

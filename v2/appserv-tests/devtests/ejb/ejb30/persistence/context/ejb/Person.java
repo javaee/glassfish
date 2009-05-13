@@ -24,5 +24,8 @@ public class Person implements java.io.Serializable {
         return "Person: {"+"(name = "+name+")}";
     }
 
+    public String getName() {
+        return name;
+    }
 }
  

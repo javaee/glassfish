@@ -48,10 +48,10 @@
         <jar destfile="${assemble.dir}/lib/${appname}-par1.jar">
              <metainf file="descriptor/persistence.xml"/>
         </jar>
-        <jar destfile="${assemble.dir}/${appname}-par2.jar">
+        <jar destfile="${assemble.dir}/lib/${appname}-par2.jar">
              <metainf file="descriptor2/persistence.xml"/>
         </jar>
-        <jar destfile="${assemble.dir}/${appname}-par3.jar">
+        <jar destfile="${assemble.dir}/lib/${appname}-par3.jar">
              <metainf file="descriptor/persistence.xml"/>
         </jar>
         <antcall target="build-ear-common">
@@ -62,7 +62,7 @@
         </antcall>
         <jar destfile="${assemble.dir}/${appname}App.ear" update="yes"
              basedir="${assemble.dir}"
-             includes="lib/${appname}-lib.jar, lib/${appname}-par1.jar, ${appname}-par2.jar, ${appname}-par3.jar">
+             includes="lib/${appname}-lib.jar, lib/${appname}-par1.jar, lib/${appname}-par2.jar, lib/${appname}-par3.jar">
         </jar>
 
     </target> 

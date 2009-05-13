@@ -16,7 +16,7 @@ import javax.ejb.TransactionAttributeType;
 public class SlessBean implements Sless {
 
     private @PersistenceContext(unitName="lib/ejb-ejb30-persistence-context-par1.jar#em", properties={ @PersistenceProperty(name="foo", value="bar"), @PersistenceProperty(name="foobar", value="123") } ) EntityManager emCreate;
-    private @PersistenceContext(unitName="ejb-ejb30-persistence-context-par3.jar#em") EntityManager emFind;
+    private @PersistenceContext(unitName="lib/ejb-ejb30-persistence-context-par3.jar#em") EntityManager emFind;
     private @PersistenceContext(unitName="em2") EntityManager emRemove;
 
     public void createPerson(String name) {
@@ -112,7 +112,7 @@ public class SlessBean implements Sless {
         Person p2 = emFind.find(Person.class, name);
         System.out.println("Found " + p2);
 
-        if( !p.name.equals(p2.name) ) {
+        if( !name.equals(p2.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
@@ -123,7 +123,7 @@ public class SlessBean implements Sless {
         Person p3 = (Person) q1.getSingleResult();
         System.out.println("Found " + p3);
 
-        if( !p.name.equals(p3.name) ) {
+        if( !name.equals(p3.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
@@ -158,7 +158,7 @@ public class SlessBean implements Sless {
         System.out.println("Executing q2");
         Person p4 = (Person) q2.getSingleResult();
         System.out.println("Found " + p4);
-        if( !p.name.equals(p4.name) ) {
+        if( !name.equals(p4.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
@@ -166,7 +166,7 @@ public class SlessBean implements Sless {
         System.out.println("Executing q1 again");
         Person p5 = (Person) q1.getSingleResult();
         System.out.println("Found " + p5);
-        if( !p.name.equals(p5.name) ) {
+        if( !name.equals(p5.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
@@ -174,7 +174,7 @@ public class SlessBean implements Sless {
         Person p6 = emFind.getReference(Person.class, name);
         System.out.println("Found " + p6);
 
-        if( !p.name.equals(p6.name) ) {
+        if( !name.equals(p6.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
@@ -241,56 +241,56 @@ public class SlessBean implements Sless {
 
         Person p7 = (Person) q3.getSingleResult();
         System.out.println("Found " + p7);
-        if( !p.name.equals(p7.name) ) {
+        if( !name.equals(p7.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
         Person p8 = (Person) q3.getSingleResult();
         System.out.println("Found " + p8);
-        if( !p.name.equals(p8.name) ) {
+        if( !name.equals(p8.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
         
-        Query q4 = emFind.createNativeQuery("SELECT p.name FROM EJB30_PERSISTENCE_CONTEXT_PERSON p WHERE p.name LIKE '" + p.name + "'");
-        String p9 = (String) ((Vector) q4.getSingleResult()).elementAt(0);
+        Query q4 = emFind.createNativeQuery("SELECT p.name FROM EJB30_PERSISTENCE_CONTEXT_PERSON p WHERE p.name LIKE '" + name + "'");
+        String p9 = (String) q4.getSingleResult(); // ((Vector) q4.getSingleResult()).elementAt(0);
         System.out.println("Found " + p9);
-        if( !p.name.equals(p9) ) {
+        if( !name.equals(p9) ) {
             throw new EJBException("finder results not equivalent");
         }
         // execute native query again
-        String p10 = (String) ((Vector) q4.getSingleResult()).elementAt(0);
+        String p10 = (String) q4.getSingleResult(); // ((Vector) q4.getSingleResult()).elementAt(0);
         System.out.println("Found " + p10);
-        if( !p.name.equals(p10) ) {
+        if( !name.equals(p10) ) {
             throw new EJBException("finder results not equivalent");
         }
         
 
-        Query q5 = emFind.createNativeQuery("SELECT p.name FROM EJB30_PERSISTENCE_CONTEXT_PERSON p WHERE p.name LIKE '" + p.name + "'", Person.class);
+        Query q5 = emFind.createNativeQuery("SELECT p.name FROM EJB30_PERSISTENCE_CONTEXT_PERSON p WHERE p.name LIKE '" + name + "'", Person.class);
         Person p11 = (Person) q5.getSingleResult();
         System.out.println("Found " + p11);
-        if( !p.name.equals(p11.name) ) {
+        if( !name.equals(p11.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
         // Execute native query again
         Person p12 = (Person) q5.getSingleResult();
         System.out.println("Found " + p12);
-        if( !p.name.equals(p12.name) ) {
+        if( !name.equals(p12.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
-        Query q6 = emFind.createNativeQuery("SELECT p.name FROM EJB30_PERSISTENCE_CONTEXT_PERSON p WHERE p.name LIKE '" + p.name + "'", "PersonSqlMapping");
+        Query q6 = emFind.createNativeQuery("SELECT p.name FROM EJB30_PERSISTENCE_CONTEXT_PERSON p WHERE p.name LIKE '" + name + "'", "PersonSqlMapping");
         
         Person p13 = (Person) q6.getSingleResult();
         System.out.println("Found " + p13);
-        if( !p.name.equals(p13.name) ) {
+        if( !name.equals(p13.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
         // Execute native query again
         Person p14 = (Person) q6.getSingleResult();
         System.out.println("Found " + p14);
-        if( !p.name.equals(p14.name) ) {
+        if( !name.equals(p14.getName()) ) {
             throw new EJBException("finder results not equivalent");
         }
 
