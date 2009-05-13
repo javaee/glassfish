@@ -191,9 +191,21 @@ public class WebServiceHandler extends AbstractHandler {
         }catch (Exception e) {
             throw new AnnotationProcessorException(rb.getString("webservice.annotation.exception")+ e.getMessage());
         }
+
         //WebService.name in the impl class identifies port-component-name
         // If this is specified in impl class, then that takes precedence
-        String portComponentName = ann.name();
+        //However if this is specified in webservices.xml that will take precedence
+        //see issue 5221
+        String portComponentName = null;
+        WebServicesDescriptor wsDesc = bundleDesc.getWebServices();
+        for (WebServiceEndpoint wsEndpoint :wsDesc.getEndpoints()) {
+            portComponentName = wsEndpoint.getEndpointName();
+            if (portComponentName == null) {
+                portComponentName = ann.name();
+            }
+
+        }
+       
 
         // As per JSR181, the serviceName is either specified in the deployment descriptor
         // or in @WebSErvice annotation in impl class; if neither service name implclass+Service
@@ -266,7 +278,7 @@ public class WebServiceHandler extends AbstractHandler {
             }
         }
 
-        WebServicesDescriptor wsDesc = bundleDesc.getWebServices();
+         wsDesc = bundleDesc.getWebServices();
         //WebService.name not found; as per 109, default port-component-name
         //is the simple class name as long as the simple class name will be a
         // unique port-component-name for this module
@@ -320,6 +332,17 @@ public class WebServiceHandler extends AbstractHandler {
             newWS.addEndpoint(endpoint);
             wsDesc.setSpecVersion (com.sun.enterprise.deployment.node.WebServicesDescriptorNode.SPEC_VERSION);
         } else {
+            //This is the case like issue 5221 in this case the
+            // port-component-name is different from Webservice.name
+            //so the end wsdl publishing address will take the port-components-name
+            //but the spec says the wsdl address is the @Webservice.name hence
+            //  this step
+
+            if (portComponentName !=null && portComponentName !=
+                    ((Class)annElem).getName())  {
+                endpoint.setEndpointName(implClassName);
+            }
+
             newWS = endpoint.getWebService();
         }
 
@@ -415,38 +438,38 @@ public class WebServiceHandler extends AbstractHandler {
             }
         } else {
 
-               if(endpoint.getEjbLink() == null) {
-                  //TODO BM handle stateless
-               Stateless stateless = null;
-                try {
-                    stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
-                } catch (Exception e) {
-                    //This can happen in the web.zip installation where there is no ejb
-                    //Just logging the error
-                    logger.fine(rb.getString("exception.thrown") + e.getMessage() );
-                }
-                Singleton singleton = null;
-                try {
-                    singleton = annElem.getAnnotation(javax.ejb.Singleton.class);
-                } catch (Exception e) {
-                    //This can happen in the web.zip installation where there is no ejb
-                    //Just logging the error
-                    logger.fine(rb.getString("exception.thrown") + e.getMessage() );
-                }
-                String name;
+            //TODO BM handle stateless
+            Stateless stateless = null;
+            try {
+                stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
+            } catch (Exception e) {
+                //This can happen in the web.zip installation where there is no ejb
+                //Just logging the error
+                logger.fine(rb.getString("exception.thrown") + e.getMessage() );
+            }
+            Singleton singleton = null;
+            try {
+                singleton = annElem.getAnnotation(javax.ejb.Singleton.class);
+            } catch (Exception e) {
+                //This can happen in the web.zip installation where there is no ejb
+                //Just logging the error
+                logger.fine(rb.getString("exception.thrown") + e.getMessage() );
+            }
+            String name;
 
-                
-                if ((stateless != null) &&((stateless).name()==null || stateless.name().length()>0)) {
-                    name = stateless.name();
-                } else if ((singleton != null) &&((singleton).name()==null || singleton.name().length()>0)) {
-                    name = singleton.name();
 
-                }else {
-                    name = ((Class) annElem).getSimpleName();
-                }
-                EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
-                endpoint.setEjbComponentImpl(ejb);
-                ejb.setWebServiceEndpointInterfaceName(endpoint.getServiceEndpointInterface());
+            if ((stateless != null) &&((stateless).name()==null || stateless.name().length()>0)) {
+                name = stateless.name();
+            } else if ((singleton != null) &&((singleton).name()==null || singleton.name().length()>0)) {
+                name = singleton.name();
+
+            }else {
+                name = ((Class) annElem).getSimpleName();
+            }
+            EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
+            endpoint.setEjbComponentImpl(ejb);
+            ejb.setWebServiceEndpointInterfaceName(endpoint.getServiceEndpointInterface());
+            if (endpoint.getEjbLink() == null){
                 endpoint.setEjbLink(ejb.getName());
             }
         }
