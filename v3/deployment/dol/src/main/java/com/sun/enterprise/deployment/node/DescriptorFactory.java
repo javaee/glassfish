@@ -168,6 +168,7 @@ public class DescriptorFactory {
         register(new XMLElement(WebTagNames.ORDERING), OrderingDescriptor.class);                         
         register(new XMLElement(WebTagNames.AFTER), OrderingOrderingDescriptor.class);                         
         register(new XMLElement(WebTagNames.BEFORE), OrderingOrderingDescriptor.class);                         
+        register(new XMLElement(WebTagNames.MULTIPART_CONFIG), MultipartConfigDescriptor.class);                         
 
         // JSR 109 integration
         register(new XMLElement(WebServicesTagNames.SERVICE_REF), ServiceReferenceDescriptor.class);

@@ -39,17 +39,20 @@ import java.util.EnumSet;
 import java.util.Set;
 import javax.servlet.SessionTrackingMode;
 
+import com.sun.enterprise.deployment.web.CookieConfig;
+import com.sun.enterprise.deployment.web.SessionConfig;
+
 /**
  * This represents the session-config in web.xml.
  *
  * @author Shing Wai Chan
  */
 
-public class SessionConfigDescriptor extends Descriptor {
+public class SessionConfigDescriptor extends Descriptor implements SessionConfig {
     public static final int SESSION_TIMEOUT_DEFAULT = 30;
 
     private int sessionTimeout;
-    private CookieConfigDescriptor cookieConfigDescriptor = null;
+    private CookieConfig cookieConfig = null;
     private Set<SessionTrackingMode> trackingModes = null;
 
     public SessionConfigDescriptor() {
@@ -70,12 +73,19 @@ public class SessionConfigDescriptor extends Descriptor {
         this.sessionTimeout = sessionTimeout;
     }
 
-    public CookieConfigDescriptor getCookieConfigDescriptor() {
-        return cookieConfigDescriptor;
+    public CookieConfig getCookieConfig() {
+        return cookieConfig;
     }
 
-    public void setCookieConfigDescriptor(CookieConfigDescriptor cookieConfigDescriptor) {
-        this.cookieConfigDescriptor = cookieConfigDescriptor;
+    public void setCookieConfig(CookieConfig cookieConfig) {
+        this.cookieConfig = cookieConfig;
+    }
+
+    /**
+     * DeploymentDescriptorNode.addNodeDescriptor(node) need this.
+     */
+    public void setCookieConfig(CookieConfigDescriptor cookieConfigDesc) {
+        this.cookieConfig = cookieConfigDesc;
     }
 
     public void addTrackingMode(String trackingMode) {
@@ -101,8 +111,8 @@ public class SessionConfigDescriptor extends Descriptor {
 
     public void print(StringBuffer toStringBuffer) {
         toStringBuffer.append("\n sessionTimeout ").append(sessionTimeout);
-        if (cookieConfigDescriptor != null) {
-            cookieConfigDescriptor.print(toStringBuffer);
+        if (cookieConfig!= null) {
+            toStringBuffer.append(cookieConfig);
         }
         if (trackingModes != null) {
             toStringBuffer.append("\n trackingModes ");

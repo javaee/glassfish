@@ -78,7 +78,7 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
                                                             SecurityRoleNode.class, "addRole");            
         registerElementHandler(new XMLElement(WebTagNames.SERVLET), ServletNode.class);       
         registerElementHandler(new XMLElement(WebTagNames.SERVLET_MAPPING), ServletMappingNode.class);               
-        registerElementHandler(new XMLElement(WebTagNames.SESSION_CONFIG), SessionConfigNode.class, "setSessionConfigDescriptor");               
+        registerElementHandler(new XMLElement(WebTagNames.SESSION_CONFIG), SessionConfigNode.class, "setSessionConfig");               
         registerElementHandler(new XMLElement(WebTagNames.MIME_MAPPING), 
                                                             MimeMappingNode.class, "addMimeMapping");
         registerElementHandler(new XMLElement(WebTagNames.CONTEXT_PARAM), 
@@ -402,10 +402,10 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
 				lemDesc);
 	}           
 
-        if (webBundleDesc.getSessionConfigDescriptor() != null) {
+        if (webBundleDesc.getSessionConfig() != null) {
             SessionConfigNode scNode = new SessionConfigNode();
             scNode.writeDescriptor(jarNode, WebTagNames.SESSION_CONFIG,
-                    webBundleDesc.getSessionConfigDescriptor());            
+                    (SessionConfigDescriptor)webBundleDesc.getSessionConfig());            
         }
 
         return jarNode;

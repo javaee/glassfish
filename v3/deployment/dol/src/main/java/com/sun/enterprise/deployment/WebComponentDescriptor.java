@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.web.InitializationParameter;
+import com.sun.enterprise.deployment.web.MultipartConfig;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
 
 import java.util.Enumeration;
@@ -90,6 +91,7 @@ public class WebComponentDescriptor extends Descriptor {
     private WebBundleDescriptor webBundleDescriptor = null;
     private boolean enabled = true;
     private Boolean asyncSupported = null;
+    private MultipartConfig multipartConfig = null;
 
     /**
      * The default constructor.
@@ -114,6 +116,7 @@ public class WebComponentDescriptor extends Descriptor {
         getSecurityRoleReferenceSet().addAll(
             other.getSecurityRoleReferenceSet());
         setRunAsIdentity(other.getRunAsIdentity());
+        setMultipartConfig(other.getMultipartConfig());
         setWebBundleDescriptor(other.getWebBundleDescriptor());
     }
 
@@ -308,6 +311,21 @@ public class WebComponentDescriptor extends Descriptor {
         }
     }
 
+    public MultipartConfig getMultipartConfig() {
+        return multipartConfig;
+    }
+
+    public void setMultipartConfig(MultipartConfig multipartConfig) {
+        this.multipartConfig = multipartConfig;
+    }
+
+    /**
+     * DeploymentDescriptorNode.addNodeDescriptor(node) need this.
+     */
+    public void setMultipartConfig(MultipartConfigDescriptor multipartConfigDesc) {
+        this.multipartConfig = multipartConfigDesc;
+    }
+
     public Application getApplication() {
         if (getWebBundleDescriptor() != null) {
             return getWebBundleDescriptor().getApplication();
@@ -376,6 +394,7 @@ public class WebComponentDescriptor extends Descriptor {
         toStringBuffer.append("\n enabled ").append(enabled);
         toStringBuffer.append("\n asyncSupported ").append(asyncSupported);
         toStringBuffer.append("\n securityRoleReferences ").append(securityRoleReferences);
+        toStringBuffer.append("\n multipartConfig ").append(multipartConfig);
         if (isServlet()) {
             toStringBuffer.append("\n servlet className ").append(getWebComponentImplementation());
         } else {
@@ -459,6 +478,9 @@ public class WebComponentDescriptor extends Descriptor {
         }
         if (getRunAsIdentity() == null) {
             setRunAsIdentity(other.getRunAsIdentity());
+        }
+        if (getMultipartConfig() == null) {
+            setMultipartConfig(other.getMultipartConfig());
         }
         if (getWebComponentImplementation() == null) {
             setWebComponentImplementation(

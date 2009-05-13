@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.deployment.node.web;
 
+import com.sun.enterprise.deployment.MultipartConfigDescriptor;
 import com.sun.enterprise.deployment.RoleReference;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
@@ -43,6 +44,7 @@ import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.InitializationParameter;
+import com.sun.enterprise.deployment.web.MultipartConfig;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 import org.w3c.dom.Node;
 
@@ -70,6 +72,7 @@ public class ServletNode extends DisplayableComponentNode {
         registerElementHandler(new XMLElement(WebTagNames.INIT_PARAM), InitParamNode.class);                
         registerElementHandler(new XMLElement(WebTagNames.RUNAS_SPECIFIED_IDENTITY), 
                                                              RunAsNode.class, "setRunAsIdentity");                
+        registerElementHandler(new XMLElement(WebTagNames.MULTIPART_CONFIG), MultipartConfigNode.class);                
         
     }
     
@@ -110,6 +113,8 @@ public class ServletNode extends DisplayableComponentNode {
             }
             descriptor.addInitializationParameter(
                         (InitializationParameter) newDescriptor);    
+        } else if (newDescriptor instanceof MultipartConfig) {
+            descriptor.setMultipartConfig((MultipartConfig)newDescriptor);
         } else super.addDescriptor(newDescriptor);
     }
     
@@ -196,6 +201,15 @@ public class ServletNode extends DisplayableComponentNode {
         while (roleRefs.hasMoreElements()) {
             roleRefNode.writeDescriptor(myNode, WebTagNames.ROLE_REFERENCE, 
                             (RoleReference) roleRefs.nextElement());            
+        }
+
+        // multipart-config
+        MultipartConfigDescriptor multipartConfigDesc =
+                (MultipartConfigDescriptor)descriptor.getMultipartConfig();
+        if (multipartConfigDesc != null) {
+            MultipartConfigNode multipartConfigNode = new MultipartConfigNode();
+            multipartConfigNode.writeDescriptor(myNode, WebTagNames.MULTIPART_CONFIG,
+                    multipartConfigDesc);
         }
         
         return myNode;

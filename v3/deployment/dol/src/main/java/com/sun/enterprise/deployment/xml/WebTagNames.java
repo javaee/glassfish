@@ -145,4 +145,9 @@ public interface WebTagNames extends TagNames {
     public static final String ORDERING = "ordering";
     public static final String AFTER = "after";
     public static final String BEFORE = "before";
+
+    public static final String MULTIPART_CONFIG = "multipart-config";
+    public static final String MAX_FILE_SIZE = "max-file-size";
+    public static final String MAX_REQUEST_SIZE = "max-request-size";
+    public static final String FILE_SIZE_THRESHOLD = "file-size-threshold";
 }

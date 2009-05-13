@@ -1833,7 +1833,7 @@ public class WebModule extends PwcWebModule {
 
         int webXmlTimeoutSeconds = -1;
         if (wbd != null) {
-            webXmlTimeoutSeconds = wbd.getSessionConfigDescriptor().getSessionTimeout() * 60;
+            webXmlTimeoutSeconds = wbd.getSessionConfig().getSessionTimeout() * 60;
         }
 
         //web.xml setting has precedence if it exists

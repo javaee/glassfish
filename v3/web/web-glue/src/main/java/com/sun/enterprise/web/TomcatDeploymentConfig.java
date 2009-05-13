@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.SessionCookieConfig;
 
-import com.sun.enterprise.deployment.CookieConfigDescriptor;
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.ErrorPageDescriptor;
@@ -53,17 +52,18 @@ import com.sun.enterprise.deployment.MessageDestinationDescriptor;
 import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.deployment.SecurityRoleDescriptor;
-import com.sun.enterprise.deployment.SessionConfigDescriptor;
 import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.web.AppListenerDescriptor;
 import com.sun.enterprise.deployment.web.ContextParameter;
+import com.sun.enterprise.deployment.web.CookieConfig;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.web.MimeMapping;
+import com.sun.enterprise.deployment.web.SessionConfig;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
 import com.sun.enterprise.deployment.web.ServletFilter;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
@@ -545,31 +545,30 @@ public class TomcatDeploymentConfig {
             }
         }
        
-        SessionConfigDescriptor sessionConfigDesc = 
-            wmd.getSessionConfigDescriptor();
+        SessionConfig sessionConfig = 
+            wmd.getSessionConfig();
 
         // <session-config><session-timeout>
-        webModule.setSessionTimeout(sessionConfigDesc.getSessionTimeout());
+        webModule.setSessionTimeout(sessionConfig.getSessionTimeout());
 
         // <session-config><cookie-config>
-        CookieConfigDescriptor cookieConfigDesc =
-            sessionConfigDesc.getCookieConfigDescriptor();
-        if (cookieConfigDesc != null) {
-            SessionCookieConfig cookieConfig =
+        CookieConfig cookieConfig = sessionConfig.getCookieConfig();
+        if (cookieConfig != null) {
+            SessionCookieConfig sessionCookieConfig =
                 webModule.getSessionCookieConfig();
-            cookieConfig.setName(cookieConfigDesc.getName());
-            cookieConfig.setDomain(cookieConfigDesc.getDomain());
-            cookieConfig.setPath(cookieConfigDesc.getPath());
-            cookieConfig.setComment(cookieConfigDesc.getComment());
-            cookieConfig.setHttpOnly(cookieConfigDesc.isHttpOnly());
-            cookieConfig.setSecure(cookieConfigDesc.isSecure());
-            cookieConfig.setMaxAge(cookieConfigDesc.getMaxAge());
+            sessionCookieConfig.setName(cookieConfig.getName());
+            sessionCookieConfig.setDomain(cookieConfig.getDomain());
+            sessionCookieConfig.setPath(cookieConfig.getPath());
+            sessionCookieConfig.setComment(cookieConfig.getComment());
+            sessionCookieConfig.setHttpOnly(cookieConfig.isHttpOnly());
+            sessionCookieConfig.setSecure(cookieConfig.isSecure());
+            sessionCookieConfig.setMaxAge(cookieConfig.getMaxAge());
         }
 
         // <session-config><tracking-mode>
-        if (!sessionConfigDesc.getTrackingModes().isEmpty()) {
+        if (!sessionConfig.getTrackingModes().isEmpty()) {
             webModule.setSessionTrackingModes(
-                sessionConfigDesc.getTrackingModes());
+                sessionConfig.getTrackingModes());
         }
 
         enumeration = wmd.getWelcomeFiles();

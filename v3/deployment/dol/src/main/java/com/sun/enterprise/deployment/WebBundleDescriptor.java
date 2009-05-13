@@ -66,7 +66,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
 
     private Set<WebComponentDescriptor> webComponentDescriptors;
-    private SessionConfigDescriptor sessionConfigDescriptor;
+    private SessionConfig sessionConfig;
     private Set<MimeMapping> mimeMappings;
     private Set<String> welcomeFiles;
     private Set<ErrorPageDescriptor> errorPageDescriptors;
@@ -179,8 +179,8 @@ public class WebBundleDescriptor extends BundleDescriptor
             thisWebServices.addWebService(new WebService(ws));
         }
 
-        if (getSessionConfigDescriptor() == null) {
-            setSessionConfigDescriptor(webBundleDescriptor.getSessionConfigDescriptor());
+        if (getSessionConfig() == null) {
+            setSessionConfig(webBundleDescriptor.getSessionConfig());
         }
 
         if (getLoginConfiguration() == null) {
@@ -273,12 +273,19 @@ public class WebBundleDescriptor extends BundleDescriptor
         getWebComponentDescriptors().remove(webComponentDescriptor);
     }
 
-    public void setSessionConfigDescriptor(SessionConfigDescriptor sessionConfigDescriptor) {
-        this.sessionConfigDescriptor = sessionConfigDescriptor;
+    public SessionConfig getSessionConfig() {
+        return sessionConfig;
     }
 
-    public SessionConfigDescriptor getSessionConfigDescriptor() {
-        return sessionConfigDescriptor;
+    public void setSessionConfig(SessionConfig sessionConfig) {
+        this.sessionConfig = sessionConfig;
+    }
+
+    /**
+     * DeploymentDescriptorNode.addNodeDescriptor(node) need this.
+     */
+    public void setSessionConfig(SessionConfigDescriptor sessionConfigDesc) {
+        this.sessionConfig = sessionConfigDesc;
     }
 
     /**
@@ -1454,8 +1461,8 @@ public class WebBundleDescriptor extends BundleDescriptor
     public void printCommon(StringBuffer toStringBuffer) {
         super.print(toStringBuffer);
         toStringBuffer.append("\n context root ").append(getContextRoot());
-        if (sessionConfigDescriptor != null) {
-            sessionConfigDescriptor.print(toStringBuffer);
+        if (sessionConfig != null) {
+            toStringBuffer.append(sessionConfig);
         }
         String wname = getName();
         if (wname != null && wname.length() > 0) {

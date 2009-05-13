@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,8 +36,9 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import com.sun.enterprise.deployment.CookieConfigDescriptor;
-import com.sun.enterprise.deployment.SessionConfigDescriptor;
+import java.util.Map;
+
+import com.sun.enterprise.deployment.MultipartConfigDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.WebTagNames;
@@ -45,17 +46,15 @@ import com.sun.enterprise.deployment.xml.WebTagNames;
 import org.w3c.dom.Node;
 
 /**
- * This class is responsible for handling session-config xml node.
+ * This class is responsible for handling multipart-config xml node.
  * 
  * @author Shing Wai Chan
  */
-public class SessionConfigNode extends DeploymentDescriptorNode {
-    private SessionConfigDescriptor descriptor;
+public class MultipartConfigNode extends DeploymentDescriptorNode {
+    private MultipartConfigDescriptor descriptor;
 
-    public SessionConfigNode() {
+    public MultipartConfigNode() {
         super();
-        registerElementHandler(new XMLElement(WebTagNames.COOKIE_CONFIG),
-                CookieConfigNode.class, "setCookieConfig");
     }
 
    /**
@@ -63,9 +62,24 @@ public class SessionConfigNode extends DeploymentDescriptorNode {
     */
     public Object getDescriptor() {
         if (descriptor == null) {
-            descriptor = (SessionConfigDescriptor)super.getDescriptor();
+            descriptor = (MultipartConfigDescriptor)super.getDescriptor();
         }
         return descriptor;
+    }
+
+    /**
+     * all sub-implementation of this class can use a dispatch table to map xml element to
+     * method name on the descriptor class for setting the element value. 
+     *  
+     * @return the map with the element name as a key, the setter method as a value
+     */    
+    protected Map getDispatchTable() {
+        Map table = super.getDispatchTable();
+        table.put(WebTagNames.LOCATION, "setLocation");
+        table.put(WebTagNames.MAX_FILE_SIZE, "setMaxFileSize");
+        table.put(WebTagNames.MAX_REQUEST_SIZE, "setMaxRequestSize");
+        table.put(WebTagNames.FILE_SIZE_THRESHOLD, "setFileSizeThreshold");
+        return table;
     }
 
     /**
@@ -73,24 +87,18 @@ public class SessionConfigNode extends DeploymentDescriptorNode {
      * 
      * @param element the xml element
      * @param value it's associated value
-     */    
-    public void setElementValue(XMLElement element, String value) {    
-        if (WebTagNames.SESSION_TIMEOUT.equals(element.getQName())) {
-            // if the session out value is already set
-            // which means there are multiple session-config elements
-            // throw an exception
-            if (descriptor.getSessionTimeout() != 
-                SessionConfigDescriptor.SESSION_TIMEOUT_DEFAULT) {
-                throw new RuntimeException(
-                    "Has more than one session-config element!");
-            } 
-            descriptor.setSessionTimeout((Integer.valueOf(value.trim())).intValue());
-        } else if (WebTagNames.TRACKING_MODE.equals(element.getQName())) {
-            descriptor.addTrackingMode(value);
+     */
+    public void setElementValue(XMLElement element, String value) {
+        if (WebTagNames.MAX_FILE_SIZE.equals(element.getQName())) {
+            descriptor.setMaxFileSize(Long.parseLong(value));
+        } else if (WebTagNames.MAX_REQUEST_SIZE.equals(element.getQName())) {
+            descriptor.setMaxRequestSize(Long.parseLong(value));
+        } else if (WebTagNames.FILE_SIZE_THRESHOLD.equals(element.getQName())) {
+            descriptor.setFileSizeThreshold(Integer.parseInt(value));
         } else {
             super.setElementValue(element, value);
         }
-    }      
+    }
 
     /**
      * write the descriptor class to a DOM tree and return it
@@ -100,24 +108,13 @@ public class SessionConfigNode extends DeploymentDescriptorNode {
      * @param the descriptor to write
      * @return the DOM tree top node
      */
-    public Node writeDescriptor(Node parent, String nodeName, SessionConfigDescriptor descriptor) {
+    public Node writeDescriptor(Node parent, String nodeName, MultipartConfigDescriptor descriptor) {       
         Node myNode = appendChild(parent, nodeName);
-        if (descriptor.getSessionTimeout() != descriptor.SESSION_TIMEOUT_DEFAULT) {
-            appendTextChild(myNode, WebTagNames.SESSION_TIMEOUT, 
-                    String.valueOf(descriptor.getSessionTimeout()));
-        }
-        CookieConfigDescriptor cookieConfigDesc = (CookieConfigDescriptor)descriptor.getCookieConfig();
-        if (cookieConfigDesc != null) {
-            CookieConfigNode cookieConfigNode = new CookieConfigNode();
-            cookieConfigNode.writeDescriptor(myNode, WebTagNames.COOKIE_CONFIG,
-                cookieConfigDesc);
-        }
-
-        if (descriptor.getTrackingModes().size() > 0) {
-            for (Enum tmEnum : descriptor.getTrackingModes()) {
-                appendTextChild(myNode, WebTagNames.TRACKING_MODE, tmEnum.name());
-            }
-        }
+        appendTextChild(myNode, WebTagNames.LOCATION, descriptor.getLocation());
+        appendTextChild(myNode, WebTagNames.MAX_FILE_SIZE, Long.toString(descriptor.getMaxFileSize()));
+        appendTextChild(myNode, WebTagNames.MAX_REQUEST_SIZE, Long.toString(descriptor.getMaxRequestSize()));
+        appendTextChild(myNode, WebTagNames.FILE_SIZE_THRESHOLD, Integer.toString(descriptor.getFileSizeThreshold()));
+        
         return myNode;
-    }
+    }   
 }
