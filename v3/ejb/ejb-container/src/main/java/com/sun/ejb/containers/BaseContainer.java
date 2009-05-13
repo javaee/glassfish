@@ -56,6 +56,7 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.deployment.util.TypeUtil;
@@ -102,7 +103,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 
 public abstract class BaseContainer
-    implements Container, EJBStatsProvider, EjbContainerFacade
+    implements Container, EJBStatsProvider, EjbContainerFacade, JavaEEContainer
 {
     public enum ContainerType {
         STATELESS, STATEFUL, SINGLETON, MESSAGE_DRIVEN, ENTITY, READ_ONLY
@@ -846,7 +847,13 @@ public abstract class BaseContainer
     public final ClassLoader getClassLoader() {
         return loader;
     }
-    
+
+    /**
+     * Method defined on JavaEEContainer
+     */
+    public final ClassLoader getContainerClassLoader() {
+        return getClassLoader();
+    }
     
     final long getContainerId() {
         return ejbDescriptor.getUniqueId();
@@ -857,6 +864,13 @@ public abstract class BaseContainer
         return ejbDescriptor;
     }
     
+    /**
+     * Method defined on JavaEEContainer
+     */
+    public final Descriptor getDescriptor() {
+        return getEjbDescriptor();
+    }
+
     public final EJBMetaData getEJBMetaData() {
         return metadata;
     }
@@ -1749,6 +1763,14 @@ public abstract class BaseContainer
         }
     }
     
+    /**
+     * Containers that allow extended EntityManager will override this method.
+     */
+    public EntityManager lookupExtendedEntityManager(EntityManagerFactory emf) {
+        throw new IllegalStateException(
+                "EntityManager with PersistenceContextType.EXTENDED " + 
+                "is not supported for this bean type");
+    }
 
     public void webServicePostInvoke(EjbInvocation inv) {
         // postInvokeTx is handled by WebServiceInvocationHandler.

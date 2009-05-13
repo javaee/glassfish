@@ -678,6 +678,10 @@ public final class StatefulSessionContainer
         return em;
     }
 
+    public EntityManager lookupExtendedEntityManager(EntityManagerFactory emf) {
+        return findExtendedEMFromInvList(emf);
+    }
+
     private void afterInstanceCreation(SessionContextImpl context)
             throws Exception {
 
