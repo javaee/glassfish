@@ -66,9 +66,9 @@ public class WindowsScriptManager {
 			+ "\n \n"
 			+ "Set FsObj = CreateObject(\"Scripting.FileSystemObject\")"
 			+ "\n"
-			+ "If Not FsObj.FolderExists(StrUserDesktop & \"\\%%FOLDER_NAME%%\") Then"
+			+ "If FsObj.FolderExists(StrUserDesktop & \"\\%%FOLDER_NAME%%\") Then"
 			+ "\n"
-			+ "	FsObj.CreateFolder(StrUserDesktop & \"\\%%FOLDER_NAME%%\")"
+			+ "	FsObj.DeleteFolder(StrUserDesktop & \"\\%%FOLDER_NAME%%\")"
 			+ "\n" + "End If" + "\n";
 
 	// Script code to create the entire program group folder.
