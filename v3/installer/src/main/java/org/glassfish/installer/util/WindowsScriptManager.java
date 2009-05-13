@@ -111,6 +111,7 @@ public class WindowsScriptManager {
 			theExec.execute();
 			theOutput = theExec.getAllOutput();
 			// Delete the temporary file
+			theTempFile.delete();
 		} catch (Exception theIOE) {
 			return retValue;
 		}

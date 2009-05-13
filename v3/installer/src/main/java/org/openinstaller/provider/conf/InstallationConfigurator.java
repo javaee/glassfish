@@ -41,9 +41,8 @@ import java.io.BufferedOutputStream;
 import org.openinstaller.provider.conf.ResultReport;
 import org.openinstaller.provider.conf.Configurator;
 import org.openinstaller.config.PropertySheet;
-import org.openinstaller.util.EnhancedException;
-import org.openinstaller.util.ExecuteCommand;
-import org.openinstaller.util.ClassUtils;
+import org.openinstaller.util.*;
+import org.glassfish.installer.util.*;
 import com.sun.pkg.bootstrap.Bootstrap;
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -123,7 +122,14 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
                 aSheet.getProperty("Administration.ADMIN_USER"),
                 aSheet.getProperty("Administration.ADMIN_PASSWORD"),
                 aSheet.getProperty("Administration.LOGIN_MODE"));
-	    }
+		
+	String folderName = 
+		(String)TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
+    	if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
+        	LOGGER.log(Level.INFO, "Creating shortcuts under Folder :<" + folderName + ">");
+		createServerShortCuts(folderName); 
+	}
+	}
 
         if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
             LOGGER.log(Level.INFO, "Configuring Updatetool");
@@ -135,6 +141,12 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
                 aSheet.getProperty("Configuration.PROXY_HOST"),
                 aSheet.getProperty("Configuration.PROXY_PORT"));
 	    }
+	String folderName = 
+		(String)TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
+    	if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
+        	LOGGER.log(Level.INFO, "Creating shortcuts under Folder :<" + folderName + ">");
+		createUpdatetoolShortCuts(folderName);
+	}
      }
      catch (Exception e) {
          configSuccessful = false;
@@ -169,6 +181,19 @@ public ResultReport unConfigure (final PropertySheet aSheet, final boolean aVali
             LOGGER.log(Level.INFO, "Unconfiguring Updatetool");
             LOGGER.log(Level.INFO, "Installation directory: " + installDir);
             unconfigureUpdatetool(installDir);
+	}
+	/* Delete the newly created folder, on windows. No incremental uninstallation, so delete everything.*/ 
+	String folderName = 
+		(String)TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
+    	if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
+		WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
+		wsShortMgr.deleteFolder(folderName);
+	/* As a workaround also cleanup the folder created by Open Installer. */	
+		String theInstallHome = installDir.replace("\\", "-");
+		theInstallHome = theInstallHome.replace("/", "-");
+		theInstallHome = theInstallHome.replace(":", "-");
+                LOGGER.log(Level.INFO, "Removing Foldername" + folderName + " (" + theInstallHome + ")");
+		wsShortMgr.deleteFolder(folderName + " (" + theInstallHome + ")");
 	}
      }
      catch (Exception e) {
@@ -879,4 +904,72 @@ public boolean unpackJars(String unpackDir) {
             return true;
 
 }
+
+
+/* Creates shortcuts for windows. The ones created from OI will be removed due to
+manged names. These shortcuts are in addition to the ones created by default. 
+Since the descriptor for defining the short cut entry is not OS specific, we still
+need to carry on the xml entries to create items on Gnome.
+*/
+public void createUpdatetoolShortCuts(String folderName) {
+		WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
+		wsShortMgr.createFolder(folderName);
+		String modifiedInstallDir = installDir.replace("\\","\\\\");
+		// Create short cut for starting update tool.
+		wsShortMgr.createShortCut(
+			folderName,
+			"Start Update Tool",
+			modifiedInstallDir + "\\\\bin\\\\updatetool",
+			"Start updatetool",
+			"",
+			modifiedInstallDir + "\\\\updatetool\\\\vendor-packages\\\\updatetool\\\\images\\\\application-update-tool.ico",
+			modifiedInstallDir + "\\\\bin",
+			"2");
+}
+	
+/* Creates shortcuts for windows. The ones created from OI will be removed due to
+manged names. These shortcuts are in addition to the ones created by default. 
+Since the descriptor for defining the short cut entry is not OS specific, we still
+need to carry on the xml entries to create items on Gnome.
+*/
+public void createServerShortCuts(String folderName) {
+		WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
+		wsShortMgr.createFolder(folderName);
+		String modifiedInstallDir = installDir.replace("\\","\\\\");
+		// Create short cut for starting server.
+		wsShortMgr.createShortCut(
+			folderName,
+			"Start Application Server",
+			modifiedInstallDir + "\\\\glassfish\\\\bin\\\\asadmin.bat",
+			"Start server",
+			"start-domain domain1",
+			modifiedInstallDir + "\\\\glassfish\\\\icons\\\\startAppserv.ico",
+			modifiedInstallDir + "\\\\glassfish",
+			"2");
+
+
+		// Create short cut for Stop application server.
+		wsShortMgr.createShortCut(
+			folderName,
+			"Stop Application Server",
+			modifiedInstallDir + "\\\\glassfish\\\\bin\\\\asadmin.bat",
+			"Stop server",
+			"stop-domain domain1",
+			modifiedInstallDir + "\\\\glassfish\\\\icons\\\\stopAppserv.ico",
+			modifiedInstallDir + "\\\\glassfish",
+			"2");
+
+		// Create short cut for uninstall.exe.
+		wsShortMgr.createShortCut(
+			folderName,
+			"Uninstall",
+			modifiedInstallDir + "\\\\uninstall.exe",
+			"Uninstall",
+			"",
+			modifiedInstallDir + "\\\\glassfish\\\\icons\\\\uninstall.ico",
+			modifiedInstallDir,
+			"2");
+
+}
+
 }
