@@ -3752,12 +3752,7 @@ public abstract class BaseContainer
 
             preInvoke(inv);
 
-/**
-            // AroundInvoke methods don't apply to timeout methods so
-            // use invokeTargetBeanMethod() instead of intercept()
-            invokeTargetBeanMethod(inv.getBeanMethod(), inv, inv.ejb,
-                                   inv.methodParams, null);
-**/
+            // AroundTimeout interceptors will be checked for timeout methods
             intercept(inv);
      
             if( !isBeanManagedTran && (transactionManager.getStatus() ==

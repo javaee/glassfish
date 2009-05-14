@@ -1051,8 +1051,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 				if (isTimedObject()
 						&& isEjbTimeoutMethod(invocation.method)) {
 					invocation.beanMethod = invocation.method;
-					invokeTargetBeanMethod(invocation.method, invocation,
-							invocation.ejb, invocation.methodParams, null);
+					intercept(invocation);
 				} else {
 					// invocation.beanMethod is the actual target method from
 					// the bean class. The bean class is not required to be
