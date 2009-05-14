@@ -43,6 +43,7 @@ import javax.management.MBeanOperationInfo;
 import static java.lang.annotation.ElementType.METHOD;
 
 /**
+    Annotation used to generate MBeanInfo using a Java interface.
    @author Lloyd Chambers
  */
 @Retention(RUNTIME)
