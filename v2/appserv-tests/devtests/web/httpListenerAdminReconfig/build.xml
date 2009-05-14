@@ -42,7 +42,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="--secure=true configs.config.server-config.network-config.protocols.protocol.admin-listener.security-enabled=false"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.admin-listener.security-enabled=false"/>
         </antcall>
     </target>
     

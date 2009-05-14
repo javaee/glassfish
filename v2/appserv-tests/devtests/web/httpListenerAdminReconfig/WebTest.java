@@ -3,7 +3,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for 6273998
+ * Unit test for 6319436: BindException when reconfigureing http-listener with Asynch startup enabled.
  */
 public class WebTest {
 
