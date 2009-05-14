@@ -135,12 +135,21 @@ public class WebServletHandler extends AbstractWebHandler {
 
         String webCompImpl = webCompDesc.getWebComponentImplementation();
         if (webCompImpl != null && webCompImpl.length() > 0 &&
-                !webCompImpl.equals(webCompClass.getName())) {
+                (!webCompImpl.equals(webCompClass.getName()) || !webCompDesc.isServlet())) {
+
+            String messageKey = null;
+            String defaultMessage = null;
+
+            if (webCompDesc.isServlet()) {
+                messageKey = "enterprise.deployment.annotation.handlers.servletimpldontmatch";
+                defaultMessage = "The servlet '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.";
+            } else {
+                messageKey = "enterprise.deployment.annotation.handlers.servletimpljspdontmatch";
+                defaultMessage = "The servlet '{0}' is a jsp '{1}' in xml. It does not match with '{2}' from annotation @{3}.";
+            }
             
             log(Level.SEVERE, ainfo,
-                localStrings.getLocalString(
-                "enterprise.deployment.annotation.handlers.servletimpldontmatch",
-                "The servlet '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.",
+                localStrings.getLocalString(messageKey, defaultMessage,
                 new Object[] { webCompDesc.getName(), webCompImpl, webCompClass.getName(),
                 WebServlet.class.getName() }));
             return getDefaultFailedResult();
