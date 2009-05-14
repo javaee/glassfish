@@ -38,23 +38,37 @@ public class WebTest {
     }
 
     public void run() throws Exception {
-        String contextPath = contextRoot + "/myurl";
-        doWebMethod("GET", host, port, contextPath, "login-logout", 200, "g:Hello, true, false, javaee, true, true, false");
+        doWebMethod("GET", host, port, contextRoot + "/myurl", false, "login-logout",
+                200, null, "g:Hello, true, false, javaee, true, true, false");
+
+        doWebMethod("GET", host, port, contextRoot + "/myurl2", false, "authenticate-401",
+                401, "WWW-Authenticate", null);
+        doWebMethod("GET", host, port, contextRoot + "/myurl2", true, "authenticate-logout",
+                200, null, "g:Hello, true, false, javaee, true, true, false");
     }
 
     private static void doWebMethod(String webMethod, String host, int port,
-            String contextPath, String testSuffix,
-            int responseCode, String expected) throws Exception {
+            String contextPath, boolean sendAuthHeader, String testSuffix,
+            int responseCode, String headerName, String expected) throws Exception {
 
         String urlStr = "http://" + host + ":" + port + contextPath;
         System.out.println(webMethod + " " + urlStr);
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
         urlConnection.setRequestMethod(webMethod);
+        if (sendAuthHeader) {
+            urlConnection.setRequestProperty("Authorization", "Basic amF2YWVlOmphdmFlZQ==");
+        }
         urlConnection.connect();
 
         int code = urlConnection.getResponseCode();
         boolean ok = (code == responseCode);
+        String headerValue = null;
+        if (headerName != null) {
+            headerValue = urlConnection.getHeaderField(headerName);
+            ok = ok && (headerValue != null);
+            System.out.println(headerName + " : " + headerValue);
+        }
         if (expected != null) {
             InputStream is = null;
             BufferedReader bis = null;
