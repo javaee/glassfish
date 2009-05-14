@@ -46,6 +46,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 
 /**
  * Ping JDBC Connection Pool Command
@@ -64,6 +66,12 @@ public class PingJdbcConnectionPool implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connRuntime;
+
+    @Inject
+    JdbcConnectionPool[] jdbcPools;
+
+    @Inject
+    ConnectorConnectionPool[] connPools;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -74,6 +82,13 @@ public class PingJdbcConnectionPool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         boolean status = false;
+
+        if (!isConnPoolExists(poolName)) {
+            report.setMessage(localStrings.getLocalString("ping.connection.pool.connPoolNotFound",
+                "Connection pool {0} not found.", poolName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
 
         try {
             status = connRuntime.pingConnectionPool(poolName);
@@ -89,9 +104,28 @@ public class PingJdbcConnectionPool implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "ping.connection.pool.fail", 
-                    "Ping JDBC Connection Pool for {0} Failed", poolName));
+                    "Ping JDBC Connection Pool for {0} Failed", poolName) + " " +
+                    e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+    }
+
+    private boolean isConnPoolExists(String poolName) {
+        if (jdbcPools != null) {
+            for (JdbcConnectionPool pool : jdbcPools) {
+                if (pool.getName().equals(poolName)) {
+                    return true;
+                }
+            }
+        }
+        if (connPools != null) {
+            for (ConnectorConnectionPool pool : connPools) {
+                if (pool.getName().equals(poolName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
