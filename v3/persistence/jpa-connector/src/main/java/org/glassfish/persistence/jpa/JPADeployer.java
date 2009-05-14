@@ -111,9 +111,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
               // Initialize pus for only this bundle here to enable transformers to work properly. This is because classloader from deploymentcontext is for this bundle only
               // Retrieve them in load() and put them in corresponding JPAContainer instance and close them in corresponding stop()
-                List<PersistenceUnitDescriptor> pusToInitialize = new ArrayList<PersistenceUnitDescriptor>();
                 Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
                     for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
+                        List<PersistenceUnitDescriptor> pusToInitialize = new ArrayList<PersistenceUnitDescriptor>();
                         for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
                             if(referencedPus.contains(pud)) {
                                 pusToInitialize.add(pud);
