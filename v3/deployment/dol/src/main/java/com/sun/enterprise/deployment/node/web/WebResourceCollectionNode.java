@@ -103,9 +103,21 @@ public class WebResourceCollectionNode extends DeploymentDescriptorNode  {
     public void setElementValue(XMLElement element, String value) {
         if (WebTagNames.URL_PATTERN.equals(element.getQName())) {
             if (!URLPattern.isValid(value)) {
-                // try trimming url (in case DD uses extra whitespace for
-                // aligning)
+                // try trimming url (in case DD uses extra
+                // whitespace for aligning)
                 String trimmedUrl = value.trim();
+
+                // If URL Pattern does not start with "/" then
+                // prepend it (for Servlet2.2 Web apps)
+                Object parent = getParentNode().getParentNode().getDescriptor();
+                if (parent instanceof WebBundleDescriptor &&
+                        ((WebBundleDescriptor) parent).getSpecVersion().equals("2.2")) {
+                    if(!trimmedUrl.startsWith("/") &&
+                            !trimmedUrl.startsWith("*.")) {
+                        trimmedUrl = "/" + trimmedUrl;
+                    }
+                }
+
                 if (URLPattern.isValid(trimmedUrl)) {
                     // warn user with error message if url included \r or \n
                     if (URLPattern.containsCRorLF(value)) {
@@ -120,16 +132,6 @@ public class WebResourceCollectionNode extends DeploymentDescriptorNode  {
                                     "enterprise.deployment.invalidurlpattern",
                                     "Invalid URL Pattern: [{0}]",
                                     new Object[] { value }));
-                }
-            }
-            // If URL Pattern does not start with "/" then
-            // prepend it (for Servlet2.2 Web apps)
-            Object parent = getParentNode().getParentNode().getDescriptor();
-            if (parent instanceof WebBundleDescriptor &&
-                ((WebBundleDescriptor) parent).getSpecVersion().equals("2.2"))
-            {
-                if(!value.startsWith("/") && !value.startsWith("*.")) {
-                    value = "/" + value;
                 }
             }
             descriptor.addUrlPattern(value);

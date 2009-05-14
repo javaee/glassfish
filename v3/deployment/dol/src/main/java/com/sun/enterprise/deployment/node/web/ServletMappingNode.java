@@ -73,11 +73,23 @@ public class ServletMappingNode extends DeploymentDescriptorNode {
         } 
         if (WebTagNames.URL_PATTERN.equals(element.getQName())) {
             if (!URLPattern.isValid(value)) {
-                // try trimming url (in case DD uses extra whitespace for
-                // aligning)
+                // try trimming url (in case DD uses extra
+                // whitespace for aligning)
                 String trimmedUrl = value.trim();
+
+                // If URL Pattern does not start with "/" then 
+                // prepend it (for Servlet2.2 Web apps) 
+                Object parent = getParentNode().getDescriptor(); 
+                if (parent instanceof WebBundleDescriptor &&  
+                        ((WebBundleDescriptor) parent).getSpecVersion().equals("2.2")) { 
+                    if(!trimmedUrl.startsWith("/") &&
+                            !trimmedUrl.startsWith("*.")) { 
+                        trimmedUrl = "/" + trimmedUrl; 
+                    } 
+                }
+
                 if (URLPattern.isValid(trimmedUrl)) {
-                    // warn user with error message if url included \r or \n
+                    // warn user if url included \r or \n
                     if (URLPattern.containsCRorLF(value)) {
                         DOLUtils.getDefaultLogger().log(Level.WARNING,
                                 "enterprise.deployment.backend.urlcontainscrlf",
@@ -92,16 +104,7 @@ public class ServletMappingNode extends DeploymentDescriptorNode {
                                     new Object[] { value }));
                 }
             }
-            // If URL Pattern does not start with "/" then 
-            // prepend it (for Servlet2.2 Web apps) 
-            Object parent = getParentNode().getDescriptor(); 
-            if (parent instanceof WebBundleDescriptor &&  
-                ((WebBundleDescriptor) parent).getSpecVersion().equals("2.2")) 
-            { 
-                if(!value.startsWith("/") && !value.startsWith("*.")) { 
-                    value = "/" + value; 
-                } 
-            } 
+
             urlPattern = value;
 
             XMLNode  parentNode = getParentNode();
