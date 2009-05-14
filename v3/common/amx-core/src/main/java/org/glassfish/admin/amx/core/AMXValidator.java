@@ -48,7 +48,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanConstructorInfo;
 import javax.management.MBeanInfo;
+import javax.management.MBeanNotificationInfo;
+import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.OpenType;
@@ -204,8 +207,7 @@ public final class AMXValidator
             }
             builder.append(mFailures.size() + " failures.");
 
-            return builder.toString() + NL +
-                   mNumTested + " MBeans tested.";
+            return builder.toString() + NL + mNumTested + " MBeans tested.";
         }
 
     }
@@ -236,7 +238,7 @@ public final class AMXValidator
     Attributes that cannot be sent to generic clients are not allowed.
     More than OpenTypes are allowed eg messy stuff like JSR 77 Stats and Statistics.
      */
-    private void checkLegalForRemote(final Object value) throws IllegalClassException
+    private static void checkLegalForRemote(final Object value) throws IllegalClassException
     {
         if (value == null)
         {
@@ -677,6 +679,22 @@ public final class AMXValidator
             mDescriptor = d;
             mFieldNames = SetUtil.newSet(d.getFieldNames());
             mProblems = problems;
+            
+            validateRemote();
+        }
+        
+        // Descriptor fields must be remotable
+        void validateRemote()
+        {
+            for( final String fieldName : mFieldNames )
+            {
+                try {
+                    checkLegalForRemote( mDescriptor.getFieldValue(fieldName) );
+                }
+                catch( final IllegalClassException e ) {
+                    mProblems.add( "Descriptor field " + fieldName + " uses a remote-unfriendly class: " + e.clazz().getName() );
+                }
+            }
         }
 
         void validateMetadataBoolean(final String fieldName)
@@ -718,14 +736,14 @@ public final class AMXValidator
                 }
             }
         }
-
     }
 
     private static List<String> validateMetadata(final AMXProxy proxy)
     {
         final List<String> problems = new ArrayList<String>();
 
-        final Descriptor d = proxy.extra().mbeanInfo().getDescriptor();
+        final MBeanInfo mbeanInfo = proxy.extra().mbeanInfo();
+        final Descriptor d = mbeanInfo.getDescriptor();
 
         // verify that no extraneous field exist
         final Set<String> LEGAL_AMX_DESCRIPTORS = SetUtil.newStringSet(
@@ -749,6 +767,26 @@ public final class AMXValidator
         val.validateMetadataStringNonEmpty(DESC_GROUP);
 
         val.validate(DESC_SUB_TYPES, String[].class);
+        
+        for( final MBeanAttributeInfo attrInfo: mbeanInfo.getAttributes() )
+        {
+            new MetadataValidator( attrInfo.getDescriptor(), problems );
+        }
+        
+        for( final MBeanOperationInfo opInfo : mbeanInfo.getOperations() )
+        {
+            new MetadataValidator( opInfo.getDescriptor(), problems );
+        }
+        
+        for( final MBeanConstructorInfo cosntructorInfo : mbeanInfo.getConstructors() )
+        {
+            new MetadataValidator( cosntructorInfo.getDescriptor(), problems );
+        }
+        
+        for( final MBeanNotificationInfo notifInfo : mbeanInfo.getNotifications() )
+        {
+            new MetadataValidator( notifInfo.getDescriptor(), problems );
+        }
 
         return problems;
     }
@@ -811,7 +849,10 @@ public final class AMXValidator
 
         private final int mNumFailures;
 
-        public ValidationResult(final int numTested, final int numFailures, final String details)
+        public ValidationResult(
+            final int numTested,
+            final int numFailures,
+            final String details)
         {
             mNumTested = numTested;
             mNumFailures = numFailures;
@@ -842,6 +883,7 @@ public final class AMXValidator
 
     public ValidationResult validate(final ObjectName[] targets)
     {
+        final long startMillis = System.currentTimeMillis();
         final Failures failures = new Failures();
 
         final DomainRoot dr = mDomainRoot;
@@ -854,8 +896,12 @@ public final class AMXValidator
             final List<String> problems = _validate(amx);
             failures.result(objectName, problems);
         }
+        final long elapsedMillis = System.currentTimeMillis() - startMillis;
 
-        final ValidationResult result = new ValidationResult(failures.getNumTested(), failures.getNumFailures(), failures.toString());
+        final ValidationResult result = new ValidationResult(
+            failures.getNumTested(),
+            failures.getNumFailures(),
+            failures.toString() + NL + elapsedMillis + " milliseconds.");
         return result;
     }
 

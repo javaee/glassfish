@@ -581,7 +581,7 @@ public class ConfigBeanJMXSupport {
                     final Object fieldValue = m.invoke(a);
                     // make sure all metadata is safe across the wire: convert to String
                     Object actualValue = fieldValue;
-                    if ( actualValue != null && ! actualValue.getClass().getName().startsWith("java.lang") )
+                    if ( actualValue != null /* && ! actualValue.getClass().getName().startsWith("java.lang") */ )
                     {
                         actualValue = SmartStringifier.toString(actualValue);
                     }
