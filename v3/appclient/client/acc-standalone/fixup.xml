@@ -33,9 +33,22 @@ own identifying information: Portions Copyright [yyyy]
         <!-- define the classpath property -->
         <property file="${classpath.file}"/>
 
+        <!--
+            Entries in zip (and JAR) files have two-second timestamp resolution.  The
+            next sleep makes sure that the time stamp on the updated manifest
+            file will later than the original manifest's time + two seconds;
+            this make sure the zip task will actually replacde the manifest
+            in the JAR file.
+
+            Also, the manifest task seems not to update the timestamp on the
+            manifest file, so we need to explicitly touch it after updating
+            the manifest.
+        -->
+        <sleep seconds="3"/>
         <manifest mode="update" file="${stage.dir}/META-INF/MANIFEST.MF">
             <attribute name="Class-Path" value="${classpath} ${classpath.additions}"/>
         </manifest>
+        <touch file="${stage.dir}/META-INF/MANIFEST.MF"/>
 
         <!-- Update the JAR file with the revised manifest -->
         <zip destfile="${output.dir}/${output.file}" basedir="${stage.dir}" update="true" includes="META-INF/MANIFEST.MF"/>
