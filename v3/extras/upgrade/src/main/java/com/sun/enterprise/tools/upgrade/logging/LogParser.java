@@ -36,14 +36,17 @@
 
 package com.sun.enterprise.tools.upgrade.logging;
 
-import java.io.BufferedReader;
+import java.io.RandomAccessFile;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.FileNotFoundException;
+
 
 /**
  * Log parsing code to look for potential error messages.
@@ -57,13 +60,45 @@ public class LogParser {
     private static final String SEP = "|";
 
     // holds the "upgrade failed" cases
-    private static final Set<String> FAIL_LEVELS = new HashSet<String>();
-
+    private static final Set<Pattern> FAIL_LEVELS = new HashSet<Pattern>();
+    
+    // Search rule: pattern in log msg (e.g. |WARNING|)
     static {
-        FAIL_LEVELS.add(String.format("%s%s%s",
-            SEP, Level.SEVERE.getName(), SEP));
-        FAIL_LEVELS.add(String.format("%s%s%s",
-            SEP, Level.WARNING.getName(), SEP));
+        FAIL_LEVELS.add(Pattern.compile(String.format("[%s]%s[%s]",
+                SEP, Level.SEVERE.getName(), SEP )));
+        FAIL_LEVELS.add(Pattern.compile(String.format("[%s]%s[%s]",
+                SEP, Level.WARNING.getName(), SEP)));
+    }
+
+
+    // Search rule: find pattern of this type (e.g.
+    // at java.util.ResourceBundle.getObject(ResourceBundle.java:384))
+    private Pattern pattern = Pattern.compile("at .*[(].*:[0-9]*[)]");
+    // sequence that ends log msg
+    private static final String endToken = SEP + "#]";
+
+    private long startPoint = 0;
+    private File logFile;
+
+    public LogParser(File logFile) throws FileNotFoundException, IOException {
+        this.logFile = logFile;
+        // record the endpoint of the data.
+        RandomAccessFile raf = new RandomAccessFile(logFile, "r");
+        startPoint = raf.length();
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(String.format("Parsing file: %s",
+                    logFile.getAbsolutePath()));
+            logger.fine("File length: " + startPoint);
+        }
+        raf.close();
+    }
+
+    public void setStartPoint(long start){
+        if (start < 0){
+            startPoint = 0;
+        } else {
+            startPoint = start;
+        }
     }
 
     /**
@@ -72,40 +107,57 @@ public class LogParser {
      * Level.SEVERE.
      *
      * @param logFile File object representing the log to parse.
-     * @return True if any potential errors were found
+     * @return collected messages.
      */
-    public boolean parseLog(File logFile) throws IOException {
+    public StringBuffer parseLog() throws IOException {
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine(String.format("Parsing '%s'",
-                logFile.getAbsolutePath()));
+            logger.fine(String.format("Parsing file: %s", logFile.getAbsolutePath()));
         }
-        BufferedReader reader = null;
+        StringBuffer sBuf = new StringBuffer();
+        RandomAccessFile reader = null;
         try {
-            reader = new BufferedReader(new FileReader(logFile));
+            reader = new RandomAccessFile(logFile, "r");
+            // skip past prior log mgs. Process only msg for this startup
+            reader.seek(startPoint);
             String line = reader.readLine();
             while (line != null) {
-                if (parseForError(line)) {
-                    return true;
+                if (line.length() > 0 ) {
+                        if (line.endsWith(endToken)){
+                            if (matchBeginning(line)){
+                                sBuf.append(line).append("\n\n");
+                            }
+                        } else {
+                            // log msg consists of multiple lines.  Get full msg
+                            String tmpBuf = getFullMsg(line, reader);
+
+                            // check for and print a stack trace from any log level
+                            Matcher matcher = pattern.matcher(tmpBuf);
+                            if (matcher.find()) {
+                                sBuf.append(tmpBuf).append("\n\n");
+                            }
+                        }
                 }
                 line = reader.readLine();
             }
         } finally {
             reader.close();
         }
-        return false;
+        return sBuf;
     }
 
-    /*
-     * Checks each line to see if anything was logged at a level
-     * that is in the 'FAIL_LEVELS' set. E.g., Level.SEVERE messages
-     * might be considered an upgrade failure.
+
+    /**
+     * Check msg for log level of interest.
+     *
+     * @param line
+     * @return
      */
-    private boolean parseForError(String line) {
-        for (String levelToken : FAIL_LEVELS) {
-            if (line.indexOf(levelToken) != -1) {
+    private boolean matchBeginning(String line) {
+        for (Pattern p: FAIL_LEVELS) {
+            Matcher matcher = p.matcher(line);
+            if (matcher.find()) {
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.fine(String.format("Found error message: %s",
-                        getMessage(line)));
+                    logger.fine(String.format("Found error message: %s", line));
                 }
                 return true;
             }
@@ -113,19 +165,34 @@ public class LogParser {
         return false;
     }
 
-    /*
-     * Utility method for getting the message out of a GF log line.
-     * Hopefully there's some code already to handle this.
+
+    /**
+     * Read a multi-line msg.
+     *
+     * @param l     inital line of multi-line msg
+     * @param reader    utility reading the data
+     * @return  The full msg as a string
+     * @throws java.io.IOException
      */
-    private String getMessage(String line) {
 
-        // parse off end
-        line = line.substring(0, line.lastIndexOf(SEP));
+    private String getFullMsg(String l, RandomAccessFile reader) throws java.io.IOException {
+        StringBuffer sbuf = new StringBuffer();
+        sbuf.append(l + "\n");
 
-        // now parse up till message
-        line = line.substring(1 + line.lastIndexOf(SEP), line.length());
-        
-        return line;
+        String line = reader.readLine();
+        while (line != null) {
+            sbuf.append(line  + "\n");
+            if (line.endsWith(endToken)) {
+                break;
+            }
+            line = reader.readLine();
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(String.format("multi-line message: %s",
+                    sbuf.toString()));
+        }
+        return sbuf.toString();
+
     }
 
 }

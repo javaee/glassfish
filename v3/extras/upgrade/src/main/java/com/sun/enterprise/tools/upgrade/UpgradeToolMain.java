@@ -179,15 +179,68 @@ public class UpgradeToolMain {
         try {
             commonInfo.setupTasks();
 
+
             try {
                 // preform upgrade
                 DomainsProcessor dProcessor = new DomainsProcessor(commonInfo);
                 TargetAppSrvObj _target = commonInfo.getTarget();
+
+                // Find the endpoint of an existing server log so
+                // when we look for error msgs we will not get
+                // pre-existing ones.
+                File serverLog = null;
+                LogParser logParser = null;
+                try {
+                    serverLog = LogFinder.getServerLogFile();
+                    if (serverLog != null) {
+                        logParser = new LogParser(serverLog);
+                    }
+                } catch (FileNotFoundException fe) {
+                    _logger.log(Level.WARNING, sm.getString(
+                            "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
+                } catch (IOException e) {
+                    _logger.log(Level.WARNING, sm.getString(
+                            "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
+                }
+
                 int exitValue = dProcessor.startDomain(_target.getDomainName());
                 UpdateProgressManager.getProgressManager().processUpgradeUpdateEvent(100);
                 if (exitValue == 0){
                     dProcessor.stopDomain(_target.getDomainName());
                 }
+
+                //- There should be a new server log file.
+                if (serverLog == null) {
+                    try {
+                        serverLog = LogFinder.getServerLogFile();
+                        logParser = new LogParser(serverLog);
+                        logParser.setStartPoint(0);
+                    } catch (FileNotFoundException fe) {
+                        _logger.log(Level.WARNING, sm.getString(
+                                "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
+                    } catch (IOException e) {
+                        _logger.log(Level.WARNING, sm.getString(
+                                "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
+                    }
+                }
+                //- broadcast all upgrade error found
+                if (logParser != null){
+                    StringBuffer sbuf = logParser.parseLog();
+                    if (sbuf.length() > 0){
+                        _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.not_successful_mgs"));
+                         _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.logs_mgs_title"));
+                         _logger.log(Level.INFO, sbuf.toString());
+
+                    } else {
+                        _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.success_mgs"));
+
+                    }
+
+                } else {
+                    _logger.log(Level.WARNING, sm.getString("enterprise.tools.upgrade.could_not_process_server_log"));
+
+                }
+
             } catch (HarnessException he) {
                 _logger.log(Level.INFO, sm.getString(
                         "enterprise.tools.upgrade.generalException", he.getMessage()));
@@ -203,6 +256,7 @@ public class UpgradeToolMain {
             _logger.log(Level.INFO, e.getMessage());
         }
     }
+
     
     public static void main(String [] args) {
         UpgradeToolMain main = new UpgradeToolMain();

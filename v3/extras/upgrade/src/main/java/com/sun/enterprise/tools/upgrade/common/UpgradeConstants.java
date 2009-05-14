@@ -77,6 +77,9 @@ public final class UpgradeConstants {
     public static final String ASADMIN_BAT = "asadmin.bat";
 	public static final String DOMAIN_XML_FILE = "domain.xml";
 	public static final String DELIMITER = ";"; //-seperator for version edititon
+    public static final String LOGGING_PROPERTIES = "logging.properties";
+    public static final String SERVER_LOG_PROPERTY="com.sun.enterprise.server.logging.GFFileHandler.file";
+    public static final String SERVER_LOG_DEFAULT="logs/server.log";
 		
     //operating system related constants    
     public static final String OS_NAME_IDENTIFIER = "os.name";
