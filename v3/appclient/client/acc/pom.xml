@@ -383,5 +383,19 @@
          <version>${project.version}</version>
      </dependency>
 
+     <dependency>
+         <scope>runtime</scope>
+         <groupId>org.glassfish.jms</groupId>
+         <artifactId>jms-core</artifactId>
+         <version>${project.version}</version>
+     </dependency>
+
+     <dependency>
+         <scope>runtime</scope>
+         <groupId>org.glassfish</groupId>
+         <artifactId>javax.jms</artifactId>
+         <version>${project.version}</version>
+     </dependency>
+
    </dependencies>
 </project>
