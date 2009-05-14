@@ -399,9 +399,11 @@ public class CoyoteAdapter
                                       response.getResponse(),
                                       hostName,
                                       response.getStatus());
-            // Recycle the wrapper request and response
-            request.recycle();
-            response.recycle();
+            if (!res.isSuspended()){
+                // Recycle the wrapper request and response
+                request.recycle();
+                response.recycle();
+            }
         }
     }
     // END GlassFish Issue 798
