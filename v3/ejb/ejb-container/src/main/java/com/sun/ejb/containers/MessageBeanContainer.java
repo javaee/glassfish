@@ -335,7 +335,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 	private boolean containerStartsTx(Method method) {
 		int txMode = getTxAttr(method, MethodDescriptor.EJB_BEAN);
 
-		return method.equals(ejbTimeoutMethod) ? ((txMode == TX_REQUIRES_NEW) || (txMode == TX_REQUIRED))
+		return isEjbTimeoutMethod(method) ? ((txMode == TX_REQUIRES_NEW) || (txMode == TX_REQUIRED))
 				: (txMode == TX_REQUIRED);
 	}
 
@@ -393,16 +393,18 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 		try {
 
+                        Method method = getTimeoutMethod(timerState);
+                        
 			// Do pre-invoke logic for message bean with tx import = false
 			// and a null resource handle.
-			beforeMessageDelivery(ejbTimeoutMethod, MessageDeliveryType.Timer,
+			beforeMessageDelivery(method, MessageDeliveryType.Timer,
                     false, nullResourceHandle);
 
-			// Application must be passed a TimerWrapper.
-			Object[] args = { new TimerWrapper(timerState.getTimerId(),
-					timerService) };
+                        prepareEjbTimeoutParams((EjbInvocation) invocationManager.getCurrentInvocation(),
+				timerState, timerService);
 
-			deliverMessage(args);
+                        // Method arguments had been set already
+			deliverMessage(null);
 
 		} catch (Throwable t) {
 			// A runtime exception thrown from ejbTimeout, independent of
@@ -1046,12 +1048,10 @@ public final class MessageBeanContainer extends BaseContainer implements
 					ejbMethodStatsManager.preInvoke(invocation.method);
 				}
 
-				invocation.methodParams = params;
-
 				if (isTimedObject()
-						&& invocation.method.equals(ejbTimeoutMethod)) {
+						&& isEjbTimeoutMethod(invocation.method)) {
 					invocation.beanMethod = invocation.method;
-					invokeTargetBeanMethod(ejbTimeoutMethod, invocation,
+					invokeTargetBeanMethod(invocation.method, invocation,
 							invocation.ejb, invocation.methodParams, null);
 				} else {
 					// invocation.beanMethod is the actual target method from
@@ -1060,6 +1060,8 @@ public final class MessageBeanContainer extends BaseContainer implements
 					// we need to be careful to invoke through the bean class
 					// method itself. This info is also returned from the
 					// interceptor context info.
+
+				        invocation.methodParams = params;
 
 					invocation.beanMethod = invocation.ejb.getClass()
 							.getMethod(invocation.method.getName(),
@@ -1221,6 +1223,9 @@ public final class MessageBeanContainer extends BaseContainer implements
 		}
 
 		return success;
+	}
+	private boolean isEjbTimeoutMethod(Method m) {
+		return schedules.containsKey(m) || m.equals(ejbTimeoutMethod);
 	}
 
 	public long getCreateCount() {

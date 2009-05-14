@@ -133,7 +133,7 @@ public class ScheduleHandler extends AbstractAttributeHandler {
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
         
-        return new Class[] {Stateless.class, Singleton.class};
+        return new Class[] {Stateless.class, Singleton.class, MessageDriven.class};
                 
     }
 

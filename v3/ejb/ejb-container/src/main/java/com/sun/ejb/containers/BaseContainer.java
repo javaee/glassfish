@@ -3737,25 +3737,11 @@ public abstract class BaseContainer
         // If run-as is specified for the bean, it should be used.
         inv.securityPermissions = com.sun.ejb.Container.SEC_UNCHECKED;
      
-        inv.method = scheduleIds.get(timerState.getTimerId());
-        if (inv.method == null) {
-            inv.method = ejbTimeoutMethod;
-        }
-
+        inv.method = getTimeoutMethod(timerState); 
         inv.beanMethod = inv.method;
 
-        // Create a TimerWrapper for AroundTimeout and as a method argument.
-        javax.ejb.Timer timer  = new TimerWrapper(timerState.getTimerId(),
-                                            timerService);
-        inv.timer = timer;
+        prepareEjbTimeoutParams(inv, timerState, timerService);
 
-        if (inv.method.getParameterTypes().length == 1) {
-            Object[] args  = { timer };
-            inv.methodParams = args;
-        } else {
-            inv.methodParams = null;
-        }
-     
         // Delegate to subclass for i.ejbObject / i.isLocal setup.
         doTimerInvocationInit(inv, timerState);
      
@@ -3818,6 +3804,26 @@ public abstract class BaseContainer
         return redeliver;
     }
 
+    Method getTimeoutMethod(RuntimeTimerState timerState) {
+        Method m = scheduleIds.get(timerState.getTimerId());
+        return (m != null) ? m : ejbTimeoutMethod;
+    }
+
+    void prepareEjbTimeoutParams(EjbInvocation inv, RuntimeTimerState timerState,
+                           EJBTimerService timerService) {
+        // Create a TimerWrapper for AroundTimeout and as a method argument.
+        javax.ejb.Timer timer  = new TimerWrapper(timerState.getTimerId(),
+                                            timerService);
+        inv.timer = timer;
+
+        if (inv.method.getParameterTypes().length == 1) {
+            Object[] args  = { timer };
+            inv.methodParams = args;
+        } else {
+            inv.methodParams = null;
+        }
+    }
+     
     final void onEnteringContainer() {
         callFlowAgent.startTime(ContainerTypeOrApplicationType.EJB_CONTAINER);
     }
