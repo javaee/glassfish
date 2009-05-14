@@ -97,6 +97,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
+import com.sun.enterprise.connectors.util.ConnectorTimerProxy;
 
 
 /**
@@ -168,9 +169,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ProcessEnvironment processEnvironment;
-
-    private final Object getTimerLock = new Object();
-    private Timer timer;
 
     /**
      * Returns the ConnectorRuntime instance.
@@ -756,14 +754,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     public Timer getTimer() {
-        synchronized (getTimerLock) {
-            if (timer == null) {
-                // Create a scheduler as a daemon so it
-                // won't prevent process from exiting.
-                timer = new Timer("connector-runtime", true);
-            }
-        }
-        return timer;
+        return ConnectorTimerProxy.getProxy();        
     }
 
     /**
@@ -784,9 +775,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * The component is about to be removed from commission
      */
     public void preDestroy() {
-        if (timer != null) {
-            timer.cancel();
-        }
     }
 
     /**

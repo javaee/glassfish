@@ -86,7 +86,12 @@ public class Resizer extends TimerTask {
 
     public void run() {
         debug("Resizer for pool " + poolName);
-        resizePool(true);
+        try {
+            resizePool(true);
+        } catch(Exception ex) {
+            Object[] params = new Object[]{poolName, ex.getMessage()};
+            _logger.log(Level.WARNING, "resource_pool.resize_pool_error", params);
+        }
     }
 
     /**
