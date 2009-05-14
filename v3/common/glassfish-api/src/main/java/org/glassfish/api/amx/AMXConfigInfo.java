@@ -56,13 +56,14 @@ import java.lang.annotation.Documented;
     &lt;pre>@AMXConfigInfo(j2eeType=X-MyType)&lt;/pre>
     (where 'MyType' is the desired type).  Of course a 'nameHint' might be needed, and if
     the config is a singleton within its scope, then those values should be included.
-    @Deprecated
+    @deprecated
  * @author llc
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @AMXMBeanMetadata
 @Documented
+@Deprecated
 //@CagedBy(AMXConfigRegistrar.class)
 public @interface AMXConfigInfo {
     /**
