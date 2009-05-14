@@ -58,7 +58,7 @@ import java.util.Enumeration;
 import java.util.logging.*; 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.internal.api.Globals;
+
 /**
  * This class is a wrapper around the default jdk policy file 
  * implementation. BasePolicyWrapper is installed as the JRE policy object
@@ -137,7 +137,6 @@ public class BasePolicyWrapper extends java.security.Policy {
         }
     }
 
-    private boolean isMyPolicyFactory = true;
     
     /** Creates a new instance of BasePolicyWrapper */
     public BasePolicyWrapper() {
@@ -146,8 +145,6 @@ public class BasePolicyWrapper extends java.security.Policy {
 	refreshTime = 0L;
 	// call the following routine to compute the actual refreshTime
 	defaultContextChanged();
-        String policyFactoryName = System.getProperty(FACTORY_NAME);
-        isMyPolicyFactory = myFactoryName.equals(policyFactoryName) ? true : false;
     }
     
     /** gets the underlying PolicyFile implementation
@@ -642,43 +639,8 @@ public class BasePolicyWrapper extends java.security.Policy {
 	return l.longValue();
     }
     
-    // obtains PolicyConfigurationFactory once for class
-    // if not available in the habitat, delegate to JDK's system-wide factory
+    // obtains PolicyConfigurationFactory 
     private PolicyConfigurationFactoryImpl getPolicyFactory() {
-        if (!this.isMyPolicyFactory) {
-            //using this might violate the JACC contract
-            //But this occurs when someone is trying to explicitly create our Factory
-            //to use it as a Delegate. In this case we cannot call PolicyConfigurationFactory API
-            //pcf = Globals.get(PolicyConfigurationFactoryImpl.class);
-            PolicyConfigurationFactoryImpl pcf = 
-                PolicyConfigurationFactoryImpl.getInstance();
-            return pcf;
-        } else {
-            PolicyConfigurationFactory pcfimpl = null;
-
-            pcfimpl = (PolicyConfigurationFactory) AccessController.doPrivileged(new PrivilegedAction() {
-
-                public Object run() {
-                    try {
-                        PolicyConfigurationFactory localPcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
-                        return localPcf;
-                    } catch (ClassNotFoundException ex) {
-                        logger.log(Level.SEVERE, null, ex);
-                        throw new RuntimeException(ex);
-                    } catch (PolicyContextException ex) {
-                        logger.log(Level.SEVERE, null, ex);
-                        throw new RuntimeException(ex);
-                    }
-                }
-            });
-
-            if (!(pcfimpl instanceof PolicyConfigurationFactoryImpl)) {
-                throw new RuntimeException(
-                        "Wrong PolicyConfigurationFactory class, " +
-                        pcfimpl.getClass().getName() + ", Expected " +
-                        PolicyConfigurationFactoryImpl.class.getName());
-            }
-            return (PolicyConfigurationFactoryImpl) pcfimpl;
-        }
+       return PolicyConfigurationFactoryImpl.getInstance();
     }
 }
