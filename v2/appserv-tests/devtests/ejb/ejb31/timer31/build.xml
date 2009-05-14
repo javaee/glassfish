@@ -17,6 +17,7 @@
         <antcall target="schedule_exp"/>
         <antcall target="schedule_ann"/>
         <antcall target="aroundtimeout"/>
+        <antcall target="mdb"/>
 
     </target>
 
@@ -44,6 +45,12 @@
         <record name="aroundtimeout.output" action="stop" />
     </target>
 
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
@@ -53,6 +60,7 @@
 			ant schedule_exp (Executes the schedule_exp ejb-timer test)
 			ant schedule_ann (Executes the schedule_ann ejb-timer test)
 			ant aroundtimeout (Executes the aroundtimeout ejb-timer test)
+			ant mdb (Executes the mdb ejb-timer test)
 
 	</echo>
     </target>
