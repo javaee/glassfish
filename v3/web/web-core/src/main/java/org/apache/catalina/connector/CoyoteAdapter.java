@@ -383,8 +383,10 @@ public class CoyoteAdapter
         if ( request == null || response == null) return;
         
         try{
-            response.finishResponse();
-            req.action( ActionCode.ACTION_POST_REQUEST , null);
+            if (!res.isSuspended()){
+                response.finishResponse();
+                req.action( ActionCode.ACTION_POST_REQUEST , null);
+            }
         } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
         } finally {
