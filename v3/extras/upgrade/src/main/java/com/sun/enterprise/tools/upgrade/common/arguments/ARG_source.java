@@ -37,8 +37,8 @@
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
 import java.io.File;
-
-import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
+import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  *
@@ -50,19 +50,34 @@ public class ARG_source extends ArgumentHandler {
 	public ARG_source() {
         super();
 	}
+
+    @Override
 	public void setRawParameters(String p){
-		rawParameters = p;
-        if (rawParameters != null){
-            if (p.length() == 0){
-                File tmpF = new File(p);
-                rawParameters = tmpF.getAbsolutePath();
+        if (p == null) {
+            return;
+        }
+        if (p.length() == 0) {
+            File tmpF = new File(p);
+            rawParameters = tmpF.getAbsolutePath();
+        } else {
+            try {
+                File rawFile = new File(p);
+                rawParameters = rawFile.getCanonicalPath();
+            } catch (IOException ioe) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine(String.format(
+                        "Will not create canonical path for source due to %s",
+                        ioe.getLocalizedMessage()));
+                }
+                rawParameters = p;
             }
-            if (commonInfo.getSource().isValidPath(rawParameters)){
-                super._isValidParameter = true;
-            }
-		}
+        }
+        if (commonInfo.getSource().isValidPath(rawParameters)) {
+            super._isValidParameter = true;
+        }
 	}
 	
+    @Override
 	public void exec(){
 		if (super._isValidParameter)
 			commonInfo.getSource().setInstallDir(rawParameters);
