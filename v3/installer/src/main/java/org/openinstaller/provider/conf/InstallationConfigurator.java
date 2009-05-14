@@ -70,6 +70,7 @@ private final String productName;
 private final String altRootDir;
 private final String xcsFilePath;
 private final String installDir;
+private String adminPort;
 
 private int gWaitCount = 0;
 private String productError = null;
@@ -115,9 +116,11 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
      try {
         if (productName.equals(GLASSFISH_PRODUCT_NAME)) {
             LOGGER.log(Level.INFO, "Configuring GlassFish");
+	    // Store admin port to be used for short cut creation.
+	    adminPort = aSheet.getProperty("Administration.ADMIN_PORT");
             configSuccessful = configureGlassfish(
                 installDir,
-                aSheet.getProperty("Administration.ADMIN_PORT"),
+		adminPort,
                 aSheet.getProperty("Administration.HTTP_PORT"),
                 aSheet.getProperty("Administration.ADMIN_USER"),
                 aSheet.getProperty("Administration.ADMIN_PASSWORD"),
@@ -919,7 +922,7 @@ public void createUpdatetoolShortCuts(String folderName) {
 		wsShortMgr.createShortCut(
 			folderName,
 			"Start Update Tool",
-			modifiedInstallDir + "\\\\bin\\\\updatetool",
+			modifiedInstallDir + "\\\\bin\\\\updatetool.exe",
 			"Start updatetool",
 			"",
 			modifiedInstallDir + "\\\\updatetool\\\\vendor-packages\\\\updatetool\\\\images\\\\application-update-tool.ico",
@@ -970,6 +973,23 @@ public void createServerShortCuts(String folderName) {
 			modifiedInstallDir,
 			"2");
 
+		// Create short cut for Quick Start guide.
+		wsShortMgr.createShortCut(
+			folderName,
+			"Quick Start Guide",
+			modifiedInstallDir + "\\\\glassfish\\\\docs\\\\quickstart.html");
+
+		// Create short cut for About Page.
+		wsShortMgr.createShortCut(
+			folderName,
+			"About GlassFish Server",
+			modifiedInstallDir + "\\\\glassfish\\\\docs\\\\about.html");
+
+		// Create short cut for Admin Console.
+		wsShortMgr.createShortCut(
+			folderName,
+			"Administration Console",
+			"http://localhost:" + adminPort);
 }
 
 }
