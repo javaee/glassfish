@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,95 +74,127 @@ These tests do not validate any MBean-specific semantics, only general requireme
 all AMX MBeans.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-public final class AMXValidator {
+public final class AMXValidator
+{
     private static void debug(final Object o)
     {
-        System.out.println(o.toString() );
+        System.out.println(o.toString());
     }
-    
+
     private static final String NL = StringUtil.NEWLINE();
+
     private final MBeanServerConnection mMBeanServer;
+
     private final ProxyFactory mProxyFactory;
+
     private final DomainRoot mDomainRoot;
 
     private static final String LEGAL_CHARS_FOR_TYPE = "[\\$a-zA-Z0-9\\._-]";
-    private static final Pattern LEGAL_PATTERN_FOR_TYPE = Pattern.compile( LEGAL_CHARS_FOR_TYPE + LEGAL_CHARS_FOR_TYPE + "*" );
-    
+
+    private static final Pattern LEGAL_PATTERN_FOR_TYPE = Pattern.compile(LEGAL_CHARS_FOR_TYPE + LEGAL_CHARS_FOR_TYPE + "*");
+
     private static final String LEGAL_CHARS_FOR_NAME = "[^\\[\\]]";
-    private static final Pattern LEGAL_PATTERN_FOR_NAME = Pattern.compile( LEGAL_CHARS_FOR_NAME + "*" );
-    
-    public AMXValidator(final MBeanServerConnection conn) {
+
+    private static final Pattern LEGAL_PATTERN_FOR_NAME = Pattern.compile(LEGAL_CHARS_FOR_NAME + "*");
+
+    public AMXValidator(final MBeanServerConnection conn)
+    {
         mMBeanServer = conn;
 
         mProxyFactory = ProxyFactory.getInstance(conn);
         mDomainRoot = mProxyFactory.getDomainRootProxy();
     }
 
-    private static final class IllegalClassException extends Exception {
+    private static final class IllegalClassException extends Exception
+    {
         private final Class<?> mClass;
 
-        public IllegalClassException(final Class<?> clazz) {
-            super( "Class " + clazz.getName() + " not allowed for AMX MBeans" );
+        public IllegalClassException(final Class<?> clazz)
+        {
+            super("Class " + clazz.getName() + " not allowed for AMX MBeans");
             mClass = clazz;
         }
-        public Class<?> clazz() { return mClass; }
-        
-        public String toString() { return super.getMessage(); }
-    }
-    
-    private static final class ValidationFailureException extends Exception {
 
+        public Class<?> clazz()
+        {
+            return mClass;
+        }
+
+        public String toString()
+        {
+            return super.getMessage();
+        }
+
+    }
+
+    private static final class ValidationFailureException extends Exception
+    {
         private final ObjectName mObjectName;
 
-        public ValidationFailureException(final ObjectName objectName, final String msg) {
+        public ValidationFailureException(final ObjectName objectName, final String msg)
+        {
             super(msg);
             mObjectName = objectName;
         }
-        public ValidationFailureException(final AMXProxy amx, final String msg) {
-            this( amx.objectName(), msg);
+
+        public ValidationFailureException(final AMXProxy amx, final String msg)
+        {
+            this(amx.objectName(), msg);
         }
 
-        public ObjectName objectName() {
+        public ObjectName objectName()
+        {
             return mObjectName;
         }
-        
-        public String toString() {
+
+        public String toString()
+        {
             return getMessage() + ", " + mObjectName;
         }
+
     }
 
-    private static final class Failures {
-
+    private static final class Failures
+    {
         private final ConcurrentMap<ObjectName, List<String>> mFailures = new ConcurrentHashMap<ObjectName, List<String>>();
+
         private AtomicInteger mNumTested = new AtomicInteger();
 
-        public Failures() {
+        public Failures()
+        {
         }
 
-        public int getNumTested() {
+        public int getNumTested()
+        {
             return mNumTested.get();
         }
 
-        public int getNumFailures() {
+        public int getNumFailures()
+        {
             return mFailures.keySet().size();
         }
 
-        public Map<ObjectName, List<String>> getFailures() {
+        public Map<ObjectName, List<String>> getFailures()
+        {
             return mFailures;
         }
 
-        void result(final ObjectName objectName, final List<String> problems) {
+        void result(final ObjectName objectName, final List<String> problems)
+        {
             mNumTested.incrementAndGet();
 
-            if (problems != null && problems.size() != 0) {
+            if (problems != null && problems.size() != 0)
+            {
                 mFailures.put(objectName, problems);
             }
         }
 
-        public String toString() {
+        public String toString()
+        {
             final StringBuilder builder = new StringBuilder();
 
-            for (final ObjectName badBoy : mFailures.keySet()) {
+            for (final ObjectName badBoy : mFailures.keySet())
+            {
                 final List<String> failures = mFailures.get(badBoy);
 
                 builder.append(badBoy + NL);
@@ -172,157 +205,209 @@ public final class AMXValidator {
             builder.append(mFailures.size() + " failures.");
 
             return builder.toString() + NL +
-                    mNumTested + " MBeans tested.";
+                   mNumTested + " MBeans tested.";
         }
+
     }
 
-    private String toString(final Throwable t) {
+    private String toString(final Throwable t)
+    {
         return ExceptionUtil.toString(ExceptionUtil.getRootCause(t));
     }
-    
-    private static boolean isObviousOpenType( final Class<?> c ) {
-        if ( c.isPrimitive() || OpenType.ALLOWED_CLASSNAMES_LIST.contains(c.getName()) ) {
+
+    private static boolean isObviousOpenType(final Class<?> c)
+    {
+        if (c.isPrimitive() || OpenType.ALLOWED_CLASSNAMES_LIST.contains(c.getName()))
+        {
             return true;
         }
-        
+
         // quick checks for other common cases
-        if ( c.isArray() && isObviousOpenType( c.getComponentType() )  ) {
+        if (c.isArray() && isObviousOpenType(c.getComponentType()))
+        {
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
-        "best effort"<p>
-        Attributes that cannot be sent to generic clients are not allowed.
-        More than OpenTypes are allowed eg messy stuff like JSR 77 Stats and Statistics.
+    "best effort"<p>
+    Attributes that cannot be sent to generic clients are not allowed.
+    More than OpenTypes are allowed eg messy stuff like JSR 77 Stats and Statistics.
      */
     private void checkLegalForRemote(final Object value) throws IllegalClassException
     {
-        if ( value == null) return;
-        final Class<?> clazz = value.getClass();
-        if ( isObviousOpenType(clazz) ) {
+        if (value == null)
+        {
             return;
         }
-        
-        // would these always be disallowed?
-        if ( clazz.isSynthetic() || clazz.isLocalClass() || clazz.isAnonymousClass() || clazz.isMemberClass() ) {
-            throw new IllegalClassException( clazz );
+        final Class<?> clazz = value.getClass();
+        if (isObviousOpenType(clazz))
+        {
+            return;
         }
-        
-        if ( clazz.isArray() ) {
-            if ( ! isObviousOpenType( clazz.getComponentType() ) ) {
-                final Object[] a = (Object[])value;
-                for( final Object o : a ) {
+
+        // would these always be disallowed?
+        if (clazz.isSynthetic() || clazz.isLocalClass() || clazz.isAnonymousClass() || clazz.isMemberClass())
+        {
+            throw new IllegalClassException(clazz);
+        }
+
+        if (clazz.isArray())
+        {
+            if (!isObviousOpenType(clazz.getComponentType()))
+            {
+                final Object[] a = (Object[]) value;
+                for (final Object o : a)
+                {
                     checkLegalForRemote(o);
                 }
             }
         }
-        else if ( Collection.class.isAssignableFrom(clazz) ) {
-            final Collection<?> items = (Collection)value;
-            for( final Object o : items ) {
+        else if (Collection.class.isAssignableFrom(clazz))
+        {
+            final Collection<?> items = (Collection) value;
+            for (final Object o : items)
+            {
                 checkLegalForRemote(o);
             }
         }
-        else if ( Map.class.isAssignableFrom(clazz) ) {
-            final Map<?,?> items = (Map)value;
-            for( final Object key : items.keySet() ) {
+        else if (Map.class.isAssignableFrom(clazz))
+        {
+            final Map<?, ?> items = (Map) value;
+            for (final Object key : items.keySet())
+            {
                 checkLegalForRemote(key);
                 checkLegalForRemote(items.get(key));
             }
         }
         else
         {
-            throw new IllegalClassException( clazz );
+            throw new IllegalClassException(clazz);
         }
     }
 
-    private List<String> _validate(final AMXProxy proxy) {
+    private List<String> _validate(final AMXProxy proxy)
+    {
         final List<String> problems = new ArrayList<String>();
         final ObjectName objectName = proxy.objectName();
 
-        try {
+        try
+        {
             validateObjectName(proxy);
-        } catch (Throwable t) {
-            problems.add(t.toString());
         }
-        
-        List<String> temp = null;
-        try {
-            temp = validateMetadata(proxy);
-            if ( temp != null )  {
-                problems.addAll(temp);
-            }
-        } catch (Throwable t) {
+        catch (Throwable t)
+        {
             problems.add(t.toString());
         }
 
-        try {
+        List<String> temp = null;
+        try
+        {
+            temp = validateMetadata(proxy);
+            if (temp != null)
+            {
+                problems.addAll(temp);
+            }
+        }
+        catch (Throwable t)
+        {
+            problems.add(t.toString());
+        }
+
+        try
+        {
             validateRequiredAttributes(proxy);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t)
+        {
             problems.add(t.toString());
         }
 
         final Pathnames paths = mDomainRoot.getPathnames();
 
         // test required attributes
-        try {
+        try
+        {
             final String name = proxy.getName();
-        } catch (Throwable t) {
+        }
+        catch (Throwable t)
+        {
             problems.add("Proxy access to 'Name' failed: " + toString(t));
         }
 
-        try {
+        try
+        {
             final ObjectName parent = proxy.getParent();
-        } catch (Throwable t) {
+        }
+        catch (Throwable t)
+        {
             problems.add("Proxy access to 'Parent' failed: " + toString(t));
         }
-        try {
+        try
+        {
             final ObjectName[] children = proxy.getChildren();
-        } catch (Throwable t) {
+        }
+        catch (Throwable t)
+        {
             problems.add("Proxy access to 'Children' failed: " + toString(t));
         }
 
 
         // test path resolution
-        try {
+        try
+        {
             final String path = proxy.path();
             final ObjectName actualObjectName = Util.getObjectName(proxy);
 
             final ObjectName o = paths.resolvePath(path);
-            if (o == null) {
+            if (o == null)
+            {
                 problems.add("Path " + path + " does not resolve to any ObjectName, should resolve to: " + actualObjectName);
-            } else if (!actualObjectName.equals(o)) {
+            }
+            else if (!actualObjectName.equals(o))
+            {
                 problems.add("Path " + path + " does not resolve to ObjectName: " + actualObjectName);
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t)
+        {
             problems.add(ExceptionUtil.toString(ExceptionUtil.getRootCause(t)));
         }
 
         // test attributes
         final Set<String> attributeNames = proxy.extra().attributeNames();
-        for (final String attrName : attributeNames) {
-            try {
+        for (final String attrName : attributeNames)
+        {
+            try
+            {
                 final Object result = proxy.extra().getAttribute(attrName);
-                
+
                 checkLegalForRemote(result);
-            } catch (final Throwable t) {
+            }
+            catch (final Throwable t)
+            {
                 problems.add("Attribute failed: '" + attrName + "': " + toString(t));
             }
         }
-        
+
         List<String> tempProblems = null;
-        try {
+        try
+        {
             validateChildren(proxy);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t)
+        {
             problems.add(t.toString());
         }
 
         // test proxy methods
-        try {
+        try
+        {
             final AMXProxy parent = proxy.parent();
-            if (parent == null && ! proxy.type().equals( Util.deduceType(DomainRoot.class) )) {
+            if (parent == null && !proxy.type().equals(Util.deduceType(DomainRoot.class)))
+            {
                 throw new Exception("Null parent");
             }
 
@@ -330,47 +415,58 @@ public final class AMXValidator {
             final boolean valid = proxy.valid();
             final String path = proxy.path();
             final Extra extra = proxy.extra();
-            
+
             final String interfaceName = extra.interfaceName();
             final MBeanInfo mbeanInfo = extra.mbeanInfo();
-            final String group         = extra.group();
+            final String group = extra.group();
             final Class<? extends AMXProxy> genericInterface = extra.genericInterface();
-            final boolean invariantMBeanInfo  = extra.isInvariantMBeanInfo();
-            final boolean supportsAdoption    = extra.supportsAdoption();
-            final String[] subTypes           = extra.subTypes();
+            final boolean invariantMBeanInfo = extra.isInvariantMBeanInfo();
+            final boolean supportsAdoption = extra.supportsAdoption();
+            final String[] subTypes = extra.subTypes();
 
             final Set<AMXProxy> childrenSet = proxy.childrenSet();
             final Map<String, Map<String, AMXProxy>> childrenMaps = proxy.childrenMaps();
             final Map<String, Object> attributesMap = proxy.attributesMap();
             final Set<String> attrNames = proxy.attributeNames();
-            if (!attrNames.equals(attributesMap.keySet())) {
+            if (!attrNames.equals(attributesMap.keySet()))
+            {
                 throw new Exception("Attributes Map differs from attribute names");
             }
 
-            for (final AMXProxy child : childrenSet) {
-                if (child.extra().singleton()) {
+            for (final AMXProxy child : childrenSet)
+            {
+                if (child.extra().singleton())
+                {
                     final String childType = child.type();
-                    if (!child.objectName().equals(proxy.child(childType).objectName())) {
+                    if (!child.objectName().equals(proxy.child(childType).objectName()))
+                    {
                         throw new Exception("Child type " + childType + " cannot be found via child(type)");
                     }
                 }
             }
 
-            for (final String type : childrenMaps.keySet()) {
+            for (final String type : childrenMaps.keySet())
+            {
                 final Map<String, AMXProxy> m = proxy.childrenMap(type);
-                if (m.keySet().size() == 0) {
+                if (m.keySet().size() == 0)
+                {
                     throw new Exception("Child type " + type + " has nothing in Map");
                 }
             }
 
-        } catch (final Throwable t) {
+        }
+        catch (final Throwable t)
+        {
             problems.add("Test failure: " + toString(t));
         }
-        
 
-        try {
+
+        try
+        {
             validateAMXConfig(proxy, problems);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t)
+        {
             problems.add(t.toString());
         }
 
@@ -378,102 +474,119 @@ public final class AMXValidator {
     }
 
     private void fail(final ObjectName objectName, final String msg)
-            throws ValidationFailureException {
+            throws ValidationFailureException
+    {
         throw new ValidationFailureException(objectName, msg);
     }
+
     private void fail(final AMXProxy amx, final String msg)
-            throws ValidationFailureException {
+            throws ValidationFailureException
+    {
         throw new ValidationFailureException(amx, msg);
     }
-    
+
     private void validateAMXConfig(final AMXProxy proxy, final List<String> problems)
     {
-        if ( ! AMXConfigProxy.class.isAssignableFrom( proxy.extra().genericInterface() ) )
+        if (!AMXConfigProxy.class.isAssignableFrom(proxy.extra().genericInterface()))
         {
             return;
         }
-        
+
         // check default values support
         final AMXConfigProxy config = proxy.as(AMXConfigProxy.class);
-        final Map<String,String> defaultValues= config.getDefaultValues(false);
-        final Map<String,String> defaultValuesAMX = config.getDefaultValues(true);
-        if ( defaultValues.keySet().size() != defaultValuesAMX.keySet().size() )
+        final Map<String, String> defaultValues = config.getDefaultValues(false);
+        final Map<String, String> defaultValuesAMX = config.getDefaultValues(true);
+        if (defaultValues.keySet().size() != defaultValuesAMX.keySet().size())
         {
             problems.add("Default values for AMX names differ in number from XML names: " + defaultValues.keySet().size() + " != " + defaultValuesAMX.keySet().size());
         }
-        for( final String key : defaultValues.keySet() ) {
+        for (final String key : defaultValues.keySet())
+        {
             final Object value = defaultValues.get(key);
-            if ( value == null )
+            if (value == null)
             {
-                problems.add( "Default value of null for: " + key );
+                problems.add("Default value of null for: " + key);
             }
-            else if ( ! (value instanceof String) )
+            else if (!(value instanceof String))
             {
-                problems.add( "Default value is not a String for: " + key );
+                problems.add("Default value is not a String for: " + key);
             }
         }
-        
+
         final String[] subTypes = config.extra().subTypes();
-        if ( subTypes != null )
+        if (subTypes != null)
         {
-            for( final String subType : subTypes ) {
-                final Map<String,String> subTypeDefaults = config.getDefaultValues(subType, false);
+            for (final String subType : subTypes)
+            {
+                final Map<String, String> subTypeDefaults = config.getDefaultValues(subType, false);
             }
         }
     }
-    
+
     private void validateObjectName(final AMXProxy proxy)
-            throws ValidationFailureException {
+            throws ValidationFailureException
+    {
         final ObjectName objectName = proxy.objectName();
 
         final String type = objectName.getKeyProperty("type");
-        if (type == null || type.length() == 0) {
+        if (type == null || type.length() == 0)
+        {
             fail(objectName, "type property required in ObjectName");
         }
-        if ( ! LEGAL_PATTERN_FOR_TYPE.matcher(type).matches() ) {
-            fail( objectName, "Illegal type \"" + type + "\", does not match " + LEGAL_PATTERN_FOR_TYPE.pattern() );
+        if (!LEGAL_PATTERN_FOR_TYPE.matcher(type).matches())
+        {
+            fail(objectName, "Illegal type \"" + type + "\", does not match " + LEGAL_PATTERN_FOR_TYPE.pattern());
         }
 
         final String nameProp = objectName.getKeyProperty("name");
-        if (nameProp != null) {
-            if ( nameProp.length() == 0) {
+        if (nameProp != null)
+        {
+            if (nameProp.length() == 0)
+            {
                 fail(objectName, "name property of ObjectName may not be empty");
             }
-            if ( ! LEGAL_PATTERN_FOR_NAME.matcher(nameProp).matches() ) {
-                fail( objectName, "Illegal name \"" + nameProp + "\", does not match " + LEGAL_PATTERN_FOR_NAME.pattern() );
+            if (!LEGAL_PATTERN_FOR_NAME.matcher(nameProp).matches())
+            {
+                fail(objectName, "Illegal name \"" + nameProp + "\", does not match " + LEGAL_PATTERN_FOR_NAME.pattern());
             }
-        } else {
+        }
+        else
+        {
             // no name property, it's by definition a singleton
             final String name = proxy.getName();
-            if (!name.equals(AMXConstants.NO_NAME)) {
+            if (!name.equals(AMXConstants.NO_NAME))
+            {
                 fail(objectName, "getName() returned a non-empty name for a singleton: " + name);
             }
-            if ( ! proxy.extra().singleton() ) {
+            if (!proxy.extra().singleton())
+            {
                 fail(objectName, "Metadata claims named (non-singleton), but no name property present in ObjectName");
             }
         }
-        
-        if (  proxy.parent() != null )
+
+        if (proxy.parent() != null)
         {
-            if ( ! proxy.parentPath().equals( proxy.parent().path() ) ) {
-                fail( objectName, "Parent path of " + proxy.parentPath() + " does not match parent's path for " + proxy.parent().objectName() );
+            if (!proxy.parentPath().equals(proxy.parent().path()))
+            {
+                fail(objectName, "Parent path of " + proxy.parentPath() + " does not match parent's path for " + proxy.parent().objectName());
             }
         }
     }
-    
+
     /** verify that the children/parent relationship exists */
     private void validateChildren(final AMXProxy proxy)
             throws ValidationFailureException
     {
         final Set<String> attrNames = proxy.attributeNames();
-        if ( ! attrNames.contains(ATTR_CHILDREN) ) 
+        if (!attrNames.contains(ATTR_CHILDREN))
         {
             // must NOT supply Children
-            try {
+            try
+            {
                 final ObjectName[] children = proxy.getChildren();
-                fail(proxy, "MBean has no Children attribute in its MBeanInfo, but supplies the attribute" );
+                fail(proxy, "MBean has no Children attribute in its MBeanInfo, but supplies the attribute");
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 // good, the Attribute must not exist
             }
@@ -481,205 +594,288 @@ public final class AMXValidator {
         else
         {
             // must supply Children
-            try {
+            try
+            {
                 final ObjectName[] children = proxy.getChildren();
-                if ( children == null )
+                if (children == null)
                 {
-                    fail(proxy, "Children attribute must be non-null" );
+                    fail(proxy, "Children attribute must be non-null");
                 }
                 // verify that each child is non-null and references its parent
-                for( final ObjectName childObjectName : children ) {
-                    if ( childObjectName == null ) {
+                for (final ObjectName childObjectName : children)
+                {
+                    if (childObjectName == null)
+                    {
                         fail(proxy, "Child in Children array is null");
                     }
                     final AMXProxy child = mProxyFactory.getProxy(childObjectName);
-                    if ( ! proxy.objectName().equals( child.parent().objectName() ) )
+                    if (!proxy.objectName().equals(child.parent().objectName()))
                     {
-                        fail( proxy, "Child’s Parent of " + child.parent().objectName() +
-                            " does not match the actual parent of " + proxy.objectName() );
+                        fail(proxy, "Child’s Parent of " + child.parent().objectName() +
+                                    " does not match the actual parent of " + proxy.objectName());
                     }
                 }
-                
+
                 // verify that the children types do not differ only by case-sensitivity
                 final Set<String> caseSensitiveTypes = new HashSet<String>();
                 final Set<String> caseInsensitiveTypes = new HashSet<String>();
-                for( final ObjectName o : children ) {
-                    caseSensitiveTypes.add( Util.getTypeProp(o) );
-                    caseInsensitiveTypes.add( Util.getTypeProp(o).toLowerCase() );
+                for (final ObjectName o : children)
+                {
+                    caseSensitiveTypes.add(Util.getTypeProp(o));
+                    caseInsensitiveTypes.add(Util.getTypeProp(o).toLowerCase());
                 }
-                if ( caseSensitiveTypes.size() != caseInsensitiveTypes.size() ) {
-                    fail( proxy, "Children types must be case-insensitive" );
+                if (caseSensitiveTypes.size() != caseInsensitiveTypes.size())
+                {
+                    fail(proxy, "Children types must be case-insensitive");
                 }
             }
-            catch( Exception e )
+            catch (final Exception e)
             {
-                fail(proxy, "MBean failed to supply Children attribute" );
+                fail(proxy, "MBean failed to supply Children attribute");
+            }
+
+            // children of the same type must have the same MBeanInfo
+            try
+            {
+                final Map<String, Map<String, AMXProxy>> maps = proxy.childrenMaps();
+
+                for (final String type : maps.keySet())
+                {
+                    final Map<String, AMXProxy> siblings = maps.get(type);
+                    if (siblings.keySet().size() > 1)
+                    {
+                        final Iterator<AMXProxy> iter = siblings.values().iterator();
+                        final MBeanInfo mbeanInfo = iter.next().extra().mbeanInfo();
+                        while (iter.hasNext())
+                        {
+                            final AMXProxy next = iter.next();
+                            if (! mbeanInfo.equals(next.extra().mbeanInfo()))
+                            {
+                                fail(proxy, "Children of type " + type + " must  have the same MBeanInfo" );
+                            }
+                        }
+                    }
+                }
+            }
+            catch (final Exception e)
+            {
+                fail(proxy, "MBean failed validating the MBeanInfo of children");
             }
         }
     }
-    
-    private static final class MetadataValidator {
-        private final Descriptor    mDescriptor;
-        private final Set<String>   mFieldNames;
-        private final List<String>  mProblems;
-        public MetadataValidator(final Descriptor d, final List<String> problems) {
+
+    private static final class MetadataValidator
+    {
+        private final Descriptor mDescriptor;
+
+        private final Set<String> mFieldNames;
+
+        private final List<String> mProblems;
+
+        public MetadataValidator(final Descriptor d, final List<String> problems)
+        {
             mDescriptor = d;
-            mFieldNames = SetUtil.newSet( d.getFieldNames() );
+            mFieldNames = SetUtil.newSet(d.getFieldNames());
             mProblems = problems;
         }
-    
-        void validateMetadataBoolean( final String fieldName )
+
+        void validateMetadataBoolean(final String fieldName)
         {
-            if ( mFieldNames.contains(fieldName) )
+            if (mFieldNames.contains(fieldName))
             {
                 final Object value = mDescriptor.getFieldValue(fieldName);
-                if ( value == null )
+                if (value == null)
                 {
-                    mProblems.add( "Descriptor field " + fieldName + " must not be null" );
+                    mProblems.add("Descriptor field " + fieldName + " must not be null");
                 }
-                else if ( ! ( (value instanceof Boolean) || value.equals("true") || value.equals("false")) )
+                else if (!((value instanceof Boolean) || value.equals("true") || value.equals("false")))
                 {
-                    mProblems.add( "Descriptor field " + fieldName + " must be set to 'true' or 'false', value is " + value );
+                    mProblems.add("Descriptor field " + fieldName + " must be set to 'true' or 'false', value is " + value);
                 }
             }
         }
-        
-       void validateMetadataStringNonEmpty( final String fieldName )
+
+        void validateMetadataStringNonEmpty(final String fieldName)
         {
-            if ( mFieldNames.contains(fieldName) )
+            if (mFieldNames.contains(fieldName))
             {
                 final Object value = mDescriptor.getFieldValue(fieldName);
-                if ( value == null || (! (value instanceof String)) || ((String)value).length() == 0 )
+                if (value == null || (!(value instanceof String)) || ((String) value).length() == 0)
                 {
-                    mProblems.add( "Descriptor field " + fieldName + " must be non-zero length String, value = " + value);
+                    mProblems.add("Descriptor field " + fieldName + " must be non-zero length String, value = " + value);
                 }
             }
         }
-        
-       void validate( final String fieldName, final Class<?> clazz)
+
+        void validate(final String fieldName, final Class<?> clazz)
         {
-            if ( mFieldNames.contains(fieldName) )
+            if (mFieldNames.contains(fieldName))
             {
                 final Object value = mDescriptor.getFieldValue(fieldName);
-                if ( value == null || (! ( clazz.isAssignableFrom(value.getClass()) )) )
+                if (value == null || (!(clazz.isAssignableFrom(value.getClass()))))
                 {
-                    mProblems.add( "Descriptor field " + fieldName + " must be of class " + clazz.getSimpleName() );
+                    mProblems.add("Descriptor field " + fieldName + " must be of class " + clazz.getSimpleName());
                 }
             }
         }
+
     }
-    
+
     private static List<String> validateMetadata(final AMXProxy proxy)
     {
         final List<String> problems = new ArrayList<String>();
-        
+
         final Descriptor d = proxy.extra().mbeanInfo().getDescriptor();
-        
+
         // verify that no extraneous field exist
         final Set<String> LEGAL_AMX_DESCRIPTORS = SetUtil.newStringSet(
-            DESC_GENERIC_INTERFACE_NAME, DESC_IS_SINGLETON, DESC_GROUP, DESC_SUPPORTS_ADOPTION, DESC_SUB_TYPES);
-        for( final String fieldName : d.getFieldNames() )
+                DESC_GENERIC_INTERFACE_NAME, DESC_IS_SINGLETON, DESC_GROUP, DESC_SUPPORTS_ADOPTION, DESC_SUB_TYPES);
+        for (final String fieldName : d.getFieldNames())
         {
-            if ( fieldName.startsWith(DESC_PREFIX) && ! LEGAL_AMX_DESCRIPTORS.contains(fieldName) )
+            if (fieldName.startsWith(DESC_PREFIX) && !LEGAL_AMX_DESCRIPTORS.contains(fieldName))
             {
-                problems.add( "Illegal/unknown AMX metadata field: " + fieldName + " = " + d.getFieldValue(fieldName) );
+                problems.add("Illegal/unknown AMX metadata field: " + fieldName + " = " + d.getFieldValue(fieldName));
             }
         }
-        
+
         final MetadataValidator val = new MetadataValidator(d, problems);
         // verify data types
-        val.validateMetadataBoolean( DESC_IS_SINGLETON);
-        val.validateMetadataBoolean( DESC_SUPPORTS_ADOPTION );
-        val.validateMetadataBoolean( DESC_STD_IMMUTABLE_INFO );
-        
-        val.validateMetadataStringNonEmpty( DESC_STD_INTERFACE_NAME );
-        val.validateMetadataStringNonEmpty( DESC_GENERIC_INTERFACE_NAME );
-        val.validateMetadataStringNonEmpty( DESC_GROUP );
-        
-        val.validate( DESC_SUB_TYPES, String[].class );
-        
+        val.validateMetadataBoolean(DESC_IS_SINGLETON);
+        val.validateMetadataBoolean(DESC_SUPPORTS_ADOPTION);
+        val.validateMetadataBoolean(DESC_STD_IMMUTABLE_INFO);
+
+        val.validateMetadataStringNonEmpty(DESC_STD_INTERFACE_NAME);
+        val.validateMetadataStringNonEmpty(DESC_GENERIC_INTERFACE_NAME);
+        val.validateMetadataStringNonEmpty(DESC_GROUP);
+
+        val.validate(DESC_SUB_TYPES, String[].class);
+
         return problems;
     }
 
     private void validateRequiredAttributes(final AMXProxy proxy)
-            throws ValidationFailureException {
+            throws ValidationFailureException
+    {
         final ObjectName objectName = proxy.objectName();
         // verify that the required attributes are present
         final Map<String, MBeanAttributeInfo> infos = JMXUtil.attributeInfosToMap(proxy.extra().mbeanInfo().getAttributes());
         final Set<String> attrNames = infos.keySet();
-        if (!attrNames.contains("Name")) {
+        if (!attrNames.contains("Name"))
+        {
             fail(objectName, "MBeanInfo does not contain Name attribute");
         }
-        if (!attrNames.contains("Parent")) {
+        if (!attrNames.contains("Parent"))
+        {
             fail(objectName, "MBeanInfo does not contain Parent attribute");
         }
 
-        if (attrNames.contains("Children")) {
+        if (attrNames.contains("Children"))
+        {
             // must contain a non-null list of children
-            try {
-                if (proxy.getChildren() == null) {
+            try
+            {
+                if (proxy.getChildren() == null)
+                {
                     fail(objectName, "value of Children attribute must not be null");
                 }
-            } catch (final AMXException e) {
+            }
+            catch (final AMXException e)
+            {
                 throw e;
-            } catch (final Exception e) {
+            }
+            catch (final Exception e)
+            {
                 fail(objectName, "does not supply children correctly");
             }
-        } else {
+        }
+        else
+        {
             // must NOT contain children, we expect an exception
-            try {
+            try
+            {
                 proxy.getChildren();
                 fail(objectName, "Children attribute is present, but not listed in MBeanInfo");
-            } catch (final Exception e) {
+            }
+            catch (final Exception e)
+            {
                 // good, this is expected
             }
         }
     }
-    
-    public static final class ValidationResult {
+
+    public static final class ValidationResult
+    {
         private final String mDetails;
+
         private final int mNumTested;
+
         private final int mNumFailures;
-        public ValidationResult( final int numTested, final int numFailures, final String details )
+
+        public ValidationResult(final int numTested, final int numFailures, final String details)
         {
             mNumTested = numTested;
             mNumFailures = numFailures;
             mDetails = details;
         }
-        public String details() { return mDetails; }
-        public int numTested() { return mNumTested; }
-        public int numFailures() { return mNumFailures; }
-        public String toString() { return details(); }
+
+        public String details()
+        {
+            return mDetails;
+        }
+
+        public int numTested()
+        {
+            return mNumTested;
+        }
+
+        public int numFailures()
+        {
+            return mNumFailures;
+        }
+
+        public String toString()
+        {
+            return details();
+        }
+
     }
 
-    public ValidationResult validate(final ObjectName[] targets) {
+    public ValidationResult validate(final ObjectName[] targets)
+    {
         final Failures failures = new Failures();
 
         final DomainRoot dr = mDomainRoot;
 
         // list them in order
-        for (final ObjectName objectName : targets) {
+        for (final ObjectName objectName : targets)
+        {
             final AMXProxy amx = mProxyFactory.getProxy(objectName);
 
             final List<String> problems = _validate(amx);
             failures.result(objectName, problems);
         }
-        
-        final ValidationResult result = new ValidationResult( failures.getNumTested(), failures.getNumFailures(), failures.toString() );
+
+        final ValidationResult result = new ValidationResult(failures.getNumTested(), failures.getNumFailures(), failures.toString());
         return result;
     }
 
-    public ValidationResult validate(final ObjectName objectName) {
-        final ObjectName[] targets = new ObjectName[]{objectName};
+    public ValidationResult validate(final ObjectName objectName)
+    {
+        final ObjectName[] targets = new ObjectName[]
+        {
+            objectName
+        };
 
         return validate(targets);
     }
 
-    public ValidationResult validate() {
+    public ValidationResult validate()
+    {
         final Set<ObjectName> all = mDomainRoot.getQueryMgr().queryAllObjectNameSet();
 
         return validate(CollectionUtil.toArray(all, ObjectName.class));
     }
+
 }
 
 
