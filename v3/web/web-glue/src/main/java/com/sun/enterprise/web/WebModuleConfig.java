@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.deployment.DeploymentContext;
 
 /**
  * Represents the configuration parameters required in order to create
@@ -104,6 +105,8 @@ public class WebModuleConfig {
     // END S1AS 6178005
 
     private ClassLoader _appClassLoader = null;
+
+    private DeploymentContext deploymentContext;
 
 
     // ------------------------------------------------------------- Properties
@@ -208,6 +211,20 @@ public class WebModuleConfig {
     }
 
     /**
+     * Sets the deployment context for this web application.
+     */
+    public void setDeploymentContext(DeploymentContext deploymentContext) {
+        this.deploymentContext = deploymentContext;
+    }
+
+    /**
+     * Gets the deployment context of this web application.
+     */
+    public DeploymentContext getDeploymentContext() {
+        return deploymentContext;
+    }
+
+    /**
      * Sets the work directory for this web application.
      */
     public synchronized void setWorkDir(String workDir) {
@@ -224,7 +241,13 @@ public class WebModuleConfig {
      */
     public synchronized String getWorkDir() {
         if (workDir == null) {
-            workDir = getWebDir(_baseDir);
+            if (deploymentContext != null &&
+                    deploymentContext.getScratchDir(
+                        "jsp") != null) {
+                workDir = deploymentContext.getScratchDir("jsp").getPath();
+            } else {
+                workDir = getWebDir(_baseDir);
+            }
         }
         return workDir;
     }

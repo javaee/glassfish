@@ -283,6 +283,12 @@ public final class J2EEInstanceListener implements InstanceListener {
                         && instance.getClass() != DefaultServlet.class
                         && instance.getClass() != JspServlet.class) {
                     injectionMgr.injectInstance(instance, desc);
+                    // WebBeans injection TBD
+                    // Acquire WebBeansBootstrap from web module's
+                    // DeploymentContext
+                    /*
+                    wm.getWebModuleConfig().getDeploymentContext();
+                    */
                 }
             }
         } catch (Exception ex) {            

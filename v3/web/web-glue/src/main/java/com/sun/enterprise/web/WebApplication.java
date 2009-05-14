@@ -82,9 +82,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         if (appContext!=null) {
             wmInfo.setAppClassLoader(appContext.getClassLoader());
             if (appContext instanceof DeploymentContext) {
-                wmInfo.setWorkDir(
-                    ((DeploymentContext)appContext).getScratchDir(
-                    "jsp").getPath());
+                wmInfo.setDeploymentContext((DeploymentContext)appContext);
             }
             applyApplicationConfig(appContext);
         }

@@ -244,11 +244,13 @@ public class WebModule extends PwcWebModule {
         this.javaEEObjectStreamFactory = webContainer.getJavaEEObjectStreamFactory();
     }
 
-
     public void setWebModuleConfig(WebModuleConfig wmInfo) {
         this.wmInfo = wmInfo;
     }
 
+    public WebModuleConfig getWebModuleConfig() {
+        return wmInfo;
+    }
 
     /**
      * Sets the parameter encoding (i18n) info from sun-web.xml.
