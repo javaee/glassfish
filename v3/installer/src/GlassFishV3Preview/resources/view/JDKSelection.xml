@@ -132,6 +132,8 @@
   import org.openinstaller.provider.conf.ConfigHelper;
   import org.openinstaller.provider.dependency.ComponentDetails;
   import org.openinstaller.provider.dependency.DependencyControl;
+  import java.awt.Cursor;
+  import org.openinstaller.provider.dependency.JavaDetection;
 
 
   initComponents() {
@@ -145,7 +147,10 @@
 
     setValueForCombo(int index) {
       theHiddenJDK = wizard.getComponentByName(content, "HIDDEN_JDK");
-      theJDKComps = (List) Scripting.getInterpreter().get("gJDKComponents");
+      frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+      theJava = new JavaDetection(ConfigHelper.getStringValue("JDKSelection.directory.JDK_VERSIONRANGE"));
+      theJDKComps = (List) theJava.getInstalledJDKDetails();
+      frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); 
       ComponentDetails theJDKComp = theJDKComps.get(index);
       File theFile = theJDKComp.getLocation();
       theHiddenJDK.setText(theFile.getAbsolutePath());
@@ -194,7 +199,10 @@
 	option2.setSelected(true);
       }
 
-      theJDKComps = (List) Scripting.getInterpreter().get("gJDKComponents");
+      frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+      theJava = new JavaDetection(ConfigHelper.getStringValue("JDKSelection.directory.JDK_VERSIONRANGE"));
+      theJDKComps = (List) theJava.getInstalledJDKDetails();
+      frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); 
 
       /*
        * See if we need to exclude any JDKs in 'theJDKComps':

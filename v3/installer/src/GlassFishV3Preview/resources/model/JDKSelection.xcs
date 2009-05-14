@@ -151,13 +151,7 @@
             import org.openinstaller.util.EnhancedException;
             import org.openinstaller.provider.dependency.JavaDetection;
 
-            public java.util.List gJDKComponents = null;
-
             run(){
-              theJava = new JavaDetection(ConfigHelper.getStringValue("JDKSelection.directory.JDK_VERSIONRANGE"));
-              gJDKComponents = (List) theJava.getInstalledJDKDetails();
-
-
             }
             return (Runnable)this;]]>
            </onSet>
