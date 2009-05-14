@@ -556,7 +556,15 @@ public class TomcatDeploymentConfig {
         if (cookieConfig != null) {
             SessionCookieConfig sessionCookieConfig =
                 webModule.getSessionCookieConfig();
-            sessionCookieConfig.setName(cookieConfig.getName());
+            /* 
+             * Unlike a cookie's domain, path, and comment, its name
+             * will be empty (instead of null) if left unspecified
+             * inside <session-config><cookie-config>
+             */
+            if (cookieConfig.getName() != null &&
+                    !cookieConfig.getName().isEmpty()) {
+                sessionCookieConfig.setName(cookieConfig.getName());
+            }
             sessionCookieConfig.setDomain(cookieConfig.getDomain());
             sessionCookieConfig.setPath(cookieConfig.getPath());
             sessionCookieConfig.setComment(cookieConfig.getComment());
