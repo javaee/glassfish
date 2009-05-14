@@ -23,7 +23,6 @@ public class TestServlet extends HttpServlet {
                 public void run() {
                     try {
                         ac.getResponse().getWriter().println("Hello world");
-                        ac.getResponse().getWriter().flush();
                         ac.complete();
                     } catch (IOException ioe) {
                         ioe.printStackTrace();

@@ -3,7 +3,8 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for AsyncContext#complete
+ * Unit test for AsyncContext#complete: Ensure that any output
+ * buffered in the response is flushed.
  */
 public class WebTest {
 
