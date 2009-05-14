@@ -129,6 +129,10 @@ public final class DTDRegistry {
         "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Java EE Application 5.0//EN";
     public static final String SUN_APPLICATION_500_DTD_SYSTEM_ID =
         "http://www.sun.com/software/appserver/dtds/sun-application_5_0-0.dtd";        
+    public static final String SUN_APPLICATION_600_DTD_PUBLIC_ID =
+        "-//Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 Java EE Application 6.0//EN";
+    public static final String SUN_APPLICATION_600_DTD_SYSTEM_ID =
+        "http://www.sun.com/software/appserver/dtds/sun-application_6_0-0.dtd"; 
 
     /**
      * EJB: Sun ONE App Server specific dtd info.

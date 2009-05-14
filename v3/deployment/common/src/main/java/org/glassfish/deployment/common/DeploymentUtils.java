@@ -88,6 +88,23 @@ public class DeploymentUtils {
         return false;
     }
 
+   /**
+     * @param pathName
+     * @return the default value of the EE name. 
+     * The default name is the pathname with any filename extension 
+     * (.jar, .war, .rar) removed, but with any directory names included.
+     */
+    public static String getDefaultEEName(String pathName) {
+        if (pathName == null) {
+            return null;
+        }
+        if (pathName.endsWith(".jar") || pathName.endsWith(".war")
+            || pathName.endsWith(".rar")) {
+            return pathName.substring(0, pathName.length() - 4);
+        } else {
+            return pathName;
+        }
+    }
     /**
      * check whether the archive is a .rar
      * @param archive archive to be tested

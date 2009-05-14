@@ -135,6 +135,8 @@ public class Application extends RootDeploymentDescriptor
     private String registrationName;
 
     private String appName;
+   
+    private String archiveName;
 
     private boolean initializeInOrder = false;
 
@@ -299,6 +301,26 @@ public class Application extends RootDeploymentDescriptor
      */
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    /**
+     * Returns the value of the archive-name element in the sun-application.xml
+     * When the app-name is not present in application.xml and archive-name is
+     * present in sun-application.xml, the value of archive-name minus file 
+     * extension will be used as the default name of the app-name.
+     *
+     * @return the EE app name of this application
+     */
+    public String getArchiveName() {
+        return archiveName;
+    }
+
+    /**
+     * Sets the EE app name
+     * @param appName the EE app name of this application
+     */
+    public void setArchiveName(String archiveName) {
+        this.archiveName = archiveName;
     }
 
     /**

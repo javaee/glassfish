@@ -96,6 +96,7 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
        publicIDToDTD.put(DTDRegistry.SUN_APPLICATION_140_DTD_PUBLIC_ID, DTDRegistry.SUN_APPLICATION_140_DTD_SYSTEM_ID);       
        publicIDToDTD.put(DTDRegistry.SUN_APPLICATION_141_DTD_PUBLIC_ID, DTDRegistry.SUN_APPLICATION_141_DTD_SYSTEM_ID);       
        publicIDToDTD.put(DTDRegistry.SUN_APPLICATION_500_DTD_PUBLIC_ID, DTDRegistry.SUN_APPLICATION_500_DTD_SYSTEM_ID);       
+       publicIDToDTD.put(DTDRegistry.SUN_APPLICATION_600_DTD_PUBLIC_ID, DTDRegistry.SUN_APPLICATION_600_DTD_SYSTEM_ID);       
        if (!restrictDTDDeclarations()) {
            publicIDToDTD.put(DTDRegistry.SUN_APPLICATION_140beta_DTD_PUBLIC_ID, DTDRegistry.SUN_APPLICATION_140beta_DTD_SYSTEM_ID);       
        }
@@ -113,14 +114,14 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-	return DTDRegistry.SUN_APPLICATION_500_DTD_PUBLIC_ID;
+	return DTDRegistry.SUN_APPLICATION_600_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-	return DTDRegistry.SUN_APPLICATION_500_DTD_SYSTEM_ID;
+	return DTDRegistry.SUN_APPLICATION_600_DTD_SYSTEM_ID;
     }
 
     /**
@@ -151,6 +152,9 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     public void setElementValue(XMLElement element, String value) {
 	if (element.getQName().equals(RuntimeTagNames.PASS_BY_REFERENCE)) {
 	    descriptor.setPassByReference("true".equalsIgnoreCase(value));
+	} else
+	if (element.getQName().equals(RuntimeTagNames.ARCHIVE_NAME)) {
+	    descriptor.setArchiveName(value);
 	} else
 	if (element.getQName().equals(RuntimeTagNames.WEB_URI)) {
 	    currentWebUri=value;

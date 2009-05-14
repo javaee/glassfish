@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.util;
 import com.sun.enterprise.deployment.DeploymentExtensionDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -185,12 +186,7 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
      */
     public String getModuleName() {
         if (moduleName == null) {
-            if (path.endsWith(".jar") || path.endsWith(".war")
-                || path.endsWith(".rar")) {
-                return path.substring(0, path.length() - 4);
-            } else {
-                return path;
-            }
+            return DeploymentUtils.getDefaultEEName(path);
         }
         return moduleName;
     }
