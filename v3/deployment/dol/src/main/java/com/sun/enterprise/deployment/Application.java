@@ -134,6 +134,8 @@ public class Application extends RootDeploymentDescriptor
      */
     private String registrationName;
 
+    private String appName;
+
     // realm associated with this application
     private String realm;
 
@@ -276,6 +278,26 @@ public class Application extends RootDeploymentDescriptor
         }
     }
     // END OF IASRI 4648645
+
+
+    /**
+     * Returns the value of the app-name element in the application.xml if 
+     * it's defined. The default EE app name is the unqualified name of 
+     * the .ear or stand-alone module, minus the file extension. 
+     *
+     * @return the EE app name of this application
+     */
+    public String getAppName() {
+        return appName;
+    }
+
+    /**
+     * Sets the EE app name
+     * @return the EE app name of this application
+     */
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
 
     /**
      * Set the physical entity manager factory for a persistence unit

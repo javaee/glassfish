@@ -88,6 +88,8 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
      */
     private boolean standalone=false;
 
+    private String moduleName;
+
     /** Creates new ModuleDescriptor */
     public ModuleDescriptor() {
     }
@@ -172,7 +174,35 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
     public String getContextRoot() {
         return contextRoot;
     }
-    
+
+    /**
+     * Returns the value of the module-name element in the application.xml if
+     * it's defined. The default module name is the pathname of the module in 
+     * the ear file with any filename extension (.jar, .war, .rar) removed, 
+     * but with any directory names included. 
+     *
+     * @return the module of this application
+     */
+    public String getModuleName() {
+        if (moduleName == null) {
+            if (path.endsWith(".jar") || path.endsWith(".war")
+                || path.endsWith(".rar")) {
+                return path.substring(0, path.length() - 4);
+            } else {
+                return path;
+            }
+        }
+        return moduleName;
+    }
+
+    /**
+     * Sets the module name
+     * @return the module name of this application
+     */
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
     /**
      * @return the @see Manifest manifest information 
      * for this module

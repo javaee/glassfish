@@ -108,6 +108,16 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
                 throw new IOException(e);
             }
             application.setRegistrationName(name);
+
+            // if the app-name is defined in application.xml and user did not 
+            // specify any name, use the app name as the registration name
+            // the precedence of the registration name:  
+            // 1. user specified name
+            // 2. app-name defined in application.xml
+            // 3. default name
+            if (application.getAppName() != null && params.isUsingDefaultName){
+                application.setRegistrationName(application.getAppName());
+            }
         }
         if (application==null) {
             try {
@@ -119,6 +129,12 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         }
 
         validateApplication(application, dc);
+
+        // if the app-name is not defined in the application.xml or it's 
+        // a standalone module, use the default name
+        if (application.getAppName() == null) {
+            application.setAppName(params.defaultName());
+        }
 
         // this may not be the best location for this but it will suffice.
         if (deploymentVisitor!=null) {

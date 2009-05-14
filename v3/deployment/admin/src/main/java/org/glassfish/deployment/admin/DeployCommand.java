@@ -180,7 +180,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // get an application name
             if (name==null) {
                 // Archive handlers know how to construct default app names.
-                name = archiveHandler.getDefaultApplicationName(archive);
+                defaultName = archiveHandler.getDefaultApplicationName(archive);
+                isUsingDefaultName = true;
+                name = defaultName;
             }
 
             ActionReport.MessagePart part = report.getTopMessagePart();
