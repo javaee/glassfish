@@ -35,11 +35,13 @@
  */
 package org.glassfish.appclient.server.core;
 
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
 import com.sun.enterprise.universal.io.FileUtils;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -54,7 +56,6 @@ import java.util.jar.Manifest;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DownloadableArtifacts;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 /**
  * Encapsulates the details of generating the required JAR file(s),
@@ -184,6 +185,37 @@ abstract class AppClientDeployerHelper {
         return appClientDesc;
     }
 
+    /**
+     * If the specified URI is for an expanded submodule, makes a copy of
+     * the submodule as a JAR and returns the URI for the copy.
+     * @param classPathElement
+     * @return URI to the safe copy of the submodule, relative to the top level
+     * if the classPathElement is for a submodule; null otherwise
+     */
+    File JAROfExpandedSubmodule(final URI candidateSubmoduleURI) throws IOException {
+        ReadableArchive source = new FileArchive();
+        source.open(dc().getSource().getParentArchive().getURI().resolve(expandedDirURI(candidateSubmoduleURI)));
+        OutputJarArchive target = new OutputJarArchive();
+        target.create(dc().getScratchDir("xml").toURI().resolve(candidateSubmoduleURI));
+        /*
+         * Copy the manifest explicitly because the ReadableArchive
+         * entries() method omits it.
+         */
+        Manifest mf = source.getManifest();
+        OutputStream os = target.putNextEntry(JarFile.MANIFEST_NAME);
+        mf.write(os);
+        target.closeEntry();
+        ClientJarMakerUtils.copyArchive(source, target, Collections.EMPTY_SET);
+        target.close();
+        return new File(target.getURI());
+    }
+
+    private URI expandedDirURI(final URI submoduleURI) {
+        final String uriText = submoduleURI.toString();
+        int lastDot = uriText.lastIndexOf('.');
+        return URI.create(uriText.substring(0, lastDot) + "_" + uriText.substring(lastDot + 1));
+    }
+
 //    protected String renamedOriginalJarFileName() {
 //        return renamedOriginalJarFileName;
 //    }
@@ -248,27 +280,8 @@ abstract class AppClientDeployerHelper {
 
     protected void prepareJARs() throws IOException, URISyntaxException {
         generateAppClientFacade();
-//        copyOriginalAppClientJAR(dc());
     }
 
-
-//    protected void copyOriginalAppClientJAR(final DeploymentContext dc) throws IOException {
-//        ReadableArchive originalSource = ((ExtendedDeploymentContext) dc).getOriginalSource();
-//        originalSource.open(originalSource.getURI());
-//        OutputJarArchive target = new OutputJarArchive();
-//        target.create(appClientServerURI(dc));
-//        /*
-//         * Copy the manifest explicitly because ReadableArchive.entries()
-//         * excludes the manifest.
-//         */
-//        Manifest originalManifest = originalSource.getManifest();
-//        OutputStream os = target.putNextEntry(JarFile.MANIFEST_NAME);
-//        originalManifest.write(os);
-//        target.closeEntry();
-//        ClientJarMakerUtils.copyArchive(originalSource, target, Collections.EMPTY_SET);
-//        target.close();
-//        originalSource.close();
-//    }
 
     protected final void generateAppClientFacade() throws IOException, URISyntaxException {
         OutputJarArchive facadeArchive = new OutputJarArchive();

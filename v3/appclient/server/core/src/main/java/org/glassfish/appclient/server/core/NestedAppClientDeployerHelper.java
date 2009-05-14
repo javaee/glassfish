@@ -187,6 +187,23 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * object pointing to that generated JAR.
          */
         URI dependencyFileURI = earURI.resolve(dependencyURI);
+
+        /*
+         * Make sure the URI has the scheme "file" and not "jar" because
+         * dependencies from the Class-Path in a JAR's manifest could be
+         * "jar" URIs.  We need "file" URIs to check for existence, etc.
+         */
+
+        String scheme = dependencyFileURI.getScheme();
+        if (scheme != null && scheme.equals("jar")) {
+            dependencyFileURI = URI.create("file:" + dependencyFileURI.getRawSchemeSpecificPart());
+        } else {
+            if (scheme == null) {
+                scheme = "file";
+            }
+            dependencyFileURI = URI.create(scheme + ":" + dependencyFileURI.getRawSchemeSpecificPart());
+        }
+
         File dependentJARFile = new File(dependencyFileURI);
         if ( ! dependentJARFile.exists()) {
             if (isSubmodule(dependencyURI)) {
@@ -199,21 +216,6 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                  */
                 return;
             }
-        }
-
-        /*
-         * Get a URI of the same scheme as the EAR directory URI for the
-         * client-side directory so relativize will work correctly.
-         */
-
-        String scheme = dependencyFileURI.getScheme();
-        if (scheme != null && scheme.equals("jar")) {
-            dependencyFileURI = URI.create("file:" + dependencyFileURI.getRawSchemeSpecificPart());
-        } else {
-            if (scheme == null) {
-                scheme = "file";
-            }
-            dependencyFileURI = URI.create(scheme + ":" + dependencyFileURI.getRawSchemeSpecificPart());
         }
 
         /*
@@ -250,31 +252,6 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         }
     }
 
-    /**
-     * If the specified URI is for an expanded submodule, makes a copy of
-     * the submodule as a JAR and returns the URI for the copy.
-     * @param classPathElement
-     * @return URI to the safe copy of the submodule, relative to the top level
-     * if the classPathElement is for a submodule; null otherwise
-     */
-    private File JAROfExpandedSubmodule(final URI candidateSubmoduleURI) throws IOException {
-        ReadableArchive source = new FileArchive();
-        source.open(dc().getSource().getParentArchive().getURI().resolve(expandedDirURI(candidateSubmoduleURI)));
-        OutputJarArchive target = new OutputJarArchive();
-        target.create(dc().getScratchDir("xml").toURI().resolve(candidateSubmoduleURI));
-        /*
-         * Copy the manifest explicitly because the ReadableArchive
-         * entries() method omits it.
-         */
-        Manifest mf = source.getManifest();
-        OutputStream os = target.putNextEntry(JarFile.MANIFEST_NAME);
-        mf.write(os);
-        target.closeEntry();
-        ClientJarMakerUtils.copyArchive(source, target, Collections.EMPTY_SET);
-        target.close();
-        return new File(target.getURI());
-    }
-
     private boolean isSubmodule(final URI candidateURI) {
         for (ModuleDescriptor<BundleDescriptor> desc : appClientDesc().getApplication().getModules()) {
             if (URI.create(desc.getArchiveUri()).equals(candidateURI)) {
@@ -306,12 +283,6 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 : URI.create(submoduleURIText));
 
         return normalizedCandidateURI.equals(normalizedSubmoduleURI);
-    }
-
-    private URI expandedDirURI(final URI submoduleURI) {
-        final String uriText = submoduleURI.toString();
-        int lastDot = uriText.lastIndexOf('.');
-        return URI.create(uriText.substring(0, lastDot) + "_" + uriText.substring(lastDot + 1));
     }
 
     private URI convertExpandedDirToJarURI(final String submoduleURI) {
