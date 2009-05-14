@@ -190,31 +190,6 @@ class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected void prepareJARs() throws IOException, URISyntaxException {
-        generateAppClientFacade();
-        copyOriginalAppClientJAR();
-    }
-
-    private void copyOriginalAppClientJAR() throws IOException {
-        ReadableArchive originalSource = ((ExtendedDeploymentContext) dc()).getOriginalSource();
-        originalSource.open(originalSource.getURI());
-        OutputJarArchive target = new OutputJarArchive();
-        target.create(appClientServerURI(dc()));
-        /*
-         * Copy the manifest explicitly because ReadableArchive.entries()
-         * excludes the manifest.
-         */
-        Manifest originalManifest = originalSource.getManifest();
-        OutputStream os = target.putNextEntry(JarFile.MANIFEST_NAME);
-        originalManifest.write(os);
-        target.closeEntry();
-        ClientJarMakerUtils.copyArchive(originalSource, target, Collections.EMPTY_SET);
-        target.close();
-        originalSource.close();
-    }
-
-
-    @Override
     protected URI appClientUserURIForFacade(DeploymentContext dc) {
         return appClientUserURI(dc);
     }

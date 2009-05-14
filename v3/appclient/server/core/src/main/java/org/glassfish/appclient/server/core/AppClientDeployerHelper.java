@@ -39,7 +39,6 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
-import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.universal.io.FileUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +46,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -54,6 +54,7 @@ import java.util.jar.Manifest;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DownloadableArtifacts;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 /**
  * Encapsulates the details of generating the required JAR file(s),
@@ -245,7 +246,29 @@ abstract class AppClientDeployerHelper {
         archivist.writeDeploymentDescriptors(facadeArchive);
     }
 
-    protected abstract void prepareJARs() throws IOException, URISyntaxException;
+    protected void prepareJARs() throws IOException, URISyntaxException {
+        generateAppClientFacade();
+//        copyOriginalAppClientJAR(dc());
+    }
+
+
+//    protected void copyOriginalAppClientJAR(final DeploymentContext dc) throws IOException {
+//        ReadableArchive originalSource = ((ExtendedDeploymentContext) dc).getOriginalSource();
+//        originalSource.open(originalSource.getURI());
+//        OutputJarArchive target = new OutputJarArchive();
+//        target.create(appClientServerURI(dc));
+//        /*
+//         * Copy the manifest explicitly because ReadableArchive.entries()
+//         * excludes the manifest.
+//         */
+//        Manifest originalManifest = originalSource.getManifest();
+//        OutputStream os = target.putNextEntry(JarFile.MANIFEST_NAME);
+//        originalManifest.write(os);
+//        target.closeEntry();
+//        ClientJarMakerUtils.copyArchive(originalSource, target, Collections.EMPTY_SET);
+//        target.close();
+//        originalSource.close();
+//    }
 
     protected final void generateAppClientFacade() throws IOException, URISyntaxException {
         OutputJarArchive facadeArchive = new OutputJarArchive();
