@@ -69,7 +69,7 @@ public class AMXConfigHelper
      */
     public Map<String, Object> simpleAttributesMap()
     {
-        return simpleAttributesMap();
+        return mAMX.attributesMap( simpleAttributes() );
     }
 
     /**

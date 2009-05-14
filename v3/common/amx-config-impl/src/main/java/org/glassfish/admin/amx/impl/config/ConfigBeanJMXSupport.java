@@ -740,6 +740,44 @@ public class ConfigBeanJMXSupport {
         "Kilobytes", Units.KILOBYTES,
         "Megabytes", Units.MEGABYTES
     );
+    
+    private static Map<Class<?>, long[]>
+    makeMIN_MAX()
+    {
+        final Map<Class<?>, long[]> m = new HashMap<Class<?>, long[]>();
+        
+        long[] mm = new long[] { Byte.MIN_VALUE, Byte.MAX_VALUE };
+        m.put(byte.class, mm );
+        m.put(Byte.class, mm );
+        
+        mm = new long[] { Short.MIN_VALUE, Short.MAX_VALUE };
+        m.put(short.class, mm );
+        m.put(Short.class, mm );
+        
+        mm = new long[] { Integer.MIN_VALUE, Integer.MAX_VALUE };
+        m.put(int.class, mm );
+        m.put(Integer.class, mm);
+        
+        mm = new long[] { Long.MIN_VALUE, Long.MAX_VALUE };
+        m.put(long.class, mm );
+        m.put(Long.class, mm );
+        
+        /*
+        m.put(PositiveInteger.class, new long[] { 1, Integer.MAX_VALUE } );
+        m.put(NonNegativeInteger.class, new long[] { 0, Integer.MAX_VALUE } );
+        m.put(Port.class, new long[] { 0, 65535 } );
+        */
+        
+        return m;
+    }
+    
+    private static final Map<Class<?>, long[]> MIN_MAX = makeMIN_MAX();
+    
+        private static long[]
+    minMaxFromDataType( final Class<?> dataType )
+    {
+        return MIN_MAX.get(dataType);
+    }
 
     public static final class AttributeMethodInfo extends MethodInfo {
 
@@ -779,12 +817,20 @@ public class ConfigBeanJMXSupport {
 
         public Long min() {
             final Min min = mMethod.getAnnotation(Min.class);
-            return min == null ? null : min.value();
+            if ( min != null ) {
+                return min.value();
+            }
+            final long[] minMax = minMaxFromDataType(attribute().dataType());
+            return minMax == null ? null: minMax[0];
         }
 
         public Long max() {
             final Max max = mMethod.getAnnotation(Max.class);
-            return max == null ? null : max.value();
+            if ( max != null ) {
+                return max.value();
+            }
+            final long[] minMax = minMaxFromDataType(attribute().dataType());
+            return minMax == null ? null: minMax[1];
         }
         
         /** infer the data type, using specified value if present */
@@ -826,9 +872,6 @@ public class ConfigBeanJMXSupport {
             if ( max() != null ) {
                 if ( max().equals( Long.MAX_VALUE ) ) {
                     return Long.class;
-                }
-                else if ( max().equals( Integer.MAX_VALUE ) ) {
-                    return Integer.class;
                 }
                 else {
                     return Integer.class;
