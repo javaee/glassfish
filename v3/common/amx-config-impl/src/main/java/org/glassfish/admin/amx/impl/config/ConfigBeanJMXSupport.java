@@ -63,7 +63,7 @@ import org.jvnet.hk2.config.Element;
 public class ConfigBeanJMXSupport {
 
     /** bugs: these @Configured do not set @Attribute(key=true)
-    Map classnmame to id field */
+    Map classnmame to id field 
     private static final Map<String, String> CONFIGURED_BUGS = Collections.unmodifiableMap(MapUtil.newMap(
             "", ""
         ));
@@ -75,7 +75,7 @@ public class ConfigBeanJMXSupport {
     private String configuredBugKey() {
         final String key = CONFIGURED_BUGS.get(mIntf.getName());
         return key;
-    }
+    }*/
     private final Class<? extends ConfigBeanProxy> mIntf;
     private final List<AttributeMethodInfo> mAttrInfos = new ArrayList<AttributeMethodInfo>();
     private final List<ElementMethodInfo> mElemenInfos = new ArrayList<ElementMethodInfo>();
@@ -120,14 +120,12 @@ public class ConfigBeanJMXSupport {
         sanityCheckMBeanInfo();
         mNameHint = findNameHint();
 
+        /**
         if (hasConfiguredBug() && key == null) {
             ImplUtil.getLogger().warning("ConfigBeanJMXSupport (AMX): working around @Configured bug for " + mIntf.getName() +
                     ", using \"" + configuredBugKey() + "\" as the key attribute");
         }
-
-        //ConfigModel model = Dom.unwrap(intf).getConfigModel();        
-
-        //debug(toString());
+        */
     }
 
     private static Class<?> findDuck(final Class<?> intf) {
@@ -270,9 +268,11 @@ public class ConfigBeanJMXSupport {
         if ( mKey != null ) {
             return false;
         }
+        /*
         if (hasConfiguredBug()) {
             return false;
         }
+        */
 
         for (final AttributeMethodInfo info : mAttrInfos) {
             if (info.key()) {
@@ -1120,17 +1120,20 @@ public class ConfigBeanJMXSupport {
             return new NameHint(mKey);
         }
 
-        final String configuredBugKey = configuredBugKey();
+        // final String configuredBugKey = configuredBugKey();
 
         for (final AttributeMethodInfo info : mAttrInfos) {
             
             if (info.key()) {
                 //debug( "findNameHint: mKey = " + mKey + ", info says " + info.xmlName() );
                 return new NameHint(info.xmlName());
-            } else if (configuredBugKey != null && info.attrName().equalsIgnoreCase(configuredBugKey)) {
+            }
+            /*
+                else if (configuredBugKey != null && info.attrName().equalsIgnoreCase(configuredBugKey)) {
                 //debug( "findNameHint: mKey = " + mKey + ", workaround says " + configuredBugKey );
                 return new NameHint(configuredBugKey);
             }
+            */
         }
 
         /**
