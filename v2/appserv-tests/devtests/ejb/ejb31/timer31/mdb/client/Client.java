@@ -33,7 +33,7 @@ public class Client {
 
 	    SingletonRemote singleton = (SingletonRemote) new InitialContext().lookup("java:global/" + appName + "/SingletonBean!com.acme.SingletonRemote");
 
-	    System.out.println("Watiing a few seconds for timer callback...");
+	    System.out.println("Waiting a few seconds for timer callback...");
 	    try {
 		Thread.sleep(4000);
 	    } catch(Exception e) {
