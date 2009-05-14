@@ -136,6 +136,8 @@ public class Application extends RootDeploymentDescriptor
 
     private String appName;
 
+    private boolean initializeInOrder = false;
+
     // realm associated with this application
     private String realm;
 
@@ -293,11 +295,28 @@ public class Application extends RootDeploymentDescriptor
 
     /**
      * Sets the EE app name
-     * @return the EE app name of this application
+     * @param appName the EE app name of this application
      */
     public void setAppName(String appName) {
         this.appName = appName;
     }
+
+    /**
+     * @return the initializeInOrder flag
+     * when the return value is true, the modules inside ear will be loaded
+     * by their declaration order in application.xml
+     */
+    public boolean isInitializeInOrder() {
+        return initializeInOrder;
+    }
+
+    /**
+     * Sets the initializeInOrder flag
+     * @param initializeInOrder
+     */
+    public void setInitializeInOder(boolean initializeInOrder) {
+        this.initializeInOrder = initializeInOrder;   
+    } 
 
     /**
      * Set the physical entity manager factory for a persistence unit

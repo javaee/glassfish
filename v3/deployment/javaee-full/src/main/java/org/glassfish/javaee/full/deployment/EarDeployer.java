@@ -291,23 +291,34 @@ public class EarDeployer implements Deployer {
 
     private void doOnAllBundles(Application application, BundleBlock runnable) throws Exception {
 
-        Collection<ModuleDescriptor> bundles = new HashSet<ModuleDescriptor>();
+        Collection<ModuleDescriptor> bundles = 
+            new LinkedHashSet<ModuleDescriptor>();
         bundles.addAll(application.getModules());
 
-        // first we take care of the connectors
-        bundles.removeAll(doOnAllTypedBundles(application, XModuleType.RAR, runnable));
-
-        // now the EJBs
-        bundles.removeAll(doOnAllTypedBundles(application, XModuleType.EJB, runnable));
-
-        // finally the war files.
-        bundles.removeAll(doOnAllTypedBundles(application, XModuleType.WAR, runnable));
-
-        // now ther remaining bundles
-        for (final ModuleDescriptor bundle : bundles) {
-            runnable.doBundle(bundle);
+        // if the initialize-in-order flag is set
+        // we load the modules by their declaration order in application.xml
+        if (application.isInitializeInOrder()) {
+            for (final ModuleDescriptor bundle : bundles) {
+                runnable.doBundle(bundle);
+            }
         }
         
+        // otherwise we load modules by default order: connector, ejb, web
+        else {
+            // first we take care of the connectors
+            bundles.removeAll(doOnAllTypedBundles(application, XModuleType.RAR, runnable));
+
+            // now the EJBs
+            bundles.removeAll(doOnAllTypedBundles(application, XModuleType.EJB, runnable));
+
+            // finally the war files.
+            bundles.removeAll(doOnAllTypedBundles(application, XModuleType.WAR, runnable));
+
+            // now ther remaining bundles
+            for (final ModuleDescriptor bundle : bundles) {
+                runnable.doBundle(bundle);
+            }
+        } 
     }
 
     private ModuleInfo prepareBundle(final ModuleDescriptor md, Application application, final ExtendedDeploymentContext bundleContext)
