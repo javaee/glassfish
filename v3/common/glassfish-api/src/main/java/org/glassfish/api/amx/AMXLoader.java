@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -35,37 +35,35 @@
  */
 package org.glassfish.api.amx;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.jvnet.hk2.annotations.Contract;
 
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 /**
-    For those @Configured which group a variety of generic types within themselves (eg 
-    List&lt;Resources> of various subtypes, this annotation specified the specific subtypes
-    that can be created.
-    <p>
-    Intended as an intermediate solution until a more generic and automatic solution can be
-    devised.
-
-    @deprecated will be removed soon
-    @author llc
+	A loader of AMX MBeans.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Deprecated
-public @interface AMXCreatorInfo {
+@Contract
+public interface AMXLoader
+{
+    public static final String  AMX_JMX_DOMAIN  = "v3";
+    
+    public static final String AMX3_SUPPORT_DOMAIN = AMX_JMX_DOMAIN + "-support";
+    public static String LOADER_PREFIX = AMX3_SUPPORT_DOMAIN + ":type=amx-loader,name=";
+    
+    /** ObjectName prefix for the loader MBean itself */
+    public static String LOADER_OLD_PREFIX = "amx-support:type=amx-loader,name=";
+    
     /**
-       Get the list of @Configured ({@link ConfigBeanProxy} interfaces) that can be created by this item.
+        Loader a hierarchy of AMX MBeans, returning the ObjectName of the root
+        of the hierarchy.
      */
-    Class<? extends ConfigBeanProxy>[]  creatables();
+    public ObjectName loadAMXMBeans();
+    
+    /**
+        Unload (unregister) AMX MBeans.
+     */
+    public void unloadAMXMBeans();
 }
-
-
-
-
-
-
 
