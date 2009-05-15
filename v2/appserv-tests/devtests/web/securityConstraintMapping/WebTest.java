@@ -30,9 +30,10 @@ public class WebTest
         try {
             //Check if it strips out uri parameters (";.*") before mapping to webapps
             goGet(host, port, contextRoot + "/ServletTest;test=aaa" );
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Throwable t) {
             System.out.println(t.getMessage());
-            stat.addStatus(TEST_NAME + "UNPREDICTED-FAILURE", stat.FAIL);
+            stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
         stat.printSummary(TEST_NAME + " ---> PASS");
@@ -92,13 +93,8 @@ public class WebTest
             }
         }
 
-        if (pass) {
-            System.out.println("security constraint processed");
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.out.println("security constraint NOT processed");
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (!pass) {
+            throw new Exception("security constraint NOT processed");
         }
-   }
-  
+    }
 }
