@@ -58,6 +58,7 @@ import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 /**
   GlassFish V3 dotted names implementation (MBean).
@@ -151,6 +152,7 @@ public final class PathnamesImpl  extends AMXImplBase
         // limit the memory use; non-existent paths could otherwise build up
         if ( mPathnameCache.keySet().size() > MAX_CACHE_SIZE )
         {
+            // clears out old stuff we might not need anyway
             mPathnameCache.clear();
         }
         
@@ -300,7 +302,7 @@ public final class PathnamesImpl  extends AMXImplBase
                 buf.append("\t");
                 buf.append(name);
                 buf.append(" = ");
-                buf.append( "" + attributesMap.get(name));
+                buf.append( "" + SmartStringifier.toString( attributesMap.get(name) ) );
                 buf.append(NL);
             }
             buf.append(NL);
