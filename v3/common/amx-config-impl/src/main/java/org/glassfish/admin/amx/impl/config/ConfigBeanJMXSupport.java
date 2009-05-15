@@ -741,6 +741,7 @@ public class ConfigBeanJMXSupport {
         "Megabytes", Units.MEGABYTES
     );
     
+    /** Create the default min/max values for primitive types */
     private static Map<Class<?>, long[]>
     makeMIN_MAX()
     {
@@ -770,7 +771,6 @@ public class ConfigBeanJMXSupport {
         
         return m;
     }
-    
     private static final Map<Class<?>, long[]> MIN_MAX = makeMIN_MAX();
     
         private static long[]
