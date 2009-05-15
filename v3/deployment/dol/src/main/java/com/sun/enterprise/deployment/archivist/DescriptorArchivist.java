@@ -50,6 +50,7 @@ import javax.enterprise.deploy.shared.ModuleType;
 import com.sun.enterprise.deployment.util.XModuleType;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 
 /**
  * This class is responsible for writing deployment descriptors 
@@ -167,23 +168,14 @@ public class DescriptorArchivist {
         throws IOException
     {
         archivist.setDescriptor(bundle);
-        archivist.writeRuntimeDeploymentDescriptors(out);
-        
-        if (!bundle.isFullFlag()) {
-            archivist.writeStandardDeploymentDescriptors(out);
-        } else {
-            // Also if this is a web bundle descriptor, we always want to 
-            // rewrite the standard deployment descriptors if we have web 
-            // services since the servlet implementation has been switched
-            if (bundle.getModuleType().equals(XModuleType.WAR)) {
-                WebBundleDescriptor webBundle = (WebBundleDescriptor) bundle;
-                if (webBundle.hasWebServices()) {
-                    archivist.writeStandardDeploymentDescriptors(out);
-                } else {
-                    archivist.copyStandardDeploymentDescriptors(in, out);
-                } 
-            } else {
-                archivist.copyStandardDeploymentDescriptors(in, out);
+        archivist.writeDeploymentDescriptors(out);
+        if (bundle.getModuleType().equals(XModuleType.WAR)) {
+            Collection<EjbBundleDescriptor> ejbExtensions = 
+                bundle.getExtensionsDescriptors(EjbBundleDescriptor.class);
+            for (EjbBundleDescriptor ejbBundle : ejbExtensions) {
+                Archivist ejbArchivist = 
+                    archivistFactory.getArchivist(XModuleType.EJB);
+                write(ejbBundle, ejbArchivist, in, out);
             }
         }
 
