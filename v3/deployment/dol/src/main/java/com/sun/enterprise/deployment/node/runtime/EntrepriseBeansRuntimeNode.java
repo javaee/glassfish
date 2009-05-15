@@ -102,6 +102,10 @@ public class EntrepriseBeansRuntimeNode extends RuntimeDescriptorNode {
             return;
         }
 
+        if (RuntimeTagNames.UNIQUE_ID.equals(element.getQName())) {
+            DOLUtils.getDefaultLogger().finer("Ignoring unique id");
+            return;
+        }
 	    super.setElementValue(element, value);
     }
     
