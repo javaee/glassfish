@@ -36,64 +36,45 @@
 
 package com.sun.enterprise.tools.upgrade.gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import javax.swing.JLabel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 
-public class HeaderPanel extends InsetsPanel
-{
+public class HeaderPanel extends InsetsPanel {
 
-    private String headerText;
-    private Header header;
+    private JLabel header;
     private int preferredHeight;
 
-    public HeaderPanel()
-    {
+    public HeaderPanel() {
         this("", 55);
     }
 
-    public HeaderPanel(String s)
-    {
+    public HeaderPanel(String s) {
         this(s, 55);
     }
 
-    public HeaderPanel(String s, int i)
-    {
-        headerText = null;
-        header = null;
-        headerText = s;
+    public HeaderPanel(String s, int i) {
+        header = new JLabel(s);
         preferredHeight = i;
         setLayout(new BorderLayout());
-        add(header = new Header(s), "North");        
+        add(header, BorderLayout.NORTH);
+
+        JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
+        add(sep, BorderLayout.CENTER);
     }
 
-    public Dimension getMinimumSize()
-    {
+    @Override
+    public Dimension getMinimumSize() {
         return getPreferredSize();
     }
 
-    public Dimension getPreferredSize()
-    {
+    @Override
+    public Dimension getPreferredSize() {
         Dimension dimension = new Dimension(getSize().width, preferredHeight);
         return dimension;
     }
 
-    public String getText()
-    {
-        if(header != null)
-        {
-            return header.getText();
-        } else
-        {
-            return headerText;
-        }
-    }
-
-    public void setText(String s)
-    {
-        headerText = s;
-        if(header != null)
-        {
-            header.setText(s);
-        }
-    }
 }

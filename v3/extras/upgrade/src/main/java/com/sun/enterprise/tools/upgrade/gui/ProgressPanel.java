@@ -46,23 +46,21 @@ package com.sun.enterprise.tools.upgrade.gui;
  *
  * @author  prakash
  */
-import javax.swing.*;
-import java.awt.*;
 import com.sun.enterprise.tools.upgrade.common.*;
-import java.util.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.logging.*;
+import java.awt.*;
+import java.util.logging.Level;
+import javax.swing.*;
 
-public class ProgressPanel extends javax.swing.JPanel {
+public class ProgressPanel extends JPanel {
     
-    private FlowLabel flowProgressLabel;
+    private JLabel progressLabel;
     private JTextArea resultTextArea;
     private ProgressBar progressBar;
     private JScrollPane jscrollpane;
     
-    //////private StringManager stringManager = StringManager.getManager("com.sun.enterprise.tools.upgrade.gui");
-    private StringManager stringManager = StringManager.getManager(ProgressPanel.class);
-    private Logger logger = com.sun.enterprise.tools.upgrade.common.CommonInfoModel.getDefaultLogger();    
+    private StringManager stringManager =
+        StringManager.getManager(ProgressPanel.class);
     
     /** Creates a new instance of ProgressPanel */
     public ProgressPanel() {
@@ -71,17 +69,19 @@ public class ProgressPanel extends javax.swing.JPanel {
   
     private void initialize(){
         this.setLayout(new BorderLayout());
-        HeaderPanel headerPanel = new HeaderPanel(stringManager.getString("upgrade.gui.progresspanel.headerPanel"));
-        headerPanel.setInsets(new java.awt.Insets(12, 10, 12, 10));
-        add(headerPanel, "North");
-        add(getWizardPanel(), "Center");
-        
-    }  
+        HeaderPanel headerPanel = new HeaderPanel(
+            stringManager.getString("upgrade.gui.progresspanel.headerPanel"));
+        headerPanel.setInsets(new Insets(12, 10, 12, 10));
+        add(headerPanel, BorderLayout.NORTH);
+        add(getWizardPanel(), BorderLayout.CENTER);
+    }
+    
     private JPanel getWizardPanel(){
         JPanel panel = new JPanel(new GridBagLayout());
-        FlowLabel flowTopLabel = new FlowLabel();
-        FlowLabel flowTextAreaLabel = new FlowLabel();
-        flowProgressLabel = new FlowLabel();
+        JLabel topLabel = new JLabel();
+        JLabel textAreaLabel = new JLabel();
+        progressLabel = new JLabel();
+        progressLabel.setForeground(Color.BLUE);
         progressBar = new ProgressBar();
         resultTextArea = new JTextArea();
         resultTextArea.setFocusable(false);
@@ -90,48 +90,50 @@ public class ProgressPanel extends javax.swing.JPanel {
         jscrollpane = new JScrollPane(resultTextArea, 20, 30);
         jscrollpane.setAutoscrolls(true);
         resultTextArea.setAutoscrolls(true);
-        
-        flowTopLabel.setText(stringManager.getString("upgrade.gui.progresspanel.flowContentLabel"));
+
+        topLabel.setText(stringManager.getString("upgrade.gui.progresspanel.contentLabel"));
+        topLabel.setForeground(Color.BLUE);
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(0, 10, 10, 0);
         gridBagConstraints.weightx = 1.0;
-        panel.add(flowTopLabel, gridBagConstraints);
+        panel.add(topLabel, gridBagConstraints);
         
-        flowTextAreaLabel.setText(stringManager.getString("upgrade.gui.progresspanel.textAreaText"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        textAreaLabel.setText(stringManager.getString("upgrade.gui.progresspanel.textAreaText"));
+        textAreaLabel.setForeground(Color.BLUE);
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(5, 10, 10, 10);
         gridBagConstraints.weightx = 1.0;
-        panel.add(flowTextAreaLabel, gridBagConstraints);
+        panel.add(textAreaLabel, gridBagConstraints);
         
-        gridBagConstraints = new java.awt.GridBagConstraints();  
+        gridBagConstraints = new GridBagConstraints();  
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new Insets(0, 10, 10, 10);
         gridBagConstraints.weightx = 1.0; gridBagConstraints.weighty = 1.0;
         panel.add(jscrollpane, gridBagConstraints);
         
-        flowProgressLabel.setText(stringManager.getString("upgrade.gui.progresspanel.progressLabel"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        progressLabel.setText(stringManager.getString("upgrade.gui.progresspanel.progressLabel"));
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(10, 10, 10, 10);
         gridBagConstraints.weightx = 1.0;
-        panel.add(flowProgressLabel, gridBagConstraints);
+        panel.add(progressLabel, gridBagConstraints);
         
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(0, 10, 10, 10);
         gridBagConstraints.weightx = 1.0;
         panel.add(progressBar, gridBagConstraints);
         
@@ -141,8 +143,8 @@ public class ProgressPanel extends javax.swing.JPanel {
         java.util.logging.LogRecord logRecord = evt.getLogRecord();
         if(logRecord != null){
             if((logRecord.getLevel().equals(Level.SEVERE)) || (logRecord.getLevel().equals(Level.WARNING))){
-                //java.awt.Font origFont = this.resultTextArea.getFont();
-                //java.awt.Font spFont = new java.awt.Font(this.resultTextArea.getFont().getName(), java.awt.Font.BOLD, this.resultTextArea.getFont().getSize());
+                //Font origFont = this.resultTextArea.getFont();
+                //Font spFont = new Font(this.resultTextArea.getFont().getName(), Font.BOLD, this.resultTextArea.getFont().getSize());
                 //this.resultTextArea.setFont(spFont);
                 this.resultTextArea.append(logRecord.getMessage());
                 this.resultTextArea.revalidate();
@@ -169,12 +171,14 @@ public class ProgressPanel extends javax.swing.JPanel {
         if(evt.getProgressState() == -1){
             progressState = 0;
             labelText = stringManager.getString("upgrade.gui.progresspanel.progressLabel.ERROR");
-            javax.swing.JOptionPane.showMessageDialog(this, stringManager.getString("upgrade.gui.progresspanel.errorProgressMsg"),
-						      stringManager.getString("upgrade.gui.progresspanel.errorProgressMsgTitle"),
-						      javax.swing.JOptionPane.ERROR_MESSAGE); 
+            JOptionPane.showMessageDialog(this, stringManager.getString(
+                "upgrade.gui.progresspanel.errorProgressMsg"),
+                stringManager.getString(
+                "upgrade.gui.progresspanel.errorProgressMsgTitle"),
+                JOptionPane.ERROR_MESSAGE);
         }
         this.progressBar.setProgress(progressState);         
         if(labelText != null)
-            flowProgressLabel.setText(labelText);
+            progressLabel.setText(labelText);
     }    
 }
