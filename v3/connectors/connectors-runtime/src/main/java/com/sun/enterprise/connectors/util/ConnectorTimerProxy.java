@@ -39,6 +39,7 @@ import com.sun.logging.LogDomains;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConnectorTimerProxy extends Timer {
@@ -95,7 +96,7 @@ public class ConnectorTimerProxy extends Timer {
         try {
             timer.cancel();
         } catch(Exception ex) {
-            _logger.warning("Exception while cancelling timer : " + ex.getMessage());
+            _logger.log(Level.WARNING, "exception_cancelling_timer", ex.getMessage());
         }
     }
 
@@ -106,7 +107,7 @@ public class ConnectorTimerProxy extends Timer {
         try {
             status = timer.purge();
         } catch(Exception ex) {
-            _logger.warning("Exception while purging timer : " + ex.getMessage());
+            _logger.log(Level.WARNING, "exception_purging_timer",  ex.getMessage());
         }        
         return status;
     }
@@ -217,7 +218,7 @@ public class ConnectorTimerProxy extends Timer {
      * @param ex exception that was caught
      */
     private void handleTimerException(Exception ex) {
-        _logger.warning("Exception while scheduling timer : " + ex.getMessage());
+        _logger.log(Level.WARNING, "exception_scheduling_timer", ex.getMessage());
         
         //In case of unchecked exceptions, timer needs to recreated.
         _logger.info("Recreating Timer and scheduling at fixed rate");
