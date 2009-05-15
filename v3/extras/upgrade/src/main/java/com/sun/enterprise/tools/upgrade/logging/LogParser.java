@@ -36,16 +36,14 @@
 
 package com.sun.enterprise.tools.upgrade.logging;
 
-import java.io.RandomAccessFile;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.RandomAccessFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.FileNotFoundException;
 
 
 /**
@@ -59,15 +57,21 @@ public class LogParser {
     // separator used in GF logs
     private static final String SEP = "|";
 
-    // holds the "upgrade failed" cases
-    private static final Set<Pattern> FAIL_LEVELS = new HashSet<Pattern>();
-    
-    // Search rule: pattern in log msg (e.g. |WARNING|)
+    private static final Pattern errorPattern;
+
+    /*
+     * Search rule: pattern in log msg (e.g. |WARNING|).
+     * Add levels here that should be included, separated
+     * by | character.
+     */
     static {
-        FAIL_LEVELS.add(Pattern.compile(String.format("[%s]%s[%s]",
-                SEP, Level.SEVERE.getName(), SEP )));
-        FAIL_LEVELS.add(Pattern.compile(String.format("[%s]%s[%s]",
-                SEP, Level.WARNING.getName(), SEP)));
+        StringBuilder sb = new StringBuilder();
+        sb.append(".*\\|(");
+        sb.append(Level.SEVERE.getName());
+        sb.append("|");
+        sb.append(Level.WARNING.getName());
+        sb.append(")\\|.*");
+        errorPattern = Pattern.compile(sb.toString());
     }
 
 
@@ -109,11 +113,11 @@ public class LogParser {
      * @param logFile File object representing the log to parse.
      * @return collected messages.
      */
-    public StringBuffer parseLog() throws IOException {
+    public StringBuilder parseLog() throws IOException {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine(String.format("Parsing file: %s", logFile.getAbsolutePath()));
         }
-        StringBuffer sBuf = new StringBuffer();
+        StringBuilder sBuf = new StringBuilder();
         RandomAccessFile reader = null;
         try {
             reader = new RandomAccessFile(logFile, "r");
@@ -123,7 +127,7 @@ public class LogParser {
             while (line != null) {
                 if (line.length() > 0 ) {
                         if (line.endsWith(endToken)){
-                            if (matchBeginning(line)){
+                            if (matchErrorPattern(line)){
                                 sBuf.append(line).append("\n\n");
                             }
                         } else {
@@ -152,15 +156,13 @@ public class LogParser {
      * @param line
      * @return
      */
-    private boolean matchBeginning(String line) {
-        for (Pattern p: FAIL_LEVELS) {
-            Matcher matcher = p.matcher(line);
-            if (matcher.find()) {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine(String.format("Found error message: %s", line));
-                }
-                return true;
+    private boolean matchErrorPattern(String line) {
+        Matcher matcher = errorPattern.matcher(line);
+        if (matcher.find()) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine(String.format("Found error message: %s", line));
             }
+            return true;
         }
         return false;
     }

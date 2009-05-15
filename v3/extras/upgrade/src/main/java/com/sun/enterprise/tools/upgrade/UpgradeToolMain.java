@@ -225,7 +225,7 @@ public class UpgradeToolMain {
                 }
                 //- broadcast all upgrade error found
                 if (logParser != null){
-                    StringBuffer sbuf = logParser.parseLog();
+                    StringBuilder sbuf = logParser.parseLog();
                     if (sbuf.length() > 0){
                         _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.not_successful_mgs"));
                          _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.logs_mgs_title"));
