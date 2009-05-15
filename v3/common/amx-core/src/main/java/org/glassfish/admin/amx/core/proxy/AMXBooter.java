@@ -49,7 +49,7 @@ import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.Util;
 import static org.glassfish.admin.amx.core.AMXConstants.*;
 
-import org.glassfish.admin.mbeanserver.AMXLoader;
+import org.glassfish.api.amx.AMXLoader;
 
 /**
 	AMX must be "booted" before use.

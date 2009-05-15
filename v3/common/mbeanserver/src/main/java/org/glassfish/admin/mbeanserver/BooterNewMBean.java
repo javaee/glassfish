@@ -23,7 +23,7 @@
 package org.glassfish.admin.mbeanserver;
 
 import javax.management.ObjectName;
-import javax.management.remote.JMXServiceURL;
+import org.glassfish.api.amx.AMXLoader;
 
 /**
     MBean responsible for booting the AMX system.

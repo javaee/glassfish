@@ -27,7 +27,7 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.mbeanserver.AMXLoader;
+import org.glassfish.api.amx.AMXLoader;
 
 /**
     MBean responsible for starting AMX configuration support.

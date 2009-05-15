@@ -61,9 +61,9 @@ import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
-import org.glassfish.admin.mbeanserver.AMXLoader;
 import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
 import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
+import org.glassfish.api.amx.AMXLoader;
 
 /**
     Responsible for loading AMXConfigProxy MBeans

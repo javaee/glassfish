@@ -37,7 +37,7 @@ package org.glassfish.admin.amx.core;
 
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.mbeanserver.AMXLoader;
+import org.glassfish.api.amx.AMXLoader;
 
 /**
 Keys for AMX metadata found in the various javax.management.Desriptors found in MBeanInfo

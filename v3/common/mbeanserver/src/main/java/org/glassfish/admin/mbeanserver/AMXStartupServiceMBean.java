@@ -25,6 +25,7 @@ package org.glassfish.admin.mbeanserver;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
+import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.annotations.Contract;
 
 /**

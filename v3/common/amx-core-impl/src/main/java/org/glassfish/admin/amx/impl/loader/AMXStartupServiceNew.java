@@ -23,7 +23,6 @@
 package org.glassfish.admin.amx.impl.loader;
 
 import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.base.QueryMgr;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.core.proxy.AMXBooter;
 
@@ -40,7 +39,6 @@ import javax.management.ObjectName;
 import javax.management.StandardMBean;
 import javax.management.remote.JMXServiceURL;
 
-import java.util.Set;
 import java.util.Collection;
 
 import org.glassfish.admin.amx.base.MBeanTracker;
@@ -52,8 +50,8 @@ import org.glassfish.admin.amx.impl.util.Issues;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 import org.glassfish.admin.mbeanserver.BooterNewMBean;
-import org.glassfish.admin.mbeanserver.AMXLoader;
 import org.glassfish.admin.mbeanserver.AMXStartupServiceNewMBean;
+import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.component.Habitat;
 
 /**
