@@ -299,17 +299,10 @@ if [ "${OS1}" = SunOS ] ; then
         echo  "openInstaller is only supported on Solaris 9 or later"
         exit 1
         ;;
-      5.9)
-        OPTSTRING=${SHORTOPT}
-        ;;
-      *)
-        OPTSTRING=${LONGOPT}
-        ;;
      esac
-else
-  # Linux has no built-in support for long-style getopts so we use the short style only
-  OPTSTRING=${SHORTOPT}
 fi
+# Long opt doesnt work on Open Solaris also, so have shortopt for all of OS.
+OPTSTRING=${SHORTOPT}
 
 # check arguments
 while getopts "${OPTSTRING}" opt ; do

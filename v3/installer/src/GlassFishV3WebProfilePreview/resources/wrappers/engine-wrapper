@@ -25,13 +25,10 @@
 #
 
 # binaries needed on both Solaris, Linux, etc.
-BASENAME=basename
 CAT=/bin/cat
-#CD=/bin/cd
 CHMOD=/bin/chmod
 CP=/bin/cp
 CUT=/bin/cut
-DIRNAME=/usr/bin/dirname
 ECHO=/bin/echo
 EGREP=/bin/egrep
 GETTEXT=/usr/bin/gettext
@@ -43,8 +40,12 @@ RM=/bin/rm
 SED=/bin/sed
 SU=/bin/su
 TOUCH=/bin/touch
-UNAME=uname
 XAUTH=/openwin/bin/xauth,/usr/X11R6/bin/xauth
+
+if [ "`uname -s`" = Darwin ] ; then
+  # Mac OS does not have gettext by default, so don't try and localize
+  GETTEXT=echo
+fi
 
 PP_FAMILY="Unix"
 PP_OSNAME="Solaris"
@@ -53,8 +54,8 @@ OS_ARCH="sparc"
 # static constants
 DEF_SUP_JVM_VER=1.5				# default supported jdk version
 
-NAME=`${BASENAME} $0`
-MYDIR=`${DIRNAME} $0`
+NAME=`basename $0`
+MYDIR=`dirname $0`
 MYDIR=`cd ${MYDIR}; ${_PWD}`
 
 INSTALL_HOME=${MYDIR}/..
@@ -200,10 +201,6 @@ perform() {
     INSTALLPROPS="${INSTALLPROPS} -p Installable-Unit-Path=${INSTALLABLES}"
   fi
 
-  SPLASH_NAME=/tmp/messages.splash.$$
-  export SPLASH_NAME
-  touch $SPLASH_NAME
-
   # Uninstalls typically remove the files that make up the installer,
   # which can cause problems on unix, so as a precautionary measure,
   # cd to a safe place
@@ -233,23 +230,16 @@ SHORTOPT="hVn:a:s:R:l:m:i:j:J:C:p:c:"
 
 export TEXTDOMAINDIR
 
-if [ "`${UNAME} -s`" = SunOS ] ; then
-    case "`${UNAME} -r`" in
+if [ "`uname -s`" = SunOS ] ; then
+    case "`uname -r`" in
       2.* | 5.7 | 5.8)
         echo `${GETTEXT} "openInstaller is only supported on Solaris 9 or later"`
         exit 1
         ;;
-      5.9)
-        OPTSTRING=${SHORTOPT}
-        ;;
-      *)
-        OPTSTRING=${LONGOPT}
-        ;;
      esac
-else
-  # Linux has no built-in support for long-style getopts so we use the short style only
-  OPTSTRING=${SHORTOPT}
 fi
+# Long opt doesnt work on Open Solaris also, so have shortopt for all of OS.
+OPTSTRING=${SHORTOPT}
 
 # check arguments
 while getopts "${OPTSTRING}" opt ; do
@@ -332,15 +322,15 @@ while getopts "${OPTSTRING}" opt ; do
 done
 
 if [ -n "${VERSIONFLAG}" ] ; then
-    ${ECHO} "openInstaller Install Framework 0.9.5"
+    ${ECHO} "openInstaller Install Framework 0.9.6"
     ${ECHO}
     echo `${GETTEXT} "Copyright 2006, 2007 Sun Microsystems, Inc. All rights reserved."`
     echo `${GETTEXT} "Use is subject to license terms."`
     ${ECHO}
-    ${PRINTF} "`${GETTEXT} 'Version      : %s'`\n" "0.9.5"
+    ${PRINTF} "`${GETTEXT} 'Version      : %s'`\n" "0.9.6"
     ${PRINTF} "`${GETTEXT} 'Release      : %s'`\n" "1.1"
-    ${PRINTF} "`${GETTEXT} 'Build        : %s'`\n" "21feea6cc64b"
-    ${PRINTF} "`${GETTEXT} 'Assembled on : %s'`\n" "Fri, Apr 4, 2008 02:24 PM PDT"
+    ${PRINTF} "`${GETTEXT} 'Build        : %s'`\n" "65d65b03c578"
+    ${PRINTF} "`${GETTEXT} 'Assembled on : %s'`\n" "Mon, Sep 29, 2008 04:35 AM PDT"
     exit 0
 fi
 
