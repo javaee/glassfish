@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.glassfish.admin.amx.core;
 
 import java.util.ArrayList;
@@ -15,160 +14,227 @@ import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
-import static org.glassfish.admin.amx.base.Pathnames.*;
-
+import static org.glassfish.admin.amx.core.PathnameConstants.*;
 
 /**
- *
- * @author llc
+Parses a pathname into parts.
+<p>
+The root part (leading "/") is not included in the parts list returned
+by {@link parts}.
  */
-@Taxonomy(stability = Stability.PRIVATE)
-public final class PathnameParser {
+@Taxonomy(stability = Stability.UNCOMMITTED)
+public final class PathnameParser
+{
     private static void debug(final Object o)
     {
-       // System.out.println( "" + o);
+        System.out.println("" + o);
     }
-    
+
     private final char mDelim;
+
     private final char mNameLeft;
+
     private final char mNameRight;
 
     private final String mPath;
+
     private final List<PathPart> mParts;
+
+    private final boolean mIsFullPath;
 
     public static final class PathPart
     {
-        private final String mType, mName;
+        private final String mType,  mName;
+
         public PathPart(final String type, final String name)
         {
             mType = type;
             mName = name;
         }
-        public String type() { return mType; }
-        public String name() { return mName; }
-        public String toString() { return pathPart(mType,mName);}
-    }
-    
-    public String toString() {
-        final StringBuilder buf = new StringBuilder();
+
+        public String type()
+        {
+            return mType;
+        }
+
+        public String name()
+        {
+            return mName;
+        }
         
-        buf.append( mPath + " as " + mParts.size() + " parts: " );
-        buf.append( "{" );
+        public boolean isWildType()
+        {
+            return mType.indexOf(MATCH_ZERO_OR_MORE) >= 0;
+        }
+        
+        public boolean isWildName()
+        {
+            return mName != null && mName.indexOf(MATCH_ZERO_OR_MORE) >= 0;
+        }
+
+        public String toString()
+        {
+            return pathPart(mType, mName);
+        }
+
+    }
+
+    public String toString()
+    {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append(mPath + " as " + mParts.size() + " parts: ");
+        buf.append("{");
         final String delim = ", ";
-        for( final PathPart part : mParts )
+        for (final PathPart part : mParts)
         {
-            buf.append( part.toString() );
-            buf.append( delim );
+            buf.append(part.toString());
+            buf.append(delim);
         }
-        if ( mParts.size() != 0 )
+        if (mParts.size() != 0)
         {
-            buf.setLength( buf.length() - delim.length() );
+            buf.setLength(buf.length() - delim.length());
         }
-        buf.append( "}" );
+        buf.append("}");
         return buf.toString();
     }
-    
+
     public PathnameParser(final String path)
     {
-        this( path, SEPARATOR, SUBSCRIPT_LEFT, SUBSCRIPT_RIGHT);
+        this(path, SEPARATOR, SUBSCRIPT_LEFT, SUBSCRIPT_RIGHT);
     }
-    
+
     public PathnameParser(
-        final String path,
-        final char  delim,
-        final char nameLeft,
-        final char nameRight)
+            final String path,
+            final char delim,
+            final char nameLeft,
+            final char nameRight)
     {
         mPath = path;
-        
-        mDelim     = delim;
-        mNameLeft  = nameLeft;
+
+        mDelim = delim;
+        mNameLeft = nameLeft;
         mNameRight = nameRight;
 
-        mParts  = parse();
+        mParts = parse();
+
+        mIsFullPath = path.startsWith(DomainRoot.PATH);
     }
 
-    public List<PathPart>  parts()
+    public boolean isFullPath()
+    {
+        return mIsFullPath;
+    }
+    
+    public boolean isRoot()
+    {
+        return mParts.size() == 0;
+    }
+    
+    /** return true if any part of the path includes a wildcard */
+    public boolean isWild()
+    {
+        for( final PathPart part : mParts )
+        {
+            if ( part.isWildType() || part.isWildName() )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<PathPart> parts()
     {
         return mParts;
     }
-    
+
     public String type()
     {
-        return mParts.get(mParts.size() -1).type();
+        return mParts.get(mParts.size() - 1).type();
     }
+
     public String name()
     {
-        return mParts.get(mParts.size() -1).name();
+        return mParts.get(mParts.size() - 1).name();
     }
-    
+
     public String parentPath()
     {
-        if ( mParts.size() == 0 ) return null;
-        
+        if (mParts.size() == 0)
+        {
+            return null;
+        }
+
         final StringBuffer buf = new StringBuffer();
-        for( int i = 0; i < mParts.size() - 1; ++ i )
+        for (int i = 0; i < mParts.size() - 1; ++i)
         {
             final PathPart part = mParts.get(i);
-            buf.append( part.toString()  );
+            buf.append(part.toString());
             // don't want a trailing slash
-            if ( i < mParts.size() - 2 )
+            if (i < mParts.size() - 2)
             {
-                buf.append( Pathnames.SEPARATOR );
+                buf.append(SEPARATOR);
             }
         }
-        
-        if ( buf.length() == 0 )
-        {
-            buf.append( DomainRoot.PATH );
-        }
-        
-        return buf.toString();
-    }
 
+        return DomainRoot.PATH + buf.toString();
+    }
 
     /**
+        This pattern finds a type and whatever follows.
         FIXME: how to support arbitrary delimiter or subscript?
-        
-        Maybe better to do a simple parse which can do escapes, etc.
-        Characters for the type are restricted to alphanumeric matchs the type portion of the path part
      */
-        private static Pattern
-    getTypePattern()
-    {
-        final String typeAloneStr = "([" + LEGAL_TYPE_CHARS + "]*)";
-        final String typePatternStr = typeAloneStr + ".*";
-        final Pattern typePattern = Pattern.compile(typePatternStr);
-        
-        return typePattern;
-    }
-    
+    private static final Pattern TYPE_SEARCH_PATTERN = Pattern.compile(LEGAL_TYPE_PATTERN + ".*");
+
+    /**
+        This pattern finds a name up to the terminating SUBSCRIPT_RIGHT.
+     */
+    private static final Pattern NAME_SEARCH_PATTERN = Pattern.compile("(" + LEGAL_NAME_PATTERN + ")" + SUBSCRIPT_RIGHT + ".*");
+
+    /* a legal type, by itself */
+    private static final Pattern LEGAL_TYPE_PATTERN_COMPILED = Pattern.compile( LEGAL_TYPE_PATTERN );
+
+    /* a legal name, by itself */
+    private static final Pattern LEGAL_NAME_PATTERN_COMPILED = Pattern.compile( LEGAL_NAME_PATTERN );
+
     public static boolean isValidType(final String type)
     {
-        final Matcher matcher = getTypePattern().matcher(type);
+        final Matcher matcher = LEGAL_TYPE_PATTERN_COMPILED.matcher(type);
         return matcher.matches();
     }
-    
+    public static boolean isValidName(final String type)
+    {
+        final Matcher matcher = LEGAL_NAME_PATTERN_COMPILED.matcher(type);
+        return matcher.matches();
+    }
+
     /**
      */
-    private void parse( final String path, final List<PathPart> parts)
+    private void parse(final String path, final List<PathPart> parts)
     {
         //debug( "PathnameParser: parsing: " + path );
-        if ( path == null || path.length() == 0)
+        if (path == null || path.length() == 0)
         {
             throw new IllegalArgumentException(path);
         }
-        final Pattern typePattern = getTypePattern();
-
-        final String namePatternStr = "([^]]*)](.*)";
-        final Pattern namePattern = Pattern.compile(namePatternStr);
-        
-        // how to know whether to escape the name-left char if it can be any char?
         String remaining = path;
-        while ( remaining.length() != 0 )
+
+        // strip the leading "/" for DomainRoot if present, to avoid having
+        // to support a type of an empty string eg ""/foo/bar
+        if (remaining.startsWith(DomainRoot.PATH))
+        {
+            remaining = remaining.substring(DomainRoot.PATH.length());
+        }
+
+        final Pattern typePattern = TYPE_SEARCH_PATTERN;
+        final Pattern namePattern = NAME_SEARCH_PATTERN;
+
+        // how to know whether to escape the name-left char if it can be any char?
+        while (remaining.length() != 0)
         {
             Matcher matcher = typePattern.matcher(remaining);
-            if ( ! matcher.matches() )
+            if (!matcher.matches())
             {
                 throw new IllegalArgumentException("No match: " + remaining);
             }
@@ -177,82 +243,90 @@ public final class PathnameParser {
             //debug( "PathnameParser, matched type: \"" + type + "\"" );
 
             char matchChar = '\0';
-            if ( type.length() < remaining.length()  )
+            if (type.length() < remaining.length())
             {
-                matchChar = remaining.charAt( type.length() );
-                remaining = remaining.substring( type.length() + 1 );
+                matchChar = remaining.charAt(type.length());
+                remaining = remaining.substring(type.length() + 1);
             }
             else
             {
-                final PathPart part = new PathPart(type,null);
+                final PathPart part = new PathPart(type, null);
                 parts.add(part);
                 break;
             }
             //debug( "PathnameParser, match char: \"" + matchChar + "\"" );
-           // debug( "PathnameParser, remaining: \"" + remaining + "\"" );
+            //debug( "PathnameParser, remaining: \"" + remaining + "\"" );
 
             String name = null;
-            if ( matchChar == mNameLeft )
+            if (matchChar == mNameLeft)
             {
                 // anything goes in a name, and we do NOT allow escaped SUBSCRIPT_RIGHT,
                 // so just scarf up everything untilthe next SUBSCRIPT_RIGHT.
                 final int idx = remaining.indexOf(mNameRight);
-                if ( idx < 0 ) {
+                if (idx < 0)
+                {
                     throw new IllegalArgumentException(path);
                 }
                 name = remaining.substring(0, idx);
-                remaining = remaining.substring(idx +1);
-                if ( remaining.length() != 0 && remaining.charAt(0) == mDelim )
+                remaining = remaining.substring(idx + 1);
+                if (remaining.length() != 0 && remaining.charAt(0) == mDelim)
                 {
                     remaining = remaining.substring(1);
                 }
             }
 
-            final PathPart part = new PathPart(type,name);
+            final PathPart part = new PathPart(type, name);
             parts.add(part);
 
-            //debug( "PathnameParser, matched part: \"" + part + "\"" );
+        //debug( "PathnameParser, matched part: \"" + part + "\"" );
         }
 
-        String s = "";
-        for( final PathPart part : parts ){
-            s = s + "{" + part + "}";
-        }
-        //debug( "FINAL PARSE for : " + path + " = " + s);
+    /*
+    String s = "";
+    for( final PathPart part : parts ){
+    s = s + "{" + part + "}";
     }
-     
+    debug( "FINAL PARSE for : " + path + " = " + s);
+     */
+    }
+
     private List<PathPart> parse()
     {
         final List<PathPart> parts = new ArrayList<PathPart>();
 
         parse(mPath, parts);
-        
+
         return parts;
     }
 
-    
-    private static void checkName( final String name ) {
-        if (name != null && (name.indexOf(SUBSCRIPT_LEFT) >= 0 || name.indexOf(SUBSCRIPT_RIGHT) >= 0)) {
+    private static void checkName(final String name)
+    {
+        if ( name != null && ! isValidName(name) )
+        {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
     }
 
-    private static void checkType( final String type ) {
-        if (type == null ) {
+    private static void checkType(final String type)
+    {
+        if (type == null)
+        {
             throw new IllegalArgumentException("Illegal type: " + type);
         }
 
-        if ( type.indexOf(SUBSCRIPT_LEFT) >= 0 || type.indexOf(SUBSCRIPT_RIGHT) >= 0 ) {
+        if (type.indexOf(SUBSCRIPT_LEFT) >= 0 || type.indexOf(SUBSCRIPT_RIGHT) >= 0)
+        {
             throw new IllegalArgumentException("Illegal type: " + type);
         }
-        
-        if ( ! isValidType(type) )
+
+        if (!isValidType(type))
         {
             throw new IllegalArgumentException("Illegal type: " + type);
         }
     }
 
-    public static String pathPart(final String type, final String name) {
+    public static String pathPart(final String type, final String name)
+    {
         checkName(name);
 
         final String namePart = (name == null) ? "" : SUBSCRIPT_LEFT + name + SUBSCRIPT_RIGHT;
@@ -261,21 +335,22 @@ public final class PathnameParser {
         return part;
     }
 
-    public static String pathPart(final String type) {
+    public static String pathPart(final String type)
+    {
         checkType(type);
         return type;
     }
 
-    public static String path(final String parentPath, final String type, final String name) {
-        if ( parentPath != null && parentPath.length() == 0 && ! type.equals(Util.deduceType(DomainRoot.class)) )
+    public static String path(final String parentPath, final String type, final String name)
+    {
+        if (parentPath != null && parentPath.length() == 0 && !type.equals(Util.deduceType(DomainRoot.class)))
         {
-            throw new IllegalArgumentException( "parent path cannot be the empty string" );
+            throw new IllegalArgumentException("parent path cannot be the empty string");
         }
 
-        String path = (parentPath == null || parentPath.equals(DomainRoot.PATH)) ?
-                DomainRoot.PATH : parentPath + Pathnames.SEPARATOR;
+        String path = (parentPath == null || parentPath.equals(DomainRoot.PATH)) ? DomainRoot.PATH : parentPath + SEPARATOR;
 
-        path = path + pathPart(type,name);
+        path = path + pathPart(type, name);
 
         // make sure it can be parsed
         new PathnameParser(path);
@@ -283,9 +358,11 @@ public final class PathnameParser {
         return path;
     }
 
-    public static String parentPath(final ObjectName objectName) {
+    public static String parentPath(final ObjectName objectName)
+    {
         return objectName.getKeyProperty(AMXConstants.PARENT_PATH_KEY);
     }
+
 }
 
 

@@ -43,6 +43,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
+import org.glassfish.admin.amx.core.PathnameConstants;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
@@ -67,7 +68,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 public interface DomainRoot extends AMXProxy
 {
     public static final String PARENT_PATH = "";
-    public static final String PATH = PARENT_PATH + Pathnames.SEPARATOR;
+    public static final String PATH = PARENT_PATH + PathnameConstants.SEPARATOR;
     
     @ManagedOperation
     public void stopDomain();

@@ -98,7 +98,7 @@ public final class PathnamesImpl  extends AMXImplBase
         final ObjectName pattern = JMXUtil.newObjectNamePattern( getObjectName().getDomain(), props );
         final Set<ObjectName> s = getMBeanServer().queryNames( pattern, null);
         
-        //cdebug( "resolvePath: " + path + " = query for parent " + pattern );
+        //cdebug( "resolvePath: " + path + " = query for parent path: " + pattern + " yields children: " + s.size() );
         
         ObjectName objectName = null;
         final String type = parser.type();
@@ -121,7 +121,7 @@ public final class PathnamesImpl  extends AMXImplBase
                         break;
                     }
                     // badly formed: a name is specified, but none is present for this type
-                    cdebug( "A name is specified in path, but the type has none: path = " + path + ", objectName = " + child);
+                    //cdebug( "A name is specified in path, but the type has none: path = " + path + ", objectName = " + child);
                     continue;
                 }
                 
@@ -158,6 +158,7 @@ public final class PathnamesImpl  extends AMXImplBase
         
         if ( objectName != null )
         {
+            //cdebug( "Matched " + path + " to " + objectName);
             mPathnameCache.put( path, objectName );
         }
         
@@ -282,6 +283,7 @@ public final class PathnamesImpl  extends AMXImplBase
     public String dump( final String path )
     {
         final ObjectName top = resolvePath(path);
+        if ( top == null ) return null;
         
         final AMXProxy topProxy = getProxyFactory().getProxy(top, AMXProxy.class);
         final List<AMXProxy> list  = new ArrayList<AMXProxy>();

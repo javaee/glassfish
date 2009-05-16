@@ -59,6 +59,7 @@ import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
+import static org.glassfish.admin.amx.core.PathnameConstants.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Extra;
@@ -91,14 +92,6 @@ public final class AMXValidator
     private final ProxyFactory mProxyFactory;
 
     private final DomainRoot mDomainRoot;
-
-    private static final String LEGAL_CHARS_FOR_TYPE = "[\\$a-zA-Z0-9\\._-]";
-
-    private static final Pattern LEGAL_PATTERN_FOR_TYPE = Pattern.compile(LEGAL_CHARS_FOR_TYPE + LEGAL_CHARS_FOR_TYPE + "*");
-
-    private static final String LEGAL_CHARS_FOR_NAME = "[^\\[\\]]";
-
-    private static final Pattern LEGAL_PATTERN_FOR_NAME = Pattern.compile(LEGAL_CHARS_FOR_NAME + "*");
 
     public AMXValidator(final MBeanServerConnection conn)
     {
@@ -525,6 +518,9 @@ public final class AMXValidator
         }
     }
 
+    private static final Pattern TYPE_PATTERN = Pattern.compile(LEGAL_TYPE_PATTERN);
+    private static final Pattern NAME_PATTERN = Pattern.compile(LEGAL_NAME_PATTERN);
+    
     private void validateObjectName(final AMXProxy proxy)
             throws ValidationFailureException
     {
@@ -535,9 +531,9 @@ public final class AMXValidator
         {
             fail(objectName, "type property required in ObjectName");
         }
-        if (!LEGAL_PATTERN_FOR_TYPE.matcher(type).matches())
+        if (!TYPE_PATTERN.matcher(type).matches())
         {
-            fail(objectName, "Illegal type \"" + type + "\", does not match " + LEGAL_PATTERN_FOR_TYPE.pattern());
+            fail(objectName, "Illegal type \"" + type + "\", does not match " + TYPE_PATTERN.pattern());
         }
 
         final String nameProp = objectName.getKeyProperty("name");
@@ -547,9 +543,9 @@ public final class AMXValidator
             {
                 fail(objectName, "name property of ObjectName may not be empty");
             }
-            if (!LEGAL_PATTERN_FOR_NAME.matcher(nameProp).matches())
+            if (!NAME_PATTERN.matcher(nameProp).matches())
             {
-                fail(objectName, "Illegal name \"" + nameProp + "\", does not match " + LEGAL_PATTERN_FOR_NAME.pattern());
+                fail(objectName, "Illegal name \"" + nameProp + "\", does not match " + NAME_PATTERN.pattern());
             }
         }
         else

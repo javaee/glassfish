@@ -42,27 +42,20 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.PathnameConstants;
+import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
     The Pathnames MBean--utilities for working with pathnames and MBeans.
     @since GlassFish V3
+    @see PathnameConstants
+    @see PathnameParser
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(type="paths", leaf=true, singleton=true)
 public interface Pathnames extends AMXProxy, Utility, Singleton
 {
-    /** delimiter between parts of a path */
-    public static final char SEPARATOR = '/';
-    
-    /** subscript left character, subscripts must be a character pair for grammar reasons */
-    public static final char SUBSCRIPT_LEFT = '[';
-    public static final char SUBSCRIPT_RIGHT = ']';
-    
-    /** A restricted set of characters legal to use as the type portion of a pathname,
-        expressed as regex compatible string */
-    final String LEGAL_TYPE_CHARS = "a-zA-Z0-9_-";
-    
     /** Resolve a path to an ObjectName.  Any aliasing, etc is dealt with.  Return null if failure. */
     @ManagedOperation
     public ObjectName  resolvePath( final String path );
