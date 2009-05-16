@@ -66,6 +66,12 @@
     	<Option name="interval" type="string" value-required="true" default="30"/>
     	<Option name="type" type="string" value-required="true"/>
     	<Option name="filter" type="string" value-required="true"/>
+	<Option name="dry-run" type="boolean" value-required="false" default="false"/>
+        <Option name="serviceproperties" type="string" value-required="true"/>
+        <Option name="name" type="string" value-required="true">
+                <shortoption>n</shortoption>
+        </Option>
+
     </Options>
     <Commands>
 	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain [--terse=false] [--echo=false] [--interactive=true] [--user admin_user] [--passwordfile file_name] [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
@@ -198,6 +204,17 @@
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
             <ValidOption name="file"/>
+        </Command>
+        <Command name="create-service"
+            classname="com.sun.enterprise.admin.cli.optional.CreateServiceCommand"
+            numberofoperands="1"
+            usage-text="asadmin create-service --passwordfile password-file [--terse=false] [--echo=false] [--name service-name] [--serviceproperties (name=value)+] [--dry-run=false] domain-dir">
+                <RequiredOption name="passwordfile"/>
+                <ValidOption name="terse"/>
+                <ValidOption name="echo"/>
+                <ValidOption name="name"/>
+                <ValidOption name="serviceproperties"/>
+                <ValidOption name="dry-run"/>
         </Command>
     </Commands>
 </CommandsAndOptions>

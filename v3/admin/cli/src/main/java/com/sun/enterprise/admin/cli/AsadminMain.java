@@ -39,12 +39,12 @@ import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.util.SystemPropertyConstants;
+
 import java.io.*;
 import java.text.*;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
-import java.util.Hashtable;
+import java.util.*;
 
 
 /**
@@ -167,6 +167,13 @@ public class AsadminMain {
         }
     }
 
+    /**
+     * We avoid using real System properties.  Instead we use our own Map
+     * @return a read-only Map of our system-wide properties                                                           
+     */
+    public static Map<String, String> getSystemProps() {
+        return Collections.unmodifiableMap(systemProps);
+    }
     /*pkg-priv*/ static String[] getArgs() {
         return copyOfArgs;
     }
@@ -257,7 +264,6 @@ public class AsadminMain {
             return s2;
     }
 
-
     private final static int ERROR = 1;
     private final static int CONNECTION_ERROR = 2;
     private final static int INVALID_COMMAND_ERROR = 3;
@@ -266,6 +272,26 @@ public class AsadminMain {
     private       static String[] copyOfArgs;
     private       static String classPath;
     private       static String className;
+    private       static Map<String, String> systemProps;
+
+    static {
+        systemProps = new ASenvPropertyReader().getProps();
+        final String ir = SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
+        final String cr = SystemPropertyConstants.CONFIG_ROOT_PROPERTY;
+        final String irVal = systemProps.get(ir);
+        final String crVal = systemProps.get(cr);
+
+        if(ok(irVal))
+            System.setProperty(ir, irVal);
+
+        if(ok(crVal))
+            System.setProperty(cr, crVal);
+    }
+
+    private static boolean ok(String s) {
+        return s!= null && s.length() > 0;
+    }
+
 }
 
 

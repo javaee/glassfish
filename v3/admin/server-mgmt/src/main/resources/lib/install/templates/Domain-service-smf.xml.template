@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+    Use is subject to license terms.
+-->
+
+<!--
+    Document   : domain-service.xml
+    Created on : %%%DATE_CREATED%%%
+    Author     : User and SJSAS Administration Team
+    Description: The SMF Service Manifest file for domain %%%NAME%%% in %%%LOCATION%%%
+-->
+
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<service_bundle type="manifest"
+                name="SUNWasu appserver services">
+  <service name="%%%NAME%%%"
+           version="1"
+           type="service">
+    <single_instance/>
+    <exec_method type="method"
+                 name="start"
+                 exec="%%%AS_ADMIN_PATH%%% start-domain --user %%%AS_ADMIN_USER%%% --passwordfile %%%PASSWORD_FILE_PATH%%% --domaindir %%%LOCATION%%% %%%ENTITY_NAME%%%"
+                 timeout_seconds="%%%TIMEOUT_SECONDS%%%">
+      <method_context working_directory=":default">
+        <method_credential user="%%%OS_USER%%%"
+                           group=":default"/>
+                           <!-- privileges="%%%PRIVILEGES%%%" -->
+      </method_context>
+      <stability value="Evolving"/>
+    </exec_method>
+    <exec_method type="method"
+                 name="stop"
+                 exec="%%%AS_ADMIN_PATH%%% stop-domain --domaindir %%%LOCATION%%% %%%ENTITY_NAME%%%"
+                 timeout_seconds="%%%TIMEOUT_SECONDS%%%">
+      <method_context working_directory=":default">
+        <method_credential user="%%%OS_USER%%%"
+                           group=":default"/>
+      </method_context>
+      <stability value="Evolving"/>
+    </exec_method>
+    <instance name="default" enabled="false">
+        <dependency
+                name='network'
+                grouping='require_all'
+                restart_on='none'
+                type='service'>
+                <service_fmri value='svc:/milestone/network:default' />
+        </dependency>
+        <!-- for ZFS, we need this to state this dependency -->
+        <dependency
+                name='filesystem-local'
+                grouping='require_all'
+                restart_on='none'
+                type='service'>
+                <service_fmri value='svc:/system/filesystem/local:default' />
+        </dependency>
+    </instance>
+    <stability value="Evolving"/>
+    <template>
+      <common_name>
+        <loctext xml:lang="C"> Appserver Domain Administration Server </loctext>
+      </common_name>
+      <documentation>
+        <manpage title="Appserver" section="1" manpath="/opt/SUNWappserver/appserver/man"/>
+      </documentation>
+    </template>
+  </service>
+</service_bundle>
