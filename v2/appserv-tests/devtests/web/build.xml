@@ -237,10 +237,14 @@
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithEAR" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
+<!-- XXX temporarily commented out, see IT 8315
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
+-->
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
+<!-- XXX temporarily commented out, see IT 8315
         <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
+-->
         <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
