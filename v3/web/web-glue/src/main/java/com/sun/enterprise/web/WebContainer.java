@@ -533,7 +533,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             createHosts(httpService, aConfig.getSecurityService());
         }
 
-        loadDefaultWebModules();
+        loadSystemDefaultWebModules();
 
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
@@ -576,9 +576,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     public void event(Event event) {
         if (event.is(Deployment.ALL_APPLICATIONS_PROCESSED)) {
-            // TODO Amy
             // configure default web modules for virtual servers after all applications are processed
-            //loadDefaultWebModules();
+            loadDefaultWebModulesAfterAllAppsProcessed();
         } else if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
             isShutdown = true;
         }
@@ -990,7 +989,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (docroot == null) {
             docroot = vsBean.getDocroot();
         }
-
+        
         validateDocroot(docroot,
                         vs_id,
                         vsBean.getDefaultWebModule());
@@ -1223,17 +1222,58 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
 
     // ------------------------------------------------------ Private Methods
-
+    
+        
     /**
-     * Configures a default web module for each virtual server.
-     *
-     * If a virtual server does not specify any default-web-module, and none
-     * of its web modules are loaded at "/", this method will create and load
-     * a default context for the virtual server, based on the virtual server's
-     * docroot.
+     * Configures a default web module for each virtual server based on the
+     * virtual server's docroot if a virtual server does not specify 
+     * any default-web-module, and none of its web modules are loaded at "/"
+     * 
+     * Needed in postConstruct before Deployment.ALL_APPLICATIONS_PROCESSED
+     * for "jsp from docroot before web container start" scenario
      */
-    public void loadDefaultWebModules() {
-
+        
+    public void loadSystemDefaultWebModules() {      
+        
+        WebModuleConfig wmInfo = null;
+        String defaultPath = null;
+        
+        Container[] vsArray = getEngine().findChildren();
+        for (Container aVsArray : vsArray) {
+            if (aVsArray instanceof VirtualServer) {
+                VirtualServer vs = (VirtualServer) aVsArray;
+                /*
+                * Let AdminConsoleAdapter handle any requests for
+                * the root context of the '__asadmin' virtual-server, see
+                * https://glassfish.dev.java.net/issues/show_bug.cgi?id=5664
+                */
+                if (VirtualServer.ADMIN_VS.equals(vs.getName())) {
+                    continue;
+                }
+                            
+                // Create default web module off of virtual
+                // server's docroot if necessary                   
+                wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
+                            habitat.getComponent(
+                            WebArchivist.class));
+                if (wmInfo != null) {
+                    defaultPath = wmInfo.getContextPath();
+                    loadStandaloneWebModule(vs, wmInfo);
+                }
+                _logger.info("Virtual server " + vs.getName() +
+                                " loaded system default web module");
+            }
+        }
+        
+    }
+    
+        
+    /**
+     * Configures a default web module for each virtual server 
+     * if default-web-module is defined.
+     */
+    public void loadDefaultWebModulesAfterAllAppsProcessed() {
+        
         String defaultPath = null;
 
         Container[] vsArray = getEngine().findChildren();
@@ -1264,20 +1304,69 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             vs.getName());
                         _logger.log(Level.SEVERE, msg, le);
                     }
+                    _logger.info("Virtual server " + vs.getName() + 
+                                    " loaded default web module "+defaultPath);
 
                 } else {
-                    // Create default web module off of virtual
-                    // server's docroot if necessary
-                    wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
-                        habitat.getComponent(
-                            WebArchivist.class));
-                    if (wmInfo != null) {
-                        defaultPath = wmInfo.getContextPath();
-                        loadStandaloneWebModule(vs, wmInfo);
-                    }
+                    // No need to create default web module off of virtual
+                    // server's docroot since system web modules are already
+                    // created in WebContainer.postConstruct
                 }
             }
         }
+    }
+
+             
+    /**
+     * Load a default-web-module on the specified virtual server.
+     */
+    public void loadDefaultWebModule(
+            com.sun.enterprise.config.serverbeans.VirtualServer vsBean) {   
+        
+        VirtualServer virtualServer = (VirtualServer)
+            getEngine().findChild(vsBean.getId());
+
+        if (virtualServer!=null) {
+            loadDefaultWebModule(virtualServer);
+        }
+    }
+    
+    
+     /**
+     * Load a default-web-module on the specified virtual server.
+     */   
+    public void loadDefaultWebModule(VirtualServer vs) {      
+        
+        String defaultPath = null;
+        WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
+                habitat.getComponent(
+                WebArchivist.class),
+                appRegistry);
+        if (wmInfo != null) {
+            defaultPath = wmInfo.getContextPath();
+            // Virtual server declares default-web-module
+            try {
+                updateDefaultWebModule(vs, vs.getPorts(), wmInfo);
+            } catch (LifecycleException le) {
+                String msg = rb.getString("webcontainer.defaultWebModuleError");
+                msg = MessageFormat.format(msg, defaultPath, vs.getName());
+                _logger.log(Level.SEVERE, msg, le);
+            }
+
+        } else {
+            // Create default web module off of virtual
+            // server's docroot if necessary                   
+            wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
+                            habitat.getComponent(
+                            WebArchivist.class));
+            if (wmInfo != null) {
+                defaultPath = wmInfo.getContextPath();
+                loadStandaloneWebModule(vs, wmInfo);
+            }
+        }
+        
+        _logger.info("Virtual server " + vs.getName() +
+                        " loaded default web module " + defaultPath);
     }
 
 
