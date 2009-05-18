@@ -135,7 +135,9 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         return value;
     }
 
-    public void setter(ConfigModel.Property property, Object newValue, java.lang.reflect.Type t)  {
+    public void setter(ConfigModel.Property property,
+        Object newValue, java.lang.reflect.Type t)  {
+        
         // are we still in a transaction
         if (currentTx==null) {
             throw new IllegalStateException("Not part of a transation");
@@ -147,13 +149,66 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             bean.getLock().unlock();
             throw new RuntimeException(v);
         }
+
+        // Following is a check to avoid duplication of elements with same key
+        // attribute values. See Issue 7956
+        if (property instanceof ConfigModel.AttributeLeaf) {
+
+            // First check if the key leaf attribute is being set
+            ConfigModel.AttributeLeaf al =
+                (ConfigModel.AttributeLeaf)property;
+
+            ConfigBean master = getMasterView();
+            String key = master.model.key;
+
+            // A key attribute may not exist at all if none of the attribs of
+            // an element are annotated with key=true. If one exists, make sure
+            // that attribute is actually the one being set
+            if ((key != null) && (key.substring(1).equals(property.xmlName))) {
+
+                // remove leading @
+                key = key.substring(1);
+                // Extract the old key value
+                String oldKeyValue = getPropertyValue(key);
+
+                // Get the Parent Element which has the key attribute specified
+                // through the input paramater 'property'. For e.g. in case of
+                // Domain->Resources->ConnectorConnectionPool->name(key attrib)
+                // thisview will equal ConnectorConnectionPool
+                Dom thisview = Dom.unwrap(defaultView);
+
+                // parent will equal Resources
+                Dom parent = thisview.parent();
+
+                // siblings will contain all ConnectorConnectionPools under
+                // Resources
+                List<Dom> siblings = 
+                    parent.domNodeByTypeElements(thisview.getProxyType());
+
+                // Iterate through each sibling element and see if anyone has
+                // same key. If true throw an exception after unlocking this
+                // element
+                for (Dom sibling : siblings) {
+                    String siblingKey = sibling.getKey();
+                    if (newValue.equals(siblingKey)) {
+                        bean.getLock().unlock();
+                        throw new IllegalArgumentException(
+                            "Keys cannot be duplicate. Old value of this key " +
+                            "property, " + oldKeyValue + "will be retained");
+                    }
+                }
+            }
+        }
+
         // setter
         Object oldValue = bean.getter(property, t);
         if (newValue instanceof ConfigBeanProxy) {
-            ConfigView bean = (ConfigView) Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
+            ConfigView bean = (ConfigView)
+                Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
             newValue = bean.getMasterView();
         }
-        PropertyChangeEvent evt = new PropertyChangeEvent(defaultView,property.xmlName(), oldValue, newValue);
+        PropertyChangeEvent evt = new PropertyChangeEvent(
+            defaultView,property.xmlName(), oldValue, newValue);
         changedAttributes.put(property.xmlName(), evt);
     }
 
