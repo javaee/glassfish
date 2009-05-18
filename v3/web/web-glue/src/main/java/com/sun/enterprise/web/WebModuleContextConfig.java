@@ -160,13 +160,12 @@ public class WebModuleContextConfig extends ContextConfig {
         // Process the event that has occurred
         if (event.getType().equals(Lifecycle.START_EVENT)) {
             start();
-        } else if (event.getType().equals(Lifecycle.STOP_EVENT)) {
-            stop();
-        } else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
-            super.init();
             configureResource();
+        } else if (event.getType().equals(Lifecycle.STOP_EVENT))
+            stop();
+        else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
+            super.init();
         }
-
     }
     
     
