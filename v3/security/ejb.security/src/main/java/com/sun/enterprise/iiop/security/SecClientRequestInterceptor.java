@@ -96,6 +96,7 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
     //private SecurityService secsvc;
     private GlassFishORBHelper orbHelper;
     private SecurityContextUtil secContextUtil;
+    private Habitat habitat;
     
     /** 
      *  Hard code the value of 15 for SecurityAttributeService until
@@ -108,6 +109,7 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
 	this.name   = name;
         this.codec  = codec;
         this.prname = name + "::";
+        this.habitat = habitat;
         orbHelper = habitat.getComponent(GlassFishORBHelper.class);
         secContextUtil = habitat.getComponent(SecurityContextUtil.class);
     }
@@ -165,7 +167,7 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
 
             /* Generate mechanism specific GSS token for the GSSUP mechanism */
             PasswordCredential pwdcred = (PasswordCredential) cred;
-	    GSSUPToken tok = GSSUPToken.getClientSideInstance(orb, codec, pwdcred);
+	    GSSUPToken tok = GSSUPToken.getClientSideInstance(orb, codec, pwdcred, habitat);
             gsstoken = tok.getGSSToken();
 	}
         return gsstoken;

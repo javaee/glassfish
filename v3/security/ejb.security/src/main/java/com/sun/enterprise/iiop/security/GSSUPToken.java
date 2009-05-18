@@ -44,7 +44,6 @@ package com.sun.enterprise.iiop.security;
 import com.sun.corba.ee.org.omg.CSIIOP.CompoundSecMech;
 import com.sun.corba.ee.org.omg.GSSUP.InitialContextToken;
 import com.sun.corba.ee.org.omg.GSSUP.InitialContextTokenHelper;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import java.io.IOException;
 import org.omg.CORBA.*;
 import org.omg.IOP.*;
@@ -104,8 +103,8 @@ public class GSSUPToken {
      * @since 1.4
      */
     public static GSSUPToken getClientSideInstance(ORB orb, Codec codec, 
-                    PasswordCredential pwdcred){
-        return new GSSUPToken(orb, codec, pwdcred);        
+                    PasswordCredential pwdcred, Habitat habitat){
+        return new GSSUPToken(orb, codec, pwdcred, habitat);        
     }
     /**
      * Creates a GSSUPToken instance on the server side
@@ -126,7 +125,7 @@ public class GSSUPToken {
      * PasswordCredential. This is used by a context initiator.
      * This is called on the Client Side
      */
-    private GSSUPToken(ORB orb, Codec codec, PasswordCredential pwdcred)
+    private GSSUPToken(ORB orb, Codec codec, PasswordCredential pwdcred, Habitat habitat)
     {
         byte[] name_utf8      = {};  // username in UTF8 format
         byte[] password_utf8  = {};  // password in UTF8 format
@@ -173,7 +172,6 @@ public class GSSUPToken {
         /* Get the target name from the IOR. The IOR is stored in the
          * ConnectionContext object
          */
-        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
         SecurityMechanismSelector sms = habitat.getComponent(SecurityMechanismSelector.class);
         ConnectionContext cc   = sms.getClientConnectionContext();
         CompoundSecMech   mech = cc.getMechanism();

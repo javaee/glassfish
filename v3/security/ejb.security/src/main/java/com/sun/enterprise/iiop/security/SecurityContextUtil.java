@@ -55,6 +55,7 @@ import java.util.Set;
 import javax.security.auth.Subject;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -85,6 +86,9 @@ public class SecurityContextUtil implements PostConstruct {
     //TODO: change the below two to @Inject
     private GlassFishORBHelper orbHelper;
     private SecurityMechanismSelector sms;
+  
+    @Inject
+    private Habitat habitat;
     
     public SecurityContextUtil() {
     
@@ -92,7 +96,6 @@ public class SecurityContextUtil implements PostConstruct {
 
     public void postConstruct() {
         policy = Policy.getPolicy();
-        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
         orbHelper = habitat.getComponent(GlassFishORBHelper.class);
         sms = habitat.getComponent(SecurityMechanismSelector.class);
     }

@@ -85,12 +85,12 @@ import com.sun.corba.ee.org.omg.CSIIOP.TAG_NULL_TAG ;
 import com.sun.corba.ee.org.omg.CSIIOP.TAG_CSI_SEC_MECH_LIST ;
 import com.sun.corba.ee.org.omg.CSIIOP.TAG_TLS_SEC_TRANS ;
 import com.sun.corba.ee.org.omg.CSIIOP.TransportAddress ;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.omg.CORBA.INV_POLICY;
 import org.omg.PortableInterceptor.IORInfo;
 
 import org.glassfish.enterprise.iiop.impl.CSIv2Policy;
+import org.jvnet.hk2.component.Habitat;
 /** 
  * This is the class that manages the CSIV2 tagged component information
  * in the IORs.
@@ -126,17 +126,15 @@ public final class CSIV2TaggedComponentInfo
     private GlassFishORBHelper orbHelper;
     
     
-    public CSIV2TaggedComponentInfo(ORB orb) {
+    public CSIV2TaggedComponentInfo(ORB orb, Habitat habitat) {
 	this.orb = orb;	
         orbHelper = 
-                SecurityServicesUtil.getInstance().getHabitat().getComponent(GlassFishORBHelper.class);
+                habitat.getComponent(GlassFishORBHelper.class);
     }
 
-    public CSIV2TaggedComponentInfo(ORB orb, int sslMutualAuthPort ) {
-	this( orb ) ;
+    public CSIV2TaggedComponentInfo(ORB orb, int sslMutualAuthPort , Habitat habitat) {
+	this( orb, habitat ) ;
 	this.sslMutualAuthPort = sslMutualAuthPort ;
-         orbHelper = 
-                SecurityServicesUtil.getInstance().getHabitat().getComponent(GlassFishORBHelper.class);
     }
 
     public  EjbDescriptor getEjbDescriptor( IORInfo iorInfo ) {

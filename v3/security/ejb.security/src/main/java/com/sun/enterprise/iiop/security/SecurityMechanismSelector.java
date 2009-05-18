@@ -80,6 +80,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.logging.*;
 import com.sun.logging.*;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
@@ -88,6 +90,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.invocation.InvocationManager ;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
@@ -135,7 +138,10 @@ public final class SecurityMechanismSelector implements PostConstruct {
     private ORB orb = null;
     private CSIV2TaggedComponentInfo ctc = null;
     private InvocationManager invMgr = null;
-    
+    @Inject
+    private Habitat habitat;
+    @Inject
+    private ProcessEnvironment processEnv;
     /**
      * Read the client and server preferences from the config files.
      */
@@ -144,8 +150,6 @@ public final class SecurityMechanismSelector implements PostConstruct {
     
     public void postConstruct() {
         try {
-            
-            Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
             orbHelper = habitat.getComponent(GlassFishORBHelper.class);
             sslUtils = habitat.getComponent(SSLUtils.class);
             invMgr = habitat.getComponent(InvocationManager.class);
@@ -331,7 +335,7 @@ public final class SecurityMechanismSelector implements PostConstruct {
     
     public synchronized CSIV2TaggedComponentInfo getCtc() {
         if (ctc == null) {
-           this.ctc = new CSIV2TaggedComponentInfo(orbHelper.getORB()); 
+           this.ctc = new CSIV2TaggedComponentInfo(orbHelper.getORB(), habitat); 
         }
         return ctc;
     }
@@ -463,7 +467,7 @@ public final class SecurityMechanismSelector implements PostConstruct {
         boolean clientAuthOccurred = cc.getSSLClientAuthenticationOccurred();
 
         // Standalone client
-        if (SecurityServicesUtil.getInstance().isNotServerOrACC()) {
+        if (isNotServerOrACC()) {
             context = getSecurityContextForAppClient(
                     null, sslUsed, clientAuthOccurred, mechanism);
             return context;
@@ -480,7 +484,7 @@ public final class SecurityMechanismSelector implements PostConstruct {
             return null;
         }
         Object obj = ci.getContainerContext();*/
-        if(SecurityServicesUtil.getInstance().isACC()) {
+        if(isACC()) {
             context = getSecurityContextForAppClient(ci, sslUsed, clientAuthOccurred, mechanism);
         } else {
             context = getSecurityContextForWebOrEJB(ci, sslUsed, clientAuthOccurred, mechanism);
@@ -772,7 +776,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         try {
             Subject s = null;
             //if(ci == null) {
-            if (SecurityServicesUtil.getInstance().isNotServerOrACC()) {
+            if (isNotServerOrACC()) {
 		// Standalone client ... Changed the security context 
 		// from which to fetch the subject
                 ClientSecurityContext sc = 
@@ -787,7 +791,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
             } else {
                 //Object obj = ci.getContainerContext();
                 //if(obj instanceof AppContainer) {
-                 if (SecurityServicesUtil.getInstance().isACC()) {
+                 if (isACC()) {
 		    // get the subject
                     ClientSecurityContext sc = 
                         ClientSecurityContext.getCurrent();
@@ -1521,6 +1525,12 @@ as_context_mech
         return sslRequired;
     }
 
+    private boolean isNotServerOrACC() {
+        return processEnv.getProcessType().equals(ProcessType.Other);
+    }
     
+    private boolean isACC() {
+        return processEnv.getProcessType().equals(ProcessType.ACC);
+    }
 }
 

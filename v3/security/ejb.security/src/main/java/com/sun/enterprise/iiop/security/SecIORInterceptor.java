@@ -141,7 +141,7 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
 	}
 
 	CSIV2TaggedComponentInfo ctc = new CSIV2TaggedComponentInfo( orb,
-	    sslMutualAuthPort );
+	    sslMutualAuthPort, habitat );
         desc = ctc.getEjbDescriptor(iorInfo);
 
 	// Create CSIv2 tagged component
