@@ -883,12 +883,8 @@
    <xsd:annotation>
      <xsd:documentation>
 
-       This element contains a sequence of "name" elements, each of which
-       refers to an application configuration resource by the "name"
-       declared on its web.xml fragment.  This element can also contain
-       a single "others" element which specifies that this document comes
-       before or after other documents within the application.
-       See section 8.2.2 of the specification for details.
+       This element contains configuration for multipart/form-data
+       requests.
 
      </xsd:documentation>
    </xsd:annotation>
@@ -896,16 +892,49 @@
      <xsd:element name="location"
                   type="javaee:string"
                   minOccurs="0"
-                  maxOccurs="1"/>
+                  maxOccurs="1">
+       <xsd:annotation>
+         <xsd:documentation>
+
+           The directory location where uploaded files will be stored
+
+         </xsd:documentation>
+       </xsd:annotation>
+     </xsd:element>
      <xsd:element name="max-file-size"
                   type="xsd:long"
-                  minOccurs="0" maxOccurs="1" />
+                  minOccurs="0" maxOccurs="1">
+       <xsd:annotation>
+         <xsd:documentation>
+
+           The size limit for uploaded files
+
+         </xsd:documentation>
+       </xsd:annotation>
+     </xsd:element>
      <xsd:element name="max-request-size"
                   type="xsd:long"
-                  minOccurs="0" maxOccurs="1" />
+                  minOccurs="0" maxOccurs="1">
+       <xsd:annotation>
+         <xsd:documentation>
+
+           The size limit for multipart/form-data requests
+
+         </xsd:documentation>
+       </xsd:annotation>
+     </xsd:element>
      <xsd:element name="file-size-threshold"
                   type="xsd:integer"
-                  minOccurs="0" maxOccurs="1" />
+                  minOccurs="0" maxOccurs="1">
+       <xsd:annotation>
+         <xsd:documentation>
+
+           The size threshold after which an uploaded file will be
+           written to disk
+
+         </xsd:documentation>
+       </xsd:annotation>
+     </xsd:element>
    </xsd:sequence>
  </xsd:complexType>
 
