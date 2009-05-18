@@ -192,6 +192,8 @@ public class WebBundleDescriptor extends BundleDescriptor
         if (getLoginConfiguration() == null) {
             setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
         }
+
+        setDistributable(isDistributable && webBundleDescriptor.isDistributable());
     }
 
     public boolean isEmpty() {
