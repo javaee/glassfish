@@ -30,5 +30,5 @@ metro_version="1.4,0-5010"
 
 #description
 glassfish_description="GlassFish v3 Application Server"
-glassfish_description_long="GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0). Refer to www.sun.com/glassfish for production support from Sun Microsystems, Inc."
+glassfish_description_long="GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform."
 glassfish_info_classification="Application Servers"
