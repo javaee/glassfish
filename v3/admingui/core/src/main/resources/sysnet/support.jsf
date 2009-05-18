@@ -37,60 +37,56 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.support.PageTitle}" >
 <!define name="content">
 
-
-    <sun:script url="/resource/js/adminjsf.js" />
-    <sun:script>
-	// Should move this to JS to our adminjsf.js file
-	<f:verbatim>
-	    function resizeColumns() {
-		// Get the document window width
-		var docWidth = document.documentElement.offsetWidth;
-		// 20px for left, right, and middle -- divide by 2 columns
-		var colWidth = Math.floor((docWidth-60) / 2);
-		// Fix the left column
-		var col = document.getElementById("leftcolumn");
-		col.style.left = "20px";
-		col.style.width = (colWidth + "px");
-		// Fix the right column
-		col = document.getElementById("rightcolumn");
-		col.style.left = ((40 + colWidth) + "px");
-		col.style.width = (colWidth + "px");
-		// Fix the top box
-		col = document.getElementById("newsBlogs");
-		col.style.left = "20px";
-		col.style.width = ((20 + colWidth * 2) + "px");
-		// Set the window resize event
-		window.onresize = resizeColumns;
-	    }
-	</f:verbatim>
-    </sun:script>
+<sun:script url="/resource/js/adminjsf.js" />
+<sun:script>
+    // Should move this to JS to our adminjsf.js file
+    <f:verbatim>
+        function resizeColumns() {
+            // Get the document window width
+            var docWidth = document.documentElement.offsetWidth;
+            // 20px for left, right, and middle -- divide by 2 columns
+            var colWidth = Math.floor((docWidth-60) / 2);
+            // Fix the left column
+            var col = document.getElementById("leftcolumn");
+            col.style.left = "20px";
+            col.style.width = (colWidth + "px");
+            // Fix the right column
+            col = document.getElementById("rightcolumn");
+            col.style.left = ((40 + colWidth) + "px");
+            col.style.width = (colWidth + "px");
+            // Fix the top box
+            col = document.getElementById("newsBlogs");
+            col.style.left = "20px";
+            col.style.width = ((20 + colWidth * 2) + "px");
+            // Set the window resize event
+            window.onresize = resizeColumns;
+        }
+    </f:verbatim>
+</sun:script>
 
 <sun:form id="propertyForm">
-
-
-<!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-    getSupportImages(count="5", imageList=>$page{imageList});
-    getIssueQueryString(query=>$page{IssueQuery});
-/>
-
-<!-- Bread Crumbs -->
-<!--
-<sun:markup tag="div" id="breadcrumbs" style="border: 1px solid #E5E9ED; background-color: #E5E9ED;">
-<sun:breadcrumbs id="boom" style="background-color: #E5E9ED;">
-    <sun:hyperlink text="$resource{i18n.tree.support}">
-	<!command
-	    redirect("#{request.contextPath}/sysnet/support.jsf");
-	/>
-    </sun:hyperlink>
-</sun:breadcrumbs>
-</sun:markup>
--->
+    <!beforeCreate
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+        getSupportImages(count="5", imageList=>$page{imageList});
+        getIssueQueryString(query=>$page{IssueQuery});
+    />
+    <!-- Bread Crumbs -->
+    <!--
+    <sun:markup tag="div" id="breadcrumbs" style="border: 1px solid #E5E9ED; background-color: #E5E9ED;">
+        <sun:breadcrumbs id="boom" style="background-color: #E5E9ED;">
+            <sun:hyperlink text="$resource{i18n.tree.support}">
+                <!command
+                    redirect("#{request.contextPath}/sysnet/support.jsf");
+                />
+            </sun:hyperlink>
+        </sun:breadcrumbs>
+    </sun:markup>
+    -->
     <!-- Page Title -->
     //<sun:title id="propertyContentPage" title="$resource{i18n.support.PageTitle}" helpText="$resource{i18n.support.PageTitleHelp}">
     //</sun:title>
-            <sun:hidden id="helpKey" value="$resource{help.support}" />
+    <sun:hidden id="helpKey" value="$resource{help.support}" />
 </sun:form>
 <f:verbatim>   
     <style type="text/css">
@@ -236,229 +232,213 @@
     </style>    
     <br>
     <div id="maincontainer">
-    <div id="newsBlogs" class="md1" style="margin-left: 20px; width: 90%;">
-    <div class="hd"> 
-        <h2>$resource{i18n.support.newsBlogs}</h2>
-    </div>
-    <div id="boxbd" class="bd">
-    <div class="innerbox"> 
+        <div id="newsBlogs" class="md1" style="margin-left: 20px; width: 90%;">
+            <div class="hd">
+                <h2>$resource{i18n.support.newsBlogs}</h2>
+            </div>
+            <div id="boxbd" class="bd">
+                <div class="innerbox">
 </f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="aqua" args="{filter: 'admin.blockList.RSSFilter', count:1}" service="/xhp?key=aquarium" template="/resources/jmaki/blockList/aquarium.htm" />
+                    <jmaki:widget name="jmaki.blockList" id="aqua" args="{filter: 'admin.blockList.RSSFilter', count:1}" service="/xhp?key=aquarium" template="/resources/jmaki/blockList/aquarium.htm" />
 <f:verbatim>
-<br clear="all"><a href="$resource{i18n.support.aquariumLink}" target="_blank">$resource{i18n.support.moreAquarium}</a>                                                            
-    </div>
-    </div>
-    </div>   
-    <p>
-    <div id="leftcolumn">
-    <div id="box" class="md1">
-    <div class="hd"> 
-        <h2>$resource{i18n.support.events}</h2>
-    </div>
-    <div id="boxbd" class="bd">
-    <div class="innerbox">
-    <image src="#{request.contextPath}/resource/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
-    <font face=arial size=-1> $resource{i18n.support.techDays}<br>$resource{i18n.support.techDaysDesc}</font>
-</f:verbatim>
-<jmaki:widget name="jmaki.blockList" service="/xhp?key=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
-<f:verbatim> 
-    <br clear="all"><center><hr></center>
-</f:verbatim>
-<jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" /> 
-<f:verbatim>
-    <br clear="all"><a href="$resource{i18n.support.eventsLink}" target="_blank">$resource{i18n.support.moreDevEvents}</a> 
-    </div>
-    </div>
-    </div>   
-    <p>
-        
-        
-        
-    <div id="box" class="md1">
-        <div class="hd"> 
-            <h2>$resource{i18n.support.techTips}</h2>
-        </div>
-        <div id="boxbd" class="bd">
-            <div class="innerbox"> 
-                <img src="#{request.contextPath}/resource/images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
-                <h3>$resource{i18n.support.coreTechTips}</h3>
-            </f:verbatim>
-            <jmaki:widget name="jmaki.blockList" service="/xhp?key=coretechtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/coretechtips.htm" />                                                               
-            <f:verbatim> 
-                <br clear="all"><center><hr></center><p>
-                <h3>$resource{i18n.support.entTechTips}</h3>
-            </f:verbatim>
-            <jmaki:widget name="jmaki.blockList" service="/xhp?key=techtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/techtips.htm" />
-            <f:verbatim>
-            <br clear="all"><a href="$resource{i18n.support.tipsLink}" target="_blank">$resource{i18n.support.moreTechTips}</a>                                                            
+                    <br clear="all"><a href="$resource{i18n.support.aquariumLink}" target="_blank">$resource{i18n.support.moreAquarium}</a>
+                </div>
             </div>
         </div>
-    </div>  
-<p>
+        <p>
+        <div id="leftcolumn">
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.events}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
+                        <image src="#{request.contextPath}/resource/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
+                        <font face=arial size=-1> $resource{i18n.support.techDays}<br>$resource{i18n.support.techDaysDesc}</font>
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" service="/xhp?key=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
+<f:verbatim> 
+                        <br clear="all"><center><hr></center>
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" />
+<f:verbatim>
+                        <br clear="all">
+                        <a href="$resource{i18n.support.eventsLink}" target="_blank">$resource{i18n.support.moreDevEvents}</a>
+                    </div>
+                </div>
+            </div>
+            <p>
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.techTips}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
+                        <img src="#{request.contextPath}/resource/images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                        <h3>$resource{i18n.support.coreTechTips}</h3>
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" service="/xhp?key=coretechtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/coretechtips.htm" />
+<f:verbatim> 
+                        <br clear="all"><center><hr></center><p>
+                        <h3>$resource{i18n.support.entTechTips}</h3>
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" service="/xhp?key=techtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/techtips.htm" />
+<f:verbatim>
+                        <br clear="all"><a href="$resource{i18n.support.tipsLink}" target="_blank">$resource{i18n.support.moreTechTips}</a>
+                    </div>
+                </div>
+            </div>
+            <p>
     
-    
-    
-<div id="box" class="md1">
-    <div class="hd"> 
-        <h2>$resource{i18n.support.javeEENewsAndArticles}</h2>
-    </div>
-    <div id="boxbd" class="bd">
-        <div class="innerbox"> 
-            <img src="#{request.contextPath}/resource/images/squares/#{imageList[2]}" alt=""  border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
-            </f:verbatim>
-            <jmaki:widget name="jmaki.blockList" service="/xhp?key=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
-            <f:verbatim>
-    <br clear="all"><a href="$resource{i18n.support.javaeeLink}" target="_blank">$resource{i18n.support.moreEnterpriseArticles}</a> 
-        </div>
-    </div>
-</div> 
-<p>
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.javeEENewsAndArticles}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
+                        <img src="#{request.contextPath}/resource/images/squares/#{imageList[2]}" alt=""  border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" service="/xhp?key=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
+<f:verbatim>
+                        <br clear="all"><a href="$resource{i18n.support.javaeeLink}" target="_blank">$resource{i18n.support.moreEnterpriseArticles}</a>
+                    </div>
+                </div>
+            </div>
+            <p>
 
-    
- <div id="box" class="md1">
-        <div class="hd"> 
-            <h2>$resource{i18n.support.sunDevNews}</h2>
-        </div>
-        <div id="boxbd" class="bd">
-            <div class="innerbox"> 
-                <img src="#{request.contextPath}/resource/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
-                <!--
-                <h3>Enterprise Java</h3>
-            </f:verbatim>
-            <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnEENews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />                                                               
-            <f:verbatim> 
-                <br><br><center><hr></center><p>
-                <h3> All SDN News</h3>
-                -->
-            </f:verbatim>
-            <jmaki:widget name="jmaki.blockList" id="sdndevnews" service="/xhp?key=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
-            <f:verbatim>
-            <br clear="all"><a href="$resource{i18n.support.devNewsLink}" target="_blank">$resource{i18n.support.sunDevNews}</a>                                                            
-        </div>
-    </div>
-</div>
-<p>
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.sunDevNews}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
+                        <img src="#{request.contextPath}/resource/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+<!--
+                        <h3>Enterprise Java</h3>
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnEENews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
+<f:verbatim> 
+                        <br><br><center><hr></center><p>
+                        <h3> All SDN News</h3>
+-->
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" id="sdndevnews" service="/xhp?key=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
+<f:verbatim>
+                        <br clear="all"><a href="$resource{i18n.support.devNewsLink}" target="_blank">$resource{i18n.support.sunDevNews}</a>
+                    </div>
+                </div>
+            </div>
+            <p>
 
-<div id="box" class="md1">
+            <div id="box" class="md1">
                 <div class="hd"> 
                     <h2>$resource{i18n.support.gfIssues}</h2>
                     
                 </div>
                 <div id="boxbd" class="bd">
-                    
                     <div class="innerbox">
-                <font face=arial size=-1>$resource{i18n.support.bugList}</font>
-                </f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="issues" args="{count:5}" service="/xhp?key=issues&count=20" template="/resources/jmaki/blockList/issues.htm" />
+                        <font face=arial size=-1>$resource{i18n.support.bugList}</font>
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" id="issues" args="{count:5}" service="/xhp?key=issues&count=20" template="/resources/jmaki/blockList/issues.htm" />
 <f:verbatim>
-    <br clear="all"><a href="#{IssueQuery}" target="_blank">$resource{i18n.support.moreIssues}</a>
+                        <br clear="all">
+                        <a href="#{IssueQuery}" target="_blank">$resource{i18n.support.moreIssues}</a>
                     </div>
                 </div>
-                
             </div> 
             <p>
 
-                      
-
-</div>             
-<div id="rightcolumn">
-    
-        <div id="box" class="md1">
-	    <div class="hd"> 
-		<h2>$resource{i18n.support.GlassFishBusiness}</h2>
-	    </div>
-	    <div id="boxbd" class="bd">
-		<div class="innerbox"> 
-</f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="business" service="/xhp?key=gfbusiness" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
-<f:verbatim>
-<br clear="all"><a href="$resource{i18n.support.businessLink}" target="_blank">$resource{i18n.support.moreBusiness}</a>
-		</div>
-            </div>   
-	</div> 
-         <p>
-        <div id="box" class="md1">
-            <div class="hd"> 
-                <h2>$resource{i18n.support.service}</h2>
-            </div>
-            <div id="boxbd" class="bd">
-                <div class="innerbox">
-                    <font face=arial size=-1>
-                    <img src="#{request.contextPath}/resource/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
-                         <a href="$resource{i18n.support.appServerSubscriptionLink}" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
-                    $resource{i18n.support.s1} 
-                    <p><br>
-                    <a href="$resource{i18n.support.trainingLink}" target="_blank">$resource{i18n.support.training}</a><br>
-                    $resource{i18n.support.t1}
-                    <p>
-                    <a href="$resource{i18n.support.devSupportLink}" target="_blank">$resource{i18n.support.devSupportService}</a><br>
-                    $resource{i18n.support.d1}
-                    <p>
-                    <a href="$resource{i18n.support.forumLink}" target="_blank">$resource{i18n.support.forum}</a><br>
-                    $resource{i18n.support.forum1}
-                    <p>
-                    <a href="$resource{i18n.support.issueLink}" target="_blank">$resource{i18n.support.issueTracker}</a><br>
-                    $resource{i18n.support.issueTracker1}</font>
-                </div>
-            </div>               
         </div>
-        <p>
-	<!-- sysnet / learningBox -->
-	<div id="box" class="md1">
-	    <div class="hd"> 
-		<h2>$resource{i18n.support.adoption}</h2>
-	    </div>
-	    <div id="boxbd" class="bd">
-		<div class="innerbox"> 
+        <div id="rightcolumn">
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.GlassFishBusiness}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
 </f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="blogs" service="/xhp?key=stories" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
+                        <jmaki:widget name="jmaki.blockList" id="business" service="/xhp?key=gfbusiness" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
 <f:verbatim>
-<br clear="all"><a href="$resource{i18n.support.storyLink}" target="_blank">$resource{i18n.support.moreStories}</a>
-		</div>
-            </div>   
-	</div> 
-        
+                        <br clear="all">
+                        <a href="$resource{i18n.support.businessLink}" target="_blank">$resource{i18n.support.moreBusiness}</a>
+                    </div>
+                </div>
+            </div>
+            <p>
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.service}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
+                        <font face=arial size=-1>
+                        <img src="#{request.contextPath}/resource/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
+                        <a href="$resource{i18n.support.appServerSubscriptionLink}" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
+                        $resource{i18n.support.s1}
+                        <p><br>
+                        <a href="$resource{i18n.support.trainingLink}" target="_blank">$resource{i18n.support.training}</a><br>
+                        $resource{i18n.support.t1}
+                        <p>
+                        <a href="$resource{i18n.support.devSupportLink}" target="_blank">$resource{i18n.support.devSupportService}</a><br>
+                        $resource{i18n.support.d1}
+                        <p>
+                        <a href="$resource{i18n.support.forumLink}" target="_blank">$resource{i18n.support.forum}</a><br>
+                        $resource{i18n.support.forum1}
+                        <p>
+                        <a href="$resource{i18n.support.issueLink}" target="_blank">$resource{i18n.support.issueTracker}</a><br>
+                        $resource{i18n.support.issueTracker1}</font>
+                    </div>
+                </div>
+            </div>
+            <p>
+            <!-- sysnet / learningBox -->
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.adoption}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" id="blogs" service="/xhp?key=stories" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
+<f:verbatim>
+                        <br clear="all">
+                        <a href="$resource{i18n.support.storyLink}" target="_blank">$resource{i18n.support.moreStories}</a>
+                    </div>
+                </div>
+            </div>
             <p>
                 
-                <div id="box" class="md1">
-	    <div class="hd"> 
-		<h2>$resource{i18n.support.learning}</h2>
-	    </div>
-	    <div id="boxbd" class="bd">
-		<div class="innerbox"> 
-
+            <div id="box" class="md1">
+                <div class="hd">
+                    <h2>$resource{i18n.support.learning}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    <div class="innerbox">
 </f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="learning" args="{count:5}" service="/resource/sysnet/learning.json" template="/resources/jmaki/blockList/learning.htm" />
+                        <jmaki:widget name="jmaki.blockList" id="learning" args="{count:5}" service="/resource/sysnet/learning.json" template="/resources/jmaki/blockList/learning.htm" />
 <f:verbatim>
-		</div>
-            </div>   
-	</div>   
-        <p>
+                    </div>
+                </div>
+            </div>
+            <p>
             
             <div id="box" class="md1">
                 <div class="hd"> 
                     <h2>$resource{i18n.support.podcast}</h2>
                 </div>
                 <div id="boxbd" class="bd">
-                    
                     <div class="innerbox"> 
-			</f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
-			<f:verbatim>
+</f:verbatim>
+                        <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
+<f:verbatim>
                         <br clear="all"><a href="$resource{i18n.support.podcastLink}" target="_blank">$resource{i18n.support.morePodCast}</a>
                     </div>
                 </div>
-                
             </div>
-            
-        
-        
-        
+        </div>
     </div>
-</div>
-
 </div> 
 <p>
 </f:verbatim>
-   </define>
+</define>
 </composition>
