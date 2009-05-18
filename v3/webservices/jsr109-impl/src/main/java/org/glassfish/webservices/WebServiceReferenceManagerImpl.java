@@ -14,10 +14,15 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceFactory;
+import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.ws.soap.AddressingFeature;
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.RespectBindingFeature;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.security.PrivilegedActionException;
@@ -219,9 +224,6 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
     private Object initiateInstance(Class svcClass, ServiceReferenceDescriptor desc)
             throws Exception {
 
-        java.lang.reflect.Constructor cons = svcClass.getConstructor
-                (new Class[]{java.net.URL.class,
-                        javax.xml.namespace.QName.class});
 
         //TODO BM if JBI needs this reenable it
         /*com.sun.enterprise.webservice.ServiceRefDescUtil descUtil =
@@ -250,9 +252,39 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
         if(catalogFile.exists()) {
             wsdlFile = wsu.resolveCatalog(catalogFile, desc.getWsdlFileUri(), null);
         }   */
-        Object obj =
-                cons.newInstance(wsdlFile, desc.getServiceName());
 
+        /**
+         * JAXWS 2.2 enables @MTOM, @Addressing @RespectBinding
+         * on WebServiceRef
+         * If these are present use the
+         * Service(url,wsdl,features) constructor
+         */
+        ArrayList<WebServiceFeature> wsFeatures = new ArrayList<WebServiceFeature>();
+        if (desc.isMtomEnabled()) {
+            wsFeatures.add( new MTOMFeature(true,desc.getMtomThreshold()))   ;
+        }
+        if (desc.isAddressingEnabled()) {
+            wsFeatures.add( new AddressingFeature(true,desc.isAddressingRequired()))   ;
+        }
+        if (desc.isRespectBindingEnabled()) {
+            wsFeatures.add( new RespectBindingFeature(true))   ;
+        }
+
+        Object obj ;
+        if (wsFeatures.size()>0) {
+        java.lang.reflect.Constructor cons = svcClass.getConstructor
+                (new Class[]{java.net.URL.class,
+                        javax.xml.namespace.QName.class, WebServiceFeature[].class});
+
+        obj =
+                cons.newInstance(wsdlFile, desc.getServiceName(),wsFeatures.toArray());
+        } else {
+            java.lang.reflect.Constructor cons = svcClass.getConstructor
+                (new Class[]{java.net.URL.class,
+                        javax.xml.namespace.QName.class});
+            obj =
+                cons.newInstance(wsdlFile, desc.getServiceName());
+        }
 
         /*TODO BM if jbi needs this reenable it
         descUtil.postServiceCreate();

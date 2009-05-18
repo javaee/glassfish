@@ -42,10 +42,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Information about a J2EE web service client.
@@ -113,7 +110,63 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
     // the Service interface or the Port interface directly), you 
     // may need to disambiguate when loading from XML DDs.
     private String injectionTargetType=null; 
-    
+
+    //Support for JAXWS 2.2 features
+    //@MTOM for WebserviceRef
+    private boolean mtomEnabled ;
+
+    //Support for JAXWS 2.2 features
+    //@RespectBinding for WebserviceRef
+    private boolean respectBindingEnabled;
+
+    //Support for JAXWS 2.2 features
+    //@Addressing for WebserviceRef
+    private boolean addressingEnabled;
+
+    private boolean addressingRequired;
+
+    private int mtomThreshold;
+
+    public boolean isRespectBindingEnabled() {
+        return respectBindingEnabled;
+    }
+
+    public void setRespectBindingEnabled(boolean respectBindingEnabled) {
+        this.respectBindingEnabled = respectBindingEnabled;
+    }
+
+    public boolean isMtomEnabled() {
+        return mtomEnabled;
+    }
+
+    public void setMtomEnabled(boolean mtomEnabled) {
+        this.mtomEnabled = mtomEnabled;
+    }
+
+    public boolean isAddressingEnabled() {
+        return addressingEnabled;
+    }
+
+    public void setAddressingEnabled(boolean addressingEnabled) {
+        this.addressingEnabled = addressingEnabled;
+    }
+
+    public boolean isAddressingRequired() {
+        return addressingRequired;
+    }
+
+    public void setAddressingRequired(boolean addressingRequired) {
+        this.addressingRequired = addressingRequired;
+    }
+
+    public int getMtomThreshold() {
+        return mtomThreshold;
+    }
+
+    public void setMtomThreshold(int mtomThreshold) {
+        this.mtomThreshold = mtomThreshold;
+    }
+
     public ServiceReferenceDescriptor(ServiceReferenceDescriptor other) {
         super(other);
 	serviceInterface = other.serviceInterface;

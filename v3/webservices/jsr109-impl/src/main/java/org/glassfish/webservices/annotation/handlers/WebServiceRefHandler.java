@@ -77,6 +77,8 @@ import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 @Service
 public class WebServiceRefHandler extends AbstractHandler  {
 
+    private boolean isClassLevelAnnotation = false;
+
     /** Creates a new instance of WebServiceRefHandler */
     public WebServiceRefHandler() {
     }
@@ -177,6 +179,8 @@ public class WebServiceRefHandler extends AbstractHandler  {
                          annInfo);
             }
             declaringClass = (Class) annElem;
+            isClassLevelAnnotation = true;
+
         } else {    
                 throw new AnnotationProcessorException(
                         localStrings.getLocalString(
@@ -211,6 +215,25 @@ public class WebServiceRefHandler extends AbstractHandler  {
                 // time to create it...
                 aRef = new ServiceReferenceDescriptor();
                 aRef.setName(serviceRefName);
+                if (isClassLevelAnnotation) {
+                    //Check the MTOM annotation
+                    javax.xml.ws.soap.MTOM mtom = (javax.xml.ws.soap.MTOM )((Class)annElem).getAnnotation(javax.xml.ws.soap.MTOM.class);
+                    if (mtom != null ) {
+                        aRef.setMtomEnabled( mtom.enabled());
+                        aRef.setMtomThreshold(mtom.threshold());
+                    }
+                    //Check Addressing Annotation
+                    javax.xml.ws.soap.Addressing addressing = (javax.xml.ws.soap.Addressing )((Class)annElem).getAnnotation(javax.xml.ws.soap.Addressing.class);
+                    if (addressing != null) {
+                        aRef.setAddressingEnabled( addressing.enabled());
+                        aRef.setAddressingRequired(addressing.required());
+                    }
+                     //Check RespectBinding Annotation
+                    javax.xml.ws.RespectBinding respectBinding = (javax.xml.ws.RespectBinding )((Class)annElem).getAnnotation(javax.xml.ws.RespectBinding.class);
+                    if (respectBinding != null) {
+                        aRef.setRespectBindingEnabled( respectBinding.enabled());
+                    }
+                }
                 container.addServiceReferenceDescriptor(aRef);
             }
 
