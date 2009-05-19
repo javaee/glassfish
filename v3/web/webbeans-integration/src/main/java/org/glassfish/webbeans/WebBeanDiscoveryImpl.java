@@ -64,7 +64,7 @@ public abstract class WebBeanDiscoveryImpl implements WebBeanDiscovery {
     private static final String WEB_INF_CLASSES = "WEB-INF/classes";
     private static final String CLASS_SUFFIX = ".class";
     private static final String JAR_SUFFIX = ".jar";
-    private static final String SEPERATOR_CHAR = "/";
+    private static final char SEPARATOR_CHAR = '/';
 
     private final List<Class<?>> wbClasses;
     private final List<URL> wbUrls;
@@ -121,7 +121,7 @@ public abstract class WebBeanDiscoveryImpl implements WebBeanDiscovery {
                 while (entries.hasMoreElements()) {
                     String entry = (String)entries.nextElement();
                     if (entry.endsWith(JAR_SUFFIX) &&
-                        entry.indexOf(SEPERATOR_CHAR, WEB_INF_LIB.length() + 1 ) == -1 ) {
+                        entry.indexOf(SEPARATOR_CHAR, WEB_INF_LIB.length() + 1 ) == -1 ) {
                         ReadableArchive jarArchive = archive.getSubArchive(entry);
                         if (jarArchive.exists(META_INF_BEANS_XML)) {
                             Enumeration jarEntries = jarArchive.entries();
@@ -149,7 +149,12 @@ public abstract class WebBeanDiscoveryImpl implements WebBeanDiscovery {
     }
 
     public static String filenameToClassname(String filename) {
-        String className = filename.replace(File.separatorChar, '.');
+        String className = null;
+        if (filename.indexOf(File.separatorChar) >= 0) {
+            className = filename.replace(File.separatorChar, '.');
+        } else {
+            className = filename.replace(SEPARATOR_CHAR, '.');
+        }
         className = className.substring(0, className.length()-6);
         return className;
     }
