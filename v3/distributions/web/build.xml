@@ -19,7 +19,7 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish prelude distribution creation" default="create.distribution" basedir=".">
+<project name="glassfish web distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
     <target name="create.distribution">
         <echo message="Creating distribution: web"/>

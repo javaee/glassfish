@@ -29,7 +29,7 @@ own identifying information: Portions Copyright [yyyy]
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
 <property name="title" value="GlassFish v3 Preview"/>
-<property name="description" value="GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0)."/>
+<property name="description" value="GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform."/>
 <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
 <property name="dev.authority" value="dev.glassfish.org"/>
 <property name="contrib.authority" value="contrib.glassfish.org"/>
@@ -129,7 +129,7 @@ own identifying information: Portions Copyright [yyyy]
         <arg line="set-property title 'GlassFish v3'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-property description 'GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0).'"/>
+        <arg line="set-property description 'GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform.'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -P -O ${repo.url} '${dev.authority}'"/>
