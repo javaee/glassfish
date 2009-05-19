@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="397"/>
+    <property name="TOTAL_EXPECTED" value="408"/>
 
     &commonSetup;
     &commonBuild;
@@ -169,7 +169,9 @@
         <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
         <ant dir="javaxServletErrorRequestUriStaticResource" target="all"/>
         <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
+<!-- XXX temporarily commented out, see IT 8393
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
+-->
         <ant dir="forwardWithQueryString" target="all"/>
         <ant dir="securityConstraintWildcardMapping" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClassName" target="all"/>
@@ -234,7 +236,9 @@
         <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithWars" target="all"/>
+<!-- XXX temporarily commented out, see IT 8392
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithEAR" target="all"/>
+-->
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
