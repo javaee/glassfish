@@ -49,7 +49,6 @@ import java.util.Set;
 import java.util.logging.*;
 import javax.security.auth.Subject;
 
-import org.glassfish.security.common.Group;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import org.glassfish.security.common.PrincipalImpl;
@@ -59,10 +58,7 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.server.ApplicationServer;
-import org.glassfish.internal.api.ServerContext;
-//import com.sun.enterprise.Switch;
 import com.sun.logging.*;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
 
 
@@ -75,7 +71,6 @@ import org.glassfish.security.common.Group;
  */
 public class RoleMapper implements Serializable, SecurityRoleMapper {
 
-    private  ServerContext serverContext;
     //private static Map ROLEMAPPER = new HashMap();
     private static final String DEFAULT_ROLE_NAME = "ANYONE";
     private  Role defaultRole = null;
@@ -122,22 +117,16 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     
     RoleMapper(String appName) {
         this.appName = appName;
-        serverContext = Globals.getDefaultHabitat().getComponent(ServerContext.class);
-        secService = Globals.getDefaultHabitat().getComponent(SecurityService.class);
+        secService = SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
         defaultP2RMappingClassName = getDefaultP2RMappingClassName();
         postConstruct();
     }
    
-    private  synchronized void initDefaultRole() {
-
-         if (!isEJBContainer(serverContext)) {
-//V3:Commented        Switch sw = Switch.getSwitch();
-//V3:Commented        if (sw.getContainerType() == Switch.EJBWEB_CONTAINER) { // 4735725
-        
-//V3:Commented        }
-             return;
-         }
-         
+    private  synchronized void initDefaultRole() {  
+        if (!SecurityServicesUtil.getInstance().isServer()) {
+            //do nothing if this is not an EJB or Web Container
+            return;
+        }
         if (defaultRole == null) {
             defaultRoleName = DEFAULT_ROLE_NAME;
             try {
@@ -444,7 +433,6 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         String className = null;
          try {
              if (secService != null && Boolean.parseBoolean(secService.getActivateDefaultPrincipalToRoleMapping())) {
-//V3:Commented                       securityService.isActivateDefaultPrincipalToRoleMapping()==true) {
                  className = secService.getMappedPrincipalClass();
                  if (className == null || "".equals(className)) {
                      className = Group.class.getName();
@@ -565,10 +553,6 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         currentMapping = null;
     }
 
-    //TODO:V3 Fixme.
-    private boolean isEJBContainer(ServerContext serverContext) {
-        return false;
-    }
 
     private boolean roleConflicts(Role r, Set<Principal> ps) {
 
