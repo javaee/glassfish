@@ -146,6 +146,10 @@
     }
 
     setValueForCombo(int index) {
+     /* Do not do any processing on Mac/Silent install. */
+     if (isSilentMode()) 
+  		if (System.getProperty("os.name").toLowerCase().startsWith("mac")) 
+			return;
       theHiddenJDK = wizard.getComponentByName(content, "HIDDEN_JDK");
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       theJava = new JavaDetection(ConfigHelper.getStringValue("JDKSelection.directory.JDK_VERSIONRANGE"));
@@ -173,6 +177,18 @@
                                           theRequest, "svc://general/Dependency");
       return theResponse.getResult();
     }
+
+   /* Helper to determine installation mode */
+   isSilentMode() {
+   /* get processing mode */
+   BusRequest modeReq = new BusRequest("ConfigRequest",
+   new EngineConfigCommand(EngineConfigCommand.COMMAND.GET_CONFIG, EngineConfigItem.DISPLAY_MODE));
+   BusResponse modeResp = bus.publishRequest(modeReq, "svc://general/EngineConfig");
+   String mode = (String)modeResp.getResult();
+   if ("SILENT".equals(mode)) 
+        return true;
+   return false;
+   }
 
     run() {
       option2 = wizard.getComponentByName(content, "JDK_FROM_LIST_CHOICE");
@@ -313,8 +329,7 @@
       wizard.enableHelp(true);
       wizard.enableBack(true);
       wizard.enableNext(true);
-    }
-
+   }
     return (Runnable)this;
   ]]></apt:scriptCode>
   </apt:scriptHandler>

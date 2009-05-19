@@ -658,8 +658,11 @@ void unconfigureUpdatetool(String installDir) throws Exception {
     if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
         isWindows=true;
     }
-    /* Try to shutdown the notifer. */
-    try {
+/* Try to shutdown the notifer. Don't do this on Mac, the notifier command
+does not work on Mac, refer to Issue #7348. */
+    String osName = System.getProperty("os.name").toLowerCase();
+    if (!osName.startsWith("mac os x")){
+    	try {
             String shutdownCommand;
             if (isWindows)
                  shutdownCommand = installDir + "\\updatetool\\bin\\updatetool.exe";
@@ -674,6 +677,8 @@ void unconfigureUpdatetool(String installDir) throws Exception {
        } catch (Exception e) {
             LOGGER.log(Level.INFO, "Exception while unregistering notifier: " + e.getMessage());
        }
+} /* End, conditional code for Mac. */
+
     /* Now unregister notifer. */
     try {
             String configCommand;
