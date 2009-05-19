@@ -122,6 +122,13 @@ public interface Deployment {
 
 
     /**
+     * The following synchronous event is sent before the application is 
+     * undeployed so various listeners could validate the undeploy operation
+     * and decide whether to abort undeployment
+     */
+    public final EventTypes<DeploymentContext> UNDEPLOYMENT_VALIDATION = EventTypes.create("Undeployment_Validation", DeploymentContext.class);
+
+    /**
      * The following asynchronous event is sent after all applications are 
      * started in server start up.
      */
