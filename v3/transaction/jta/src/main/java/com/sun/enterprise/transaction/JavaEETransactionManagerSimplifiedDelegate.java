@@ -240,4 +240,11 @@ public class JavaEETransactionManagerSimplifiedDelegate
         writeLock.release();
     }
 
+    /**
+     * Return false as this delegate doesn't support tx interop.
+     */
+    public boolean isNullTransaction() {
+        return false;
+    }
+
 }

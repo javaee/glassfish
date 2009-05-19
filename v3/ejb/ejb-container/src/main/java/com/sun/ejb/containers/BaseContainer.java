@@ -4166,9 +4166,8 @@ public abstract class BaseContainer
         // or if this server's tx interop mode flag is false.
         // Follow the tables in EJB2.0 sections 19.6.2.2.1 and 19.6.2.2.2.
         boolean isNullTx = false;
-        //if (!inv.isLocal && !inv.isMessageDriven && !inv.isWebService)
-        if (!inv.isLocal) {
-            isNullTx = false; // TODO enable after orb transaction work transactionManager.isNullTransaction();
+        if (inv.isRemote) {
+            isNullTx = transactionManager.isNullTransaction();
         }
         
         int txAttr = getTxAttr(inv);

@@ -237,7 +237,7 @@ public class JavaEETransactionManagerSimplified
      * tx but the client container did not support tx interop.
      */
     public boolean isNullTransaction() {
-        return true;
+        return getDelegate().isNullTransaction();
     }
 
     public void recover(XAResource[] resourceList) {

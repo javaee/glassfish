@@ -270,4 +270,13 @@ public interface JavaEETransactionManagerDelegate {
      * Allows the delegate to release a write lock.
      */
     public void releaseWriteLock();
+
+    /**
+     * Return the delegate specific implementation when a "null transaction context" 
+     * was received from the client. See EJB2.0 spec section 19.6.2.1.
+     * A null tx context has no Coordinator objref. It indicates
+     * that the client had an active
+     * tx but the client container did not support tx interop.
+     */
+    public boolean isNullTransaction();
 }
