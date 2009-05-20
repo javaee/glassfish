@@ -92,9 +92,7 @@
         <ant dir="jspWelcomePageWithoutAnyServletMappings" target="all"/>
         <ant dir="jspPoundSyntax" target="all"/>
         <ant dir="jspELEnum" target="all"/>
-<!-- XXX temporarily commented out, see IT 8213
         <ant dir="jspInWebappWithBundledXercesImpl" target="all"/>
--->
         <ant dir="jspTagLibraryValidatorXMLViewStaticInclude" target="all"/>
         <ant dir="jspCacheTaglibPrecompile" target="all"/>
         <ant dir="jspReloadGeneratedServletIfUpdated" target="all"/>
