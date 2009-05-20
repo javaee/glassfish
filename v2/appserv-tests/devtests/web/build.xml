@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="409"/>
+    <property name="TOTAL_EXPECTED" value="410"/>
 
     &commonSetup;
     &commonBuild;
@@ -234,9 +234,7 @@
         <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithWars" target="all"/>
-<!-- XXX temporarily commented out, see IT 8392
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithEAR" target="all"/>
--->
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
