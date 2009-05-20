@@ -34,12 +34,7 @@
  * holder.
  */
 
-/*
- * HttpServiceHandlers.java
- *
- *
- */
-package org.glassfish.web.admingui.handlers;
+package org.glassfish.admingui.common.handlers;
 
 
 import java.util.Map;
@@ -64,7 +59,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
  *
  * @author Anissa Lam
  */
-public class GrizzlyHandlers {
+public class ProxyHandlers {
 
     
     @Handler(id="getChildrenTable",
