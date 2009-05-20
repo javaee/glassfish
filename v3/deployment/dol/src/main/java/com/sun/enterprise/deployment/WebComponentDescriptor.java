@@ -116,6 +116,7 @@ public class WebComponentDescriptor extends Descriptor {
         getSecurityRoleReferenceSet().addAll(
             other.getSecurityRoleReferenceSet());
         setRunAsIdentity(other.getRunAsIdentity());
+        setAsyncSupported(other.isAsyncSupported());
         setMultipartConfig(other.getMultipartConfig());
         setWebBundleDescriptor(other.getWebBundleDescriptor());
     }

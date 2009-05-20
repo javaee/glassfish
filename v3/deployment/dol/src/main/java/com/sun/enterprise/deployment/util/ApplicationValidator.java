@@ -107,6 +107,9 @@ public class ApplicationValidator extends EjbBundleValidator
         if (descriptor.getSessionConfig() == null) {
             descriptor.setSessionConfig(new SessionConfigDescriptor());
         }
+        if (descriptor.isDistributable() == null) {
+            descriptor.setDistributable(Boolean.FALSE);
+        }
     }   
     
     /**

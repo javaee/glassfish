@@ -91,7 +91,7 @@ public class WebBundleDescriptor extends BundleDescriptor
             entityManagerReferences =
             new HashSet<EntityManagerReferenceDescriptor>();
 
-    private boolean isDistributable;
+    private Boolean isDistributable;
     private Set<SecurityRoleDescriptor> securityRoles;
     private Set<SecurityConstraint> securityConstraints;
     private String contextRoot;
@@ -193,7 +193,14 @@ public class WebBundleDescriptor extends BundleDescriptor
             setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
         }
 
-        setDistributable(isDistributable && webBundleDescriptor.isDistributable());
+        Boolean otherIsDistributable = webBundleDescriptor.isDistributable();
+        if (otherIsDistributable != null) {
+            if (isDistributable != null) {
+                setDistributable(isDistributable && otherIsDistributable);
+            } else {
+                setDistributable(otherIsDistributable);
+            }
+        }
     }
 
     public boolean isEmpty() {
@@ -569,14 +576,14 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Return true if this web app [{0}] can be distributed across different processes.
      */
 
-    public boolean isDistributable() {
+    public Boolean isDistributable() {
         return isDistributable;
     }
 
     /**
      * Sets whether this web app [{0}] can be distributed across different processes.
      */
-    public void setDistributable(boolean isDistributable) {
+    public void setDistributable(Boolean isDistributable) {
         this.isDistributable = isDistributable;
     }
 
