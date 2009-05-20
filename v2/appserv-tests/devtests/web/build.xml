@@ -169,9 +169,7 @@
         <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
         <ant dir="javaxServletErrorRequestUriStaticResource" target="all"/>
         <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
-<!-- XXX temporarily commented out, see IT 8393
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
--->
         <ant dir="forwardWithQueryString" target="all"/>
         <ant dir="securityConstraintWildcardMapping" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClassName" target="all"/>
