@@ -869,6 +869,10 @@ public class ApplicationLifecycle implements Deployment {
 
     public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler archiveHandler) throws IOException {
         ExtendedDeploymentContext context = new DeploymentContextImpl(report, logger, source, params, env);
+        return getContext(logger, source, params, report, archiveHandler, context);
+    }
+
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler archiveHandler, ExtendedDeploymentContext context) throws IOException {
         if (source != null && !(new File(source.getURI().getSchemeSpecificPart()).isDirectory())) {
             // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 

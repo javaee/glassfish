@@ -83,6 +83,10 @@ public abstract class GenericHandler implements ArchiveHandler {
         return appName;
     }
 
+    public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context) {
+        return getDefaultApplicationName(archive);
+    }
+
     /**
      * Returns the manifest file for this archive, this file is usually located at
      * the META-INF/MANIFEST location, however, certain archive type can change this

@@ -54,6 +54,8 @@ public interface ArchiveHandler {
      */
     public String getDefaultApplicationName(ReadableArchive archive);
 
+    public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context);
+
     /**
      * Returns true if this handler understands the specified archive and
      * can process it.

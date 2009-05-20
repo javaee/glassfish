@@ -148,6 +148,8 @@ public interface Deployment {
     public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler handler)
             throws IOException;
 
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler handler, ExtendedDeploymentContext context)
+            throws IOException;
 
     public ModuleInfo prepareModule(
         List<EngineInfo> sortedEngineInfos, String moduleName,

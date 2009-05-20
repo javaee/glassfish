@@ -127,23 +127,12 @@ public class DeployCommandParameters extends OpsParams {
 
     public String previousContextRoot = null;
 
-    public boolean isUsingDefaultName = false;
-
-    public String defaultName = null;
-
     public String name() {
         return name;
     }
 
     public String libraries() {
         return libraries;
-    }
-
-    public String defaultName() {
-        if (defaultName == null) {
-            return name;
-        }
-        return defaultName;
     }
 
     public DeployCommandParameters() {

@@ -48,6 +48,7 @@ import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -177,11 +178,14 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 return;
             }
 
+            // create an initial  context
+            ExtendedDeploymentContext initialContext = new DeploymentContextImpl(report, logger, archive, this, env);
+
+            // Archive handlers know how to construct app default names.
+            String defaultName = archiveHandler.getDefaultApplicationName(archive, initialContext);
+
             // get an application name
             if (name==null) {
-                // Archive handlers know how to construct default app names.
-                defaultName = archiveHandler.getDefaultApplicationName(archive);
-                isUsingDefaultName = true;
                 name = defaultName;
             }
 
@@ -204,7 +208,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
 
             // create the parent class loader
-            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this, report, archiveHandler);
+            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this, report, archiveHandler, initialContext);
 
             // reset the properties (might be null) set by the deployers when undeploying.
             if (undeployProps!=null) {
@@ -218,6 +222,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (property!=null) {
                 deploymentContext.getAppProps().putAll(property);
             }
+
+            // add the default EE6 name to the property list as well
+            deploymentContext.getAppProps().put(
+                "default-EE6-app-name", defaultName);
 
             // clean up any generated files
             deploymentContext.clean();

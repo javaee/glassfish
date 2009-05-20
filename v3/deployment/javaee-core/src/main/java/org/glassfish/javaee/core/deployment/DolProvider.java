@@ -129,19 +129,20 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
                     application.getArchiveName());
                 application.setAppName(appName);
             } else {
-                application.setAppName(params.defaultName());
+                String defaultEE6AppName = 
+                    dc.getAppProps().getProperty("default-EE6-app-name");
+                if (defaultEE6AppName != null) {
+                    application.setAppName(defaultEE6AppName);
+                }  else {
+                    application.setAppName(name);;
+                }
             }
         }
 
-        // if the app-name is defined in application.xml and user did not 
-        // specify any name, use the app name as the registration name
-        // the precedence of the registration name:  
-        // 1. user specified name
-        // 2. app-name defined in application.xml
-        // 3. default name
-        if (application.getAppName() != null && params.isUsingDefaultName){
-            application.setRegistrationName(application.getAppName());
-            params.name = application.getAppName();
+        // for standalone module, make module name the same as app name
+        if (application.isVirtual()) {
+            application.getModules().iterator().next().setModuleName(
+                application.getAppName());
         }
 
         // this may not be the best location for this but it will suffice.
