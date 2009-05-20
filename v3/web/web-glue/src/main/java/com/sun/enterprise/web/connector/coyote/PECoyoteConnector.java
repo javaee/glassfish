@@ -194,11 +194,6 @@ public class PECoyoteConnector extends Connector {
      */
     private String rootFolder = "";    
     
-    /**
-     * The http-listener name
-     */
-    private String name;
-
 
     // --------------------------------------------- FileCache support --//
     
@@ -761,22 +756,6 @@ public class PECoyoteConnector extends Connector {
         super.initialize();
         // Set the monitoring.
         grizzlyMonitor = new GrizzlyConfig(webContainer, domain, getPort());
-    }
-
-
-    /**
-     * Set the name of this connector.
-     */
-    public void setName(String name){
-        this.name = name;
-    }
-    
-    
-    /**
-     * Get the name of this connector;
-     */
-    public String getName(){
-        return name;
     }
 
 
