@@ -124,7 +124,9 @@ public class OrderingDescriptorTest {
         wfs.add(createWebFragmentDescriptor("E", null, new String[] { OTHERS }));
         wfs.add(createWebFragmentDescriptor("F", null, null));
         OrderingDescriptor.sort(wfs);
-        String[] ids = { "B", "E", "F", "", "C", "D" };
+        //an alternative result from jsf-ri
+        //String[] ids = { "B", "E", "F", "", "C", "D" };
+        String[] ids = { "E", "B", "F", "D", "", "C" };
         validate(ids, wfs);
     }
 
@@ -138,7 +140,9 @@ public class OrderingDescriptorTest {
         wfs.add(createWebFragmentDescriptor("E", new String[] { "C" }, new String[] { OTHERS }));
         wfs.add(createWebFragmentDescriptor("F", null, null));
         OrderingDescriptor.sort(wfs);
-        String[] ids = { "B", "C", "E", "F", "A", "D" };
+        //an alternative result from jsf-ri
+        //String[] ids = { "B", "C", "E", "F", "A", "D" };
+        String[] ids = { "C", "E", "B", "F", "D", "A" };
         validate(ids, wfs);
     }
 
@@ -152,7 +156,7 @@ public class OrderingDescriptorTest {
         OrderingDescriptor.sort(wfs);
         //an alternative result from jsf-ri
         //String[] ids = { "C", "B", "D", "A" };
-        String[] ids = { "C", "B", "A", "D" };
+        String[] ids = { "C", "D", "B", "A" };
         validate(ids, wfs);
     }
 
@@ -214,7 +218,7 @@ public class OrderingDescriptorTest {
         OrderingDescriptor.sort(wfs);
         //an alternative result from jsf-ri
         //String[] ids = { "A", "C", "D", "B" };
-        String[] ids = { "A", "C", "B", "D" };
+        String[] ids = { "C", "B", "A", "D" };
         validate(ids, wfs);
     }
 
@@ -250,6 +254,40 @@ public class OrderingDescriptorTest {
         }
     }
 
+    // ----- additional test cases
+
+    @Test
+    public void testCyclic3() {
+        List<WebFragmentDescriptor> wfs = new ArrayList<WebFragmentDescriptor>();
+        wfs.add(createWebFragmentDescriptor("A", null, new String[] { OTHERS }));
+        wfs.add(createWebFragmentDescriptor("B", new String[] { OTHERS } , new String[] { "A" }));
+        wfs.add(createWebFragmentDescriptor("C", null, null));
+        try {
+            OrderingDescriptor.sort(wfs);
+            fail("No exception thrown when circular document dependency is present");
+        } catch(IllegalStateException ex) {
+            // expected
+            System.out.println("Expected exception: " + ex);
+        }
+    }
+
+    @Test
+    public void testCyclic4() {
+        List<WebFragmentDescriptor> wfs = new ArrayList<WebFragmentDescriptor>();
+        wfs.add(createWebFragmentDescriptor("A", null, new String[] { "B" }));
+        wfs.add(createWebFragmentDescriptor("B", null, new String[] { "C" }));
+        wfs.add(createWebFragmentDescriptor("C", null, new String[] { "D" }));
+        wfs.add(createWebFragmentDescriptor("D", null, new String[] { "A" }));
+        wfs.add(createWebFragmentDescriptor("E", null, null));
+        
+        try {
+            OrderingDescriptor.sort(wfs);
+            fail("No exception thrown when circular document dependency is present");
+        } catch(IllegalStateException ex) {
+            // expected
+            System.out.println("Expected exception: " + ex);
+        }
+    }
 
     // ----- private methods
  

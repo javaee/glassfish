@@ -35,9 +35,14 @@
  */
 package com.sun.enterprise.deployment;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -115,221 +120,228 @@ public class OrderingDescriptor extends Descriptor {
     // ----- sorting logic
 
     public static void sort(List<WebFragmentDescriptor> wfs) {
-        if (wfs == null || wfs.size() == 1) {
+        if (wfs == null || wfs.size() <= 1) {
             return;
         }
-        
-        // in the following, size >= 2
-        int size = wfs.size();
-        processOthers(wfs);
-        enhanceOrderingData(wfs);
 
-        WebFragmentDescriptor[] wfarr = wfs.toArray(new WebFragmentDescriptor[size]);
+        // build the graph
+        List<Node> graph = new ArrayList<Node>();
+        Map<String, Node> name2NodeMap = new HashMap<String, Node>();
 
-        int maxSwap = (size + 1) * size + 1;
-        int numSwap = 0;
-        boolean swap = false;
-        boolean startCheck = false;
-        int k = -1;
-
-        while (numSwap < maxSwap) {
-            if (swap) {
-                k = 0;
-                swap = false;
-                startCheck = false;
-            } else {
-                k++;
-                if (startCheck) {
-                    break;
-                }
-                if (k == size - 1) {
-                    k = 0;
-                    startCheck = true;
-                }
+        // build the nodes
+        Node othersNode = new Node(null);
+        for (WebFragmentDescriptor wf : wfs) {
+            Node wfNode = new Node(wf);
+            String wfName = wf.getName();
+            if (wfName != null && wfName.length() > 0) {
+                name2NodeMap.put(wfName, wfNode);
             }
-
-            int i = 1;
-            while (i < size - k) {
-                if (isAfter(wfarr[k], wfarr[k + i])) {
-                    OrderingDescriptor od = wfarr[k + i].getOrderingDescriptor();
-
-                    // shift
-                    if (od != null && od.getAfter() != null 
-                            && od.getAfter().containsOthers()) {
-
-                        // move k after k+i as  ..., k+1, ... , k+i, k, ...
-                        WebFragmentDescriptor temp = wfarr[k];
-                        for (int j = 0; j < i; j++) {
-                            wfarr[k + j] = wfarr[k + j + 1];
-                        }
-                        wfarr[k + i] = temp;
-                    } else {
-                        // move k+i before k as  ..., k+i, k,  ... , k+i-1, ...
-                        WebFragmentDescriptor temp = wfarr[k + i];
-                        for (int j = k + i; j > k; j--) {
-                            wfarr[j] = wfarr[j - 1];
-                        }
-                        wfarr[k] = temp;
-
-                        k++;
-                    }
-
-                    numSwap++;
-                    swap = true;
-
-                } else {
-                    i++;
-                }
-            } 
+            graph.add(wfNode);
         }
 
-        if (numSwap >= maxSwap) {
+        List<Node> remaining = new ArrayList<Node>(graph);
+        boolean needOthers = false;
+
+        // build the edges
+        // othersNode is not in the loop
+        for (int i = 0; i < graph.size(); i++) {
+            Node wfNode = graph.get(i);
+            WebFragmentDescriptor wf = wfNode.getWebFragmentDescriptor();
+            String wfName = wf.getName();
+            OrderingDescriptor od = wf.getOrderingDescriptor();
+            if (od != null) {
+                OrderingOrderingDescriptor after = od.getAfter();
+                if (after != null) {
+                    if (after.containsOthers()) {
+                        wfNode.getInNodes().add(othersNode);
+                        othersNode.getOutNodes().add(wfNode);
+                        remaining.remove(othersNode);
+                        needOthers = true;
+                    }
+                    for (String name : after.getNames()) {
+                        Node nameNode = name2NodeMap.get(name);
+                        wfNode.getInNodes().add(nameNode);
+                        nameNode.getOutNodes().add(wfNode);
+                        remaining.remove(nameNode);
+                    }
+                }
+
+                OrderingOrderingDescriptor before = od.getBefore();
+                if (before != null) {
+                    if (before.containsOthers()) {
+                        wfNode.getOutNodes().add(othersNode);
+                        othersNode.getInNodes().add(wfNode);
+                        remaining.remove(othersNode);
+                        needOthers = true;
+                    }
+                    for (String name : before.getNames()) {
+                        Node nameNode = name2NodeMap.get(name);
+                        wfNode.getOutNodes().add(nameNode);
+                        nameNode.getInNodes().add(wfNode);
+                        remaining.remove(nameNode);
+                    }
+                }
+
+                boolean hasAfterOrdering = (after != null &&
+                        (after.containsOthers() || after.getNames().size() > 0));
+                boolean hasBeforeOrdering = (before != null &&
+                        (before.containsOthers() || before.getNames().size() > 0));
+                if (hasAfterOrdering || hasBeforeOrdering) {
+                    remaining.remove(wfNode);
+                }
+            }
+        }
+
+        // add others if necessary
+        if (needOthers) {
+            graph.add(othersNode);
+        }
+
+        List<Node> subgraph = new ArrayList<Node>(graph);
+        subgraph.removeAll(remaining);
+
+        List<Node> sortedNodes = topologicalSort(subgraph);
+        wfs.clear();
+        boolean othersProcessed = false;
+        for (Node node: sortedNodes) {
+            WebFragmentDescriptor wf = node.getWebFragmentDescriptor();
+            if (wf == null) {
+                // others
+                othersProcessed = true;
+                for (Node rnode: remaining) {
+                    wfs.add(rnode.getWebFragmentDescriptor());
+                }
+            } else {
+                wfs.add(wf);
+            }
+        }
+
+        if (!othersProcessed) {
+            for (Node rnode: remaining) {
+                wfs.add(rnode.getWebFragmentDescriptor());
+            }
+        }
+    }
+
+    /**
+     * Note that this processing will modify the graph.
+     * It is not intended for public.
+     */
+    private static List<Node> topologicalSort(List<Node> graph) {
+        List<Node> sortedNodes = new ArrayList<Node>();
+
+        if (graph.size() == 0) {
+            return sortedNodes;
+        }
+
+        Stack<Node> roots = new Stack<Node>();
+        // find nodes without incoming edges
+        for (Node node: graph) {
+            if (node.getInNodes().size() == 0) {
+                roots.push(node);
+            }
+        }
+        
+        if (roots.empty()) {
             throw new IllegalStateException(localStrings.getLocalString(
                     "enterprise.deployment.exceptioninvalidwebfragmentordering",
                     "The web fragment ordering is not valid and possibly has cycling conflicts."));
         }
 
-        // copy the result back to original list
-        if (wfs != null && wfs.size() > 1) {
-            wfs.clear();
-            for (WebFragmentDescriptor wf : wfarr) {
-                wfs.add(wf);
-            }
-        }
-    }
+        while (!roots.empty()) {
+            Node node = roots.pop();
+            sortedNodes.add(node);
+            // for each outcoming edges
+            Iterator<Node> outNodesIter = node.getOutNodes().iterator();
+            while (outNodesIter.hasNext()) {
+                Node outNode = outNodesIter.next();
+                // remove the outcoming edge
+                outNodesIter.remove();
+                outNode.getInNodes().remove(node);
 
-    /**
-     * Processing &lt;others/&gt; in ordering first.
-     */
-    private static void processOthers(List<WebFragmentDescriptor> wfs) {
-        int i = 0;
-        //One can always insert the "before others" at the index 0 and no need for beforeOthersInd.
-        //We keep this so that the order will be close to those in jsf-ri.
-        int beforeOthersInd = 0; // the index to insert for "before others"
-        int afterOthersInd = wfs.size(); // the largest index to process for "after others"
-        while (i < afterOthersInd) {
-            WebFragmentDescriptor wf = wfs.get(i);
-            OrderingDescriptor od = wf.getOrderingDescriptor();
-
-            if (od != null && od.getBefore() != null && od.getBefore().containsOthers()) {
-                if (i > 0) {
-                   wfs.remove(i);
-                   wfs.add(beforeOthersInd, wf);
-                }
-                beforeOthersInd++;
-                i++;
-            } else if (i < (afterOthersInd - 1) &&
-                    od != null && od.getAfter() != null && od.getAfter().containsOthers()) {
-                wfs.remove(i);
-                wfs.add(wf);
-                afterOthersInd--;
-            } else {
-                i++;
-            }
-        }
-    }
-
-    /**
-     * Update after/before knowledge of all OrderingDescriptors.
-     * Basically, it does the following:
-     * (a) add some symmetric data,
-     * &nbsp;&nbsp; for instance, A is before B, then B should be after A
-     * (b) add data from first level transitivity,
-     * &nbsp;&nbsp; for instance, A is before B, B is before C, then A is before C
-     * This method also detects some possible cycles and then throw exception.
-     */
-    private static void enhanceOrderingData(List<WebFragmentDescriptor> wfs) {
-        Map<String, WebFragmentDescriptor> name2WfMap = new TreeMap<String, WebFragmentDescriptor>();
-        for (WebFragmentDescriptor wf: wfs) {
-            String name = wf.getName();
-            if (name != null && name.length() > 0) {
-                name2WfMap.put(name, wf);
-            }
-        }
-
-        for (WebFragmentDescriptor wf: wfs) {
-            String wfName = wf.getName();
-            OrderingDescriptor od = wf.getOrderingDescriptor();
-
-            if (od != null && wfName != null && wfName.length() > 0) {
-                // if A is before B, then (i) B should be after A and (ii) A should be before B's before
-                OrderingOrderingDescriptor before = od.getBefore();
-                if (before != null) {
-                    Set<String> beforeNamesSet = before.getNames();
-                    String[] beforeNames = beforeNamesSet.toArray(new String[beforeNamesSet.size()]);
-                    for (String beforeName : beforeNames) {
-                        WebFragmentDescriptor otherWf = name2WfMap.get(beforeName);
-                        OrderingDescriptor otherOd = otherWf.getOrderingDescriptor();
-                        if (otherOd == null) {
-                            otherOd = new OrderingDescriptor();
-                            otherWf.setOrderingDescriptor(otherOd);
-                        }
-                        OrderingOrderingDescriptor otherAfter = otherOd.getAfter();
-                        if (otherAfter == null) {
-                            otherAfter = new OrderingOrderingDescriptor();
-                            otherOd.setAfter(otherAfter);
-                        }
-                        otherAfter.addName(wfName);
-
-                        OrderingOrderingDescriptor otherBefore = otherOd.getBefore();
-                        if (otherBefore != null) {
-                            before.getNames().addAll(otherBefore.getNames());
-
-                            if (otherBefore.containsName(wfName)) {
-                                throw new IllegalStateException(localStrings.getLocalString(
-                                        "enterprise.deployment.exceptioncyclicdependenyinwebfragmentordering",
-                                        "There is a cyclic dependencies on name [{0}] in web fragment relative ordering.",
-                                        new Object[] { wfName }));
-                            }
-                        }
-                    }
-                }
-
-                // if A is after B, then (i) B should be before A and (ii) A should be after B's after
-                OrderingOrderingDescriptor after = od.getAfter();
-                if (after != null) {
-                    Set<String> afterNamesSet = after.getNames();
-                    String[] afterNames = afterNamesSet.toArray(new String[afterNamesSet.size()]);
-                    for (String afterName : afterNames) {
-                        WebFragmentDescriptor otherWf = name2WfMap.get(afterName);
-                        OrderingDescriptor otherOd = otherWf.getOrderingDescriptor();
-                        if (otherOd == null) {
-                            otherOd = new OrderingDescriptor();
-                            otherWf.setOrderingDescriptor(otherOd);
-                        }
-                        OrderingOrderingDescriptor otherBefore = otherOd.getBefore();
-                        if (otherBefore == null) {
-                            otherBefore = new OrderingOrderingDescriptor();
-                            otherOd.setBefore(otherBefore);
-                        }
-                        otherBefore.addName(wfName);
-
-                        OrderingOrderingDescriptor otherAfter = otherOd.getAfter();
-                        if (otherAfter != null) {
-                            after.getNames().addAll(otherAfter.getNames());
-
-                            if (otherAfter.containsName(wfName)) {
-                                throw new IllegalStateException(localStrings.getLocalString(
-                                        "enterprise.deployment.exceptioncyclicdependenyinwebfragmentordering",
-                                        "There is a cyclic dependencies for name [{0}] in web fragment relative ordering.",
-                                        new Object[] { wfName }));
-                            }
-                        }
-                    }
+                // if no incoming edge
+                if (outNode.getInNodes().size() == 0) {
+                    roots.push(outNode);
                 }
             }
         }
+
+        boolean hasEdges = false;
+        for (Node node: graph) {
+            if (node.getInNodes().size() > 0 || node.getOutNodes().size() > 0) {
+                hasEdges = true;
+                break;
+            }
+        }
+        if (hasEdges) {
+            throw new IllegalStateException(localStrings.getLocalString(
+                    "enterprise.deployment.exceptioninvalidwebfragmentordering",
+                    "The web fragment ordering is not valid and possibly has cycling conflicts."));
+        }
+        return sortedNodes;
     }
 
-    /**
-     * This only checks the explicit ordering relationship without &lt;others/&gt;.
-     */
-    private static boolean isAfter(WebFragmentDescriptor wf1, WebFragmentDescriptor wf2) {
-        String name1 = wf1.getName();
-        String name2 = wf2.getName();
-        OrderingDescriptor od1 = wf1.getOrderingDescriptor();
-        OrderingDescriptor od2 = wf2.getOrderingDescriptor();
-        return (od1 != null && od1.getAfter() != null && od1.getAfter().containsName(name2)) ||
-                (od2 != null && od2.getBefore() != null && od2.getBefore().containsName(name1));
+    // for debug
+    private static void print(WebFragmentDescriptor wf,
+            String nullWfString, StringBuilder sb) {
+
+        String wfName = null;
+        if (wf != null) {
+            wfName = wf.getName();
+        } else {
+            wfName = nullWfString;
+        }
+        sb.append(wfName);
+    }
+
+    private static class Node {
+        private WebFragmentDescriptor webFragmentDescriptor = null;
+        private Set<Node> inNodes = new LinkedHashSet<Node>();
+        private Set<Node> outNodes = new LinkedHashSet<Node>();
+
+        private Node(WebFragmentDescriptor wf) {
+            webFragmentDescriptor = wf;
+        }
+
+        private WebFragmentDescriptor getWebFragmentDescriptor() {
+            return webFragmentDescriptor;
+        }
+
+        private Set<Node> getInNodes() {
+            return inNodes;
+        }
+
+        private Set<Node> getOutNodes() {
+            return outNodes;
+        }
+
+        // for debug
+        public String toString() {
+            StringBuilder sb = new StringBuilder("{name=");
+            print(webFragmentDescriptor, "@others", sb);
+
+            sb.append(", inNodes=[");
+            boolean first = true;
+            for (Node n: inNodes) {
+                if (!first) {
+                    sb.append(", ");
+                }
+                first = false;
+                print(n.getWebFragmentDescriptor(), "@others", sb);
+            }
+            sb.append("]");
+
+            sb.append(", outNodes=[");
+            first = true;
+            for (Node n: outNodes) {
+                if (!first) {
+                    sb.append(", ");
+                }
+                first = false;
+                print(n.getWebFragmentDescriptor(), "@others", sb);
+            }
+            sb.append("]}");
+            return sb.toString();
+        }
     }
 }
