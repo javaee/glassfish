@@ -86,12 +86,17 @@
             <artifactId>jstl-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jsf-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jspcaching-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-cli</artifactId>
             <version>${project.version}</version>
