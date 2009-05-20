@@ -145,6 +145,8 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
                             if (classFile.containsAnnotation(channel, je.getSize())) {
                                 addEntry(je);                     
                             }
+
+                            channel.close();
                         }
                     }
                 }
