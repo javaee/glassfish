@@ -181,12 +181,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // create an initial  context
             ExtendedDeploymentContext initialContext = new DeploymentContextImpl(report, logger, archive, this, env);
 
-            // Archive handlers know how to construct app default names.
-            String defaultName = archiveHandler.getDefaultApplicationName(archive, initialContext);
-
             // get an application name
             if (name==null) {
-                name = defaultName;
+                name = archiveHandler.getDefaultApplicationName(archive, initialContext);
             }
 
             ActionReport.MessagePart part = report.getTopMessagePart();
@@ -222,10 +219,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (property!=null) {
                 deploymentContext.getAppProps().putAll(property);
             }
-
-            // add the default EE6 name to the property list as well
-            deploymentContext.getAppProps().put(
-                "default-EE6-app-name", defaultName);
 
             // clean up any generated files
             deploymentContext.clean();

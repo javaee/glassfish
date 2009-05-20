@@ -873,6 +873,14 @@ public class ApplicationLifecycle implements Deployment {
     }
 
     public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report, ArchiveHandler archiveHandler, ExtendedDeploymentContext context) throws IOException {
+        if (archiveHandler == null) {
+            archiveHandler = getArchiveHandler(source);
+        }
+
+        // add the default EE6 name to the property list
+        context.getAppProps().put("default-EE6-app-name", 
+            archiveHandler.getDefaultApplicationName(source, context));
+
         if (source != null && !(new File(source.getURI().getSchemeSpecificPart()).isDirectory())) {
             // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 
@@ -887,9 +895,6 @@ public class ApplicationLifecycle implements Deployment {
                 logger.fine(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
             }
             try {
-                if (archiveHandler == null) {
-                    archiveHandler = getArchiveHandler(source);
-                }
                 Long start = System.currentTimeMillis();
                 archiveHandler.expand(source, archiveFactory.createArchive(expansionDir), context);
                 System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
