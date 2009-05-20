@@ -61,9 +61,11 @@ own identifying information: Portions Copyright [yyyy]
            <patternset>
 		   <exclude name="**/domains/**"/>
            </patternset>
-   	</unzip>
+        </unzip>
 
-       <copy todir="target/stage/${install.dir.name}/bin">
+        <mkdir dir="target/stage/${install.dir.name}/glassfish/domains" />
+
+        <copy todir="target/stage/${install.dir.name}/bin">
 		<fileset dir="src/main/resources/bin"/>
 	</copy>
 
