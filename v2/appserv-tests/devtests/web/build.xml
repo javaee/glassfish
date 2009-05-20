@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="410"/>
+    <property name="TOTAL_EXPECTED" value="411"/>
 
     &commonSetup;
     &commonBuild;
@@ -95,6 +95,7 @@
         <ant dir="jspInWebappWithBundledXercesImpl" target="all"/>
         <ant dir="jspTagLibraryValidatorXMLViewStaticInclude" target="all"/>
         <ant dir="jspCacheTaglibPrecompile" target="all"/>
+        <ant dir="jspCachingInstanceLevel" target="all"/>
         <ant dir="jspReloadGeneratedServletIfUpdated" target="all"/>
         <ant dir="jspTrimDirectiveWhitespaces" target="all"/>
         <ant dir="jspConfigDefaultContentType" target="all"/>
