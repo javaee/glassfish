@@ -161,7 +161,7 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
          status = ResultReport.ResultStatus.FAIL;
      }
   
-     return new ResultReport(status, "http://docs.sun.com/doc/820-5968 ", "http://docs.sun.com/doc/820-5968", null, productError);
+     return new ResultReport(status, "http://docs.sun.com/doc/820-7690 ", "http://docs.sun.com/doc/820-7690", null, productError);
          
 }
 
@@ -203,7 +203,7 @@ public ResultReport unConfigure (final PropertySheet aSheet, final boolean aVali
          
      }
 
-    return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-5968", "http://docs.sun.com/doc/820-5968", null, productError);
+    return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-7690", "http://docs.sun.com/doc/820-7690", null, productError);
 }
 
 public void handleNotification (final Notification aNotification,
