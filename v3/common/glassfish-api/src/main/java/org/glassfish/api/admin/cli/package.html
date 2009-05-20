@@ -71,14 +71,15 @@ The annotations and enums in this package are supposed to be used as described b
         </ul>
     </li>
     <li>
-        To specify an option that may or may not repeat, the command implementation should specify it as a Map.
-        e.g.
+        To specify a "property" (i.e. name=value) option that may or may not repeat, the command implementation
+        should specify it as a Map, e.g.
         <pre>
           atOption (name="property" repeats=true/false, type=OptionType.PROPERTY)
           private final Map &lt; String, String &gt; properties;
         </pre>
         Such an option can be specified as: --property prop1=value1 --property prop2=value2 or --property=name1=value1
-        --property=name2=value2 on the command line depdending on the value of <i> repeats </i>.
+        --property=name2=value2 on the command line depdending on the value of <i> repeats </i>. Note that the type
+        PROPERTY is a special treatment for a commonly used pattern where command implementations need  
         <p>
         Any use of '=' in the property names and values needs to be escaped with a backslash.
         </p>
