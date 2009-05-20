@@ -541,9 +541,23 @@ private class ProtectedList extends AbstractList {
         }
         return camelCaseName.toString();
     }
-
+    
     private void handleValidation(ConfigModel.Property property, Object value)
     throws ValidationException { 
+
+        // First check for dataType constraints -- as was done for v3 Prelude
+        // see PrimitiveDataType.java
+        // These validations could be transformed into BV custom annotations
+        // such as AssertBoolean, AssertInteger etc. But since GUI and other
+        // config clients such as AMX need dataType key in @Attribute it's been
+        // decided to validate using existing annotation information
+        if (property instanceof ConfigModel.AttributeLeaf) {
+            ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
+            validateDataType(al, value.toString());
+        }
+
+        // Next check for other non-dataType annotations expressed as
+        // BV annotations
         BeanDescriptor bd =
             beanValidator.getConstraintsForClass(bean.getProxyType());
 
@@ -564,6 +578,51 @@ private class ProtectedList extends AbstractList {
                 System.out.println(msg); // todo: needs to be removed
                 throw new ValidationException(msg);
             }
+        }               
+    }
+
+    private void validateDataType(ConfigModel.AttributeLeaf al, String value)
+    throws ValidationException {
+
+        if (value.startsWith("${") && value.endsWith("}"))
+          return;
+
+        boolean isValid = false;
+        if ("int".equals(al.dataType) ||
+            "java.lang.Integer".equals(al.dataType))
+            isValid = representsInteger(value);
+        else if ("boolean".equals(al.dataType) ||
+                 "java.lang.Boolean".endsWith(al.dataType))
+            isValid = representsBoolean(value);
+        else if ("char".equals(al.dataType) ||
+                 "java.lang.Character".equals(al.dataType))
+            isValid = representsChar(value);        
+        if (!isValid) {
+            String msg = "Validation Failed: " +
+                         value + " is not of data type: " + al.dataType;
+            throw new ValidationException(msg);            
         }
     }
+    
+    private boolean representsBoolean(String value) {
+        boolean isBoolean = 
+           "true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value);
+        return (isBoolean);
+    }
+
+    private boolean representsChar(String value) {
+            if (value.length() == 1)
+                return true;
+            return false;
+    }
+
+    private boolean representsInteger(String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        } catch(NumberFormatException ne) {
+            return false;
+        }
+    }
+
 }
