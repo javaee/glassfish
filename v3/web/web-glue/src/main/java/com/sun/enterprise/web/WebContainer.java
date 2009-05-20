@@ -363,6 +363,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private boolean isShutdown = false;
 
     private final Object mapperUpdateSync = new Object();
+
     /**
      * Static initialization
      */
@@ -710,8 +711,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
              */
         }
 
-        connector = (WebConnector)_embedded.createConnector(address, port,
-                                                            isSecure);
+        connector = (WebConnector)_embedded.createConnector(
+            address, port, isSecure);
 
         if (mapper != null) {
             connector.setMapper(mapper);
@@ -728,7 +729,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                      " on port " + listener.getPort());
 
         connector.setName(listener.getName());
-
+        connector.setInstanceName(instanceName);
         connector.configure(listener, isSecure, httpService);
 
         if ( _logger.isLoggable(Level.FINE)){
