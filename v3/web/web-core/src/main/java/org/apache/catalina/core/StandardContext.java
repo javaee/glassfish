@@ -2187,6 +2187,11 @@ public class StandardContext
         Wrapper wrapper = (Wrapper) child;
         String wrapperName = child.getName();
 
+        if ("javax.faces.webapp.FacesServlet".equals(
+                wrapper.getServletClassName())) {
+            isJsfApplication = true;
+        }
+
         // Allow webapp to override JspServlet inherited from global web.xml.
         boolean isJspServlet = "jsp".equals(wrapperName);
         if (isJspServlet) {
@@ -5519,9 +5524,6 @@ public class StandardContext
                 // START SJSAS 8.1 5049111
                 // Notify our interested LifecycleListeners
                 lifecycle.fireLifecycleEvent(START_EVENT, null);
-
-                if (TldConfig.getScanParentTldListener() == false)
-                    isJsfApplication = isJsfServletDefined();
                 // END SJSAS 8.1 5049111
 
                 // Read tldListeners. XXX  Option to disable
@@ -6048,32 +6050,6 @@ public class StandardContext
 
 
     // ------------------------------------------------------ Protected Methods
-
-    // START SJSAS 8.1 5049111
-    /**
-     * Check if we need to scan the classloader parent for Tld listeners.
-     * Tlds will be scanned for listeners only if the web app uses
-     * Java Server Faces.
-     */
-    private boolean isJsfServletDefined(){
-        String servletName;
-        for(Container wrapper : findChildren()) {
-            servletName = ((Wrapper)wrapper).getServletClassName();
-            if(servletName == null) {
-                continue;
-            }
-            // REVISIT Should we make the list configurable?
-            if("javax.faces.webapp.FacesServlet".equals(servletName)) {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-    // END SJSAS 8.1 5049111
-
-
 
     /**
      * Adjust the URL pattern to begin with a leading slash, if appropriate

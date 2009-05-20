@@ -386,8 +386,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             instance.getApplicationCompileJspPath().getAbsolutePath();
         _modulesRoot = instance.getApplicationRepositoryPath();
 
-        setTldScan();
-
         // START S1AS 6178005
         modulesStubRoot = instance.getModuleStubPath();
         appsStubRoot = instance.getApplicationStubPath().getAbsolutePath();
@@ -2206,43 +2204,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
     }
-
-
-    /*
-     * Includes, from TLD scanning, any user specified JARs on the classpath
-     * and higher up in the classloader delegation chain that are known to
-     * contain any TLDs or TLD listeners.
-     */
-    private void setTldScan() {
-
-        HashSet<String> tldJars = null;
-        HashSet<String> tldListeners = null;
-
-        String prop = System.getProperty("com.sun.enterprise.taglibs");
-        if (prop != null && prop.trim().length() > 0) {
-            tldJars = new HashSet<String>(
-                    StringUtils.parseStringList(prop, ","));
-        }
-
-        prop = System.getProperty("com.sun.enterprise.taglisteners");
-        if (prop != null && prop.trim().length() > 0) {
-            tldListeners = new HashSet<String>(
-                    StringUtils.parseStringList(prop, ","));
-        }
-
-        // Check to see if we need to scan the parent classloader when
-        // searching for TLD listener. JSF application mandate the search, as
-        // well as shared TLD added to the
-        // property com.sun.enterprise.taglisteners
-        if ( tldListeners != null && !tldListeners.isEmpty()){
-            // By default, domain.xml contains no element.
-            TldConfig.setScanParentTldListener(true);
-        }
-
-        TldConfig.setTldListeners(tldListeners);
-        TldLocationsCache.setTldJars(tldJars);
-    }
-
 
     // Begin EE: 4927099 load only associated applications
     /**

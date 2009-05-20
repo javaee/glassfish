@@ -40,10 +40,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.glassfish.api.web.TldProvider;
@@ -70,20 +67,54 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     @Inject
     ModulesRegistry registry;
 
-    private Map<URI, List<String>> tldMap = new HashMap<URI, List<String>>();
+    private Map<URI, List<String>> tldMap =
+        new HashMap<URI, List<String>>();
+
+    private Map<URI, List<String>> tldListenerMap = null;
+
+    /**
+     * Gets the name of this TldProvider
+     */
+    public String getName() {
+        return "jsfTld";
+    }
  
     /**
-     * Get a Map with key URL and value as a list of tld entries.
+     * Gets a mapping from JAR files to their TLD resources.
      */
     public Map<URI, List<String>> getTldMap() {
         return (Map<URI, List<String>>)((HashMap)tldMap).clone();
+    }
+
+    /**
+     * Gets a mapping from JAR files to their TLD resources
+     * that are known to contain listener declarations.
+     */
+    public synchronized Map<URI, List<String>> getTldListenerMap() {
+        if (tldListenerMap == null) {
+            tldListenerMap = new HashMap<URI, List<String>>();
+            for (URI uri : tldMap.keySet()) {
+                /*
+                 * In the case of JSF, the only TLD that declares any
+                 * listener is META-INF/jsf_core.tld 
+                 */
+                if (tldMap.get(uri).contains("META-INF/jsf_core.tld")) {
+                    tldListenerMap.put(uri, tldMap.get(uri));
+                    break;
+                }
+            }
+            tldListenerMap = Collections.unmodifiableMap(tldListenerMap);
+        }
+
+        return tldListenerMap;
     }
 
     public void postConstruct() {
 
         Class jsfImplClass = null;
         try {
-            jsfImplClass = getClass().getClassLoader().loadClass("com.sun.faces.spi.InjectionProvider");
+            jsfImplClass = getClass().getClassLoader().loadClass(
+                "com.sun.faces.spi.InjectionProvider");
         } catch (ClassNotFoundException ignored) {
         }
 

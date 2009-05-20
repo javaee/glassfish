@@ -506,14 +506,6 @@ public class TomcatDeploymentConfig {
 
             wrapper = (StandardWrapper)webModule.createWrapper();
             wrapper.setName(webComponentDesc.getCanonicalName());
-            webModule.addChild(wrapper);
-
-            enumeration = webComponentDesc.getInitializationParameters();
-            InitializationParameter initP = null;
-            while (enumeration.hasMoreElements()) {
-                initP = (InitializationParameter)enumeration.nextElement();
-                wrapper.addInitParameter(initP.getName(), initP.getValue());
-            }
 
             if (webComponentDesc.isServlet()){
                 wrapper.setServletClassName(
@@ -521,6 +513,20 @@ public class TomcatDeploymentConfig {
             } else {
                 wrapper.setJspFile(
                     webComponentDesc.getWebComponentImplementation());
+            }
+
+            /*
+             * Add the wrapper only after we have set its 
+             * servletClassName, so we know whether we're dealing with
+             * a JSF app
+             */
+            webModule.addChild(wrapper);
+
+            enumeration = webComponentDesc.getInitializationParameters();
+            InitializationParameter initP = null;
+            while (enumeration.hasMoreElements()) {
+                initP = (InitializationParameter)enumeration.nextElement();
+                wrapper.addInitParameter(initP.getName(), initP.getValue());
             }
 
             wrapper.setLoadOnStartup(webComponentDesc.getLoadOnStartUp());

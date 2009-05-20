@@ -58,7 +58,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 
 /**
- * Implementation of TldProvider for JSF.
+ * Implementation of TldProvider for JSTL.
  * @author Shing Wai Chan
  * @author Sahoo
  */
@@ -72,10 +72,26 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     private Map<URI, List<String>> tldMap = new HashMap<URI, List<String>>();
 
     /**
-     * Get a Map with key URI and value as a list of tld entries.
+     * Gets the name of this TldProvider
+     */
+    public String getName() {
+        return "jstlTld";
+    }
+
+    /**
+     * Gets a mapping from JAR files to their TLD resources.
      */
     public Map<URI, List<String>> getTldMap() {
         return (Map<URI, List<String>>)((HashMap)tldMap).clone();
+    }
+
+    /**
+     * Gets a mapping from JAR files to their TLD resources
+     * that are known to contain listener declarations.
+     */
+    public Map<URI, List<String>> getTldListenerMap() {
+        // None of the JSTL TLDs declare any listeners
+        return null;
     }
  
     public void postConstruct() {

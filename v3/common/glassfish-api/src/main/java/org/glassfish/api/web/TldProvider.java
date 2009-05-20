@@ -51,8 +51,19 @@ import org.jvnet.hk2.annotations.Contract;
 public interface TldProvider {
 
     /**
-     * Get a Map with key a URI to a jar file and
-     * value as a list of values of one or more of tld entries in the jar file.
+     * Gets the name of this TldProvider
+     */
+    public String getName();
+   
+    /**
+     * Gets a mapping from JAR files to their TLD resources.
      */
     public Map<URI, List<String>> getTldMap();
+
+    /**
+     * Gets a mapping from JAR files to their TLD resources
+     * that are known to contain listener declarations
+     */
+    public Map<URI, List<String>> getTldListenerMap();
+
 }

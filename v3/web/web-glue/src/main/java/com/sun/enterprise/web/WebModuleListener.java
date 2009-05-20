@@ -245,8 +245,9 @@ final class WebModuleListener
     //------------------------------------------------------- Private Methods
 
     /**
-     * Configure the jsp config settings for the jspServlet  using the values
-     * in sun-web.xml's jsp-config
+     * Configure all JSP related aspects of the web module, including
+     * any relevant TLDs as well as the jsp config settings of the
+     * JspServlet (using the values from sun-web.xml's jsp-config).
      */
     private void configureJsp(WebModule webModule) {
         // Find tld URI and set it to ServletContext attribute
@@ -255,6 +256,11 @@ final class WebModuleListener
                 TldProvider.class);
         Map<URI, List<String>> tldMap = new HashMap<URI, List<String>>();
         for (TldProvider tldProvider : tldProviders) {
+            // Skip any JSF related TLDs for non-JSF apps
+            if ("jsfTld".equals(tldProvider.getName()) &&
+                    !webModule.isJsfApplication()) {
+                continue;
+            }
             Map<URI, List<String>> tmap = tldProvider.getTldMap();
             if (tmap != null) {
                 tldMap.putAll(tmap);
@@ -263,12 +269,33 @@ final class WebModuleListener
         webModule.getServletContext().setAttribute(
                 "com.sun.appserv.tld.map", tldMap);
 
+        /*
+         * Discover all TLDs that are known to contain listener
+         * declarations, and store the resulting map as a
+         * ServletContext attribute
+         */
+        Map<URI, List<String>> tldListenerMap =
+            new HashMap<URI, List<String>>();
+        for (TldProvider tldProvider : tldProviders) {
+            // Skip any JSF related TLDs for non-JSF apps
+            if ("jsfTld".equals(tldProvider.getName()) &&
+                    !webModule.isJsfApplication()) {
+                continue;
+            }
+            Map<URI, List<String>> tmap = tldProvider.getTldListenerMap();
+            if (tmap != null) {
+                tldListenerMap.putAll(tmap);
+            }
+        }
+        webModule.getServletContext().setAttribute(
+            "com.sun.appserv.tldlistener.map", tldListenerMap);
+
         // set habitat for jsf injection
         webModule.getServletContext().setAttribute(
                 Constants.HABITAT_ATTRIBUTE,
                 serverContext.getDefaultHabitat());
 
-        SunWebApp bean  = webModule.getIasWebAppConfigBean();
+        SunWebApp bean = webModule.getIasWebAppConfigBean();
 
         // Find the default jsp servlet
         String name = webModule.findServletMapping(Constants.JSP_URL_PATTERN);

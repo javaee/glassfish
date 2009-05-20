@@ -107,9 +107,6 @@ import org.xml.sax.InputSource;
  */
 public final class TldConfig  {
 
-    // Names of JARs that are known not to contain any TLDs with listeners
-    private static HashSet<String> tldListeners;
-
     private static Logger log = Logger.getLogger(TldConfig.class.getName());
 
     private static final String FILE_URL_PREFIX = "file:";
@@ -177,13 +174,6 @@ public final class TldConfig  {
     
     private boolean rescan=true;
     
-    // START SJSAS 8.1 5049111   
-    /**
-     * Scan the parent when searching for TLD listeners.
-     */
-    private static boolean scanParent = false;
-    // END SJSAS 8.1 5049111    
-
     private ArrayList listeners=new ArrayList();
 
     // START GlassFish 747
@@ -199,63 +189,10 @@ public final class TldConfig  {
 
     // --------------------------------------------------------- Public Methods
 
-
     public void setUseMyFaces(boolean useMyFaces) {
         this.useMyFaces = useMyFaces;
     }
 
-
-    /**
-     * Sets the list of JAR files that are known to contain any
-     * TLDs that declare servlet listeners.
-     *
-     * Only shared JAR files (that is, those loaded by a delegation parent
-     * of the webapp's classloader) will be checked against this list.
-     *
-     * @param jarNames List of comma-separated names of JAR files that are 
-     * known to contain any TLDs that declare servlet listeners
-     */
-    public static void setTldListeners(String jarNames) {
-        if (jarNames != null) {
-            if (tldListeners == null) {
-                tldListeners = new HashSet<String>();
-            } else {
-                tldListeners.clear();
-            }
-            StringTokenizer tokenizer = new StringTokenizer(jarNames, ",");
-            while (tokenizer.hasMoreElements()) {
-                tldListeners.add(tokenizer.nextToken());
-            }
-        }
-    }
-
-    /**
-     * Sets the list of JAR files that are known to contain any
-     * TLDs that declare servlet listeners.
-     *
-     * Only shared JAR files (that is, those loaded by a delegation parent
-     * of the webapp's classloader) will be checked against this list.
-     *
-     * @param set HashSet containing the names of JAR file known to
-     * contain any TLDs that declare servlet listeners
-     */
-    public static void setTldListeners(HashSet set) {
-        tldListeners = set;
-    }
-    
-    // START SJSAS 8.1 5049111   
-    /**
-     * Scan the parent when searching for TLD listeners.
-     */
-    public static void setScanParentTldListener(boolean scan){
-        scanParent = scan;
-    }
-    
-    public static boolean getScanParentTldListener(){
-        return scanParent;
-    }
-    // END SJSAS 8.1 5049111     
-    
     // START CR 6402120
     /**
      * Sets the flag that indicates whether to create/use a serialized cache of
@@ -322,8 +259,7 @@ public final class TldConfig  {
         this.tldNamespaceAware = tldNamespaceAware;
     }    
 
-
-     public boolean isRescan() {
+    public boolean isRescan() {
         return rescan;
     }
 
@@ -384,7 +320,7 @@ public final class TldConfig  {
     }
 
     public String[] getTldListeners() {
-        String result[]=new String[listeners.size()];
+        String result[] = new String[listeners.size()];
         listeners.toArray(result);
         return result;
     }
@@ -443,11 +379,9 @@ public final class TldConfig  {
         Set<String> resourcePaths = tldScanResourcePaths();              
         Map<String, JarPathElement> jarPaths = getJarPaths();
 
-        Map<URI, List<String>> tldMap = null;
-        if (scanParent || context.isJsfApplication()) {
-            tldMap = (Map<URI, List<String>>)context.getServletContext().getAttribute(
-                    "com.sun.appserv.tld.map");
-        }
+        Map<URI, List<String>> tldMap = (Map<URI, List<String>>)
+            context.getServletContext().getAttribute(
+                "com.sun.appserv.tldlistener.map");
         
         // Check to see if we can use cached listeners
         if (tldCache != null && tldCache.exists()) {
@@ -885,23 +819,8 @@ public final class TldConfig  {
     }
 
     /**
-     * Returns a map of the paths to all JAR files that are accessible to the
-     * webapp and will be scanned for TLDs and their listeners.
-     *
-     * The map always includes all the JARs under WEB-INF/lib, as well as
-     * shared JARs in the classloader delegation chain of the webapp's
-     * classloader.
-     *
-     * The latter constitutes a Tomcat-specific extension to the TLD search
-     * order defined in the JSP spec. It allows tag libraries packaged as JAR
-     * files to be shared by web applications by simply dropping them in a 
-     * location that all web applications have access to (e.g.,
-     * <CATALINA_HOME>/common/lib).
-     *
-     * The set of shared JARs to be scanned for TLDs is narrowed down by
-     * the <tt>tldListeners</tt> class variable, which contains the names
-     * of JARs that are known to contain any TLDs that declare servlet
-     * listeners.
+     * Returns a map of the paths to all JAR files under WEB-INF/lib
+     * that will be scanned for TLDs and their listeners.
      *
      * @return Map of JAR file paths
      */
@@ -909,67 +828,48 @@ public final class TldConfig  {
 
         HashMap<String, JarPathElement> jarPathMap = null;
 
-        ClassLoader webappLoader = Thread.currentThread().getContextClassLoader();
-        ClassLoader loader = webappLoader;
-        while (loader != null) {
-            if (loader instanceof URLClassLoader) {
-                URL[] urls = ((URLClassLoader) loader).getURLs();
-                for (int i=0; i<urls.length; i++) {
-                    // Expect file URLs, these are %xx encoded or not depending
-                    // on the class loader
-                    // This is definitely not as clean as using JAR URLs either
-                    // over file or the custom jndi handler, but a lot less
-                    // buggy overall
+        ClassLoader loader =
+            Thread.currentThread().getContextClassLoader();;
+        if (loader instanceof URLClassLoader) {
+            URL[] urls = ((URLClassLoader) loader).getURLs();
+            for (int i=0; i<urls.length; i++) {
+                // Expect file URLs, these are %xx encoded or not depending
+                // on the class loader
+                // This is definitely not as clean as using JAR URLs either
+                // over file or the custom jndi handler, but a lot less
+                // buggy overall
 
-                    // Check that the URL is using file protocol, else ignore it
-                    if (!"file".equals(urls[i].getProtocol())) {
-                        continue;
-                    }
+                // Check that the URL is using file protocol, else ignore it
+                if (!"file".equals(urls[i].getProtocol())) {
+                    continue;
+                }
 
-                    File file = new File(
-                            RequestUtil.URLDecode(urls[i].getFile()));
-                    try {
-                        file = file.getCanonicalFile();
-                    } catch (IOException e) {
-                        // Ignore
-                    }
-                    if (!file.exists()) {
-                        continue;
-                    }
-                    String path = file.getAbsolutePath();
-                    if (!path.endsWith(".jar")) {
-                        continue;
-                    }
-                    /*
-                     * Scan all JARs from WEB-INF/lib, plus any shared JARs
-                     * that are not known not to contain any TLDs with
-                     * listeners
-                     */
-                    if (loader == webappLoader
-                            || (tldListeners != null &&
-                                tldListeners.contains(file.getName()))) {
-                        JarPathElement elem = new JarPathElement(
-                                file, loader == webappLoader);
-                        if (jarPathMap == null) {
-                            jarPathMap = new HashMap<String, JarPathElement>();
-                            jarPathMap.put(path, elem);
-                        } else if (!jarPathMap.containsKey(path)) {
-                            jarPathMap.put(path, elem);
-                        }
-                    }
+                File file = new File(
+                        RequestUtil.URLDecode(urls[i].getFile()));
+                try {
+                    file = file.getCanonicalFile();
+                } catch (IOException e) {
+                    // Ignore
+                }
+                if (!file.exists()) {
+                    continue;
+                }
+                String path = file.getAbsolutePath();
+                if (!path.endsWith(".jar")) {
+                    continue;
+                }
+                /*
+                 * Scan any JARs from WEB-INF/lib
+                 */
+                JarPathElement elem = new JarPathElement(file, true);
+                if (jarPathMap == null) {
+                    jarPathMap = new HashMap<String, JarPathElement>();
+                    jarPathMap.put(path, elem);
+                } else if (!jarPathMap.containsKey(path)) {
+                    jarPathMap.put(path, elem);
                 }
             }
-            
-            // START SJSAS 8.1 5049111
-            if ( scanParent || context.isJsfApplication() ) {
-            // END SJSAS 8.1 5049111    
-                loader = loader.getParent();
-            // START SJSAS 8.1 5049111
-            } else {
-                loader = null;
-            }
-            // END SJSAS 8.1 5049111                
-        }
+        }            
 
         return jarPathMap;
     }
