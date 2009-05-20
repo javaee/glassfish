@@ -55,10 +55,10 @@ import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 //import com.sun.enterprise.config.ConfigContext;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.server.ApplicationServer;
 import com.sun.logging.*;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
 
 
@@ -117,16 +117,16 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     
     RoleMapper(String appName) {
         this.appName = appName;
-        secService = SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
+        secService = Globals.getDefaultHabitat().getComponent(SecurityService.class);
         defaultP2RMappingClassName = getDefaultP2RMappingClassName();
         postConstruct();
     }
    
     private  synchronized void initDefaultRole() {  
-        if (!SecurityServicesUtil.getInstance().isServer()) {
-            //do nothing if this is not an EJB or Web Container
-            return;
-        }
+//        if (!SecurityServicesUtil.getInstance().isServer()) {
+//            //do nothing if this is not an EJB or Web Container
+//            return;
+//        }
         if (defaultRole == null) {
             defaultRoleName = DEFAULT_ROLE_NAME;
             try {
@@ -718,7 +718,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     }
 
     public void postConstruct() {
-       initDefaultRole();
+//       initDefaultRole();
     }
 
 }
