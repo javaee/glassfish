@@ -44,8 +44,8 @@
  -->
 
 <!initPage
-    getRequestValue(key="form2:validate" value="#{requestScope.form2_validate}");
-    setComponentRequired(id="form2:sheet:generalSheet:dsProp:datasource" required="#{requestScope.form2_validate}" )
+    getRequestValue(key="form2:validate" value="$attribute{form2-validate}");
+    setComponentRequired(id="form2:sheet:generalSheet:dsProp:datasource" required="$attribute{form2-validate}" )
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
 />
