@@ -49,6 +49,7 @@ import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.AuditModule;
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 
+import com.sun.enterprise.deployment.LoginConfigurationImpl;
 import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.realm.Realm;
@@ -57,6 +58,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import javax.security.auth.login.Configuration;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
@@ -294,6 +296,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             secSupp.synchronizeKeyFile((Object) null, authRealm.getName());
         }
         Realm.instantiate(authRealm.getName(), className, props);
+        Configuration.getConfiguration().refresh();
     }
 
     public void postConstruct() {
