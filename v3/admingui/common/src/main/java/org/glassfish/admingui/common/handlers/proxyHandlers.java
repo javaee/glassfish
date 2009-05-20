@@ -59,7 +59,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
  *
  * @author Anissa Lam
  */
-public class ProxyHandlers {
+public class proxyHandlers {
 
     
     @Handler(id="getChildrenTable",
