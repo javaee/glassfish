@@ -36,35 +36,38 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
-        <version>3.0-SNAPSHOT</version>
-    </parent>
         <groupId>org.glassfish.web</groupId>
-    <artifactId>web</artifactId>
-    <packaging>pom</packaging>
-    <name>GlassFish Web container related modules</name>  
-    <modules>
-        <module>web-naming</module>
-        <module>web-core</module>
-        <module>web-ajp</module>
-        <module>war-util</module>
-        <module>jstl-connector</module>
-        <module>jsf-connector</module>
-        <module>jspcaching-connector</module>
-        <module>gui-plugin-common</module>
-        <module>web-glue</module>
-        <module>webtier-all</module>
-        <module>admin</module>
-        <module>gf-web-connector</module>
-        <module>javax.servlet</module>
-        <module>webbeans-integration</module>
-        <module>osgi-http</module>
-    </modules>
+        <artifactId>web</artifactId>
+        <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>    
+    <groupId>org.glassfish.web</groupId>
+    <artifactId>jspcaching-connector</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>JSP caching taglib connector module</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-glue</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
 </project>
 
