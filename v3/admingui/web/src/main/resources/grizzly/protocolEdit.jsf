@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config]/network-config,type=protocols");
         setPageSessionAttribute(key="childType" value="protocol");
-        getBeanAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled"});
         setSessionAttribute(key="protocolTabs" value="protocolGeneral");
 

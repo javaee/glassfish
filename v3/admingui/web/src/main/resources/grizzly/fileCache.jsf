@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}]/http,type=file-cache");
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
         setPageSessionAttribute(key="childType" value="file-cache");
-        getBeanAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.fileMap}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.fileMap}");
         setPageSessionAttribute(key="valueMap" value="#{pageSession.fileMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         setSessionAttribute(key="protocolTabs" value="fileCacheTab");

@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/thread-pools,type=thread-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools");
         setPageSessionAttribute(key="childType" value="thread-pool");
-        getBeanAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         />
     </event>
 #include "/shared/restart.inc"

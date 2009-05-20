@@ -46,12 +46,13 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getprotocols(configName="$pageSession{configName}", result=>$attribute{listOfRows} );
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
+        setPageSessionAttribute(key="childType" value="protocol");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteProtocol}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/protocolNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/protocols.jsf?configName=#{configName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="type" value="protocol");
         setPageSessionAttribute(key="tableTitle"  value="$resource{i18n_web.grizzly.protocol.tableName}");
     />
     </event>

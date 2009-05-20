@@ -12,7 +12,7 @@
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            deleteGrizzlyElement(configName="#{configName}", type="#{pageSession.type}", selectedRows="${selectedRows}");
+            deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
             setAttribute(key="selectedRows" value="${selectedRows}");
             redirect(page="#{pageSession.listLink}");
         />

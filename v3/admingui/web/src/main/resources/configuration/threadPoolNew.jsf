@@ -50,7 +50,7 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/threadPools.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools" );
         setPageSessionAttribute(key="childType" value="thread-pool");
-        getDefaultBeanAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
     />
     </event>
 #include "/shared/restart.inc"

@@ -50,7 +50,7 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/networkListeners.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
         setPageSessionAttribute(key="childType" value="network-listener");
-        getDefaultBeanAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
     />
     </event>

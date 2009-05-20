@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config/network-listeners,type=network-listener,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
         setPageSessionAttribute(key="childType" value="network-listener");
-        getBeanAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         />
     </event>

@@ -46,12 +46,13 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getThreadPools(configName="$pageSession{configName}", result=>$attribute{listOfRows} );
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools");
+        setPageSessionAttribute(key="childType" value="thread-pool");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteThreadPool}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/threadPoolNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/configuration/threadPools.jsf?configName=#{configName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="type" value="thread-pool");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n_web.configuration.threadPool.tableName}");
     />
     </event>
@@ -75,7 +76,7 @@
             <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.threadPool.Name}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.threadPool.threadPoolIdCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}"
             url="#{pageSession.editLink}&name=#{td.value.Name}" />
     </sun:tableColumn>
