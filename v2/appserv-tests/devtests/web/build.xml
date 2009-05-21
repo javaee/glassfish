@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="412"/>
+    <property name="TOTAL_EXPECTED" value="414"/>
 
     &commonSetup;
     &commonBuild;
@@ -310,9 +310,7 @@
 <!-- XXX temporarily commented out, see IT 7919
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
 -->
-<!-- XXX temporarily commented out, see IT 7424
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
--->
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerStateDynamicReconfig" target="all"/>
@@ -327,12 +325,8 @@
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
 -->
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
-<!-- XXX temporarily commented out, see IT 8219
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
--->
-<!-- XXX temporarily commented out, see IT 8220
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
--->
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
 <!-- XXX temporarily commented out, see IT 7447
         <ant dir="classloaderMemoryLeak" target="all"/>
@@ -410,8 +404,8 @@
         <ant dir="httpConnectorKeepAlive" target="all"/>
         <ant dir="doubleContentLength" target="all"/>
         <ant dir="dosBrokenPost" target="all"/>
-        <ant dir="defaultKeepAlive" target="all"/>
 <!-- XXX temporarily commented out, see IT 8282
+        <ant dir="defaultKeepAlive" target="all"/>
         <ant dir="multiServletRequests" target="all"/>
 -->
 <!-- XXX temporarily commented out, see IT 7919
