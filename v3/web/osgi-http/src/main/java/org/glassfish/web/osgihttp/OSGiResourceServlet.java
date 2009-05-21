@@ -74,14 +74,17 @@ public class OSGiResourceServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        URLConnection conn = url.openConnection();
-        int writeCount = writeToStream(conn, resp.getOutputStream());
-        resp.setContentLength(writeCount);
+        // contentType must be set before writing anything to the stream
+        // as for long data,m stream gets flushed before we have finished
+        // writing everything.
         String mimeType = httpContext.getMimeType(resPath);
         if (mimeType == null) {
             mimeType = getServletConfig().getServletContext().getMimeType(resPath);
         }
         resp.setContentType(mimeType);
+        URLConnection conn = url.openConnection();
+        int writeCount = writeToStream(conn, resp.getOutputStream());
+        resp.setContentLength(writeCount);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
