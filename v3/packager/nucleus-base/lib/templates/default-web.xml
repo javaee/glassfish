@@ -86,6 +86,10 @@
   <!--                       entries can be slow and may consume            -->
   <!--                       significant proportions of server resources.   -->
   <!--                                                                      -->
+  <!--   sortedBy            Specifies the criteria that will be used for   -->
+  <!--                       sorting directory entries. Legal values are    -->
+  <!--                       NAME, SIZE, and LAST_MODIFIED.  [NAME]         -->
+  <!--                                                                      -->
   <!--   output              Output buffer size (in bytes) when writing     -->
   <!--                       resources to be served.  [2048]                -->
   <!--                                                                      -->
