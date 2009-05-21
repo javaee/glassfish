@@ -124,6 +124,12 @@ public class DefaultServlet
 
 
     /**
+     * The sorting mechanism for directory listings
+     */
+    protected SortedBy sortedBy = SortedBy.NAME;
+
+
+    /**
      * Read only flag. By default, it's set to true.
      */
     protected boolean readOnly = true;
@@ -264,6 +270,11 @@ public class DefaultServlet
 
         listings = Boolean.parseBoolean(sc.getInitParameter("listings"));
 
+        String sortedByInitParam = sc.getInitParameter("sortedBy");
+        if (sortedByInitParam != null) {
+            sortedBy = Enum.valueOf(SortedBy.class, sortedByInitParam);
+        }
+
         if (sc.getInitParameter("readonly") != null)
             readOnly = Boolean.parseBoolean(sc.getInitParameter("readonly"));
 
@@ -329,6 +340,14 @@ public class DefaultServlet
      */
     public void setListings(boolean listings) {
         this.listings = listings;
+    }
+
+
+    /**
+     * Sets the sorting mechanism for directory listings.
+     */
+    public void setSortedBy(String sortedByString) {
+        this.sortedBy = Enum.valueOf(SortedBy.class, sortedByString);
     }
 
 
@@ -1227,9 +1246,24 @@ public class DefaultServlet
         try {
 
             // Render the directory entries within this directory
-            NamingEnumeration<NameClassPair> enumeration =
+            Enumeration<NameClassPair> enumeration =
                 resources.list(cacheEntry.name);
-            
+            if (sortedBy.equals(SortedBy.LAST_MODIFIED)) {
+                ArrayList<NameClassPair> list = 
+                    Collections.list(enumeration);
+                Comparator c = new LastModifiedComparator(
+                    resources, cacheEntry.name);
+                Collections.sort(list, c);
+                enumeration = Collections.enumeration(list);
+            } else if (sortedBy.equals(SortedBy.SIZE)) {
+                ArrayList<NameClassPair> list = 
+                    Collections.list(enumeration);
+                Comparator c = new SizeComparator(
+                    resources, cacheEntry.name);
+                Collections.sort(list, c);
+                enumeration = Collections.enumeration(list);
+            }
+
             // rewriteUrl(contextPath) is expensive. cache result for later reuse
             String rewrittenContextPath =  rewriteUrl(contextPath);
 
@@ -1406,8 +1440,24 @@ public class DefaultServlet
         try {
 
             // Render the directory entries within this directory
-            NamingEnumeration<NameClassPair> enumeration =
+            Enumeration<NameClassPair> enumeration =
                 resources.list(cacheEntry.name);
+            if (sortedBy.equals(SortedBy.LAST_MODIFIED)) {
+                ArrayList<NameClassPair> list = 
+                    Collections.list(enumeration);
+                Comparator c = new LastModifiedComparator(
+                    resources, cacheEntry.name);
+                Collections.sort(list, c);
+                enumeration = Collections.enumeration(list);
+            } else if (sortedBy.equals(SortedBy.SIZE)) {
+                ArrayList<NameClassPair> list = 
+                    Collections.list(enumeration);
+                Comparator c = new SizeComparator(
+                    resources, cacheEntry.name);
+                Collections.sort(list, c);
+                enumeration = Collections.enumeration(list);
+            }
+
             boolean shade = false;
             while (enumeration.hasMoreElements()) {
 
@@ -2265,8 +2315,7 @@ public class DefaultServlet
     }
 
 
-    // ------------------------------------------------------ Range Inner Class
-
+    // ------------------------------------------------------ Inner Classes
 
     protected class Range {
 
@@ -2289,8 +2338,82 @@ public class DefaultServlet
             end = 0;
             length = 0;
         }
-
     }
 
+    /**
+     * Enumeration of sorting mechanisms for directory listings.
+     */
+    private enum SortedBy {
+        NAME,
+        LAST_MODIFIED,
+        SIZE
+    }
+
+    /**
+     * Comparator which sorts directory listings by their creation
+     * or lastModified date
+     */
+    private class LastModifiedComparator
+            implements Comparator<NameClassPair> {
+
+        private ProxyDirContext resources;
+        private String dirName;
+
+        public LastModifiedComparator(ProxyDirContext resources,
+                                      String dirName) {
+            this.resources = resources;
+            this.dirName = dirName;
+        }
+
+        public int compare(NameClassPair p1, NameClassPair p2) {
+
+            CacheEntry ce1 = resources.lookupCache(
+                dirName + p1.getName());
+            Date date1 = ce1.attributes.getCreationOrLastModifiedDate();
+            CacheEntry ce2 = resources.lookupCache(
+                dirName + p2.getName());
+            Date date2 = ce2.attributes.getCreationOrLastModifiedDate();
+            if (date1.before(date2)) {
+                return -1;
+            } else if (date1.after(date2)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    /**
+     * Comparator which sorts directory listings by their file size
+     */
+    private class SizeComparator
+            implements Comparator<NameClassPair> {
+
+        private ProxyDirContext resources;
+        private String dirName;
+
+        public SizeComparator(ProxyDirContext resources,
+                              String dirName) {
+            this.resources = resources;
+            this.dirName = dirName;
+        }
+
+        public int compare(NameClassPair p1, NameClassPair p2) {
+
+            CacheEntry ce1 = resources.lookupCache(
+                dirName + p1.getName());
+            long size1 = ce1.attributes.getContentLength();
+            CacheEntry ce2 = resources.lookupCache(
+                dirName + p2.getName());
+            long size2 = ce2.attributes.getContentLength();
+            if (size1 < size2) {
+                return -1;
+            } else if (size1 > size2) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
 
 }

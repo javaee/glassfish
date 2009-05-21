@@ -652,6 +652,21 @@ public class ResourceAttributes implements Attributes {
         lastModifiedHttp = FORMAT.get().format(modifiedDate);
         return lastModifiedHttp;
     }
+
+
+    /**
+     * @return the creation or lastModified date
+     */
+    public Date getCreationOrLastModifiedDate() {
+        Date modifiedDate = getLastModifiedDate();
+        if (modifiedDate == null) {
+            modifiedDate = getCreationDate();
+        }
+        if (modifiedDate == null) {
+            modifiedDate = new Date();
+        }
+        return modifiedDate;
+    }
     
     
     /**
