@@ -37,14 +37,15 @@
 package com.sun.enterprise.web.logger;
 
 /**
- * An implementation of FileLoggerHandler which logs to virtual-server property log-file when enabled.
- *
-**/
+ * An implementation of FileLoggerHandler which logs to virtual-server property 
+ * log-file when enabled
+ */
 
-import java.util.logging.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.io.IOException;
+import java.util.logging.*;
+import com.sun.enterprise.server.logging.UniformLogFormatter;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -58,24 +59,29 @@ import org.jvnet.hk2.component.*;
 @Scoped(Singleton.class)
 public class FileLoggerHandler extends Handler implements PostConstruct {
     
-    @Inject
-    Habitat habitat;
     
-    static BufferedWriter f = null;
-    String webLogger = "javax.enterprise.system.container.web";
-    String catalinaLogger = "org.apache.catalina";
+    private String webLogger = "javax.enterprise.system.container.web.com.sun.enterprise.web";
+    private String catalinaLogger = "org.apache.catalina";
+    
+    private FileOutputStream fileOutputStream;
+    private PrintWriter printWriter;
+
     
     public void postConstruct() {
         setLevel(Level.OFF);
+        this.setFormatter(new UniformLogFormatter());
     }
+    
     
     public void setLogFile(String logFile) {
         try {
-            f = new BufferedWriter(new FileWriter(logFile));       
+            fileOutputStream = new FileOutputStream(logFile);
+            printWriter = new PrintWriter(fileOutputStream);     
     	} catch (IOException e) {
     	}
     }
  
+    
     /**
      * Overridden method used to capture log entries   
      *
@@ -89,42 +95,63 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
                 return;
         }
         
-        // log-file hasn't been set XXX check log level
-        if (f==null) {
+        // log-file hasn't been set 
+        if (fileOutputStream==null || printWriter==null) {
             return; 
         }
 
-        try {
-            if (webLogger.equals(record.getLoggerName()) || 
-                    catalinaLogger.equals(record.getLoggerName()) ) {
-                f.write ("FileLoggerHandler output - ");
-                f.write("logger name: "+record.getLoggerName());
-                f.write(" source classname: "+record.getSourceClassName());
-                f.write(" message: "+record.getMessage()); 
-                f.newLine();
-                f.flush();
-            }
-        } catch (IOException ex){
+        if (webLogger.equals(record.getLoggerName()) || 
+            catalinaLogger.equals(record.getLoggerName()) ) {      
+            printWriter.write(getFormatter().format(record)); 
+            printWriter.flush();
         }
 
     }
 
+    
     /**
      * Called to close this log handler.
      */
     public void close() {
-        try {
-	    f.close();
- 	} catch (IOException ex) {
-        }
+        printWriter.close();
     }
-
  
+    
     /**
      * Called to flush any cached data that
      * this log handler may contain.
      */
     public void flush() {
-        // not used
+        printWriter.flush();
     }
+    
+        
+    /**
+     * Set the verbosity level of this logger.  Messages logged with a
+     * higher verbosity than this level will be silently ignored.
+     *
+     * @param verbosityLevel The new verbosity level, as a string
+     */
+    public void setLevel(String logLevel) {
+            
+        if ("SEVERE".equalsIgnoreCase(logLevel)) {
+            setLevel(Level.SEVERE);
+        } else if ("WARNING".equalsIgnoreCase(logLevel)) {
+            setLevel(Level.WARNING);
+        } else if ("INFO".equalsIgnoreCase(logLevel)) {
+           setLevel(Level.INFO);
+        } else if ("CONFIG".equalsIgnoreCase(logLevel)) {
+           setLevel(Level.CONFIG);
+        } else if ("FINE".equalsIgnoreCase(logLevel)) {
+            setLevel(Level.FINE);
+        } else if ("FINER".equalsIgnoreCase(logLevel)) {
+            setLevel(Level.FINER);
+        } else if ("FINEST".equalsIgnoreCase(logLevel)) {
+            setLevel(Level.FINEST);
+        } else {
+            setLevel(Level.INFO);
+        }
+        
+    }
+    
 }

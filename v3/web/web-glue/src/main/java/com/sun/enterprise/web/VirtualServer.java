@@ -1032,7 +1032,8 @@ public class VirtualServer extends StandardHost {
      * the domain.xml
      */
     void setLogFile(String logFile, String logLevel, FileLoggerHandler logHandler) {
-        
+   
+        /** catalina file logger code
         String logPrefix = logFile;
         String logDir = null;
         String logSuffix = null;
@@ -1065,9 +1066,10 @@ public class VirtualServer extends StandardHost {
         }
         contextLogger.setTimestamp(true);
         contextLogger.setLevel(logLevel); 
+         */
+        
         logHandler.setLogFile(logFile);
-        contextLogger.addHandler(logHandler); 
-        setLogger(contextLogger);
+        logHandler.setLevel(logLevel);
     }
 
 
