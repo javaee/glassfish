@@ -152,10 +152,26 @@ public class WebBundleDescriptor extends BundleDescriptor
         getAppListeners().addAll(webBundleDescriptor.getAppListeners());
         // ok as EnvironmentProperty.equals() only compare name
         getContextParametersSet().addAll(webBundleDescriptor.getContextParametersSet());
-        getEjbReferenceDescriptors().addAll(webBundleDescriptor.getEjbReferenceDescriptors());
+        for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
+            addEjbReferenceDescriptor((EjbReferenceDescriptor)ejbRef);
+        }
         getResourceReferenceDescriptors().addAll(webBundleDescriptor.getResourceReferenceDescriptors());
-        getMessageDestinationReferenceDescriptors().addAll(webBundleDescriptor.getMessageDestinationReferenceDescriptors());
-        getServiceReferenceDescriptors().addAll(webBundleDescriptor.getServiceReferenceDescriptors());
+
+        for (MessageDestinationReferenceDescriptor mdRef:
+                webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
+            addMessageDestinationReferenceDescriptor(mdRef);
+        }
+        for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
+            addServiceReferenceDescriptor(serviceRef);
+        }
+        for (EntityManagerFactoryReferenceDescriptor emfRef:
+                webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
+            addEntityManagerFactoryReferenceDescriptor(emfRef);
+        }
+        for (EntityManagerReferenceDescriptor emRef:
+                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
+            addEntityManagerReferenceDescriptor(emRef);
+        }
         getEnvironmentProperties().addAll(webBundleDescriptor.getEnvironmentProperties());
         getSecurityConstraintsSet().addAll(webBundleDescriptor.getSecurityConstraintsSet());
 
