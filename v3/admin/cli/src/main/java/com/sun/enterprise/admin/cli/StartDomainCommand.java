@@ -85,8 +85,9 @@ public class StartDomainCommand extends AbstractCommand {
             // km@dev.java.net (Aug 2008)
             if(isServerAlive(info.getAdminPorts())) {
                 String port = info.getAdminPorts().toArray(new Integer[0])[0] + "";
-                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName(), port});
-                throw new CommandException(msg);
+                String msg = getLocalizedString("ServerRunning", new String[]{port});
+                Log.warning(msg);
+                return;
             }
 
             if(isRestart)

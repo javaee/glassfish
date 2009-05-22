@@ -81,9 +81,12 @@ public class StopDomainCommand extends AbstractCommand {
         int adminPort = ports[0];
 
         // Verify that the DAS is running and reachable
-        if(!isServerAlive(adminPort))
-            throw new CommandException(strings.get("StopDomain.dasNotRunning"));
-
+        if(!isServerAlive(adminPort)) {
+            // by definition this is not an error
+            // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
+            Log.warning(strings.get("StopDomain.dasNotRunning"));
+            return;
+        }
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
             invokeCommand(adminPort);
