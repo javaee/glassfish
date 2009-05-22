@@ -587,7 +587,7 @@ private class ProtectedList extends AbstractList {
         if (value.startsWith("${") && value.endsWith("}"))
           return;
 
-        boolean isValid = false;
+        boolean isValid = String.class.getName().equals(al.dataType);
         if ("int".equals(al.dataType) ||
             "java.lang.Integer".equals(al.dataType))
             isValid = representsInteger(value);
