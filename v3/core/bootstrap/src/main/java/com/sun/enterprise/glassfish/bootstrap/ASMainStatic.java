@@ -39,6 +39,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.PlatformMain;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.module.impl.HK2Factory;
@@ -64,7 +65,7 @@ import org.kohsuke.MetaInfServices;
  * Main class for static invocation, no OSGi mode, all classes loaded
  * by a single class loader.
  */
-@MetaInfServices(AbstractMain.class)
+@MetaInfServices(PlatformMain.class)
 public class ASMainStatic extends AbstractMain {
 
     private File out;

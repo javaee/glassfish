@@ -45,13 +45,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.module.bootstrap.PlatformMain;
+
 /**
  * Main class to launch GlassFish on Equinox (non-embedded)
  * use GlassFish on Equinox at your risk.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-@MetaInfServices(AbstractMain.class)
+@MetaInfServices(PlatformMain.class)
 public class ASMainEquinox extends ASMainOSGi {
     /* if equinox is installed under glassfish/eclipse this would be the
      *  glassfish/eclipse/plugins dir that contains the equinox jars

@@ -2,6 +2,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.Which;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.PlatformMain;
 
 import java.io.*;
 import java.util.Properties;
@@ -18,13 +19,11 @@ import java.nio.channels.FileChannel;
  *
  * @author Jerome Dochez
  */
-public abstract class AbstractMain {
+public abstract class AbstractMain extends PlatformMain {
 
     final File bootstrapFile;
 
-    protected Logger logger;
-
-    final protected ASMainHelper helper;
+    protected ASMainHelper helper;
 
     final protected File glassfishDir; // glassfish/
 
@@ -36,14 +35,6 @@ public abstract class AbstractMain {
 
     protected abstract String getPreferedCacheDir();
 
-    /**
-     * Returns the plaform name, this will uniquely define this instance as a
-     * provider for that platform.
-     *
-     * @return the platform name
-     */
-    public abstract String getName();
-
     abstract boolean createCache(File cacheDir) throws IOException;
 
     AbstractMain() {
@@ -51,8 +42,12 @@ public abstract class AbstractMain {
         System.setProperty("hk2.startup.context.root", bootstrapFile.getParent());
         glassfishDir = bootstrapFile.getParentFile().getParentFile(); //glassfish/
         System.setProperty("com.sun.aas.installRoot",glassfishDir.getAbsolutePath());
+    }
+
+    public void start(String[] args) throws Exception {
         helper = new ASMainHelper(logger);
         helper.parseAsEnv(glassfishDir);
+        run(logger, args);
     }
 
     public void run(Logger logger, String... args) throws Exception {
