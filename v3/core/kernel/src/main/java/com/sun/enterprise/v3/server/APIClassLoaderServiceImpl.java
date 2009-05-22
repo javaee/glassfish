@@ -58,6 +58,8 @@ import java.net.URL;
  * load classes exported by any OSGi bundle in the system for public use.
  * Such classes include Java EE API, AMX API, appserv-ext API, etc.
  * CommonClassLoader delegates to this class loader..
+ * It does special treatment of META-INF/mailcap file. For such resources,
+ * it searches all available bundles.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -73,6 +75,7 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
     ModulesRegistry mr;
     private static final String APIExporterModuleName =
             "GlassFish-Application-Common-Module"; // NOI18N
+    private static final String MAILCAP = "META-INF/mailcap";
     final static Logger logger = LogDomains.getLogger(APIClassLoaderServiceImpl.class, LogDomains.LOADER_LOGGER);
     private Module APIModule;
 
@@ -129,9 +132,22 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
             {
                 URL url = null;
                 if (!name.startsWith("java/")) {
-                    url = apiModuleLoader.getResource(name);
+                    if (name.equals(MAILCAP)) {
+                        // punch in for META-INF/mailcap files.
+                        // see issue #8426
+                        for (Module m : mr.getModules()) {
+                            if ((url = m.getClassLoader().getResource(name)) != null) {
+                                break;
+                            }
+                        }
+                    } else {
+                        url = apiModuleLoader.getResource(name);
+                    }
                 }
                 if (url == null) {
+                    // Either requested resource belongs to java/ namespace or
+                    // it was not found in any of the bundles, so call
+                    // super class implementation which will delegate to parent.
                     url = super.getResource(name);
                 }
                 return url;
@@ -141,10 +157,21 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
             public Enumeration<URL> getResources(String name) throws IOException
             {
                 List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
-                enumerators.add(super.getResources(name));
                 if (!name.startsWith("java/")) {
-                    enumerators.add(apiModuleLoader.getResources(name));
+                    if (name.equals(MAILCAP)) {
+                        // punch in for META-INF/mailcap files.
+                        // see issue #8426
+                        for (Module m : mr.getModules()) {
+                            enumerators.add(m.getClassLoader().getResources(name));
+                        }
+                    } else {
+                        enumerators.add(apiModuleLoader.getResources(name));
+                    }
                 }
+                // Either requested resource belongs to java/ namespace or
+                // it was not found in any of the bundles, so call
+                // super class implementation which will delegate to parent.
+                enumerators.add(super.getResources(name));
                 return new CompositeEnumeration(enumerators);
             }
         };
