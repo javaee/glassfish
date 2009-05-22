@@ -139,9 +139,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             for (final Module module : getModules())
                 parseInhabitants(module, name,parser);
 
-            ConfigParser configParser = new ConfigParser(habitat);
-            for( Populator p : habitat.getAllByContract(Populator.class) )
-                p.run(configParser);
+            populateConfig(habitat);
 
             // default modules registry is the one that created the habitat
             habitat.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(this),
@@ -151,6 +149,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         } catch (IOException e) {
             throw new ComponentException("Failed to create a habitat",e);
         }
+    }
+
+    protected void populateConfig(Habitat habitat) {
+        ConfigParser configParser = new ConfigParser(habitat);
+        for( Populator p : habitat.getAllByContract(Populator.class) )
+            p.run(configParser);
     }
 
     public abstract void parseInhabitants(Module module,
