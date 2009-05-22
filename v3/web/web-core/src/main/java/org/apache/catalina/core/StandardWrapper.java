@@ -948,7 +948,7 @@ public class StandardWrapper
      *  an exception
      * @exception ServletException if a loading error occurs
      */
-    public Servlet allocate() throws ServletException {
+    public synchronized Servlet allocate() throws ServletException {
 
         // If we are currently unloading this servlet, throw an exception
         if (unloading) {
@@ -960,30 +960,26 @@ public class StandardWrapper
         if (!singleThreadModel) {
 
             // Load and initialize our instance if necessary
-            if (instance == null || instance.getServletConfig() == null) {
-                synchronized (this) {
-                    if (instance == null) {
-                        // No instance. Instantiate and initialize
-                        try {
-                            if (log.isLoggable(Level.FINEST))
-                                log.finest("Allocating non-STM instance");
-                            instance = loadServlet();
-                            initServlet(instance);
-                        } catch (ServletException e) {
-                            throw e;
-                        } catch (Throwable e) {
-                            throw new ServletException
-                                (sm.getString("standardWrapper.allocate"), e);
-                        }
-                    } else {
-                        /*
-                         * Instance not yet initialized. This is the case
-                         * when the instance was registered via
-                         * ServletContext#addServlet
-                         */
-                        initServlet(instance);
-                    }
+            if (instance == null) {
+                // No instance. Instantiate and initialize
+                try {
+                    if (log.isLoggable(Level.FINEST))
+                        log.finest("Allocating non-STM instance");
+                    instance = loadServlet();
+                    initServlet(instance);
+                } catch (ServletException e) {
+                    throw e;
+                } catch (Throwable e) {
+                    throw new ServletException
+                        (sm.getString("standardWrapper.allocate"), e);
                 }
+            } else if (instance.getServletConfig() == null) {
+                /*
+                 * Instance not yet initialized. This is the case
+                 * when the instance was registered via
+                 * ServletContext#addServlet
+                 */
+                initServlet(instance);
             }
 
             if (!singleThreadModel) {
