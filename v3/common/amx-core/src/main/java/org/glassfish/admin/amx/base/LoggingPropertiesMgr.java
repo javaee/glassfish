@@ -37,6 +37,9 @@ package org.glassfish.admin.amx.base;
 
 import java.util.Map;
 
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Singleton;
@@ -51,10 +54,12 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(type="logging-props", leaf=true, singleton=true)
 public interface LoggingPropertiesMgr extends AMXProxy, Utility, Singleton
 {
+  @ManagedAttribute
   public Map<String,String> getLoggingProps();
 
     /** Overwrite the existing value, return prior one.
         Pass null to remove
     */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION_INFO)
     public String setLoggingProp( String name, String value );
 }

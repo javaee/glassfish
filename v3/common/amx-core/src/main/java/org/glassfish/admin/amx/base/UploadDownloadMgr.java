@@ -38,6 +38,7 @@ package org.glassfish.admin.amx.base;
 import java.io.File;
 import java.io.IOException;
 
+import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
@@ -62,7 +63,7 @@ public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 	 @param totalSize	total size of the file to upload
 	 @return an opaque identifier describing this file upload
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public Object initiateUpload(String name, long totalSize )
 			throws IOException;
 
@@ -73,8 +74,8 @@ public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 	 @param bytes		more bytes to be uploaded
 	 @return			true if the total upload has been completed, false otherwise
 	 @throws			an Exception if a problem occurred
-	 */ 
-    @ManagedOperation
+	 */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public boolean uploadBytes(Object uploadID, byte[] bytes)
 		throws IOException;
 		
@@ -86,8 +87,8 @@ public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 		@param uploadID	the id obtained from initiateUpload()
 		@return a File object for a file containing the uploaded bytes
 		@throws			an Exception if the uploadID doesn't exist, or has not finished.
-	 */ 
-    @ManagedOperation
+	 */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public File takeUpload( Object uploadID );
 
 
@@ -101,7 +102,7 @@ public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 	 @param deleteWhenDone	whether to delete the file when done
 	 @return the downloadID to be used for subequent calls to downloadBytes()
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public Object initiateDownload( File theFile, boolean deleteWhenDone )
 		throws IOException;
 		
@@ -110,7 +111,7 @@ public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 		
 	 	@param downloadID	the dowloadID, as obtained from initiateDownload()
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public long getDownloadLength( final Object downloadID );
 
 	/**
@@ -134,7 +135,7 @@ public interface UploadDownloadMgr extends AMXProxy, Utility, Singleton
 	 @param downloadID	the id from initiateDownload()
 	 @return bytes remaining bytes, up to the request size
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public byte[] downloadBytes( Object downloadID, int requestSize )
 		throws IOException;
 

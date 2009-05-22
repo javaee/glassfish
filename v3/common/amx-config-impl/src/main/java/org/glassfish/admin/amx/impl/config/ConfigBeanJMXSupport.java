@@ -10,7 +10,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +45,7 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.quality.ToDo;
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXCreatorInfo;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Units;
 import org.jvnet.hk2.config.ConfigBean;
@@ -951,7 +951,17 @@ public class ConfigBeanJMXSupport {
     Get the child types, excluding String[] and anonymous.
      */
     public Set<Class<? extends ConfigBeanProxy>> childInterfaces() {
-        return childInterfaces(mElemenInfos);
+        final Set<Class<? extends ConfigBeanProxy>>  intfs =  childInterfaces(mElemenInfos);
+        
+        final AMXCreatorInfo creatorInfo = mIntf.getAnnotation(AMXCreatorInfo.class);
+        if ( creatorInfo != null )
+        {
+            for( final Class<? extends ConfigBeanProxy> childInterface : creatorInfo.creatables() )
+            {
+                intfs.add( childInterface );
+            }
+        }
+        return intfs;
     }
 
     public Map<String, Class<? extends ConfigBeanProxy>> childTypes() {

@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.base;
 
+import javax.management.MBeanOperationInfo;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
@@ -68,7 +69,7 @@ public interface Sample extends AMXProxy
 		@param numNotifs number of Notifications to issue >= 1
 		@param intervalMillis interval at which Notifications should be issued >= 0
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public void	emitNotifications( final Object data, final int numNotifs, final long intervalMillis );
 	
 	/** 
@@ -78,23 +79,23 @@ public interface Sample extends AMXProxy
 		@param name
 		@param value
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public void 	addAttribute( final String name, final Object value );
 	
 	/** 
 		Remove an Attribute. After this, the MBeanInfo will no longer
 		contain an MBeanAttributeInfo for this Attribute.
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public void 	removeAttribute( final String name );
 	
 	/**
 		For testing bandwidth...
 	 */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
 	public void		uploadBytes( final byte[] bytes );
-    
-    @ManagedOperation
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public byte[]	downloadBytes( final int numBytes );
 
     // these two methods exercise proxyt code in different ways

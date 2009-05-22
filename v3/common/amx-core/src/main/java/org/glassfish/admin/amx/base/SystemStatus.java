@@ -38,6 +38,9 @@ package org.glassfish.admin.amx.base;
 import java.util.Map;
 import java.util.List;
 
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Singleton;
@@ -70,6 +73,7 @@ public interface SystemStatus extends AMXProxy, Utility, Singleton
         @see #REASON_FAILED_KEY
         @see org.glassfish.admin.amx.util.ExceptionUtil#toMap
      */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public Map<String,Object> pingJDBCConnectionPool( final String poolName );
     
     
@@ -86,6 +90,7 @@ public interface SystemStatus extends AMXProxy, Utility, Singleton
         See the Javadoc for {@link UnprocessedConfigChange} for the order of values in the Object[].
         Clients with access to the class can use {@link SystemStatus.Helper#toUnprocessedConfigChange}
      */
+    @ManagedAttribute
     public List<Object[]>  getRestartRequiredChanges();
     
     /** helper class, in particular to convert results from {@link #getRestartRequiredChanges} */

@@ -71,6 +71,12 @@ public final class MapUtil
 		return( SetUtil.toSortedStringArray( m.keySet() ) );
 	}
 	
+    /** assignable to any map type, keeps things short on the rhs */
+	public static <K,V> Map<K,V>  newMap()
+    {
+        return new HashMap<K,V>();
+    }
+    
 	/**
 		Create a new Map consisting of a single key/value pair.
 	 */

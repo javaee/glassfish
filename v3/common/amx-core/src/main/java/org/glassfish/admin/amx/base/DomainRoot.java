@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.base;
 
+import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.annotation.*;
@@ -70,7 +71,7 @@ public interface DomainRoot extends AMXProxy
     public static final String PARENT_PATH = "";
     public static final String PATH = PARENT_PATH + PathnameConstants.SEPARATOR;
     
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void stopDomain();
     
     /**
@@ -186,7 +187,7 @@ public interface DomainRoot extends AMXProxy
     /**
         Wait (block) until AMX is ready for use. Upon return, AMX is ready for use.
      */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public void  waitAMXReady();
     
     /**

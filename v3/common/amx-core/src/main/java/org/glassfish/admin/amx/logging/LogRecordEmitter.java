@@ -47,6 +47,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
@@ -202,6 +204,7 @@ public interface LogRecordEmitter extends NotificationEmitter, ListenerInfo
 		@param logLevel
 		@return number of listeners listening for messages of the specified level, or higher level
 	 */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public int	getLogLevelListenerCount( final Level logLevel );
 }
 

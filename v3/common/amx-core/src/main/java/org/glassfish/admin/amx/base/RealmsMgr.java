@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.base;
 
 import java.util.Map;
 
+import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.annotation.*;
 import org.glassfish.admin.amx.base.Singleton;
@@ -62,27 +63,27 @@ public interface RealmsMgr extends AMXProxy, Utility, Singleton
     public String getDefaultRealmName();
     @ManagedAttribute
     public void   setDefaultRealmName(String realmName);
-    
-    @ManagedOperation
+
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void addUser( String realm, String user, String password, String[] groupList );
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void updateUser( String realm, String user, String newUser, String password, String[] groupList );
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void removeUser(String realm, String user);
 
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[] getUserNames(String realm);
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[] getGroupNames(String realm);
-    
-    @ManagedOperation
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public Map<String,Object> getUserAttributes(final String realm, final String user);
-    
-    @ManagedOperation
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[] getGroupNames(String realm, String user);
 
     /** @return true if the realm implementation support User Management (add,remove,update user) */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public boolean supportsUserManagement(final String realmName);
     
     /** @return true if anonymous login is in use */

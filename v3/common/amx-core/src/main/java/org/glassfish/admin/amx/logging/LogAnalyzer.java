@@ -39,6 +39,9 @@ package org.glassfish.admin.amx.logging;
 
 import java.util.Map;
 import java.util.logging.Level;
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
@@ -126,11 +129,13 @@ for( int i = 0; i < infos.length; ++i ) {<br>
 	/**
 	    @return all the logger names currently in use
 	 */
+    @ManagedAttribute
 	public String[] getLoggerNames();
 	
 	/**
 	    @return all the logger names currently in use under this logger.
 	 */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[]   getLoggerNamesUnder( String loggerName );
     
     /**
@@ -138,11 +143,13 @@ for( int i = 0; i < infos.length; ++i ) {<br>
      
         @param numIntervals number of intervals
      */
+    @ManagedAttribute
     public void setKeepErrorStatisticsForIntervals(final int numIntervals );
     
     /*
         See {@link #setErrorStatisticsIntervals}.
      */
+    @ManagedAttribute
     public int  getKeepErrorStatisticsForIntervals();
 
     /**
@@ -150,11 +157,13 @@ for( int i = 0; i < infos.length; ++i ) {<br>
     
         @param minutes The duration of an interval in minutes.
      */
+    @ManagedAttribute
     public void setErrorStatisticsIntervalMinutes(final long minutes);
     
     /*
         See {@link #setErrorStatisticsIntervalMinutes}.
      */
+    @ManagedAttribute
     public long getErrorStatisticsIntervalMinutes(); 
 }
 

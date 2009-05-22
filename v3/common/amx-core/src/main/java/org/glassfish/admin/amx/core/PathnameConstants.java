@@ -42,16 +42,16 @@ public final class PathnameConstants
         The characters legal to use as the type portion of a pathname,
         expressed as regex compatible string, but without enclosing square brackets.
     */
-    public static final String LEGAL_CHAR_FOR_TYPE = "\\$a-zA-Z0-9\\._-";
+    public static final String LEGAL_CHAR_FOR_TYPE = "$a-zA-Z0-9._-";
     
     /** Regex pattern for one legal character (in square braces). */
-    public static final String LEGAL_CHAR_FOR_TYPE_PATTERN = "[" + LEGAL_CHAR_FOR_TYPE + "]";
+    public static final String LEGAL_CHAR_FOR_TYPE_PATTERN = "[**" + LEGAL_CHAR_FOR_TYPE + "]";
     
     /** Regex pattern for one legal character (in square braces), wildcard allowed */
    // public static final String LEGAL_CHAR_FOR_TYPE_WILD_PATTERN = "[" + LEGAL_CHAR_FOR_TYPE + "*]";
     
      /** regex pattern denoting a legal type, grouping () surrounding it */
-    public static String LEGAL_TYPE_PATTERN = "(" + LEGAL_CHAR_FOR_TYPE_PATTERN + LEGAL_CHAR_FOR_TYPE_PATTERN + "*)";
+    public static final String LEGAL_TYPE_PATTERN = "(" + LEGAL_CHAR_FOR_TYPE_PATTERN + LEGAL_CHAR_FOR_TYPE_PATTERN + "*)";
     
      /** regex pattern denoting a legal type, with wildcards, grouping () surrounding it */
    // public static String LEGAL_TYPE_WILD_PATTERN = "(" + LEGAL_CHAR_FOR_TYPE_WILD_PATTERN + "*)";

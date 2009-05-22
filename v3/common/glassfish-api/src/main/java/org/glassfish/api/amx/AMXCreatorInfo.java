@@ -50,12 +50,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
     Intended as an intermediate solution until a more generic and automatic solution can be
     devised.
 
-    @deprecated will be removed soon
     @author llc
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Deprecated
 public @interface AMXCreatorInfo {
     /**
        Get the list of @Configured ({@link ConfigBeanProxy} interfaces) that can be created by this item.

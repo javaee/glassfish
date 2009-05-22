@@ -37,6 +37,8 @@
 
 package org.glassfish.admin.amx.logging;
 
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
@@ -75,6 +77,7 @@ public interface LogFileAccess
     	</ul>
     	@return a String[] of the legal keys which designate log files
      */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[]	getLogFileKeys();
     
     
@@ -96,6 +99,7 @@ public interface LogFileAccess
 		@param key	a key specifying the type of log file
 		@return String[] of all log filenames 
 	 */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public String[] getLogFileNames( final String key );
 	
 	/**
@@ -110,12 +114,14 @@ public interface LogFileAccess
 		@return the contents of the specified log file in a String
 		@see #getLogFileKeys
 	 */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public String getLogFile( final String key, final String fileName );
 	
     /**
 		Rotate all log files as soon as possible.  May return
 		prior to the rotation occuring.
      */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void rotateAllLogFiles();
     
     
@@ -129,6 +135,7 @@ public interface LogFileAccess
     	</ul>
     	@param key
      */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void rotateLogFile( String key );
 }
 

@@ -105,7 +105,7 @@ public class AMXConfigImpl extends AMXImplBase
         }
         return configMBeanInfo;
     }
-
+    
     /**
      * We save time and space by creating exactly one MBeanInfo for any given config interface;
      * it can be shared among all instances since it is invariant.

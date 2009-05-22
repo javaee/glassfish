@@ -36,6 +36,8 @@
 package org.glassfish.admin.amx.logging;
 
 
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -63,6 +65,7 @@ public interface Logging
 		@param module	a module name as specified in {@link LogModuleNames}.
 		@param level	a log level
      */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void setModuleLogLevel( String module, String level );
     
    /**
@@ -73,6 +76,7 @@ public interface Logging
    		
    		@param moduleName a module name as specified in {@link LogModuleNames}
     */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String getModuleLogLevel( String moduleName );
     
     /**
@@ -81,6 +85,7 @@ public interface Logging
         @param level the log level of the log message.
         @param message  the message to be placed in Notif.getMessage()
      */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void testEmitLogMessage( final String level, final String message );
 }
 

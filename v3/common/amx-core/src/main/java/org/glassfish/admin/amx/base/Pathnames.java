@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.base;
 
 
+import javax.management.MBeanOperationInfo;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
@@ -57,11 +58,11 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 public interface Pathnames extends AMXProxy, Utility, Singleton
 {
     /** Resolve a path to an ObjectName.  Any aliasing, etc is dealt with.  Return null if failure. */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public ObjectName  resolvePath( final String path );
     
     /** Paths that don't resolve result in a null entry */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public ObjectName[]  resolvePaths( final String[] paths );
     
     /**
@@ -70,32 +71,32 @@ public interface Pathnames extends AMXProxy, Utility, Singleton
         From the ObjectNames one can obtain the path of every ancestor.
         If the MBean does not exist, null will be returned.
      */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public ObjectName[] ancestors( final ObjectName objectName );
 
     /**
         Resolves the path to an ObjectName, then calls ancestors(objectName).
         Any aliasing or special handling will be dealt with.
      */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public ObjectName[] ancestors( final String path );
     
     /**
         List descendant ObjectNames.
      */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public ObjectName[]  listObjectNames( final String path, final boolean recursive);
     
     /**
         List descendant paths.
      */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[] listPaths( final String path, boolean recursive );
     
     @ManagedAttribute
     public String[] getAllPathnames();
-    
-    @ManagedOperation
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[] dump( final String path );
 }
 

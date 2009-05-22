@@ -39,6 +39,7 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
+import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
@@ -53,11 +54,11 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(type="runtime", leaf=true, singleton=true)
 public interface RuntimeMgr extends AMXProxy, Utility, Singleton
 {
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void stopDomain();
     
     /** Map key is the name of the descriptor, value is the content of the descriptor */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public Map<String,String> getDeploymentConfigurations(String appName);
     
     /**
@@ -70,7 +71,7 @@ public interface RuntimeMgr extends AMXProxy, Utility, Singleton
     /**
         Execute a REST command.  Do not include a leading "/".
      */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public String executeREST(final String command);
     
     /**
@@ -80,7 +81,7 @@ public interface RuntimeMgr extends AMXProxy, Utility, Singleton
         Example only, the host and port are typically different.  A trailing "/" is 
         included; simply append the command string and call {@link #executeREST}.
      */
-    @ManagedAttribute
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String getRESTBaseURL();
     
     
@@ -94,7 +95,7 @@ public interface RuntimeMgr extends AMXProxy, Utility, Singleton
         @see #PROPERTY_MAP_KEY
         @see #REASON_FAILED_KEY
      */
-    @ManagedOperation
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public Map<String,Object>  getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName );
     
     @ManagedAttribute

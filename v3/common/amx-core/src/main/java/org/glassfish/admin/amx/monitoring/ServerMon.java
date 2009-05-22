@@ -36,13 +36,11 @@
 package org.glassfish.admin.amx.monitoring;
 
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
 /**
-	Top-level interface for accessing all monitoring information.
+	Top-level interface for accessing all monitoring information for a server.
  */
-@AMXMBeanMetadata(type="server-mon")
-public interface ServerMonitoring extends AMXProxy
+public interface ServerMon extends AMXProxy
 {
 }

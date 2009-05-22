@@ -41,6 +41,8 @@ import javax.management.Attribute;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
@@ -104,6 +106,7 @@ public interface LogQuery
 		@see LogRecordFields
 		@see LogModuleNames
      */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
         public LogQueryResult
     queryServerLog( 
     	String  name,
@@ -136,15 +139,18 @@ public interface LogQuery
     
     /**
      */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[] getDiagnosticCauses( String messageID );
     
     /**
      */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String[] getDiagnosticChecks( String messageID );
     
     
     /**
      */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public String getDiagnosticURI( String messageID );
 	
 }

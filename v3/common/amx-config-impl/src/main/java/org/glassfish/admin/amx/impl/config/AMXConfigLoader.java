@@ -51,6 +51,7 @@ import javax.management.*;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
@@ -58,9 +59,11 @@ import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
+import org.glassfish.admin.amx.util.MapUtil;
 import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
 import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
 import org.glassfish.api.amx.AMXLoader;
@@ -97,6 +100,27 @@ public final class AMXConfigLoader extends MBeanImplBase
         mPendingConfigBeans = pending;
         mMBeanServer = mbeanServer;
     }
+    
+    public void registerConfigured( final Class<? extends ConfigBeanProxy> intf )
+    {
+        // cache it
+        ConfigBeanJMXSupportRegistry.getInstance(intf);
+    }
+    
+    public Map<String,String> getConfiguredTypes()
+    {
+        final List<Class<? extends ConfigBeanProxy>>  classes = ConfigBeanJMXSupportRegistry.getConfiguredClasses();
+        final Map<String,String>  types = MapUtil.newMap();
+        
+        for( final Class<? extends ConfigBeanProxy>  clazz : classes )
+        {
+            final String classname = clazz.getName();
+            final String elementType = Util.typeFromName( classname );
+            types.put( elementType, classname );
+        }
+        return types;
+    }
+    
     
         private void
     configBeanRemoved( final ConfigBean cb )

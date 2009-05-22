@@ -198,12 +198,12 @@ public final class PathnameParser
     /* a legal name, by itself */
     private static final Pattern LEGAL_NAME_PATTERN_COMPILED = Pattern.compile( LEGAL_NAME_PATTERN );
 
-    public static boolean isValidType(final String type)
+    private static boolean isValidType(final String type)
     {
         final Matcher matcher = LEGAL_TYPE_PATTERN_COMPILED.matcher(type);
         return matcher.matches();
     }
-    public static boolean isValidName(final String type)
+    private static boolean isValidName(final String type)
     {
         final Matcher matcher = LEGAL_NAME_PATTERN_COMPILED.matcher(type);
         return matcher.matches();

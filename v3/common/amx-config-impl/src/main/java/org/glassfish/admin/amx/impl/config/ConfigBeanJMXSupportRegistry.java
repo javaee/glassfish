@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.impl.config;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -59,7 +61,6 @@ final class ConfigBeanJMXSupportRegistry
         new ConcurrentHashMap<Class<? extends ConfigBeanProxy>,ConfigBeanJMXSupport>();
     
     /**
-        Return null if no instance yet; createInstance() must be called to create one.
      */
         public static ConfigBeanJMXSupport
     getInstance( final Class<? extends ConfigBeanProxy> intf )
@@ -71,6 +72,12 @@ final class ConfigBeanJMXSupportRegistry
             helper = new ConfigBeanJMXSupport(intf, null);
         }
         return helper;
+    }
+    
+    
+    public static synchronized  List<Class<? extends ConfigBeanProxy>> getConfiguredClasses()
+    {
+        return new ArrayList<Class<? extends ConfigBeanProxy>>( INSTANCES.keySet() );
     }
     
         public static ConfigBeanJMXSupport
