@@ -95,7 +95,7 @@
 
     <sun:treeNode id="support"
 	    text="$resource{i18n.tree.support}"
-	    url="#{request.contextPath}/sysnet/support.jsf"
+	    url="/sysnet/support.jsf"
 	    >
 	    <!facet image>
 		<sun:imageHyperlink imageURL="/resource/images/support.gif" url="#{request.contextPath}/sysnet/support.jsf"  border="0" immediate="true" />

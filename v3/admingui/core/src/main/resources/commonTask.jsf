@@ -40,6 +40,7 @@
     Any page-specific I18N files can be included here, core.*
     bundles are already included.
 -->
+    getProductInstanceURN();
 #include "/sysnet/regInit.inc"
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}">
@@ -130,3 +131,4 @@
           </event>
 </define>
 </composition>
+
