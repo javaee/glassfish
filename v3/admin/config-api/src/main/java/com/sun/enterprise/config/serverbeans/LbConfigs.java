@@ -47,7 +47,6 @@ import java.util.List;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
 /**
  *
  */
@@ -56,7 +55,6 @@ import org.glassfish.api.amx.AMXCreatorInfo;
     "lbConfig"
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LBConfigsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
-@AMXCreatorInfo( creatables={LbConfig.class })
 @Configured
 public interface LbConfigs extends ConfigBeanProxy, Injectable  {
 

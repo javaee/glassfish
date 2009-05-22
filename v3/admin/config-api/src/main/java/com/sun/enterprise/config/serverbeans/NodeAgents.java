@@ -47,7 +47,6 @@ import java.util.List;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
 /**
  *
  */
@@ -57,7 +56,6 @@ import org.glassfish.api.amx.AMXCreatorInfo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.NodeAgentsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
 // general solution needed; this is intermediate solution
-@AMXCreatorInfo( creatables={NodeAgent.class})
 @Configured
 public interface NodeAgents extends ConfigBeanProxy, Injectable  {
 

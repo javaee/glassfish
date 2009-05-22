@@ -47,7 +47,6 @@ import java.util.List;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
 /**
  *
  */
@@ -56,7 +55,6 @@ import org.glassfish.api.amx.AMXCreatorInfo;
     "cluster"
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClustersConfig", omitAsAncestorInChildObjectName=true, singleton=true)
-@AMXCreatorInfo( creatables={Cluster.class })
 @Configured
 public interface Clusters extends ConfigBeanProxy, Injectable {
 

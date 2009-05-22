@@ -39,7 +39,6 @@ import java.util.List;
 
 import com.sun.grizzly.config.dom.ThreadPool;
 import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
@@ -48,7 +47,6 @@ import org.jvnet.hk2.config.Element;
 @AMXConfigInfo(amxInterfaceName = "com.sun.appserv.management.config.ThreadPoolsConfig",
     omitAsAncestorInChildObjectName = true, singleton = true)
 // general solution needed; this is intermediate solution
-@AMXCreatorInfo(creatables = {ThreadPool.class})
 @Configured
 public interface ThreadPools extends ConfigBeanProxy, Injectable {
     /**

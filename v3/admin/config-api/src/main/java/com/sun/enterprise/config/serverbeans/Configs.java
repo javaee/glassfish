@@ -38,7 +38,6 @@ package com.sun.enterprise.config.serverbeans;
 import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
@@ -48,7 +47,6 @@ import org.jvnet.hk2.config.Element;
 @AMXConfigInfo(amxInterfaceName = "com.sun.appserv.management.config.ConfigsConfig",
     omitAsAncestorInChildObjectName = true, singleton = true)
 // general solution needed; this is intermediate solution
-@AMXCreatorInfo(creatables = {Config.class})
 @Configured
 public interface Configs extends ConfigBeanProxy, Injectable {
     /**
