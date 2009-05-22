@@ -134,15 +134,25 @@ public final class JavaURLContext implements Context, Cloneable {
 
         try {
             Object obj = null;
-            if (fullName.startsWith("java:comp/env")) {
-                // name is in component specific namespace
+            // If we know for sure it's an entry within an environment namespace
+            if (fullName.startsWith("java:comp/env/") ||
+                fullName.startsWith("java:module/env/") ||
+                fullName.startsWith("java:app/env/") ) {
+                // refers to a dependency defined by the application
                 obj = namingManager.lookup(fullName, serialContext);
             } else {
+                // It's either an application-defined dependency in a java:
+                // namespace or a special EE platform object.
+                // Check for EE platform objects first to prevent overriding.  
                 obj = NamedNamingObjectManager.tryNamedProxies(name);
                 if (obj == null) {
                     // try GlassfishNamingManager
                     obj = namingManager.lookup(fullName, serialContext);
                 }
+            }
+
+            if( obj == null ) {
+                throw new NamingException("No object found for " + name);
             }
 
             return obj;

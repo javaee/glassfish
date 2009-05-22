@@ -114,7 +114,7 @@ public class EjbDeployer
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
         
         if( ejbBundle == null ) {
-            throw new RuntimeException("Null EjbBundleDescriptor in EjbDeployer.load()");
+            throw new RuntimeException("Null EjbBundleDescriptor " + dc.getSourceDir() + " in EjbDeployer.load()");
         }
 
         // Get application-level properties (*not* module-level)

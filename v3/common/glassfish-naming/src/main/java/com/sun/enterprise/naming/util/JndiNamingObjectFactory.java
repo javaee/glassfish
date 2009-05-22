@@ -41,6 +41,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class JndiNamingObjectFactory
@@ -50,7 +51,7 @@ public class JndiNamingObjectFactory
 
     private String jndiName;
 
-    private transient Object value;
+    private AtomicReference value;
 
     private boolean cacheResult;
 
@@ -58,6 +59,7 @@ public class JndiNamingObjectFactory
         this.name = name;
         this.jndiName = jndiName;
         this.cacheResult = cacheResult;
+        this.value = new AtomicReference();       
     }
 
     public boolean isCreateResultCacheable() {
@@ -68,14 +70,14 @@ public class JndiNamingObjectFactory
             throws NamingException {
         Object result = null;
         if (cacheResult) {
-            if (value == null) {
-                synchronized (this) {
-                    if (value == null) {
-                        result = value = ic.lookup(jndiName);
-                    }
+            result = value.get();
+            if (result == null) {
+                Object tempResult = ic.lookup(jndiName);
+                if( value.compareAndSet(null, tempResult) ) {
+                    result = tempResult;
+                } else {
+                    result = value.get();
                 }
-            } else {
-                result = value;
             }
         } else {
             result = ic.lookup(jndiName);

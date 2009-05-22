@@ -253,6 +253,18 @@ public class Remote30WrapperGenerator extends Generator
                               _v("nsoe")));
                 _throw(_v("r"));
 
+            _catch( _t("java.rmi.AccessException"),
+                    "accex");
+
+                _define( _t("java.lang.RuntimeException"), "r",
+                         _new( _t("javax.ejb.EJBAccessException"),
+                           _s(_void())));
+                _expr( _call( _v("r"), "initCause",
+                              _s(_t("java.lang.Throwable"),
+                                 _t("java.lang.Throwable")),
+                              _v("accex")));
+                _throw(_v("r"));
+
             _catch(_t("com.sun.ejb.containers.InternalEJBContainerException"),
                    "iejbcEx");
 

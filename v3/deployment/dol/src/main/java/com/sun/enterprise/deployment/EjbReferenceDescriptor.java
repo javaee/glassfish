@@ -379,7 +379,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
         }
 
         if( ejbDescriptor != null ) {
-            toStringBuffer.append("resolved to intra-app EJB with ejb-name="+ejbDescriptor.getName());
+            toStringBuffer.append(" resolved to intra-app EJB with ejb-name="+ejbDescriptor.getName());
         }
 
         toStringBuffer.append(",ejb-link="+getLinkName());

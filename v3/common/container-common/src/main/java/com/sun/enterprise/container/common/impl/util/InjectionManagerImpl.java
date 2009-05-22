@@ -288,8 +288,11 @@ public class InjectionManagerImpl implements InjectionManager {
 
             try {
 
-                final Object value = namingCtx.lookup("java:comp/env/" + 
-                                               next.getComponentEnvName());
+                String lookupName = next.getComponentEnvName();
+                if( !lookupName.startsWith("java:") ) {
+                    lookupName = "java:comp/env/" + lookupName;
+                }
+                final Object value = namingCtx.lookup(lookupName);
 
                 // there still could be 2 injection on the same class, better
                 // do a loop here

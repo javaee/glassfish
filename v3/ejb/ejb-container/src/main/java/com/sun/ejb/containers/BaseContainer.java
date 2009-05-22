@@ -1495,27 +1495,14 @@ public abstract class BaseContainer
 
         String appName = null;
 
-        // TODO replace with logic that specifically uses the new
-        // EE 6 definition of app name
-
         Application app = ejbDescriptor.getApplication();
         if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
-            appName = ejbDescriptor.getApplication().getRegistrationName();
+            appName = ejbDescriptor.getApplication().getAppName();
         }
 
-        // TODO replace with logic that specifically uses the new
-        // EE 6 definition of module name.
+        EjbBundleDescriptor ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
+        String modName = ejbBundle.getModuleDescriptor().getModuleName();
 
-        String modName = null;
-        if (appName == null) {
-            modName = ejbDescriptor.getApplication().getRegistrationName();
-        } else {
-            String archiveUri = ejbDescriptor.getEjbBundleDescriptor().
-                    getModuleDescriptor().getArchiveUri();
-            // For now, just chop off the file extension
-            int length = archiveUri.length();
-            modName =  archiveUri.substring(0, length - 4);
-        }
         String ejbName = ejbDescriptor.getName();
 
         StringBuffer javaGlobalPrefix = new StringBuffer("java:global/");
@@ -2082,6 +2069,9 @@ public abstract class BaseContainer
             mappedException.initCause(t);
         } else if( t instanceof NoSuchObjectLocalException ) {
             mappedException = new NoSuchEJBException();
+            mappedException.initCause(t);
+        } else if( t instanceof AccessLocalException ) {
+            mappedException = new EJBAccessException();
             mappedException.initCause(t);
         }
         

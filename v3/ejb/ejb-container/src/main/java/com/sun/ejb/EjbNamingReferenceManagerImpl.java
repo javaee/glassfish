@@ -43,6 +43,7 @@ import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -72,6 +73,8 @@ public class EjbNamingReferenceManagerImpl
     @Inject
     Habitat habitat;
 
+    // Be careful with EjbContainerUtil usage.  It should only be used from code running within a
+    // server environment.
     private volatile EjbContainerUtil ejbContainerUtil;
 
     public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Context context)
@@ -97,10 +100,9 @@ public class EjbNamingReferenceManagerImpl
             try {
 
                 if (remoteJndiName.startsWith(CORBANAME)) {
-                    if (ejbContainerUtil == null) {
-                        ejbContainerUtil = habitat.getByContract(EjbContainerUtil.class);
-                    }
-                    ORB orb = ejbContainerUtil.getORBHelper().getORB();
+                    GlassFishORBHelper orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+
+                    ORB orb = orbHelper.getORB();
                     jndiObj = (Object) orb.string_to_object(remoteJndiName);
                 } else {
                     jndiObj = context.lookup(remoteJndiName);

@@ -41,6 +41,8 @@ import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
 import com.sun.enterprise.container.common.spi.WebServiceReferenceManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import com.sun.enterprise.naming.spi.NamingUtils;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -73,7 +75,13 @@ import java.io.File;
 public class ComponentEnvManagerImpl
     implements ComponentEnvManager {
 
-    private static final String JAVA_COMP_STRING = "java:comp/env/";
+    private static final String JAVA_COLON = "java:";
+    private static final String JAVA_COMP_ENV_STRING = "java:comp/env/";
+    private static final String JAVA_COMP_PREFIX = "java:comp/";
+    private static final String JAVA_MODULE_PREFIX = "java:module/";
+    private static final String JAVA_APP_PREFIX = "java:app/";
+    private static final String JAVA_GLOBAL_PREFIX = "java:global/";
+
 
     private static final String EIS_STRING = "/eis/";
 
@@ -124,8 +132,34 @@ public class ComponentEnvManagerImpl
     public String bindToComponentNamespace(JndiNameEnvironment env)
         throws NamingException {
         String compEnvId = getComponentEnvId(env);
-        Collection<JNDIBinding> bindings = getJNDIBindings(env);
+
+        Collection<JNDIBinding> bindings = new ArrayList<JNDIBinding>();
+
+        // Add all java:comp dependencies for the specified environment
+        addJNDIBindings(env, ScopeType.COMPONENT, bindings);
+
+        // Add all java:module dependencies in any environment in the same module
+        for(JndiNameEnvironment moduleEnv : getJndiNameEnvironmentsForModule(env)) {
+            addJNDIBindings(moduleEnv, ScopeType.MODULE, bindings);
+        }
+
+        // Add all java:app dependencies in any environment in the same application
+        for(JndiNameEnvironment appEnv : getJndiNameEnvironmentsForApp(env)) {
+            addJNDIBindings(appEnv, ScopeType.APP, bindings);
+        }
+
+        // Bind dependencies to the namespace for this component
         namingManager.bindToComponentNamespace(getApplicationName(env), compEnvId, bindings);
+
+        // Publish any dependencies with java:global names defined by the current env
+        // to the global namespace
+        Collection<JNDIBinding> globalBindings = new ArrayList<JNDIBinding>();
+        addJNDIBindings(env, ScopeType.GLOBAL, globalBindings);
+
+        for(JNDIBinding next : globalBindings) {
+            namingManager.publishObject(next.getName(), next.getValue(), true);
+        }
+
         this.register(compEnvId, env);
         return compEnvId;
     }
@@ -133,22 +167,40 @@ public class ComponentEnvManagerImpl
     public void unbindFromComponentNamespace(JndiNameEnvironment env)
         throws NamingException {
 
+        // Unbind anything in the component namespace
         String compEnvId = getComponentEnvId(env);
         namingManager.unbindObjects(compEnvId);
+
+        // Unpublish any global entries exported by this environment
+        Collection<JNDIBinding> globalBindings = new ArrayList<JNDIBinding>();
+        addJNDIBindings(env, ScopeType.GLOBAL, globalBindings);
+
+        for(JNDIBinding next : globalBindings) {
+            namingManager.unpublishObject(next.getName());
+        }
+
+
         this.unregister(compEnvId);
     }
 
-    public Collection<JNDIBinding> getJNDIBindings(JndiNameEnvironment env) {
+    private void addJNDIBindings(JndiNameEnvironment env, ScopeType scope, Collection<JNDIBinding> jndiBindings) {
 
-        Collection<JNDIBinding> jndiBindings = new ArrayList<JNDIBinding>();
+        // Create objects to be bound for each env dependency.  Only add bindings that
+        // match the given scope.
 
         for (Iterator itr = env.getEnvironmentProperties().iterator();
              itr.hasNext();) {
+
             EnvironmentProperty next = (EnvironmentProperty) itr.next();
+
+            if( !dependencyAppliesToScope(next, scope)) {
+                continue;
+            }
+
             // Only env-entries that have been assigned a value are
             // eligible for look up
             if (next.hasAValue()) {
-                String name = JAVA_COMP_STRING + next.getName();
+                String name = descriptorToLogicalJndiName(next);
                 Object value = next.getValueObject();
                 jndiBindings.add(new CompEnvBinding(name,
                         namingUtils.createSimpleNamingObjectFactory(name, value)));
@@ -160,13 +212,23 @@ public class ComponentEnvManagerImpl
              itr.hasNext();) {
             JmsDestinationReferenceDescriptor next =
                 (JmsDestinationReferenceDescriptor) itr.next();
+
+            if( !dependencyAppliesToScope(next, scope)) {
+                continue;
+            }
+
             jndiBindings.add(getCompEnvBinding(next));
         }
 
         for (Iterator itr = env.getEjbReferenceDescriptors().iterator();
              itr.hasNext();) {
             EjbReferenceDescriptor next = (EjbReferenceDescriptor) itr.next();
-            String name = JAVA_COMP_STRING + next.getName();
+
+            if( !dependencyAppliesToScope(next, scope)) {
+                continue;
+            }
+
+            String name = descriptorToLogicalJndiName(next);
             EjbReferenceProxy proxy = new EjbReferenceProxy(next);
             jndiBindings.add(new CompEnvBinding(name, proxy));
         }
@@ -176,6 +238,11 @@ public class ComponentEnvManagerImpl
                  iterator(); itr.hasNext();) {
             MessageDestinationReferenceDescriptor next =
                 (MessageDestinationReferenceDescriptor) itr.next();
+
+            if( !dependencyAppliesToScope(next, scope)) {
+                continue;
+            }
+
             jndiBindings.add(getCompEnvBinding(next));
         }
 
@@ -183,7 +250,12 @@ public class ComponentEnvManagerImpl
             itr.hasNext();) {
             ResourceReferenceDescriptor resourceRef =
                 (ResourceReferenceDescriptor) itr.next();
-            String name = JAVA_COMP_STRING + resourceRef.getName();
+
+            if( !dependencyAppliesToScope(resourceRef, scope)) {
+                continue;
+            }
+
+            String name = descriptorToLogicalJndiName(resourceRef);
             Object value = null;
             String physicalJndiName = resourceRef.getJndiName();
             if (resourceRef.isMailResource()) {
@@ -221,7 +293,12 @@ public class ComponentEnvManagerImpl
 
         for (EntityManagerFactoryReferenceDescriptor next :
                  env.getEntityManagerFactoryReferenceDescriptors()) {
-            String name = JAVA_COMP_STRING + next.getName();
+
+            if( !dependencyAppliesToScope(next, scope)) {
+                continue;
+            }
+
+            String name = descriptorToLogicalJndiName(next);
             Object value = new FactoryForEntityManagerFactoryWrapper(next.getUnitName(),
                     invMgr, this);
             jndiBindings.add(new CompEnvBinding(name, value));
@@ -232,7 +309,12 @@ public class ComponentEnvManagerImpl
              itr.hasNext();) {
             ServiceReferenceDescriptor next =
                 (ServiceReferenceDescriptor) itr.next();
-            String name = JAVA_COMP_STRING + next.getName();
+
+            if( !dependencyAppliesToScope(next, scope)) {
+                continue;
+            }
+
+            String name = descriptorToLogicalJndiName(next);
             WebServiceRefProxy value = new WebServiceRefProxy(next);
             jndiBindings.add(new CompEnvBinding(name,value))  ;
             // Set WSDL File URL here if it null (happens during server restart)
@@ -270,17 +352,22 @@ public class ComponentEnvManagerImpl
 
          for (EntityManagerReferenceDescriptor next :
              env.getEntityManagerReferenceDescriptors()) {
-             String name = JAVA_COMP_STRING + next.getName();
+
+             if( !dependencyAppliesToScope(next, scope)) {
+                continue;
+             }
+
+             String name = descriptorToLogicalJndiName(next);
              FactoryForEntityManagerWrapper value =
                 new FactoryForEntityManagerWrapper(next, habitat);
             jndiBindings.add(new CompEnvBinding(name, value));
          }
 
-        return jndiBindings;
+        return;
     }
 
     private CompEnvBinding getCompEnvBinding(final JmsDestinationReferenceDescriptor next) {
-        final String name = JAVA_COMP_STRING + next.getName();
+        final String name = descriptorToLogicalJndiName(next);
             Object value = null;
             if (next.isEJBContext()) {
                 value = new EjbContextProxy(next.getRefType());
@@ -310,7 +397,7 @@ public class ComponentEnvManagerImpl
     }
 
     private CompEnvBinding getCompEnvBinding(MessageDestinationReferenceDescriptor next) {
-        String name = JAVA_COMP_STRING + next.getName();
+        String name = descriptorToLogicalJndiName(next);
         String physicalJndiName = null;
         if (next.isLinkedToMessageDestination()) {
             physicalJndiName = next.getMessageDestination().getJndiName();
@@ -322,14 +409,42 @@ public class ComponentEnvManagerImpl
             return new CompEnvBinding(name, value);
     }
 
+    private boolean dependencyAppliesToScope(Descriptor descriptor, ScopeType scope) {
+
+        boolean appliesToScope = false;
+        String name = descriptor.getName();
+
+        switch(scope) {
+
+            case COMPONENT :
+                // Env names without an explicit java: prefix default to java:comp
+                appliesToScope = name.startsWith(JAVA_COMP_PREFIX) || !name.startsWith(JAVA_COLON);
+                break;
+            case MODULE :
+                appliesToScope = name.startsWith(JAVA_MODULE_PREFIX);
+                break;
+            case APP :
+                appliesToScope = name.startsWith(JAVA_APP_PREFIX);
+                break;
+            case GLOBAL :
+                appliesToScope = name.startsWith(JAVA_GLOBAL_PREFIX);
+                break;
+        }
+
+        return appliesToScope;
+
+    }
 
     /**
-     * Generate the name of an environment property in the java:comp/env
+     * Generate the name of an environment dependency in the java:
      * namespace.  This is the lookup string used by a component to access
-     * its environment.
+     * the dependency.
      */
     private String descriptorToLogicalJndiName(Descriptor descriptor) {
-        return JAVA_COMP_STRING + descriptor.getName();
+        // If no java: prefix is specified, default to component scope.
+        String rawName = descriptor.getName();
+        return (rawName.startsWith(JAVA_COLON)) ?
+                rawName : JAVA_COMP_ENV_STRING + rawName;
     }
 
 
@@ -409,6 +524,85 @@ public class ComponentEnvManagerImpl
         }
         return appName;
     }
+
+
+    private Collection<JndiNameEnvironment> getJndiNameEnvironmentsForApp(JndiNameEnvironment env) {
+
+        Collection<JndiNameEnvironment> envsForApp = new ArrayList<JndiNameEnvironment>();
+
+        Application appDesc = null;
+
+        if( env instanceof EjbDescriptor ) {
+
+            EjbBundleDescriptor ejbBundle = ((EjbDescriptor) env).getEjbBundleDescriptor();
+            ModuleDescriptor moduleDesc = ejbBundle.getModuleDescriptor();
+            if( !moduleDesc.isStandalone() ) {
+                appDesc = ejbBundle.getApplication();
+            }
+
+        } else if( env instanceof WebBundleDescriptor ) {
+
+            WebBundleDescriptor webBundle = (WebBundleDescriptor) env;
+            ModuleDescriptor moduleDesc = webBundle.getModuleDescriptor();
+            if( !moduleDesc.isStandalone() ) {
+                appDesc = webBundle.getApplication();
+            }
+        }
+
+        if( appDesc == null ) {
+            envsForApp = getJndiNameEnvironmentsForModule(env);
+        } else {
+            envsForApp.addAll(appDesc.getJndiNameEnvironments());
+        }
+
+        return envsForApp;
+    }
+
+    private Collection<JndiNameEnvironment> getJndiNameEnvironmentsForModule(JndiNameEnvironment env) {
+
+        Collection<JndiNameEnvironment> envsForModule = new ArrayList<JndiNameEnvironment>();
+
+        if( env instanceof EjbDescriptor ) {
+
+            EjbBundleDescriptor ejbBundle = ((EjbDescriptor) env).getEjbBundleDescriptor();
+
+            for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
+                envsForModule.add(ejbDescriptor);
+            }
+
+            ModuleDescriptor moduleDesc = ejbBundle.getModuleDescriptor();
+
+            if( moduleDesc.getModuleType() == XModuleType.WAR ) {
+
+                WebBundleDescriptor webBundle = (WebBundleDescriptor) moduleDesc.getDescriptor();
+                envsForModule.add(webBundle);
+
+            }
+            
+
+        } else if( env instanceof WebBundleDescriptor ) {
+
+            WebBundleDescriptor webBundle = (WebBundleDescriptor) env;
+            envsForModule.add(webBundle);
+
+            ModuleDescriptor moduleDesc = webBundle.getModuleDescriptor();
+
+            Collection<EjbBundleDescriptor> ejbBundles =
+                moduleDesc.getDescriptor().getExtensionsDescriptors(EjbBundleDescriptor.class);
+
+            if( !ejbBundles.isEmpty() ) {
+                EjbBundleDescriptor ejbBundle = ejbBundles.iterator().next();
+
+                for(EjbDescriptor ejb : ejbBundle.getEjbs()) {
+                    envsForModule.add(ejb);
+                }
+            }
+        }
+
+        return envsForModule;
+
+    }
+
 
     private static boolean isConnector(String logicalJndiName){
         return (logicalJndiName.indexOf(EIS_STRING) != -1);
@@ -563,6 +757,14 @@ public class ComponentEnvManagerImpl
             return value;
         }
 
+    }
+
+    private enum ScopeType {
+
+        COMPONENT,
+        MODULE,
+        APP,
+        GLOBAL
     }
 
 }

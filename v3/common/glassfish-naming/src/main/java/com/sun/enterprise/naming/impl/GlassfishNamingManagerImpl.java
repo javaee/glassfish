@@ -328,11 +328,27 @@ public final class  GlassfishNamingManagerImpl
             namespace.put("java:", jc);
             namespace.put("java:/", jc);
             JavaURLContext jcc = new JavaURLContext("java:comp", null);
+
             namespace.put("java:comp", jcc);
             namespace.put("java:comp/", jcc);
             JavaURLContext jccEnv = new JavaURLContext("java:comp/env", null);
             namespace.put("java:comp/env", jccEnv);
             namespace.put("java:comp/env/", jccEnv);
+
+            JavaURLContext jMod = new JavaURLContext("java:module", null);
+            namespace.put("java:module", jMod);
+            namespace.put("java:module/", jMod);
+            JavaURLContext jModEnv = new JavaURLContext("java:module/env", null);
+            namespace.put("java:module/env", jModEnv);
+            namespace.put("java:module/env/", jModEnv);
+
+            JavaURLContext jApp = new JavaURLContext("java:app", null);
+            namespace.put("java:app", jApp);
+            namespace.put("java:app/", jApp);
+            JavaURLContext jAppEnv = new JavaURLContext("java:app/env", null);
+            namespace.put("java:app/env", jAppEnv);
+            namespace.put("java:app/env/", jAppEnv);
+                       
         }
 
         return namespace;
@@ -381,9 +397,20 @@ public final class  GlassfishNamingManagerImpl
     private void bindIntermediateContexts(HashMap namespace, String name)
             throws NamingException {
         // for each component of name, put an entry into namespace
-        name = name.substring("java:comp/".length());
+        String partialName = null;
+        if( name.startsWith("java:comp/") ) {
+            partialName = "java:comp";
+        } else if( name.startsWith("java:module/")) {
+            partialName = "java:module";
+        } else if( name.startsWith("java:app/")) {
+            partialName = "java:app";
+        } else {
+            throw new NamingException("Invalid environment namespace name : " + name);
+        }
+
+        name = name.substring((partialName + "/").length());
         StringTokenizer toks = new StringTokenizer(name, "/", false);
-        String partialName = "java:comp";
+
         while (toks.hasMoreTokens()) {
             String tok = toks.nextToken();
             partialName = partialName + "/" + tok;

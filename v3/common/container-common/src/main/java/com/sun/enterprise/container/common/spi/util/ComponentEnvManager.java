@@ -58,6 +58,4 @@ public interface ComponentEnvManager {
     public void unbindFromComponentNamespace(JndiNameEnvironment env)
         throws NamingException;
     
-    public Collection<? extends JNDIBinding> getJNDIBindings(JndiNameEnvironment env);
-
 }

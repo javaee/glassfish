@@ -71,7 +71,7 @@ public class SerialContext implements Context {
 
     private static final String JAVA_URL = "java:";
 
-    private static final String JAVA_GLOBAL_URL = "java:global";
+    private static final String JAVA_GLOBAL_URL = "java:global/";
 
 
     // Sets unmanaged SerialContext in test mode to prevent attempts to contact server. 

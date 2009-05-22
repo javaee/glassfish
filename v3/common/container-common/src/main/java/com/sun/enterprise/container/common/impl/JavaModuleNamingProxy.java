@@ -51,6 +51,9 @@ public class JavaModuleNamingProxy
     @Inject
     Habitat habitat;
 
+    @Inject
+    private Logger _logger;
+
     private InitialContext ic;
 
     public void postConstruct() {
@@ -64,21 +67,118 @@ public class JavaModuleNamingProxy
     private static final String JAVA_MODULE_CONTEXT
             = "java:module/";
 
+    private static final String JAVA_APP_CONTEXT
+            = "java:app/";
+
+    private  static final String JAVA_APP_NAME
+            = "java:comp/AppName";
+
+    private  static final String JAVA_MODULE_NAME
+            = "java:comp/ModuleName";
+
     public Object handle(String name) throws NamingException {
 
-        // Initial basic implementation of access to portable global
-        // naming context via java:module.   This needs to be expanded
-        // greatly to handle the full capabilities of defining
-        // environment dependencies at the java:module level.
-        if (name.startsWith(JAVA_MODULE_CONTEXT)) {
-            return getJavaModuleObject(name);
+        // Return null if this proxy is not responsible for processing the name.
+        Object returnValue = null;
+
+        if( name.equals(JAVA_APP_NAME) ) {
+
+            returnValue = getAppName();
+
+        } else if( name.equals(JAVA_MODULE_NAME) ) {
+
+            returnValue = getModuleName();
+
+        } else if (name.startsWith(JAVA_MODULE_CONTEXT) || name.startsWith(JAVA_APP_CONTEXT)) {
+
+            // Check for any automatically defined portable EJB names under
+            // java:module/ or java:app/.
+
+            // If name is not found, return null instead of throwing an exception.
+            // The application can explicitly define environment dependencies within this
+            // same namespace, so this will allow other name checking to take place.
+            returnValue = getJavaModuleOrAppEJB(name);
         }
-        return null;
+
+        return returnValue;
     }
 
-    private Object getJavaModuleObject(String name) throws NamingException {
+    private String getAppName() throws NamingException {
+
+        ComponentEnvManager namingMgr =
+                habitat.getComponent(ComponentEnvManager.class);
+
+        String appName = null;
+
+        if( namingMgr != null ) {
+            JndiNameEnvironment env = namingMgr.getCurrentJndiNameEnvironment();
+
+            BundleDescriptor bd = null;
+
+            if( env instanceof EjbDescriptor ) {
+                bd = (BundleDescriptor) ((EjbDescriptor)env).getEjbBundleDescriptor();
+            } else if( env instanceof BundleDescriptor ) {
+                bd = (BundleDescriptor) env;
+            }
+
+            if( bd != null ) {
+
+                Application app = bd.getApplication();
+
+                if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+                    appName = app.getAppName();
+                } else {
+                    // For stand-alone module, EE module name is used as app name
+                    appName = bd.getModuleDescriptor().getModuleName();
+                }
+            }
+        }
+
+        if( appName == null ) {
+            throw new NamingException("Could not resolve java:comp/AppName");
+        }
+
+        return appName;
+
+    }
+
+    private String getModuleName() throws NamingException {
+
+        ComponentEnvManager namingMgr =
+                habitat.getComponent(ComponentEnvManager.class);
+
+        String moduleName = null;
+
+        if( namingMgr != null ) {
+            JndiNameEnvironment env = namingMgr.getCurrentJndiNameEnvironment();
+
+            BundleDescriptor bd = null;
+
+            if( env instanceof EjbDescriptor ) {
+                bd = (BundleDescriptor) ((EjbDescriptor)env).getEjbBundleDescriptor();
+            } else if( env instanceof BundleDescriptor ) {
+                bd = (BundleDescriptor) env;
+            }
+
+            if( bd != null ) {
+                moduleName = bd.getModuleDescriptor().getModuleName();
+            }
+        }
+
+        if( moduleName == null ) {
+            throw new NamingException("Could not resolve java:comp/ModuleName");
+        }
+
+        return moduleName;
+
+    }
+
+
+
+    private Object getJavaModuleOrAppEJB(String name) {
 
         String newName = null;
+        Object returnValue = null;
 
         if( habitat != null ) {
             ComponentEnvManager namingMgr =
@@ -101,36 +201,52 @@ public class JavaModuleNamingProxy
                     String appName = null;
 
                     if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
-                        appName = app.getRegistrationName();
+                        appName = app.getAppName();
                     }
 
-                    // TODO replace with logic that specifically uses the new
-                    // EE 6 definition of module name.
-
-                    String moduleName = null;
-                    if (appName == null) {
-                        moduleName = app.getRegistrationName();
-                    } else {
-                        String archiveUri = bd.getModuleDescriptor().getArchiveUri();
-
-                        // For now, just chop off the file extension
-                        int length = archiveUri.length();
-                        moduleName =  archiveUri.substring(0, length - 4);
-                    }
+                    String moduleName = bd.getModuleDescriptor().getModuleName();
 
                     StringBuffer javaGlobalName = new StringBuffer("java:global/");
 
-                    if (appName != null) {
-                        javaGlobalName.append(appName);
+
+                    if( name.startsWith(JAVA_APP_CONTEXT) ) {
+
+                        // For portable EJB names relative to java:app, any module
+                        // name is already contained in the lookup string.  We just
+                        // replace the logical java:app with the application name,
+                        // (which is the same as the module name for a stand-alone
+                        // module).
+
+                        if (appName != null) {
+                            javaGlobalName.append(appName);
+                            javaGlobalName.append("/");
+                        } else {
+                            javaGlobalName.append(moduleName);
+                            javaGlobalName.append("/");
+                        }
+
+                        // Replace java:app/ with the fully-qualified global portion
+                        int javaAppLength = JAVA_APP_CONTEXT.length();
+                        javaGlobalName.append(name.substring(javaAppLength));
+
+                    } else {
+
+                        // For portable EJB names relative to java:module, only add
+                        // the application name if it's an .ear, but always add
+                        // the module name.
+   
+                        if (appName != null) {
+                            javaGlobalName.append(appName);
+                            javaGlobalName.append("/");
+                        }
+
+                        javaGlobalName.append(moduleName);
                         javaGlobalName.append("/");
+
+                        // Replace java:module/ with the fully-qualified global portion
+                        int javaModuleLength = JAVA_MODULE_CONTEXT.length();
+                        javaGlobalName.append(name.substring(javaModuleLength));
                     }
-
-                    javaGlobalName.append(moduleName);
-                    javaGlobalName.append("/");
-
-                    // Replace java:module/ with the fully-qualified global portion
-                    int javaModuleLength = JAVA_MODULE_CONTEXT.length();
-                    javaGlobalName.append(name.substring(javaModuleLength));
 
                     newName = javaGlobalName.toString();
 
@@ -139,12 +255,15 @@ public class JavaModuleNamingProxy
 
         }
 
-        if( newName == null ) {
-            throw new NamingException("Invalid Java EE environment context for " +
-                    name);
+        if( newName != null ) {
+            try {
+                returnValue = ic.lookup(newName);
+            } catch(NamingException ne) {
+                _logger.log(Level.FINE, newName + " corresponding to " + name + " not found", ne);    
+            }
         }
 
-        return ic.lookup(newName);
+        return returnValue;
     }
 
 }
