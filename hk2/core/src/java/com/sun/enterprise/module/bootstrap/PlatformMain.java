@@ -7,12 +7,12 @@ import java.io.File;
  * Useful delegation model for starting a hk2 instance using a service based
  * lookup
  *
- * @Jerome Dochez
+ * @author Jerome Dochez
  */
 public abstract class PlatformMain {
 
-    Logger  logger;
-    File    root;
+    protected Logger  logger;
+    protected File    root;
     Object  context;
 
     public void setLogger(Logger logger) {
@@ -33,7 +33,7 @@ public abstract class PlatformMain {
         } catch(ClassCastException e) {
             return null;
         }
-    }
+    }                                                                      
 
     /**
      * Returns the platform name associated with this main.
@@ -45,6 +45,19 @@ public abstract class PlatformMain {
      * Starts the main entry point using this platform implementation.
      *
      * @param ags arguments obtained from the command line for instance.
+     * @throws Exception if anything goes wrong
      */
-    public abstract void start(String[] ags);
+    public abstract void start(String[] ags) throws Exception;
+
+    /**
+     * Optional method.
+     * Returns singleton services after the start method was executed successfully.
+     *
+     * @param serviceType type of the requested service
+     * @param <T> service type
+     * @return service instance
+     */
+    public <T> T getStartedService(Class<T> serviceType) {
+        return null;
+    }
 }

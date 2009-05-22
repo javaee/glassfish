@@ -182,9 +182,12 @@ public class HK2Main extends Main implements
             if (contractNames != null && contractNames.length > 0) {
                 // we will register this service under each contract it implements
                 for (String contractName : contractNames) {
-                    // let's get a name if possible, that will only work with Spring OSGi services
-                    // we may need to find a better way to get a potential name.
-                    String name = (String) reference.getProperty("org.springframework.osgi.bean.name");
+                    String name = (String) reference.getProperty("component.nane");
+                    if (name==null) {
+                        // let's get a name if possible, that will only work with Spring OSGi services
+                        // we may need to find a better way to get a potential name.
+                        name = (String) reference.getProperty("org.springframework.osgi.bean.name");
+                    }
                     habitat.addIndex(new ExistingSingletonInhabitant(object), contractName, name);
                     logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                             "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{

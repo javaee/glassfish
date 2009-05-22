@@ -58,82 +58,14 @@ import org.jvnet.hk2.config.ConfigParser;
  *
  * @author Jerome Dochez
  */
-public class StaticModulesRegistry extends ModulesRegistryImpl {
-
-    final ClassLoader singleClassLoader;
-    final Module[] proxyMod = new Module[1];
+public class StaticModulesRegistry extends SingleModulesRegistry {
 
     public StaticModulesRegistry(ClassLoader singleCL) {
-        super(null);
-        this.singleClassLoader = singleCL;
-        setParentClassLoader(singleClassLoader);
-
-        ModuleDefinition moduleDef = null;
-        try {
-            moduleDef = new ProxyModuleDefinition(singleClassLoader);
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        proxyMod[0] = new ProxyModule(this, moduleDef, singleClassLoader);
-        add(moduleDef);
+        super(singleCL);
     }
 
     @Override
-    public Module find(Class clazz) {
-        Module m = super.find(clazz);
-        if (m == null)
-            return proxyMod[0];
-        return m;
-    }
-
-    @Override
-    public Collection<Module> getModules(String moduleName) {
-        // I could not care less about the modules names
-        return getModules();
-    }
-
-    @Override
-    public Collection<Module> getModules() {
-        ArrayList<Module> list = new ArrayList<Module>();
-        list.add(proxyMod[0]);
-        return list;
-    }
-
-    @Override
-    public Module makeModuleFor(String name, String version, boolean resolve) throws ResolveError {
-        return proxyMod[0];
-    }
-
-    @Override
-    public void parseInhabitants(Module module, String name, InhabitantsParser inhabitantsParser)
-            throws IOException {
-
-        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-            public ClassLoader get() {
-                return proxyMod[0].getClassLoader();
-            }
-        };
-
-        for (ModuleMetadata.InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
-            inhabitantsParser.parse(d.createScanner(), holder);
-    }
-
-    @Override
-    public Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException {
-        try {
-            Habitat habitat = parser.habitat;
-
-            for (final Module module : getModules())
-                parseInhabitants(module, name,parser);
-
-            // default modules registry is the one that created the habitat
-            habitat.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(this),
-                    ModulesRegistry.class.getName(), null);
-            
-            return habitat;
-        } catch (IOException e) {
-            throw new ComponentException("Failed to create a habitat",e);
-        }
+    protected void populateConfig(Habitat habitat) {
+        // do nothing...
     }
 }
