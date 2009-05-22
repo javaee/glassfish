@@ -117,6 +117,8 @@ public class Activator implements BundleActivator {
         // TODO(Sahoo): Need to set proper values for these directories
         standardContext.setDocBase(System.getProperty("java.io.tmpdir"));
         standardContext.setWorkDir(System.getProperty("java.io.tmpdir"));
+        // standardContext.setJ2EEServer(System.getProperty("com.sun.aas.instanceName"));
+        standardContext.setJ2EEServer("server");
         standardContext.addLifecycleListener(new ContextConfig());
         Realm realm = Globals.getDefaultHabitat().getByContract(Realm.class);
         standardContext.setRealm(realm);
