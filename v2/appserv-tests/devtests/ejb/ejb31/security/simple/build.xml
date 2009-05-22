@@ -12,7 +12,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build,create-user,deploy,run,undeploy,delete-user"/>
+    <target name="all" depends="build,create-user,deploy,run_se,undeploy,delete-user"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>

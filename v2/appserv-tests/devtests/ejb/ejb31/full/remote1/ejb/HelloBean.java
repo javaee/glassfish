@@ -8,10 +8,30 @@ import java.util.concurrent.Future;
 @RemoteHome(HelloHome.class)
 @Remote(Hello.class)
 @TransactionManagement(TransactionManagementType.BEAN)
+@EJB(name="java:global/HBGlobal", beanName="HelloBean", beanInterface=Hello.class)
 public class HelloBean {
 
-    @Resource
-	private SessionContext sessionCtx;
+    @Resource(name="java:module/env/sesCtx")
+    private SessionContext sessionCtx;
+
+    @EJB(name="java:module/env/M1")
+    private Hello m1;
+
+    @EJB(name="java:module/M2")
+    private HelloHome m2;
+
+    @EJB(name="java:app/env/A1")
+    private Hello a1;
+
+    @EJB(name="java:app/A2")
+    private HelloHome a2;
+
+    @EJB(name="java:comp/env/C1")
+    private Hello c1;
+
+    @EJB(name="java:comp/C2")
+    private HelloHome c2;
+
 
     @PostConstruct
     public void init() {

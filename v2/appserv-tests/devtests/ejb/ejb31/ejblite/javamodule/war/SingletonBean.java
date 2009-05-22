@@ -18,6 +18,16 @@ public class SingletonBean {
   
 
     @EJB private  SingletonBean me;
+
+    private SingletonBean sb2;
+    private SingletonBean sb3;
+    private SingletonBean sb4;
+    private SingletonBean sb5;
+    private StatelessBean slsb;
+    private StatelessBean slsb2;
+    private StatelessBean slsb3;
+    private StatelessBean slsb4;
+    private StatelessBean slsb5;
 	
 
     @PostConstruct
@@ -39,6 +49,25 @@ public class SingletonBean {
 		ic.lookup("java:module/StatelessBean!com.acme.StatelessBean");
 
 	    stateless2.hello();
+
+	    sb2 = (SingletonBean) ic.lookup("java:module/SingletonBean");
+	    sb3 = (SingletonBean) ic.lookup("java:module/SingletonBean!com.acme.SingletonBean");
+
+	    sb4 = (SingletonBean) ic.lookup("java:module/ES1");
+	    sb5 = (SingletonBean) ic.lookup("java:module/env/ES2");
+
+	    slsb = (StatelessBean) ic.lookup("java:module/StatelessBean");
+	    slsb2 = (StatelessBean) ic.lookup("java:app/StatelessBean");
+	    slsb3 = (StatelessBean) ic.lookup("java:app/StatelessBean!com.acme.StatelessBean");
+
+	    slsb4 = (StatelessBean) ic.lookup("java:app/EL1");
+	    slsb5 = (StatelessBean) ic.lookup("java:app/env/EL2");
+
+	    System.out.println("My AppName = " + 
+			       ic.lookup("java:comp/AppName"));
+
+	    System.out.println("My ModuleName = " + 
+			       ic.lookup("java:comp/ModuleName"));
 
 	} catch(NamingException ne) {
 	    throw new EJBException(ne);

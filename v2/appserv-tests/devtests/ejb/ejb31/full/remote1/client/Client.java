@@ -48,6 +48,8 @@ public class Client {
 
 	    Hello hello = (Hello) new InitialContext().lookup("HH#com.acme.Hello");
 
+	    // @@@ TODO System.out.println("Lookup via app-defined global name");
+	    // @@@ Not implemented yet @@@ Hello hellog = (Hello) new InitialContext().lookup("java:global/HBGlobal");
 
 	    Future<String> future = hello.helloAsync();	   
 	    

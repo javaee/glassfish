@@ -24,7 +24,14 @@ public class Client {
     }
 
     private static @EJB Sful sful;
+    
     private static @EJB(mappedName="com.sun.s1asdev.ejb.ejb30.hello.session.Sless") Sless sless;
+
+    private static @EJB(mappedName="corbaname:iiop:localhost:3700#com.sun.s1asdev.ejb.ejb30.hello.session.Sless") Sless sless2;
+
+    private static @EJB(mappedName="corbaname:iiop:localhost:3700#java:global/ejb-ejb30-hello-sessionApp/ejb-ejb30-hello-session-ejb/SlessEJB!com.sun.s1asdev.ejb.ejb30.hello.session.Sless") Sless sless3;
+
+    private static @EJB(mappedName="corbaname:iiop:localhost:3700#java:global/ejb-ejb30-hello-sessionApp/ejb-ejb30-hello-session-ejb/SlessEJB") Sless sless4;
 
     public void doTest() {
 
@@ -43,6 +50,12 @@ public class Client {
 
             System.out.println("invoking stateless");
             sless.hello();
+            System.out.println("invoking stateless2");
+	    sless2.hello();
+            System.out.println("invoking stateless3");
+	    sless3.hello();
+            System.out.println("invoking stateless4");
+	    sless4.hello();
 
             System.out.println("test complete");
 
