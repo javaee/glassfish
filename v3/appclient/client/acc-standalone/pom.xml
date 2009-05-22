@@ -114,6 +114,7 @@
                           <outputFile>${classpath.file}</outputFile>
                           <outputFilterFile>true</outputFilterFile>
                           <pathSeparator>:</pathSeparator>
+                          <fileSeparator>/</fileSeparator>
                           <prefix>../modules</prefix>
                           <stripVersion>true</stripVersion>
                       </configuration>
