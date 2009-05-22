@@ -45,10 +45,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.module.bootstrap.PlatformMain;
+
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-@MetaInfServices(AbstractMain.class)
+@MetaInfServices(PlatformMain.class)
 public class ASMainKnopflerFish extends ASMainOSGi {
     protected String getPreferedCacheDir() {
         return "knopfler-cache/gf";

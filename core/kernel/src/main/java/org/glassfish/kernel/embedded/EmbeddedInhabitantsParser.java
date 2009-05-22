@@ -1,7 +1,8 @@
 /*
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,25 +34,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.embedded;
+package org.glassfish.kernel.embedded;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.ActionReport;
-
-import java.util.Properties;
+import com.sun.hk2.component.InhabitantsParserDecorator;
+import com.sun.hk2.component.InhabitantsParser;
+import com.sun.enterprise.v3.services.impl.LogManagerService;
+import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.enterprise.v3.admin.PublicAdminAdapter;
+import com.sun.enterprise.v3.admin.PrivateAdminAdapter;
+import com.sun.enterprise.v3.server.GFDomainXml;
+import org.kohsuke.MetaInfServices;
 
 /**
- * Port abstraction, used to bind several containers to the same port.
+ * Kernel's decoration for embedded environment.
  *
  * @author Jerome Dochez
  */
-@Contract
-public interface Port {
-    
-    public void bind(int portNumber);
+@MetaInfServices
+public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
 
-    public void unbind();
+    public String getName() {
+        return "Embedded";
+    }
 
+    public void decorate(InhabitantsParser parser) {
+
+        // we don't want to reconfigure the loggers.
+        parser.drop(LogManagerService.class);
+
+        parser.drop(AdminConsoleAdapter.class);
+        parser.drop(PublicAdminAdapter.class);
+        parser.drop(PrivateAdminAdapter.class);
+
+        parser.replace(GFDomainXml.class, EmbeddedDomainXml.class);
+
+    }
 }
+

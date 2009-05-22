@@ -75,6 +75,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.1</include>
+                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>
@@ -146,11 +147,29 @@
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.kohsuke.metainf-services</groupId>
+            <artifactId>metainf-services</artifactId>
+            <version>1.1</version>
+            <optional>true</optional>
+        </dependency>        
         <!--dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>monitoring-core</artifactId>
             <version>${project.version}</version>
         </dependency-->
+        <dependency>
+                <groupId>org.glassfish.core</groupId>
+                <artifactId>glassfish</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+        </dependency>
+        <dependency>
+                <groupId>org.glassfish.branding</groupId>
+                <artifactId>branding</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

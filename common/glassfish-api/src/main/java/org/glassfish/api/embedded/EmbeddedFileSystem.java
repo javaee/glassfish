@@ -42,13 +42,51 @@ import java.io.File;
  *
  * @author Jerome Dochez
  */
-public interface EmbeddedFileSystem {
+public class EmbeddedFileSystem {
 
-    public EmbeddedFileSystem setAutoDelete(boolean b);
+    public static class Builder {
+        boolean autoDelete=false;
+        File configFile=null;
+        File installRoot=null;
+        File instanceRoot=null;
 
-    public EmbeddedFileSystem setConfigurationFile(File f);
+        public Builder setAutoDelete(boolean b) {
+            this.autoDelete = b;
+            return this;
+        }
 
-    public EmbeddedFileSystem setInstallRoot(File f);
+        public Builder setConfigurationFile(File f) {
+            this.configFile = f;
+            return this;
 
-    public EmbeddedFileSystem setInstanceRoot(File f);
+        }
+
+        public Builder setInstallRoot(File f) {
+            this.installRoot = f;
+            return this;
+        }
+
+        public Builder setInstanceRoot(File f) {
+            this.instanceRoot=f;
+            return this;
+        }
+
+        public EmbeddedFileSystem build(Builder builder) {
+            return new EmbeddedFileSystem(builder);
+        }
+
+    }
+
+    public final boolean autoDelete;
+    public final File installRoot;
+    public final File instanceRoot;
+    public final File configFile;
+
+    private EmbeddedFileSystem(Builder builder) {
+        autoDelete = builder.autoDelete;
+        installRoot = builder.installRoot;
+        instanceRoot = builder.instanceRoot;
+        configFile = builder.configFile;
+    }
+
 }

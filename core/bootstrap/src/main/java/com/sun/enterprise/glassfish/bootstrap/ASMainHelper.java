@@ -108,6 +108,10 @@ public class ASMainHelper {
         File configDir = new File(installRoot, "config");
         File asenv = getAsEnvConf(configDir);
 
+        if (!asenv.exists()) {
+            Logger.getAnonymousLogger().fine(asenv.getAbsolutePath() + " not found, ignoring");
+            return;
+        }
         LineNumberReader lnReader = null;
         try {
             lnReader = new LineNumberReader(new FileReader(asenv));

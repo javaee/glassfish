@@ -36,9 +36,13 @@
 package org.glassfish.api.embedded;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitants;
 import org.jvnet.hk2.annotations.Contract;
 
-import java.util.Collection;
+import java.util.*;
+import java.io.File;
+
+import com.sun.enterprise.module.bootstrap.PlatformMain;
 
 /**
  * Defines a embedded Server, capable of attaching containers (entities running
@@ -47,7 +51,103 @@ import java.util.Collection;
  * @author Jerome Dochez
  */
 @Contract
-public interface Server {
+public class Server {
+
+    public static class Builder {
+        final String serverName;
+        boolean loggerEnabled;
+        boolean verbose;
+        File loggerFile;
+        EmbeddedFileSystem fileSystem;
+
+        /**
+         * Creates an unconfigured instance. The habitat will be obtained
+         * by scanning the inhabitants files using this class classloader
+         * @param id the server name
+         */
+        public Builder(String id) {
+            this.serverName = id;
+        }
+
+        /**
+         * Enables or disables the logger for this server
+         *
+         * @param enabled true to enable, false to disable
+         * @return this instance
+         */
+        public Builder setLogger(boolean enabled) {
+            loggerEnabled = enabled;
+            return this;
+        }
+
+        /**
+         * Sets the log file location
+         *
+         * @param f a valid file location
+         * @return this instance
+         */
+        public Builder setLogFile(File f) {
+            loggerFile = f;
+            return this;
+        }
+
+        /**
+         * Turns on of off the verbose flag.
+         *
+         * @param b true to turn on, false to turn off
+         * @return this instance
+         */
+        public Builder setVerbose(boolean b) {
+            this.verbose = b;
+            return this;
+        }
+
+        /**
+         * Sets the embedded file system for the application server, used to locate
+         * important files or directories used through the server lifetime.
+         *
+         * @param fileSystem a virtual filesystem
+         * @return this instance
+         */
+        public Builder setEmbeddedFileSystem(EmbeddedFileSystem fileSystem) {
+            this.fileSystem = fileSystem;
+            return this;
+        }
+
+        public Server build() {
+            return new Server(this);
+        }
+    }
+
+    public final String serverName;
+    public final boolean loggerEnabled;
+    public final boolean verbose;
+    public final File loggerFile;
+    public final EmbeddedFileSystem fileSystem;
+    private final Habitat habitat;
+    private final List<EmbeddedContainer> containers = new ArrayList<EmbeddedContainer>();
+
+
+
+    private Server(Builder builder) {
+        serverName = builder.serverName;
+        loggerEnabled = builder.loggerEnabled;
+        verbose = builder.verbose;
+        loggerFile = builder.loggerFile;
+        fileSystem = builder.fileSystem;
+        final PlatformMain embedded = getMain();
+        if (embedded==null) {
+            throw new RuntimeException("Embedded startup not found");
+        }
+        embedded.setContext(this);
+        try {
+            embedded.start(new String[0]);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        habitat = embedded.getStartedService(Habitat.class);
+        
+    }
 
     /**
      * Creates a new embedded container configuration of a type.
@@ -56,7 +156,9 @@ public interface Server {
      * @param <T> type of the embedded container
      * @return the configuration to configure a container of type <T>
      */
-    public <T extends EmbeddedContainerInfo> T createConfig(Class<T> configType);
+    public <T extends EmbeddedContainerInfo> T createConfig(Class<T> configType) {
+        return habitat.getComponent(configType);        
+    }
 
     /**
      * Adds a container to this server.
@@ -69,46 +171,85 @@ public interface Server {
      * @param <T> type of the container
      * @return instance of the container <T>
      */
-    public <T extends EmbeddedContainer> T addContainer(EmbeddedContainerInfo<T> info);
+    public <T extends EmbeddedContainer> T addContainer(EmbeddedContainerInfo<T> info) {
+        T container = info.create(this);
+        if (container!=null && containers.add(container)) {
+            return container;
+        }
+        return null;
+        
+    }
+
 
     /**
      * Returns a list of the currently managed containers
      *
      * @return the containers list
      */
-    public Collection<EmbeddedContainer> getContainers();
+    public Collection<EmbeddedContainer> getContainers() {
+        ArrayList<EmbeddedContainer> copy = new ArrayList<EmbeddedContainer>();
+        copy.addAll(containers);
+        return copy;        
+    }
 
     /**
      * Creates a port to attach to embedded containers. Ports can be attached to many
      * embedded containers and containers may accept more than one port.
      *
-     * @param port port number for this port
+     * @param portNumber port number for this port
      * @return a new port abstraction.
      */
-    public Port createPort(int port);
+    public Port createPort(int portNumber) {
+        Port port = habitat.getComponent(Port.class);
+        port.bind(portNumber);
+        return port;
+    }
 
     /**
      * Returns the configured habitat for this server.
      *
      * @return the habitat
      */
-    public Habitat getHabitat();
+    public Habitat getHabitat() {
+        return habitat;
+    }
 
     /**
-     * Returns the container name, as specified in {@link ServerInfo#ServerInfo(String)}
+     * Returns the container name, as specified in {@link org.glassfish.api.embedded.Server.Builder#Builder(String)}
      *
      * @return container name
      */
-    public String getName();
+    public String getName(){
+        return serverName;
+    }
 
     /**
      * Starts the server
      */
-    public void start();
+    public void start() {
+        for (EmbeddedContainer container : containers) {
+            container.start();
+        }
+    }
 
     /**
      * Stops the container
      */
-    public void stop();    
+    public void stop() {
+        for (EmbeddedContainer container : containers) {
+            container.stop();
+        }
+    }
+
+    private PlatformMain getMain() {
+        ServiceLoader<PlatformMain> mains = ServiceLoader.load(PlatformMain.class, Server.class.getClassLoader());
+        for (PlatformMain main : mains) {
+            if (main.getName().equals("Embedded")) {
+                return main;
+            }
+        }
+        return null;
+    }
+    
 
 }

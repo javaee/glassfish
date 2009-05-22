@@ -40,24 +40,32 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.PlatformMain;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
+import com.sun.hk2.component.InhabitantsParserDecorator;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.ServiceLoader;
 import java.io.File;
 import java.io.IOException;
 
 import org.jvnet.hk2.component.Habitat;
-import com.sun.enterprise.module.single.StaticModulesRegistry;
+import org.jvnet.hk2.component.Inhabitants;
+import org.kohsuke.MetaInfServices;
+import com.sun.enterprise.module.single.SingleModulesRegistry;
 
 /**
  * Main for embedded
  */
+@MetaInfServices(PlatformMain.class)
 public class ASEmbedded extends AbstractMain {
+
+    Habitat habitat = null;
     
     Logger getLogger() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return logger;
     }
 
     long getSettingsLastModification() {
@@ -69,7 +77,7 @@ public class ASEmbedded extends AbstractMain {
     }
 
     public String getName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return "Embedded"; 
     }
 
     boolean createCache(File cacheDir) throws IOException {
@@ -77,47 +85,62 @@ public class ASEmbedded extends AbstractMain {
     }
 
     @Override
-    public void run(final Logger logger, String... args) throws Exception {
-        super.run(logger, args);
+    public <T> T getStartedService(Class<T> serviceType) {
+        if (habitat !=null)
+            return habitat.getComponent(serviceType);
+        else
+            return null;
+    }
 
+    @Override
+    public void run(final Logger logger, String... args) throws Exception {
+        
         final File modulesDir = findBootstrapFile().getParentFile();
 
         final StartupContext startupContext = new StartupContext(modulesDir, args);
 
-        final ModulesRegistry registry = new StaticModulesRegistry(ASEmbedded.class.getClassLoader());
+        final ModulesRegistry registry = new SingleModulesRegistry(ASEmbedded.class.getClassLoader());
         registry.setParentClassLoader(ASEmbedded.class.getClassLoader());
 
-        Thread launcherThread = new Thread(new Runnable(){
-            public void run() {
-                Main main = new Main() {
-                    protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
-                        Habitat habitat = registry.newHabitat();
-                        habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
-                        // the root registry must be added as other components sometimes inject it
-                        habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
-                        habitat.add(new ExistingSingletonInhabitant(Logger.class, logger));
-                        registry.createHabitat("default", createInhabitantsParser(habitat));
-                        return habitat;
-                    }
-
-                    @Override
-                    protected InhabitantsParser createInhabitantsParser(Habitat habitat) {
-                        return super.createInhabitantsParser(habitat);    //To change body of overridden methods use File | Settings | File Templates.
-                    }
-                };
-                try {
-                    main.launch(registry, startupContext);
-                } catch (BootException e) {
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-            }
-        },"Static Framework Launcher");
-
-        launcherThread.setContextClassLoader(ASEmbedded.class.getClassLoader());
-        launcherThread.setDaemon(true);
-        launcherThread.start();        
-        
+        Main main = new EmbeddedMain();
+        try {
+            main.launch(registry, startupContext);
+        } catch (BootException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }              
     }
 
+    final class EmbeddedMain extends Main {
+
+        @Override
+        protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+            Habitat habitat = registry.newHabitat();
+            habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
+            // the root registry must be added as other components sometimes inject it
+            habitat.add(new ExistingSingletonInhabitant<ModulesRegistry>(ModulesRegistry.class, registry));
+            habitat.add(new ExistingSingletonInhabitant<Logger>(Logger.class, ASEmbedded.this.logger));
+            habitat.add(Inhabitants.create(getContext(Object.class)));
+            registry.createHabitat("default", createInhabitantsParser(habitat));
+
+            // post massaging, will need to be cleaned
+            ASEmbedded.this.habitat = habitat;
+            return habitat;
+        }
+
+        @Override
+        protected InhabitantsParser createInhabitantsParser(Habitat habitat) {
+            InhabitantsParser parser = super.createInhabitantsParser(habitat);
+
+
+            ServiceLoader<InhabitantsParserDecorator> decorators =  ServiceLoader.load(InhabitantsParserDecorator.class, ASMain.class.getClassLoader());
+            for (InhabitantsParserDecorator decorator : decorators) {
+                if (decorator.getName().equalsIgnoreCase(getName()))
+                    decorator.decorate(parser);
+            }
+
+            return parser;
+        }
+        
+    }
     
 }

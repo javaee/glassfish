@@ -103,6 +103,19 @@
                     </tasks>
                 </configuration>
              </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <executions>
+                <execution>
+                    <phase>test</phase>
+                </execution>
+            </executions>
+            <version>2.4.2</version>
+            <configuration>
+                <testSourceDirectory>src/test/java</testSourceDirectory>
+            </configuration>
+      </plugin>            
         </plugins>
     </build>
 

@@ -103,6 +103,15 @@ public abstract class DomainXml implements Populator {
         }
 
         // run the upgrades...
+        upgrade();
+
+        habitat.addIndex(new ExistingSingletonInhabitant(habitat.getComponent(Server.class, env.getInstanceName())),
+                         Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
+    }
+
+    protected void upgrade() {
+        
+        // run the upgrades...
         try {
             for (ConfigurationUpgrade cu : habitat.getAllByContract(ConfigurationUpgrade.class)) {
                 Logger.getAnonymousLogger().fine("Upgrading domain.xml with " + cu.getClass());
@@ -110,9 +119,6 @@ public abstract class DomainXml implements Populator {
         } catch (Exception e) {
             Logger.getAnonymousLogger().severe("Upgrading domain.xml failed " + e.getMessage());
         }
-
-        habitat.addIndex(new ExistingSingletonInhabitant(habitat.getComponent(Server.class, env.getInstanceName())),
-                         Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
     }
 
     /**

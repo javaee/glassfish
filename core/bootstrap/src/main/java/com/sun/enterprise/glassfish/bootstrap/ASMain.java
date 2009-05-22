@@ -28,6 +28,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import com.sun.enterprise.module.bootstrap.ArgumentManager;
+import com.sun.enterprise.module.bootstrap.PlatformMain;
 
 /**
  * Tag Main to get the manifest file 
@@ -61,7 +62,7 @@ public class ASMain {
         }
 
 
-        AbstractMain delegate=getMain(platform);
+        PlatformMain delegate=getMain(platform);
         if (delegate!=null) {
 
             logger.info("Launching GlassFish on " + platform + " platform");            
@@ -69,7 +70,8 @@ public class ASMain {
             System.setProperty(PLATFORM_PROPERTY_KEY, platform);
             
             try {
-                delegate.run(logger, args);
+                delegate.setLogger(logger);
+                delegate.start(args);
             } catch(Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
@@ -85,9 +87,9 @@ public class ASMain {
      * @param platform the platform name {@see AbstractMain#getName()}
      * @return an platform provider or null if not found
      */
-    private static AbstractMain getMain(String platform) {
-        ServiceLoader<AbstractMain> loader =  ServiceLoader.load(AbstractMain.class, ASMain.class.getClassLoader());
-        for (AbstractMain main : loader) {
+    private static PlatformMain getMain(String platform) {
+        ServiceLoader<PlatformMain> loader =  ServiceLoader.load(PlatformMain.class, ASMain.class.getClassLoader());
+        for (PlatformMain main : loader) {
             if (main.getName().equalsIgnoreCase(platform))
                 return main;
         }
