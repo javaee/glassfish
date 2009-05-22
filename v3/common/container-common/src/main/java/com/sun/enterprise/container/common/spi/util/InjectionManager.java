@@ -158,6 +158,22 @@ public interface InjectionManager {
                                          JndiNameEnvironment componentEnv)
         throws InjectionException;
 
+
+    /**
+     *
+     * Invoke any @PostConstruct methods defined on the instance's class
+     * (and super-classes). The specified componentEnv must match the
+     * environment that is associated with the component on top of the
+     * invocation stack at the time this method is invoked.
+     *
+     * @exception InjectionException Thrown if an error occurs
+     * 
+     */
+    public void invokeInstancePostConstruct(Object instance,
+                                            JndiNameEnvironment componentEnv)
+        throws InjectionException;
+
+
     /**
      *
      * Invoke any static @PreDestroy methods defined on the class

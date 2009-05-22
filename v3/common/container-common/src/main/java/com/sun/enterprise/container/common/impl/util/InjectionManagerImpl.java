@@ -156,6 +156,13 @@ public class InjectionManagerImpl implements InjectionManager {
         invokePreDestroy(instance.getClass(), instance, componentEnv);
     }
 
+    public void invokeInstancePostConstruct(Object instance,
+                                            JndiNameEnvironment componentEnv)
+        throws InjectionException
+    {
+        invokePostConstruct(instance.getClass(), instance, componentEnv);
+    }
+
     public void invokeInstancePreDestroy(Object instance)
         throws InjectionException {
 
@@ -276,6 +283,44 @@ public class InjectionManagerImpl implements InjectionManager {
 
         }
 
+    }
+
+    /**
+     * @param instance Target instance for postConstruct, or null if 
+     * class-based. 
+     */
+    private void invokePostConstruct(final Class clazz,
+                                     final Object instance, 
+                                     JndiNameEnvironment envDescriptor)
+        throws InjectionException 
+    {     
+        LinkedList<Method> postConstructMethods = new LinkedList<Method>();
+            
+        Class nextClass = clazz;
+
+        // Process each class in the inheritance hierarchy, starting with
+        // the most derived class and ignoring java.lang.Object.
+        while ((nextClass != Object.class) && (nextClass != null)) {
+
+            InjectionInfo injInfo = 
+                envDescriptor.getInjectionInfoByClass(nextClass.getName());
+
+            if (injInfo.getPostConstructMethodName() != null) {
+                
+                Method postConstructMethod = getPostConstructMethod
+                    (injInfo, nextClass);
+                
+                // Invoke the postConstruct methods starting from
+                // the least-derived class downward.  
+                postConstructMethods.addFirst(postConstructMethod);
+            }
+
+            nextClass = nextClass.getSuperclass();
+        }
+
+        for (Method postConstructMethod : postConstructMethods) {
+            invokeLifecycleMethod(postConstructMethod, instance);
+        }
     }
 
 
@@ -521,7 +566,6 @@ public class InjectionManagerImpl implements InjectionManager {
         return m;
     }
 
-
     private Method getPostConstructMethod(InjectionInfo injInfo,
                                           Class resourceClass)
         throws InjectionException {
@@ -533,7 +577,7 @@ public class InjectionManagerImpl implements InjectionManager {
                 injInfo.getPostConstructMethodName();
 
             // Check for the method within the resourceClass only.
-            // This does not include super-classses.
+            // This does not include super-classes.
             for(Method next : resourceClass.getDeclaredMethods()) {
                 // InjectionManager only handles injection into PostConstruct
                 // methods with no arguments. 
