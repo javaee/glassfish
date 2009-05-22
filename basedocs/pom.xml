@@ -11,4 +11,22 @@
     <artifactId>basedocs</artifactId>
     <packaging>distribution-fragment</packaging>
     <name>Basic set of documentation for Glassfish distributions</name>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.jar</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
+    </build>
 </project>
+
