@@ -53,7 +53,8 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 public interface ConfigTools extends AMXProxy, Singleton
 {
     /**
-     * Create Property sub-elements on the specified MBean.
+     * Create Property sub-elements on the specified MBean, transactionally (all or none).
+     <p>
      * Each Map correspond to one property, and its keys should be Name/Value/Description,
      * though the Description may be omitted.
      * @param parent Parent MBean in which the new elements should reside
@@ -61,7 +62,7 @@ public interface ConfigTools extends AMXProxy, Singleton
      * @param clearAll whether to remove all existing properties first
      */
     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    @Description("Create Property sub-elements on the specified MBean")
+    @Description("Create Property sub-elements, transactionally (all or none)")
     public void  setProperties(
         @Description("Parent MBean in which the new elements should reside")
         @Param(name="parent")
@@ -76,11 +77,12 @@ public interface ConfigTools extends AMXProxy, Singleton
         final boolean clearAll);
 
     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    @Description("remove all 'property' children")
+    @Description("transactionally remove all 'property' children")
     public void clearProperties(final ObjectName objectName);
         
     /**
-     * Create SystemProperty sub-elements on the specified MBean.
+     * Create SystemProperty sub-elements, transactionally (all or none).
+     <p>
      * Each Map correspond to one property, and its keys should be Name/Value/Description,
      * though the Description may be omitted.
      * @param parent Parent MBean in which the new elements should reside
@@ -88,7 +90,7 @@ public interface ConfigTools extends AMXProxy, Singleton
      * @param clearAll whether to remove all existing properties first
      */
     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    @Description("Create Property sub-elements on the specified MBean")
+    @Description("Create SystemProperty sub-elements, transactionally (all or none)")
     public void  setSystemProperties(
         @Description("Parent MBean in which the new elements should reside")
         @Param(name="parent")
