@@ -21,7 +21,6 @@
     </target>
 
     <target name="compile" depends="clean">
-        <ant antfile="ra/build.xml" target="build"/>
         
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
@@ -83,9 +82,7 @@
 
 
     <target name="deploy" depends="init-common">
-        <antcall target="deploy-common">
-            <param  name="force" value="true"/>
-        </antcall>
+        <antcall target="deploy-common"/>
     </target>
 
     <target name="run" depends="init-common">
@@ -116,6 +113,8 @@
         </java>
 
 
+        <antcall target="undeploy-common"/>
+        
         <antcall target="setuptwo"/>
         <antcall target="deploy"/>
         <java classname="client.WebTest">
