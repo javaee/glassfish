@@ -464,8 +464,9 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
         depends="init-common, create-connector-connpool"/>
 
 <target name="create-connector-connpool" depends="init-common">
+  <property name="failonerror" value="false"/>
   <echo message="asadmin create-connector-connection-pool ${as.props} --raname ${ra.name} --connectiondefinition ${connection.defname} --target ${appserver.instance.name} ${connector.conpool.name}"/>
-  <exec executable="${ASADMIN}" failonerror="false">
+  <exec executable="${ASADMIN}" failonerror="${failonerror}">
     <arg line="create-connector-connection-pool"/>
     <arg line="${as.props}"/>
     <arg line="--port ${admin.port}"/>
@@ -489,8 +490,9 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!--  create/delete Connector resource  -->
 <target name="create-connector-resource-common" depends="init-common">
+  <property name="failonerror" value="false"/>
   <echo message="asadmin create-connector-resource ${as.props} --poolname ${connector.conpool.name} --target ${appserver.instance.name} ${connector.jndi.name}"/>
-  <exec executable="${ASADMIN}" failonerror="false">
+  <exec executable="${ASADMIN}" failonerror="${failonerror}">
     <arg line="create-connector-resource"/>
     <arg line="${as.props}"/>
     <arg line="--port ${admin.port}"/>
@@ -513,12 +515,13 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <!--  deploy/undeploy RAR files                     -->
 <target name="deploy-rar-common" depends="init-common">
   <echo message="Deploying ${rarfile}" level="verbose"/>
-  <echo message="asadmin deploy ${as.props} --type connector --target ${appserver.instance.name} ${rarfile}"/>
+  <echo message="asadmin deploy ${as.props} --target ${appserver.instance.name} ${rarfile}"/>
+    <property name="force" value="false"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="deploy"/>
     <arg line="${as.props}"/>
     <arg line="--port ${admin.port}"/>
-    <arg line="--type connector"/>
+    <arg line="--force ${force}"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="${rarfile}"/>
   </exec>
@@ -527,12 +530,13 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="undeploy-rar-common" depends="init-common">
   <echo message="Undeploying ${undeployrar}" level="verbose"/>
-  <echo message="asadmin undeploy ${as.props} --type connector --target ${appserver.instance.name} ${undeployrar}"/>
+  <echo message="asadmin undeploy ${as.props} --target ${appserver.instance.name} ${undeployrar}"/>
+    <property name="cascade" value="false"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="undeploy"/>
     <arg line="${as.props}"/>
+    <arg line="--cascade ${cascade}"/>
     <arg line="--port ${admin.port}"/>
-    <arg line="--type connector"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="${undeployrar}"/>
   </exec>
