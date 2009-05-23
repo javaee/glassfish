@@ -65,7 +65,7 @@ private static void goGet(String host, int port,
                     }
                 }
 
-                int pos = line.indexOf("END_OF_TEST");
+                int pos = line.indexOf("END_OF_EXECUTION");
                 if(pos != -1){
                     bis.close();
                     is.close();

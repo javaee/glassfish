@@ -212,7 +212,7 @@ public class WorkDispatcher implements Work {
                     new DeliveryWork(ep3, 1, "DELETE_ALL");
             wm.doWork(w3, 0, ec3, null);
             xa.commit(ec3.getXid(), true);
-            count++;
+            count = 0;
 
             debug("DELETED ALL FROM DB");
             //Controls.expectedResults = 0;
@@ -220,7 +220,7 @@ public class WorkDispatcher implements Work {
             debug(e.toString());
             e.printStackTrace();
         }finally{
-            Controls.expectedResults = count;
+            Controls.expectedResults = 0;
             notifyAndWait();
             newLine(2);
             return Controls.expectedResults;

@@ -60,11 +60,11 @@ public class SimpleServlet extends HttpServlet {
                         out.println("TEST:PASS");
 		            }
                 } else {
-                    out.println("END_OF_TEST");
+                    out.println("END_OF_EXECUTION");
                     break;
                 }
             }
-            out.println("END_OF_TEST");
+            out.println("END_OF_EXECUTION");
             
 
         } catch (Exception ex) {
@@ -73,7 +73,7 @@ public class SimpleServlet extends HttpServlet {
             res = "TEST FAILED";
             out.println("TEST:FAIL");
         }finally{
-            out.println("END_OF_TEST");
+            out.println("END_OF_EXECUTION");
             out.flush();
         }
         System.out.println("connector1.6ID");
@@ -91,6 +91,9 @@ public class SimpleServlet extends HttpServlet {
             PortableRemoteObject.narrow(o, MessageCheckerHome.class);
         MessageChecker checker = home.create();
         int result = checker.getMessageCount();
+        System.out.println("Expected num : " + num);
+        System.out.println("Result got : " + result);
+
         return result == num;
     }
 
