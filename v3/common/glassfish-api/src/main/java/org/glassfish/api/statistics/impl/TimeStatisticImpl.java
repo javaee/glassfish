@@ -37,18 +37,25 @@
 package org.glassfish.api.statistics.impl;
 import org.glassfish.api.statistics.TimeStatistic;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
+import java.lang.reflect.*;
 
 /** 
  * @author Sreenivas Munnangi
  */
-public class TimeStatisticImpl extends StatisticImpl implements 
-    TimeStatistic {
+public class TimeStatisticImpl extends StatisticImpl 
+    implements TimeStatistic, InvocationHandler {
     
     private AtomicLong count = new AtomicLong(Long.MIN_VALUE);
     private final long timeNow = System.currentTimeMillis();
     private AtomicLong maxTime = new AtomicLong(timeNow);
     private AtomicLong minTime = new AtomicLong(timeNow);
     private AtomicLong totTime = new AtomicLong(0L);
+
+    private TimeStatistic ts = (TimeStatistic) Proxy.newProxyInstance(
+            TimeStatistic.class.getClassLoader(),
+            new Class[] { TimeStatistic.class },
+            this);
 
     public final String toString() {
         return super.toString() + NEWLINE + 
@@ -69,9 +76,18 @@ public class TimeStatisticImpl extends StatisticImpl implements
     }
 
     public synchronized TimeStatistic getStatistic() {
-        return ((TimeStatistic)this);
+        return ts;
     }
     
+    public synchronized Map getStaticAsMap() {
+        Map m = super.getStaticAsMap();
+        m.put("count", getCount());
+        m.put("maxtime", getMaxTime());
+        m.put("mintime", getMinTime());
+        m.put("totaltime", getTotalTime());
+        return m;
+    }
+
     /**
      * Returns the number of times an operation was invoked 
      */
@@ -117,5 +133,20 @@ public class TimeStatisticImpl extends StatisticImpl implements
 
     public void setTotalTime(long totalTime) {
         totTime.set(totalTime);
+    }
+
+    // todo: equals implementation
+    public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
+        Object result;
+        try {
+            result = m.invoke(this, args);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        } catch (Exception e) {
+            throw new RuntimeException("unexpected invocation exception: " +
+                       e.getMessage());
+        } finally {
+        }
+        return result;
     }
 }

@@ -37,13 +37,15 @@
 package org.glassfish.api.statistics.impl;
 import org.glassfish.api.statistics.BoundedRangeStatistic;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
+import java.lang.reflect.*;
 
 
 /** 
  * @author Sreenivas Munnangi
  */
-public final class BoundedRangeStatisticImpl extends StatisticImpl implements 
-	BoundedRangeStatistic {
+public final class BoundedRangeStatisticImpl extends StatisticImpl 
+    implements BoundedRangeStatistic, InvocationHandler {
     
     private AtomicLong lowerBound = new AtomicLong(0L);
     private AtomicLong upperBound = new AtomicLong(0L);
@@ -51,6 +53,11 @@ public final class BoundedRangeStatisticImpl extends StatisticImpl implements
     private AtomicLong highWaterMark = new AtomicLong(Long.MIN_VALUE);
     private AtomicLong lowWaterMark = new AtomicLong(Long.MIN_VALUE);
     
+    private BoundedRangeStatistic bs = (BoundedRangeStatistic) Proxy.newProxyInstance(
+            BoundedRangeStatistic.class.getClassLoader(),
+            new Class[] { BoundedRangeStatistic.class },
+            this);
+
     public String toString() {
         return super.toString() + NEWLINE + 
             "Current: " + getCurrent() + NEWLINE +
@@ -74,7 +81,17 @@ public final class BoundedRangeStatisticImpl extends StatisticImpl implements
     }
     
     public synchronized BoundedRangeStatistic getStatistic() {
-        return ((BoundedRangeStatistic) this);
+        return bs;
+    }
+
+    public synchronized Map getStaticAsMap() {
+        Map m = super.getStaticAsMap();
+        m.put("current", getCurrent());
+        m.put("lowerbound", getLowerBound());
+        m.put("upperbound", getUpperBound());
+        m.put("lowwatermark", getLowWaterMark());
+        m.put("highwatermark", getHighWaterMark());
+        return m;
     }
 
     public long getCurrent() {
@@ -114,5 +131,20 @@ public final class BoundedRangeStatisticImpl extends StatisticImpl implements
 	
     public void setUpperBound(long upper) {
         upperBound.set(upper);
+    }
+
+    // todo: equals implementation
+    public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
+        Object result;
+        try {
+            result = m.invoke(this, args);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        } catch (Exception e) {
+            throw new RuntimeException("unexpected invocation exception: " +
+                       e.getMessage());
+        } finally {
+        }
+        return result;
     }
 }

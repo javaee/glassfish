@@ -38,17 +38,26 @@ package org.glassfish.api.statistics.impl;
 import org.glassfish.api.statistics.Statistic;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** 
  * @author Sreenivas Munnangi
  */
 public abstract class StatisticImpl implements Statistic,Serializable {
     
-    private String statisticDesc = "statistic description";
+    private String statisticDesc = "description";
     private AtomicLong sampleTime = new AtomicLong(System.currentTimeMillis());
-    private String statisticName = "statistic name";
+    private String statisticName = "name";
     private AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
-    private String statisticUnit = "statistic unit";
+    private String statisticUnit = "unit";
+    public static final String UNIT_COUNT = "count";
+    public static final String UNIT_SECOND = "second";
+    public static final String UNIT_MILLISECOND = "millisecond";
+    public static final String UNIT_MICROSECOND = "microsecond";
+    public static final String UNIT_NANOSECOND = "nanosecond";
+
+    protected Map<String, Object> statMap = new ConcurrentHashMap<String, Object> ();
     
     protected static final String NEWLINE = System.getProperty( "line.separator" );
 
@@ -60,11 +69,16 @@ public abstract class StatisticImpl implements Statistic,Serializable {
         startTime.set(start_time);
         sampleTime.set(sample_time);
     }
-    
-    public synchronized Statistic getStatistic() {
-        return ((Statistic)this);
-    }
 
+    public synchronized Map getStaticAsMap() {
+        statMap.put("name", statisticName);
+        statMap.put("unit", statisticUnit);
+        statMap.put("description", statisticDesc);
+        statMap.put("starttime", startTime.get());
+        statMap.put("lastsampletime", sampleTime.get());
+        return statMap;
+    }
+    
     public String getName() {
         return this.statisticName;
     }

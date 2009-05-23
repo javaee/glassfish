@@ -37,15 +37,23 @@
 package org.glassfish.api.statistics.impl;
 import org.glassfish.api.statistics.RangeStatistic;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
+import java.lang.reflect.*;
 
 /** 
  * @author Sreenivas Munnangi
  */
-public final class RangeStatisticImpl extends StatisticImpl implements RangeStatistic {
+public final class RangeStatisticImpl extends StatisticImpl 
+    implements RangeStatistic, InvocationHandler {
     
     private AtomicLong currentVal = new AtomicLong(Long.MIN_VALUE);
     private AtomicLong highWaterMark = new AtomicLong(Long.MIN_VALUE);
     private AtomicLong lowWaterMark = new AtomicLong(Long.MIN_VALUE);
+
+    private RangeStatistic rs = (RangeStatistic) Proxy.newProxyInstance(
+            RangeStatistic.class.getClassLoader(),
+            new Class[] { RangeStatistic.class },
+            this);
     
     public RangeStatisticImpl(long curVal, long highMark, long lowMark, 
                               String name, String unit, String desc, 
@@ -57,9 +65,17 @@ public final class RangeStatisticImpl extends StatisticImpl implements RangeStat
     }
 
     public synchronized RangeStatistic getStatistic() {
-        return ((RangeStatistic) this);
+        return rs;
     }
     
+    public synchronized Map getStaticAsMap() {
+        Map m = super.getStaticAsMap();
+        m.put("current", getCurrent());
+        m.put("lowwatermark", getLowWaterMark());
+        m.put("highwatermark", getHighWaterMark());
+        return m;
+    }
+
     public long getCurrent() {
         return currentVal.get();
     }
@@ -97,4 +113,18 @@ public final class RangeStatisticImpl extends StatisticImpl implements RangeStat
             "HighWaterMark: " + getHighWaterMark();
     }
 
+    // todo: equals implementation
+    public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
+        Object result;
+        try {
+            result = m.invoke(this, args);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        } catch (Exception e) {
+            throw new RuntimeException("unexpected invocation exception: " +
+                       e.getMessage());
+        } finally {
+        }
+        return result;
+    }
 }

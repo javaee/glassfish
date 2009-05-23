@@ -37,13 +37,21 @@
 package org.glassfish.api.statistics.impl;
 import org.glassfish.api.statistics.CountStatistic;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
+import java.lang.reflect.*;
 
 /** 
  * @author Sreenivas Munnangi
  */
-public class CountStatisticImpl extends StatisticImpl implements CountStatistic {
+public class CountStatisticImpl extends StatisticImpl
+    implements CountStatistic, InvocationHandler {
     
     private AtomicLong count = new AtomicLong(Long.MIN_VALUE);
+
+    private CountStatistic cs = (CountStatistic) Proxy.newProxyInstance(
+            CountStatistic.class.getClassLoader(),
+            new Class[] { CountStatistic.class },
+            this);
 
     public CountStatisticImpl(long countVal, String name, String unit, 
                               String desc, long sampleTime, long startTime) {
@@ -52,7 +60,13 @@ public class CountStatisticImpl extends StatisticImpl implements CountStatistic 
     }
     
     public synchronized CountStatistic getStatistic() {
-        return ((CountStatistic) this);
+        return cs;
+    }
+
+    public synchronized Map getStaticAsMap() {
+        Map m = super.getStaticAsMap();
+        m.put("count", getCount());
+        return m;
     }
 
     public String toString() {
@@ -67,11 +81,18 @@ public class CountStatisticImpl extends StatisticImpl implements CountStatistic 
         count.set(countVal);
     }
 
-    public AtomicLong getCountAsAtomicLong() {
-        return count;
-    }
-
-    public void setCountAsAtomicLong(AtomicLong countVal) {
-        this.count = countVal;
+    // todo: equals implementation
+    public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
+        Object result;
+        try {
+            result = m.invoke(this, args);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        } catch (Exception e) {
+            throw new RuntimeException("unexpected invocation exception: " +
+                       e.getMessage());
+        } finally {
+        }
+        return result;
     }
 }

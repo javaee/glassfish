@@ -37,16 +37,23 @@
 package org.glassfish.api.statistics.impl;
 import org.glassfish.api.statistics.BoundaryStatistic;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
+import java.lang.reflect.*;
 
 /** 
  * @author Sreenivas Munnangi
  */
 public final class BoundaryStatisticImpl extends StatisticImpl 
-    implements BoundaryStatistic {
+    implements BoundaryStatistic, InvocationHandler {
     
     private AtomicLong lowerBound = new AtomicLong(0L);
     private AtomicLong upperBound = new AtomicLong(0L);
 	
+    private BoundaryStatistic bs = (BoundaryStatistic) Proxy.newProxyInstance(
+            BoundaryStatistic.class.getClassLoader(),
+            new Class[] { BoundaryStatistic.class },
+            this);
+
     public BoundaryStatisticImpl(long lower, long upper, String name,
                                  String unit, String desc, long startTime,
                                  long sampleTime) {
@@ -56,9 +63,16 @@ public final class BoundaryStatisticImpl extends StatisticImpl
     }
 
     public synchronized BoundaryStatistic getStatistic() {
-        return ((BoundaryStatistic)this);
+        return bs;
     }
     
+    public synchronized Map getStaticAsMap() {
+        Map m = super.getStaticAsMap();
+        m.put("lowerbound", getLowerBound());
+        m.put("upperbound", getUpperBound());
+        return m;
+    }
+
     public long getLowerBound() {
         return lowerBound.get();
     }
@@ -73,5 +87,20 @@ public final class BoundaryStatisticImpl extends StatisticImpl
 
     public void setUpperBound(long upper) {
         upperBound.set(upper);
+    }
+
+    // todo: equals implementation
+    public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
+        Object result;
+        try {
+            result = m.invoke(this, args);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        } catch (Exception e) {
+            throw new RuntimeException("unexpected invocation exception: " +
+                       e.getMessage());
+        } finally {
+        }
+        return result;
     }
 }
