@@ -67,6 +67,8 @@ import java.io.*;
 
 public class NetUtils {
 
+    public enum PortAvailability { illegalNumber, noPermission, inUse, unknown, OK };
+    
     private NetUtils() {
     }
     public static final int MAX_PORT = 65535;
@@ -290,6 +292,39 @@ public class NetUtils {
         }
     }
 
+    /**
+     * There are 5 possibilities when you want to setup a server socket on a port:
+     * 1. The port is already in use
+     * 2. The user does not have permission to open up shop on that port
+     *    An example of (2) is a non-root user on UNIX trying to use port 80
+     * 3. The port number is not in the legal range
+     * 4. Unknown
+     * 5. OK -- you can use it!
+     *
+     * @param portNumber
+     * @return one of the 5 possibilities for this port
+     */
+    public static PortAvailability checkPort(int portNumber) {
+        if(!isPortValid(portNumber))
+            return PortAvailability.illegalNumber;
+
+        boolean client = isPortFreeClient(null, portNumber);
+        boolean server = isPortFreeServer(portNumber);
+
+        if(server && client)
+            return PortAvailability.OK;
+
+        if(server && !client)
+            // impossible -- or at least I can not make this happen in a test case
+            return PortAvailability.unknown;
+
+        if(!server && !client)
+            return PortAvailability.inUse;
+
+        else // !server && client
+            return PortAvailability.noPermission;
+    }
+
     public static boolean isPortFree(int portNumber) {
         return isPortFree(null, portNumber);
     }
@@ -300,7 +335,7 @@ public class NetUtils {
             // I lifted the code from installer.  Apparently if you just
             // open a socket on a free port and catch the exception something
             // will go wrong in Windows.
-            // Feel free to change it if you know EXACTLY what you'return doing
+            // Feel free to change it if you know EXACTLY what you're doing
 
             //If the host name is null, assume localhost
             if (hostName == null) {
