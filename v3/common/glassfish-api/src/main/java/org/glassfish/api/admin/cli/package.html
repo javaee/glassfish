@@ -20,14 +20,11 @@ interface per se, but they are related to the command implementation classes on 
 
 The annotations and enums in this package are supposed to be used as described below.
 
-<h3> Note: I don't know how to make javadoc behave when it encounters an @ in a &lt;pre&gt; section of package.html.
-    It just does not work, because it misunderstandts it as a tag and using -tag on javadoc for this purpose is
-    worthless. So, please read atOption as the annotation-type Option. </h3>
 <ol>
     <li>
         To specify a required String option "--jndi-name", that cannot repeat on a command line:
         <pre>
-            atOption (name="jndi-name", symbol='j', required=true)
+            &#64;Option (name="jndi-name", symbol='j', required=true)
             private volatile String jndiName;
         </pre>
         Such an option is specified as either "--jndi-name = jdbc/mysql" or "--jndi-name jdbc/mysql or
@@ -36,15 +33,15 @@ The annotations and enums in this package are supposed to be used as described b
     <li>
         To specify an optional boolean option "force" that cannot repeat on a command line, you can either use:
         <pre>
-            atOption (symbol='f', type=OptionType.BOOLEAN, defaultValue="false", legalValues={"true", "false"})
+            &#64;Option (symbol='f', type=OptionType.BOOLEAN, defaultValue="false", legalValues={"true", "false"})
             private volatile String force;
         </pre>
         OR:
         <pre>
-            atOption (symbol='f' defaultValue=false)
+            &#64;Option (symbol='f' defaultValue=false)
             private volatile boolean force;
             OR:
-            atOption (symbol='f')
+            &#64;Option (symbol='f')
             private volatile boolean force = false;
         </pre>
 
@@ -55,7 +52,7 @@ The annotations and enums in this package are supposed to be used as described b
     <li>
         To specify a required option that is secret (password) information, you should use:
         <pre>
-            atOption (type=OptionType.PASSWORD, required=true)
+            &#64;Option (type=OptionType.PASSWORD, required=true)
             private volatile String password;
         </pre>
         Such an option is treated specially by the command line. Note the following in this regard:
@@ -74,12 +71,12 @@ The annotations and enums in this package are supposed to be used as described b
         To specify a "property" (i.e. name=value) option that may or may not repeat, the command implementation
         should specify it as a Map, e.g.
         <pre>
-          atOption (name="property" repeats=true/false, type=OptionType.PROPERTY)
+          &#64;Option (name="property" repeats=true/false, type=OptionType.PROPERTY)
           private final Map &lt; String, String &gt; properties;
         </pre>
         Such an option can be specified as: --property prop1=value1 --property prop2=value2 or --property=name1=value1
         --property=name2=value2 on the command line depdending on the value of <i> repeats </i>. Note that the type
-        PROPERTY is a special treatment for a commonly used pattern where command implementations need  
+        PROPERTY is a special treatment for a commonly used pattern where command implementations need to process properties.
         <p>
         Any use of '=' in the property names and values needs to be escaped with a backslash.
         </p>
@@ -88,7 +85,7 @@ The annotations and enums in this package are supposed to be used as described b
         To specify an option that specifies a number of properties, use OptionType.PROPERTIES when the properties are
         delimited by a ':' (this is chosen for compatibility reasons). For example,
         <pre>
-            atOption (name="connection-properties", repeats=false, type=OptionType.PROPERTIES)
+            &#64;Option (name="connection-properties", repeats=false, type=OptionType.PROPERTIES)
             private final Map &lt; String, String &gt; properties;
         </pre>
         This can be specified as --connection-properties dbname=Oracle:url=jdbc\:localhost\:4456 which means there are
@@ -97,7 +94,7 @@ The annotations and enums in this package are supposed to be used as described b
     <li>
         To specify an option that represents a "file":
         <pre>
-            atOption (name="file", type=OptionType.FILE)
+            &#64;Option (name="file", type=OptionType.FILE)
             private volatile File f;                
         </pre>
         This option is specified as --file foo.jar and results in a binary file upload from the client to the server.
@@ -106,34 +103,40 @@ The annotations and enums in this package are supposed to be used as described b
     <li>
         To specify a required operand that's a string, use:
         <pre>
-            atOperand (required=true)
+            &#64;Operand (required=true)
             private volatile String server;
         </pre>
     </li>
     <li>
         To specify an operand whose type depends upon the value of another option:
         <pre>
-        atOperand (required=true, type=OptionType.FILE)
-        atTypeOverride (type=OptionType.PATH, options="upload", values="false")
+        &#64;Operand (required=true, type=OptionType.FILE)
+        atTypeOverride (type=OptionType.FILE_PATH, options="upload", values="false")
         private volatile File f;
         </pre>
         This operand is interpreted as a file by default, but if another option ("--upload") is "false", then it is
-        just a PATH. A PATH is treated specially by the client in that its absolute value is sent from the client
+        just a PATH. A FILE_PATH is treated specially by the client in that its absolute value is sent from the client
         to the server.
     </li>
     <li>
         To specify multiple operands that are all strings:
         <pre>
-            atOperand (type=OptionType.STRING, required=true)
+            &#64;Operand (type=OptionType.STRING, required=true)
             private final String[] names;
-        </pre>
+            OR:
+            &#64;Operand (type=OptionType.STRING, required=true)
+            private final Map &lt; String &gt; names;
 
+        </pre>
     </li>
     <li>
         To specify multiple operands that are all files:
         <pre>
-            atOperand (type=OptionType.FILE, required=true)
+            &#64;Operand (type=OptionType.FILE, required=true)
             private final String[] files;
+            OR:
+            &#64;Operand (type=OptionType.FILE, required=true)
+            private final Map &lt; String &gt; files;            
         </pre>
     </li>
 </ol>
@@ -143,7 +146,6 @@ The annotations and enums in this package are supposed to be used as described b
 
 <!-- Put @see and @since tags down here. -->
 
-@see org.glassfish.api.admin
 @since GlassFish v3 September 2009
 </body>
 </html>
