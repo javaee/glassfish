@@ -7,7 +7,7 @@ deploy --force=true should undeploy the first version of resource-adapter , its 
 and recreate the resources
 
 This test is executed twice to make sure that "undeploy --cascade=true rarname" works fine. Second run will try to create same resource which will fail in case the resource by the name exists.
-Resource types include : Connector-connection-pool, connector-resource, admin-object-resource
+Resource types include : Connector-connection-pool, connector-resource, admin-object-resource, resource-adapter-config
 
 
 How to run :

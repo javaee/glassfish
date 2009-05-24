@@ -14,7 +14,7 @@
     &commonRun;
     &testproperties;
 
-    <target name="all" depends="build,setup,deploy,run"/>
+    <target name="all" depends="build,setup,run"/>
 
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
@@ -135,8 +135,8 @@
 <!--
         <antcall target="delete-admin-object"/>
         <antcall target="delete-resource"/>
-        <antcall target="delete-pool"/>-->
-        <antcall target="delete-ra-config"/>
+        <antcall target="delete-pool"/>
+        <antcall target="delete-ra-config"/>-->
         <antcall target="undeploy"/>
     </target>
 
