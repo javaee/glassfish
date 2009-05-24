@@ -261,7 +261,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
     /**
     Verify that the port is valid.
     Port must be greater than 0 and less than 65535.
-    This method will also check if the port is in used.
+    This method will also check if the port is in use.
     @param portNum - the port number to verify
     @throws CommandException if Port is not valid
     @throws CommandValidationException is port number is not a numeric value.
@@ -270,18 +270,28 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
             throws CommandException, CommandValidationException {
 
         final int portToVerify = convertPortStr(portNum);
+        NetUtils.PortAvailability avail = NetUtils.checkPort(portToVerify);
 
-        if (portToVerify <= 0 || portToVerify > PORT_MAX_VAL) {
-            throw new CommandException(getLocalizedString("InvalidPortRange",
-                    new Object[]{portNum}));
+        switch(avail) {
+            case illegalNumber:
+                throw new CommandException(getLocalizedString("InvalidPortRange",
+                        new Object[]{portNum}));
+
+            case inUse:
+                throw new CommandException(getLocalizedString("PortInUseMsg",
+                        new Object[]{(String) operands.firstElement(), portNum}));
+
+            case noPermission:
+                throw new CommandException(getLocalizedString("NoPermissionForPortMsg",
+                        new Object[]{portNum, (String) operands.firstElement()}));
+
+            case unknown:
+                throw new CommandException(getLocalizedString("UnknownPortMsg",
+                        new Object[]{portNum}));
+
+            case OK:
+                CLILogger.getInstance().printDebugMessage("Port =" + portToVerify);
         }
-        if (getBooleanOption(CHECKPORTS_OPTION) && !NetUtils.isPortFree(portToVerify)) {
-            throw new CommandException(getLocalizedString("PortInUseMsg",
-                    new Object[]{(String) operands.firstElement(),
-                portNum
-            }));
-        }
-        CLILogger.getInstance().printDebugMessage("Port =" + portToVerify);
     }
 
     /**
