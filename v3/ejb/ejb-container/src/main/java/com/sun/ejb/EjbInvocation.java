@@ -39,6 +39,7 @@ package com.sun.ejb;
 //XXX: import javax.xml.rpc.handler.MessageContext;
 /* HARRY : JACC Changes */
 
+import com.sun.ejb.containers.BaseContainer;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.ejb.containers.EJBLocalRemoteObject;
 import com.sun.ejb.containers.EjbFutureTask;
@@ -60,6 +61,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.glassfish.ejb.security.application.EJBSecurityManager;
 
 /**
  * The EjbInvocation object contains state associated with an invocation
@@ -669,6 +671,12 @@ public class EjbInvocation
 	public Object invokeNext(int index, EjbInvocation invCtx)
 	    throws Throwable;
     }
+    
+    public com.sun.enterprise.security.SecurityManager getEjbSecurityManager() {
+        return ((BaseContainer)container).getSecurityManager();
+    }
+    
+    
 
 }
 
