@@ -43,15 +43,19 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.ApplicationContext;
+import org.glassfish.api.deployment.*;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.ActionReport;
 import org.glassfish.javaee.services.ResourceManager;
+import org.glassfish.internal.deployment.Deployment;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Represents a connector application, one per resource-adapter.
@@ -60,7 +64,7 @@ import java.util.ArrayList;
  *
  * @author Jagadish Ramu
  */
-public class ConnectorApplication implements ApplicationContainer {
+public class ConnectorApplication implements ApplicationContainer, EventListener {
     private static Logger _logger = LogDomains.getLogger(ConnectorApplication.class, LogDomains.RSR_LOGGER);
     private String moduleName = "";
     //indicates the "application" (ear) name if its embedded rar
@@ -68,14 +72,16 @@ public class ConnectorApplication implements ApplicationContainer {
     private ResourceManager resourceManager;
     private ClassLoader loader;
     private ConnectorRuntime runtime;
+    private Events event;
 
     public ConnectorApplication(String moduleName, String appName, ResourceManager resourceManager, ClassLoader loader,
-                                ConnectorRuntime runtime) {
+                                ConnectorRuntime runtime, Events event) {
         this.setModuleName(moduleName);
         this.resourceManager = resourceManager;
         this.loader = loader;
         this.runtime = runtime;
         this.applicationName = appName;
+        this.event = event;
     }
 
     /**
@@ -104,7 +110,10 @@ public class ConnectorApplication implements ApplicationContainer {
         deployResources();
         runtime.registerConnectorApplication(this);
 
-        started = true; // TODO V3 temporary
+        started = true;
+
+        event.register(this);
+
         logFine("Resource Adapter [ " + getModuleName() + " ] started");
         return started;
     }
@@ -121,7 +130,7 @@ public class ConnectorApplication implements ApplicationContainer {
         Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
         AdminObjectResource[] adminObjectResources =
                 ConnectorsUtil.getEnabledAdminObjectResources(moduleName, allResources, null);
-        for(AdminObjectResource aor : adminObjectResources){
+        for (AdminObjectResource aor : adminObjectResources) {
             resources.add(aor);
         }
         resourceManager.deployResources(resources);
@@ -130,7 +139,30 @@ public class ConnectorApplication implements ApplicationContainer {
     /**
      * undeploy all resources/pools pertaining to this resource adapter
      */
-    public void undeployResources() {
+    public boolean undeployResources() {
+        return undeployResources(false);
+    }
+
+    /**
+     * undeploy all resources/pools pertaining to this resource adapter
+     */
+    public boolean undeployResources(boolean failIfResourcesExist) {
+        boolean status;
+        List<Resource> resources = getAllConnectorResources();
+        if (failIfResourcesExist && resources.size() > 0) {
+            String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
+                    "use '--cascade=true' to delete them during undeploy";
+            _logger.warning(message);
+            status = false;
+            throw new RuntimeException(message);
+        } else {
+            resourceManager.undeployResources(resources);
+            status = true;
+        }
+        return status;
+    }
+
+    private List<Resource> getAllConnectorResources() {
         Resources allResources = resourceManager.getAllResources();
         Collection<ConnectorConnectionPool> connectionPools =
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
@@ -141,11 +173,9 @@ public class ConnectorApplication implements ApplicationContainer {
         List<Resource> resources = new ArrayList<Resource>();
         resources.addAll(connectorResources);
         resources.addAll(connectionPools);
-        for(AdminObjectResource aor : adminObjectResources){
-            resources.add(aor);
-        }
+        resources.addAll(Arrays.asList(adminObjectResources));
 
-        resourceManager.undeployResources(resources);
+        return resources;
     }
 
     /**
@@ -156,10 +186,24 @@ public class ConnectorApplication implements ApplicationContainer {
      */
     public boolean stop(ApplicationContext stopContext) {
         boolean stopped = false;
-        undeployResources();
-        runtime.unregisterConnectorApplication(getModuleName());
-        stopped = true;
-        logFine("Resource Adapter [ " + getModuleName() + " ] stopped");
+
+        DeploymentContext dc = (DeploymentContext) stopContext;
+        UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
+        boolean failIfResourcesExist = false;
+        if (dcp.origin == OpsParams.Origin.undeploy) {
+            if(!(dcp.ignoreCascade || dcp.cascade)){
+                failIfResourcesExist = true;
+            }
+        }
+
+        if (!undeployResources(failIfResourcesExist)) {
+            stopped = false;
+        } else {
+            runtime.unregisterConnectorApplication(getModuleName());
+            stopped = true;
+            logFine("Resource Adapter [ " + getModuleName() + " ] stopped");
+        }
+        event.unregister(this);
         return stopped;
     }
 
@@ -198,6 +242,7 @@ public class ConnectorApplication implements ApplicationContainer {
 
     /**
      * returns the module name
+     *
      * @return module-name
      */
     public String getModuleName() {
@@ -206,6 +251,7 @@ public class ConnectorApplication implements ApplicationContainer {
 
     /**
      * set the module name of the application
+     *
      * @param moduleName module-name
      */
     public void setModuleName(String moduleName) {
@@ -214,5 +260,37 @@ public class ConnectorApplication implements ApplicationContainer {
 
     public String getApplicationName() {
         return applicationName;
+    }
+
+    /**
+     * event listener to listen to </code>resource-adapter undeploy validation</code> and
+     * to validate the undeployment. Undeployment will fail, if resources are found
+     * and --cascade is not set.
+     * @param event Event 
+     */
+    public void event(Event event) {
+        if (Deployment.UNDEPLOYMENT_VALIDATION.equals(event.type())) {
+            //this is an application undeploy event
+            DeploymentContext dc = (DeploymentContext) event.hook();
+            UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
+            if (dcp.name.equals(moduleName)) {
+
+                if (dcp.origin != OpsParams.Origin.deploy) {
+                    if (dcp.origin == OpsParams.Origin.undeploy) {
+                        if (!(dcp.ignoreCascade || dcp.cascade)) {
+                            if (getAllConnectorResources().size() > 0) {
+                                String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
+                                        "use '--cascade=true' to delete them during undeploy";
+                                _logger.log(Level.WARNING, message);
+
+                                ActionReport report = dc.getActionReport();
+                                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                                report.setActionDescription(message);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

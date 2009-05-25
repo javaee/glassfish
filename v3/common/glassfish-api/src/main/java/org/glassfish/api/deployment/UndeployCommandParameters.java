@@ -56,6 +56,12 @@ public class UndeployCommandParameters extends OpsParams {
     @Param(optional=true)
     public Boolean droptables;
 
+    @Param(optional=true, defaultValue="false")
+    public Boolean cascade;
+
+    @Param(optional=true, defaultValue="false")
+    public Boolean ignoreCascade;
+
     @Param(optional=true)
     public Properties properties=null;
 
@@ -74,3 +80,4 @@ public class UndeployCommandParameters extends OpsParams {
         throw new IllegalStateException("We need to be able to get access to libraries when undeploying");
     }
 }
+    

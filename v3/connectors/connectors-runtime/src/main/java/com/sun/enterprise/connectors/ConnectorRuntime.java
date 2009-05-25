@@ -351,9 +351,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
-    public void destroyActiveResourceAdapter(String moduleName, boolean cascade)
+    public void destroyActiveResourceAdapter(String moduleName)
             throws ConnectorRuntimeException {
-        resourceAdapterAdmService.stopActiveResourceAdapter(moduleName, cascade);
+        resourceAdapterAdmService.stopActiveResourceAdapter(moduleName);
     }
 
     /**
@@ -726,18 +726,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
-     * Calls the stop method for all J2EE Connector 1.5 spec compliant RARs
-     */
-    public void stopAllActiveResourceAdapters() {
-        resourceAdapterAdmService.stopAllActiveResourceAdapters();
-    }
-
-    /**
      * {@inheritDoc}
      */
-    public void shutdownAllActiveResourceAdapters(Collection<String> resources) {
-        //destroyResourcesAndPools(resources);
-        stopAllActiveResourceAdapters();
+    public void shutdownAllActiveResourceAdapters() {
+        resourceAdapterAdmService.stopAllActiveResourceAdapters();
     }
 
     public PoolManager getPoolManager() {
@@ -1048,7 +1040,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return ConnectorsUtil.getWorkSecurityMaps(raName, allResources.getComponent(Resources.class));
     }
 
-    public int getShutdownTimeout() {
+    /**
+     * Gets the shutdown-timeout attribute configured in <code>connector-service</code>
+     * @return long shutdown timeout (in milli-seconds)
+     */
+    public long getShutdownTimeout() {
         return ConnectorsUtil.getShutdownTimeout(
                 habitat.getComponent(com.sun.enterprise.config.serverbeans.ConnectorService.class));
     }

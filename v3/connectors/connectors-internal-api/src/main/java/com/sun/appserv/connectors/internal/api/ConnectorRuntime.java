@@ -92,24 +92,12 @@ public interface ConnectorRuntime extends ConnectorConstants{
     /**
      * Destroys/deletes the Active resource adapter object from the
      * connector container. Active resource adapter abstracts the rar
-     * deployed. It checks whether any resources (pools and connector
-     * resources) are still present. If they are present and cascade option
-     * is false the deletion fails and all the objects and datastructures
-     * pertaining to  the resource adapter are left untouched.
-     * If cascade option is true, even if resources are still present, they are
-     * also destroyed with the active resource adapter
+     * deployed.
      *
      * @param moduleName Name of the rarModule to destroy/delete
-     * @param cascade    If true all the resources belonging to the rar are
-     *                   destroyed recursively.
-     *                   If false, and if resources pertaining to resource adapter
-     *                   /rar are present deletetion is failed. Then cascade
-     *                   should be set to true or all the resources have to
-     *                   deleted explicitly before destroying the rar/Active
-     *                   resource adapter.
      * @throws ConnectorRuntimeException if the deletion fails
      */
-    public void destroyActiveResourceAdapter(String moduleName, boolean cascade) throws ConnectorRuntimeException;
+    public void destroyActiveResourceAdapter(String moduleName) throws ConnectorRuntimeException;
 
     /**
      * Will be used by resource proxy objects to load the resource lazily.
@@ -126,12 +114,9 @@ public interface ConnectorRuntime extends ConnectorConstants{
                                         String raName) throws ConnectorRuntimeException;
 
     /**
-     * Shut down all active resource adapters after destroying/unpublishing resources and pools.
-     *
-     * @param resources list of resources and pools to be unpublished
+     * Shut down all active resource adapters
      */
-    //TODO V3 no need to pass resources as it is taken care by ResourceManager ?
-    public void shutdownAllActiveResourceAdapters(Collection<String> resources);
+    public void shutdownAllActiveResourceAdapters();
 
     /**
      * Given the module directory, creates a connector-class-finder (class-loader) for the module

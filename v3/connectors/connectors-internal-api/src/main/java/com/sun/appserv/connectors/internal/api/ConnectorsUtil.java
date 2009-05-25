@@ -251,6 +251,16 @@ public class ConnectorsUtil {
         return poolNames;
     }
 
+    public static Collection<WorkSecurityMap> getAllWorkSecurityMaps(Resources resources, String moduleName){
+        List<WorkSecurityMap> workSecurityMaps = new ArrayList<WorkSecurityMap>();
+        for(WorkSecurityMap resource : resources.getResources(WorkSecurityMap.class)){
+            if(resource.getResourceAdapterName().equals(moduleName)){
+                workSecurityMaps.add(resource);
+            }
+        }
+        return workSecurityMaps;
+    }
+
     /**
      * get the pools for a particular resource-adapter
      * @param moduleName resource-adapter name
@@ -271,6 +281,7 @@ public class ConnectorsUtil {
 
     /**
      * Get all System RAR pools and resources
+     * @param allResources all configured resources
      * @return Collection of system RAR pools
      */
     public static Collection<Resource> getAllSystemRAResourcesAndPools(Resources allResources) {
@@ -293,7 +304,12 @@ public class ConnectorsUtil {
                 if( ConnectorsUtil.belongsToSystemRA(raName) ){
                     resources.add(resource);
                 }
-            }
+            } else if (resource instanceof AdminObjectResource){ // jms-ra
+                String raName = ((AdminObjectResource)resource).getResAdapter();
+                if(ConnectorsUtil.belongsToSystemRA(raName)){
+                    resources.add(resource);
+                }
+            } //no need to list work-security-map as they are not deployable artifacts
         }
         resources.addAll(pools);
         return resources;
@@ -301,8 +317,9 @@ public class ConnectorsUtil {
 
     /**
      * Given the poolname, retrieve the resourceadapter name
-     * @param poolName
-     * @return resource-adaapter name
+     * @param poolName connection pool name
+     * @param allResources resources
+     * @return resource-adapter name
      */
     public static String getResourceAdapterNameOfPool(String poolName, Resources allResources) {
         String raName = ""; //TODO V3 this need not be initialized to ""
@@ -318,6 +335,22 @@ public class ConnectorsUtil {
         return raName;
     }
 
+    public static ResourceAdapterConfig getRAConfig(String raName, Resources allResources) {
+        Collection<ResourceAdapterConfig> raConfigs = allResources.getResources(ResourceAdapterConfig.class);
+        for(ResourceAdapterConfig rac : raConfigs){
+            if(rac.getResourceAdapterName().equals(raName)){
+                return rac;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * given the ra-name, returns all the configured connector-work-security-maps for the .rar
+     * @param raName resource-adapter name
+     * @param allResources resources
+     * @return list of work-security-maps
+     */
     public static List<WorkSecurityMap> getWorkSecurityMaps(String raName, Resources allResources){
         List<Resource> resourcesList = allResources.getResources();
         List<WorkSecurityMap> workSecurityMaps = new ArrayList<WorkSecurityMap>();
@@ -596,9 +629,9 @@ public class ConnectorsUtil {
      * Gets the shutdown-timeout attribute from domain.xml
      * via the connector server config bean.
      * @param connectorService connector-service configuration
-     * @return int shutdown timeout
+     * @return long shutdown timeout (in mill-seconds)
      */
-    public static int getShutdownTimeout(ConnectorService connectorService)  {
+    public static long getShutdownTimeout(ConnectorService connectorService)  {
         int shutdownTimeout;
 
         try {
@@ -607,7 +640,7 @@ public class ConnectorsUtil {
                 //domain.xml and hence going with the default time-out
                 shutdownTimeout =
                         ConnectorConstants.DEFAULT_RESOURCE_ADAPTER_SHUTDOWN_TIMEOUT;
-                _logger.log(Level.FINE, "Shutdown timeout set to "+  shutdownTimeout + "through default");
+                _logger.log(Level.FINE, "Shutdown timeout set to "+  shutdownTimeout + " through default");
             } else {
                 shutdownTimeout = Integer.parseInt(connectorService.getShutdownTimeoutInSeconds());
                 _logger.log(Level.FINE, "Shutdown timeout set to " + shutdownTimeout + " from domain.xml");
@@ -617,6 +650,6 @@ public class ConnectorsUtil {
             //Going ahead with the default timeout value
             shutdownTimeout = ConnectorConstants.DEFAULT_RESOURCE_ADAPTER_SHUTDOWN_TIMEOUT;
         }
-        return shutdownTimeout;
+        return shutdownTimeout * 1000L;
     }
 }

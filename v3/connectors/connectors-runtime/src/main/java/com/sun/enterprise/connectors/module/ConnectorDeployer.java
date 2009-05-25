@@ -42,10 +42,14 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.event.Events;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -53,10 +57,15 @@ import org.glassfish.internal.api.ConnectorClassFinder;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collection;
+import java.beans.PropertyVetoException;
 
 /**
  * Deployer for a resource-adapter.
@@ -75,6 +84,15 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     @Inject
     private ResourceManager resourceManager;
+
+    @Inject
+    private Resources resources;
+
+    @Inject
+    private Domain domain;
+
+    @Inject
+    private Events events;
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
@@ -142,15 +160,16 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
                 //runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
 
-            } catch (ConnectorRuntimeException cre) {
+            } catch (Exception cre) {
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
                 if(!(isEmbedded) && ccf != null) {
                     clh.getConnectorClassLoader(null).removeDelegate(ccf);
                 }
-
+                return null;
             }
         }
-        return new ConnectorApplication(moduleName, getApplicationName(context), resourceManager, classLoader, runtime);
+        return new ConnectorApplication(moduleName, getApplicationName(context), resourceManager,
+                classLoader, runtime, events);
     }
 
     private String getEmbeddedRarModuleName(String applicationName, String moduleName) {
@@ -193,7 +212,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 String applicationName = getApplicationName(context);
                 moduleName = getEmbeddedRarModuleName(applicationName, moduleName);
             }
-            runtime.destroyActiveResourceAdapter(moduleName, true);
+            runtime.destroyActiveResourceAdapter(moduleName);
         } catch (ConnectorRuntimeException e) {
             _logger.log(Level.WARNING, " unable to unload the resource-adapter [ " + moduleName + " ]", e);
         } finally {
@@ -210,9 +229,151 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * Clean any files and artifacts that were created during the execution
      * of the prepare method.
      *
-     * @param context deployment context
+     * @param dc deployment context
      */
-    public void clean(DeploymentContext context) {
+    public void clean(DeploymentContext dc) {
+        UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
+        if( dcp.origin == OpsParams.Origin.undeploy){
+            if(dcp.cascade){
+                deleteAllResources(dcp.name(), dcp.target);
+            }
+        }
+    }
+
+    /**
+     * deletes all resources (pool, resource, admin-object-resource, ra-config, work-security-map) of a resource-adapter)
+     * @param moduleName resource-adapter name
+     * @param targetServer target instance name
+     */
+    private void deleteAllResources(String moduleName, String targetServer) {
+
+        Collection<ConnectorConnectionPool> conPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, resources);
+        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(conPools);
+        Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, resources);
+        AdminObjectResource[] adminObjectResources = ConnectorsUtil.getEnabledAdminObjectResources(moduleName,
+                resources, ConfigBeansUtilities.getServerNamed(targetServer));
+        Collection<WorkSecurityMap> securityMaps = ConnectorsUtil.getAllWorkSecurityMaps(resources, moduleName);
+        ResourceAdapterConfig rac = ConnectorsUtil.getRAConfig(moduleName, resources);
+
+
+        deleteConnectorResources(connectorResources, targetServer, moduleName);
+        deleteConnectionPools(conPools, moduleName);
+        deleteAdminObjectResources(adminObjectResources, targetServer, moduleName);
+        deleteWorkSecurityMaps(securityMaps, moduleName);
+        if(rac != null){
+            deleteRAConfig(rac);
+        }
+
+    }
+
+    private void deleteRAConfig(final ResourceAdapterConfig rac) {
+        try {
+            // delete resource-adapter-config
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                   return param.getResources().remove(rac);
+                }
+            }, resources) == null) {
+                _logger.log(Level.WARNING, "Unable to delete resource-adapter-config for RAR : "
+                        + rac.getResourceAdapterName());
+            }
+
+        } catch(TransactionFailure tfe) {
+            _logger.log(Level.WARNING, "Unable to delete resource-adapter-config for RAR : "
+                    + rac.getResourceAdapterName(), tfe);
+
+        }
+    }
+
+    private void deleteWorkSecurityMaps(final Collection<WorkSecurityMap> workSecurityMaps, String raName) {
+        try {
+            // delete work-security-maps
+            if(ConfigSupport.apply(new SingleConfigCode<Resources>() {
+
+                public Object run(Resources param) throws PropertyVetoException,
+                        TransactionFailure {
+                    for (WorkSecurityMap resource : workSecurityMaps) {
+                            param.getResources().remove(resource);
+                    }
+                    return true; // indicating that removal was successful
+                }
+            }, resources) == null){
+                _logger.log(Level.WARNING, "Unable to delete work-security-map(s) for RAR : " + raName);
+            }
+
+        } catch (TransactionFailure tfe) {
+            _logger.log(Level.WARNING, "Unable to delete work-security-map(s) for RAR : " + raName, tfe);
+        }
+
+    }
+
+    private void deleteAdminObjectResources(final AdminObjectResource[] adminObjectResources, String target,
+                                            String raName) {
+        try {
+            final Server targetServer = domain.getServerNamed(target);
+            // delete admin-object-resource
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    for (AdminObjectResource resource : adminObjectResources) {
+                            param.getResources().remove(resource);
+
+                            // delete resource-ref
+                            targetServer.deleteResourceRef(resource.getJndiName());
+                    }
+                    // not found
+                    return true;
+                }
+            }, resources) == null) {
+                _logger.log(Level.WARNING, "Unable to delete admin-object-resource(s) for RAR : " + raName);
+            }
+        } catch(TransactionFailure tfe) {
+            _logger.log(Level.WARNING, "Unable to delete admin-object-resource(s) for RAR : " + raName, tfe);
+        }
+
+    }
+
+    private void deleteConnectorResources(final Collection<Resource> connectorResources, String target, String raName){
+        try {
+            final Server targetServer = domain.getServerNamed(target);
+
+            // delete connector-resource
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    for (Resource resource : connectorResources) {
+                        param.getResources().remove(resource);
+
+                        // delete resource-ref
+                        targetServer.deleteResourceRef(((ConnectorResource)resource).getJndiName());
+                    }
+                    // not found
+                    return true;
+                }
+            }, resources) == null) {
+                _logger.log(Level.WARNING, "Unable to delete connector-resource(s) for RAR : " + raName);
+            }
+        } catch(TransactionFailure tfe) {
+            _logger.log(Level.WARNING, "Unable to delete connector-resource(s) for RAR : " + raName, tfe);
+        }
+
+    }
+
+    private void deleteConnectionPools(final Collection<ConnectorConnectionPool> conPools, String raName){
+        // delete connector connection pool
+        try {
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    for (ConnectorConnectionPool cp : conPools) {
+                            return param.getResources().remove(cp);
+                    }
+                    // not found
+                    return null;
+                }
+            }, resources) == null) {
+                _logger.log(Level.WARNING, "Unable to delete connector-connection-pool(s) for RAR : " + raName);
+            }
+        } catch (TransactionFailure tfe) {
+            _logger.log(Level.WARNING, "Unable to delete connector-connection-pool(s) for RAR : " + raName, tfe);
+        }
     }
 
 

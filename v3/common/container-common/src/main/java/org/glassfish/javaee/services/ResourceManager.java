@@ -127,12 +127,12 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
      */
     public void preDestroy() {
         //TODO V3 : Admin need to make sure that poolnames are unique. As of V2 they are not unique.
-        Collection resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
+        Collection<Resource> resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
         
         //TODO V3 : even in case when there is no resource used by an application (no RAR was started),
         //TODO V3 not undeploying resources other than jdbc, connector pool/resource ?
         undeployResources(resources);
-        getConnectorRuntime().shutdownAllActiveResourceAdapters(null);
+        getConnectorRuntime().shutdownAllActiveResourceAdapters();
         removeListenerFromResources();
         removeListenerFromResourceRefs();
     }
@@ -175,10 +175,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
      * @param events list of changes
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        final UnprocessedChangeEvents unprocessed = 
-                ConfigSupport.sortAndDispatch(events, 
-                new PropertyChangeHandler(events), logger);
-        return unprocessed;
+        return ConfigSupport.sortAndDispatch(events, new PropertyChangeHandler(events), logger);
     }
     
     class PropertyChangeHandler implements Changed {

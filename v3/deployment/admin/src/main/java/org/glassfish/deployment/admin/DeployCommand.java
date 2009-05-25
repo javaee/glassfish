@@ -365,6 +365,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             UndeployCommandParameters undeployParams = new UndeployCommandParameters(name);
             undeployParams.keepreposdir = keepreposdir;
             undeployParams.droptables = dropandcreatetables;
+            undeployParams.ignoreCascade = force;
 
             ActionReport subReport = report.addSubActionsReport();
             if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {

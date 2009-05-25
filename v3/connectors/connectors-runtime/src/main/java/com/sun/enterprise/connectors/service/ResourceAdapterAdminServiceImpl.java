@@ -41,6 +41,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.naming.ConnectorInternalObjectsProxy;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
@@ -53,6 +54,7 @@ import javax.naming.NamingException;
 import java.util.logging.Level;
 import java.util.Set;
 import java.util.List;
+import java.util.concurrent.*;
 
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.internal.api.DelegatingClassLoader;
@@ -63,10 +65,12 @@ import org.glassfish.internal.api.ConnectorClassFinder;
  * This is resource adapter admin service. It creates, deletes Resource adapter
  * and also the resource adapter configuration updation.
  *
- * @author Binod P.G, Srikanth P and Aditya Gore
+ * @author Binod P.G, Srikanth P, Aditya Gore, Jagadish Ramu
  */
-
 public class ResourceAdapterAdminServiceImpl extends ConnectorService {
+
+    private ExecutorService execService = Executors.newCachedThreadPool();
+
     /**
      * Default constructor
      */
@@ -74,47 +78,14 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         super();
     }
 
-/*
-*/
-/**
- * Destroys/deletes the Active resource adapter object from the connector
- * container. Active resource adapter abstracts the rar deployed. It checks
- * whether any resources (pools and connector resources) are still present.
- * If they are present the deletion fails and all the objects and
- * datastructures pertaining to to the resource adapter are left untouched.
- *
- * @param moduleName Name of the rarModule to destroy/delete
- * @throws ConnectorRuntimeException if the deletion fails
- */
-/* TODO V3 use later
-    public void destroyActiveResourceAdapter(String moduleName)
-            throws ConnectorRuntimeException {
-        destroyActiveResourceAdapter(moduleName, false);
-    }
-*/
-
     /**
      * Destroys/deletes the Active resource adapter object from the connector
-     * container. Active resource adapter abstracts the rar deployed. It checks
-     * whether any resources (pools and connector resources) are still present.
-     * If they are present and cascade option is false the deletion fails and
-     * all the objects and datastructures pertaining to the resource adapter
-     * are left untouched. If cascade option is true, even if resources are
-     * still present, they are also destroyed with the active resource adapter
+     * container. Active resource adapter abstracts the rar deployed.
      *
      * @param moduleName Name of the rarModule to destroy/delete
-     * @param cascade    If true all the resources belonging to the rar are destroyed
-     *                   recursively. If false, and if resources pertaining to
-     *                   resource adapter /rar are present deletetion is failed. Then
-     *                   cascade should be set to true or all the resources have to
-     *                   deleted explicitly before destroying the rar/Active resource
-     *                   adapter.
      * @throws ConnectorRuntimeException if the deletion fails
      */
-    private void destroyActiveResourceAdapter(
-            String moduleName,
-            boolean cascade)
-            throws ConnectorRuntimeException {
+    private void destroyActiveResourceAdapter(String moduleName) throws ConnectorRuntimeException {
 
         ResourcesUtil resutil = ResourcesUtil.createInstance();
         if (resutil == null) {
@@ -124,40 +95,6 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
-        /* TODO V3 - handle resource deletion later
-        TODO V3 refactor ?
-        Object[][] resources = null;
-        try {
-            resources = resutil.getAllConnectorResourcesForRar(moduleName);
-        } catch (ConfigException ce) {
-            ConnectorRuntimeException cre =
-                    new ConnectorRuntimeException("Failed to get Resources from domain.xml");
-            ce.initCause(ce);
-            _logger.log(
-                    Level.SEVERE,
-                    "rardeployment.resources_list_error",
-                    cre);
-            throw cre;
-        }
-
-        boolean errrorOccured = false;
-
-        if (cascade && resources != null) {
-            errrorOccured = deleteResources(resources, cascade, errrorOccured);
-        } else if (
-                (resources[0] != null && resources[0].length != 0)
-                        || (resources[1] != null && resources[1].length != 0)
-                        || (resources[2] != null && resources[2].length != 0)) { //TODO V3 need for this check ??
-            _logger.log(
-                    Level.SEVERE,
-                    "rardeployment.pools_and_resources_exist",
-                    moduleName);
-            ConnectorRuntimeException cre =
-                    new ConnectorRuntimeException("Error: Connector Connection Pools/resources exist.");
-            _logger.log(Level.SEVERE, "", cre);
-            throw cre;
-        }
-        */
 
         if (!stopAndRemoveActiveResourceAdapter(moduleName)) {
             ConnectorRuntimeException cre =
@@ -177,28 +114,13 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             _runtime.getNamingManager().getInitialContext().unbind(descriptorJNDIName);
 
         } catch (NamingException ne) {
-            ConnectorRuntimeException cre = new ConnectorRuntimeException("Failed to remove connector descriptor from JNDI");
+            ConnectorRuntimeException cre =
+                    new ConnectorRuntimeException("Failed to remove connector descriptor from JNDI");
             cre.initCause(ne);
             _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_jndi_removal_failure", moduleName);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
-//        com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().removeResourceAdapter(moduleName);
-        // TODO: If this is not a system standalone RAR, then
-        // emit an event that ApplicationLifecycle (kernel) can listen to.
-        // As part of event handling, it can either remove its classloader
-        // from appropriate connector class loader.
-        /* TODO V3 handle resource destroy later
-        if (errrorOccured == true) {
-            ConnectorRuntimeException cre =
-                    new ConnectorRuntimeException("Failed to remove all connector resources/pools");
-            _logger.log(
-                    Level.SEVERE,
-                    "rardeployment.ra_resource_removal",
-                    moduleName);
-            _logger.log(Level.SEVERE, "", cre);
-            throw cre;
-        }*/
     }
 
     /**
@@ -210,6 +132,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      *                            i.e rar.xml and sun-ra.xml.
      * @param moduleName          Name of the module
      * @param moduleDir           Directory where rar module is exploded.
+     * @param loader              Classloader to use
      * @throws ConnectorRuntimeException if creation fails.
      */
 
@@ -295,9 +218,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 //Update RAConfig in Connector Descriptor and bind in JNDI
                 //so that ACC clients could use RAConfig
                 updateRAConfigInDescriptor(connectorDescriptor, moduleName);
-                
+                ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(connectorDescriptor);
                 _runtime.getNamingManager().publishObject(
-                        descriptorJNDIName, connectorDescriptor, true);
+                        descriptorJNDIName, proxy, true);
                 String securityWarningMessage=
                     connectorRuntime.getSecurityPermissionSpec(moduleName);
                 // To i18N.
@@ -417,7 +340,8 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             acr = _registry.getActiveResourceAdapter(moduleName);
         }
         if (acr != null) {
-            acr.destroy();
+            sendStopToResourceAdapter(acr);
+
             // remove the system rar from class loader chain.
             if(ConnectorsUtil.belongsToSystemRA(moduleName)) {
                 ConnectorClassFinder ccf =
@@ -431,8 +355,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                         "classloader chain : " + systemRarCLRemoved);
                 }
             }
-            boolean status = _registry.removeActiveResourceAdapter(moduleName);
-            return status;
+            return _registry.removeActiveResourceAdapter(moduleName);
         }
         return false;
     }
@@ -447,11 +370,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
 
         ActiveResourceAdapter activeResourceAdapter =
                 _registry.getActiveResourceAdapter(moduleName);
-        if (activeResourceAdapter != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return activeResourceAdapter != null;
     }
 
     /**
@@ -461,21 +380,19 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         ActiveResourceAdapter[] resourceAdapters =
                 ConnectorRegistry.getInstance().getAllActiveResourceAdapters();
 
-        for (int i = 0; i < resourceAdapters.length; i++) {
-            String raName = resourceAdapters[i].getModuleName();
-            stopActiveResourceAdapter(raName, true);
+        for (ActiveResourceAdapter resourceAdapter : resourceAdapters) {
+            stopActiveResourceAdapter(resourceAdapter.getModuleName());
         }
     }
 
     /**
      * stop the active resource adapter (runtime)
      * @param raName resource-adapter name
-     * @param cascade if cascade is true, remove all the resources, pools
      */
-    public void stopActiveResourceAdapter(String raName, boolean cascade) {
+    public void stopActiveResourceAdapter(String raName) {
         _logger.log(Level.FINE, "Stopping RA : ", raName);
         try {
-            destroyActiveResourceAdapter(raName, cascade);
+            destroyActiveResourceAdapter(raName);
         } catch (ConnectorRuntimeException cre) {
             _logger.log(Level.WARNING, "unable to stop resource adapter [ " + raName + " ]", cre.getMessage());
             _logger.log(Level.FINE, "unable to stop resource adapter [ " + raName + " ]", cre);
@@ -498,8 +415,8 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
 
     /**
 	 * Delete the resource adapter configuration to the connector registry
-	 *
-	 * @param rarName
+	 * @param rarName resource-adapter-name
+     * @throws ConnectorRuntimeException when unable to remove RA Config.
 	 */
     public void deleteResourceAdapterConfig(String rarName) throws ConnectorRuntimeException {
         if (rarName != null) {
@@ -542,6 +459,71 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
                 _registry.getConnectorApplication(moduleName).deployResources();
             }*/
+        }
+    }
+
+    /**
+     * Calls the stop method for all RARs
+     *
+     * @param resourceAdapterToStop ra to stop
+     */
+    private void sendStopToResourceAdapter(ActiveResourceAdapter
+            resourceAdapterToStop) {
+
+        Runnable rast = new RAShutdownTask(resourceAdapterToStop);
+        String raName =  resourceAdapterToStop.getModuleName();
+
+        Long timeout = ConnectorRuntime.getRuntime().getShutdownTimeout();
+
+        Future future = null;
+        boolean stopSuccessful = false;
+        try {
+            _logger.log(Level.FINE, "scheduling stop for RA [ " + raName +" ] ");
+            future = execService.submit(rast);
+            future.get(timeout, TimeUnit.MILLISECONDS);
+            _logger.log(Level.FINE, "stop() Complete for active 1.5 compliant RAR " +
+                    "[ "+ raName  +" ]");
+            stopSuccessful = true;
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+            cancelTask(future, true, raName);
+        } catch(Exception e){
+            e.printStackTrace();
+            cancelTask(future, true, raName);
+        }
+
+        if (stopSuccessful) {
+            _logger.log(Level.INFO, "ra.stop-successful", raName);
+        } else {
+            _logger.log(Level.WARNING, "ra.stop-unsuccessful", raName);
+        }
+    }
+
+    private void cancelTask(Future future, boolean interruptIfRunning, String raName){
+        if(future != null){
+            if(!(future.isCancelled()) && !(future.isDone())){
+                boolean cancelled = future.cancel(interruptIfRunning);
+                _logger.log(Level.INFO, "cancelling the shutdown of RA [ " + raName +" ] status : " + cancelled);
+            } else {
+                _logger.log(Level.INFO, "shutdown of RA [ " + raName +" ] is either already complete or already cancelled");
+            }
+        }
+    }
+
+    private class RAShutdownTask implements Runnable {
+        private ActiveResourceAdapter ra;
+
+        public RAShutdownTask(ActiveResourceAdapter ratoBeShutDown) {
+            super();
+            this.ra = ratoBeShutDown;
+            //This thread is a daemon threadS
+            // TODO V3 not needed anymore as we use ExecService with timeout
+            // this.setDaemon(true);
+        }
+
+        public void run() {
+            _logger.log(Level.FINE, "Calling RA [ " + ra.getModuleName() + " ] shutdown ");
+            this.ra.destroy();
         }
     }
 }
