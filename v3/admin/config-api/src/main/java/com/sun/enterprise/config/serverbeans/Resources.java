@@ -38,13 +38,12 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 
-import java.io.Serializable;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXCreatorInfo;
@@ -97,6 +96,22 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
      */
     @Element("*")
     public List<Resource> getResources();
+
+    @DuckTyped
+    public <T> Collection<T> getResources(Class<T> type);
+
+    public class Duck {
+
+        public static <T> Collection<T> getResources(Resources resources, Class<T> type){
+            Collection<T> filteredResources = new ArrayList<T>();
+            for(Resource resource : resources.getResources()){
+                if (type.isInstance(resource)) {
+                    filteredResources.add(type.cast(resource));
+                }
+            }
+            return filteredResources;
+        }
+    }
 }
 
 
