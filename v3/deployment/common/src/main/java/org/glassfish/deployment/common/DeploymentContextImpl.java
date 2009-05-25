@@ -84,6 +84,11 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         this.env = env;
     }
 
+    public Phase getPhase()
+    {
+        return phase;
+    }
+
     public void setPhase(Phase newPhase) {
         this.phase = newPhase;
     }
