@@ -72,5 +72,12 @@ public class ResourceAdapterAnnotationScanner implements AnnotationScanner {
     private void init() {
         annotations = new HashSet();
         annotations.add("Ljavax/resource/spi/Connector;");
+        annotations.add("Ljavax/resource/spi/AdministeredObject;");
+        annotations.add("Ljavax/resource/spi/Activation;");
+        annotations.add("Ljavax/resource/spi/AuthenticationMechanism;");
+        annotations.add("Ljavax/resource/spi/ConfigProperty;");
+        annotations.add("Ljavax/resource/spi/ConnectionDefinition;");
+        annotations.add("Ljavax/resource/spi/ConnectionDefinitions;");
+        annotations.add("Ljavax/resource/spi/SecurityPermission;");
     }
 }
