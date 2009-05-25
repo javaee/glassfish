@@ -60,7 +60,7 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
 
     @Inject
     private ConnectorRuntime runtime;
-    private static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}
@@ -84,6 +84,14 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         ConnectorResource domainResource = (ConnectorResource) resource;
         String jndiName = domainResource.getJndiName();
         runtime.deleteConnectorResource(jndiName);
+
+        //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
+        //of this resource in this server instance, remove pool from connector
+        //runtime
+        // TODO V3, we can't destroy the pool as we dont get default call from naming any more.
+        // probably, delete the pool and recreate the proxy ?
+        // checkAndDeletePool(domainResource);
+
     }
 
     /**

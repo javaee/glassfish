@@ -148,23 +148,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
             throws Exception {
     }
 
-/* TODO V3 not needed ?
-    public Object getResource(String name, Resources rbeans)
-                        throws Exception {
-        Object res = rbeans.getAdminObjectResourceByJndiName(name);
-
-        if (res == null) {
-            Exception ex = new Exception("No such resource");
-            _logger.log(Level.SEVERE,"no_resource",name);
-            _logger.log(Level.SEVERE,"",ex);
-            throw ex;
-        }
-
-        return res;
-    }
-*/
-
-    Properties transformProps(List<Property> domainProps) {
+    private Properties transformProps(List<Property> domainProps) {
 
         Properties props = new Properties();
         for (Property domainProp : domainProps) {

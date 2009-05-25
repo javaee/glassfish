@@ -130,6 +130,14 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         if(ConnectorsUtil.getValidSuffix(jndiName) == null){
             runtime.deleteConnectorResource( ConnectorsUtil.getPMJndiName( jndiName) );
         }
+
+        //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
+        //of this resource in this server instance, remove pool from connector
+        //runtime
+        // TODO V3, we can't destroy the pool as we dont get default call from naming any more.
+        // probably, delete the pool and recreate the proxy ?
+        // checkAndDeletePool(domainResource);
+
     }
 
     /**

@@ -103,6 +103,22 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         final ConnectorConnectionPool ccp = getConnectorConnectionPool(domainCcp);
         final String defName = domainCcp.getConnectionDefinitionName();
 
+        /*if (domainCcp.isEnabled()) {
+            if (UNIVERSAL_CF.equals(defName) || QUEUE_CF.equals(defName) || TOPIC_CF.equals(defName)) {
+            //registers the jsr77 object for the mail resource deployed
+            final ManagementObjectManager mgr =
+                getAppServerSwitchObject().getManagementObjectManager();
+            mgr.registerJMSResource(domainCcp.getName(), defName, null, null,
+                    getPropNamesAsStrArr(domainCcp.getElementProperty()),
+                    getPropValuesAsStrArr(domainCcp.getElementProperty()));
+            }
+
+        } else {
+                _logger.log(Level.INFO, "core.resource_disabled",
+                        new Object[] {domainCcp.getName(),
+                        IASJ2EEResourceFactoryImpl.CONNECTOR_CONN_POOL_TYPE});
+        }*/
+
 
         _logger.log(Level.FINE, "Calling backend to add connectorConnectionPool", domainCcp.getResourceAdapterName());
         runtime.createConnectorConnectionPool(ccp, defName, domainCcp.getResourceAdapterName(),
@@ -127,6 +143,15 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         runtime.deleteConnectorConnectionPool(poolName);
         _logger.log(Level.FINE,
                 "Deleted ConnectorConnectionPool in backend", poolName);
+
+        /*//unregister the managed object
+        if (QUEUE_CF.equals(defName) || TOPIC_CF.equals(defName)) {
+            //registers the jsr77 object for the mail resource deployed
+            final ManagementObjectManager mgr =
+                getAppServerSwitchObject().getManagementObjectManager();
+            mgr.unregisterJMSResource(domainCcp.getName());
+        }*/
+
     }
 
     /**

@@ -118,17 +118,10 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             // converts the config data to j2ee resource
             JavaEEResource j2eeRes = toExternalJndiJavaEEResource(jndiRes);
 
-            // resource installer
-            //ResourceInstaller installer =
-            //    ConnectorRuntime.getRuntime().getResourceInstaller();
-
             // installs the resource
             installExternalJndiResource(
                 (com.sun.enterprise.resource.beans.ExternalJndiResource) j2eeRes);
 
-            // adds the resource to the resource collection
-            //TODO V3 handle later ?
-            //installer.addResource(j2eeRes);
         } else {
             _logger.log(Level.INFO, "core.resource_disabled",
                 new Object[] {jndiRes.getJndiName(),
@@ -148,9 +141,6 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
 
         // converts the config data to j2ee resource
         JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiRes);
-
-        // resource installer
-        //ResourceInstaller installer = ConnectorRuntime.getRuntime().getResourceInstaller();
 
         // un-installs the resource
         uninstallExternalJndiResource(j2eeResource);
@@ -286,10 +276,6 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
      */
     public void uninstallExternalJndiResource(JavaEEResource resource) {
 
-        // remove from the collection
-        //TODO V3 not needed ?
-        //resourceInfo.removeResource(resource);
-
         // removes the jndi context from the factory cache
         JndiProxyObjectFactory.removeInitialContext(resource.getName());
 
@@ -331,7 +317,6 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         //jr.setDescription( rbean.getDescription() ); // FIXME: getting error
 
         // sets the enable flag
-        //TODO V3 - DONE handle later
         jr.setEnabled( ConnectorsUtil.parseBoolean(rbean.getEnabled()) );
 
         // sets the jndi look up name
@@ -354,27 +339,4 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         }
         return jr;
     }
-
-
-    /**
-	 * Utility method to find a resource from Resources beans and converte
-	 * it to a resource object to be used by the implemented ResourceDeployer
-	 *
- 	 * @param     name      resource name (normally the jndi-name)
-	 * @param     rbeans    Resources config-beans
-	 * @exception Exception thrown if fail
-	 */
-    /* TODO V3 not needed
-    public Object getResource(String name, Resources rbeans) throws Exception {
-
-        Object res = rbeans.getExternalJndiResourceByJndiName(name);
-
-        if (res == null) {
-            String msg = localStrings.getString(
-                         "resource.no_resource", name);
-            throw new Exception(msg);
-        }
-
-        return res;
-    }*/
 }

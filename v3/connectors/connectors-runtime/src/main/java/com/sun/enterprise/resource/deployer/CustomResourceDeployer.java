@@ -119,18 +119,8 @@ public class CustomResourceDeployer implements ResourceDeployer {
             // converts the config data to j2ee resource
             JavaEEResource j2eeResource = toCustomJavaEEResource(customRes);
 
-            // resource installer
-/*
-            ResourceInstaller installer =
-                ConnectorRuntime.getRuntime().getResourceInstaller();
-*/
-
             // installs the resource
             installCustomResource((CustomResource) j2eeResource);
-
-            // adds the resource to the resource collection
-            //TODO V3 handle later ?
-            //installer.addResource(j2eeResource);
 
         } else {
             _logger.log(Level.INFO, "core.resource_disabled",
@@ -154,13 +144,6 @@ public class CustomResourceDeployer implements ResourceDeployer {
         // removes the resource from jndi naming
         namingMgr.unpublishObject( j2eeResource.getName() );
 
-/* TODO V3 not needed ?
-        // resource installer
-        ResourceInstaller installer = Switch.getSwitch().getResourceInstaller();
-
-        // removes the resource from the collection
-        installer.removeResource(j2eeResource);
-*/
     }
 
     /**
@@ -211,8 +194,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
             bindName = customRes.getName();
 
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "***** installCustomResources jndiName *****"
-                        + bindName);
+                _logger.log(Level.FINE,"installCustomResource by jndi-name : "+ bindName);
             }
 
             // bind a Reference to the object factory
@@ -276,31 +258,4 @@ public class CustomResourceDeployer implements ResourceDeployer {
         }
         return jr;
     }
-
-
-/*
-
-	*/
-/**
-	 * Utility method to find a resource from Resources beans and converte
-	 * it to a resource object to be used by the implemented ResourceDeployer
-	 *
- 	 * @param     name      resource name (normally the jndi-name)
-	 * @param     rbeans    Resources config-beans
-	 * @exception Exception thrown if fail
-	 */
-/*  TODO V3 not needed ?
-    public Object getResource(String name, Resources rbeans) throws Exception {
-
-        Object res = rbeans.getCustomResourceByJndiName(name);
-
-        if (res == null) {
-            String msg = localStrings.getString(
-                         "resource.no_resource",name);
-            throw new Exception(msg);
-        }
-
-        return res;
-    }
-*/
 }

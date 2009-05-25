@@ -135,8 +135,6 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         JavaEEResource j2eeRes = toMailJavaEEResource(mailResource);
         //ResourceInstaller installer = runtime.getResourceInstaller();
         installMailResource((MailResource) j2eeRes);
-        //TODO V3 not needed ?
-        //installer.addResource(j2eeRes);
     }
 
     /**
@@ -153,13 +151,6 @@ public class MailResourceDeployer extends GlobalResourceDeployer
 
         // removes the resource from jndi naming
         namingMgr.unpublishObject(javaEEResource.getName());
-
-        // resource installer
-        //ResourceInstaller installer = ConnectorRuntime.getRuntime().getResourceInstaller();
-
-        // removes the resource from the collection
-        //TODO V3 not needed ?
-        //installer.removeResource(javaEEResource);
 
         /* TODO V3 handle later
             ManagementObjectManager mgr =
@@ -248,7 +239,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         jr.setMailHost(rbean.getHost());
         jr.setUsername(rbean.getUser());
         jr.setMailFrom(rbean.getFrom());
-        //jr.setDebug(rbean.isDebug()); TODO V3 setDebug not available ?
+        jr.setDebug(ConnectorsUtil.parseBoolean(rbean.getDebug()));
 
         // sets the properties
         List<Property> properties = rbean.getProperty();
@@ -261,28 +252,4 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         }
         return jr;
     }
-
-/*
-    */
-/**
- * Utility method to find a resource from Resources beans and converte
- * it to a resource object to be used by the implemented ResourceDeployer
- *
- * @param     name      resource name (normally the jndi-name)
- * @param     rbeans    Resources config-beans
- * @exception Exception thrown if fail
- */
-/*
-    public Object getResource(String name, Resources rbeans) throws Exception {
-
-        Object res = rbeans.getMailResourceByJndiName(name);
-
-        if (res == null) {
-            String msg = localStrings.getString("resource.no_resource",name);
-            throw new Exception(msg);
-        }
-
-        return res;
-    }
-*/
 }

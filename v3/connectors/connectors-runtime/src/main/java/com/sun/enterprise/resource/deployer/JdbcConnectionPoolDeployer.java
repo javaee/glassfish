@@ -267,7 +267,6 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     continue;
                 }
                 String name = rp.getName();
-                //TODO V3 can't these property be removed fromc configBean
 
                 //The idea here is to convert the Environment Properties coming from
                 //the admin connection pool to standard pool properties thereby
