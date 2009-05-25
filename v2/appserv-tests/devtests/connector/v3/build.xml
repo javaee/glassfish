@@ -190,11 +190,6 @@
         <echo message="@@## web2connector (second time) ##@@"/>
         <ant dir="web2connector" target="${connector-target}" />-->
 
-<!--
-        <echo message="@@## redeployRar ##@@"/>
-        <ant dir="redeployRar" target="${connector-target}" />
--->
-
         <echo message="@@## nonstringmcfproperties ##@@"/>
         <ant dir="nonstringmcfproperties" target="${connector-target}"/>
 
@@ -227,6 +222,15 @@
 
         <echo message="@@## connector1.6 - with mappings ##@@"/>
         <ant dir="connector1.6" target="all-with-mappings"/>
+
+        <echo message="@@## Annotated Connector1.5 ##@@"/>
+        <ant dir="annotation-connector1.5" target="${connector-target}"/>
+
+        <echo message="@@## force-deploy-rar ##@@"/>
+        <ant dir="force-deploy-rar" target="${connector-target}"/>
+
+        <echo message="@@## annotation-embeddedweb ##@@"/>
+        <ant dir="annotation-embeddedweb" target="${connector-target}"/>
 
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
