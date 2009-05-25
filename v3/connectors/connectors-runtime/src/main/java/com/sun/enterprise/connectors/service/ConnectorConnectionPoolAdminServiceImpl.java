@@ -56,6 +56,7 @@ import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.*;
+import com.sun.enterprise.connectors.naming.ConnectorInternalObjectsProxy;
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
 import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 import com.sun.enterprise.connectors.util.ConnectionDefinitionUtils;
@@ -186,7 +187,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
         String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
         try {
-            _runtime.getNamingManager().publishObject(jndiNameForPool, connectorPoolObj, true);
+            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(connectorPoolObj);
+            _runtime.getNamingManager().publishObject(jndiNameForPool, proxy, true);
             ManagedConnectionFactory mcf = obtainManagedConnectionFactory(poolName);
             if (mcf == null) {
                 /*TODO V3 use this later
@@ -701,9 +703,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             //now rebind the object in jndi
             String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
 
-
+            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(origCcp);
             _runtime.getNamingManager().getInitialContext().unbind(jndiNameForPool);
-            _runtime.getNamingManager().publishObject(jndiNameForPool, (Object) origCcp, true);
+            _runtime.getNamingManager().publishObject(jndiNameForPool, proxy, true);
         } catch (NamingException e) {
             ConnectorRuntimeException ex =
                     new ConnectorRuntimeException(e.getMessage());
@@ -1117,8 +1119,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
             InitialContext ic = new InitialContext();
             ic.unbind(jndiNameForPool);
+            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(origCcp);
             _runtime.getNamingManager().publishObject(
-                    jndiNameForPool, (Object) origCcp, true);
+                    jndiNameForPool, proxy, true);
 
         } catch (NamingException ne) {
             throw new ConnectorRuntimeException(ne.getMessage());
@@ -1194,8 +1197,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         try {
             String jndiNameForPool = ConnectorAdminServiceUtils.
                     getReservePrefixedJNDINameForPool(poolName);
+            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(ccp);
             _runtime.getNamingManager().publishObject(
-                    jndiNameForPool, (Object) ccp, true);
+                    jndiNameForPool, proxy, true);
             ManagedConnectionFactory mcf = null;
             mcf = obtainManagedConnectionFactory(poolName);
             if (mcf == null) {
