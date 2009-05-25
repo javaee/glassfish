@@ -356,7 +356,7 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
                                         } catch(Exception ex) {
                                             String msg=localStrings.getLocalString("pc.unable_to_read_repostory",
                                             "unable to read repository"  ,new Object []{contextsInService[i].toString()});
-                                            logger.log(Level.WARNING,msg);
+                                            logger.log(Level.WARNING,msg, ex);
                                         }
                                     }
                                 }
