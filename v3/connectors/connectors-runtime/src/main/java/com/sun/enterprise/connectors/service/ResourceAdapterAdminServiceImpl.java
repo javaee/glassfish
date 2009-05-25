@@ -41,7 +41,6 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.connectors.naming.ConnectorInternalObjectsProxy;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
@@ -218,9 +217,12 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 //Update RAConfig in Connector Descriptor and bind in JNDI
                 //so that ACC clients could use RAConfig
                 updateRAConfigInDescriptor(connectorDescriptor, moduleName);
+/*
                 ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(connectorDescriptor);
-                _runtime.getNamingManager().publishObject(
-                        descriptorJNDIName, proxy, true);
+                _runtime.getNamingManager().publishObject(descriptorJNDIName, proxy, true);
+*/
+                _runtime.getNamingManager().publishObject(descriptorJNDIName, connectorDescriptor, true);
+
                 String securityWarningMessage=
                     connectorRuntime.getSecurityPermissionSpec(moduleName);
                 // To i18N.
