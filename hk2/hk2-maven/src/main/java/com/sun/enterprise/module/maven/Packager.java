@@ -122,8 +122,14 @@ public class Packager {
             if(a.getFile()==null) {
                 throw new AssertionError(a.getId()+" is not resolved. a="+a);
             }
-
-            Manifest manifest = Jar.create(a.getFile()).getManifest();
+            Jar jar;
+            try {
+                jar = Jar.create(a.getFile());
+            } catch (IOException ioe) {
+                // not a jar file, so continue.
+                continue;
+            }
+            Manifest manifest = jar.getManifest();
             String name = null;
             if (manifest!=null) {
                 Attributes attributes = manifest.getMainAttributes();
