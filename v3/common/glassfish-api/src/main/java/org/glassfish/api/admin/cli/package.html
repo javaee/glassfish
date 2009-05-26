@@ -28,7 +28,7 @@ The annotations and enums in this package are supposed to be used as described b
             private volatile String jndiName;
         </pre>
         Such an option is specified as either "--jndi-name = jdbc/mysql" or "--jndi-name jdbc/mysql or
-        -j=jdbc/mysql or -j jdbc/mysql" on the command line.
+        "-j=jdbc/mysql" or "-j jdbc/mysql" on the command line.
     </li>
     <li>
         To specify an optional boolean option "force" that cannot repeat on a command line, you can either use:
@@ -75,8 +75,8 @@ The annotations and enums in this package are supposed to be used as described b
           private final Map &lt; String, String &gt; properties;
         </pre>
         Such an option can be specified as: --property prop1=value1 --property prop2=value2 or --property=name1=value1
-        --property=name2=value2 on the command line depdending on the value of <i> repeats </i>. Note that the type
-        PROPERTY is a special treatment for a commonly used pattern where command implementations need to process properties.
+        --property=name2=value2 on the command line depdending on the value of <i>repeats</i>. Note that the type
+	PROPERTY is a special treatment for a commonly used pattern where command implementations need to process <i>properties</i>.
         <p>
         Any use of '=' in the property names and values needs to be escaped with a backslash.
         </p>
@@ -111,12 +111,15 @@ The annotations and enums in this package are supposed to be used as described b
         To specify an operand whose type depends upon the value of another option:
         <pre>
         &#64;Operand (required=true, type=OptionType.FILE)
-        atTypeOverride (type=OptionType.FILE_PATH, options="upload", values="false")
+        &#64;TypeOverride (type=OptionType.FILE_PATH, options="upload", values="false")
         private volatile File f;
         </pre>
         This operand is interpreted as a file by default, but if another option ("--upload") is "false", then it is
-        just a PATH. A FILE_PATH is treated specially by the client in that its absolute value is sent from the client
+        just a path to a file. A FILE_PATH is treated specially by the client in that its absolute value is sent from the client
         to the server.
+	<p>
+	Note that no dependency graph is calculated here. &#64;TypeOverride is intended for simple cases where there are 
+	primary options and others depend on them. 
     </li>
     <li>
         To specify multiple operands that are all strings:
@@ -125,24 +128,25 @@ The annotations and enums in this package are supposed to be used as described b
             private final String[] names;
             OR:
             &#64;Operand (type=OptionType.STRING, required=true)
-            private final Map &lt; String &gt; names;
-
+            private final List &lt; String &gt; names;
         </pre>
+	Note that for the multiple operand case, you must use either a List or an Array. If a command does not have any field
+	annotated with &#64;Operand, it does not take any operand and if such a command line is presented with an operand (when
+	all options run out (no pun intended) what remain on the command line are operands) it is a syntax error.
     </li>
     <li>
         To specify multiple operands that are all files:
         <pre>
             &#64;Operand (type=OptionType.FILE, required=true)
-            private final String[] files;
+            private final File[] files;
             OR:
             &#64;Operand (type=OptionType.FILE, required=true)
-            private final Map &lt; String &gt; files;            
+            private final List &lt; File &gt; files;            
         </pre>
     </li>
 </ol>
 
 <h2>Related Documentation</h2>
-
 
 <!-- Put @see and @since tags down here. -->
 

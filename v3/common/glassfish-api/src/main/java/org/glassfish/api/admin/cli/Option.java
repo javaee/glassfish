@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 public @interface Option {
 
 
-    /** defaults to the field name */
+    /* defaults to the field name */
     String name() default "";
 
     char symbol() default '\u0000';
@@ -27,7 +27,7 @@ public @interface Option {
 
     boolean repeats() default false;
 
-    String defaultValue() default ""; // the value of the field overrides
+    String defaultValue() default ""; // the value in the field declaration overrides
 
     String[] legalValues() default {};
 
