@@ -245,14 +245,17 @@ public final class InvokerServlet
      * be served directly (like any registered servlet) because it will have
      * been registered and mapped in our associated Context.
      *
+     * <p>Synchronize to avoid race conditions when multiple requests
+     * try to initialize the same servlet at the same time
+     *
      * @param request The servlet request we are processing
      * @param response The servlet response we are creating
      *
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet-specified error occurs
      */
-    public void serveRequest(HttpServletRequest request,
-                             HttpServletResponse response)
+    public synchronized void serveRequest(HttpServletRequest request,
+            HttpServletResponse response)
         throws IOException, ServletException {
 
         // Disallow calling this servlet via a named dispatcher
@@ -338,73 +341,65 @@ public final class InvokerServlet
         String pattern = inServletPath + "/" + servletClass + "/*";
         Wrapper wrapper = null;
 
-        // Synchronize to avoid race conditions when multiple requests
-        // try to initialize the same servlet at the same time
-        synchronized (this) {
+        // Are we referencing an existing servlet class or name?
+        wrapper = (Wrapper) context.findChild(servletClass);
+        if (wrapper == null)
+            wrapper = (Wrapper) context.findChild(name);
+        if (wrapper != null) {
+            String actualServletClass = wrapper.getServletClassName();
+            if ((actualServletClass != null)
+                && (actualServletClass.startsWith
+                    ("org.apache.catalina"))) {
+                /* IASRI 4878272
+                response.sendError(HttpServletResponse.SC_NOT_FOUND,
+                                   inRequestURI);
+                */
+                // BEGIN IASRI 4878272
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                // END IASRI 4878272
+                return;
+            }
+            if (debug >= 1)
+                log("Using wrapper for servlet '" +
+                    wrapper.getName() + "' with mapping '" +
+                    pattern + "'");
+            context.addServletMapping(pattern, wrapper.getName());
+        }
 
-            // Are we referencing an existing servlet class or name?
-            wrapper = (Wrapper) context.findChild(servletClass);
-            if (wrapper == null)
-                wrapper = (Wrapper) context.findChild(name);
-            if (wrapper != null) {
-                String actualServletClass = wrapper.getServletClassName();
-                if ((actualServletClass != null)
-                    && (actualServletClass.startsWith
-                        ("org.apache.catalina"))) {
+        // No, create a new wrapper for the specified servlet class
+        else {
+            if (debug >= 1)
+                log("Creating wrapper for '" + servletClass +
+                    "' with mapping '" + pattern + "'");
+            try {
+                wrapper = context.createWrapper();
+                wrapper.setName(name);
+                wrapper.setLoadOnStartup(1);
+                wrapper.setServletClassName(servletClass);
+                context.addChild(wrapper);
+                context.addServletMapping(pattern, name);
+            } catch (Throwable t) {
+                log(sm.getString("invokerServlet.cannotCreate",
+                                 inRequestURI), t);
+                context.removeServletMapping(pattern);
+                context.removeChild(wrapper);
+                if (included)
+                    throw new ServletException
+                        (sm.getString("invokerServlet.cannotCreate",
+                                      inRequestURI), t);
+                else {
                     /* IASRI 4878272
                     response.sendError(HttpServletResponse.SC_NOT_FOUND,
                                        inRequestURI);
                     */
                     // BEGIN IASRI 4878272
+                    log(sm.getString("invokerServlet.invalidPath", 
+                                     inRequestURI));
                     response.sendError(HttpServletResponse.SC_NOT_FOUND);
                     // END IASRI 4878272
                     return;
                 }
-                if (debug >= 1)
-                    log("Using wrapper for servlet '" +
-                        wrapper.getName() + "' with mapping '" +
-                        pattern + "'");
-                context.addServletMapping(pattern, wrapper.getName());
             }
-
-            // No, create a new wrapper for the specified servlet class
-            else {
-
-                if (debug >= 1)
-                    log("Creating wrapper for '" + servletClass +
-                        "' with mapping '" + pattern + "'");
-
-                try {
-                    wrapper = context.createWrapper();
-                    wrapper.setName(name);
-                    wrapper.setLoadOnStartup(1);
-                    wrapper.setServletClassName(servletClass);
-                    context.addChild(wrapper);
-                    context.addServletMapping(pattern, name);
-                } catch (Throwable t) {
-                    log(sm.getString("invokerServlet.cannotCreate",
-                                     inRequestURI), t);
-                    context.removeServletMapping(pattern);
-                    context.removeChild(wrapper);
-                    if (included)
-                        throw new ServletException
-                            (sm.getString("invokerServlet.cannotCreate",
-                                          inRequestURI), t);
-                    else {
-                        /* IASRI 4878272
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND,
-                                           inRequestURI);
-                        */
-                        // BEGIN IASRI 4878272
-                        log(sm.getString("invokerServlet.invalidPath", 
-                                         inRequestURI));
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        // END IASRI 4878272
-                        return;
-                    }
-                }
-            }
-
         }
 
         // Create a request wrapper to pass on to the invoked servlet
