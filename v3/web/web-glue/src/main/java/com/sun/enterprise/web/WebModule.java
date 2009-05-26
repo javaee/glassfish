@@ -64,6 +64,7 @@ import javax.servlet.http.HttpSession;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
+import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
@@ -103,6 +104,7 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -1390,33 +1392,40 @@ public class WebModule extends PwcWebModule {
     }
 
 
-    void configureAlternateDD(String altDDName, ServerEnvironment env) {
+    /**
+     * Determines and sets the alternate deployment descriptor for
+     * this web module.
+     */
+    void configureAlternateDD(WebBundleDescriptor wbd) {
 
+        String altDDName =
+            wbd.getModuleDescriptor().getAlternateDescriptor();
         if (altDDName == null) {
             return;
         }
 
-        String wmName = wmInfo.getName();
-
-        // We should load the alt dd from generated/xml directory
-        // first, then fall back to original app location.
-        // If we have alt dd, it must be an embedded web module
-        String appName =  wmName.substring(0,
-                wmName.indexOf(Constants.NAME_SEPARATOR));
-        String appLoc = env.getApplicationGeneratedXMLPath() +
-                File.separator + appName;
-        if (!FileUtils.safeIsDirectory(appLoc)) {
-            appLoc = wmInfo.getLocation() + "/..";
+        Application app = wbd.getApplication();
+        if (app == null || app.isVirtual()) {
+            // Alternate deployment descriptors are only supported for
+            // WAR files embedded inside EAR files
+            return;
         }
 
+        DeploymentContext dc = getWebModuleConfig().getDeploymentContext();
+        if (dc == null) {
+            return;
+        }
+
+        altDDName = altDDName.trim();
         if (altDDName.startsWith("/")) {
-            altDDName = appLoc + altDDName.trim();
-        } else {
-            altDDName = appLoc + "/" + altDDName.trim();
-        }
+            altDDName = altDDName.substring(1);
+        } 
+      
+        String appLoc = dc.getSource().getParentArchive().getURI().getPath();
+        altDDName = appLoc + altDDName;
 
         if (logger.isLoggable(Level.FINE)) {
-            Object[] objs = {altDDName, wmName};
+            Object[] objs = {altDDName, wmInfo.getName()};
             logger.log(Level.FINE, "webcontainer.altDDName", objs);
         }
 

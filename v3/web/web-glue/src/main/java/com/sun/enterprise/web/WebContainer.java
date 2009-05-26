@@ -1664,9 +1664,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (wbd != null) {
             // Determine if an alternate DD is set for this web-module in
             // the application
-            ctx.configureAlternateDD(
-                    wbd.getModuleDescriptor().getAlternateDescriptor(),
-                    instance);
+            ctx.configureAlternateDD(wbd);
             ctx.configureWebServices(wbd);
         }
 
