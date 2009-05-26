@@ -192,7 +192,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, org.gla
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2048")
+    @Attribute (defaultValue="65536")
     public String getKeypointInterval();
 
     /**
