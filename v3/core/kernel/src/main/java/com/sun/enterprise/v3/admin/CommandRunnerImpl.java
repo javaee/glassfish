@@ -393,7 +393,7 @@ public class CommandRunnerImpl implements CommandRunner {
 
             Exception exception = e;
             Throwable cause = e.getCause();
-            if(cause != null && (cause instanceof UnacceptableValueException)) {
+            if(cause != null && (cause instanceof UnacceptableValueException || cause instanceof IllegalArgumentException)) {
                 // throw away the wrapper.
                 exception = (Exception)cause;
             }
@@ -1002,14 +1002,12 @@ public class CommandRunnerImpl implements CommandRunner {
             ParamTokenizer stoken = new ParamTokenizer(propsString, ":");
             while (stoken.hasMoreTokens()) {
                 String token = stoken.nextToken();
-                if (token.indexOf("=")==-1)
-                    continue;
                 final ParamTokenizer nameTok = new ParamTokenizer(token, "=");
                 if (nameTok.countTokens() == 2) {
                     properties.setProperty(nameTok.nextTokenWithoutEscapeAndQuoteChars(),
                                        nameTok.nextTokenWithoutEscapeAndQuoteChars());
                 } else {
-                    throw new IllegalArgumentException(adminStrings.getLocalString("InvalidPropertySyntax", "Invalid property syntax."));
+                    throw new IllegalArgumentException(adminStrings.getLocalString("InvalidPropertySyntax", "Invalid property syntax.", propsString));
                 }
             }
         }
