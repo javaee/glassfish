@@ -70,6 +70,12 @@ public abstract class StatisticImpl implements Statistic,Serializable {
         sampleTime.set(sample_time);
     }
 
+    protected StatisticImpl(String name, String unit, String desc) {
+        statisticName = name;
+        statisticUnit = unit;
+        statisticDesc = desc;
+    }
+
     public synchronized Map getStaticAsMap() {
         statMap.put("name", statisticName);
         statMap.put("unit", statisticUnit);

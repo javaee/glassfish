@@ -59,6 +59,10 @@ public class CountStatisticImpl extends StatisticImpl
         count.set(countVal); 
     }
     
+    public CountStatisticImpl(String name, String unit, String desc) {
+        super(name, unit, desc);
+    }
+    
     public synchronized CountStatistic getStatistic() {
         return cs;
     }
@@ -79,6 +83,18 @@ public class CountStatisticImpl extends StatisticImpl
 
     public void setCount(long countVal) {
         count.set(countVal);
+    }
+
+    public void increment() {
+        count.incrementAndGet();
+    }
+
+    public void increment(long delta) {
+        count.addAndGet(delta);
+    }
+
+    public void decrement() {
+        count.decrementAndGet();
     }
 
     // todo: equals implementation
