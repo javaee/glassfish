@@ -1,8 +1,8 @@
-<!ENTITY % optiontype SYSTEM (STRING | BOOLEAN | PASSWORD | FILE_PATH | FILE | DIRECTORY | PROPERTY | PROPERTIES )>
+<!ENTITY % optiontype "(STRING | BOOLEAN | PASSWORD | FILE_PATH | FILE | DIRECTORY | PROPERTY | PROPERTIES)">
 <!-- maps to OptionType Enumeration -->
-<!ENTITY % boolean SYSTEM (TRUE | FALSE)>
+<!ENTITY % boolean "(TRUE | FALSE)">
 <!-- maps to java.lang.Boolean -->
-<!ENTITY % condition SYSTEM (OR | AND) >
+<!ENTITY % condition "(OR | AND)" >
 
 <!ELEMENT command (option*, operand*)>
 <!ATTLIST command
@@ -16,18 +16,18 @@
           repeats %boolean; "FALSE"
           symbol CDATA #IMPLIED
           default-value CDATA #IMPLIED
-          legal-values CDATA #IMPLIED  <!-- comma separated values -->
+          legal-values CDATA #IMPLIED
 >
 
 <!ELEMENT operand (overridden-type?)>
 <!ATTLIST operand
-          name #IMPLIED
+          name CDATA #IMPLIED
           type %optiontype; "STRING"
           required %boolean; "TRUE">
 
 <!ELEMENT overridden-type (option-names, option-values)>
 <!ATTLIST overridden-type
-          type #REQUIRED
+          type %optiontype; #REQUIRED
           condition %condition; "OR">
 
 <!ELEMENT option-names (#PCDATA)> <!-- comma separated names -->
