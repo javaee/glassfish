@@ -58,6 +58,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Undeploys applications.
@@ -107,21 +109,37 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
         }
         ReadableArchive source = null;
         if (info==null) {
-            // probably disabled application
+            // disabled application or application failed to be
+            // loaded for some reason
             if (application!=null) {
-                File location = new File(application.getLocation());
-                if (location.exists()) {
-                    try {
-                        source = archiveFactory.openArchive(location);
-                    } catch (IOException e) {
-                        logger.log(Level.INFO, e.getMessage(),e );
+                URI uri = null;
+                try {
+                    uri = new URI(application.getLocation());
+                } catch (URISyntaxException e) {
+                    logger.severe("Cannot determine original location for application : " + e.getMessage());
+                }
+                if (uri != null) {
+                    File location = new File(uri);
+                    if (location.exists()) {
+                        try {
+                            source = archiveFactory.openArchive(location);
+                        } catch (IOException e) {
+                            logger.log(Level.INFO, e.getMessage(),e );
+                        }
+                    } else {
+                        logger.severe("Originally deployed application at "+ location + " not found");
                     }
-                } else {
-                    logger.warning("Originally deployed application at "+ location + " not found");
                 }
             }
         } else {
             source = info.getSource();
+        }
+
+        if (source == null) {
+            report.setMessage(
+                "Cannot get source archive for undeployment"); 
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
 
         ExtendedDeploymentContext deploymentContext = null;
@@ -168,7 +186,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             //if directory deployment then do no remove the directory
             if (source!=null) {
                 if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
-                    FileUtils.whack(new File(info.getSource().getURI()));
+                    FileUtils.whack(new File(source.getURI()));
                 }
             }
 
