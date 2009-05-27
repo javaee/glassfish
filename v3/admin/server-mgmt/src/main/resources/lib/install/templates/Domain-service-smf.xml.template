@@ -21,7 +21,7 @@
     <single_instance/>
     <exec_method type="method"
                  name="start"
-                 exec="%%%AS_ADMIN_PATH%%% start-domain --user %%%AS_ADMIN_USER%%% --passwordfile %%%PASSWORD_FILE_PATH%%% --domaindir %%%LOCATION%%% %%%ENTITY_NAME%%%"
+                 exec="%%%AS_ADMIN_PATH%%% start-domain %%%CREDENTIALS%%% --domaindir %%%LOCATION%%% %%%ENTITY_NAME%%%"
                  timeout_seconds="%%%TIMEOUT_SECONDS%%%">
       <method_context working_directory=":default">
         <method_credential user="%%%OS_USER%%%"

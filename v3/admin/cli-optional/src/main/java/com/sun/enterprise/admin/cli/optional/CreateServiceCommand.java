@@ -43,43 +43,45 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.admin.servermgmt.services.ServiceFactory;
 import com.sun.enterprise.admin.servermgmt.services.Service;
 import com.sun.enterprise.admin.servermgmt.services.AppserverServiceType;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.util.Date;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 public class CreateServiceCommand extends AbstractCommand {
-
     @Override
     public void runCommand() throws CommandException, CommandValidationException
     {
+        // note: all of the calls to File.getPath() are guaranteed to return good
+        // solid absolute paths because SmartFile is used for processing all
+        // File objects in validateOptions()
         try {
             validateOptions();
-            String passwordFile = getOption(PASSWORDFILE);
             boolean dry_run = getBooleanOption("dry-run");
             String type = "das"; //getOption(TYPE);  TODO
-            String typeDir = (String) getOperands().get(0);
             final Service service = ServiceFactory.getService();
                 //configure service
             service.setDate(new Date().toString());
-            final StringBuilder ap = new StringBuilder();
-            service.setName(getName(typeDir, ap));
+            service.setName(serviceName);
             service.setDryRun(dry_run);
-            service.setLocation(ap.toString());
+            service.setLocation(serverDir.getPath());
             service.setType(type.equals("das") ?
                             AppserverServiceType.Domain
                             : AppserverServiceType.NodeAgent);
             service.setFQSN();
             service.setOSUser();
-            service.setAsadminPath(SystemPropertyConstants.getAsAdminScriptLocation());
-            service.setPasswordFilePath(passwordFile);
+            service.setAsadminPath(asadminScript.getPath());
+            
+            if(passwordFile != null)
+                service.setPasswordFilePath(passwordFile.getPath());
+
             service.setServiceProperties(getOption(SERVICE_PROPERTIES));
             service.isConfigValid();
             service.setTrace(CLILogger.isDebug());
             service.createService(service.tokensAndValues());
             printSuccess(service);
-            CLILogger.getInstance().printDetailMessage(getLocalizedString(
-                                                           "CommandSuccessful",
-                                                           new Object[] {name}));
+            logger.printDetailMessage(getLocalizedString("CommandSuccessful", new Object[] {name}));
         }
         catch (CommandValidationException e) {
             throw e;
@@ -94,42 +96,82 @@ public class CreateServiceCommand extends AbstractCommand {
     {
         super.validateOptions();
 
-        // 1.  They *must* have a password file
-        String passwordFile = getOption(PASSWORDFILE);
-
-        if (! new File(passwordFile).isFile())
-        {
-            final String msg = getLocalizedString("FileDoesNotExist",
-                    new Object[] {passwordFile});
-            throw new CommandValidationException(msg);
-        }
+        // The order that you make these calls matters!!
+        validateServerDir();
+        validateName();
+        validateAsadmin();
+        validatePasswordFile();
         
-    	return true;
+        return true;
     }
 
-  /**
-     *  Retrieves the domain/nodeagent name from the given directory
-     *  @return domain/nodeagent name
-     *  @throws CommandValidationException
-     */
-    private String getName(String typeDir, final StringBuilder absolutePath) throws CommandException
-    {
-        String path = "";
-        try
-        {
-            //Already checked for the valid directory in validateOptions()
-           final File f = new File(typeDir);
-           String aName = f.getName();
-           absolutePath.append(f.getAbsolutePath());
-           final String nameFromOption = getOption(NAME);
-           if (nameFromOption != null)
-               aName = nameFromOption;
-           CLILogger.getInstance().printDebugMessage("service name = " + aName);
-           return ( aName );
+    // TODO TODO TODO
+    // Allow the default domain!!!!
+    // TODO TODO TODO
+    private void validateServerDir() throws CommandValidationException{
+        String op = (String)getOperands().get(0);
+
+        if(!ok(op)) {
+            throw new CommandValidationException(strings.get("create.service.NoServerDirOperand"));
         }
-        catch (Exception e)
-        {
-            throw new CommandException(e.getLocalizedMessage());
+
+        File f = SmartFile.sanitize(new File(op));
+
+        if(!f.isDirectory()) {
+            throw new CommandValidationException(strings.get("create.service.BadServerDir", f));
+        }
+
+        File serverDirParent = new File(f, "..");
+
+        if(!serverDirParent.isDirectory()) {
+            throw new CommandValidationException(strings.get("create.service.BadServerDirParent", serverDirParent));
+        }
+        String serverName = f.getName();
+
+        if(!ok(serverName)) {
+            // impossible
+            throw new CommandValidationException(strings.get("create.service.BadServerDir", f));
+        }
+
+        serverDir = f;
+    }
+
+    private void validateName() {
+       serviceName = getOption(NAME);
+
+       if(!ok(serviceName))
+           serviceName = serverDir.getName();
+
+       logger.printDebugMessage("service name = " + serviceName);
+    }
+
+    private void validatePasswordFile() throws CommandValidationException {
+        String passwordFileName = getOption(PASSWORDFILE);
+
+        if (!ok(passwordFileName)) {
+            return; // no password file specified -- that is allowed...
+        }
+
+        // they specified a password file...
+        // TODO look inside the file and make sure it is kosher...
+        passwordFile = SmartFile.sanitize(new File(passwordFileName));
+        
+        if(!passwordFile.isFile()) {
+            final String msg = strings.get("create.service.NoSuchFile", passwordFileName);
+            throw new CommandValidationException(msg);
+        }
+    }
+
+    private void validateAsadmin() throws CommandValidationException{
+        String s = SystemPropertyConstants.getAsAdminScriptLocation();
+
+        if(!ok(s))
+            throw new CommandValidationException(strings.get("internal.error", "Can't get Asadmin script location"));
+
+        asadminScript = SmartFile.sanitize(new File(s));
+
+        if(!asadminScript.isFile()) {
+            throw new CommandValidationException(strings.get("create.service.noAsadminScript", asadminScript));
         }
     }
 
@@ -139,11 +181,20 @@ public class CreateServiceCommand extends AbstractCommand {
         CLILogger.getInstance().printMessage(msg);
     }
 
+    private static boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+
     private final static String TYPE = "type";
     private final static String NAME = "name";
     private final static String SERVICE_PROPERTIES = "serviceproperties";
     private final static String VALID_TYPES = "das|node-agent";
     private final static String DAS_TYPE = "das";
+    private final static LocalStringsImpl strings = new LocalStringsImpl(CreateServiceCommand.class);
+    private final static CLILogger logger = CLILogger.getInstance();
 
-
+    private File    serverDir;
+    private String  serviceName;
+    private File    passwordFile;
+    private File    asadminScript;
 }

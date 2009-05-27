@@ -80,10 +80,11 @@ public final class SMFService implements Service {
     public static final String AS_ADMIN_USER_TN             = "AS_ADMIN_USER";
     public static final String AS_ADMIN_PASSWORD_TN         = "AS_ADMIN_PASSWORD";
     public static final String AS_ADMIN_MASTERPASSWORD_TN   = "AS_ADMIN_MASTERPASSWORD";
-    public static final String PASSWORD_FILE_PATH_TN        = "PASSWORD_FILE_PATH";
+    //public static final String PASSWORD_FILE_PATH_TN        = "PASSWORD_FILE_PATH";
     public static final String TIMEOUT_SECONDS_TN           = "TIMEOUT_SECONDS";
     public static final String OS_USER_TN                   = "OS_USER";
     public static final String PRIVILEGES_TN                = "PRIVILEGES";
+    public static final String CREDENTIALS_TN               = "CREDENTIALS";
     
     public static final String TIMEOUT_SECONDS_DV           = "0";
     public static final String AS_ADMIN_USER_DEF_VAL        = "admin";
@@ -246,12 +247,14 @@ public final class SMFService implements Service {
         }
         pairs.put(AS_ADMIN_PATH_TN, path);
     }
+
     /** Returns the absolute path of the password file that contains asadmin
      * authentication artifacts.
      */
     public String getPasswordFilePath() {
-        return (pairs.get(PASSWORD_FILE_PATH_TN) );
+        throw new UnsupportedOperationException("Not supported any longer.");
     }
+
     /** Sets the absolute path of the password file that contains asadmin
      * authentication artifacts. Parameter may not be null.
      */
@@ -277,8 +280,9 @@ public final class SMFService implements Service {
             msg = sm.getString("missingParamsInFile", cp, AS_ADMIN_MASTERPASSWORD_TN);
             throw new IllegalArgumentException(msg);
         }
-        pairs.put(AS_ADMIN_USER_TN, tv.get(AS_ADMIN_USER_TN));
-        pairs.put(PASSWORD_FILE_PATH_TN, cp);
+        //pairs.put(AS_ADMIN_USER_TN, tv.get(AS_ADMIN_USER_TN));
+        //pairs.put(PASSWORD_FILE_PATH_TN, cp);
+        pairs.put(CREDENTIALS_TN, " --user " + tv.get(AS_ADMIN_USER_TN) + " --passwordfile " + cp + " ");
     }
     /** Returns timeout in seconds before the master boot restarter should
      * give up starting this service.
@@ -377,6 +381,13 @@ public final class SMFService implements Service {
             final String msg = sm.getString("serviceTemplateNotFound", getManifestFileTemplatePath());
             throw new RuntimeException(msg);
         }
+
+        // bnevins May 27, 2009
+        // passwordfile is now optional for start-domain
+        // BEFORE:  --user %%%AS_ADMIN_USER%%% --passwordfile %%%PASSWORD_FILE_PATH%%%
+        // AFTER:   %%%CREDENTIALS%%%
+        
+
         return ( true );
     }
     
@@ -503,11 +514,13 @@ public final class SMFService implements Service {
         pairs.put(START_INSTANCES_TN, START_INSTANCES_DEFAULT_VAL);
         pairs.put(AS_ADMIN_PATH_TN, NULL_VALUE);
         pairs.put(AS_ADMIN_USER_TN, AS_ADMIN_USER_DEF_VAL);
-        pairs.put(PASSWORD_FILE_PATH_TN, NULL_VALUE);
+        //pairs.put(PASSWORD_FILE_PATH_TN, NULL_VALUE);
         pairs.put(TIMEOUT_SECONDS_TN, TIMEOUT_SECONDS_DV);
         pairs.put(OS_USER_TN, NULL_VALUE);
         pairs.put(PRIVILEGES_TN, PRIVILEGES_DEFAULT_VAL);
+        pairs.put(CREDENTIALS_TN, " ");
     }
+    
     private Set<String> ps2Pairs(final String cds) {
         final StringTokenizer p = new StringTokenizer(cds, SP_DELIMITER);
         final Set<String> tokens = new HashSet<String>();
@@ -698,4 +711,5 @@ public final class SMFService implements Service {
         in.close();
         out.close();
     }
+
 }

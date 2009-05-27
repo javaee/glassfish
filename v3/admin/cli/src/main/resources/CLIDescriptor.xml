@@ -208,8 +208,8 @@
         <Command name="create-service"
             classname="com.sun.enterprise.admin.cli.optional.CreateServiceCommand"
             numberofoperands="1"
-            usage-text="asadmin create-service --passwordfile password-file [--terse=false] [--echo=false] [--name service-name] [--serviceproperties (name=value)+] [--dry-run=false] domain-dir">
-                <RequiredOption name="passwordfile"/>
+            usage-text="asadmin create-service [--passwordfile password-file] [--terse=false] [--echo=false] [--name service-name] [--serviceproperties (name=value)+] [--dry-run=false] domain-dir">
+                <ValidOption name="passwordfile"/>
                 <ValidOption name="terse"/>
                 <ValidOption name="echo"/>
                 <ValidOption name="name"/>
