@@ -707,7 +707,12 @@ public class WebappLoader
         // Construct a class loader based on our current repositories list
         try {
 
-            classLoader = (WebappClassLoader) createClassLoader();
+            ClassLoader cl = createClassLoader();
+            if (cl instanceof WebappClassLoader) {
+                classLoader = (WebappClassLoader) cl;
+            } else {
+                classLoader = new WebappClassLoader(cl);
+            }
             classLoader.setResources(container.getResources());
             classLoader.setDebug(this.debug);
             classLoader.setDelegate(this.delegate);
