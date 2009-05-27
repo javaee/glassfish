@@ -420,10 +420,6 @@ public final class SMFService implements Service {
      * a runtime exception results.
      */
     public String getManifestFileTemplatePath() {
-        /* Implementation Note: This should actually come from PEFileLayout or EEFileLayout, but 
-         * it is too complex to get access to PEFileLayout instance and hence this
-         * (rather incorrect) approach of getting template path information is
-         */
         if (NULL_VALUE.equals(getType().toString())) {
             final String msg = sm.getString("serviceTypeNotSet");
             throw new RuntimeException(msg);
@@ -442,10 +438,6 @@ public final class SMFService implements Service {
         String filename = getType().toString() + MANIFEST_FILE_TEMPL_SUFFIX;
 
         File f = new File(templatesDir, filename);
-
-        if(!f.isFile())
-            createManifestFileTemplate(f);
-
         return f.getPath();
     }
 
@@ -691,25 +683,4 @@ public final class SMFService implements Service {
     private void printOut(final String s) {
         System.out.println(s);
     }
-
-    private void createManifestFileTemplate(File f) {
-        try {
-            InputStream in = getClass().getResourceAsStream("/" + REL_PATH_TEMPLATES + "/" + f.getName());
-            FileOutputStream out = new FileOutputStream(f);
-            copyStream(in, out);
-        }
-        catch (IOException ex) {
-        }
-    }
-
-    private static void copyStream(InputStream in, OutputStream out) throws IOException {
-        byte[] buf = new byte[4096];
-        int len;
-        while ((len = in.read(buf)) >= 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-    }
-
 }
