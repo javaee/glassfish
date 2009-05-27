@@ -20,13 +20,22 @@
                 </excludes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-plugin</artifactId>
+                <version>3.0-b47</version>
+                <extensions>true</extensions>
+           </plugin>
+       </plugins>
         <extensions>
             <extension>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>maven-glassfishbuild-extension</artifactId>
-                <version>${project.version}</version>
+                <version>3.0-b47</version>
             </extension>
         </extensions>
     </build>
+
 </project>
 
