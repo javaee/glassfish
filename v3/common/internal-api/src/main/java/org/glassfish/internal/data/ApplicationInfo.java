@@ -242,6 +242,7 @@ public class ApplicationInfo extends ModuleInfo {
     }
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
+        super.clean(context);
         for (ModuleInfo info : modules) {
             info.clean(getSubContext(info,context));
         }
