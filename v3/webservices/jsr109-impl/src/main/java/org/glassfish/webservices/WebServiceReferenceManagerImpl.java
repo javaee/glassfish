@@ -9,6 +9,8 @@ import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.logging.LogDomains;
+import com.sun.xml.ws.api.FeatureConstructor;
+import com.sun.xml.ws.resources.ModelerMessages;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -18,11 +20,17 @@ import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.RespectBindingFeature;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Constructor;
+import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.security.PrivilegedActionException;
@@ -172,7 +180,12 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
                     // the requested resource is not the service but one of its port.
                     if (injValue!=null && desc.getInjectionTargetType()!=null) {
                         Class requestedPortType = service.getClass().getClassLoader().loadClass(desc.getInjectionTargetType());
-                        injValue = service.getPort(requestedPortType);
+                        ArrayList<WebServiceFeature> wsFeatures = getWebServiceFeatures(desc);
+                        if (wsFeatures.size() >0) {
+                             injValue = service.getPort(requestedPortType,wsFeatures.toArray(new WebServiceFeature[0]));
+                        }   else {
+                            injValue = service.getPort(requestedPortType);
+                        }
                     }
 
                 }
@@ -253,22 +266,7 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
             wsdlFile = wsu.resolveCatalog(catalogFile, desc.getWsdlFileUri(), null);
         }   */
 
-        /**
-         * JAXWS 2.2 enables @MTOM, @Addressing @RespectBinding
-         * on WebServiceRef
-         * If these are present use the
-         * Service(url,wsdl,features) constructor
-         */
-        ArrayList<WebServiceFeature> wsFeatures = new ArrayList<WebServiceFeature>();
-        if (desc.isMtomEnabled()) {
-            wsFeatures.add( new MTOMFeature(true,desc.getMtomThreshold()))   ;
-        }
-        if (desc.isAddressingEnabled()) {
-            wsFeatures.add( new AddressingFeature(true,desc.isAddressingRequired()))   ;
-        }
-        if (desc.isRespectBindingEnabled()) {
-            wsFeatures.add( new RespectBindingFeature(true))   ;
-        }
+        ArrayList<WebServiceFeature> wsFeatures = getWebServiceFeatures(desc);
 
         Object obj ;
         if (wsFeatures.size()>0) {
@@ -291,6 +289,33 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
         */
         return obj;
 
+    }
+
+    private ArrayList<WebServiceFeature> getWebServiceFeatures(ServiceReferenceDescriptor desc) {
+         /**
+         * JAXWS 2.2 enables @MTOM, @Addressing @RespectBinding
+         * on WebServiceRef
+         * If these are present use the
+         * Service(url,wsdl,features) constructor
+         */
+        ArrayList<WebServiceFeature> wsFeatures = new ArrayList<WebServiceFeature>();
+        if (desc.isMtomEnabled()) {
+            wsFeatures.add( new MTOMFeature(true,desc.getMtomThreshold()))   ;
+        }
+        if (desc.isAddressingEnabled()) {
+            wsFeatures.add( new AddressingFeature(true,desc.isAddressingRequired()))   ;
+        }
+        if (desc.isRespectBindingEnabled()) {
+            wsFeatures.add( new RespectBindingFeature(true))   ;
+        }
+        Map<Class<? extends Annotation>, Annotation> otherAnnotations =
+            desc.getOtherAnnotations();
+        Iterator it = otherAnnotations.values().iterator();
+        while(it.hasNext()){
+            wsFeatures.add(getWebServiceFeatureBean((Annotation)it.next()));
+        }
+        
+        return wsFeatures;
     }
 
     private void resolvePortComponentLinks(ServiceReferenceDescriptor desc)
@@ -317,6 +342,46 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
                 }
             }
         }
+    }
+
+    private  WebServiceFeature getWebServiceFeatureBean(Annotation a) {
+        WebServiceFeatureAnnotation wsfa = a.annotationType().getAnnotation(WebServiceFeatureAnnotation.class);
+
+        Class<? extends WebServiceFeature> beanClass = wsfa.bean();
+        WebServiceFeature bean;
+
+        Constructor ftrCtr = null;
+        String[] paramNames = null;
+        for (Constructor con : beanClass.getConstructors()) {
+            FeatureConstructor ftrCtrAnn = (FeatureConstructor) con.getAnnotation(FeatureConstructor.class);
+            if (ftrCtrAnn != null) {
+                if (ftrCtr == null) {
+                    ftrCtr = con;
+                    paramNames = ftrCtrAnn.value();
+                } else {
+                    throw new WebServiceException(ModelerMessages.RUNTIME_MODELER_WSFEATURE_MORETHANONE_FTRCONSTRUCTOR(a, beanClass));
+                }
+            }
+        }
+        if (ftrCtr == null) {
+            throw new WebServiceException(ModelerMessages.RUNTIME_MODELER_WSFEATURE_NO_FTRCONSTRUCTOR(a, beanClass));
+        }
+        if (ftrCtr.getParameterTypes().length != paramNames.length) {
+            throw new WebServiceException(ModelerMessages.RUNTIME_MODELER_WSFEATURE_ILLEGAL_FTRCONSTRUCTOR(a, beanClass));
+        }
+
+        try {
+            Object[] params = new Object[paramNames.length];
+            for (int i = 0; i < paramNames.length; i++) {
+                Method m = a.annotationType().getDeclaredMethod(paramNames[i]);
+                params[i] = m.invoke(a);
+            }
+            bean = (WebServiceFeature) ftrCtr.newInstance(params);
+        } catch (Exception e) {
+            throw new WebServiceException(e);
+        }
+
+        return bean;
     }
 
 

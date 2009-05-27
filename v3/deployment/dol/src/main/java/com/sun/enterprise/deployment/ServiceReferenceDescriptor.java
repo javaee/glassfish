@@ -43,6 +43,7 @@ import javax.xml.namespace.QName;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.lang.annotation.Annotation;
 
 /**
  * Information about a J2EE web service client.
@@ -127,9 +128,27 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
 
     private int mtomThreshold;
 
+    public Map<Class<? extends Annotation>, Annotation> getOtherAnnotations() {
+        return otherAnnotations;
+    }
+
+    public void setOtherAnnotations(Map<Class<? extends Annotation>, Annotation> otherAnnotations) {
+        this.otherAnnotations = otherAnnotations;
+    }
+
+    /**
+     * In addition to MTOM,Addressing , RespectBinding
+     * pass over other annotations too.
+     */
+
+   private Map<Class<? extends Annotation>, Annotation> otherAnnotations =
+            new HashMap<Class<? extends Annotation>, Annotation>();
+
     public boolean isRespectBindingEnabled() {
         return respectBindingEnabled;
     }
+
+
 
     public void setRespectBindingEnabled(boolean respectBindingEnabled) {
         this.respectBindingEnabled = respectBindingEnabled;
@@ -150,6 +169,8 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
     public void setAddressingEnabled(boolean addressingEnabled) {
         this.addressingEnabled = addressingEnabled;
     }
+
+
 
     public boolean isAddressingRequired() {
         return addressingRequired;
