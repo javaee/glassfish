@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.web.MultipartConfig;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 
 import java.util.Collection;
@@ -145,6 +146,19 @@ public class ApplicationValidator extends EjbBundleValidator
         }
         if (descriptor.isAsyncSupported() == null) {
             descriptor.setAsyncSupported(false);
+        }
+
+        MultipartConfig multipartConfig = descriptor.getMultipartConfig();
+        if (multipartConfig != null) {
+            if (multipartConfig.getMaxFileSize() == null) {
+                multipartConfig.setMaxFileSize(new Long(-1));
+            }
+            if (multipartConfig.getMaxRequestSize() == null) {
+                multipartConfig.setMaxRequestSize(new Long(-1));
+            }
+            if (multipartConfig.getFileSizeThreshold() == null) {
+                multipartConfig.setFileSizeThreshold(new Integer(0));
+            }
         }
 
         computeRuntimeDefault(descriptor);

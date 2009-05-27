@@ -45,9 +45,9 @@ import com.sun.enterprise.deployment.web.MultipartConfig;
 
 public class MultipartConfigDescriptor extends Descriptor implements MultipartConfig {
     private String location = null;
-    private long maxFileSize;
-    private long maxRequestSize;
-    private int fileSizeThreshold;
+    private Long maxFileSize = null;
+    private Long maxRequestSize = null;
+    private Integer fileSizeThreshold = null;
 
     public String getLocation() {
         return location;
@@ -57,27 +57,27 @@ public class MultipartConfigDescriptor extends Descriptor implements MultipartCo
         this.location = location;
     }
 
-    public long getMaxFileSize() {
+    public Long getMaxFileSize() {
         return maxFileSize;
     }
 
-    public void setMaxFileSize(long maxFileSize) {
+    public void setMaxFileSize(Long maxFileSize) {
         this.maxFileSize = maxFileSize;
     }
 
-    public long getMaxRequestSize() {
+    public Long getMaxRequestSize() {
         return maxRequestSize;
     }
 
-    public void setMaxRequestSize(long maxRequestSize) {
+    public void setMaxRequestSize(Long maxRequestSize) {
         this.maxRequestSize = maxRequestSize;
     }
 
-    public int getFileSizeThreshold() {
+    public Integer getFileSizeThreshold() {
         return fileSizeThreshold;
     }
 
-    public void setFileSizeThreshold(int fileSizeThreshold) {
+    public void setFileSizeThreshold(Integer fileSizeThreshold) {
         this.fileSizeThreshold = fileSizeThreshold;
     }
 

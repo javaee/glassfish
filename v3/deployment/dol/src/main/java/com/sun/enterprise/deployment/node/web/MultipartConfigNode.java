@@ -76,9 +76,6 @@ public class MultipartConfigNode extends DeploymentDescriptorNode {
     protected Map getDispatchTable() {
         Map table = super.getDispatchTable();
         table.put(WebTagNames.LOCATION, "setLocation");
-        table.put(WebTagNames.MAX_FILE_SIZE, "setMaxFileSize");
-        table.put(WebTagNames.MAX_REQUEST_SIZE, "setMaxRequestSize");
-        table.put(WebTagNames.FILE_SIZE_THRESHOLD, "setFileSizeThreshold");
         return table;
     }
 
@@ -90,11 +87,11 @@ public class MultipartConfigNode extends DeploymentDescriptorNode {
      */
     public void setElementValue(XMLElement element, String value) {
         if (WebTagNames.MAX_FILE_SIZE.equals(element.getQName())) {
-            descriptor.setMaxFileSize(Long.parseLong(value));
+            descriptor.setMaxFileSize(Long.valueOf(value));
         } else if (WebTagNames.MAX_REQUEST_SIZE.equals(element.getQName())) {
-            descriptor.setMaxRequestSize(Long.parseLong(value));
+            descriptor.setMaxRequestSize(Long.valueOf(value));
         } else if (WebTagNames.FILE_SIZE_THRESHOLD.equals(element.getQName())) {
-            descriptor.setFileSizeThreshold(Integer.parseInt(value));
+            descriptor.setFileSizeThreshold(Integer.valueOf(value));
         } else {
             super.setElementValue(element, value);
         }
@@ -111,9 +108,15 @@ public class MultipartConfigNode extends DeploymentDescriptorNode {
     public Node writeDescriptor(Node parent, String nodeName, MultipartConfigDescriptor descriptor) {       
         Node myNode = appendChild(parent, nodeName);
         appendTextChild(myNode, WebTagNames.LOCATION, descriptor.getLocation());
-        appendTextChild(myNode, WebTagNames.MAX_FILE_SIZE, Long.toString(descriptor.getMaxFileSize()));
-        appendTextChild(myNode, WebTagNames.MAX_REQUEST_SIZE, Long.toString(descriptor.getMaxRequestSize()));
-        appendTextChild(myNode, WebTagNames.FILE_SIZE_THRESHOLD, Integer.toString(descriptor.getFileSizeThreshold()));
+        if (descriptor.getMaxFileSize() != null) {
+            appendTextChild(myNode, WebTagNames.MAX_FILE_SIZE, descriptor.getMaxFileSize().toString());
+        }
+        if (descriptor.getMaxRequestSize() != null) {
+            appendTextChild(myNode, WebTagNames.MAX_REQUEST_SIZE, descriptor.getMaxRequestSize().toString());
+        }
+        if (descriptor.getFileSizeThreshold() != null) {
+            appendTextChild(myNode, WebTagNames.FILE_SIZE_THRESHOLD, descriptor.getFileSizeThreshold().toString());
+        }
         
         return myNode;
     }   

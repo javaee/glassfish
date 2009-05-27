@@ -46,12 +46,12 @@ public interface MultipartConfig {
     public String getLocation();
     public void setLocation(String location);
 
-    public long getMaxFileSize();
-    public void setMaxFileSize(long maxFileSize);
+    public Long getMaxFileSize();
+    public void setMaxFileSize(Long maxFileSize);
 
-    public long getMaxRequestSize();
-    public void setMaxRequestSize(long maxRequestSize);
+    public Long getMaxRequestSize();
+    public void setMaxRequestSize(Long maxRequestSize);
 
-    public int getFileSizeThreshold();
-    public void setFileSizeThreshold(int fileSizeThreshold);
+    public Integer getFileSizeThreshold();
+    public void setFileSizeThreshold(Integer fileSizeThreshold);
 }

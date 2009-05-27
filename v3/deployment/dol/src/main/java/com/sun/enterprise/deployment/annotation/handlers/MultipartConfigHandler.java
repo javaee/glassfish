@@ -95,13 +95,23 @@ public class MultipartConfigHandler extends AbstractWebHandler {
             throws AnnotationProcessorException {
 
         MultipartConfig multipartConfigAn = (MultipartConfig)ainfo.getAnnotation();
-        if (webCompDesc.getMultipartConfig() == null) {
-            MultipartConfigDescriptor multipartConfigDesc = new MultipartConfigDescriptor();
-            multipartConfigDesc.setLocation(multipartConfigAn.location());
-            multipartConfigDesc.setMaxFileSize(multipartConfigAn.maxFileSize());
-            multipartConfigDesc.setMaxRequestSize(multipartConfigAn.maxRequestSize());
-            multipartConfigDesc.setFileSizeThreshold(multipartConfigAn.fileSizeThreshold());
-            webCompDesc.setMultipartConfig(multipartConfigDesc);
+        com.sun.enterprise.deployment.web.MultipartConfig multipartConfig = webCompDesc.getMultipartConfig();
+        if (multipartConfig == null) {
+            multipartConfig = new MultipartConfigDescriptor();
+            webCompDesc.setMultipartConfig(multipartConfig);
+        }
+
+        if (multipartConfig.getLocation() == null) {
+            multipartConfig.setLocation(multipartConfigAn.location());
+        }
+        if (multipartConfig.getMaxFileSize() == null) {
+            multipartConfig.setMaxFileSize(multipartConfigAn.maxFileSize());
+        }
+        if (multipartConfig.getMaxRequestSize() == null) {
+            multipartConfig.setMaxRequestSize(multipartConfigAn.maxRequestSize());
+        }
+        if (multipartConfig.getFileSizeThreshold() == null) {
+            multipartConfig.setFileSizeThreshold(multipartConfigAn.fileSizeThreshold());
         }
 
         return getDefaultProcessedResult();
