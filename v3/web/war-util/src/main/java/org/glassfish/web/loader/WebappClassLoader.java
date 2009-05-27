@@ -243,20 +243,25 @@ public class WebappClassLoader
 
 
     /**
-     * Construct a new ClassLoader with no defined repositories and no
-     * parent ClassLoader.
+     * Construct a new ClassLoader with the given parent ClassLoader,
+     * but no defined repositories.
      */
     public WebappClassLoader(ClassLoader parent) {
         super(new URL[0], parent);
         init();
     }
 
-     public WebappClassLoader(URL[] urls, ClassLoader parent) {
-         super(urls, parent);
-         init();
-     }
 
-     // ----------------------------------------------------- Instance Variables
+    /**
+     * Construct a new ClassLoader with the given parent ClassLoader
+     * and defined repositories.
+     */
+    public WebappClassLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
+        init();
+    }
+
+    // ----------------------------------------------------- Instance Variables
 
     // START PE 4989455
     /**
