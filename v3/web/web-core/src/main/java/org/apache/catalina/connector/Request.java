@@ -4011,12 +4011,16 @@ public class Request
         return startAsync(servletRequest, servletResponse, false);
     }
 
-    public Iterable<Part> getParts() {
+
+    @Override
+    public Iterable<Part> getParts() throws ServletException {
         //TODO: Stub out the implementation
         return null; 
     }
 
-    public Part getPart(String name) {
+
+    @Override
+    public Part getPart(String name) throws ServletException {
         //TODO: Stub out the implementation
         return null;
     }

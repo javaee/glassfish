@@ -1156,14 +1156,24 @@ public class RequestFacade
         return request.getAsyncTimeout();
     }
 
-    public Iterable<Part> getParts() {
-       //Stub out implementation
-       return null;
+
+    @Override
+    public Iterable<Part> getParts() throws ServletException {
+        if (request == null) {
+            throw new IllegalStateException(
+                sm.getString("requestFacade.nullRequest"));
+        }
+        return request.getParts();
     }
 
-    public Part getPart(String name) {
-       //Stub out implementation
-       return null;
+
+    @Override
+    public Part getPart(String name) throws ServletException {
+        if (request == null) {
+            throw new IllegalStateException(
+                sm.getString("requestFacade.nullRequest"));
+        }
+        return request.getPart(name);
     }
 
 
