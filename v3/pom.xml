@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>pom</artifactId>
-        <version>3</version>
+        <version>4</version>
     </parent>
     
     <groupId>org.glassfish</groupId>
@@ -343,15 +343,6 @@
             <id>glassfish-repo-archive</id>
             <name>Nexus repository collection for Glassfish</name>
             <url>http://maven.glassfish.org/content/groups/glassfish</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
-            <id>glassfish-repository-wsinterop</id>
-            <name>Java.net Repository for Glassfish</name>
-            <url>http://maven.dyndns.org/glassfish/</url>
             <snapshots>
                 <updatePolicy>never</updatePolicy>
             </snapshots>
