@@ -148,6 +148,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-command-metadata-classes</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaLanguage>DTD</schemaLanguage>
+                    <schemaDirectory>src/main/resources</schemaDirectory>
+                    <generatePackage>org.glassfish.cli.metadata</generatePackage>
+                    <schemaIncludes>
+                        <include>cmd-metadata.dtd</include>
+                    </schemaIncludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
