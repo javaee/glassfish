@@ -117,29 +117,35 @@ public final class SMFService implements Service {
      * Callers must verify that the tokens are properly token-replaced before
      * using this instance.
      */
-    public SMFService() {
-        final boolean smfExists = new File(SVCADM).exists();
-        // The above was suggsted by smf-discuss forum on OpenSolaris
-        if (OS.isSun() && !smfExists) {
-            throw new IllegalArgumentException("");
+    SMFService() {
+        if(!apropos()) {
+            throw new IllegalArgumentException("Internal Error: SMFService constructor called but SMF is not available.");
         }
         pairs = new HashMap<String, String> ();
         init();
     }
-    
-    /**
+
+ /**
      * Creates SMFService instance with tokens initialized from given map. Given
      * Map may not be null. Callers must verify that the tokens are properly token-replaced before
      * using this instance.
      * @param tv a Map of <String, String> that contains mappings between tokens and their values
      * @throws IllegalArgumentException in case the parameter is null
      */
-    public SMFService(final Map<String, String> tv) {
+    private SMFService(final Map<String, String> tv) {
         if (tv == null)
             throw new IllegalArgumentException(nullArgMsg);
+
         pairs = new HashMap<String, String> (tv);
     }
-    
+
+
+
+    static boolean apropos() {
+        // suggested by smf-discuss forum on OpenSolaris
+        return OS.isSun() && new File(SVCADM).isFile();
+    }
+
     /** Returns the <code> name </code> of the SMF Service.
      */
     public String getName() {

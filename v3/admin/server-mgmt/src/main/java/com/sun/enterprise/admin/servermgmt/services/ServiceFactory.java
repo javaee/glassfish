@@ -42,12 +42,11 @@ import java.io.File;
 public final class ServiceFactory {
     
     public static final Service getService() {
-        //this should be made more dynamic, but since for this release,
-        //we don't have any other platforms, I am doing it rather ugly way.
-        if (OS.isSun() && new File(SMFService.SVCADM).exists())
-            return ( new SMFService() );
-        else {
+        if(SMFService.apropos())
+            return new SMFService();
+        else if(WindowsService.apropos())
+            return new WindowsService();
+        else
             throw new RuntimeException("noSuitableServiceImplementation");
-        }
     }
 }
