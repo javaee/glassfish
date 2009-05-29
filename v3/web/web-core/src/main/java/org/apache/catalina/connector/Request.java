@@ -4219,7 +4219,12 @@ public class Request
      * <tt>onComplete</tt> method
      */
     void asyncComplete() {
-        if (!isAsyncStarted()) {
+        asyncComplete(true);
+    }
+
+
+    void asyncComplete(boolean checkIsAsyncStarted) {
+        if (checkIsAsyncStarted && !isAsyncStarted()) {
             throw new IllegalStateException("Request not in async mode");
         }
         isAsyncComplete = true;
