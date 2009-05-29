@@ -212,6 +212,54 @@ public interface Wrapper extends Container {
     public String getDescription();
 
 
+    /**
+     * Sets the multipart location
+     */
+    public void setMultipartLocation(String location);
+
+
+    /**
+     * Gets the multipart location
+     */
+    public String getMultipartLocation();
+
+
+    /**
+     * Sets the multipart max-file-size
+     */
+    public void setMultipartMaxFileSize(long maxFileSize);
+
+
+    /**
+     * Gets the multipart max-file-size
+     */
+    public long getMultipartMaxFileSize();
+
+
+    /**
+     * Sets the multipart max-request-size
+     */
+    public void setMultipartMaxRequestSize(long maxRequestSize);
+
+
+    /**
+     * Gets the multipart max-request-Size
+     */
+    public long getMultipartMaxRequestSize();
+
+
+    /**
+     * Sets the multipart file-size-threshold
+     */
+    public void setMultipartFileSizeThreshold(int fileSizeThreshold);
+
+
+    /**
+     * Gets the multipart file-size-threshol
+     */
+    public int getMultipartFileSizeThreshold();
+
+
     // --------------------------------------------------------- Public Methods
 
 

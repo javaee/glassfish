@@ -306,6 +306,15 @@ public class StandardWrapper
                                                          ServletRequest.class,
                                                          ServletResponse.class};
 
+    /**
+     * File upload (multipart) support 
+     */
+    private String multipartLocation = null;
+    private long multipartMaxFileSize = -1L;
+    private long multipartMaxRequestSize = -1L;
+    private int multipartFileSizeThreshold = 10240;  // 10K
+
+
     // ------------------------------------------------------------- Properties
 
     /**
@@ -724,6 +733,70 @@ public class StandardWrapper
 
         String[] methodNames = new String[allow.size()];
         return allow.toArray(methodNames);
+    }
+
+
+    /**
+     * Sets the multipart location
+     */
+    public void setMultipartLocation(String location) {
+        multipartLocation = location;
+    }
+
+
+    /**
+     * Gets the multipart location
+     */
+    public String getMultipartLocation(){
+        return multipartLocation;
+    }
+
+
+    /**
+     * Sets the multipart max-file-size
+     */
+    public void setMultipartMaxFileSize(long maxFileSize) {
+        multipartMaxFileSize = maxFileSize;
+    }
+
+
+    /**
+     * Gets the multipart max-file-size
+     */
+    public long getMultipartMaxFileSize() {
+        return multipartMaxFileSize;
+    }
+
+
+    /**
+     * Sets the multipart max-request-size
+     */
+    public void setMultipartMaxRequestSize(long maxRequestSize) {
+        multipartMaxRequestSize = maxRequestSize;
+    }
+
+
+    /**
+     * Gets the multipart max-request-Size
+     */
+    public long getMultipartMaxRequestSize() {
+        return multipartMaxRequestSize;
+    }
+
+
+    /**
+     * Sets the multipart file-size-threshold
+     */
+    public void setMultipartFileSizeThreshold(int fileSizeThreshold) {
+        multipartFileSizeThreshold = fileSizeThreshold;
+    }
+
+
+    /**
+     * Gets the multipart file-size-threshol
+     */
+    public int getMultipartFileSizeThreshold() {
+        return multipartFileSizeThreshold;
     }
 
 

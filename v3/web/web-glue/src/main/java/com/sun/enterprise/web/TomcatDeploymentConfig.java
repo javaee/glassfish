@@ -62,6 +62,7 @@ import com.sun.enterprise.deployment.web.CookieConfig;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
+import com.sun.enterprise.deployment.web.MultipartConfig;
 import com.sun.enterprise.deployment.web.MimeMapping;
 import com.sun.enterprise.deployment.web.SessionConfig;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
@@ -548,6 +549,14 @@ public class TomcatDeploymentConfig {
                 wrapper.addSecurityReference(
                     securityRoleReference.getRolename(),
                     securityRoleReference.getSecurityRoleLink().getName());
+            }
+
+            MultipartConfig mpConfig = webComponentDesc.getMultipartConfig();
+            if (mpConfig != null) {
+                wrapper.setMultipartLocation(mpConfig.getLocation());
+                wrapper.setMultipartMaxFileSize(mpConfig.getMaxFileSize());
+                wrapper.setMultipartMaxRequestSize(mpConfig.getMaxRequestSize());
+                wrapper.setMultipartFileSizeThreshold(mpConfig.getFileSizeThreshold());
             }
         }
        
