@@ -27,6 +27,10 @@ final class Option {
         if (metadata == null)
             throw new IllegalArgumentException("null option metadata");
         this.metadata = metadata;
+        if ("BOOLEAN".equals(metadata.getType())) {
+            if(!("TRUE".equalsIgnoreCase(givenValue) || "FALSE".equalsIgnoreCase("FALSE")))
+                throw new IllegalArgumentException("A boolean option has be specified as true or false only");
+        }    
         this.givenValue = givenValue; //may be null, but is expected to be non-null
     }
 

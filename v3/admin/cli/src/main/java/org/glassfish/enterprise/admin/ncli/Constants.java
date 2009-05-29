@@ -1,5 +1,8 @@
 package org.glassfish.enterprise.admin.ncli;
 
+import org.glassfish.cli.metadata.OptionDesc;
+import org.glassfish.api.admin.cli.OptionType;
+
 /**
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
