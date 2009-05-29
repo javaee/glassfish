@@ -244,7 +244,7 @@ public abstract class JMSDestination {
                      //AppserverClusterViewFromCacheRepository rep
                        //  = new AppserverClusterViewFromCacheRepository(domainurl);
 
-                     java.util.Map<String,JmsHost> hostMap =   null;//todo: enable this
+                     java.util.Map<String,JmsHost> hostMap =  new HashMap(); //todo: enable this
                        //  rep.getResolvedLocalJmsHostsInCluster(target);
 
                      if ( hostMap.size() == 0 ) {
