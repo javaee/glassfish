@@ -16,6 +16,10 @@ public class DispatchTarget extends HttpServlet {
                                        "request attributes");
         }
 
+        if (!"MYVALUE".equals(req.getAttribute("MYNAME"))) {
+            throw new ServletException("Missing custom request attribute");
+        }
+
         int asyncRequestAttributeFound = 0;
         while (attrNames.hasMoreElements()){
             String attrName = attrNames.nextElement();

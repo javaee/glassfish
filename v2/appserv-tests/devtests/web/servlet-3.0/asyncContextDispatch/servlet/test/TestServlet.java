@@ -15,6 +15,8 @@ public class TestServlet extends HttpServlet {
         }
 
         final AsyncContext ac = req.startAsync();
+        req.setAttribute("MYNAME", "MYVALUE");
+
         final String target = req.getParameter("target");
 
         Timer asyncTimer = new Timer("TestTimer", true);
