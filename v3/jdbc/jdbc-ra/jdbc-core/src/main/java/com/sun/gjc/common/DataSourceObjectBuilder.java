@@ -49,6 +49,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.sun.enterprise.util.i18n.StringManager;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 /**
  * Utility class, which would create necessary Datasource object according to the
@@ -249,7 +251,15 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
     private Object getDataSourceObject() throws ResourceException {
         String className = spec.getDetail(DataSourceSpec.CLASSNAME);
         try {
-            Class dataSourceClass = Thread.currentThread().getContextClassLoader().loadClass(className);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Class dataSourceClass;
+            try {
+                dataSourceClass = Class.forName(className, true, cl);
+            } catch (ClassNotFoundException cnfe) {
+                // OSGi-ed apps can't see lib dir, so try using CommonClassLoader
+                cl = Globals.get(ClassLoaderHierarchy.class).getCommonClassLoader();
+                dataSourceClass = Class.forName(className, true, cl);
+            }
             Object dataSourceObject = dataSourceClass.newInstance();
             return dataSourceObject;
         } catch (ClassNotFoundException cnfe) {
