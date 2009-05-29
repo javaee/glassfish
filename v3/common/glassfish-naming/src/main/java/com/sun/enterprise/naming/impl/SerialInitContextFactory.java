@@ -45,6 +45,7 @@ import org.jvnet.hk2.component.Habitat;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.NamingManager;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -80,7 +81,6 @@ public class SerialInitContextFactory implements InitialContextFactory {
      * Create the InitialContext object.
      */
     public Context getInitialContext(Hashtable env) throws NamingException {
-
         if( (defaultHost != null) &&
             (env.get(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY) == null)) {
             env.put(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY, defaultHost);
@@ -116,10 +116,22 @@ public class SerialInitContextFactory implements InitialContextFactory {
             }
         }
 
-        if (env != null) {
-            return new SerialContext(env, habitat);
-        } else {
-            return new SerialContext(defaultEnv, habitat);
+        return createInitialContext(env != null ? env : defaultEnv);
+    }
+
+    private Context createInitialContext(Hashtable env) throws NamingException
+    {
+        SerialContext serialContext = new SerialContext(env, habitat);
+        if (NamingManager.hasInitialContextFactoryBuilder()) {
+            // When builder is used, JNDI does not go through
+            // URL Context discovery anymore. To address that
+            // we install a wrapper that first goes through
+            // URL context discovery and then falls back to
+            // serialContext.
+            return new WrappedSerialContext(env, serialContext);
+        }
+        else {
+            return serialContext;
         }
     }
 
