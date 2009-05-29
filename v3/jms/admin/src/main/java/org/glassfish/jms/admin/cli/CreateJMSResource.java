@@ -112,18 +112,25 @@ public class CreateJMSResource implements AdminCommand {
 
          if (resourceType == null) {
             report.setMessage(localStrings.getLocalString("create.jms.resource.noResourceType",
-                            "No Resoruce Type defined for JMS Resource."));
+                            "No Resoruce Type specified for JMS Resource."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
         if (jndiName == null) {
             report.setMessage(localStrings.getLocalString("create.jms.resource.noJndiName",
-                            "No JNDI name defined for JMS Resource."));
+                            "No JNDI name specified for JMS Resource."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
+        if (!(resourceType.equals(TOPIC_CF) || resourceType.equals(QUEUE_CF) || resourceType.equals(UNIFIED_CF) || resourceType.equals(TOPIC)  || resourceType.equals(QUEUE))) {
+             report.setMessage(localStrings.getLocalString("create.jms.resource.InvalidResourceType",
+                            "Invalid Resource Type specified for JMS Resource."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+
+        }
         //Populate the JMS RA map
         populateJmsRAMap();
 
