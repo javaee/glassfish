@@ -72,13 +72,10 @@ import com.sun.logging.LogDomains;
 public class DeleteJMSDestination extends JMSDestination implements AdminCommand {
 
         static Logger logger = LogDomains.getLogger(ActiveJmsResourceAdapter.class,LogDomains.ADMIN_LOGGER);
-        final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSDestination.class);
+        final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJMSDestination.class);
 
-        @Param(name="desttype", optional=false)
+        @Param(name="desttype", shortName="T", optional=false)
         String destType;
-
-        @Param(name="property", optional=true)
-        Properties props;
 
         @Param(name="dest_name", primary=true)
         String destName;
@@ -115,16 +112,19 @@ public class DeleteJMSDestination extends JMSDestination implements AdminCommand
         }
 
         try {
-    			deleteJMSDestination(destName, destType, target);
-    			return;
+    			Object ret = deleteJMSDestination(destName, destType, target);
+                return;
         } catch (Exception e) {
             logger.throwing(getClass().getName(), "deleteJMSDestination", e);
-            e.printStackTrace();//handleException(e);
+            //e.printStackTrace();//handleException(e);
+            report.setMessage(localStrings.getLocalString("delete.jms.dest.noJmsDelete",
+                            "Delete JMS Destination failed. Please verify if the JMS Destination specified for deletion exists"));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
      }
 
        // delete-jmsdest
-	private void deleteJMSDestination(String destName, String destType,
+	private Object deleteJMSDestination(String destName, String destType,
 		String tgtName)
 		throws Exception {
 
@@ -150,8 +150,9 @@ public class DeleteJMSDestination extends JMSDestination implements AdminCommand
 				destType = DESTINATION_TYPE_QUEUE;
 			}
 			params = new Object [] {destType, destName};
-			mbsc.invoke(on, "destroy", params, signature);
-		} catch (Exception e) {
+			return mbsc.invoke(on, "destroy", params, signature);
+
+        } catch (Exception e) {
                    //log JMX Exception trace as WARNING
                    logAndHandleException(e, "admin.mbeans.rmb.error_deleting_jms_dest");
                 } finally {
@@ -163,5 +164,6 @@ public class DeleteJMSDestination extends JMSDestination implements AdminCommand
                       handleException(e);
                     }
                 }
-	}
+           return null;
+    }
 }
