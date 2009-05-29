@@ -2,14 +2,15 @@
 <!-- maps to OptionType Enumeration -->
 <!ENTITY % boolean "(TRUE | FALSE)">
 <!-- maps to java.lang.Boolean -->
+<!ENTITY % cardinality "(ONE | MANY)">
 <!ENTITY % condition "(OR | AND)" >
 
-<!ELEMENT command (option*, operand*)>
-<!ATTLIST command
+<!ELEMENT command-desc (option-desc*, operand-desc*)>
+<!ATTLIST command-desc
           name CDATA #REQUIRED>
 
-<!ELEMENT option (overridden-type?)>
-<!ATTLIST option
+<!ELEMENT option-desc (overriding-type?)>
+<!ATTLIST option-desc
           name CDATA #REQUIRED
           required %boolean; "FALSE"
           type %optiontype; "STRING"
@@ -19,14 +20,14 @@
           legal-values CDATA #IMPLIED
 >
 
-<!ELEMENT operand (overridden-type?)>
-<!ATTLIST operand
-          name CDATA #IMPLIED
+<!ELEMENT operand-desc (overriding-type?)>
+<!ATTLIST operand-desc
+          name CDATA #REQUIRED
           type %optiontype; "STRING"
-          required %boolean; "TRUE">
+          cardinality %cardinality; "ONE">
 
-<!ELEMENT overridden-type (option-names, option-values)>
-<!ATTLIST overridden-type
+<!ELEMENT overriding-type (option-names, option-values)>
+<!ATTLIST overriding-type
           type %optiontype; #REQUIRED
           condition %condition; "OR">
 
