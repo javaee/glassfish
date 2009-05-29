@@ -123,7 +123,7 @@ public class MQAddressList {
     }
 
     private void setupClusterViewFromRepository() throws Exception {
-        ServerContext context = null;//todo: ApplicationServer.getServerContext();
+        ServerContext context = Globals.get(ServerContext.class);//todo: ApplicationServer.getServerContext();
         Server server = context.getConfigBean();
         String domainurl = context.getServerConfigURL();
         //rep = new AppserverClusterViewFromCacheRepository(domainurl);
