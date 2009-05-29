@@ -96,7 +96,8 @@ public class ListJMSResources implements AdminCommand {
             }
 
             for (ConnectorConnectionPool cp : connectionpools) {
-               if(QUEUE_CF.equals(cp.getConnectionDefinitionName()) || TOPIC_CF.equals(cp.getConnectionDefinitionName()))
+               if(QUEUE_CF.equals(cp.getConnectionDefinitionName()) || TOPIC_CF.equals(cp.getConnectionDefinitionName())
+                       || UNIFIED_CF.equals(cp.getConnectionDefinitionName()))
                     list.add(cp.getName());
             }
             if (list.isEmpty()) {
