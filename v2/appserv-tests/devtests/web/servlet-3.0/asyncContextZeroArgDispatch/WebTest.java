@@ -30,7 +30,7 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest();
+            webTest.doTest("/TestServlet");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -40,10 +40,10 @@ public class WebTest {
 	stat.printSummary();
     }
 
-    public void doTest() throws Exception {
+    public void doTest(String target) throws Exception {
      
         URL url = new URL("http://" + host  + ":" + port
-            + contextRoot + "/TestServlet?target=DispatchTargetWithPath");
+            + contextRoot + target);
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
