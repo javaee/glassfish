@@ -71,6 +71,5 @@ public class DispatchTarget extends HttpServlet {
         }
 
         res.getWriter().println("Hello world");
-        res.getWriter().flush();
     }
 }
