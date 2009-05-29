@@ -88,6 +88,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+
 
 /**
  * Represents an active JMS resource adapter. This does
@@ -237,6 +239,9 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     private File mqPassFile = null;
 
     @Inject
+    Habitat habitat;
+
+    /*@Inject
      ServerEnvironmentImpl env;
 
     @Inject
@@ -256,7 +261,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
 
     @Inject
     private JmsService jmsService;
-
+    */
     @Inject
     private ConnectorRuntime connectorRuntime;
 
@@ -338,6 +343,10 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
      */
      protected Set mergeRAConfiguration(ResourceAdapterConfig raConfig, List<Property> raConfigProps) {
    //private void hackMergedProps(Set mergedProps) {
+        if (!(connectorRuntime.getEnvironment()
+                                == ConnectorRuntime.SERVER)) {
+            return super.mergeRAConfiguration(raConfig, raConfigProps);
+        }
         Set mergedProps = super.mergeRAConfiguration(raConfig, raConfigProps);
         String brokerType = null;
 
@@ -667,15 +676,15 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
         //cluster to LOCAL is brought in, change this to use system properties
         //for EE to get port, host, adminusername, adminpassword.
         //JmsService jmsService = ServerBeansFactory.getJmsServiceBean(ctx);
-        String defaultJmsHost = jmsService.getDefaultJmsHost();
+        String defaultJmsHost = getJmsService().getDefaultJmsHost();
         logFine("Default JMS Host :: " + defaultJmsHost);
 
         JmsHost jmsHost = null;
         if (defaultJmsHost == null || defaultJmsHost.equals("")) {
             jmsHost = (JmsHost) Globals.get(JmsHost.class); //ServerBeansFactory.getJmsHostBean(ctx);
         } else {
-                String defaultJmsHostName = jmsService.getDefaultJmsHost();
-                List jmsHostsList = jmsService.getJmsHost();
+                String defaultJmsHostName = getJmsService().getDefaultJmsHost();
+                List jmsHostsList = getJmsService().getJmsHost();
 
                 for (int i=0; i < jmsHostsList.size(); i ++)
                 {
@@ -698,13 +707,13 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
              * uncomment the line below once we have an MQ integration
              * that has DIRECT mode support
              */
-            String brokerType = adjustForDirectMode(jmsService.getType());
+            String brokerType = adjustForDirectMode(getJmsService().getType());
 
             String brokerPort = jmsHost.getPort();
         brkrPort = brokerPort;
             String adminUserName = jmsHost.getAdminUserName();
             String adminPassword = jmsHost.getAdminPassword();
-            List jmsHostProps= jmsService.getProperty();
+            List jmsHostProps= getJmsService().getProperty();
 
         String username = null;
         String password = null;
@@ -726,7 +735,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
             createMQVarDirectoryIfNecessary();
             String brokerVarDir = getMQVarDir();
 
-            String tmpString = jmsService.getStartArgs();
+            String tmpString = getJmsService().getStartArgs();
             if (tmpString == null) {
                 tmpString = "";
             }
@@ -740,10 +749,10 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
             String brokerHomeDir = getBrokerHomeDir();
         String brokerLibDir = getBrokerLibDir();
             if (brokerInstanceName == null) {
-                brokerInstanceName = getBrokerInstanceName(jmsService);
+                brokerInstanceName = getBrokerInstanceName(getJmsService());
             }
 
-            long brokerTimeOut = getBrokerTimeOut(jmsService);
+            long brokerTimeOut = getBrokerTimeOut(getJmsService());
 
             //Need to set the following properties
             //BrokerType, BrokerInstanceName, BrokerPort,
@@ -803,7 +812,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
             setProperty(cd, envProp12);
 
             //set adminpassfile
-            if (!jmsService.getType().equals(REMOTE)) {
+            if (!getJmsService().getType().equals(REMOTE)) {
                 //For LOCAL and EMBEDDED, we pass in the admin pass file path
                 //containing the MQ admin password to enable authenticated
                 //startup of the broker.
@@ -934,7 +943,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
         return instanceName;
     }
     private void createMQVarDirectoryIfNecessary(){
-        String asInstanceRoot = env.getInitFilePath().getPath();
+        String asInstanceRoot = getServerEnvironment().getInitFilePath().getPath();
                 /*ApplicationServer.getServerContext().
                                    getInstanceEnvironment().getInstancesRoot();   */
         String mqInstanceDir =  asInstanceRoot + java.io.File.separator
@@ -948,7 +957,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     }
 
     private String getMQVarDir(){
-        String asInstanceRoot = env.getInitFilePath().getPath();
+        String asInstanceRoot = getServerEnvironment().getInitFilePath().getPath();
                             /*ApplicationServer.getServerContext().
                                   getInstanceEnvironment().getInstancesRoot();   */
         String mqInstanceDir =  asInstanceRoot + java.io.File.separator
@@ -976,7 +985,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
                 java.io.File.separator + "imq" ;
                 //java.io.File.separator + "bin"; hack until MQ RA changes
             //XXX: This doesn't work in clustered instances.
-            brokerHomeDir = env.getDomainRoot()//ApplicationServer.getServerContext().getInstallRoot()
+            brokerHomeDir = getServerEnvironment().getDomainRoot()//ApplicationServer.getServerContext().getInstallRoot()
                                 + IMQ_INSTALL_SUBDIR;
         } else {
             //hack until MQ RA changes
@@ -1364,10 +1373,10 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
 
     private boolean isDAS()
     {
-       List serversList =  servers.getServer();
+       List serversList =  getServers().getServer();
        for (int i =0; i < serversList.size(); i++){
            Server aserver = (Server) serversList.get(i);
-           if (serverContxt.getInstanceName().equals(aserver))
+           if (getServerContext().getInstanceName().equals(aserver))
                 return (aserver.getNodeAgentRef() == null);
        }
         return false;
@@ -1382,8 +1391,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     }
 
     private JmxConnector getJmxConnector() throws Exception{
-       List jmxConnectors = adminService.getJmxConnector();
-       String sysJmsConnectorName = adminService.getSystemJmxConnectorName();
+       List jmxConnectors = getAdminService().getJmxConnector();
+       String sysJmsConnectorName = getAdminService().getSystemJmxConnectorName();
       if (jmxConnectors != null)
       {
           for (int i=0; i < jmxConnectors.size(); i++){
@@ -1678,15 +1687,15 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
              * the properties as defined by the MDB.
              */
             try {
-                    String instanceName = env.getInstanceName();
-                    List serversList = servers.getServer();
+                    String instanceName = getServerEnvironment().getInstanceName();
+                    List serversList = getServers().getServer();
                     Server server = null;
                     for (int j =0; j < serversList.size(); j ++){
                        if (instanceName.equals(((Server)serversList.get(j)).getName())){
                            server = (Server) serversList.get(j);
                        }
                     }
-                    AdminObjectResource[] adminObjectResources = ConnectorsUtil.getEnabledAdminObjectResources(ConnectorConstants.DEFAULT_JMS_ADAPTER, allResources, server);
+                    AdminObjectResource[] adminObjectResources = ConnectorsUtil.getEnabledAdminObjectResources(ConnectorConstants.DEFAULT_JMS_ADAPTER, getAllResources(), server);
                 //cb = ResourcesUtil.createInstance().getEnabledAdminObjectResources(ConnectorConstants.DEFAULT_JMS_ADAPTER);
                 for (int i = 0; i < adminObjectResources.length; i++) {
                     AdminObjectResource aor = adminObjectResources[i];
@@ -1825,8 +1834,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
             //ConfigContext ctx = sc.getConfigContext();
             //Resources rbeans =                           ServerBeansFactory.getDomainBean(ctx).getResources();
             AdminObjectResource res = null;
-            for (int i=0; i < allResources.getResources().size(); i++){
-                 Resource ares = allResources.getResources().get(i);
+            for (int i=0; i < getAllResources().getResources().size(); i++){
+                 Resource ares = getAllResources().getResources().get(i);
                 if (!(ares instanceof AdminObjectResource) ) continue;
 
                  AdminObjectResource adminres = (AdminObjectResource)ares ;
@@ -1920,5 +1929,29 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     }
     logFine("Address list count is " + count);
     return count;
+    }
+
+    private ServerEnvironmentImpl getServerEnvironment(){
+        return habitat.getComponent(ServerEnvironmentImpl.class);
+    }
+
+    private Resources getAllResources(){
+        return habitat.getComponent(Resources.class);
+    }
+
+    private AdminService getAdminService() {
+        return habitat.getComponent(AdminService.class);
+    }
+
+    private Servers getServers(){
+        return habitat.getComponent(Servers.class);
+    }
+
+    private JmsService getJmsService(){
+        return habitat.getComponent(JmsService.class);
+    }
+
+    private ServerContext getServerContext(){
+        return habitat.getComponent(ServerContext.class);
     }
 }
