@@ -75,7 +75,7 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
         static Logger logger = LogDomains.getLogger(CreateJMSDestination.class,LogDomains.ADMIN_LOGGER);
         final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSDestination.class);
 
-        @Param(name="desttype", optional=false)
+        @Param(name="desttype", shortName="T", optional=false)
         String destType;
 
         @Param(name="property", optional=true)
