@@ -12,7 +12,6 @@
     Description: The Windows Service Wrapper configuration file for server %%%ENTITY_NAME%%%.
 -->
 
-
 <service>
   <id>%%%NAME%%%</id>
   <name>%%%ENTITY_NAME%%% GlassFish Server</name>

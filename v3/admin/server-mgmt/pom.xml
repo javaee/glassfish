@@ -62,6 +62,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.template</include>
+                    <include>**/*.exe</include>
                 </includes>
             </resource>
         </resources>

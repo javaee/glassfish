@@ -202,9 +202,21 @@ public interface Service {
     /** Sets the trace flag. The ServiceHandler is expected to provide trace output if the flag is set.
      */
     public void setTrace(final boolean trace);    
-
     /** For safety -- this is similar to the subversion dry-run command.
      * It does everything except create the service.
      */
     public void setDryRun(final boolean dryRun);
+
+    /**
+     * @return the trace flag
+     */
+    public boolean isTrace();
+
+    /**
+     * @return the dry-run flag
+     */
+    public boolean isDryRun();
+
+    public String getSuccessMessage();
+
 }

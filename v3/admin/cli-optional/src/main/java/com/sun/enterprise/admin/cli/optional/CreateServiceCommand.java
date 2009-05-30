@@ -80,7 +80,7 @@ public class CreateServiceCommand extends AbstractCommand {
             service.isConfigValid();
             service.setTrace(CLILogger.isDebug());
             service.createService(service.tokensAndValues());
-            printSuccess(service);
+            CLILogger.getInstance().printMessage(service.getSuccessMessage());
             logger.printDetailMessage(getLocalizedString("CommandSuccessful", new Object[] {name}));
         }
         catch (CommandValidationException e) {
@@ -173,12 +173,6 @@ public class CreateServiceCommand extends AbstractCommand {
         if(!asadminScript.isFile()) {
             throw new CommandValidationException(strings.get("create.service.noAsadminScript", asadminScript));
         }
-    }
-
-    private void printSuccess(final Service service) {
-        final String[] params = new String[] {service.getName(), service.getType().toString(), service.getLocation(), service.getManifestFilePath()};
-        final String msg = getLocalizedString("ServiceCreated", params);
-        CLILogger.getInstance().printMessage(msg);
     }
 
     private static boolean ok(String s) {

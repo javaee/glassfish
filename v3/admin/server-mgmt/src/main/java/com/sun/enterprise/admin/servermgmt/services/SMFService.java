@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.servermgmt.services;
 import com.sun.enterprise.admin.util.LineTokenReplacer;
 import com.sun.enterprise.admin.util.TokenValue;
 import com.sun.enterprise.admin.util.TokenValueSet;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.ProcessExecutor;
@@ -71,12 +72,18 @@ import java.util.Properties;
 public final class SMFService implements Service {
     
     public static final String DATE_CREATED_TN              = "DATE_CREATED";
+    public static final String AS_ADMIN_PATH_TN             = "AS_ADMIN_PATH";
+    public static final String CREDENTIALS_TN               = "CREDENTIALS";
     public static final String SERVICE_NAME_TN              = "NAME";
+
+
+
+
+
     public static final String SERVICE_TYPE_TN              = "TYPE";
     public static final String CFG_LOCATION_TN              = "LOCATION";
     public static final String ENTITY_NAME_TN               = "ENTITY_NAME";
     public static final String FQSN_TN                      = "FQSN";
-    public static final String AS_ADMIN_PATH_TN             = "AS_ADMIN_PATH";
     public static final String AS_ADMIN_USER_TN             = "AS_ADMIN_USER";
     public static final String AS_ADMIN_PASSWORD_TN         = "AS_ADMIN_PASSWORD";
     public static final String AS_ADMIN_MASTERPASSWORD_TN   = "AS_ADMIN_MASTERPASSWORD";
@@ -84,7 +91,6 @@ public final class SMFService implements Service {
     public static final String TIMEOUT_SECONDS_TN           = "TIMEOUT_SECONDS";
     public static final String OS_USER_TN                   = "OS_USER";
     public static final String PRIVILEGES_TN                = "PRIVILEGES";
-    public static final String CREDENTIALS_TN               = "CREDENTIALS";
     
     public static final String TIMEOUT_SECONDS_DV           = "0";
     public static final String AS_ADMIN_USER_DEF_VAL        = "admin";
@@ -464,7 +470,10 @@ public final class SMFService implements Service {
                 printOut(smf.toString());
             validateManifest(smf.getManifestFilePath());
             previousManifestExists = false;
-            tokenReplaceTemplateAtDestination(smf);
+            ServicesUtils.tokenReplaceTemplateAtDestination(
+                    smf.tokensAndValues(),
+                    smf.getManifestFileTemplatePath(),
+                    smf.getManifestFilePath());
             validateService(smf);
             success = importService(smf);
         } catch(final Exception e) {
@@ -500,6 +509,10 @@ public final class SMFService implements Service {
     public void setDryRun(final boolean aDryRun) {
         dryRun = aDryRun;
 }
+
+    public String getSuccessMessage() {
+        return strings.get("SMFServiceCreated", getName(), getType().toString(), getLocation(), getManifestFilePath());
+    }
 
     ////////////////////// PRIVATE METHODS ////////////////////
     private void init() {
@@ -633,25 +646,6 @@ public final class SMFService implements Service {
         if (trace)
             printOut("Manifest validated: " + manifestPath);
     }
-    private void tokenReplaceTemplateAtDestination(final SMFService smf) throws Exception {
-        final LineTokenReplacer tr = new LineTokenReplacer(map2Set(smf.tokensAndValues()));
-        tr.replace(smf.getManifestFileTemplatePath(), smf.getManifestFilePath());
-        if (trace)
-            printOut("Manifest configured: " + smf.getManifestFilePath());
-    }
-    
-    private TokenValueSet map2Set(final Map<String, String> map) throws Exception {
-        final Set<TokenValue> set = new HashSet<TokenValue> ();
-        final Set<String> keys = map.keySet();
-        for (final String key : keys) {
-            final String value      = map.get(key);
-            final TokenValue tv     = new TokenValue(key, value);
-            set.add(tv);
-        }
-        final TokenValueSet tvset = new TokenValueSet(set);
-        return ( tvset );
-    }
-    
     private void validateService(final SMFService smf) throws Exception {
         final String[] cmda = new String[]{SMFService.SVCCFG, "validate", smf.getManifestFilePath()};
         final ProcessExecutor pe = new ProcessExecutor(cmda);
@@ -689,4 +683,14 @@ public final class SMFService implements Service {
     private void printOut(final String s) {
         System.out.println(s);
     }
+
+    public boolean isTrace() {
+        return trace;
+    }
+
+    public boolean isDryRun() {
+        return dryRun;
+    }
+    
+    private final static LocalStringsImpl   strings = new LocalStringsImpl(SMFService.class);
 }
