@@ -202,7 +202,7 @@ public class StandardContext
     /**
      * The broadcaster that sends j2ee notifications.
      */
-    private NotificationBroadcasterSupport broadcaster = null;
+    private transient NotificationBroadcasterSupport broadcaster = null;
 
     /**
      * The Locale to character set mapper for this application.
