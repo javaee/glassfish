@@ -33,9 +33,9 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- appServer/propertyTable.inc -->
+<!-- shared/propertyDescTable.inc -->
 
-             <!-- Table .... -->
+<!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.common.AdditionalProperties}" 
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
@@ -75,16 +75,16 @@
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
                 onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)" 
-		toolTip="$resource{i18n.common.property.select.title}"
             />
         </sun:tableColumn>                    
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{30}" id="col1St" value="#{td.value.name}" 
-		toolTip="$resource{i18n.common.PropertyName}"/>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <sun:textField columns="$int{30}" id="col1St" value="#{td.value.Name}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
-            <sun:textField columns="$int{55}" id="col1St" value="#{td.value.value}" 
-		toolTip="$resource{i18n.common.PropertyValue}"/>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <sun:textField columns="$int{30}" id="col1St" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.Description}" sort="Value" rowHeader="$boolean{false}" id="col4">
+            <sun:textField columns="$int{20}" id="col1St" value="#{td.value.Description}" />
         </sun:tableColumn>
         "<br/>
     </sun:tableRowGroup>
