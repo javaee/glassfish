@@ -48,6 +48,8 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -96,8 +98,8 @@ public class proxyHandlers {
     }
 
     private static String getA(Map<String, Object> attrs,  String key){
-        String res = "" + attrs.get(key);
-        return res;
+        Object val = attrs.get(key);
+        return (val == null) ? "" : val.toString();
     }
 
 
@@ -315,15 +317,38 @@ public class proxyHandlers {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
             ObjectName objectName = new ObjectName(objectNameStr);
             List<Map<String,String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
+            List newList = new ArrayList();
+            Set propertyNames = new HashSet();
             final ConfigTools configTools = V3AMX.getInstance().getDomainRoot().getExt().child(ConfigTools.class);
             if (propertyList.size()==0){
                 configTools.clearProperties(objectName);
             }else{
-                for(Map oneRow : propertyList){
+                for(Map<String, String> oneRow : propertyList){
                     oneRow.remove("selected");
+                    Map newRow = new HashMap();
+                    final String  name = oneRow.get(PROPERTY_NAME);
+                    if (GuiUtil.isEmpty(name)){
+                        continue;
+                    }
+                    if (propertyNames.contains(name)){
+                        GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.propertyTable.duplicateName", new Object[]{name}));
+                        return;
+                    }
+                    
+                    String value = oneRow.get(PROPERTY_VALUE);
+                    if (GuiUtil.isEmpty(value)){
+                        value = "";
+                    }
+                    newRow.put(PROPERTY_NAME,name);
+                    newRow.put(PROPERTY_VALUE,value);
+                    String desc = (String) oneRow.get(PROPERTY_DESC);
+                    if (! GuiUtil.isEmpty(desc)){
+                        newRow.put( PROPERTY_DESC,  desc);
+                    }
+                    newList.add(newRow);
                 }
-                System.out.println("============ call configToos.setProperties() \n objectName="+objectName + "\npropertyList="+propertyList.toString());
-                configTools.setProperties(objectName, propertyList, true);
+                System.out.println("============ call configToos.setProperties() \n objectName="+objectName + "\npropertyList="+newList.toString());
+                configTools.setProperties(objectName, newList, true);
             }
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -333,7 +358,9 @@ public class proxyHandlers {
 
     //mbean Attribute Name
     private static List httpServiceSkipPropsList = new ArrayList();
-    
+    private static final String PROPERTY_NAME = "Name";
+    private static final String PROPERTY_VALUE = "Value";
+    private static final String PROPERTY_DESC = "Description";
     static {
         httpServiceSkipPropsList.add("accessLogBufferSize");
         httpServiceSkipPropsList.add("accessLogWriteInterval");
