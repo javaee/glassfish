@@ -331,7 +331,7 @@ public class proxyHandlers {
                         continue;
                     }
                     if (propertyNames.contains(name)){
-                        GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.propertyTable.duplicateName", new Object[]{name}));
+                        GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
                         return;
                     }
                     
