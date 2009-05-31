@@ -39,7 +39,7 @@
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 //<sun:page id="page1">
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.webContainer.sessionProp}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.webContainer.sessionProp}" >
 <!define name="content">
     <event>
  <!beforeCreate
@@ -56,7 +56,7 @@
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
-                 <sun:title id="propertyContentPage" title="$resource{i18n.webContainer.sessionProp}" >
+                 <sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.sessionProp}" >
                      <!-- Buttons  -->
                      <!facet pageButtonsTop>
                      <sun:panelGroup id="topButtons">
@@ -82,7 +82,7 @@
                      <sun:propertySheet id="propertySheet">
                          <!-- Text Field section -->
                          <sun:propertySheetSection id="propertySectionTextField">
-                            <sun:property id="SessionTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webSession.sessionTimeoutLabel}" >
+                            <sun:property id="SessionTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webSession.sessionTimeoutLabel}" >
                                 <sun:textField id="SessionTimeout" styleClass="integer" columns="$int{20}" text="#{requestScope.sessionTimeout}" />
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>

@@ -55,8 +55,9 @@
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.httpMap}");
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"EnableCometSupport"});
-
         setSessionAttribute(key="protocolTabs" value="httpTab");
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
     />
     </event>
 #include "/shared/restart.inc"

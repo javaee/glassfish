@@ -55,7 +55,8 @@
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled"});
         setSessionAttribute(key="protocolTabs" value="protocolGeneral");
-
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         />
     </event>
 #include "/shared/restart.inc"

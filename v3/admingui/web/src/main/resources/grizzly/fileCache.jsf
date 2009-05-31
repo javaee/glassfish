@@ -56,6 +56,8 @@
         setPageSessionAttribute(key="valueMap" value="#{pageSession.fileMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         setSessionAttribute(key="protocolTabs" value="fileCacheTab");
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         />
     </event>
 #include "/shared/restart.inc"

@@ -35,11 +35,11 @@
 -->
 <!-- configuration/webContainerManager.jsf -->
 <!initPage
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
  
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.webContainer.managerProp}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.webContainer.managerProp}" >
 <!define name="content">
 <event>
         <!beforeCreate
@@ -60,7 +60,7 @@
     #include "/shared/treeBreadcrumbs.inc"
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
-<sun:title id="propertyContentPage" title="$resource{i18n.webContainer.managerProp}">
+<sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.managerProp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" 
@@ -97,17 +97,17 @@
             getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         />
     <sun:propertySheetSection>
-        <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.reapIntervalLabel}" helpText="$resource{i18n.webManager.reapIntervalHelp}" >
+        <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ni18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
             <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{ReapInterval}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
-        <sun:property id="MaxSessionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.maxSessionsLabel}" >
+        <sun:property id="MaxSessionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.maxSessionsLabel}" >
             <sun:textField id="MaxSessions" styleClass="integer" columns="$int{20}" text="#{MaxSessions}" />
         </sun:property>
-        <sun:property id="SessFileNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.sessFileNameLabel}" helpText="$resource{i18n.webManager.sessFileNameHelp}" >
+        <sun:property id="SessFileNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.sessFileNameLabel}" helpText="$resource{i18n_web.webManager.sessFileNameHelp}" >
             <sun:textField id="SessFileName" columns="$int{50}" text="#{SessFileName}" />
         </sun:property>
-        <sun:property id="SessionIdGenProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.sessionIdGenLabel}" helpText="$resource{i18n.webManager.sessionIdGenHelp}" >
+        <sun:property id="SessionIdGenProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.sessionIdGenLabel}" helpText="$resource{i18n_web.webManager.sessionIdGenHelp}" >
             <sun:textField id="SessionIdGen" columns="$int{50}" text="#{SessionIdGen}" />
         </sun:property>
     

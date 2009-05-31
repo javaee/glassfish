@@ -45,19 +45,19 @@
         redirect(page="#{request.contextPath}/web/configuration/webContainerGeneral.jsf?configName=#{configName}");
         />       
     </sun:tab>
-    <sun:tab id="sessionTab" immediate="$boolean{true}" text="$resource{i18n.webContainer.sessionProp}" >
+    <sun:tab id="sessionTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.sessionProp}" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="sessionTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerSession.jsf?configName=#{configName}");
         />
     </sun:tab>
-    <sun:tab id="managerTab" immediate="$boolean{true}" text="$resource{i18n.webContainer.managerProp}" >
+    <sun:tab id="managerTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.managerProp}" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="managerTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerManager.jsf?configName=#{configName}");
         />
     </sun:tab>
-    <sun:tab id="storeTab" immediate="$boolean{true}" text="$resource{i18n.webContainer.storeProp}" >
+    <sun:tab id="storeTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.storeProp}" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="storeTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerStore.jsf?configName=#{configName}");

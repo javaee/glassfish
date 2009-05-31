@@ -38,7 +38,7 @@
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.webContainer.storeProp}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.webContainer.storeProp}" >
 <!define name="content">
     <event>
  <!beforeCreate
@@ -56,7 +56,7 @@
 #include "webContainerTabs.inc"            
 #include "/shared/alertMsg.inc"   
                 <!-- Page Title -->
-                 <sun:title id="propertyContentPage" title="$resource{i18n.webContainer.storeProp}" > 
+                 <sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.storeProp}" >
                      <!-- Buttons  -->                    
                      <!facet pageButtonsTop>
                      <sun:panelGroup id="topButtons">
@@ -83,11 +83,11 @@
                      <sun:propertySheet id="propertySheet">			 
                          <!-- Text Field section -->   
                          <sun:propertySheetSection id="propertySectionTextField">
-                            <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.reapIntervalLabel}" helpText="$resource{i18n.webManager.reapIntervalHelp}" >
+                            <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
                                 <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{requestScope.reapInterval}" />      
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>
-                            <sun:property id="DirectoryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webStore.directoryLabel}" helpText="$resource{i18n.webStore.directoryHelp}" >
+                            <sun:property id="DirectoryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webStore.directoryLabel}" helpText="$resource{i18n_web.webStore.directoryHelp}" >
                                 <sun:textField id="Directory" columns="$int{50}" text="#{requestScope.directory}" />      
                             </sun:property>
                          </sun:propertySheetSection>

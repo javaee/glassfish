@@ -35,7 +35,7 @@
 -->
 <!-- grizzly/buttons.inc -->
 
-    <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
+    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDefaultButton}"  primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
         <!command
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         />
@@ -63,7 +63,7 @@
                     redirect(page="#{parentPage}?configName=#{configName}")
                 />
             </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton} text="$resource{i18n.button.Cancel}" >
                 <!command
                     redirect(page="#{parentPage}?configName=#{configName}");
                 />
