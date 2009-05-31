@@ -63,7 +63,7 @@
                     redirect(page="#{parentPage}?configName=#{configName}")
                 />
             </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton} text="$resource{i18n.button.Cancel}" >
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
                     redirect(page="#{parentPage}?configName=#{configName}");
                 />
