@@ -48,6 +48,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.util.Date;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.util.Vector;
 
 public class CreateServiceCommand extends AbstractCommand {
     @Override
@@ -105,36 +106,91 @@ public class CreateServiceCommand extends AbstractCommand {
         return true;
     }
 
-    // TODO TODO TODO
-    // Allow the default domain!!!!
-    // TODO TODO TODO
     private void validateServerDir() throws CommandValidationException{
-        String op = (String)getOperands().get(0);
+        Vector v = getOperands();
+        if(v.size() >= 1)
+            serverName = (String)v.get(0);
 
-        if(!ok(op)) {
-            throw new CommandValidationException(strings.get("create.service.NoServerDirOperand"));
-        }
+        String serverDirParentPath = getOption(DOMAIN_PARENT_DIR);
 
-        File f = SmartFile.sanitize(new File(op));
+        if(!ok(serverDirParentPath))
+            serverDirParent = getDefaultServerDirParent();
+        else
+            serverDirParent = SmartFile.sanitize(new File(serverDirParentPath));
 
-        if(!f.isDirectory()) {
-            throw new CommandValidationException(strings.get("create.service.BadServerDir", f));
-        }
-
-        File serverDirParent = new File(f, "..");
-
+        // either the default or the given is set.  Make sure it is valid...
         if(!serverDirParent.isDirectory()) {
             throw new CommandValidationException(strings.get("create.service.BadServerDirParent", serverDirParent));
         }
-        String serverName = f.getName();
 
         if(!ok(serverName)) {
-            // impossible
-            throw new CommandValidationException(strings.get("create.service.BadServerDir", f));
+            serverName = getTheOneAndOnlyDomain();
         }
 
-        serverDir = f;
+        serverDir = SmartFile.sanitize(new File(serverDirParent, serverName));
+
+        if(!serverDir.isDirectory())
+            throw new CommandValidationException(strings.get("create.service.BadServerDir", serverDir));
     }
+
+    private File getDefaultServerDirParent() {
+        String ir = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        if(!ok(ir))
+            throw new RuntimeException("Internal Error: System Property not set: "
+                    +  SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        return SmartFile.sanitize(new File(new File(ir), "domains"));
+    }
+
+    private String getTheOneAndOnlyDomain() {
+        // look for subdirs in the parent dir -- there must be one and only one
+
+        File[] files = serverDirParent.listFiles(new FileFilter() {
+            public boolean accept(File f) {
+                return f != null && f.isDirectory();
+            }
+        });
+
+        if (files == null || files.length == 0) {
+            throw new RuntimeException(strings.get("create.service.noServerDirs", serverDirParent));
+        }
+
+        if (files.length > 1) {
+            throw new RuntimeException(strings.get("create.service.tooManyDomainDirs", serverDirParent));
+        }
+
+        return files[0].getName();
+    }
+/*
+    private void setupDomainRootDir() throws GFLauncherException {
+        // if they set domainrootdir -- it takes precedence
+        if (domainRootDir != null) {
+            domainParentDir = domainRootDir.getParentFile();
+            domainName = domainRootDir.getName();
+            return;
+        }
+
+        // if they set domainParentDir -- use it.  o/w use the default dir
+        if (domainParentDir == null) {
+            domainParentDir = new File(installDir, DEFAULT_DOMAIN_PARENT_DIR);
+        }
+
+        // if they specified domain name -- use it.  o/w use the one and only dir
+        // in the domain parent dir
+
+        if (domainName == null) {
+            domainName = getTheOneAndOnlyDomain();
+        }
+
+        domainRootDir = new File(domainParentDir, domainName);
+    }
+
+
+
+
+
+ */
 
     private void validateName() {
        serviceName = getOption(NAME);
@@ -155,7 +211,7 @@ public class CreateServiceCommand extends AbstractCommand {
         // they specified a password file...
         // TODO look inside the file and make sure it is kosher...
         passwordFile = SmartFile.sanitize(new File(passwordFileName));
-        
+
         if(!passwordFile.isFile()) {
             final String msg = strings.get("create.service.NoSuchFile", passwordFileName);
             throw new CommandValidationException(msg);
@@ -179,6 +235,7 @@ public class CreateServiceCommand extends AbstractCommand {
         return s != null && s.length() > 0;
     }
 
+    private final static String DOMAIN_PARENT_DIR = "domaindir";
     private final static String TYPE = "type";
     private final static String NAME = "name";
     private final static String SERVICE_PROPERTIES = "serviceproperties";
@@ -191,4 +248,6 @@ public class CreateServiceCommand extends AbstractCommand {
     private String  serviceName;
     private File    passwordFile;
     private File    asadminScript;
+    private File    serverDirParent;
+    private String  serverName;
 }
