@@ -52,6 +52,7 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
+import org.glassfish.admin.amx.intf.config.ConfigTools;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
 
@@ -299,6 +300,31 @@ public class proxyHandlers {
             Map<String, AMXProxy> childrenMap = amx.childrenMap(type);
             result.addAll(childrenMap.keySet());
             handlerCtx.setOutputValue("result",result);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
+    @Handler(id="setProxyProperties",
+    input={
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
+        @HandlerInput(name="propertyList", type=List.class, required=true)})
+        public static void setProxyProperties(HandlerContext handlerCtx) {
+        try{
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            ObjectName objectName = new ObjectName(objectNameStr);
+            List<Map<String,String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
+            final ConfigTools configTools = V3AMX.getInstance().getDomainRoot().getExt().child(ConfigTools.class);
+            if (propertyList.size()==0){
+                configTools.clearProperties(objectName);
+            }else{
+                for(Map oneRow : propertyList){
+                    oneRow.remove("selected");
+                }
+                System.out.println("============ call configToos.setProperties() \n objectName="+objectName + "\npropertyList="+propertyList.toString());
+                configTools.setProperties(objectName, propertyList, true);
+            }
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
