@@ -397,5 +397,14 @@
          <version>${project.version}</version>
      </dependency>
 
+     <!-- for EclipseLink support -->
+     <dependency>
+         <type>pom</type>
+         <scope>runtime</scope>
+         <groupId>org.glassfish.persistence</groupId>
+         <artifactId>eclipselink-wrapper</artifactId>
+         <version>${project.version}</version>
+     </dependency>
+
    </dependencies>
 </project>
