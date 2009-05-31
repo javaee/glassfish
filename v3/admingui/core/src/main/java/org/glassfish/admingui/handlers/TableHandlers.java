@@ -436,7 +436,7 @@ public class TableHandlers {
                 if (name != null && (! name.trim().equals(""))) {
                     if (addProps.containsKey(name)){
                         //duplicate property name, give error
-                        GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey"));
+                        GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey" , new Object[]{name}));
                         return;
                     }
                     addProps.put(name, (String)props.get("value"));
