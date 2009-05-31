@@ -35,33 +35,32 @@
 -->
 <!-- configuration/webContainerGeneral.jsf -->
 <!initPage 
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 
-
-<!composition template="/templates/default.layout"  guiTitle="$resource{web.headings.webGeneral}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.headings.webGeneral}" >
 <!define name="content">
 <event>
-        <!beforeCreate
-            setSessionAttribute(key="webContainerTabs" value="general");
-            getRequestValue(key="configName" value=>$page{configName} default="server-config");
-            getWebContainerGeneralProps(
-                ConfigName="#{configName}", 
-                Properties=>$page{props}
-            ); 
-            getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-            
-        />
+    <!beforeCreate
+        setSessionAttribute(key="webContainerTabs" value="general");
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=web-container");
+        setPageSessionAttribute(key="childType" value="property");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/webContainerGeneral.jsf");
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+    />
     </event>
 
 #include "/shared/restart.inc"    
     
             <sun:form id="form1">
-    #include "/shared/treeBreadcrumbs.inc"
+    //#include "/shared/treeBreadcrumbs.inc"
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
-<sun:title id="propertyContentPage" title="$resource{web.headings.webGeneral}">
+<sun:title id="propertyContentPage" title="$resource{i18n_web.headings.webGeneral}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" 
@@ -70,18 +69,19 @@
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                 getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                 convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                prepareSuccessfulMsg();
                 saveWebContainerGeneralProps(
                     ConfigName="#{configName}",
                     newProps="${newProps}"
                 );
-                redirect(page="#{request.contextPath}/web/configuration/webContainerGeneral.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=$pageSession{configName}");
+                //setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}");
+                prepareSuccessfulMsg();
+                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />    
             </sun:button>
         </sun:panelGroup>
     </facet>
 
-#include "/shared/propertyTable.inc"
+#include "/shared/propertyDescTable.inc"
     	<sun:hidden id="helpKey" value="$resource{help_web.webContainerGeneral}" />
             </sun:title>
             </sun:form>
