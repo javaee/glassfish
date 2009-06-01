@@ -15,6 +15,7 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
 import org.glassfish.admin.amx.util.MapUtil;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.jvnet.hk2.config.ConfigBean;
@@ -37,6 +38,11 @@ public class ConfigToolsImpl extends AMXImplBase {
     {
         for( final Property prop : props )
         {
+            if ( prop == null )
+            {
+                debug( "WARNING: null Property object in List<Property>" );
+                continue;
+            }
             if ( prop.getName().equals(name) )
             {
                 return prop;
@@ -114,11 +120,10 @@ public class ConfigToolsImpl extends AMXImplBase {
                     props.remove(prop);
                 }
                 prop = parent.createChild(Property.class);
-                props.add(prop);
-
                 prop.setName(name);
                 prop.setValue(value);
                 prop.setDescription(description);
+                props.add(prop);
                 debug( "Created/updated property: " + name );
             }
                             
@@ -157,11 +162,10 @@ public class ConfigToolsImpl extends AMXImplBase {
                     props.remove(prop);
                 }
                 prop = parent.createChild(SystemProperty.class);
-                props.add(prop);
-
                 prop.setName(name);
                 prop.setValue(value);
                 prop.setDescription(description);
+                props.add(prop);
                 debug( "Created/updated system property: " + name );
             }
                             
@@ -179,9 +183,11 @@ public class ConfigToolsImpl extends AMXImplBase {
         props.add( MapUtil.newMap("Name", "test2", "Value", "value2", "Description", "desc2") );
         props.add( MapUtil.newMap("Name", "test3", "Value", "value3", "Description", "desc3") );
         
-        setProperties( getDomainRootProxy().getDomain().objectName(), props, false );
+        //final ObjectName target = getDomainRootProxy().getDomain().objectName();
+        final ObjectName target = JMXUtil.newObjectName( "v3:pp=/domain/configs/config[server-config],type=web-container" );
         
-        setSystemProperties( getDomainRootProxy().getDomain().objectName(), props, false );
+        setProperties( target, props, false );
+        setSystemProperties( target, props, false );
     }
     
     // dummy interface for creating a proxy
@@ -259,7 +265,7 @@ public class ConfigToolsImpl extends AMXImplBase {
         {
             ConfigSupport.apply( propsSetter, proxy );
         }
-        catch( Exception e )
+        catch( final Exception e )
         {
             e.printStackTrace();
             throw new RuntimeException(e);
