@@ -3,151 +3,177 @@ package org.glassfish.enterprise.admin.ncli;
 import org.glassfish.api.admin.cli.OptionType;
 import org.glassfish.cli.metadata.OptionDesc;
 
-/** Builds the asadmin program options. It is an option for the asadmin program itself. The good
- *  thing is the metadata for program options is no different from that for option of a command.
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+
+/** Builds the asadmin program options. A program option is an option for the asadmin program itself. The good
+ *  thing is the metadata for program options is no different from that for options of a command.
  *  So, this class builds the OptionDesc for all the options that asadmin supports.
+ *
+ *  This is modeled as a Singleton class.  Instances of this class are immutable.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @see org.glassfish.cli.metadata.OptionDesc
  */
-final class ProgramOptionBuilder {
+public final class ProgramOptionBuilder {
 
+    private final static ProgramOptionBuilder INSTANCE = new ProgramOptionBuilder();
+    private final Set<OptionDesc> som; //set of metadata
 
-    private static OptionDesc HOST_DESC;
-    private static OptionDesc PORT_DESC;
-    private static OptionDesc USER_DESC;
-    private static OptionDesc PASSWORDFILE_DESC;
-    private static OptionDesc SECURE_DESC;
-    private static OptionDesc INTERACTIVE_DESC;
-    private static OptionDesc ECHO_DESC;
-    private static OptionDesc TERSE_DESC;
+    private final OptionDesc hostDesc;
+    private final OptionDesc portDesc;
+    private final OptionDesc userDesc;
+    private final OptionDesc pwfileDesc;
+    private final OptionDesc secureDesc;
+    private final OptionDesc interDesc;
+    private final OptionDesc echoDesc;
+    private final OptionDesc terseDesc;
 
-    private ProgramOptionBuilder() {} //disallow
+    private ProgramOptionBuilder() {
+        Set<OptionDesc> t = new HashSet<OptionDesc>();
+        t.add(hostDesc = buildHostDesc());
+        t.add(portDesc = buildPortDesc());
+        t.add(userDesc = buildUserDesc());
+        t.add(pwfileDesc = buildPasswordfileDesc());
+        t.add(secureDesc = buildSecureDesc());
+        t.add(interDesc = buildInteractiveDesc());
+        t.add(echoDesc = buildEchoDesc());
+        t.add(terseDesc = buildTerseDesc());
+        som = Collections.unmodifiableSet(t);
+    }
 
-    static synchronized OptionDesc buildHostDesc() {
-        if (HOST_DESC != null)
-            return HOST_DESC;
-        HOST_DESC = new OptionDesc();
-        HOST_DESC.setName("host");
-        HOST_DESC.setSymbol("h");
-        HOST_DESC.setDefaultValue("localhost");
-        HOST_DESC.setRepeats("FALSE");
-        HOST_DESC.setRequired("FALSE");
-        HOST_DESC.setType(OptionType.STRING.name());
+    public static ProgramOptionBuilder getInstance() {
+        return INSTANCE;
+    }
 
-        return HOST_DESC;
+    public Set<OptionDesc> getAllOptionMetadata() {
+        return som; //this is unmodifiable
     }
-    static Option buildHost(String host) {
-        return new Option(buildHostDesc(), host);
+    public OptionDesc getHostDesc() {
+        return hostDesc;
     }
-    static synchronized OptionDesc buildPortDesc() {
-        if (PORT_DESC != null)
-            return PORT_DESC;
-        PORT_DESC = new OptionDesc();
-        PORT_DESC.setName("port");
-        PORT_DESC.setSymbol("p");
-        PORT_DESC.setDefaultValue("4848");
-        PORT_DESC.setRepeats("FALSE");
-        PORT_DESC.setRequired("FALSE");
-        PORT_DESC.setType(OptionType.STRING.name());
+    public OptionDesc getPortDesc() {
+        return portDesc;
+    }
 
-        return PORT_DESC;
+    public OptionDesc getUserDesc() {
+        return userDesc;
     }
-    static Option buildPort(String port) {
-        return new Option(buildPortDesc(), port);
-    }
-    static synchronized OptionDesc buildUserDesc() {
-        if (USER_DESC != null)
-            return USER_DESC;
-        USER_DESC = new OptionDesc();
-        USER_DESC.setName("user");
-        USER_DESC.setSymbol("u");
-        USER_DESC.setDefaultValue("anonymous");
-        USER_DESC.setRepeats("FALSE");
-        USER_DESC.setRequired("FALSE");
-        USER_DESC.setType(OptionType.STRING.name());
 
-        return USER_DESC;
+    public OptionDesc getPwfileDesc() {
+        return pwfileDesc;
     }
-    static Option buildUser(String user) {
-        return new Option(buildHostDesc(), user);
-    }
-    static synchronized OptionDesc buildPasswordfileDesc() {
-        if (PASSWORDFILE_DESC != null)
-            return PASSWORDFILE_DESC;
-        PASSWORDFILE_DESC = new OptionDesc();
-        PASSWORDFILE_DESC.setName("passwordfile");
-        PASSWORDFILE_DESC.setSymbol("W");
-        PASSWORDFILE_DESC.setRepeats("FALSE");
-        PASSWORDFILE_DESC.setRequired("FALSE");
-        PASSWORDFILE_DESC.setType(OptionType.FILE_PATH.name());
 
-        return PASSWORDFILE_DESC;
+    public OptionDesc getSecureDesc() {
+        return secureDesc;
     }
-    static Option buildPasswordFile(String path) {
-        return new Option(buildPasswordfileDesc(), path);
-    }
-    static synchronized OptionDesc buildSecureDesc() {
-        if (SECURE_DESC != null)
-            return SECURE_DESC;
-        SECURE_DESC = new OptionDesc();
-        SECURE_DESC.setName("secure");
-        SECURE_DESC.setSymbol("s");
-        SECURE_DESC.setDefaultValue("FALSE");
-        SECURE_DESC.setRepeats("FALSE");
-        SECURE_DESC.setRequired("FALSE");
-        SECURE_DESC.setType(OptionType.BOOLEAN.name());
 
-        return SECURE_DESC;
+    public OptionDesc getInterDesc() {
+        return interDesc;
     }
-    static Option buildSecure(String secure) {
-        return new Option(buildSecureDesc(), secure);
-    }
-    static synchronized OptionDesc buildInteractiveDesc() {
-        if (INTERACTIVE_DESC != null)
-            return INTERACTIVE_DESC;
-        INTERACTIVE_DESC = new OptionDesc();
-        INTERACTIVE_DESC.setName("interactive");
-        INTERACTIVE_DESC.setSymbol("i");
-        INTERACTIVE_DESC.setDefaultValue("FALSE");
-        INTERACTIVE_DESC.setRepeats("FALSE");
-        INTERACTIVE_DESC.setRequired("FALSE");
-        INTERACTIVE_DESC.setType(OptionType.BOOLEAN.name());
 
-        return INTERACTIVE_DESC;
+    public OptionDesc getEchoDesc() {
+        return echoDesc;
     }
-    static Option buildInteractive(String interactive) {
-        return new Option(buildHostDesc(), interactive);
-    }
-    static synchronized OptionDesc buildEchoDesc() {
-        if (ECHO_DESC != null)
-            return ECHO_DESC;
-        ECHO_DESC = new OptionDesc();
-        ECHO_DESC.setName("echo");
-        ECHO_DESC.setSymbol("e");
-        ECHO_DESC.setDefaultValue("FALSE");
-        ECHO_DESC.setRepeats("FALSE");
-        ECHO_DESC.setRequired("FALSE");
-        ECHO_DESC.setType(OptionType.BOOLEAN.name());
 
-        return ECHO_DESC;
+    public OptionDesc getTerseDesc() {
+        return terseDesc;
     }
-    static Option buildEcho(String echo) {
-        return new Option(buildEchoDesc(), echo);
-    }
-    static synchronized OptionDesc buildTerseDesc() {
-        if (TERSE_DESC != null)
-            return TERSE_DESC;
-        TERSE_DESC = new OptionDesc();
-        TERSE_DESC.setName("terse");
-        TERSE_DESC.setSymbol("t");
-        TERSE_DESC.setDefaultValue("FALSE");
-        TERSE_DESC.setRepeats("FALSE");
-        TERSE_DESC.setRequired("FALSE");
-        TERSE_DESC.setType(OptionType.BOOLEAN.name());
+    
+    // ALL PRIVATE ....
 
-        return TERSE_DESC;
+    private static OptionDesc buildHostDesc() {
+        OptionDesc h = new OptionDesc();
+        h.setName("host");
+        h.setSymbol("h");
+        h.setDefaultValue("localhost");
+        h.setRepeats("FALSE");
+        h.setRequired("FALSE");
+        h.setType(OptionType.STRING.name());
+
+        return h;
     }
-    static Option buildTerse(String terse) {
-        return new Option(buildTerseDesc(), terse);
+
+    private static OptionDesc buildPortDesc() {
+        OptionDesc p = new OptionDesc();
+        p.setName("port");
+        p.setSymbol("p");
+        p.setDefaultValue("4848");
+        p.setRepeats("FALSE");
+        p.setRequired("FALSE");
+        p.setType(OptionType.STRING.name());
+
+        return p;
+    }
+
+    private static OptionDesc buildUserDesc() {
+        OptionDesc u = new OptionDesc();
+        u.setName("user");
+        u.setSymbol("u");
+        u.setDefaultValue("anonymous");
+        u.setRepeats("FALSE");
+        u.setRequired("FALSE");
+        u.setType(OptionType.STRING.name());
+
+        return u;
+    }
+
+    private OptionDesc buildPasswordfileDesc() {
+        OptionDesc pf = new OptionDesc();
+        pf.setName("passwordfile");
+        pf.setSymbol("W");
+        pf.setRepeats("FALSE");
+        pf.setRequired("FALSE");
+        pf.setType(OptionType.FILE_PATH.name());
+
+        return pf;
+    }
+
+    private OptionDesc buildSecureDesc() {
+        OptionDesc s = new OptionDesc();
+        s.setName("secure");
+        s.setSymbol("s");
+        s.setDefaultValue("FALSE");
+        s.setRepeats("FALSE");
+        s.setRequired("FALSE");
+        s.setType(OptionType.BOOLEAN.name());
+
+        return s;
+    }
+
+    private OptionDesc buildInteractiveDesc() {
+        OptionDesc i = new OptionDesc();
+        i.setName("interactive");
+        i.setSymbol("i");
+        i.setDefaultValue("FALSE");
+        i.setRepeats("FALSE");
+        i.setRequired("FALSE");
+        i.setType(OptionType.BOOLEAN.name());
+
+        return i;
+    }
+
+    private OptionDesc buildEchoDesc() {
+        OptionDesc e = new OptionDesc();
+        e.setName("echo");
+        e.setSymbol("e");
+        e.setDefaultValue("FALSE");
+        e.setRepeats("FALSE");
+        e.setRequired("FALSE");
+        e.setType(OptionType.BOOLEAN.name());
+
+        return e;
+    }
+
+    private OptionDesc buildTerseDesc() {
+        OptionDesc t = new OptionDesc();
+        t.setName("terse");
+        t.setSymbol("t");
+        t.setDefaultValue("FALSE");
+        t.setRepeats("FALSE");
+        t.setRequired("FALSE");
+        t.setType(OptionType.BOOLEAN.name());
+
+        return t;
     }
 }

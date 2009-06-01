@@ -1,6 +1,7 @@
 package org.glassfish.enterprise.admin.ncli;
 
 import org.glassfish.cli.metadata.CommandDesc;
+import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,12 +14,12 @@ import java.util.List;
  * @see Option
  * @see Operand
  */
-final class Command {
+final class NewCommand {
     private final String name;
     private final List<Option> options;
     private final List<Operand> operands;
 
-    Command(CommandDesc metadata, List<Option> options, List<Operand> operands) {
+    NewCommand(CommandDesc metadata, List<Option> options, List<Operand> operands) {
         if (metadata == null || options == null || operands == null)
             throw new IllegalArgumentException("null metadata, options or operands");
         this.name = metadata.getName();
@@ -26,6 +27,11 @@ final class Command {
         this.operands = Collections.unmodifiableList(operands);
     }
 
+    CommandExecutionResult execute(TargetServer ts) {
+        //TODO
+        //this is where it creates the request,  communicates with the server and handles the response
+        return null;   
+    }
     String getName() {
         return name;
     }

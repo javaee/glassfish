@@ -7,12 +7,14 @@ import java.util.regex.Matcher;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 final class ParseUtilities {
+
+    private static final String CMD_NAME_REGEX                = "^[a-zA-Z]([-_\\w]*)?$";
     private static final String SHORT_BOOLEAN_OPTION_REGEX    = "^-[a-zA-Z](=([t][r][u][e]|[f][a][l][s][e]))?$";
     private static final String LONG_BOOLEAN_OPTION_REGEX     = "^--[\\w && \\D][-_\\w]+(=([t][r][u][e]|[f][a][l][s][e]))?$";
     private static final String NEG_LONG_BOOLEAN_OPTION_REGEX = "^--no-[\\w &&\\D][-_\\w]+$";
 
-    private static final String SHORT_NON_BOOLEAN_OPTION_REGEX = "^-[a-zA-Z](=([^\\s])+)?$";
-    private static final String LONG_NON_BOOLEAN_OPTION_REGEX  = "^--[\\w && \\D][-_\\w]+(=([^\\s])+)?$";
+    private static final String SHORT_NON_BOOLEAN_OPTION_REGEX = "^-[a-zA-Z](=(.)+)?$";
+    private static final String LONG_NON_BOOLEAN_OPTION_REGEX  = "^--[\\w && \\D][-_\\w]+(=(.)+)?$";
 
     private static final String REMAINDER_ARE_OPERANDS_INDICATOR_REGEX = "^--$";
     
@@ -22,6 +24,10 @@ final class ParseUtilities {
 
     private ParseUtilities() {}
 
+    static boolean indicatesCommandName(String s) {
+        return matches(s, CMD_NAME_REGEX);
+    }
+    
     static boolean indicatesOption(String s) {
         return indicatesShortBooleanOption(s)        ||
                indicatesLongBooleanOption(s)         ||
@@ -51,10 +57,10 @@ final class ParseUtilities {
     static boolean indicatesEndOfOptions(String s) {
         return matches(s, REMAINDER_ARE_OPERANDS_INDICATOR_REGEX);
     }
+
     private static boolean matches(String s, String regex) {
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(s);
         return m.matches();
     }
-
 }

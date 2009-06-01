@@ -20,7 +20,7 @@ final class Operand {
 
     /** Constructs an Operand from given metadata and array of strings each of which represents an operand.
      *  Calling classes should ensure the given values are according to the metadata. For instance, there is
-     *  no point in creating an operand with null <code> values</code> if the metadata says it is a required
+     *  no point in creating an operand with null <code>values</code> if the metadata says it is a required
      *  operand.
      *  <p>
      *  Note that all the operand (values) of a command are of the same <i> type</i> decided by
