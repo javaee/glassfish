@@ -40,37 +40,10 @@ final class Parser {
     }
 
     private void initializeLegacyCommands() {
-        file2Set(Constants.SUPPORTED_CMD_FILE_NAME, slc);
-        file2Set(Constants.UNSUPPORTED_CMD_FILE_NAME, uslc);
+        ParseUtilities.file2Set(Constants.SUPPORTED_CMD_FILE_NAME, slc);
+        ParseUtilities.file2Set(Constants.UNSUPPORTED_CMD_FILE_NAME, uslc);
     }
 
     // Private static methods
-    private static void file2Set(String file, Set<String> set) {
-        BufferedReader reader = null;
-        try {
-            InputStream is = ClassLoader.getSystemResourceAsStream(file);
-            reader = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while((line = reader.readLine()) != null) {
-                if (line.startsWith("#"))
-                    continue; //# indicates comment
-                StringTokenizer tok = new StringTokenizer(line, " "); //space delimited
-                String cmd = tok.nextToken();   //handles with or without space, rudimendary as of now
-                set.add(cmd);
-            }
-
-        } catch(IOException e) {
-          e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch(IOException ee) {
-                    //ignore
-                }
-
-            }
-        }
-    }
 }
 
