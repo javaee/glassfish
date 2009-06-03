@@ -96,20 +96,13 @@ public class StandardContextMBean extends BaseModelMBean {
      *  occurs
      */
     public StandardContextMBean()
-        throws MBeanException, RuntimeOperationsException {
-
+            throws MBeanException, RuntimeOperationsException {
         super();
-
+        registry = MBeanUtils.createRegistry();
     }
     
 
     // ----------------------------------------------------- Instance Variables
-    
-    
-    /**
-     * The configuration information registry for our managed beans.
-     */
-    protected Registry registry = MBeanUtils.createRegistry();
 
     /**
      * The <code>ManagedBean</code> information describing this MBean.

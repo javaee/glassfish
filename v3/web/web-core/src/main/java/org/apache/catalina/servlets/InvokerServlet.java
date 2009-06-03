@@ -133,14 +133,12 @@ public final class InvokerServlet
      *
      * @param wrapper The new wrapper
      */
-    public void setWrapper(Wrapper wrapper) {
-
+    public synchronized void setWrapper(Wrapper wrapper) {
         this.wrapper = wrapper;
         if (wrapper == null)
             context = null;
         else
             context = (Context) wrapper.getParent();
-
     }
 
 
@@ -214,7 +212,7 @@ public final class InvokerServlet
     /**
      * Initialize this servlet.
      */
-    public void init() throws ServletException {
+    public synchronized void init() throws ServletException {
 
         // Ensure that our ContainerServlet properties have been set
         if ((wrapper == null) || (context == null))
