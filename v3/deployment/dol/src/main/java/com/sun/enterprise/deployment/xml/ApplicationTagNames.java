@@ -43,6 +43,8 @@ package com.sun.enterprise.deployment.xml;
 
 public interface ApplicationTagNames extends TagNames {
      public static String APPLICATION = "application";
+     public static String APPLICATION_NAME = "application-name";
+     public static String INITIALIZE_IN_ORDER = "initialize-in-order";
      public static String MODULE = "module";
      public static String EJB = "ejb";
      public static String WEB = "web";

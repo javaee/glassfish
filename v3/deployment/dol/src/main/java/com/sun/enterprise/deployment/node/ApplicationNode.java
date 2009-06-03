@@ -125,6 +125,12 @@ public class ApplicationNode extends BundleNode<Application> {
         if (element.getQName().equals(
             ApplicationTagNames.LIBRARY_DIRECTORY)) {          
             application.setLibraryDirectory(value);
+        } else if(element.getQName().equals(
+            ApplicationTagNames.APPLICATION_NAME)) {
+            application.setAppName(value);
+        } else if (element.getQName().equals(
+            ApplicationTagNames.INITIALIZE_IN_ORDER)) {
+            application.setInitializeInOrder(Boolean.valueOf(value));
         } else super.setElementValue(element, value);
     }   
 
@@ -186,7 +192,16 @@ public class ApplicationNode extends BundleNode<Application> {
      */    
     public Node writeDescriptor(Node parent, Application application) {
         Node appNode = super.writeDescriptor(parent, application);
+
+        // application-name
+        appendTextChild(appNode, ApplicationTagNames.APPLICATION_NAME, application.getAppName());
         
+        // description, display-name, icons...
+        writeDisplayableComponentInfo(appNode, application);
+
+        // initialize-in-order
+        appendTextChild(appNode, ApplicationTagNames.INITIALIZE_IN_ORDER, String.valueOf(application.isInitializeInOrder()));
+
         // module
         ModuleNode moduleNode = new ModuleNode();
         for (ModuleDescriptor md :  application.getModules()) {

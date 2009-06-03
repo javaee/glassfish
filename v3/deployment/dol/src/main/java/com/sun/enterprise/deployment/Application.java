@@ -336,7 +336,7 @@ public class Application extends RootDeploymentDescriptor
      * Sets the initializeInOrder flag
      * @param initializeInOrder
      */
-    public void setInitializeInOder(boolean initializeInOrder) {
+    public void setInitializeInOrder(boolean initializeInOrder) {
         this.initializeInOrder = initializeInOrder;   
     } 
 
