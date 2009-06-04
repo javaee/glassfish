@@ -99,6 +99,7 @@ public class StandardContextMBean extends BaseModelMBean {
             throws MBeanException, RuntimeOperationsException {
         super();
         registry = MBeanUtils.createRegistry();
+        managed = registry.findManagedBean("StandardContext");
     }
     
 
@@ -107,8 +108,7 @@ public class StandardContextMBean extends BaseModelMBean {
     /**
      * The <code>ManagedBean</code> information describing this MBean.
      */
-    protected ManagedBean managed =
-        registry.findManagedBean("StandardContext");
+    protected ManagedBean managed;
 
     
     // ------------------------------------------------------------- Attributes
