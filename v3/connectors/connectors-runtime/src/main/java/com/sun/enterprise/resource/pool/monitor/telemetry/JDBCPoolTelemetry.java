@@ -122,52 +122,52 @@ public class JDBCPoolTelemetry implements PostConstruct {
 
             //Potential Connection Leak
             Method m1 = this.getClass().getMethod("getNumPotentialConnLeakCount");
-            TreeNode connLeakNode = TreeNodeFactory.createMethodInvoker("numPotentialConnLeak", this, "jdbc-connection-pool", m1);
+            TreeNode connLeakNode = TreeNodeFactory.createMethodInvoker("numpotentialconnleak-count", this, "jdbc-connection-pool", m1);
             poolNode.addChild(connLeakNode);
             
             //Connection Validation Failed
             Method m2 = this.getClass().getMethod("getNumConnFailedValidation");
-            TreeNode connFailValNode = TreeNodeFactory.createMethodInvoker("numConnFailedValidation", this, "jdbc-connection-pool", m2);
+            TreeNode connFailValNode = TreeNodeFactory.createMethodInvoker("numconnfailedvalidation-count", this, "jdbc-connection-pool", m2);
             poolNode.addChild(connFailValNode);
             
             //Num Connection Timed Out
             Method m3 = this.getClass().getMethod("getNumConnTimedOut");
-            TreeNode numConnTimedOutNode = TreeNodeFactory.createMethodInvoker("numConnTimedOut", this, "jdbc-connection-pool", m3);
+            TreeNode numConnTimedOutNode = TreeNodeFactory.createMethodInvoker("numconntimedout-count", this, "jdbc-connection-pool", m3);
             poolNode.addChild(numConnTimedOutNode);
             
             //Num Conn Free
             Method m4 = this.getClass().getMethod("getNumConnFree");
-            TreeNode numConnFreeNode = TreeNodeFactory.createMethodInvoker("numConnFree", this, "jdbc-connection-pool", m4);
+            TreeNode numConnFreeNode = TreeNodeFactory.createMethodInvoker("numconnfree-count", this, "jdbc-connection-pool", m4);
             poolNode.addChild(numConnFreeNode);
             
             //Num Conn Used
             Method m5 = this.getClass().getMethod("getNumConnUsed");
-            TreeNode numConnUsedNode = TreeNodeFactory.createMethodInvoker("numConnUsed", this, "jdbc-connection-pool", m5);
+            TreeNode numConnUsedNode = TreeNodeFactory.createMethodInvoker("numconnused-count", this, "jdbc-connection-pool", m5);
             poolNode.addChild(numConnUsedNode);
             
             //Connection Request Wait Time
             Method m6 = this.getClass().getMethod("getConnRequestWaitTime");
-            TreeNode connReqWaitTimeNode = TreeNodeFactory.createMethodInvoker("connRequestWaitTime", this, "jdbc-connection-pool", m6);
+            TreeNode connReqWaitTimeNode = TreeNodeFactory.createMethodInvoker("connectionrequestwaittime-count", this, "jdbc-connection-pool", m6);
             poolNode.addChild(connReqWaitTimeNode);
             
             //Num Conn Destroyed
             Method m7 = this.getClass().getMethod("getNumConnDestroyed");
-            TreeNode numConnDestroyedNode = TreeNodeFactory.createMethodInvoker("numConnDestroyed", this, "jdbc-connection-pool", m7);
+            TreeNode numConnDestroyedNode = TreeNodeFactory.createMethodInvoker("numconndestroyed-count", this, "jdbc-connection-pool", m7);
             poolNode.addChild(numConnDestroyedNode);            
            
             //Num Conn Acquired
             Method m8 = this.getClass().getMethod("getNumConnAcquired");
-            TreeNode numConnAcquiredNode = TreeNodeFactory.createMethodInvoker("numConnAcquired", this, "jdbc-connection-pool", m8);
+            TreeNode numConnAcquiredNode = TreeNodeFactory.createMethodInvoker("numconnacquired-count", this, "jdbc-connection-pool", m8);
             poolNode.addChild(numConnAcquiredNode);            
 
             //Num Conn Created
             Method m9 = this.getClass().getMethod("getNumConnCreated");
-            TreeNode numConnCreatedNode = TreeNodeFactory.createMethodInvoker("numConnCreated", this, "jdbc-connection-pool", m9);
+            TreeNode numConnCreatedNode = TreeNodeFactory.createMethodInvoker("numconncreated-count", this, "jdbc-connection-pool", m9);
             poolNode.addChild(numConnCreatedNode);            
 
             //Num Conn Released
             Method m10 = this.getClass().getMethod("getNumConnReleased");
-            TreeNode numConnReleasedNode = TreeNodeFactory.createMethodInvoker("numConnReleased", this, "jdbc-connection-pool", m10);
+            TreeNode numConnReleasedNode = TreeNodeFactory.createMethodInvoker("numconnreleased-count", this, "jdbc-connection-pool", m10);
             poolNode.addChild(numConnReleasedNode);            
             
             parent.addChild(poolNode);
