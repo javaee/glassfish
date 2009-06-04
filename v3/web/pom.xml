@@ -64,6 +64,7 @@
         <module>javax.servlet</module>
         <module>webbeans-integration</module>
         <module>osgi-http</module>
+        <module>osgi-web-container</module>
     </modules>
 
 </project>
