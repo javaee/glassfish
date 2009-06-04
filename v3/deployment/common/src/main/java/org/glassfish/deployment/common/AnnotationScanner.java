@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
@@ -75,6 +76,9 @@ public class AnnotationScanner implements ClassVisitor {
                     try {
                         ClassReader cr = new ClassReader(is);
                         cr.accept(this, crFlags);
+                    } catch(Exception e) {
+                        logger.log(Level.WARNING, "Exception while scanning " +
+                                entryName, e);
                     } finally {
                         is.close();
                     }
@@ -94,6 +98,10 @@ public class AnnotationScanner implements ClassVisitor {
                                     try {
                                         ClassReader cr = new ClassReader(is);
                                         cr.accept(this, crFlags);
+                                    } catch(Exception e) {
+                                        logger.log(Level.WARNING,
+                                                "Exception while scanning " +
+                                                        entryName, e);
                                     } finally {
                                         is.close();
                                     }
@@ -109,8 +117,7 @@ public class AnnotationScanner implements ClassVisitor {
                 }
             }
         } catch (Exception e) {
-            logger.warning("Failed to scan archive for annotations" + 
-                e.getMessage());
+            logger.log(Level.WARNING, "Failed to scan archive for annotations", e);
         }
     }
 }
