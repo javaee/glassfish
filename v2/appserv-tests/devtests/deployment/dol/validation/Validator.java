@@ -4,9 +4,21 @@ import java.io.*;
 import com.sun.enterprise.deployment.archivist.*;
 import com.sun.enterprise.deployment.Descriptor;
 
+import com.sun.enterprise.module.ModulesRegistry;
+import org.jvnet.hk2.component.Habitat;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+
+
 
 public class Validator {
-    
+
     public static void main(String args[]) {
         String fileName = args[0];
         String ext = getExtension(fileName);
@@ -14,11 +26,25 @@ public class Validator {
         String outputFileName = fileName + "1" + ext;
         String outputFileName2 = fileName + "2" + ext;
 
+        // Bootstrap a hk2 environment.
+        ModulesRegistry registry = new StaticModulesRegistry(Thread.currentThread().getContextClassLoader());
+        Habitat habitat = registry.createHabitat("default");
+
+        StartupContext startupContext = new StartupContext();
+        habitat.add(new ExistingSingletonInhabitant(startupContext));
+
+        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+
+        ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
+        ApplicationFactory applicationFactory = habitat.getComponent(ApplicationFactory.class);
+        ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
         
         // first read/parse and write out the original valid archive
         try {
+            ReadableArchive archive = archiveFactory.openArchive(
+                new File(fileName));
             Archivist archivist = 
-                ArchivistFactory.getArchivistForArchive(fileName);
+                archivistFactory.getArchivist(archive, null);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(fileName);
 	    archivist.setXMLValidation(true);
@@ -26,8 +52,8 @@ public class Validator {
             log("Reading/parsing the orginal archive: " + 
                 fileName);
             Descriptor descriptor = 
-                ApplicationArchivist.openArchive(archivist, 
-                    new File(fileName), true);     
+                applicationFactory.openArchive(archivist, 
+                    archive, true);     
             log("Writing out the archive to: " + 
                 outputFileName);
             archivist.write(outputFileName);
@@ -42,8 +68,10 @@ public class Validator {
         // then write to another archive
         try {
 
+            ReadableArchive archive = archiveFactory.openArchive(
+                new File(outputFileName));
             Archivist archivist = 
-                ArchivistFactory.getArchivistForArchive(outputFileName);
+                archivistFactory.getArchivist(archive, null);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(outputFileName);
             archivist.setXMLValidation(true);
@@ -51,8 +79,8 @@ public class Validator {
             log("Reading/parsing the output archive" + 
                 outputFileName);
             Descriptor descriptor = 
-                ApplicationArchivist.openArchive(archivist, 
-                    new File(outputFileName), true);
+                applicationFactory.openArchive(archivist, 
+                    archive, true);
             log("Writing out the archive to: " +
                 outputFileName2);
             archivist.write(outputFileName2);
@@ -66,8 +94,10 @@ public class Validator {
         // Read/parse the resulted archive, it should be valid too
         try {
 
+            ReadableArchive archive = archiveFactory.openArchive(
+                new File(outputFileName2));
             Archivist archivist =
-                ArchivistFactory.getArchivistForArchive(outputFileName2);
+                archivistFactory.getArchivist(archive, null);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(outputFileName2);
             archivist.setXMLValidation(true);
@@ -75,8 +105,8 @@ public class Validator {
             log("Reading/parsing the output archive" +
                 outputFileName2);
             Descriptor descriptor =
-                ApplicationArchivist.openArchive(archivist,
-                    new File(outputFileName2), true);
+                applicationFactory.openArchive(archivist,
+                    archive, true);
         } catch (Exception e) {
             e.printStackTrace();
             log("The output archive: [" + outputFileName2 +

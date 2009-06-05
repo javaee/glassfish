@@ -92,12 +92,7 @@
             <jvmarg value="-Dcom.sun.aas.installRoot=${inst}"/>
 
             <classpath>
-                <path location="${inst}/lib/appserv-rt.jar"/>
-                <path location="${inst}/lib/appserv-cmp.jar"/>
-                <path location="${inst}/lib/webservices-rt.jar"/>
-                <path location="${inst}/lib/webservices-tools.jar"/>
-                <path location="${inst}/lib/j2ee.jar"/>
-                <path location="${inst}/lib/dom.jar"/>
+                <path refid="gfv3.classpath"/>
                 <path location="${build}"/>
             </classpath>
 
