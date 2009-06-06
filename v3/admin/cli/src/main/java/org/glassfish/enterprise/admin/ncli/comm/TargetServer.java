@@ -33,11 +33,11 @@ public final class TargetServer {
     }
 
     public TargetServer(String host, int port) {
-        this(host, port, ANON_USER, null);
+        this(host, port, DEFAULT_USER, null);
     }
 
     public TargetServer() {
-        this(ADMIN_HOST, ADMIN_PORT, ANON_USER, null);
+        this(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_USER, null);
     }
 
     @Override

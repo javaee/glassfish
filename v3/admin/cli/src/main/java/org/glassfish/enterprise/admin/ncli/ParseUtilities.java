@@ -1,13 +1,12 @@
 package org.glassfish.enterprise.admin.ncli;
 
+import org.glassfish.cli.metadata.OptionDesc;
+import org.glassfish.api.admin.cli.OptionType;
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
+import java.util.*;
+import java.io.*;
 
 /** Provides utility routines to parse the command line. The regular expressions defined in this class as
  *  literal strings are the basis of command line parsing.
@@ -15,18 +14,19 @@ import java.io.IOException;
  */
 final class ParseUtilities {
 
-    private static final String NEG_LONG_PREFIX               = "--no-";
-    private static final String CMD_NAME_REGEX                = "^[a-zA-Z]([-_\\w]*)?$";
-    private static final String SHORT_BOOLEAN_OPTION_REGEX    = "^-[a-zA-Z](=([t][r][u][e]|[f][a][l][s][e]))?$";
-    private static final String LONG_BOOLEAN_OPTION_REGEX     = "^--[\\w && \\D][_\\w]+(=([t][r][u][e]|[f][a][l][s][e]))?$";
-    private static final String NEG_LONG_BOOLEAN_OPTION_REGEX = "^" + NEG_LONG_PREFIX +"[\\w &&\\D][_\\w]+$";
+    private static final String NEG_LONG_PREFIX                  = "--no-";
+    private static final String CMD_NAME_REGEX                   = "^[a-zA-Z]([-_\\w]*)?$";
+    private static final String SHORT_BOOLEAN_OPTION_REGEX       = "^-[a-zA-Z](=([t][r][u][e]|[f][a][l][s][e]))?$";
+    private static final String SHORT_BOOLEAN_OPTION_LIST_REGEX  = "^-[a-zA-Z][a-zA-Z]+$";
+    private static final String LONG_BOOLEAN_OPTION_REGEX        = "^--[\\w && \\D][_\\w]+(=([t][r][u][e]|[f][a][l][s][e]))?$";
+    private static final String NEG_LONG_BOOLEAN_OPTION_REGEX    = "^" + NEG_LONG_PREFIX +"[\\w &&\\D][_\\w]+$";
 
-    private static final String SHORT_NON_BOOLEAN_OPTION_REGEX = "^-[a-zA-Z](=(.)+)?$";
-    private static final String LONG_NON_BOOLEAN_OPTION_REGEX  = "^--[\\w && \\D][_\\w]+(=(.)+)?$";
+    private static final String SHORT_NON_BOOLEAN_OPTION_REGEX   = "^-[a-zA-Z](=(.)+)?$";
+    private static final String LONG_NON_BOOLEAN_OPTION_REGEX    = "^--[\\w && \\D][_\\w]+(=(.)+)?$";
 
     private static final String REMAINDER_ARE_OPERANDS_INDICATOR_REGEX = "^--$";
     
-    private static final String OPTION_NAME_VALUE_SEPARATOR    = "=";
+    public static final String OPTION_NAME_VALUE_SEPARATOR    = "=";
 
 
 
@@ -37,11 +37,18 @@ final class ParseUtilities {
     }
     
     static boolean indicatesOption(String s) {
-        return indicatesShortBooleanOption(s)        ||
-               indicatesLongBooleanOption(s)         ||
-               indicatesNegativeLongBooleanOption(s) ||
-               indicatesShortNonBooleanOption(s)     ||
-               indicatesLongNonBooleanOption(s);
+        return indicatesShortOption(s) || indicatesLongOption(s);
+    }
+
+    static boolean indicatesBooleanOptionList(String s) {
+        return matches(s, SHORT_BOOLEAN_OPTION_LIST_REGEX);
+    }
+    
+    static boolean indicatesShortOption(String s) {
+        return indicatesShortBooleanOption(s) || indicatesShortNonBooleanOption(s);
+    }
+    static boolean indicatesLongOption(String s) {
+        return indicatesLongBooleanOption(s) || indicatesNegativeLongBooleanOption(s) || indicatesLongNonBooleanOption(s);
     }
 
     static boolean indicatesShortBooleanOption(String s) {
@@ -110,6 +117,117 @@ final class ParseUtilities {
         }
         return null;
     }
+
+    static void booleanOptionListToOptionMap(String s, Map<Character, String> trueOptions) {
+        if (indicatesBooleanOptionList(s)) {
+            String optionMnemonicsCombined = s.substring(1);
+            for (char ch : optionMnemonicsCombined.toCharArray())
+                trueOptions.put(ch, "true");
+        }
+        //this method could have thrown an exception for a string that does NOT represent list of boolean options
+    }
+
+    static OptionDesc getOptionDescForName(String s, Set<OptionDesc> som) {
+        for (OptionDesc od : som) {
+            if (od.getName().equals(s))
+                return od;
+        }
+        return null;
+    }
+
+    static OptionDesc getOptionDescForSymbol(char c, Set<OptionDesc> som) {
+        String sc = Character.toString(c);
+        for (OptionDesc od : som) {
+            if (od.getSymbol().equals(sc))
+                return od;
+        }
+        return null;
+    }
+
+    static OptionDesc getOptionDescForBooleanOptionForName(String s, Set<OptionDesc> som) {
+     for (OptionDesc od : som) {
+         if (od.getName().equals(s)) {
+            if (od.getType().equals(OptionType.BOOLEAN.name()))
+                return od;
+         }
+     }
+        return null;
+    }
+
+    static OptionDesc getOptionDescForBooleanOptionForSymbol(char c, Set<OptionDesc> som) {
+        String sc = Character.toString(c);
+        for (OptionDesc od : som) {
+            if (od.getSymbol().equals(sc)) {
+                if (od.getType().equals(OptionType.BOOLEAN.name()))
+                    return od;
+            }
+        }
+        return null;
+    }
+    static OptionDesc getMetadataFor(String s, Set<OptionDesc> som) {
+        for(OptionDesc od : som) {
+            if (od.getName().equals(s))
+                return od;
+        }
+        return null;
+    }
+
+    static Set<OptionDesc> getAllOptionMetadataExcluding(Set<OptionDesc> som, Set<String> names) {
+        if (names == null || names.isEmpty())
+            return som;
+        Set<OptionDesc> remaining = new HashSet<OptionDesc>(som); //make a copy first
+        Set<OptionDesc> exclude = new HashSet<OptionDesc>();
+        for (String name : names) {
+            for (OptionDesc od : som) {
+                if (od.getName().equals(name)) {
+                    exclude.add(od);
+                    break;
+                }
+            }
+        }
+        remaining.removeAll(exclude); //no need to have this set unmodifiable as it represents no state here in this class
+        return remaining;
+    }
+
+    static boolean nonNullValueValidFor(OptionDesc po, String value) {
+        if (value == null)
+                return true;
+        //VERY basic validation only if given value is non-null
+        if (po == null)
+            throw new IllegalArgumentException ("null arg");
+        value = value.trim();
+
+        if (OptionType.FILE.name().equals(po.getType())) {
+            File f = new File(value);
+            return f.isFile() || f.canRead();
+        }
+        if (OptionType.BOOLEAN.name().equals(po.getType())) {
+            return ("true".equals(value.toLowerCase()) || "false".equals(value.toLowerCase()));
+        }
+        //non-null value for any remaining option is valid
+        return true;
+    }
+
+    static char getSymbol(String name, Map<Character, String>symbolToName) {
+        for (char symbol : symbolToName.keySet()) {
+            String aName = symbolToName.get(symbol);
+            if (aName.equals(name))
+                return symbol;
+        }
+        return '\u0000'; // this character implies no such symbol
+    }
+
+    static String getName(char symbol, Map<Character, String>symbolToName) {
+        return symbolToName.get(symbol); //null implies no mapping
+    }
+
+    static Map<Character, String> getSymbolToNameMap(Set<OptionDesc> som) {
+        Map<Character, String> s2n = new HashMap<Character, String>();
+        for (OptionDesc od : som)
+            s2n.put(od.getSymbol().charAt(0), od.getName());
+        return s2n;
+    }
+    
     static void file2Set(String file, Set<String> set) {
         BufferedReader reader = null;
         try {
@@ -136,6 +254,12 @@ final class ParseUtilities {
 
             }
         }
+    }
+    static Option getOptionNamed(Set<Option> ops, String name) {
+        for (Option op : ops)
+            if (op.getName().equals(name))
+                return op;
+        return null;
     }
 
     // ALL Private ...

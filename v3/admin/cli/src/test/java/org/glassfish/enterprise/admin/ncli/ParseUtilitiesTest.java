@@ -1,18 +1,19 @@
 package org.glassfish.enterprise.admin.ncli;
 
 import static org.glassfish.enterprise.admin.ncli.ParseUtilities.*;
-import junit.framework.TestCase;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
-public class ParseUtilitiesTest extends TestCase {
+public class ParseUtilitiesTest {
 
-    public void testIndicatesCommandName1() {
+    @Test
+    public void indicatesCommandName1() {
         String cmd = "create-jdbc-resource";
         assertEquals(indicatesCommandName(cmd), true);
 
@@ -21,20 +22,23 @@ public class ParseUtilitiesTest extends TestCase {
 
         cmd = "0another-invalid";
         assertEquals(indicatesCommandName(cmd), false);
+
+        cmd = "invalid with space";
+        assertEquals(indicatesCommandName(cmd), false);
     }
 
-    public void testIndicatesCommandName2() {
+    @Test
+    public void indicatesCommandName2() {
         //this is a combined test as it tests multiple things.
         Set<String> slc = new HashSet<String>();
         file2Set(Constants.SUPPORTED_CMD_FILE_NAME, slc);
-        Iterator<String> it = slc.iterator();
-        while(it.hasNext()) {
-            String cmd = it.next();
-            assertEquals(indicatesCommandName(cmd), true);
+        for (String c : slc) {
+            assertEquals(indicatesCommandName(c), true);
         }
     }
-    
-    public void testIndicatesOption() {
+
+    @Test
+    public void indicatesOption1() {
         String s = "--host"; //valid long option
         assertEquals(indicatesOption(s), true);
         s = "-f";  //valid short option
@@ -65,22 +69,27 @@ public class ParseUtilitiesTest extends TestCase {
         assertEquals(indicatesOption(s), false);
         s = "-to"; //a symbol is should be one character long
         assertEquals(indicatesOption(s), false);
+        s = "--space banned in option name";
+        assertEquals(indicatesOption(s), false);
     }
 
-    public void testGetOptionNameFromLongOption() {
+    @Test
+    public void getOptionNameFromLongOption1() {
         String s = "--host=localhost";
         assertEquals(getOptionNameFromLongOption(s), "host");
         s = "--host";
         assertEquals(getOptionNameFromLongOption(s), "host");
     }
-    public void testGetOptionSymbolFromShortOption() {
+    @Test
+    public void getOptionSymbolFromShortOption1() {
         String s = "-h=129.23.44.224";
         assertEquals(getOptionSymbolFromShortOption(s), 'h');
         s = "-h";
         assertEquals(getOptionSymbolFromShortOption(s), 'h');        
     }
 
-    public void testHasOptionNameAndValue() {
+    @Test
+    public void hasOptionNameAndValue1() {
         String s = "-h=localhost";
         assertEquals(hasOptionNameAndValue(s), true);
         s = "--desc=application display name";
@@ -93,7 +102,8 @@ public class ParseUtilitiesTest extends TestCase {
         assertEquals(hasOptionNameAndValue(s), true);
     }
 
-    public void testGetOptionValue() {
+    @Test
+    public void getOptionValue1() {
         String s = "-h=localhost";
         assertEquals(getOptionValue(s), "localhost");
         s = "--desc=application display name";

@@ -3,9 +3,7 @@ package org.glassfish.enterprise.admin.ncli;
 import org.glassfish.api.admin.cli.OptionType;
 import org.glassfish.cli.metadata.OptionDesc;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import java.util.*;
 
 /** Builds the asadmin program options. A program option is an option for the asadmin program itself. The good
  *  thing is the metadata for program options is no different from that for options of a command.
@@ -17,26 +15,49 @@ import java.util.Collections;
  */
 public final class ProgramOptionBuilder {
 
-    private final static ProgramOptionBuilder INSTANCE = new ProgramOptionBuilder();
     private final Set<OptionDesc> som; //set of metadata
 
     private final OptionDesc hostDesc;
     private final OptionDesc portDesc;
     private final OptionDesc userDesc;
+    private final OptionDesc passwordDesc;
     private final OptionDesc pwfileDesc;
     private final OptionDesc secureDesc;
-    private final OptionDesc interDesc;
+    private final OptionDesc interactiveDesc;
     private final OptionDesc echoDesc;
     private final OptionDesc terseDesc;
+    
+    public static final String HOST = "host";
+    public static final String PORT = "port";
+    public static final String USER = "user";
+    public static final String PASSWORD = "password";
+    public static final String PASSWORDFILE = "passwordfile";
+    public static final String SECURE = "secure";
+    public static final String INTERACTIVE = "interactive";
+    public static final String ECHO = "echo";
+    public static final String TERSE = "terse";
+
+    public static final char HOST_SYMBOL = 'H';
+    public static final char PORT_SYMBOL = 'p';
+    public static final char USER_SYMBOL = 'u';
+    public static final char PASSWORD_SYMBOL = 'w';
+    public static final char PASSWORDFILE_SYMBOL = 'W';
+    public static final char SECURE_SYMBOL = 's';
+    public static final char INTERACTIVE_SYMBOL = 'I';
+    public static final char ECHO_SYMBOL = 'e';
+    public static final char TERSE_SYMBOL = 't';
+
+    private final static ProgramOptionBuilder INSTANCE = new ProgramOptionBuilder();
 
     private ProgramOptionBuilder() {
         Set<OptionDesc> t = new HashSet<OptionDesc>();
         t.add(hostDesc = buildHostDesc());
         t.add(portDesc = buildPortDesc());
         t.add(userDesc = buildUserDesc());
+        t.add(passwordDesc = buildPasswordDesc());
         t.add(pwfileDesc = buildPasswordfileDesc());
         t.add(secureDesc = buildSecureDesc());
-        t.add(interDesc = buildInteractiveDesc());
+        t.add(interactiveDesc = buildInteractiveDesc());
         t.add(echoDesc = buildEchoDesc());
         t.add(terseDesc = buildTerseDesc());
         som = Collections.unmodifiableSet(t);
@@ -49,6 +70,7 @@ public final class ProgramOptionBuilder {
     public Set<OptionDesc> getAllOptionMetadata() {
         return som; //this is unmodifiable
     }
+
     public OptionDesc getHostDesc() {
         return hostDesc;
     }
@@ -60,6 +82,10 @@ public final class ProgramOptionBuilder {
         return userDesc;
     }
 
+    public OptionDesc getPasswordDesc() {
+        return passwordDesc;
+    }
+
     public OptionDesc getPwfileDesc() {
         return pwfileDesc;
     }
@@ -68,8 +94,8 @@ public final class ProgramOptionBuilder {
         return secureDesc;
     }
 
-    public OptionDesc getInterDesc() {
-        return interDesc;
+    public OptionDesc getInteractiveDesc() {
+        return interactiveDesc;
     }
 
     public OptionDesc getEchoDesc() {
@@ -79,14 +105,15 @@ public final class ProgramOptionBuilder {
     public OptionDesc getTerseDesc() {
         return terseDesc;
     }
-    
+
+
     // ALL PRIVATE ....
 
     private static OptionDesc buildHostDesc() {
         OptionDesc h = new OptionDesc();
-        h.setName("host");
-        h.setSymbol("h");
-        h.setDefaultValue("localhost");
+        h.setName(HOST);
+        h.setSymbol(Character.toString(HOST_SYMBOL));
+        h.setDefaultValue(Constants.DEFAULT_HOST);
         h.setRepeats("FALSE");
         h.setRequired("FALSE");
         h.setType(OptionType.STRING.name());
@@ -96,9 +123,9 @@ public final class ProgramOptionBuilder {
 
     private static OptionDesc buildPortDesc() {
         OptionDesc p = new OptionDesc();
-        p.setName("port");
-        p.setSymbol("p");
-        p.setDefaultValue("4848");
+        p.setName(PORT);
+        p.setSymbol(Character.toString(PORT_SYMBOL));
+        p.setDefaultValue(Constants.DEFAULT_PORT + "");
         p.setRepeats("FALSE");
         p.setRequired("FALSE");
         p.setType(OptionType.STRING.name());
@@ -108,9 +135,9 @@ public final class ProgramOptionBuilder {
 
     private static OptionDesc buildUserDesc() {
         OptionDesc u = new OptionDesc();
-        u.setName("user");
-        u.setSymbol("u");
-        u.setDefaultValue("anonymous");
+        u.setName(USER);
+        u.setSymbol(Character.toString(USER_SYMBOL));
+        u.setDefaultValue(Constants.DEFAULT_USER);
         u.setRepeats("FALSE");
         u.setRequired("FALSE");
         u.setType(OptionType.STRING.name());
@@ -118,10 +145,21 @@ public final class ProgramOptionBuilder {
         return u;
     }
 
+    private static OptionDesc buildPasswordDesc() {
+        OptionDesc pwd = new OptionDesc();
+        pwd.setName(PASSWORD);
+        pwd.setSymbol(Character.toString(PASSWORD_SYMBOL));
+        pwd.setRepeats("FALSE");
+        pwd.setRequired("FALSE");
+        pwd.setType(OptionType.PASSWORD.name());
+
+        return pwd;
+    }
+
     private OptionDesc buildPasswordfileDesc() {
         OptionDesc pf = new OptionDesc();
-        pf.setName("passwordfile");
-        pf.setSymbol("W");
+        pf.setName(PASSWORDFILE);
+        pf.setSymbol(Character.toString(PASSWORDFILE_SYMBOL));
         pf.setRepeats("FALSE");
         pf.setRequired("FALSE");
         pf.setType(OptionType.FILE_PATH.name());
@@ -131,8 +169,8 @@ public final class ProgramOptionBuilder {
 
     private OptionDesc buildSecureDesc() {
         OptionDesc s = new OptionDesc();
-        s.setName("secure");
-        s.setSymbol("s");
+        s.setName(SECURE);
+        s.setSymbol(Character.toString(SECURE_SYMBOL));
         s.setDefaultValue("FALSE");
         s.setRepeats("FALSE");
         s.setRequired("FALSE");
@@ -143,8 +181,8 @@ public final class ProgramOptionBuilder {
 
     private OptionDesc buildInteractiveDesc() {
         OptionDesc i = new OptionDesc();
-        i.setName("interactive");
-        i.setSymbol("i");
+        i.setName(INTERACTIVE);
+        i.setSymbol(Character.toString(INTERACTIVE_SYMBOL));
         i.setDefaultValue("FALSE");
         i.setRepeats("FALSE");
         i.setRequired("FALSE");
@@ -155,8 +193,8 @@ public final class ProgramOptionBuilder {
 
     private OptionDesc buildEchoDesc() {
         OptionDesc e = new OptionDesc();
-        e.setName("echo");
-        e.setSymbol("e");
+        e.setName(ECHO);
+        e.setSymbol(Character.toString(ECHO_SYMBOL));
         e.setDefaultValue("FALSE");
         e.setRepeats("FALSE");
         e.setRequired("FALSE");
@@ -167,8 +205,8 @@ public final class ProgramOptionBuilder {
 
     private OptionDesc buildTerseDesc() {
         OptionDesc t = new OptionDesc();
-        t.setName("terse");
-        t.setSymbol("t");
+        t.setName(TERSE);
+        t.setSymbol(Character.toString(TERSE_SYMBOL));
         t.setDefaultValue("FALSE");
         t.setRepeats("FALSE");
         t.setRequired("FALSE");

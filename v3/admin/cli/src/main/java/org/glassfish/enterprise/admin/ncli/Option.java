@@ -23,6 +23,13 @@ final class Option {
 
     private final OptionDesc metadata;
     private final String givenValue;
+
+    /** Constructs an Option with given meta-data and specified value. The specified value implies any value specified
+     *  on the command line. A null specified value means that there was no value specified for this option on the
+     *  command line, implying such an option would assume its default value if it has one.
+     * @param metadata OptionDesc denoting the description of the option
+     * @param givenValue String denoting its specified value; may be null
+     */
     Option(OptionDesc metadata, String givenValue) {
         if (metadata == null)
             throw new IllegalArgumentException("null option metadata");
@@ -100,5 +107,24 @@ final class Option {
         while(st.hasMoreTokens())
             values.add(st.nextToken());
         return values;
+    }
+
+
+    @Override
+    public String toString() {
+        return (this.getName() + ParseUtilities.OPTION_NAME_VALUE_SEPARATOR + this.getEffectiveValue());
+    }
+    
+    static String toString(String name, String value) {
+        if (name == null || value == null)
+            throw new IllegalArgumentException("null arg");
+        return (name + ParseUtilities.OPTION_NAME_VALUE_SEPARATOR + value);
+    }
+
+    static String toCommandLineOption(String s) {
+        return "--" + s;
+    }
+    static String toCommandLineOption(char c) {
+        return "-" + c;
     }
 }
