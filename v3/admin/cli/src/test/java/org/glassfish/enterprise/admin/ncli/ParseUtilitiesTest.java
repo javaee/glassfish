@@ -57,7 +57,7 @@ public class ParseUtilitiesTest {
         assertEquals(indicatesOption(s), false);
         s = "foo"; //option must start with a - or -- or --no-
         assertEquals(indicatesOption(s), false);
-        s = "-"; //short option should have at least a character
+        s = "-"; //short option should have exactly one character as its symbol
         assertEquals(indicatesOption(s), false);
         s = "--"; //long option should have at least 2 characters in name
         assertEquals(indicatesOption(s), false);
@@ -110,5 +110,15 @@ public class ParseUtilitiesTest {
         assertEquals(getOptionValue(s), "application display name");
         s = "--prop=a=b";
         assertEquals(getOptionValue(s), "a=b");        
+    }
+
+    @Test
+    public void booleanOptionList() {
+        String bol = "-abc";
+        assertTrue(indicatesBooleanOptionList(bol));
+        bol = "--abc";
+        assertFalse(indicatesBooleanOptionList(bol));
+        bol = "-abc=true";
+        assertFalse(indicatesBooleanOptionList(bol));
     }
 }

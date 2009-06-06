@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import static org.glassfish.enterprise.admin.ncli.ParseUtilities.*;
 import static org.glassfish.enterprise.admin.ncli.ParseUtilities.getOptionSymbolFromShortOption;
 import static org.glassfish.enterprise.admin.ncli.ParseUtilities.hasOptionNameAndValue;
-import com.sun.enterprise.universal.i18n.LocalStrings;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 /**
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
@@ -21,6 +21,8 @@ final class Parser {
     private final String[] args;
     private final PrintStream out;
     private final PrintStream err;
+    
+    private static final LocalStringsImpl lsm = new LocalStringsImpl(Parser.class);
 
     Parser(String[] args, PrintStream out, PrintStream err) {
         if (args == null || out == null)
@@ -37,7 +39,6 @@ final class Parser {
         String cmd;
         FirstPassResult fpr;
         if (indicatesCommandName(args[0])) {
-            System.out.println("parsing: " + Arrays.toString(args));
             cmd = args[0];
             handleUnsupportedLegacyCommand(cmd);
             Set<OptionDesc> known = POB.getAllOptionMetadata();
@@ -52,7 +53,7 @@ final class Parser {
             //depends on whether we want to support the program option and command option separation
             throw new ParserException("As of now, command line must start with command name, not any of asadmin program options");
         } else {
-            throw new ParserException(LocalStrings.get("parser.invalid.start", args[0]));
+            throw new ParserException(lsm.get("parser.invalid.start", args[0]));
         }
     }
 
@@ -77,7 +78,7 @@ final class Parser {
     private void handleUnsupportedLegacyCommand(String cmd) throws ParserException {
         for (String c : uslc) {
             if (c.equals(cmd)) {
-                throw new ParserException(LocalStrings.get("unsupported.legacy.command", cmd));
+                throw new ParserException(lsm.get("unsupported.legacy.command", cmd));
             }
         }
         //it is a supported command; do nothing
@@ -106,13 +107,13 @@ final class Parser {
                             si++;
                         } else { // not a boolean option or a boolean option specified as --name true/false
                             if (si == (argsToParse.length-1))
-                                throw new ParserException(LocalStrings.get("option.needs.value.symbol", Character.toString(c)));
+                                throw new ParserException(lsm.get("option.needs.value.symbol", Character.toString(c)));
                             OptionDesc lod = getOptionDescForSymbol(c, known);
                             if(lod != null) {
                                 putHandlingRepeats(lod, optionMap, argsToParse[si+1]);
                                 si += 2;
                             } else {
-                                throw new ParserException(LocalStrings.get("current.limitation.symbol", Character.toString(c)));
+                                throw new ParserException(lsm.get("current.limitation.symbol", Character.toString(c)));
                             }
                         }
                     }
@@ -129,13 +130,13 @@ final class Parser {
                             si++;
                         } else { // not a boolean option or a boolean option specified as --name true/false
                             if (si == (argsToParse.length-1))
-                                throw new ParserException(LocalStrings.get("option.needs.value.name", name));
+                                throw new ParserException(lsm.get("option.needs.value.name", name));
                             OptionDesc lod = getOptionDescForName(name, known);
                             if(lod != null) {
                                 putHandlingRepeats(lod, optionMap, argsToParse[si+1]);
                                 si += 2;
                             } else {
-                                throw new ParserException(LocalStrings.get("current.limitation.name", name));
+                                throw new ParserException(lsm.get("current.limitation.name", name));
                             }
                         }
                     }
@@ -148,7 +149,10 @@ final class Parser {
                 fillOperandsFromArgs(si+1, remainingArgs, argsToParse);
                 break;
             } else {
-                throw new ParserException(LocalStrings.get("invalid.argument.on.command.line", argument));
+                //throw new ParserException(lsm.get("invalid.argument.on.command.line", argument));
+                //this is an operand!
+                remainingArgs.add(argument);
+                si++;
             }
         }
         return remainingArgs.toArray(new String[remainingArgs.size()]);
@@ -172,7 +176,7 @@ final class Parser {
         String value = getOptionValue(argument);
         if (pod != null) {
             if (!nonNullValueValidFor(pod, value)) {  // name exists, but value is invalid!
-                throw new ParserException(LocalStrings.get("invalid.value.for.known.option", name, value));
+                throw new ParserException(lsm.get("invalid.value.for.known.option", name, value));
             }
             putHandlingRepeats(pod, filtrate, value); //this is a valid program option
         } else {
@@ -217,7 +221,7 @@ final class Parser {
         if (!Boolean.valueOf(od.getRepeats().toLowerCase())) {  //repeats not allowed
             String name = od.getName();
             if (filtrate.containsKey(name)) {
-                throw new ParserException(LocalStrings.get("repeats.not.allowed", name));
+                throw new ParserException(lsm.get("repeats.not.allowed", name));
             }
         }
         filtrate.put(od.getName(), value);

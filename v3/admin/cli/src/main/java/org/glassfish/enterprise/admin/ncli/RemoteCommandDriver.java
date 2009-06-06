@@ -30,6 +30,7 @@ public class RemoteCommandDriver {
         FirstPassResult fpr = parser.firstPass();
         String cmdName      = fpr.getCommandName();
         TargetServer ts     = fpr.getTargetServer();
+        debug("command is: " + cmdName);
         CommandDesc desc    = cache.get(cmdName, ts);
         NewCommand command  = null;
         if (desc == null) {
@@ -42,6 +43,10 @@ public class RemoteCommandDriver {
         assert command != null : "Command is null!";
         CommandExecutionResult er = command.execute(ts);
         cache.put(cmdName, ts, desc);
+    }
+
+    private static void debug(String s) {
+        System.out.println("Debug output: " + s);
     }
 
     private CommandDesc getCommandMetadata(String cmdName, TargetServer from) {

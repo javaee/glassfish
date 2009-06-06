@@ -31,6 +31,8 @@ final class CommandMetadataCache {
 
     CommandDesc get(String cmdName, TargetServer ts) {
         Set<CommandDesc> scd = s2d.get(ts);
+        if (scd == null)
+            return null;
         Iterator<CommandDesc> it = scd.iterator();
         while(it.hasNext()) {
             CommandDesc cd = it.next();
