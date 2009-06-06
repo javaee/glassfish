@@ -28,7 +28,7 @@ import java.io.FilenameFilter;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.*;
 
 /**
  * GFDomainLauncher

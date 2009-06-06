@@ -43,7 +43,7 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.util.ObjectAnalyzer;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.backup.BackupException;
 import com.sun.enterprise.backup.BackupManager;
 import com.sun.enterprise.backup.RestoreManager;

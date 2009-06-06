@@ -40,7 +40,7 @@ import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.admin.servermgmt.RepositoryConfig;
 import com.sun.enterprise.admin.servermgmt.RepositoryManager;
 import com.sun.enterprise.admin.servermgmt.RepositoryException;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 /* Comment out for now because of LoginInfo dependency*/
 /*

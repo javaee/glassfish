@@ -40,7 +40,7 @@ import com.sun.enterprise.admin.cli.ClassPathBuilder;
 import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
-import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import com.sun.enterprise.util.OS;
 import java.io.File;
 import java.io.FileFilter;

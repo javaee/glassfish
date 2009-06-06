@@ -34,7 +34,7 @@ import java.util.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import java.util.logging.Level;
-import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.*;
 
 /**
  * This is the main Launcher class designed for external and internal usage.

@@ -44,7 +44,7 @@ import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import com.sun.enterprise.admin.cli.remote.CommandInvoker;
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 public class AsadminLoginCommand extends BaseLifeCycleCommand {
 

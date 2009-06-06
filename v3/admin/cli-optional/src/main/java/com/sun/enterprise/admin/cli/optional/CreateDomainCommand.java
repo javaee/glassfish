@@ -36,7 +36,7 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.File;
 
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;

@@ -35,7 +35,7 @@
  */
 package org.glassfish.admin.rest;
 
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

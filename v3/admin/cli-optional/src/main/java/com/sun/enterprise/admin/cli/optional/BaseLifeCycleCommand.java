@@ -42,7 +42,7 @@ package com.sun.enterprise.admin.cli.optional;
 import com.sun.enterprise.cli.framework.*;
 
 
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.logging.Logger;
 import java.util.HashMap;
 import java.io.IOException;

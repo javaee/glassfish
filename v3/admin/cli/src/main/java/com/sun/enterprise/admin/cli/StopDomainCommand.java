@@ -40,7 +40,7 @@ import com.sun.enterprise.admin.cli.remote.CommandInvoker;
 import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;

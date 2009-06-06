@@ -44,7 +44,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport.ExitCode;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
