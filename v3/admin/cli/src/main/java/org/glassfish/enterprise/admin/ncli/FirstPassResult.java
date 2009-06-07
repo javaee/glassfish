@@ -29,6 +29,8 @@ final class FirstPassResult {
     private final String[] cmdArgs;
 
     FirstPassResult(String cmdName, Map<String, String> poPair, String[] cmdArgs) {
+        if (cmdName == null || poPair == null || cmdArgs == null)
+            throw new IllegalArgumentException("null_arg");
         this.cmdName = cmdName;
         this.programOptions = initializeAllProgramOptions(poPair);
         this.ts             = initializeTargetServer();
@@ -51,7 +53,7 @@ final class FirstPassResult {
     public Set<Option> getProgramOptions() {
         return programOptions;
     }
-    
+
     // ALL Private ...
 
     private Set<Option> initializeAllProgramOptions(Map<String, String> explicitOpts) {

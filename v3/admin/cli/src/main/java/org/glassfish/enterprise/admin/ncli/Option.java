@@ -52,6 +52,8 @@ final class Option {
      */
     String getEffectiveValue() {
         String value = (givenValue != null ? givenValue : metadata.getDefaultValue());
+        if (value == null)
+            return value;
         String type  = this.getEffectiveType();
         if(OptionType.FILE.name().equals(type) ||
            OptionType.DIRECTORY.name().equals(type) ||

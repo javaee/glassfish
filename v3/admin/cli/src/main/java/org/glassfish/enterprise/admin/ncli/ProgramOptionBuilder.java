@@ -183,7 +183,7 @@ public final class ProgramOptionBuilder {
         OptionDesc i = new OptionDesc();
         i.setName(INTERACTIVE);
         i.setSymbol(Character.toString(INTERACTIVE_SYMBOL));
-        i.setDefaultValue("FALSE");
+        i.setDefaultValue("TRUE");
         i.setRepeats("FALSE");
         i.setRequired("FALSE");
         i.setType(OptionType.BOOLEAN.name());

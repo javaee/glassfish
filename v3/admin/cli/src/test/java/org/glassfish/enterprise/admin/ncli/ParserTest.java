@@ -25,17 +25,17 @@ public class ParserTest {
         FirstPassResult fpr = p.firstPass();
         Set<Option> pos = fpr.getProgramOptions();
         Option host = ParseUtilities.getOptionNamed(pos, HOST);
-        assertEquals(CMD, fpr.getCommandName());
+        assertEquals(fpr.getCommandName(), CMD);
         assertNotNull(host);
-        assertEquals(host.getEffectiveValue(), value);
+        assertEquals(value, host.getEffectiveValue());
 
         p = new Parser(new String[]{CMD, Option.toCommandLineOption(HOST_SYMBOL), value});
         fpr = p.firstPass();
         pos = fpr.getProgramOptions();
         host = ParseUtilities.getOptionNamed(pos, HOST);
-        assertEquals(CMD, fpr.getCommandName());
+        assertEquals(fpr.getCommandName(), CMD);
         assertNotNull(host);
-        assertEquals(host.getEffectiveValue(), value);
+        assertEquals(value, host.getEffectiveValue());
     }
     @Test
     public void testHost2() throws ParserException {
@@ -45,17 +45,17 @@ public class ParserTest {
         FirstPassResult fpr = p.firstPass();
         Set<Option> pos = fpr.getProgramOptions();
         Option host = ParseUtilities.getOptionNamed(pos, HOST);
-        assertEquals(CMD, fpr.getCommandName());
+        assertEquals(fpr.getCommandName(), CMD);
         assertNotNull(host);
-        assertEquals(host.getEffectiveValue(), value);
+        assertEquals(value, host.getEffectiveValue());
 
         p = new Parser(new String[]{CMD, Option.toCommandLineOption(HOST_SYMBOL) + "=" + value});
         fpr = p.firstPass();
         pos = fpr.getProgramOptions();
         host = ParseUtilities.getOptionNamed(pos, HOST);
-        assertEquals(CMD, fpr.getCommandName());
+        assertEquals(fpr.getCommandName(), CMD);
         assertNotNull(host);
-        assertEquals(host.getEffectiveValue(), value);
+        assertEquals(value, host.getEffectiveValue());
     }
 
     @Test
@@ -65,15 +65,15 @@ public class ParserTest {
         FirstPassResult fpr = p.firstPass();
         Option host = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), HOST);
         Option port = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), PORT);
-        assertEquals(hv, host.getEffectiveValue());
-        assertEquals(pv, port.getEffectiveValue());
+        assertEquals(host.getEffectiveValue(), hv);
+        assertEquals(port.getEffectiveValue(), pv);
 
         p = new Parser(new String[]{CMD, Option.toCommandLineOption(HOST), hv, Option.toCommandLineOption(PORT_SYMBOL), pv }); //bar --host foo.sun.com --p 3355
         fpr = p.firstPass();
         host = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), HOST);
         port = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), PORT);
-        assertEquals(hv, host.getEffectiveValue());
-        assertEquals(pv, port.getEffectiveValue());
+        assertEquals(host.getEffectiveValue(), hv);
+        assertEquals(port.getEffectiveValue(), pv);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ParserTest {
 
         Option port = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), PORT);
         int pn = Integer.parseInt(port.getEffectiveValue());
-        assertEquals(pn, Constants.DEFAULT_PORT);
+        assertEquals(Constants.DEFAULT_PORT, pn);
     }
 
     @Test(expected = ParserException.class)
@@ -120,10 +120,10 @@ public class ParserTest {
         Parser p = new Parser(cmdline);
         FirstPassResult fpr = p.firstPass();
         Option bo = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), INTERACTIVE);
-        assertEquals("true", bo.getEffectiveValue());
+        assertEquals(bo.getEffectiveValue(), "true");
         bo = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), TERSE);
-        assertEquals("true", bo.getEffectiveValue());
+        assertEquals(bo.getEffectiveValue(), "true");
         bo = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), ECHO);
-        assertEquals("true", bo.getEffectiveValue());
+        assertEquals(bo.getEffectiveValue(), "true");
     }
 }

@@ -46,7 +46,7 @@ final class Parser {
             int length = args.length-1;
             String[] argsToParse = new String[length];
             System.arraycopy(args, 1, argsToParse, 0, length);
-            String[] cmdArgs = splitUsingMetadata(argsToParse, known, givenProgramOptions);  //may contains options and operands
+            String[] cmdArgs = splitUsingMetadata(argsToParse, known, givenProgramOptions);  //may contain options and operands
             fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs);
             return fpr;
         } else if (indicatesOption(args[0])) {
