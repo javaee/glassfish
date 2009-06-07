@@ -46,7 +46,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.MailResource;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Domain;
 import java.util.ArrayList;

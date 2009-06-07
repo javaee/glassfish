@@ -47,7 +47,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
 
 import java.util.Properties;

@@ -39,7 +39,7 @@ import java.beans.PropertyVetoException;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;

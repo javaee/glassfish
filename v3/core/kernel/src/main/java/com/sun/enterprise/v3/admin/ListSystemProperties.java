@@ -38,7 +38,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;

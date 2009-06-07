@@ -43,7 +43,7 @@ import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyVetoException;

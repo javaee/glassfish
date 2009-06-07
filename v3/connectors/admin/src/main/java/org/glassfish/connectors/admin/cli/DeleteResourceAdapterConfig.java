@@ -1,4 +1,3 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,6 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
+
+
 package org.glassfish.connectors.admin.cli;
 
 import org.glassfish.api.admin.AdminCommand;
@@ -49,7 +51,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;

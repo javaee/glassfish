@@ -39,7 +39,7 @@ package org.glassfish.embed.util;
 
 import java.net.*;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;
-//import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+//import static com.sun.enterprise.util.SystemPropertyConstants.*;
 
 /**
  *

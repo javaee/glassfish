@@ -50,7 +50,7 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.logging.Level;

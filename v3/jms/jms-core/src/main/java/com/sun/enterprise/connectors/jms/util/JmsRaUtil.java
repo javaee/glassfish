@@ -55,7 +55,7 @@ import com.sun.enterprise.connectors.jms.system.MQAddressList;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.server.Constants;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.zip.ZipFile;
 import com.sun.enterprise.util.zip.ZipFileException;
 import org.glassfish.api.admin.config.Property;

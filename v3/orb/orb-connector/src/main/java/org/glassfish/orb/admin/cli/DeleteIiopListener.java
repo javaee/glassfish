@@ -28,7 +28,7 @@ import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
 
 import com.sun.enterprise.config.serverbeans.Servers;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.List;

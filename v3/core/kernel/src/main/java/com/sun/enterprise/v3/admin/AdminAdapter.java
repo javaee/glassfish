@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.net.HttpURLConnection;

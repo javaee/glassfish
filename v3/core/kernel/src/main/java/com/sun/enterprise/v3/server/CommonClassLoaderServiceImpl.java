@@ -38,7 +38,7 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;

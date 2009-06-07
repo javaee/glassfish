@@ -44,7 +44,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.util.ArrayList;
 import java.beans.PropertyVetoException;

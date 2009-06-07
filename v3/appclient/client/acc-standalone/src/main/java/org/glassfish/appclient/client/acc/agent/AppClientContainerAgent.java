@@ -40,7 +40,7 @@
 package org.glassfish.appclient.client.acc.agent;
 
 import com.sun.enterprise.deployment.node.SaxParserHandler;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;

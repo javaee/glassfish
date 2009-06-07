@@ -22,7 +22,7 @@
  */
 package com.sun.enterprise.universal.glassfish;
 
-import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.net.*;

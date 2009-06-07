@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 import org.glassfish.internal.api.AdminAuthenticator;
 import com.sun.grizzly.tcp.Request;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.GFBase64Decoder;
 
 /**

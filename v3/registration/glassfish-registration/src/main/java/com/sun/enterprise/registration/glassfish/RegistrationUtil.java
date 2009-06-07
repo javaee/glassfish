@@ -38,7 +38,7 @@ package com.sun.enterprise.registration.glassfish;
 import java.util.logging.Logger;
 
 
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

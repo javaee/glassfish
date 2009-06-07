@@ -38,7 +38,7 @@ package org.glassfish.ejb.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import org.glassfish.ejb.api.DistributedEJBTimerService;
 import org.glassfish.api.ActionReport;

@@ -42,7 +42,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.AdminCommandContext;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;

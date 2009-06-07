@@ -24,7 +24,7 @@ package org.glassfish.server;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.io.*;
 import java.util.*;

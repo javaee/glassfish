@@ -35,7 +35,7 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;

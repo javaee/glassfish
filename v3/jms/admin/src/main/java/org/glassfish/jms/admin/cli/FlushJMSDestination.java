@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
 
 import javax.management.MBeanServerConnection;
