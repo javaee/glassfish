@@ -261,7 +261,8 @@ public class OSGiBundleArchive implements ReadableArchive
 
     public InputStream getEntry(String name) throws IOException
     {
-        return b.getEntry(name).openStream();
+        URL entry = b.getEntry(name);
+        return entry != null ? entry.openStream() : null;
     }
 
     public boolean exists(String name) throws IOException
