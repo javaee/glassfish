@@ -33,404 +33,370 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.util;
 
 /* WBN Valentine's Day, 2000 -- place for handy String utils.
  */
-
 import java.util.*;
 import java.sql.SQLException;
 
-public class StringUtils
-{
-	private StringUtils()
-	{
-		
-	}
+public class StringUtils {
+
+    private StringUtils() {
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * return the length of the String - or 0 if it's null
+     */
+    public static int safeLength(String s) {
+        if (s == null) {
+            return 0;
+        }
+
+        return s.length();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static String formatSQLException(SQLException ex) {
+        assert ex != null;
+
+        String s = "SQLException:\n";
+
+        do {
+            s += "SQLState: " + ex.getSQLState() + "\n";
+            s += "Message:  " + ex.getMessage() + "\n";
+            s += "Vendor:   " + ex.getErrorCode() + "\n";
+            s += "\n";
+        } while ((ex = ex.getNextException()) != null);
+
+        return s;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static int maxWidth(Vector v) {
+        // find longest String in a vector of Strings...
+        int max = 0;
+
+        if (v == null || v.size() <= 0 || !(v.elementAt(0) instanceof String)) {
+            return 0;
+        }
+
+        for (int i = v.size() - 1; i >= 0; i--) {
+            int len = ((String) v.elementAt(i)).length();
+
+            if (len > max) {
+                max = len;
+            }
+        }
+
+        return max;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static boolean isHex(String s) {
+        // is this the String representation of a valid hex number?
+        // "5", "d", "D", "F454ecbb" all return true...
+        // p.s. there MUST be a better and faster way of doing this...
+
+        final int slen = s.length();
+
+        for (int i = 0; i < slen; i++) {
+            if (isHex(s.charAt(i)) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static boolean isHex(char c) {
+        // is this the char a valid hex digit?
+
+        String hex = "0123456789abcdefABCDEF";
+        int hexlen = hex.length();
 
-	////////////////////////////////////////////////////////////////////////////
+        for (int i = 0; i < hexlen; i++) {
+            if (hex.charAt(i) == c) {
+                return true;
+            }
+        }
 
-	/**
-	 * return the length of the String - or 0 if it's null
-	 */
-	public static int safeLength(String s)
-	{
-		if(s == null)
-			return 0;
-		
-		return s.length();
-	}
+        return false;
+    }
 
-	////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    public static String getPenultimateDirName(String s) {
+        // e.g.  input: "a/b/c/d/foobar.txt"   output: "d"
+
+        if (s == null || s.length() <= 0) {
+            return s;
+        }
+
+        // must be a plain file name -- return empty string...
+        if ((s.indexOf('/') < 0) && (s.indexOf('\\') < 0)) {
+            return "";
+        }
 
-	public static boolean ok(String s)
-	{
-		return s != null && s.length() > 0;
-	}
+        s = s.replace('\\', '/');	// make life easier for the next steps...
 
-	////////////////////////////////////////////////////////////////////////////
+        int index = s.lastIndexOf('/');
 
-	public static String formatSQLException(SQLException ex)
-	{
-		assert ex!=null;
+        if (index < 0) {
+            return "";	// can't happen!!!
+        }
+        s = s.substring(0, index);	// this will truncate the last '/'
 
-		String s = "SQLException:\n";
+        index = s.lastIndexOf('/');
 
-		do
-		{
-			s += "SQLState: " + ex.getSQLState() + "\n";
-			s += "Message:  " + ex.getMessage()  + "\n";
-			s += "Vendor:   " + ex.getErrorCode()+ "\n";
-			s += "\n";
-		}while( (ex = ex.getNextException()) != null);
+        if (index >= 0) {
+            s = s.substring(index + 1);
+        }
 
-    	return s;
-	}
+        return s;
+    }
 
-	////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    public static String toShortClassName(String className) {
+        int index = className.lastIndexOf('.');
 
-	public static int maxWidth(Vector v)
-	{
-		// find longest String in a vector of Strings...
-		int max = 0;
+        if (index >= 0 && index < className.length() - 1) {
+            return className.substring(index + 1);
+        }
 
-		if(v == null || v.size() <= 0 || !(v.elementAt(0) instanceof String))
-			return 0;
+        return className;
+    }
 
-		for(int i = v.size() - 1; i >= 0; i--)
-		{
-			int len = ((String)v.elementAt(i)).length();
+    ////////////////////////////////////////////////////////////////////////////
+    public static String padRight(String s, int len) {
+        if (s == null || s.length() >= len) {
+            return s;
+        }
 
-			if(len > max)
-				max = len;
-		}
+        for (int i = len - s.length(); i > 0; --i) {
+            s += ' ';
+        }
 
-		return max;
-	}
+        return s;
+    }
 
-	////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    public static String padLeft(String s, int len) {
+        String ss = "";
 
-	public static boolean isHex(String s)
-	{
-		// is this the String representation of a valid hex number?
-		// "5", "d", "D", "F454ecbb" all return true...
-		// p.s. there MUST be a better and faster way of doing this...
+        if (s == null || s.length() >= len) {
+            return s;
+        }
 
-		final int slen = s.length();
+        for (int i = len - s.length(); i > 0; --i) {
+            ss += ' ';
+        }
 
-		for(int i = 0; i < slen; i++)
-			if(isHex(s.charAt(i)) == false)
-				return false;
-		return true;
-	}
+        return ss + s;
+    }
 
-	////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    public static String[] toLines(String s) {
+        if (s == null) {
+            return new String[0];
+        }
 
-	public static boolean isHex(char c)
-	{
-		// is this the char a valid hex digit?
+        Vector v = new Vector();
 
-		String hex = "0123456789abcdefABCDEF";
-		int	hexlen = hex.length();
-
-		for(int i = 0; i < hexlen; i++)
-			if(hex.charAt(i) == c)
-				return true;
-
-		return false;
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String getPenultimateDirName(String s)
-	{
-		// e.g.  input: "a/b/c/d/foobar.txt"   output: "d"
-
-		if(s == null || s.length() <= 0)
-			return s;
-
-		// must be a plain file name -- return empty string...
-		if( (s.indexOf('/') < 0) && (s.indexOf('\\') < 0) )
-			return "";
-
-		s = s.replace('\\', '/');	// make life easier for the next steps...
-
-		int index = s.lastIndexOf('/');
-
-		if(index < 0)
-			return "";	// can't happen!!!
-
-		s = s.substring(0, index);	// this will truncate the last '/'
-
-		index = s.lastIndexOf('/');
-
-		if(index >= 0)
-			s = s.substring(index + 1);
-
-		return s;
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String toShortClassName(String className)
-	{
-		int index = className.lastIndexOf('.');
-
-		if(index >= 0 && index < className.length() - 1)
-			return className.substring(index + 1);
-
-		return className;
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String padRight(String s, int len)
-	{
-		if(s == null || s.length() >= len)
-			return s;
-
-		for(int i = len - s.length(); i > 0; --i)
-			s += ' ';
-
-		return s;
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String padLeft(String s, int len)
-	{
-		String ss = "";
-
-		if(s == null || s.length() >= len)
-			return s;
-
-		for(int i = len - s.length(); i > 0; --i)
-			ss += ' ';
-
-		return ss + s;
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String[] toLines(String s)
-	{
-		if(s == null)
-			return new String[0];
-
-		Vector v = new Vector();
-
-		int start	= 0;
-		int end		= 0;
-
-		for(end = s.indexOf('\n', start); end >= 0 && start < s.length(); end = s.indexOf('\n', start))
-		{
-			v.addElement(s.substring(start, end));	// does NOT include the '\n'
-			start = end + 1;
-		}
-
-		if(start < s.length())
-			v.addElement(s.substring(start));
-
-		String[] ss = new String[v.size()];
-
-		v.copyInto(ss);
-
-		return ss;
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static void prepend(String[] ss, String what)
-	{
-		for(int i = 0; i < ss.length; i++)
-			ss[i] = what + ss[i];
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String UpperCaseFirstLetter(String s)
-	{
-		if(s == null || s.length() <= 0)
-			return s;
-		
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String replace(String s, String token, String replace)
-	{
-		if(s == null || s.length() <= 0 || token == null || token.length() <= 0)
-			return s;
-		
-		int index = s.indexOf(token);
-
-		if(index < 0)
-			return s;
-
-		int tokenLength = token.length();
-		String ret = s.substring(0, index);
-		ret += replace;
-		ret += s.substring(index + tokenLength);
-
-		return ret;
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	public static String toString(Properties props)
-	{
-		if(props == null || props.size() <= 0)
-			return "No entries";
-		
-		Set entries = props.entrySet();
-		StringBuffer sb = new StringBuffer();
-		
-		// first -- to line things up nicely -- find the longest key...
-		int keyWidth = 0;
-		for(Iterator it = entries.iterator(); it.hasNext(); )
-		{
-			Map.Entry	me	= (Map.Entry)it.next();
-			String		key	= (String)me.getKey();
-			int			len = key.length();
-		
-			if(len > keyWidth)
-				keyWidth = len;
-		}
-		
-		++keyWidth;
-		
-		// now make the strings...
-		for(Iterator it = entries.iterator(); it.hasNext(); )
-		{
-			Map.Entry	me	= (Map.Entry)it.next();
-			String		key	= (String)me.getKey();
-			String		val	= (String)me.getValue();
-
-			sb.append(padRight(key, keyWidth));
-			sb.append("= ");
-			sb.append(val);
-			sb.append('\n');
-		}
-		
-		return sb.toString();
-	}
-	
-
-	//  Test Code...
-
-	public static void main(String[] args)
-	{
-		final int len = args.length;
-
-		if((len == 1) && args[0].equalsIgnoreCase("toLine"))
-			testToLine();
-		else if((len > 1) && args[0].equalsIgnoreCase("isHex"))
-			testHex(args);
-		else
-			usage();
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	private static void usage()
-	{
-		System.out.println("StringUtils -- main() for testing usage:\n");
-		System.out.println("java netscape.blizzard.util.StringUtils toLine");
-		System.out.println("java netscape.blizzard.util.StringUtils isHex number1 number2 ...");
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	private static void testHex(String[] args)
-	{
-		System.out.println("StringUtils -- Testing Hex");
-
-		for(int i = 1; i < args.length; i++)
-			System.out.println(padRight(args[i], 16) + "  " + (isHex(args[i]) ? "yesHex" : "notHex"));
-	}
-
-	////////////////////////////////////////////////////////////////////////////
-
-	private static void testToLine()
-	{
-		System.out.println("StringUtils -- Testing toLine()");
-		String[] ss =
-		{
-			null,
-			"",
-			"abc\ndef\n",
-			"abc\ndef",
-			"abc",
-			"abc\n",
-			"abc\n\n",
-			"q",
-			"\n\nk\n\nz\n\n",
-			"sd.adj;ld"
-		};
-
-		for(int k = 0; k < ss.length; k++)
-		{
-			String[] s2 = StringUtils.toLines(ss[k]);
-			System.out.println("String #" + k + ", Number of Lines:  " + s2.length);
-
-			for(int i = 0; i < s2.length; i++)
-				System.out.println(s2[i]);
-		}
-	}
-
-	
-	public static void testUpperCase()
-	{
-		String[] test = new String[] { "xyz", "HITHERE", "123aa", "aSSS", "yothere" };//NOI18N
-		
-		for(int i = 0; i < test.length; i++)
-		{
-			System.out.println(test[i] + " >>> " + UpperCaseFirstLetter(test[i]));//NOI18N
-		}
-	}
-        
-	/**
-		A utility to get the Operating System specific path from given array
-		of Strings.
-		@param strings an array of Strings participating in the path.
-		@param addTrailing a boolean that determines whether the returned
-			String should have a trailing File Separator character. None of
-			the strings may be null or empty String. An exception is thrown.
-		@return a String that concatenates these Strings and gets a path. Returns
-			a null if the array is null or contains no elements.
-		@throws IllegalArgumentException if any of the arguments is null or is
-			an empty string.
-	*/
-	
-	public static String makeFilePath(String[] strings, boolean addTrailing)
-	{
-		StringBuffer	path		= null;
-		String			separator	= System.getProperty("file.separator");
-		if (strings != null)
-		{
-			path = new StringBuffer();
-			for (int i = 0 ; i < strings.length ; i++)
-			{
-				String element = strings[i];
-				if (element == null || element.length () == 0)
-				{
-					throw new IllegalArgumentException();
-				}
-				path.append(element);
-				if (i < strings.length - 1)
-				{
-					path.append(separator);
-				}
-			}
-			if (addTrailing)
-			{
-				path.append(separator);
-			}
-		}
-		return ( path.toString() );
-	}
+        int start = 0;
+        int end = 0;
+
+        for (end = s.indexOf('\n', start); end >= 0 && start < s.length(); end = s.indexOf('\n', start)) {
+            v.addElement(s.substring(start, end));	// does NOT include the '\n'
+            start = end + 1;
+        }
+
+        if (start < s.length()) {
+            v.addElement(s.substring(start));
+        }
+
+        String[] ss = new String[v.size()];
+
+        v.copyInto(ss);
+
+        return ss;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static void prepend(String[] ss, String what) {
+        for (int i = 0; i < ss.length; i++) {
+            ss[i] = what + ss[i];
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static String UpperCaseFirstLetter(String s) {
+        if (s == null || s.length() <= 0) {
+            return s;
+        }
+
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static String replace(String s, String token, String replace) {
+        if (s == null || s.length() <= 0 || token == null || token.length() <= 0) {
+            return s;
+        }
+
+        int index = s.indexOf(token);
+
+        if (index < 0) {
+            return s;
+        }
+
+        int tokenLength = token.length();
+        String ret = s.substring(0, index);
+        ret += replace;
+        ret += s.substring(index + tokenLength);
+
+        return ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    public static String toString(Properties props) {
+        if (props == null || props.size() <= 0) {
+            return "No entries";
+        }
+
+        Set entries = props.entrySet();
+        StringBuffer sb = new StringBuffer();
+
+        // first -- to line things up nicely -- find the longest key...
+        int keyWidth = 0;
+        for (Iterator it = entries.iterator(); it.hasNext();) {
+            Map.Entry me = (Map.Entry) it.next();
+            String key = (String) me.getKey();
+            int len = key.length();
+
+            if (len > keyWidth) {
+                keyWidth = len;
+            }
+        }
+
+        ++keyWidth;
+
+        // now make the strings...
+        for (Iterator it = entries.iterator(); it.hasNext();) {
+            Map.Entry me = (Map.Entry) it.next();
+            String key = (String) me.getKey();
+            String val = (String) me.getValue();
+
+            sb.append(padRight(key, keyWidth));
+            sb.append("= ");
+            sb.append(val);
+            sb.append('\n');
+        }
+
+        return sb.toString();
+    }
+
+    //  Test Code...
+    public static void main(String[] args) {
+        final int len = args.length;
+
+        if ((len == 1) && args[0].equalsIgnoreCase("toLine")) {
+            testToLine();
+        } else if ((len > 1) && args[0].equalsIgnoreCase("isHex")) {
+            testHex(args);
+        } else {
+            usage();
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    private static void usage() {
+        System.out.println("StringUtils -- main() for testing usage:\n");
+        System.out.println("java netscape.blizzard.util.StringUtils toLine");
+        System.out.println("java netscape.blizzard.util.StringUtils isHex number1 number2 ...");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    private static void testHex(String[] args) {
+        System.out.println("StringUtils -- Testing Hex");
+
+        for (int i = 1; i < args.length; i++) {
+            System.out.println(padRight(args[i], 16) + "  " + (isHex(args[i]) ? "yesHex" : "notHex"));
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    private static void testToLine() {
+        System.out.println("StringUtils -- Testing toLine()");
+        String[] ss = {
+            null,
+            "",
+            "abc\ndef\n",
+            "abc\ndef",
+            "abc",
+            "abc\n",
+            "abc\n\n",
+            "q",
+            "\n\nk\n\nz\n\n",
+            "sd.adj;ld"
+        };
+
+        for (int k = 0; k < ss.length; k++) {
+            String[] s2 = StringUtils.toLines(ss[k]);
+            System.out.println("String #" + k + ", Number of Lines:  " + s2.length);
+
+            for (int i = 0; i < s2.length; i++) {
+                System.out.println(s2[i]);
+            }
+        }
+    }
+
+    public static void testUpperCase() {
+        String[] test = new String[]{"xyz", "HITHERE", "123aa", "aSSS", "yothere"};//NOI18N
+
+        for (int i = 0; i < test.length; i++) {
+            System.out.println(test[i] + " >>> " + UpperCaseFirstLetter(test[i]));//NOI18N
+        }
+    }
+
+    /**
+    A utility to get the Operating System specific path from given array
+    of Strings.
+    @param strings an array of Strings participating in the path.
+    @param addTrailing a boolean that determines whether the returned
+    String should have a trailing File Separator character. None of
+    the strings may be null or empty String. An exception is thrown.
+    @return a String that concatenates these Strings and gets a path. Returns
+    a null if the array is null or contains no elements.
+    @throws IllegalArgumentException if any of the arguments is null or is
+    an empty string.
+     */
+    public static String makeFilePath(String[] strings, boolean addTrailing) {
+        StringBuffer path = null;
+        String separator = System.getProperty("file.separator");
+        if (strings != null) {
+            path = new StringBuffer();
+            for (int i = 0; i < strings.length; i++) {
+                String element = strings[i];
+                if (element == null || element.length() == 0) {
+                    throw new IllegalArgumentException();
+                }
+                path.append(element);
+                if (i < strings.length - 1) {
+                    path.append(separator);
+                }
+            }
+            if (addTrailing) {
+                path.append(separator);
+            }
+        }
+        return (path.toString());
+    }
 
     /**
      * Parses a string containing substrings separated from
@@ -447,8 +413,7 @@ public class StringUtils
      * @return     Returns the list containing the individual strings that
      *             the input string was split into.
      */
-    public static List<String> parseStringList(String line)
-    {
+    public static List<String> parseStringList(String line) {
         return parseStringList(line, null);
     }
 
@@ -470,25 +435,26 @@ public class StringUtils
      * @return     Returns the list containing the individual strings that
      *             the input string was split into.
      */
-    public static List<String> parseStringList(String line, String sep)
-    {
-        if (line == null)
+    public static List<String> parseStringList(String line, String sep) {
+        if (line == null) {
             return null;
+        }
 
         StringTokenizer st;
-        if (sep == null)
+        if (sep == null) {
             st = new StringTokenizer(line);
-        else 
+        } else {
             st = new StringTokenizer(line, sep);
+        }
 
         String token;
 
         List<String> tokens = new Vector();
-        while (st.hasMoreTokens())
-        {
+        while (st.hasMoreTokens()) {
             token = st.nextToken().trim();
-            if (token.length() > 0)
+            if (token.length() > 0) {
                 tokens.add(token);
+            }
         }
 
         return tokens;
@@ -504,26 +470,26 @@ public class StringUtils
     public static String getProperty(String propName) {
         // xxx.yyy
         String value = System.getProperty(propName);
-        if (value!=null) {
+        if (value != null) {
             return value;
         }
         // XXX.YYY
         value = System.getProperty(propName.toUpperCase());
-        if (value!=null) {
+        if (value != null) {
             System.setProperty(propName, value);
             return value;
         }
         // xxx_yyy
         value = System.getProperty(propName.replace('.', '_'));
-        if (value!=null) {
+        if (value != null) {
             System.setProperty(propName, value);
             return value;
         }
         // XXX_YYY
-        value = System.getProperty(propName.toUpperCase().replace('.','_'));
-        if (value!=null) {
+        value = System.getProperty(propName.toUpperCase().replace('.', '_'));
+        if (value != null) {
             System.setProperty(propName, value);
         }
         return value;
-    }        
+    }
 }
