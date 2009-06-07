@@ -53,9 +53,9 @@ import org.osgi.framework.Bundle;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,12 +64,6 @@ import java.util.logging.Logger;
  */
 public class OSGiWebContainer
 {
-    // Protocol used both in Felix and Equinox to read content of a bundle
-    // directly from a jar or directory as opposed to first copying it to
-    // bundle cache and then reading from there.
-    private static final String REFERENCE_PROTOCOL = "reference:";
-    private static final String FILE_PROTOCOL = "file:";
-
     private static class OSGiApplicationInfo
     {
         ApplicationInfo appInfo;
@@ -106,12 +100,12 @@ public class OSGiWebContainer
 
         ActionReport reporter = getReporter();
 
+        ReadableArchive archive = new OSGiBundleArchive(b);
+
         // Try to obtain a handle to the underlying archive.
         // First see if it is backed by a file or a directory, else treat
         // it as a generic bundle.
-        File file = makeFile(b);
-        ReadableArchive archive = file != null ?
-                archiveFactory.openArchive(file) : new OSGiBundleArchive(b);
+        File file = makeFile(archive);
 
         // Set up a deployment context
         OpsParams opsParams = getDeployParams(archive);
@@ -198,6 +192,7 @@ public class OSGiWebContainer
                 logger, osgiAppInfo.appInfo.getSource(), opsParams, env, b);
         dc.setArchiveHandler(new OSGiWarHandler());
         deployer.undeploy(opsParams.name(), dc);
+        applications.remove(b);
         if (!osgiAppInfo.isDirectoryDeployment)
         {
             FileUtils.whack(opsParams.path);
@@ -210,7 +205,8 @@ public class OSGiWebContainer
 
     public void undeployAll()
     {
-        for (Bundle b : applications.keySet())
+        // Take a copy of the entries as undeploy changes the underlying map.
+        for (Bundle b : new HashSet<Bundle>(applications.keySet()))
         {
             try
             {
@@ -234,34 +230,21 @@ public class OSGiWebContainer
     }
 
     /**
-     * Return a File object that corresponds to this bundle's content.
+     * Return a File object that corresponds to this archive.
      * return null if it can't determine the underlying file object.
-     * It only knows how to handle reference:file: type locations.
      *
-     * @param b
+     * @param a The archive
      * @return
      */
-    private File makeFile(Bundle b)
+    private File makeFile(ReadableArchive a)
     {
-        String location = b.getLocation();
-        if (location != null && location.startsWith(REFERENCE_PROTOCOL))
+        try
         {
-            location = location.substring(REFERENCE_PROTOCOL.length());
-
-            // We only know how to handle reference:file: type urls.
-            if (location.startsWith(FILE_PROTOCOL))
-            {
-
-                // Decode any URL escaped sequences.
-                location = URLDecoder.decode(location);
-
-                // Return iff referenced file exists.
-                File file = new File(location.substring(FILE_PROTOCOL.length()));
-                if (file.exists())
-                {
-                    return file;
-                }
-            }
+            return new File(a.getURI());
+        }
+        catch (Exception e)
+        {
+            // Ignore, if we can't convert
         }
         return null;
     }
@@ -269,13 +252,25 @@ public class OSGiWebContainer
     private OpsParams getDeployParams(ReadableArchive sourceArchive)
     {
         DeployCommandParameters parameters = new DeployCommandParameters();
-        String appName = sourceArchive.getName();
-        int lastDot = appName.lastIndexOf('.');
-        if (lastDot != -1)
+        parameters.name = sourceArchive.getName();
+
+        // Set the contextroot explicitly, else it defaults to name.
+        try
         {
-            appName = appName.substring(0, lastDot);
+            // We expect WEB_CONTEXT_ROOT to be always present.
+            // This is mandated in the spec.
+            parameters.contextroot = sourceArchive.getManifest().
+                    getMainAttributes().getValue(Constants.WEB_CONTEXT_PATH);
         }
-        parameters.name = appName;
+        catch (IOException e)
+        {
+            // ignore and continue
+        }
+        if (parameters.contextroot == null || parameters.contextroot.length() == 0)
+        {
+            throw new RuntimeException(Constants.WEB_CONTEXT_PATH +
+                    " manifest header is mandatory");
+        }
         parameters.enabled = Boolean.TRUE;
         parameters.origin = DeployCommandParameters.Origin.deploy;
         parameters.force = true;
@@ -304,7 +299,10 @@ public class OSGiWebContainer
     {
         // ok we need to explode the directory somwhere and
         // remember to delete it on shutdown
-        File tmpFile = File.createTempFile(sourceArchive.getName(), "");
+        // We can't use archive name as it can contain file separator, so
+        // we shall use a temporary name
+        File tmpFile = File.createTempFile("osgiapp", "");
+
         // create a directory in place of the tmp file.
         tmpFile.delete();
         tmpFile = new File(tmpFile.getAbsolutePath());

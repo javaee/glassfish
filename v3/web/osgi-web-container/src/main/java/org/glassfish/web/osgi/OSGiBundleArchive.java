@@ -39,13 +39,18 @@ package org.glassfish.web.osgi;
 
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import static org.glassfish.web.osgi.Constants.FILE_PROTOCOL;
+import static org.glassfish.web.osgi.Constants.REFERENCE_PROTOCOL;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +58,8 @@ import java.util.Enumeration;
 import java.util.ListIterator;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import com.sun.enterprise.deployment.deploy.shared.Util;
 
 /**
  * Adapts a {@link Bundle} to {@link Archive}.
@@ -67,9 +74,68 @@ public class OSGiBundleArchive implements ReadableArchive
 {
     private Bundle b;
 
+    private String name;
+
+    private URI uri;
+
     public OSGiBundleArchive(Bundle b)
     {
         this.b = b;
+        init();
+    }
+
+    /**
+     * This method initializes {@link #uri} and {@link #name}
+     */
+    private void init() {
+        // The only time we can rely on a bundle's location is when the
+        // location string begins with reference: scheme, as both Felix and
+        // equinox assumes that the rest of the location is a file.
+        // In no other case, we can use rely on bundle.getLocation()
+        // to arrive at the URI of the underlying archive.
+        // e.g., user can install like this:
+        // bundleContext.install ("file:/a/b.jar", new URL("file:/c/d.jar").openStream));
+        // In the above case, although location returns a.jar, the actual archive
+        // is read from d.jar.
+        // So, we return a valid URI only for reference: scheme and in all
+        // cases, we prefer to return null as opposed to throwing an exception
+        // to keep the behavior same as MemoryMappedArchive.
+        String location = b.getLocation();
+        if (location != null && location.startsWith(REFERENCE_PROTOCOL))
+        {
+            location = location.substring(REFERENCE_PROTOCOL.length());
+
+            // We only know how to handle reference:file: type urls.
+            if (location.startsWith(FILE_PROTOCOL))
+            {
+
+                // Decode any URL escaped sequences.
+                location = URLDecoder.decode(location);
+
+                // Return iff referenced file exists.
+                File file = new File(location.substring(FILE_PROTOCOL.length()));
+                if (file.exists())
+                {
+                    uri = file.toURI();
+                }
+            }
+        }
+
+        if (uri != null) {
+            name = Util.getURIName(uri);
+        } else {
+            // See if there is a symbolic name & version. Use them,
+            // else use location. Either symbolic name or location must exist
+            // in a bundle.
+            String symName = b.getSymbolicName();
+            String version = (String)b.getHeaders().get(BUNDLE_VERSION);
+            if (symName != null) {
+                name = version== null ?
+                        symName : symName.concat("_").concat(version);
+            } else {
+                name = location;
+            }
+        }
     }
 
     public void close() throws IOException
@@ -105,16 +171,41 @@ public class OSGiBundleArchive implements ReadableArchive
 
     private void getEntryPaths(Collection<String> entries, String path)
     {
-        Enumeration<String> subPaths = b.getEntryPaths(path);
-        if (subPaths != null)
-        {
-            while (subPaths.hasMoreElements())
-            {
-                String next = subPaths.nextElement();
-                entries.add(next);
-                getEntryPaths(entries, next);
-            }
-        }
+//        BECAUSE OF A BUG IN FELIX, THE CODE BELOW DOES NOT WORK
+//        WHEN THERE ARE NO DIRECTORY ENTRIES IN THE JAR FILE.
+//        SO, WE ARE USING findEntries WHICH HAS AN UNDESIRED SIDE EFFECT
+//        OF RETURNING ENTRIES FROM FRAGMENTS. SO, AS SOON AS THE BUG
+//        IS FIXED IN FELIX, WE SHOULD SWITCH TO THE FOLLOWING CODE.
+//        Enumeration<String> subPaths = b.getEntryPaths(path);
+//        if (subPaths != null)
+//        {
+//            while (subPaths.hasMoreElements())
+//            {
+//                String next = subPaths.nextElement();
+//                entries.add(next);
+//                getEntryPaths(entries, next);
+//            }
+//        }
+        getEntryPaths2(entries, path); // call the new implementation
+    }
+
+    private void getEntryPaths2(Collection<String> entries, String path) {
+        // findEntries expect the path to begin with "/"
+        Enumeration e = b.findEntries(
+                path.startsWith("/") ? path : path.concat("/"), "*", true);
+         if (e != null) {
+             while (e.hasMoreElements()) {
+                 URL next = (URL)e.nextElement();
+                 String nextPath = next.getPath();
+                 // As per the OSGi R4 spec,
+                 // "The getPath method for a bundle entry URL must return
+                 // an absolute path (a path that starts with '/') to a resource
+                 // or entry in a bundle. For example, the URL returned from
+                 // getEntry("myimages/test .gif ") must have a path of
+                 // /myimages/test.gif.
+                 entries.add(nextPath.substring(1)); // remove the leading "/"
+             }
+         }
     }
 
     public Enumeration<String> entries(String prefix)
@@ -149,19 +240,13 @@ public class OSGiBundleArchive implements ReadableArchive
     }
 
     /**
-     * It always returns null.
+     * It returns URI for the underlying file if it can locate such a file.
+     * Else, it returns null.
      * @return
      */
     public URI getURI()
     {
-        // We can't use rely on bundle.getLocation() to arrive at the URI of the
-        // underlying archive. e.g., user can install like this:
-        // bundleContext.install ("file:/tmp/foo.jar", new URL("file:/tmp/bar.jar").openStream));
-        // In the above case, although location returns foo.jar, the actual archive
-        // is read from bar.jar. So, we return null.
-        // We prefer to return null as opposed to throwing an exception
-        // to keep the behavior same as MemoryMappedArchive.
-        return null;
+        return uri;
     }
 
     public long getArchiveSize() throws SecurityException
@@ -171,14 +256,6 @@ public class OSGiBundleArchive implements ReadableArchive
 
     public String getName()
     {
-        // See if there is a symbolic name. Use that, else use location.
-        String name = b.getSymbolicName();
-        if (name == null) name = b.getLocation();
-        // Only return the part after last slash (/).
-        // If it ends with /, then return the portion before it.
-        if (name.endsWith("/")) name = name.substring(0, name.length()-1);
-        int slash = name.lastIndexOf("/");
-        if (slash != -1) name = name.substring(slash+1);
         return name;
     }
 

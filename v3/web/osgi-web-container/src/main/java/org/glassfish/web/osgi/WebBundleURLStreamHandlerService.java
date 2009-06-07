@@ -38,7 +38,13 @@
 package org.glassfish.web.osgi;
 
 import org.osgi.service.url.AbstractURLStreamHandlerService;
-import org.osgi.framework.Constants;
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
+import static org.osgi.framework.Constants.IMPORT_PACKAGE;
+import static org.glassfish.web.osgi.Constants.WEB_CONTEXT_PATH;
+import static org.glassfish.web.osgi.Constants.WEB_JSP_EXTRACT_LOCATION;
+import static org.glassfish.web.osgi.Constants.WEB_BUNDLE_SCHEME;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,8 +57,6 @@ import java.net.URLConnection;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Collections;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -79,16 +83,11 @@ import java.util.Arrays;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebBundleURLStreamHandlerService extends AbstractURLStreamHandlerService
+public class WebBundleURLStreamHandlerService
+        extends AbstractURLStreamHandlerService
 {
     private static final Logger logger = Logger.getLogger(
             WebBundleURLStreamHandlerService.class.getPackage().getName());
-
-    public static final String WEB_BUNDLE_SCHEME = "webbundle";
-
-    public static final String WEB_CONTEXT_PATH = "Web-ContextPath";
-
-    public static final String WEB_JSP_EXTRACT_LOCATION = "Web-JSPExtractLocation";
 
     /**
      * These are the query parameters that are understood by this stream handler
@@ -97,10 +96,10 @@ public class WebBundleURLStreamHandlerService extends AbstractURLStreamHandlerSe
      * @see #setURL(java.net.URL, String, String, int, String, String, String, String, String)
      */
     private static String[] supportedQueryParamNames = {
-        Constants.BUNDLE_SYMBOLICNAME,
-            Constants.BUNDLE_VERSION,
-            Constants.BUNDLE_MANIFESTVERSION,
-            Constants.IMPORT_PACKAGE,
+        BUNDLE_SYMBOLICNAME,
+            BUNDLE_VERSION,
+            BUNDLE_MANIFESTVERSION,
+            IMPORT_PACKAGE,
             WEB_CONTEXT_PATH,
             WEB_JSP_EXTRACT_LOCATION
     };
@@ -151,9 +150,18 @@ public class WebBundleURLStreamHandlerService extends AbstractURLStreamHandlerSe
     }
 
     @Override
-    protected void setURL(URL u, String proto, String host, int port, String auth, String user, String path, String query, String ref)
+    protected void setURL(URL u,
+                          String proto,
+                          String host,
+                          int port,
+                          String auth,
+                          String user,
+                          String path,
+                          String query,
+                          String ref)
     {
-        logger.logp(Level.INFO, "WebBundleURLStreamHandlerService", "setURL() called with",
+        logger.logp(Level.INFO, "WebBundleURLStreamHandlerService",
+                "setURL() called with",
                 "u = [{0}], proto = [{1}], host = [{2}], port = [{3}], " +
                         "auth = [{4}], user = [{5}], path = [{6}], " +
                         "query = [{7}], ref = [{7}]",
@@ -187,7 +195,8 @@ public class WebBundleURLStreamHandlerService extends AbstractURLStreamHandlerSe
                 // with supported query params. If it does not, then
                 // treat this as embedded URL's query and hence add it to path.
                 int eq = query.indexOf("=");
-                String firstQueryParam = eq != -1 ? query.substring(0, eq) : query;
+                String firstQueryParam = eq != -1 ?
+                        query.substring(0, eq) : query;
                 if (!Arrays.asList(supportedQueryParamNames).contains(firstQueryParam)) {
                     path = path.concat("?").concat(query);
                     query = null;

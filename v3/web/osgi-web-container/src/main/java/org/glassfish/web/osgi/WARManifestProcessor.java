@@ -37,33 +37,37 @@
 
 package org.glassfish.web.osgi;
 
-import org.osgi.framework.Constants;
-import static org.osgi.framework.Constants.*;
-import static org.glassfish.web.osgi.WebBundleURLStreamHandlerService.*;
+import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
+import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
+import static org.osgi.framework.Constants.IMPORT_PACKAGE;
 
-import java.util.jar.Manifest;
-import java.util.jar.JarInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
-import java.util.StringTokenizer;
-import java.util.Properties;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URL;
-import java.io.IOException;
 
 /**
  * When a deployer installs a bundle with
- * {@link WebBundleURLStreamHandlerService#WEB_BUNDLE_SCHEME},
+ * {@link Constants#WEB_BUNDLE_SCHEME},
  * our registered handler gets a chance to look at the stream and process the
  * MANIFEST.MF. It adds necessary OSGi metadata as specified in section #5.2.1.2
  * of RFC #66. It uses the following information during computation:
- *  - WAR manifest entries, i.e., developer supplied data
- *  - Properties supplied via URL query parameters
- *  - Other information present in the WAR, e.g., existence of any jar in
- *    WEB-INF/lib causes that jar to be added as Bundle-ClassPath.
+ * - WAR manifest entries, i.e., developer supplied data
+ * - Properties supplied via URL query parameters
+ * - Other information present in the WAR, e.g., existence of any jar in
+ * WEB-INF/lib causes that jar to be added as Bundle-ClassPath.
  * For exact details, refer to the spec.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -74,13 +78,16 @@ public class WARManifestProcessor
             Logger.getLogger(WARManifestProcessor.class.getPackage().getName());
     private static final String DEFAULT_MAN_VERSION = "2";
     private static final String DEFAULT_IMPORT_PACKAGE =
-                    "javax.servlet; javax.servlet.http; version=2.5, " +
+            "javax.servlet; javax.servlet.http; version=2.5, " +
                     "javax.servlet.jsp; javax.servlet.jsp.tagext;" +
-                        "javax.el; javax.servlet.jsp.el; version=2.1";
+                    "javax.el; javax.servlet.jsp.el; version=2.1";
     // We always add WEB-INF/classes/, because not adding has the adverse
     // side effect of Bundle-ClassPath defaulting to "." by framework
     // in case there is no lib jar.
     private static final String DEFAULT_BUNDLE_CP = "WEB-INF/classes/";
+
+    static AtomicInteger id = new AtomicInteger();
+
     /**
      * Reads content of the given URL, uses it to come up with a new Manifest.
      *
@@ -90,23 +97,38 @@ public class WARManifestProcessor
      */
     public static Manifest processManifest(URL url) throws IOException
     {
-        JarInputStream jis = new JarInputStream(url.openStream());
+        final JarInputStream jis = new JarInputStream(url.openStream());
         try
         {
             final List<String> libs = new ArrayList<String>();
-            JarHelper.accept(jis, new JarHelper.Visitor() {
+
+            // It is a StringBuilder, as a String is immutable.
+            final StringBuilder contextRoot = new StringBuilder();
+            JarHelper.accept(jis, new JarHelper.Visitor()
+            {
                 public void visit(JarEntry je)
                 {
                     String name = je.getName();
                     String LIB_DIR = "WEB-INF/lib/";
                     String JAR_EXT = ".jar";
                     if (!je.isDirectory() && name.startsWith(LIB_DIR) &&
-                            name.endsWith(JAR_EXT)) {
+                            name.endsWith(JAR_EXT))
+                    {
                         String jarName = name.substring(LIB_DIR.length());
-                        if (!jarName.contains("/")) {
+                        if (!jarName.contains("/"))
+                        {
                             // only jar files directly in lib dir are considered
                             // as library jars.
                             libs.add(name);
+                        }
+                    }
+                    String SUN_WEB_XML = "WEB-INF/sun-web.xml";
+                    if (!je.isDirectory() && je.getName().equals(SUN_WEB_XML))
+                    {
+                        String contextRoot1 = parseContextRoot(jis);
+                        if (contextRoot1 != null)
+                        {
+                            contextRoot.append(contextRoot1);
                         }
                     }
                 }
@@ -115,16 +137,24 @@ public class WARManifestProcessor
             Manifest oldManifest = jis.getManifest();
             Manifest newManifest = new Manifest(oldManifest);
             Attributes attrs = newManifest.getMainAttributes();
+            String defaultContextRoot = contextRoot.length() == 0 ?
+                    generateContextRoot(url) : contextRoot.toString();
+            process(queryParams, attrs, Constants.WEB_CONTEXT_PATH, defaultContextRoot);
             process(queryParams, attrs, BUNDLE_MANIFESTVERSION,
                     DEFAULT_MAN_VERSION);
-            process(queryParams, attrs, BUNDLE_SYMBOLICNAME, url.toString());
+
+            // exclude the leading '/' while using contextroot as name
+            String defaultSymName = defaultContextRoot.startsWith("/") ?
+                    defaultContextRoot.substring(1) : defaultContextRoot;
+            process(queryParams, attrs, BUNDLE_SYMBOLICNAME,
+                    defaultSymName);
             process(queryParams, attrs, BUNDLE_VERSION, null);
             String cp = convertToCP(libs);
-            cp = cp.length() > 0 ? 
+            cp = cp.length() > 0 ?
                     DEFAULT_BUNDLE_CP.concat(",").concat(cp) : DEFAULT_BUNDLE_CP;
             process(queryParams, attrs, BUNDLE_CLASSPATH, cp);
-            process(queryParams, attrs, WEB_CONTEXT_PATH, "TODO");
-            process(queryParams, attrs, WEB_JSP_EXTRACT_LOCATION, null);
+
+            process(queryParams, attrs, Constants.WEB_JSP_EXTRACT_LOCATION, null);
             process(queryParams, attrs, IMPORT_PACKAGE, DEFAULT_IMPORT_PACKAGE);
 
             // We add this attribute until we have added support for
@@ -138,11 +168,55 @@ public class WARManifestProcessor
         }
     }
 
-    private static String convertToCP(List<String> jars) {
+    private static String generateContextRoot(URL url)
+    {
+        String contextRoot;
+        // take the last part of path as context root.
+        String file = url.getFile();
+        // If it is a directory url, then remove the last /, so that we
+        // can get the last component of the path.
+        if (file.endsWith("/"))
+        {
+            file = file.substring(0, file.length());
+        }
+        int slash = file.lastIndexOf("/");
+        int dot = file.lastIndexOf(".");
+        if (slash != -1)
+        {
+            contextRoot = dot != -1 && dot > slash ?
+                    file.substring(slash, dot) :
+                    file.substring(slash);
+        }
+        else
+        {
+            contextRoot = "/osgiwar" + id.getAndIncrement();
+        }
+        return contextRoot;
+    }
+
+    private static String parseContextRoot(JarInputStream jis)
+    {
+        try
+        {
+            SunWebXmlParser parser = new SunWebXmlParser(jis);
+            return parser.getContextRoot();
+        }
+        catch (Exception e)
+        {
+            logger.logp(Level.WARNING, "WARManifestProcessor", "getContextRoot",
+                    "e = {0}", new Object[]{e});
+        }
+        return null;
+    }
+
+    private static String convertToCP(List<String> jars)
+    {
         StringBuilder cp = new StringBuilder();
-        for (int i = 0; i < jars.size(); ++i) {
+        for (int i = 0; i < jars.size(); ++i)
+        {
             cp.append(jars.get(i));
-            if (i < jars.size() -1) {
+            if (i < jars.size() - 1)
+            {
                 cp.append(",");
             }
         }
@@ -153,17 +227,21 @@ public class WARManifestProcessor
     {
         Properties queryParams = new Properties();
         String query = url.getQuery();
-        if (query != null) {
+        if (query != null)
+        {
             // "&" separates query paremeters
             StringTokenizer st = new StringTokenizer(query, "&");
-            while (st.hasMoreTokens()) {
+            while (st.hasMoreTokens())
+            {
                 String next = st.nextToken();
                 int eq = next.indexOf("=");
                 String name = next, value = null;
-                if (eq != -1) {
+                if (eq != -1)
+                {
                     name = next.substring(0, eq);
-                    if ((eq+1) < next.length()) {
-                        value = next.substring(eq+1);
+                    if ((eq + 1) < next.length())
+                    {
+                        value = next.substring(eq + 1);
                     }
                 }
                 queryParams.put(name, value);
@@ -177,13 +255,21 @@ public class WARManifestProcessor
     private static void process(Properties deployerOptions,
                                 Attributes developerOptions,
                                 String key,
-                                String defaultOption) {
+                                String defaultOption)
+    {
         String deployerOption = deployerOptions.getProperty(key);
         String developerOption = developerOptions.getValue(key);
         String finalOption = defaultOption;
-        if (deployerOption != null) finalOption = deployerOption;
-        else if (developerOption != null) finalOption = developerOption;
-        if (finalOption != developerOption) {
+        if (deployerOption != null)
+        {
+            finalOption = deployerOption;
+        }
+        else if (developerOption != null)
+        {
+            finalOption = developerOption;
+        }
+        if (finalOption != developerOption)
+        {
             developerOptions.putValue(key, finalOption);
         }
     }
