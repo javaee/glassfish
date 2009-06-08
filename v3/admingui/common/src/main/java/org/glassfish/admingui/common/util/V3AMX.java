@@ -146,10 +146,11 @@ public class V3AMX {
             for(String key : attrMap.keySet()){
                 if (skipAttr.contains(key))
                     continue;
-                if (!(attrMap.get(key) instanceof String)){
+                Object val = attrMap.get(key);
+                if ((val != null) && (!(val instanceof String))){
                     continue;
                 }
-                Attribute attr = new Attribute(key, (String)attrMap.get(key));
+                Attribute attr = new Attribute(key, (String)val);
                 attrList.add(attr);
             }
             setAttributes(objectName, attrList);
