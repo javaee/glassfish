@@ -22,6 +22,8 @@
  */
 package org.glassfish.appclient.server.connector;
 
+import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import java.util.jar.Manifest;
 import org.glassfish.internal.deployment.GenericSniffer;
 
@@ -79,7 +81,21 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
             Manifest manifest = location.getManifest();
             if (manifest != null && 
                 manifest.getMainAttributes().containsKey(Attributes.Name.MAIN_CLASS)) {
-                return true;
+                final String uriPath = location.getURI().getPath();
+                /*
+                 * Make sure the module's name ends with .jar if it's an archive
+                 * or jar/ (either .jar/ or _jar/) if it's a directory.  We need
+                 * to handle both .jar/ and _jar/ because either suffix could
+                 * appear in the name of the expanded subdirectory for an app
+                 * client inside an EAR.  
+                 */
+                final boolean isJarArchive = uriPath.endsWith(".jar") &&
+                        (location instanceof InputJarArchive);
+                final boolean isJarDir = 
+                          (uriPath.endsWith(".jar/")
+                           || uriPath.endsWith("_jar/")) &&
+                          (location instanceof FileArchive);
+                return isJarArchive || isJarDir;
             }
         } catch (IOException ignore) {
         }
