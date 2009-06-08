@@ -10,13 +10,41 @@ import static org.glassfish.enterprise.admin.ncli.ParseUtilities.*;
 import static org.glassfish.enterprise.admin.ncli.ParseUtilities.getOptionSymbolFromShortOption;
 import static org.glassfish.enterprise.admin.ncli.ParseUtilities.hasOptionNameAndValue;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-/**
+
+/** An Ad-hoc parser that does at least two passes of the given command line (as an array of string arguments). Here are
+ *  the goals of the Parser:
+ * <ul>
+ *   <li> Perform the first pass based on known asadmin program options. See {@link ProgramOptionBuilder}. The result of
+ *        this pass is a syntax error as far as program options and their values are concerned, identification of a
+ *        a server that possibly implements that command, and command's arguments as a list of strings. It the command's
+ *        argument is an option, it will always be in the form "name=value" as a single string. The operands will
+ *        be available verbatim. A successful first pass means no syntax error as far as the program options and
+ *        command name is concerned. Anything that should be parsed for errors is put into the array of command arguments.
+ *   </li>
+ *   <li> Perform the second pass based on results of the first pass. Thus, knowing the command metadata (gotten from
+ *        either running server or from a command metadata cache) and command arguments, another pass of command
+ *        argument array is done. Any parsing errors are then reported as syntax errors. </li>
+ *   <li> Both passes throw ParserException in case of syntax errors. </li>
+ * </ul>
+ *  The grammar for CLIP-compliant command line is rather complex and not fully specified in some cases. It's also not
+ *  clear what happened to the CLIP OpenSolaris case, although a CLIP companion is available 
+ *  <a href="http://arc.opensolaris.org/caselog/PSARC/2006/062/spec.opensolaris.clip.html"> here </a>. The parser also
+ *  supports the old syntax (asadmin program options intermixed with command options) for compatibility
+ *  new syntax (work TODO).
+ *
+ *  All instances of this class are immutable.
+ *
+ * Note that the name of a command is treated specially. Since not all legacy commands are implemented for GlassFish v3
+ * and the legacy commands that suuport the old syntax, we need this kind of distinction.
+ *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * @see ProgramOptionBuilder
  */
+
 final class Parser {
     private static final ProgramOptionBuilder POB = ProgramOptionBuilder.getInstance();
-    final Set<String> slc  = new HashSet<String>();
-    final Set<String> uslc = new HashSet<String>();
+    private final Set<String> slc  = new HashSet<String>();
+    private final Set<String> uslc = new HashSet<String>();
 
     private final String[] args;
     private final PrintStream out;
@@ -27,7 +55,8 @@ final class Parser {
     Parser(String[] args, PrintStream out, PrintStream err) {
         if (args == null || out == null)
             throw new IllegalArgumentException("null arg");
-        this.args = args;
+        this.args = new String[args.length];
+        System.arraycopy(args, 0, this.args, 0, args.length);
         this.out  = out;
         this.err  = err;
         initialize();

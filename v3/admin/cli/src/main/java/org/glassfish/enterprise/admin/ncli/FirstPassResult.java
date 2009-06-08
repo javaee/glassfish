@@ -28,6 +28,12 @@ final class FirstPassResult {
     private final Set<Option> programOptions;
     private final String[] cmdArgs;
 
+    /** The only constructor.
+     * 
+     * @param cmdName String representing command name, may not be null
+     * @param poPair A Map<String, String> between option names and their values
+     * @param cmdArgs Unresolved command options and operands as string array
+     */
     FirstPassResult(String cmdName, Map<String, String> poPair, String[] cmdArgs) {
         if (cmdName == null || poPair == null || cmdArgs == null)
             throw new IllegalArgumentException("null_arg");
@@ -38,19 +44,46 @@ final class FirstPassResult {
         System.arraycopy(cmdArgs, 0, this.cmdArgs, 0, cmdArgs.length);
     }
 
+    /** Returns the name of the command to be run.
+     *
+     * @return String representing the name. Never returns null
+     */
     String getCommandName() {
         return cmdName;
     }
 
+    /** Returns an instance of TargetServer representing the target server.
+     *
+     * @return TargetServer instance. The returned instance is immutable.
+     */
     TargetServer getTargetServer() {
         return ts;
     }
 
+    /** Returns a copy of command arguments. These may contain command options (resolved as name-value pairs to an extent possible)
+     *  like "name=value" and operands. Returned array is a copy and any changes to the copy made by the caller won't
+     *  affect the state of this instance. The copy ensures the immutability of this instance.
+     *
+     * @return a String array. Never returns a null
+     */
     String[] getCommandArguments() {
-        return cmdArgs;
+        int length = cmdArgs.length;
+        String[] copy = new String[length];
+        System.arraycopy(cmdArgs, 0, copy, 0, length);
+        return copy;
     }
 
-    public Set<Option> getProgramOptions() {
+    /** Returns an <i> unmodifiable view </i> of the program options as a set. This class makes sure that asadmin program
+     *  options are initialized to values given on the command line, defaulting the rest of them based on metadata.
+     *  This is one of the responsibilities of this class and parser's first pass.
+     *  <p>
+     *  Since instances of the Option class are themselves immutable, this class is made immutable.
+     * 
+     * @return an unmodifiable set of asadmin program options.
+     * @see {@link ProgramOptionBuilder}
+     * @see {@link Parser#firstPass()}
+     */
+    Set<Option> getProgramOptions() {
         return programOptions;
     }
 
