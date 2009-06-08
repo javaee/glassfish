@@ -53,7 +53,7 @@
         <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.button.AddProperty}" >   
             <!command
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value"});
+                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"Name", "Value", "Description"});
             />                                 
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.DeleteProperties}" disabled="#{true}" primary="#{false}">
@@ -61,7 +61,7 @@
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{trg});   
                 getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});
                 deleteTableRows(tableRowGroup="${trg}" rowKeys="${rowKeys}");
-		commitTableRowGroup(tableRowGroup="${trg}");  
+                commitTableRowGroup(tableRowGroup="${trg}");
             />                                
         </sun:button>
     </sun:panelGroup>
