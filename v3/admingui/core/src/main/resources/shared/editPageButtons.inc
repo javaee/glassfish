@@ -54,14 +54,12 @@
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
                 if(#{pageSession.hasPropertySheet}){
-println("=================== AAAA ===========");
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                     );
                 }
                 if (#{pageSession.hasPropertyTable}){
-println("=================== TTTT ===========");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}");
