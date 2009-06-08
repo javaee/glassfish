@@ -4980,6 +4980,7 @@ public class StandardContext
         ServletContextEvent event =
             new ServletContextEvent(getServletContext());
         for (int i = 0; i < listeners.length; i++) {
+            // Invoke in reverse order of declaration
             int j = (listeners.length - 1) - i;
             if (listeners[j] == null) {
                 continue;
