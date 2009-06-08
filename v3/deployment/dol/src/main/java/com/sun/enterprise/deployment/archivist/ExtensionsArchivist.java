@@ -62,12 +62,10 @@ public abstract class ExtensionsArchivist  {
              is = archive.getEntry(confDD.getDeploymentDescriptorPath());
              if (is == null) {
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.logp(Level.FINE, "Archivist",
-                            "readPersistenceDeploymentDescriptor",
-                            "{0} does not contain {1}, so it is not a {2} module",
-                            new Object[]{archive.getURI(),
+                    logger.log(Level.FINE, "Deployment descriptor: " +
                                     confDD.getDeploymentDescriptorPath(),
-                                    getModuleType()});
+                                    " does not exist in archive: " + 
+                                    archive.getURI().getSchemeSpecificPart());
                 }
 
              } else {
