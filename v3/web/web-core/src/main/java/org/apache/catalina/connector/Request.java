@@ -4031,12 +4031,12 @@ public class Request
     }
 
     @Override
-    public Iterable<Part> getParts() throws ServletException {
+    public Iterable<Part> getParts() throws IOException, ServletException {
         return getMultipart().getParts();
     }
 
     @Override
-    public Part getPart(String name) throws ServletException {
+    public Part getPart(String name) throws IOException, ServletException {
         return getMultipart().getPart(name);
     }
 

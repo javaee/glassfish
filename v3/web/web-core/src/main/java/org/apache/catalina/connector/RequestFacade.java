@@ -1158,7 +1158,7 @@ public class RequestFacade
 
 
     @Override
-    public Iterable<Part> getParts() throws ServletException {
+    public Iterable<Part> getParts() throws IOException, ServletException {
         if (request == null) {
             throw new IllegalStateException(
                 sm.getString("requestFacade.nullRequest"));
@@ -1168,7 +1168,7 @@ public class RequestFacade
 
 
     @Override
-    public Part getPart(String name) throws ServletException {
+    public Part getPart(String name) throws IOException, ServletException {
         if (request == null) {
             throw new IllegalStateException(
                 sm.getString("requestFacade.nullRequest"));
