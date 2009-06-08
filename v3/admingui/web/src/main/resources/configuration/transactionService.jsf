@@ -43,61 +43,61 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getTransactionServiceSettings(ConfigName="#{configName}", OnRestart=>$attribute{onRestart}, Timeout=>$attribute{timeout}, Retry=>$attribute{retry}, LogLocation=>$attribute{logLocation}, Heuristic=>$attribute{heuristic}, KeyPoint=>$attribute{keyPoint}, Properties=>$page{props});
-        getTableList(Properties="#{props}", TableList=>$attribute{tableList});        
-        />   
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="childType" value="transaction-service");
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=transaction-service");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/transactionService.jsf");
+        setPageSessionAttribute(key="convertToFalseList" value={"AutomaticRecovery"});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+    />
+     
     </event>   
 #include "/shared/restart.inc"    
             <sun:form id="propertyForm">
-        //#include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.ts.TransactionService}" helpText="$resource{i18n_web.ts.PageHelp}">
-                    <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
-                        <!command
-                            getTransactionServiceDefaultSettings(ConfigName="#{configName}", OnRestart=>$attribute{onRestart}, Timeout=>$attribute{timeout}, Retry=>$attribute{retry}, LogLocation=>$attribute{logLocation}, Heuristic=>$attribute{heuristic}, KeyPoint=>$attribute{keyPoint});                    
-                        />
-                    </sun:button>
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-#include "/web/configuration/transactionServiceButtons.inc"
-                    </facet>    
-                    </sun:title>
+#include "/web/grizzly/buttons.inc"
+                </sun:title>
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="onRestartProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.ts.OnRestart}" helpText="$resource{i18n_web.ts.OnRestartHelp}">
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{onRestart}" > 
+                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['AutomaticRecovery']}" selectedValue="true">
                                </sun:checkbox>
                             </sun:property>                       
                             <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.ts.Timeout}" helpText="$resource{i18n_web.ts.TimeoutHelp}">
-                                <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" text="#{timeout}" />
+                                <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['TimeoutInSeconds']}" />
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>                        
                             <sun:property id="retryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.ts.Retry}" helpText="$resource{i18n_web.ts.RetryHelp}">
-                                <sun:textField id="Retry" styleClass="integer" columns="$int{10}" text="#{retry}" />
+                                <sun:textField id="Retry" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['RetryTimeoutInSeconds']}" />
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>
                             <sun:property id="logLocationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.ts.LogLocation}">
-                                <sun:textField id="LogLocation" columns="$int{55}" text="#{logLocation}"/> 
+                                <sun:textField id="LogLocation" columns="$int{55}" text="#{pageSession.valueMap['TxLogDir']}"/>
                             </sun:property>    
                             <sun:property id="heuristicProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.ts.HeuristicDesc}" helpText="$resource{i18n_web.ts.HeuristicDescHelp}">
-                               <sun:dropDown id="Heuristic" selected="#{heuristic}" labels={"$resource{i18n_web.ts.rollback}" "$resource{i18n_web.ts.commit}"} values={"rollback" "commit"} >
+                               <sun:dropDown id="HeuristicDecision" selected="#{pageSession.valueMap['HeuristicDecision']}" labels={"$resource{i18n_web.ts.rollback}" "$resource{i18n_web.ts.commit}"} values={"rollback" "commit"} >
                                 </sun:dropDown>
                              </sun:property>    
                             <sun:property id="keyPointProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.ts.KeypointInterval}" helpText="$resource{i18n_web.ts.KeypointIntervalHelp}">
-                                <sun:textField id="Keypoint" styleClass="integer" columns="$int{10}" text="#{keyPoint}" />
+                                <sun:textField id="Keypoint" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['KeypointInterval']}" />
                             </sun:property>                                                             
                             "<br /><br />
                         </sun:propertySheetSection>
-
                     </sun:propertySheet>       
-#include "/shared/propertyTable.inc"
+#include "/shared/propertyDescTable.inc"
                 <sun:title id="propertyContentPage2">
-                    <!facet pageButtonsBottom>
-#include "/web/configuration/transactionServiceButtons.inc"
-                    </facet>    
+#include "/web/grizzly/buttons.inc"
                 </sun:title>                
 	<sun:hidden id="helpKey" value="$resource{help_web.transactionService}" />
             </sun:form>
