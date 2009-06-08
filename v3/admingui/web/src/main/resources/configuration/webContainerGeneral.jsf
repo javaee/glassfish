@@ -67,7 +67,7 @@
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_web.headings.webGeneral}">
-#include "/web/grizzly/buttons.inc"
+#include "/shared/editPageButtons.inc"
 </sun:title>
 
 #include "/shared/propertyDescTable.inc"

@@ -67,7 +67,7 @@
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.managerProp}">
-#include "/web/grizzly/buttons.inc"
+#include "/shared/editPageButtons.inc"
 </sun:title>
 
     <sun:propertySheet requiredFields="#{hasRequiredFields}">

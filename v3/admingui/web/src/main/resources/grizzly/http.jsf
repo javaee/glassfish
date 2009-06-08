@@ -44,7 +44,6 @@
 
    <event>
     <!beforeCreate
-        setPageSessionAttribute(key="edit" value="#{true}" );
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/http.jsf");
@@ -56,8 +55,12 @@
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"EnableCometSupport"});
         setSessionAttribute(key="protocolTabs" value="httpTab");
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
     />
     </event>
 #include "/shared/restart.inc"
@@ -67,7 +70,7 @@
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.httpPageTitle}" helpText="$resource{i18n_web.grizzly.httpPageTitleHelp}">
-#include "/web/grizzly/buttons.inc"
+#include "/shared/editPageButtons.inc"
                     </sun:title>
     <sun:propertySheet id="propertySheet">
 #include "/web/grizzly/httpAttr.inc"

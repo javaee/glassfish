@@ -64,7 +64,7 @@
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.ts.TransactionService}" helpText="$resource{i18n_web.ts.PageHelp}">
-#include "/web/grizzly/buttons.inc"
+#include "/shared/editPageButtons.inc"
                 </sun:title>
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
@@ -97,7 +97,7 @@
                     </sun:propertySheet>       
 #include "/shared/propertyDescTable.inc"
                 <sun:title id="propertyContentPage2">
-#include "/web/grizzly/buttons.inc"
+#include "/shared/editPageButtons.inc"
                 </sun:title>                
 	<sun:hidden id="helpKey" value="$resource{help_web.transactionService}" />
             </sun:form>

@@ -44,7 +44,6 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        setPageSessionAttribute(key="edit" value="#{true}" );
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf");
@@ -54,8 +53,12 @@
         setPageSessionAttribute(key="childType" value="network-listener");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
     </event>
 #include "/shared/restart.inc"
@@ -64,7 +67,7 @@
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerEditPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerEditPageTitleHelp}">
-#include "/web/grizzly/buttons.inc"
+#include "/shared/editPageButtons.inc"
                 </sun:title>
                     "<br><br>
 
