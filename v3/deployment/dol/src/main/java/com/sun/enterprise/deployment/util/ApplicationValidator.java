@@ -66,6 +66,11 @@ public class ApplicationValidator extends EjbBundleValidator
      */
     public void accept(Application application) {
         this.application = application;
+        if (application.getBundleDescriptors().size() == 0) {
+            throw new IllegalArgumentException("Application [" + 
+                application.getRegistrationName() + 
+                "] contains no valid components");
+        }
     }
             
     /**

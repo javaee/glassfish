@@ -995,7 +995,9 @@ public class Application extends RootDeploymentDescriptor
             }
             // any children, this need to happen outside of the casting as the parent
             // type has nothing to do with the children extensions.
-            bundleSet.addAll(aModule.getDescriptor().getExtensionsDescriptors(type));
+            if (aModule.getDescriptor() != null) {
+                bundleSet.addAll(aModule.getDescriptor().getExtensionsDescriptors(type));
+            }
         }
         return bundleSet;
     }
