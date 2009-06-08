@@ -216,7 +216,7 @@ class PartItem
      * @param fileName      The original filename in the user's filesystem, or
      *                      <code>null</code> if not specified.
      */
-    public PartItem(Multipart multipart, PartHeaders partHeaders,
+    public PartItem(Multipart multipart, PartHeaders headers,
                     String fieldName, String contentType,
                     boolean isFormField, String fileName) {
 
