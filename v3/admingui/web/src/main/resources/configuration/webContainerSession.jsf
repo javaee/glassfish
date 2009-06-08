@@ -34,64 +34,59 @@
  holder.
 -->
 <!-- configuration/webContainerSession.jsf -->
+
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-//<sun:page id="page1">
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.webContainer.sessionProp}" >
 <!define name="content">
-    <event>
- <!beforeCreate
-    getRequestValue(key="configName" value=>$page{configName} default="server-config");
-    setSessionAttribute(key="webContainerTabs" value="sessionTab");
-    getWebSessionProps(ConfigName="#{configName}", SessionTimeout=>$attribute{sessionTimeout} Properties=>$page{props});
-    getTableList(Properties="#{props}", TableList=>$attribute{tableList});
- />
- </event>
+<event>
+    <!beforeCreate
+        setSessionAttribute(key="webContainerTabs" value="sessionTab");
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/web-container,type=session-config");
+        setPageSessionAttribute(key="childType" value="session-properties");
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/web-container/session-config,type=session-properties");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/webContainerSession.jsf");
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+
+    />
+    </event>
+
 #include "/shared/restart.inc"
 
-            <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
+            <sun:form id="form1">
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
-                <!-- Page Title -->
-                 <sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.sessionProp}" >
-                     <!-- Buttons  -->
-                     <!facet pageButtonsTop>
-                     <sun:panelGroup id="topButtons">
-                         <sun:button id="saveButton" text="$resource{i18n.button.Save}"
-                             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                         <!command
-                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                         convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                         prepareSuccessfulMsg();
-                         setPageSessionAttribute(key="props", value="${newProps}");
-                         saveWebSessionProps(
-                             ConfigName="#{configName}"
-                             SessionTimeout="#{sessionTimeout}"
-                             newProps="${newProps}"
-                         );
-                         />
-                         </sun:button>
-                     </sun:panelGroup>
-                     </facet>
-                     </sun:title>
-                     <!-- PropertySheet .... -->
-                     <sun:propertySheet id="propertySheet">
-                         <!-- Text Field section -->
-                         <sun:propertySheetSection id="propertySectionTextField">
-                            <sun:property id="SessionTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webSession.sessionTimeoutLabel}" >
-                                <sun:textField id="SessionTimeout" styleClass="integer" columns="$int{20}" text="#{requestScope.sessionTimeout}" />
-                                <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
-                            </sun:property>
-                         </sun:propertySheetSection>
-                     </sun:propertySheet>
-#include "/shared/propertyTable.inc"
+<sun:title id="propertyContentPage" title="$resource{i18n_web.webContainer.sessionProp}">
+#include "/web/grizzly/buttons.inc"
+</sun:title>
 
-	<sun:hidden id="helpKey" value="$resource{help_web.webContainerSession}" />
-            </sun:form>
+    <sun:propertySheet requiredFields="#{hasRequiredFields}">
+    <sun:propertySheetSection>
+        <sun:property id="SessionTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webSession.sessionTimeoutLabel}" helpText="$resource{i18n_web.webSession.sessionTimeoutHelp}">
+            <sun:textField id="SessionTimeout" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['TimeoutInSeconds']}" />
+            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+        </sun:property>
+
+    </sun:propertySheetSection>
+    </sun:propertySheet>
+
+#include "/shared/propertyDescTable.inc"
+
+<sun:hidden id="helpKey" value="$resource{help_web.webContainerSession}" />
+
+    </sun:form>
+    "<br/>
 #include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
+

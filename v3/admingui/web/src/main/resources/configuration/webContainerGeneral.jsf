@@ -49,8 +49,14 @@
         setPageSessionAttribute(key="childType" value="property");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/webContainerGeneral.jsf");
+        
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+
     />
     </event>
 
@@ -61,30 +67,12 @@
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_web.headings.webGeneral}">
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton"  text="$resource{i18n.button.Save}" 
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-                <!command
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                saveWebContainerGeneralProps(
-                    ConfigName="#{configName}",
-                    newProps="${newProps}"
-                );
-                //setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}");
-                prepareSuccessfulMsg();
-                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
-                />    
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
+#include "/web/grizzly/buttons.inc"
+</sun:title>
 
 #include "/shared/propertyDescTable.inc"
     	<sun:hidden id="helpKey" value="$resource{help_web.webContainerGeneral}" />
-            </sun:title>
-            </sun:form>
+</sun:form>
             "<br/>
 #include "/shared/changeButtonsJS.inc" 
     </define>

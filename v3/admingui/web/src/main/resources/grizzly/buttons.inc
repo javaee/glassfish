@@ -33,7 +33,15 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- grizzly/buttons.inc -->
+<!-- buttons.inc -->
+
+    <!-- To use this general include files for page buttons,  the following page Session attributes should be set:
+        setPageSessionAttribute(key="edit" value="#{false}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+    -->
 
     <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDefaultButton}"  primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
         <!command
@@ -45,15 +53,21 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
+                if(#{pageSession.hasPropertySheet}){
+                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                    );
+                }
+                if (#{pageSession.hasPropertyTable}){
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}");
+                }
                 prepareSuccessfulMsg();
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                    skipAttrs="#{pageSession.skipAttrsList}"
-                    convertToFalse="#{pageSession.convertToFalseList}"
-                );
                 redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
-
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
