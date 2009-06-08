@@ -324,7 +324,6 @@ public class proxyHandlers {
                 configTools.clearProperties(objectName);
             }else{
                 for(Map<String, String> oneRow : propertyList){
-                    oneRow.remove("selected");
                     Map newRow = new HashMap();
                     final String  name = oneRow.get(PROPERTY_NAME);
                     if (GuiUtil.isEmpty(name)){
@@ -333,6 +332,8 @@ public class proxyHandlers {
                     if (propertyNames.contains(name)){
                         GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
                         return;
+                    }else{
+                        propertyNames.add(name);
                     }
                     
                     String value = oneRow.get(PROPERTY_VALUE);
@@ -347,7 +348,7 @@ public class proxyHandlers {
                     }
                     newList.add(newRow);
                 }
-                System.out.println("============ call configToos.setProperties() \n objectName="+objectName + "\npropertyList="+newList.toString());
+                //System.out.println("============ call configToos.setProperties() \n objectName="+objectName + "\npropertyList="+newList.toString());
                 configTools.setProperties(objectName, newList, true);
             }
         }catch (Exception ex){
