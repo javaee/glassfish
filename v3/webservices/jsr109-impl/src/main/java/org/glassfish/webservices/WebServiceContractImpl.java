@@ -4,6 +4,7 @@ import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.invocation.InvocationManager;
@@ -30,6 +31,10 @@ public class WebServiceContractImpl implements WebServicesContract{
 
 
     @Inject
+    private Habitat habitat;
+
+
+    @Inject
     private InvocationManager invManager;
 
 
@@ -41,6 +46,11 @@ public class WebServiceContractImpl implements WebServicesContract{
     public ComponentEnvManager getComponentEnvManager() {
         return compEnvManager;  
     }
+
+    public Habitat getHabitat() {
+        return habitat;
+    }
+
 
     public InvocationManager getInvocationManager() {
             return invManager;

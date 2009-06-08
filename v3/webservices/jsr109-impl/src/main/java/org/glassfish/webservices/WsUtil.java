@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.VirtualServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.impl.util.InjectionManagerImpl;
 
 import java.util.*;
@@ -2358,8 +2359,10 @@ public class WsUtil {
             
             // perform injection
             try {
-                //TODO BM this should be@Inject with InjectionManager
-                new InjectionManagerImpl().injectInstance(handler);
+                
+                WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+                InjectionManager injManager = wscImpl.getHabitat().getByContract(InjectionManager.class);
+                injManager.injectInstance(handler);
             } catch(InjectionException e) {
                 logger.severe("Handler " + h.getHandlerClass() + 
                             " instance injection failed : " + e.getMessage());
