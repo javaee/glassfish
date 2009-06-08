@@ -20,6 +20,20 @@
       <antcall target="clean-common"/>
     </target>
 
+<path id="class.path">
+        <fileset dir="${env.AS_HOME}/modules">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.APS_HOME}/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+
+    </path>
+
+
     <target name="setup" depends="assemble-web, assemble-client, deploy-app, deploy-client"/>
 
     <target name="compile" depends="init-common">
@@ -50,7 +64,7 @@
           value="-b custom-client.xml -keep -d ${build.classes.dir}/webclient/WEB-INF/classes ${env.APS_HOME}/devtests/webservice/annotations/svchandler-1/SubtractNumbers.wsdl"/>
       </antcall>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
-            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
+            classpathref="class.path" 
             includes="webclient/**"/>
       <copy file="./client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
       <copy file="./client-sun-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/sun-web.xml"/>
