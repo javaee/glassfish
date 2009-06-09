@@ -152,6 +152,13 @@
 	    expanded="$boolean{true}"
 	    >
 	</sun:treeNode>
+    <sun:treeNode id="systemProps"
+        text="$resource{i18n.tree.systemProps}"
+	    url="/configuration/systemProperties.jsf?configName=#{configName}"
+	    imageURL="/resource/images/system_properties.png"
+	    target="main"
+        >
+    </sun:treeNode>
     </sun:tree>
     <event>
 	<!afterCreate
