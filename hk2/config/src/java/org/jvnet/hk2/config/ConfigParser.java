@@ -42,13 +42,14 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.Dom.Child;
 
 import javax.xml.stream.XMLInputFactory;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Parses configuration files, builds {@link Inhabitant}s,
@@ -123,8 +124,17 @@ public class ConfigParser {
      */
     protected Dom handleElement(XMLStreamReader in,DomDocument document, Dom parent) throws XMLStreamException {
         ConfigModel model = document.getModelByElementName(in.getLocalName());
-        if(model==null)
-            throw new XMLStreamException("Unrecognized element "+in.getLocalName(),in.getLocation());
+        if(model==null) {
+            String localName = in.getLocalName();
+            Logger.getAnonymousLogger().severe("Ignoring unrecognized element "+in.getLocalName() + " at " + in.getLocation() + "ignoring");
+            // flush the sub element content from the parser
+            while (in.nextTag()!=END_ELEMENT && !in.getLocalName().equals(localName)) {
+                Logger.getAnonymousLogger().fine("Jumping over " + in.getLocalName());
+            }
+            // get to the next START_ELEMENT
+            in.nextTag();
+            return null;
+        }
         return handleElement(in,document,parent,model);
     }
 
