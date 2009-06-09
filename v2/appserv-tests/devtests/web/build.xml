@@ -237,6 +237,7 @@
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
+<!-- XXX temporarily commented out, see IT 8315
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncCrossContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncContextZeroArgDispatch" target="all"/>
@@ -247,6 +248,7 @@
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
+-->
     </target>
 
     <target name="web-container">
