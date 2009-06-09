@@ -89,10 +89,13 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
     private String adminUser = null;
     private String adminPassword = null;
     private String masterPassword = null;
+    private boolean checkPorts;
 
     @Override
     public boolean validateOptions() throws CommandValidationException {
-        return super.validateOptions();
+        boolean ret = super.validateOptions();
+        checkPorts = getBooleanOption(CHECKPORTS_OPTION);
+        return ret;
     }
 
     public void verifyPortBase() throws CommandValidationException {
@@ -262,6 +265,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
     Verify that the port is valid.
     Port must be greater than 0 and less than 65535.
     This method will also check if the port is in use.
+    If checkPorts is false it does not throw an Exception if it is in use.
     @param portNum - the port number to verify
     @throws CommandException if Port is not valid
     @throws CommandValidationException is port number is not a numeric value.
@@ -278,9 +282,13 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
                         new Object[]{portNum}));
 
             case inUse:
-                throw new CommandException(getLocalizedString("PortInUseMsg",
+                if(checkPorts)
+                    throw new CommandException(getLocalizedString("PortInUseError",
                         new Object[]{(String) operands.firstElement(), portNum}));
-
+                else
+                    CLILogger.getInstance().printWarning(getLocalizedString("PortInUseWarning",
+                        new Object[]{portNum}));
+                break;
             case noPermission:
                 throw new CommandException(getLocalizedString("NoPermissionForPortMsg",
                         new Object[]{portNum, (String) operands.firstElement()}));
@@ -291,6 +299,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
 
             case OK:
                 CLILogger.getInstance().printDebugMessage("Port =" + portToVerify);
+                break;
         }
     }
 
@@ -325,7 +334,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
             throw new CommandValidationException(getLocalizedString("InvalidPortBaseRange",
                     new Object[]{portNum, portName}));
         }
-        if (getBooleanOption(CHECKPORTS_OPTION) && !NetUtils.isPortFree(portNum)) {
+        if (checkPorts && !NetUtils.isPortFree(portNum)) {
             throw new CommandValidationException(getLocalizedString("PortBasePortInUse",
                     new Object[]{portNum, portName}));
         }
@@ -465,7 +474,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
         }
 
         domainConfig.put(DomainConfig.K_VALIDATE_PORTS,
-                Boolean.valueOf(getBooleanOption(CHECKPORTS_OPTION)));
+                Boolean.valueOf(checkPorts));
         /* comment out for V3 until profiles decision is taken */
         // setUsageProfile(domainConfig);
         domainConfig.put(DomainConfig.KEYTOOLOPTIONS, getOption(KEYTOOLOPTIONS));
@@ -572,7 +581,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
             port = convertPortStr(defaultPort);
             defaultPortUsed = true;
         }
-        if (getBooleanOption(CHECKPORTS_OPTION) && !NetUtils.isPortFree(port)) {
+        if (checkPorts && !NetUtils.isPortFree(port)) {
             port = NetUtils.getFreePort();
             //don't understand why this is a printMessage not an Exception??
             //maybe there will always be a port ??
@@ -593,7 +602,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
                     Integer.valueOf(port)
                 }));
             } else {
-                CLILogger.getInstance().printDetailMessage(getLocalizedString("PortInUseMsg",
+                CLILogger.getInstance().printDetailMessage(getLocalizedString("PortInUseError",
                         new Object[]{name,
                     Integer.valueOf(port)
                 }));
