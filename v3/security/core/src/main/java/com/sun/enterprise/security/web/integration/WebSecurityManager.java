@@ -676,11 +676,20 @@ public class WebSecurityManager  {
       * ensure that policy is consulted to authorize each request.
       */
     public boolean hasNoConstrainedResources() {
-	if (allResourcesCP != null && allConnectionsCP != null) {
-	    boolean x = allResourcesCP.checkPermission();
-	    boolean y = allConnectionsCP.checkPermission();
-	    return x && y;
+        boolean result = false;
+        if (allResourcesCP != null && allConnectionsCP != null) {
+            boolean x = allResourcesCP.checkPermission();
+            boolean y = allConnectionsCP.checkPermission();
+            result = x && y;
+            if (result) {
+                try {
+                    setPolicyContext(CONTEXT_ID);
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
+            }
         }
-	return false;
+        return result;
     }
 }
+

@@ -411,14 +411,17 @@ public class WebPermissionUtil {
 	    BitSet connectMethods = m.getConnectMap(1<<i);
 	    if (i == 0) {
 		allConnectMethods = connectMethods;
-	    } 
-
+	    } else {
+ 		/* if connect type protected, remove methods 
+ 		 * that accept any connect
+ 		 */
+ 		connectMethods.andNot(allConnectMethods);
+  	    }
+            
 	    if (m.otherConstraint.isConnectAllowed(1<<i)) {
 		if (i != 0 && allConnectAtOther) {
-		    /* if connect type protected, and all connect allowed 
-		     * at other, remove methods that accept any connect,
-		     */
-		    connectMethods.andNot(allConnectMethods);
+		    /* if all connect allowed at other
+  		     */
 		    if (connectMethods.isEmpty()) {
 			/* skip, if remainder is empty, because methods
 			 * that accept any connect were handled at i==0. 
@@ -437,12 +440,6 @@ public class WebPermissionUtil {
 		    }
 		}
 	    } else if (!connectMethods.isEmpty()) {
-		if (i != 0) {
-		    connectMethods.andNot(allConnectMethods);
-		    if (connectMethods.isEmpty()) {
-			continue;
-		    }
-		} 
 		actions = MethodValue.getActions(connectMethods) ;
 	    } else {
 		continue;
