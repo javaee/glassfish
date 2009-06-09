@@ -1,32 +1,48 @@
 package org.glassfish.enterprise.admin.ncli;
 
-import org.glassfish.cli.metadata.OptionDesc;
 import org.glassfish.api.admin.cli.OptionType;
+import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.*;
 import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Provides utility routines to parse the command line. The regular expressions defined in this class as
- *  literal strings are the basis of command line parsing.
+ *  literal strings are the basis of command line parsing.  The class is composed of static methods.
+ *  <p>
+ *  As of now, this class is package-private.
+ * 
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 final class ParseUtilities {
 
-    private static final String NEG_LONG_PREFIX                  = "--no-";
-    private static final String CMD_NAME_REGEX                   = "^[a-zA-Z]([-_\\w]*)?$";
-    private static final String SHORT_BOOLEAN_OPTION_REGEX       = "^-[a-zA-Z](=([t][r][u][e]|[f][a][l][s][e]))?$";
-    private static final String SHORT_BOOLEAN_OPTION_LIST_REGEX  = "^-[a-zA-Z][a-zA-Z]+$";
-    private static final String LONG_BOOLEAN_OPTION_REGEX        = "^--[\\w && \\D][_\\w]+(=([t][r][u][e]|[f][a][l][s][e]))?$";
-    private static final String NEG_LONG_BOOLEAN_OPTION_REGEX    = "^" + NEG_LONG_PREFIX +"[\\w &&\\D][_\\w]+$";
+    /** A prefix that denotes "false" value of a boolean option specified as long name.
+     *  This is <b> NOT</b> a regular expression.
+     */
+    static final String NEG_LONG_PREFIX                  = "--no-";
 
-    private static final String SHORT_NON_BOOLEAN_OPTION_REGEX   = "^-[a-zA-Z](=(.)+)?$";
-    private static final String LONG_NON_BOOLEAN_OPTION_REGEX    = "^--[\\w && \\D][_\\w]+(=(.)+)?$";
+    /** A <b> regex </b> for the name of a command. Put literally, a command name contains one or more characters, with
+     * first character being a letter (a-z or A-Z) and subsequent characters being letters, digits or hyphens or underscores.
+     *
+     */
+    static final String CMD_NAME_REGEX                   = "^[a-zA-Z]([-_\\w]*)?$";
 
-    private static final String REMAINDER_ARE_OPERANDS_INDICATOR_REGEX = "^--$";
+    /** A <b> regex</b> for a boolean short option which can be specified as: <p>
+     *  -c, or -c=true or -c=false, where c is exactly one letter between [a-z] or [A-Z].
+     *
+     */
+    static final String SHORT_BOOLEAN_OPTION_REGEX       = "^-[a-zA-Z](=([t][r][u][e]|[f][a][l][s][e]))?$";
+    static final String SHORT_BOOLEAN_OPTION_LIST_REGEX  = "^-[a-zA-Z][a-zA-Z]+$";
+    static final String LONG_BOOLEAN_OPTION_REGEX        = "^--[\\w && \\D][_\\w]+(=([t][r][u][e]|[f][a][l][s][e]))?$";
+    static final String NEG_LONG_BOOLEAN_OPTION_REGEX    = "^" + NEG_LONG_PREFIX +"[\\w &&\\D][_\\w]+$";
+
+    static final String SHORT_NON_BOOLEAN_OPTION_REGEX   = "^-[a-zA-Z](=(.)+)?$";
+    static final String LONG_NON_BOOLEAN_OPTION_REGEX    = "^--[\\w && \\D][_\\w]+(=(.)+)?$";
+
+    static final String REMAINDER_ARE_OPERANDS_INDICATOR_REGEX = "^--$";
     
-    public static final String OPTION_NAME_VALUE_SEPARATOR    = "=";
+    static final String OPTION_NAME_VALUE_SEPARATOR    = "=";
 
 
 

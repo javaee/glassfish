@@ -1,15 +1,12 @@
 package org.glassfish.enterprise.admin.ncli;
 
-import org.glassfish.cli.metadata.CommandDesc;
-import org.glassfish.cli.metadata.OptionDesc;
-
-import java.util.*;
-import java.io.PrintStream;
-
-import static org.glassfish.enterprise.admin.ncli.ParseUtilities.*;
-import static org.glassfish.enterprise.admin.ncli.ParseUtilities.getOptionSymbolFromShortOption;
-import static org.glassfish.enterprise.admin.ncli.ParseUtilities.hasOptionNameAndValue;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
+import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
+import static org.glassfish.enterprise.admin.ncli.ParseUtilities.*;
+
+import java.io.PrintStream;
+import java.util.*;
 
 /** An Ad-hoc parser that does at least two passes of the given command line (as an array of string arguments). Here are
  *  the goals of the Parser:

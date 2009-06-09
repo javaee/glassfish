@@ -1,6 +1,6 @@
 package org.glassfish.enterprise.admin.ncli;
 
-import org.glassfish.cli.metadata.CommandDesc;
+import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
 import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
 
 

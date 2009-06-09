@@ -1,9 +1,11 @@
 package org.glassfish.enterprise.admin.ncli;
 
 import org.glassfish.api.admin.cli.OptionType;
-import org.glassfish.cli.metadata.OptionDesc;
+import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Builds the asadmin program options. A program option is an option for the asadmin program itself. The good
  *  thing is the metadata for program options is no different from that for options of a command.
@@ -11,7 +13,7 @@ import java.util.*;
  *
  *  This is modeled as a Singleton class.  Instances of this class are immutable.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
- * @see org.glassfish.cli.metadata.OptionDesc
+ * @see org.glassfish.enterprise.admin.ncli.metadata.OptionDesc
  */
 public final class ProgramOptionBuilder {
 

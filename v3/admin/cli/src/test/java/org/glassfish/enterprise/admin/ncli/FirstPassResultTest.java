@@ -10,8 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
+/** A JUnit4 Test Class for FirstPassResult. Uses other utility methods as well.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ *
+ * @see FirstPassResult
  */
 public class FirstPassResultTest {
     @Test

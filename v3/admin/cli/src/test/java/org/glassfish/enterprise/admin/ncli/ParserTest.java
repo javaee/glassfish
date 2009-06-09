@@ -6,7 +6,9 @@ import static org.glassfish.enterprise.admin.ncli.ProgramOptionBuilder.*;
 
 import java.util.Set;
 
-/**
+/** A Junit4 test to test out the parser with various command lines. It works with examination of FirstPassResult
+ *  and SecondPassResult.
+ * 
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 public class ParserTest {

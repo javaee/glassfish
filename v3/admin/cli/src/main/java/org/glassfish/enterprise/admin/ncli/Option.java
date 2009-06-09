@@ -1,19 +1,21 @@
 package org.glassfish.enterprise.admin.ncli;
 
-import org.glassfish.cli.metadata.OptionDesc;
 import org.glassfish.api.admin.cli.OptionType;
+import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
 
 import java.io.File;
-import java.util.List;
-import java.util.Collections;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /** This class represents the option of a command. An option has a Name, Effective Type and Effective Value.
  *  All of the meta-data of the option is refactored into a generated class OptionDesc. For convenience,
  *  some of the methods of this class pass through to the given OptionDesc instance.
  *  <p>
- *  Instances of this class are immutable.
+ * Instances of this class are immutable. Arguably, they are mutable since the OperandDesc class which
+ *  is a JAXB generated class is mutable. Callers are expected not to change the metadata given to this
+ *  class after the instance of this class is created. Otherwise, bad things will happen.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net) (km@dev.java.net)
  * @see OptionDesc
  * @see OptionType

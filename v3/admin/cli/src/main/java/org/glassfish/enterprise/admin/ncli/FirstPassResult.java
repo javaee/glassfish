@@ -1,13 +1,13 @@
 package org.glassfish.enterprise.admin.ncli;
 
-import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
-import org.glassfish.cli.metadata.OptionDesc;
+import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
 import static org.glassfish.enterprise.admin.ncli.ProgramOptionBuilder.*;
+import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
 
 /** A class to hold the result of first pass of the command line parsing. At the end of this <i> first pass </i>,
  *  parser should either detect a parsing error based on client-only knowledge or gather all the information relevant

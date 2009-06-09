@@ -1,14 +1,12 @@
 package org.glassfish.enterprise.admin.ncli;
 
-import org.glassfish.cli.metadata.CommandDesc;
+import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
 import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
 
-import java.util.Set;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /** <h3> This class is not yet final. Please do not spend time. </h3>
  *  A thread-safe cache of command metadata. The idea is that each server that asadmin client knows about can
