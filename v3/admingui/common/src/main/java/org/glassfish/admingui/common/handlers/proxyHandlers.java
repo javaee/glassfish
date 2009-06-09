@@ -147,7 +147,9 @@ public class proxyHandlers {
         try{
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
             AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
-            handlerCtx.setOutputValue("valueMap", amx.attributesMap());
+            AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) amx);
+            final Map<String,Object> attrs = helper.simpleAttributesMap();
+            handlerCtx.setOutputValue("valueMap", attrs);
         }catch (Exception ex){
             ex.printStackTrace();
             handlerCtx.setOutputValue("valueMap", new HashMap());
@@ -311,17 +313,23 @@ public class proxyHandlers {
     @Handler(id="setProxyProperties",
     input={
         @HandlerInput(name="objectNameStr",   type=String.class, required=true),
+        @HandlerInput(name="systemProp",   type=Boolean.class),
         @HandlerInput(name="propertyList", type=List.class, required=true)})
         public static void setProxyProperties(HandlerContext handlerCtx) {
         try{
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            Boolean systemProp = (Boolean) handlerCtx.getInputValue("systemProp");
             ObjectName objectName = new ObjectName(objectNameStr);
             List<Map<String,String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
             List newList = new ArrayList();
             Set propertyNames = new HashSet();
             final ConfigTools configTools = V3AMX.getInstance().getDomainRoot().getExt().child(ConfigTools.class);
             if (propertyList.size()==0){
-                configTools.clearProperties(objectName);
+                if ((systemProp != null) && (systemProp.booleanValue())){
+                    configTools.clearSystemProperties(objectName);
+                }else{
+                    configTools.clearProperties(objectName);
+                }
             }else{
                 for(Map<String, String> oneRow : propertyList){
                     Map newRow = new HashMap();
@@ -349,7 +357,11 @@ public class proxyHandlers {
                     newList.add(newRow);
                 }
                 //System.out.println("============ call configToos.setProperties() \n objectName="+objectName + "\npropertyList="+newList.toString());
-                configTools.setProperties(objectName, newList, true);
+                if ((systemProp != null) && (systemProp.booleanValue())){
+                    configTools.setSystemProperties(objectName, newList, true);
+                }else{
+                    configTools.setProperties(objectName, newList, true);
+                }
             }
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
