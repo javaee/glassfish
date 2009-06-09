@@ -37,7 +37,7 @@ package com.sun.enterprise.universal.glassfish;
 
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.HashMap;
 
 import java.io.*;

@@ -43,6 +43,7 @@
 package com.sun.enterprise.universal.glassfish;
 
 import java.util.*;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
  * Here is the contract:
