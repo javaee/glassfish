@@ -32,17 +32,14 @@ import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.security.SecurityUtil;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.deployment.common.DeploymentException;
 
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -53,6 +50,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
+import com.sun.enterprise.security.PolicyLoader;
 import org.glassfish.api.ActionReport;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.deployment.Deployment;
@@ -87,6 +85,8 @@ public class EjbApplication
     private SingletonLifeCycleManager singletonLCM;
 
     boolean usesEJBTimerService = false;
+    
+    private PolicyLoader policyLoader;
 
     // TODO: move restoreEJBTimers to correct location
     private static boolean restored = false;
@@ -103,6 +103,7 @@ public class EjbApplication
         this.habitat = habitat;
         this.ejbContainerFactory = habitat.getByContract(ContainerFactory.class);
         this.ejbSMF = ejbSecMgrFactory;
+        this.policyLoader = habitat.getComponent(PolicyLoader.class);
     }
     
     public Collection<EjbDescriptor> getDescriptor() {
@@ -169,7 +170,7 @@ public class EjbApplication
         singletonLCM = new SingletonLifeCycleManager();
 
         try {
-            
+            policyLoader.loadPolicy();
             String moduleName = null;
         
             for (EjbDescriptor desc : ejbs) {
