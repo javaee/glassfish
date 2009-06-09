@@ -54,6 +54,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -129,8 +130,10 @@ public class MBeanTreeAdaptor extends TreeAdaptorBase {
 	_methodName = (String) val;
 
     val = desc.getEvaluatedOption(ctx, "useV3AMX", parent);
-    if ((val != null ) && val.equals("true"))
+    if ((val != null ) && val.equals("true")){
         _useV3AMX = true;
+        _amxChildType = (String) desc.getEvaluatedOption(ctx, "amxChildType", parent);
+    }
 
 	// Get Parameters
 	_paramsArray = null;
@@ -222,10 +225,18 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
             try{
                 if (_useV3AMX == true ){
                         AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(_objectName));
-                        ObjectName[] children = amx.getChildren();
-                        _children = new ArrayList();
-                        for(int i=0; i< children.length; i++){
-                            _children.add(children[i]);
+                        if (_amxChildType == null || _amxChildType.equals("")){
+                            ObjectName[] children = amx.getChildren();
+                            _children = new ArrayList();
+                            for(int i=0; i< children.length; i++){
+                                _children.add(children[i]);
+                            }
+                        }else {
+                            _children = new ArrayList();
+                            Map<String,AMXProxy> childrenMap = amx.childrenMap(_amxChildType);
+                            for(AMXProxy oneChild : childrenMap.values()){
+                                _children.add( ((AMXConfigProxy) oneChild).objectName());
+                            }
                         }
                 }else {
                     Set<AMX> amxBeans = AMXRoot.getInstance().getQueryMgr().queryPatternSet(new ObjectName(_objectName));
@@ -597,6 +608,8 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
     private String	_nameMethod	=   null;
 
     private boolean _useV3AMX = false;
+
+    private String _amxChildType = null;
 
     /**
      *	This sub-nodes of the top-level Node.
