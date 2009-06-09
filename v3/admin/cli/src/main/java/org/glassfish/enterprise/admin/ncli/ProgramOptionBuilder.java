@@ -11,7 +11,7 @@ import java.util.Set;
  *  thing is the metadata for program options is no different from that for options of a command.
  *  So, this class builds the OptionDesc for all the options that asadmin supports.
  *
- *  This is modeled as a Singleton class.  Instances of this class are immutable.
+ *  This is modeled as a Singleton class.  That instance of this class is immutable.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @see org.glassfish.enterprise.admin.ncli.metadata.OptionDesc
  */

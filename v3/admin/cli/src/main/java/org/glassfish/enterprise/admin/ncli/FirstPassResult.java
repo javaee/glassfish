@@ -80,8 +80,8 @@ final class FirstPassResult {
      *  Since instances of the Option class are themselves immutable, this class is made immutable.
      * 
      * @return an unmodifiable set of asadmin program options.
-     * @see {@link ProgramOptionBuilder}
-     * @see {@link Parser#firstPass()}
+     * @see ProgramOptionBuilder
+     * @see Parser#firstPass()
      */
     Set<Option> getProgramOptions() {
         return programOptions;

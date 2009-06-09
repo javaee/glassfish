@@ -7,7 +7,7 @@ import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
 /**  The main class that is designed to work on arguments that are presented on a <i> command line </i>.
  *   It is designed for remote commands as of now.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
- * @since  GlassFish v3
+ * @since  GlassFish v3 (September 2009)
  */
 public class RemoteCommandDriver {
     private final String[] args;

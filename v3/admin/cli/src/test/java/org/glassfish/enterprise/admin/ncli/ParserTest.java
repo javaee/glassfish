@@ -128,4 +128,15 @@ public class ParserTest {
         bo = ParseUtilities.getOptionNamed(fpr.getProgramOptions(), ECHO);
         assertEquals(bo.getEffectiveValue(), "true");
     }
+
+    @Test (expected=ParserException.class)
+    public void rejectPassword1() throws ParserException {
+        String[] cmdline = new String[]{"cmd", "--password=secret"};
+        new Parser(cmdline).firstPass();
+    }
+    @Test (expected=ParserException.class)
+    public void rejectPassword2() throws ParserException {
+        String[] cmdline = new String[]{"cmd", "-w", "secret"};
+        new Parser(cmdline).firstPass();
+    }
 }

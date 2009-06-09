@@ -129,14 +129,14 @@ final class Parser {
                         char c = getOptionSymbolFromShortOption(argument);
                         OptionDesc od = getOptionDescForBooleanOptionForSymbol(c, known);
                         if (od != null) { //it's boolean option
-                            putHandlingRepeats(od, optionMap, "true");
+                            putHandlingConstraints(od, optionMap, "true");
                             si++;
                         } else { // not a boolean option or a boolean option specified as --name true/false
                             if (si == (argsToParse.length-1))
                                 throw new ParserException(lsm.get("option.needs.value.symbol", Character.toString(c)));
                             OptionDesc lod = getOptionDescForSymbol(c, known);
                             if(lod != null) {
-                                putHandlingRepeats(lod, optionMap, argsToParse[si+1]);
+                                putHandlingConstraints(lod, optionMap, argsToParse[si+1]);
                                 si += 2;
                             } else {
                                 throw new ParserException(lsm.get("current.limitation.symbol", Character.toString(c)));
@@ -152,14 +152,14 @@ final class Parser {
                         String name = getOptionNameFromLongOption(argument);
                         OptionDesc od = getOptionDescForBooleanOptionForName(name, known);
                         if (od != null) { //it's boolean option specified as --name
-                            putHandlingRepeats(od, optionMap, "true");
+                            putHandlingConstraints(od, optionMap, "true");
                             si++;
                         } else { // not a boolean option or a boolean option specified as --name true/false
                             if (si == (argsToParse.length-1))
                                 throw new ParserException(lsm.get("option.needs.value.name", name));
                             OptionDesc lod = getOptionDescForName(name, known);
                             if(lod != null) {
-                                putHandlingRepeats(lod, optionMap, argsToParse[si+1]);
+                                putHandlingConstraints(lod, optionMap, argsToParse[si+1]);
                                 si += 2;
                             } else {
                                 throw new ParserException(lsm.get("current.limitation.name", name));
@@ -185,7 +185,7 @@ final class Parser {
     }
 
     private static void handleOptionGivenNameValue(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown) throws ParserException {
-        String name = null;
+        String name;
         OptionDesc pod;
         if (indicatesShortOption(argument)) {
             char symbol = getOptionSymbolFromShortOption(argument);
@@ -204,7 +204,7 @@ final class Parser {
             if (!nonNullValueValidFor(pod, value)) {  // name exists, but value is invalid!
                 throw new ParserException(lsm.get("invalid.value.for.known.option", name, value));
             }
-            putHandlingRepeats(pod, filtrate, value); //this is a valid program option
+            putHandlingConstraints(pod, filtrate, value); //this is a valid program option
         } else {
             unknown.add(argument);
         }
@@ -215,7 +215,7 @@ final class Parser {
         String value = "false";
         OptionDesc od = getOptionDescForName(name, known);
         if (od != null) {
-            putHandlingRepeats(od, filtrate, value);
+            putHandlingConstraints(od, filtrate, value);
         } else {
             unknown.add(Option.toString(name, value));
         }
@@ -238,18 +238,20 @@ final class Parser {
                 unknown.add(Option.toString(optName, "true"));
             } else { // this is definitely a program option
                 OptionDesc od = getOptionDescForName(optName, known);
-                putHandlingRepeats(od, filtrate, "true");
+                putHandlingConstraints(od, filtrate, "true");
             }
         }
 
     }
-    private static void putHandlingRepeats(OptionDesc od, Map<String, String> filtrate, String value) throws ParserException {
+    private static void putHandlingConstraints(OptionDesc od, Map<String, String> filtrate, String value) throws ParserException {
         if (!Boolean.valueOf(od.getRepeats().toLowerCase())) {  //repeats not allowed
             String name = od.getName();
             if (filtrate.containsKey(name)) {
                 throw new ParserException(lsm.get("repeats.not.allowed", name));
             }
         }
+        if (isPassword(od))
+            throw new ParserException(lsm.get("password.not.allowed.on.command.line", od.getName()));
         filtrate.put(od.getName(), value);
     }
 }

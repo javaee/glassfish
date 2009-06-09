@@ -342,6 +342,9 @@ final class ParseUtilities {
         return null;
     }
 
+    static boolean isPassword(OptionDesc od) {
+        return OptionType.PASSWORD.name().equals(od.getType());
+    }
     // ALL Private ...
 
     private static boolean matches(String s, String regex) {

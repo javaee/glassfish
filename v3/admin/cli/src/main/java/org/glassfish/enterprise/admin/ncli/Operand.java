@@ -94,7 +94,7 @@ final class Operand {
 
     /** Returns a copy of effective values of this operand.
      *
-     * @return
+     * @return a copy of this operand's given values
      */
     String[] getEffectiveValues() {
         String[] copy = new String[givenValues.length];
