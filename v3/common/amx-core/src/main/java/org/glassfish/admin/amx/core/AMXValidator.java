@@ -98,7 +98,7 @@ public final class AMXValidator
         mMBeanServer = conn;
 
         mProxyFactory = ProxyFactory.getInstance(conn);
-        mDomainRoot = mProxyFactory.getDomainRootProxy();
+        mDomainRoot = mProxyFactory.getDomainRootProxy(false);
     }
 
     private static final class IllegalClassException extends Exception

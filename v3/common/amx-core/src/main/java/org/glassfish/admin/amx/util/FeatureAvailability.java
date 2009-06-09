@@ -83,35 +83,39 @@ public final class FeatureAvailability
    // private final AMXDebugHelper                mDebug;
 
     /** feature stating that the AdminContext is available.  Result data is the AdminContext */
-    public static final String  ADMIN_CONTEXT_FEATURE    = "AdminContext";
+    //public static final String  ADMIN_CONTEXT_FEATURE    = "AdminContext";
     
     /** feature stating that the MBeanServer is available.  Result data is the MBeanServer */
-    public static final String  MBEAN_SERVER_FEATURE    = "MBeanServer";
+    //public static final String  MBEAN_SERVER_FEATURE    = "MBeanServer";
     
     /** feature stating that the SunoneInterceptor is active.  Associated data should be ignored. */
-    public static final String  SUN_ONE_INTERCEPTOR_FEATURE    = "SunoneInterceptor";
+    //public static final String  SUN_ONE_INTERCEPTOR_FEATURE    = "SunoneInterceptor";
     
     /** feature stating that the com.sun.appserv:category=config MBeans are available. 
             Result data should not be used */
-    public static final String COM_SUN_APPSERV_CONFIG_MBEANS_FEATURE    = "com.sun.appserv:category=config";
+    //public static final String COM_SUN_APPSERV_CONFIG_MBEANS_FEATURE    = "com.sun.appserv:category=config";
     
     /** feature stating that the AMX MBean Loader is available (but not AMX).  Data should not be used */
     public static final String AMX_LOADER_FEATURE   = "AMXLoader";
     
     /** feature stating that the AMX BootUtil class is available.  Data should not be used */
-    public static final String AMX_BOOT_UTIL_FEATURE   = "AMXBootUtil";
+    //public static final String AMX_BOOT_UTIL_FEATURE   = "AMXBootUtil";
     
-    /** feature stating that the AMX is ready for use after having been started.  Data should not be used */
+    /** feature stating that the AMX core is ready for use after having been started.  Data should not be used.
+    Other AMX subystems might still be in the process of initializing */
+    public static final String AMX_CORE_READY_FEATURE   = "AMXCoreReady";
+    
+    /** feature stating that the AMX and all its subsystems are ready for use.  Data is the ObjectName of the DomainRoot */
     public static final String AMX_READY_FEATURE   = "AMXReady";
     
     /** feature stating that the CallFlow feature is available.  Data should not be used
         Data is of type com.sun.enterprise.admin.monitor.callflow.Agent */
-    public static final String CALL_FLOW_FEATURE   = "CallFlow";
+    //public static final String CALL_FLOW_FEATURE   = "CallFlow";
     
     /** Feature stating that the server has started, meaning that the main initialization
         code has been run; specific features could be initializing on separate threads, or 
         could be initialized lazily.  No data is associated with this feature. */
-    public static final String SERVER_STARTED_FEATURE   = "ServerStarted";
+    //public static final String SERVER_STARTED_FEATURE   = "ServerStarted";
     
     private FeatureAvailability()
     {
@@ -153,12 +157,12 @@ public final class FeatureAvailability
         <p>
         <b>NON-BLOCKING--returns current value, can be null</b>
         @return the MBeanServer used by all AppServer MBeans
-     */
         public MBeanServer
     getMBeanServer()
     {
         return (MBeanServer)mFeatures.get( MBEAN_SERVER_FEATURE );
     }
+     */
     
      /**
         MBeanServer is created very early and is available via this method exept for code
@@ -166,7 +170,6 @@ public final class FeatureAvailability
         an explicit method call is provided.
         <b>BLOCKING--returns onlyl when MBeansServer becomes available.</b>
         @return the MBeanServer used by all AppServer MBeans
-     */
         public MBeanServer
     waitForMBeanServer()
     {
@@ -179,6 +182,7 @@ public final class FeatureAvailability
         }
         return server;
     }
+     */
     
     
     /**
@@ -198,6 +202,7 @@ public final class FeatureAvailability
          public synchronized void
     registerFeature( final String featureName, final Object data )
     {
+        //debug( "FeatureAvailability.registerFeature: " + featureName + " in instance " + this);
         if ( mFeatures.get( featureName ) != null )
         {
             throw new IllegalStateException( "FeatureAvailability.addFeature: already added: " + featureName );
@@ -225,6 +230,7 @@ public final class FeatureAvailability
         public Object
     waitForFeature( final String featureName, final String callerInfo )
     {
+        //debug( "FeatureAvailability.waitForFeature: " + featureName + " by " + callerInfo + " in instance " + this);
         CountDownLatch    latch = null;
         Object            data  = null;
 
@@ -253,7 +259,7 @@ public final class FeatureAvailability
             
             try
             {
-                debug( "waitForFeature: \"" + featureName + "\" by " + callerInfo );
+                //debug( "waitForFeature: \"" + featureName + "\" by " + callerInfo );
                 final long startNanos   = System.nanoTime();
                 
                 latch.await();

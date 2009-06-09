@@ -41,10 +41,11 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
 
 public final class ResourceAdapterModuleImpl extends J2EEModuleImplBase {
+    public static final Class<ResourceAdapterModule> INTF = ResourceAdapterModule.class;
 
     public ResourceAdapterModuleImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, ResourceAdapterModule.class);
+        super(parentObjectName, INTF);
     }
 
     public String[] getresourceAdapters() {

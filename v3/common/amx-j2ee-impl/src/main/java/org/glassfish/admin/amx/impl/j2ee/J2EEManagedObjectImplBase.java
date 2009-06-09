@@ -40,19 +40,10 @@ import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
 import javax.management.j2ee.Management;
 import javax.management.j2ee.ManagementHome;
 
+import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
-import org.glassfish.admin.amx.j2ee.AppClientModule;
-import org.glassfish.admin.amx.j2ee.EJBModule;
-import org.glassfish.admin.amx.j2ee.EntityBean;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
-import org.glassfish.admin.amx.j2ee.MessageDrivenBean;
-import org.glassfish.admin.amx.j2ee.ResourceAdapter;
-import org.glassfish.admin.amx.j2ee.ResourceAdapterModule;
-import org.glassfish.admin.amx.j2ee.Servlet;
 import org.glassfish.admin.amx.j2ee.StateManageable;
-import org.glassfish.admin.amx.j2ee.StatefulSessionBean;
-import org.glassfish.admin.amx.j2ee.StatelessSessionBean;
-import org.glassfish.admin.amx.j2ee.WebModule;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
@@ -84,6 +75,13 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
         mEventProvider = evengProvider;
 
         mStartTime = System.currentTimeMillis();
+    }
+
+
+    protected Domain
+    getDomainConfig()
+    {
+        return getDomainRootProxy().getDomain().as(Domain.class);
     }
     
     /**

@@ -40,9 +40,10 @@ import org.glassfish.admin.amx.j2ee.MessageDrivenBean;
 import javax.management.ObjectName;
 
 public final class MessageDrivenBeanImpl extends EJBImplBase {
+    public static final Class<MessageDrivenBean> INTF = MessageDrivenBean.class;
 
     public MessageDrivenBeanImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, MessageDrivenBean.class);
+        super(parentObjectName, INTF);
     }
 }

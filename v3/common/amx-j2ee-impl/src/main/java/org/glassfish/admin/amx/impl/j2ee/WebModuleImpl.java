@@ -35,20 +35,19 @@
  */
 package org.glassfish.admin.amx.impl.j2ee;
 
-import java.util.Set;
 import org.glassfish.admin.amx.j2ee.WebModule;
 
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
-import org.glassfish.admin.amx.util.SetUtil;
 
 /**
  */
 public final class WebModuleImpl extends J2EEModuleImplBase // implements WebModule
 {
+    public static final Class<WebModule> INTF = WebModule.class;
 
     public WebModuleImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, WebModule.class);
+        super(parentObjectName, INTF);
     }
     
     public String[] getservlets() {

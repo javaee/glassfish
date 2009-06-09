@@ -1224,11 +1224,40 @@ public class AMXImplBase extends MBeanImplBase
     registerChildren()
     {
     }
+    
+    @Override
+        protected void
+	preDeregisterHook()
+		throws Exception
+	{
+        super.preDeregisterHook();
+        
+		unregisterChildren( );
+	}	
+    
+   // hook for subclasses
+        protected void
+    unregisterChildren()
+    {
+        final ObjectName[] children = getChildren();
+        for( final ObjectName child : children )
+        {
+            try
+            {
+                getMBeanServer().unregisterMBean(child);
+            }
+            catch( final Throwable t )
+            {
+                // note it, and move on, we must unregister remaining ones
+                t.printStackTrace();
+            }
+        }
+    }
         
 		public final DomainRoot
 	getDomainRootProxy()
 	{
-		return( getProxyFactory().getDomainRootProxy() );
+		return( getProxyFactory().getDomainRootProxy(false) );
 	}
 
 		public final ObjectName

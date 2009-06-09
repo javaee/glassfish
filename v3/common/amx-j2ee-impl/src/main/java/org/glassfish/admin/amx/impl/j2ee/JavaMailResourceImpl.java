@@ -41,9 +41,10 @@ import javax.management.ObjectName;
 
 public final class JavaMailResourceImpl
         extends J2EEResourceImplBase {
-
+    public static final Class<JavaMailResource> INTF = JavaMailResource.class;
+    
     public JavaMailResourceImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, JavaMailResource.class);
+        super(parentObjectName, INTF);
     }
 }

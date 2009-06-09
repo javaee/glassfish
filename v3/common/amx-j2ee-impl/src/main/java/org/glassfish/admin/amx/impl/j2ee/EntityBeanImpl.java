@@ -44,10 +44,11 @@ import javax.management.ObjectName;
 public final class EntityBeanImpl
 	extends EJBImplBase
 {
+    public static final Class<EntityBean> INTF = EntityBean.class;
 		public
 	EntityBeanImpl(
         final ObjectName parentObjectName )
 	{
-		super( parentObjectName, EntityBean.class );
+		super( parentObjectName, INTF );
 	}
 }

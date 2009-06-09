@@ -44,10 +44,11 @@ import org.glassfish.admin.amx.util.SetUtil;
 
 public final class J2EEApplicationImpl
         extends J2EEDeployedObjectImplBase {
+    public static final Class<J2EEApplication> INTF = J2EEApplication.class;
 
     public J2EEApplicationImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, J2EEApplication.class);
+        super(parentObjectName, INTF);
     }
 
     private static final Set<String> MODULE_TYPES	= SetUtil.newUnmodifiableStringSet(

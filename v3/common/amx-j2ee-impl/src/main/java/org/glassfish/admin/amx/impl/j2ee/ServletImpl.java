@@ -38,13 +38,15 @@ package org.glassfish.admin.amx.impl.j2ee;
 import org.glassfish.admin.amx.j2ee.Servlet;
 
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.j2ee.J2EEManagedObject;
 
 public final class ServletImpl
         extends J2EEManagedObjectImplBase //  implements Servlet
 {
+    public static final Class<Servlet> INTF = Servlet.class;
 
     public ServletImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, Servlet.class);
+        super(parentObjectName, INTF);
     }
 }
 

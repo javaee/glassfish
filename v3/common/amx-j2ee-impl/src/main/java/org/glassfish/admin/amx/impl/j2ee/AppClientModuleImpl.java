@@ -40,8 +40,9 @@ import org.glassfish.admin.amx.j2ee.AppClientModule;
 import javax.management.ObjectName;
 
 public final class AppClientModuleImpl extends J2EEModuleImplBase {
+    public static final Class<AppClientModule> INTF = AppClientModule.class;
 
     public AppClientModuleImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, AppClientModule.class);
+        super(parentObjectName, INTF);
     }
 }

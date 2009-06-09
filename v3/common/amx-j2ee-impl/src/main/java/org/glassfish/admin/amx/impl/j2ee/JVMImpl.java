@@ -38,16 +38,18 @@ package org.glassfish.admin.amx.impl.j2ee;
 import org.glassfish.admin.amx.j2ee.JVM;
 
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.j2ee.J2EEManagedObject;
 
 /**
 Identifies a Java VM being utilized by a server.
  */
 public final class JVMImpl
         extends J2EEManagedObjectImplBase {
+    public static final Class<? extends J2EEManagedObject> INTF = JVM.class;
 
     public JVMImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, JVM.class);
+        super(parentObjectName, INTF);
     }
 
     public String getjavaVersion() {

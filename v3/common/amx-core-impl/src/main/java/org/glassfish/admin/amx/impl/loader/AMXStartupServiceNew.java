@@ -41,6 +41,7 @@ import javax.management.remote.JMXServiceURL;
 
 import java.util.Collection;
 
+import java.util.concurrent.CountDownLatch;
 import org.glassfish.admin.amx.base.MBeanTracker;
 import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
@@ -181,7 +182,7 @@ public final class AMXStartupServiceNew
         DomainRoot
     getDomainRootProxy()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy(false);
     }
     
         public ObjectName
@@ -235,6 +236,53 @@ public final class AMXStartupServiceNew
         return LOADER_OBJECTNAME;
     }
 
+    /** run each AMXLoader in its own thread */
+    private static final class AMXLoaderThread extends Thread
+    {
+        private final AMXLoader mLoader;
+        private volatile ObjectName mTop;
+        private final CountDownLatch mLatch;
+        
+        public AMXLoaderThread( final AMXLoader loader)
+        {
+            mLoader = loader;
+            mLatch = new CountDownLatch(1);
+        }
+
+        public void run()
+        {
+            try
+            {
+                ImplUtil.getLogger().info( "AMXStartupServiceNew.AMXLoaderThread: loading: "  + mLoader.getClass().getName() );
+                mTop = mLoader.loadAMXMBeans();
+                //ImplUtil.getLogger().info( "AMXStartupServiceNew.AMXLoaderThread: loaded: "  + mLoader.getClass().getName() );
+            }
+            catch( final Exception e )
+            {
+                ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans: AMXLoader failed to load: " + e );
+                e.printStackTrace();
+            }
+            finally
+            {
+                mLatch.countDown();
+            }
+        }
+        
+        public ObjectName waitDone()
+        {
+            try
+            {
+                mLatch.await();
+            }
+            catch( InterruptedException e )
+            {
+            }
+            return mTop;
+        }
+        
+        public ObjectName top() { return mTop; }
+    }
+
     
         public synchronized ObjectName
     _loadAMXMBeans()
@@ -242,25 +290,26 @@ public final class AMXStartupServiceNew
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
         mAMXLoaderObjectName = loadAMX( mMBeanServer );
         //ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans(): loaded name = " + mAMXLoaderObjectName);
+        FeatureAvailability.getInstance().registerFeature( FeatureAvailability.AMX_CORE_READY_FEATURE, getDomainRoot() );
+        ImplUtil.getLogger().info( "AMXStartupServiceNew: AMX core MBeans are ready for use, DamainRoot = " + getDomainRoot() );
         
         try
         {
             // Find and load any additional AMX subsystems
             final Collection<AMXLoader> loaders = mHabitat.getAllByContract(AMXLoader.class);
             //ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans(): found this many loaders: " + loaders.size() );
+            final AMXLoaderThread[] threads = new AMXLoaderThread[loaders.size()];
+            int i = 0;
             for( final AMXLoader loader : loaders )
             {
-                try
-                {
-                    //ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans: loading: "  + loader.getClass().getName() );
-                    final ObjectName top = loader.loadAMXMBeans();
-                    //ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans: loaded: "  + loader.getClass().getName() );
-                }
-                catch( final Exception e )
-                {
-                    e.printStackTrace();
-                   // ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans: AMXLoader failed to load: " + e );
-                }
+                threads[i] = new AMXLoaderThread(loader);
+                threads[i].start();
+                ++i;
+            }
+            // don't mark AMX ready until all loaders have finished
+            for( final AMXLoaderThread thread : threads )
+            {
+                thread.waitDone();
             }
         }
         catch( Throwable t )
@@ -270,6 +319,7 @@ public final class AMXStartupServiceNew
         finally
         {
             FeatureAvailability.getInstance().registerFeature( FeatureAvailability.AMX_READY_FEATURE, getDomainRoot() );
+            ImplUtil.getLogger().info( "AMXStartupServiceNew: AMX ready for use, DomainRoot = " + getDomainRoot() );
         }
         
         return getDomainRoot();

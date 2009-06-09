@@ -26,6 +26,7 @@ import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.impl.j2ee.J2EEDomainImpl;
@@ -34,6 +35,7 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.j2ee.J2EEDomain;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
+import org.glassfish.admin.amx.util.FeatureAvailability;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -103,17 +105,8 @@ public final class AMXJ2EEStartupService
         public synchronized ObjectName
     loadAMXMBeans()
     {
-    /*
-        if ( mLoader == null )
-        {
-            //getDomainRootProxy().waitAMXReady();
+        FeatureAvailability.getInstance().waitForFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "" + this );
 
-            mLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans, mTransactions);
-            mLoader.start();
-        }
-        final ObjectName domainConfig = (ObjectName) FeatureAvailability.getInstance().waitForFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "" + this );
-        return domainConfig;
-    */
         final ObjectName domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRootObjectName();
         final J2EEDomainImpl impl = new J2EEDomainImpl(domainRoot);
         

@@ -41,18 +41,18 @@ import org.glassfish.admin.amx.impl.util.Issues;
 
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
-import org.glassfish.admin.amx.j2ee.J2EEServer;
+import org.glassfish.admin.amx.j2ee.J2EEManagedObject;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
 
 /**
 Base implementation for the J2EEDomain for DAS and non-DAS server instances.
  */
 public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
+    public static final Class<? extends J2EEManagedObject> INTF = J2EEDomain.class;
 
     public J2EEDomainImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, J2EEDomain.class);
+        super(parentObjectName, INTF);
 
         Issues.getAMXIssues().notDone("J2EEDomainImpl needs to account for DAS/non-DAS");
     }

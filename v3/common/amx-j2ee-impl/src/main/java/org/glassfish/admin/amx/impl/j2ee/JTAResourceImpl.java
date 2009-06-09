@@ -43,9 +43,10 @@ import javax.management.ObjectName;
  */
 public final class JTAResourceImpl
         extends J2EEResourceImplBase {
+    public static final Class<JTAResource> INTF = JTAResource.class;
 
     public JTAResourceImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, JTAResource.class);
+        super(parentObjectName, INTF);
     }
 }

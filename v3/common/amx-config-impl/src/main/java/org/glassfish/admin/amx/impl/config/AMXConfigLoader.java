@@ -400,6 +400,8 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         if ( mLoaderThread == null )
         {
+            FeatureAvailability.getInstance().waitForFeature( FeatureAvailability.AMX_CORE_READY_FEATURE, "AMXConfigLoader.start");
+            
             mLoaderThread   = new AMXConfigLoaderThread( mPendingConfigBeans );
             mLoaderThread.setDaemon(true);
             mLoaderThread.start();
@@ -671,7 +673,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     
     private DomainRoot getDomainRootProxy()
     {
-        return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy();
+        return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy(false);
     }
     
         private ObjectName

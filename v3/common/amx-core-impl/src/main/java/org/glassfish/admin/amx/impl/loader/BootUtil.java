@@ -54,7 +54,6 @@ public final class BootUtil
 	
 	private static BootUtil	INSTANCE	= null;
 	
-	private boolean         mAMXReady;
 	
 	private final boolean   mOfflineAMX;
 	 
@@ -65,7 +64,6 @@ public final class BootUtil
         mAppserverDomainName = mInstanceRoot.getName();
 
 		mAMX_JMXDomain		    = AMXConstants.AMX_JMX_DOMAIN;
-		mAMXReady   = false;
 		
 		mOfflineAMX = offline;
 	}
@@ -120,7 +118,10 @@ public final class BootUtil
 
 		return( INSTANCE );
 	}
-	
+
+/*
+	private boolean         mAMXReady = false;
+    
 		public boolean
 	getAMXReady()
 	{
@@ -137,6 +138,7 @@ public final class BootUtil
 	    
 	    mAMXReady   = ready;
 	}
+*/
 
 		private ObjectName
 	getObjectName( String props )

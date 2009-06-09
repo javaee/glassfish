@@ -37,6 +37,7 @@ import org.glassfish.admin.amx.base.LoggingPropertiesMgr;
 import org.glassfish.admin.amx.base.RealmsMgr;
 import org.glassfish.admin.amx.base.RuntimeMgr;
 import org.glassfish.admin.amx.base.SystemStatus;
+import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.impl.config.AMXExtStartupServiceMBean;
 import org.glassfish.admin.amx.impl.ext.LoggingPropertiesMgrImpl;
 import org.glassfish.admin.amx.impl.ext.RealmsMgrImpl;
@@ -45,6 +46,7 @@ import org.glassfish.admin.amx.impl.ext.SystemStatusImpl;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
+import org.glassfish.admin.amx.util.FeatureAvailability;
 
 /**
     Startup service that loads support for AMX config MBeans.  How this is to be
@@ -90,7 +92,7 @@ public final class AMXExtStartupService
     
     public DomainRoot getDomainRootProxy()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy(false);
     }
     
         public synchronized ObjectName
@@ -98,6 +100,9 @@ public final class AMXExtStartupService
     {
         if ( ! mLoaded )
         {
+            FeatureAvailability.getInstance().waitForFeature( FeatureAvailability.AMX_CORE_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
+            FeatureAvailability.getInstance().waitForFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
+        
             ObjectName child;
             AMXImplBase     mbean;
             final MBeanServer s = mMBeanServer;

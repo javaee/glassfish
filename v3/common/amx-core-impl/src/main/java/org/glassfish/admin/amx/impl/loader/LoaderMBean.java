@@ -67,8 +67,8 @@ public interface LoaderMBean
 		{@link org.glassfish.admin.amx.base.DomainRoot#getAMXReady} instead.</b>.
 		
 		@return true if started, false otherwise
-	 */
 	public boolean	isStarted( );
+	 */
 	
 	
 	/**

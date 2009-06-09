@@ -66,8 +66,6 @@ import org.glassfish.admin.amx.util.FeatureAvailability;
 final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 	implements LoaderMBean, LoaderRegHandler
 {
-	protected volatile boolean    mStarted;
-	
 		public
 	Loader()
 	{
@@ -81,7 +79,7 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		new StringifierRegistryIniterImpl( StringifierRegistryImpl.DEFAULT );
 		new StringifierRegistryIniter( StringifierRegistryImpl.DEFAULT );
 		
-		mStarted	    = false;
+		//mStarted	    = false;
 	}
     
 	
@@ -223,40 +221,6 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		
 		return interrupted;
 	}
-	
-		protected void
-	startHook()
-	{
-	    // nothing 
-	}
-	
-	
-	private final class CheckStartedThread extends Thread
-	{
-	    public void CheckStartedThread()    {}
-	    
-	        public void
-	    run()
-	    {
-	        final long   AMX_READY_SLEEP_DURATION  = 100;
-	        
-	        while ( ! isStarted() )
-	        {
-	            debug( "Waiting " + AMX_READY_SLEEP_DURATION + "ms for AMX to start");
-	            sleepMillis( AMX_READY_SLEEP_DURATION );
-	        }
-
-            BootUtil.getInstance().setAMXReady( true );
-	    }
-	}
-	
-
-		public boolean
-	isStarted( )
-	{
-		return( mStarted );
-	}
-
     
 		private final void
 	loadDomainRoot()
@@ -329,17 +293,14 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 	}
 	
 	
-		protected void
+	protected volatile boolean    mStarted;
+		protected synchronized void
 	start()
 	{
-		synchronized( this )
-		{
-			if ( mStarted )
-			{
-				throw new IllegalArgumentException( "Can't start Loader twice" );
-			}
-			mStarted	= true;
-		}
+        if ( mStarted )
+        {
+            return;
+        }
 		
         try
         {
@@ -356,10 +317,39 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
         
 		loadDomainRoot();
 		
-		startHook();
-		
-		(new CheckStartedThread()).start();
+		//(new CheckStartedThread()).start();
 	}
+    
+	/*
+	protected volatile boolean    mStarted;
+    
+	private final class CheckStartedThread extends Thread
+	{
+	    public void CheckStartedThread()    {}
+	    
+	        public void
+	    run()
+	    {
+	        final long   AMX_READY_SLEEP_DURATION  = 100;
+	        
+	        while ( ! isStarted() )
+	        {
+	            debug( "Waiting " + AMX_READY_SLEEP_DURATION + "ms for AMX to start");
+	            sleepMillis( AMX_READY_SLEEP_DURATION );
+	        }
+
+            BootUtil.getInstance().setAMXReady( true );
+	    }
+	}
+	
+
+		public boolean
+	isStarted( )
+	{
+		return( mStarted );
+	}
+    */
+
 }
 
 

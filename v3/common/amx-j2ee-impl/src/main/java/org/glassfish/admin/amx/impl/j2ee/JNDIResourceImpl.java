@@ -43,9 +43,11 @@ import javax.management.ObjectName;
  */
 public final class JNDIResourceImpl
         extends J2EEResourceImplBase {
+    public static final Class<JNDIResource> INTF = JNDIResource.class;
+
 
     public JNDIResourceImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, JNDIResource.class);
+        super(parentObjectName, INTF);
     }
 }

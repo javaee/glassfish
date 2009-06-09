@@ -60,7 +60,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@return ObjectName or null if not found
 		@throws exception if not found
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> T	querySingletonType( String typeValue );
 	
 	
@@ -71,7 +71,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@param types Set of String (type values).
 		@return Set of AMX or empty Set if none
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryTypesSet( Set<String> types );
 	
 	/**
@@ -87,7 +87,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@param typeValue  the value for the type property
 		@return Set of AMX or empty Set if none
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryTypeSet( String typeValue );
 	
 	/**
@@ -103,7 +103,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@param nameValue  the value for the type property
 		@return Set of AMX or empty Set if none
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryJ2EENameSet( String nameValue );
 	
 	/**
@@ -127,7 +127,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 	/**
 	    @return Set<AMX> containing all items that have the matching type and name
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryTypeNameSet( String type, String name );
 	
 	/**
@@ -148,7 +148,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@param pattern  an ObjectName containing a pattern as defined by JMX
 		@return Set of AMX or empty Set if none
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryPatternSet( ObjectName	pattern );
 	
 	/**
@@ -165,7 +165,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@param props a comma-separated Properties string
 		@return Set of AMX or empty Set if none
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryPatternSet( String domain, String props );
 	
 	/**
@@ -180,7 +180,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		
 		@param props a String containing one or more name/value properties
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryPropsSet( String props );
 	
 	/**
@@ -211,7 +211,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@param wildValues	one or more value expressions, null means all
 		@return Set of AMX or empty Set if none
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>	queryWildSet(  String[]	wildKeys, String[] wildValues );
 	
 	/**
@@ -231,7 +231,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@param candidateObjectNames	optional (may be null) Set of ObjectName to which the search is limited
 		@return Set of AMX or empty Set if none
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public <T extends AMXProxy> Set<T>
 	queryInterfaceSet( String interfaceName, Set<ObjectName> candidateObjectNames);
 					
@@ -247,7 +247,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 		@return Set of all AMX
 		@see #queryAllObjectNameSet
 	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public Set<AMXProxy> queryAllSet( );
 	
 	/**

@@ -42,10 +42,11 @@ import org.glassfish.admin.amx.j2ee.J2EETypes;
 
 public final class JDBCResourceImpl
         extends J2EEResourceImplBase {
+    public static final Class<JDBCResource> INTF = JDBCResource.class;
 
     public JDBCResourceImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, JDBCResource.class);
+        super(parentObjectName, INTF);
     }
 
     public String[] getjdbcDataSources() {

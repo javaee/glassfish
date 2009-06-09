@@ -41,9 +41,10 @@ import javax.management.ObjectName;
 
 public final class StatefulSessionBeanImpl
         extends EJBImplBase {
+    public static final Class<StatefulSessionBean> INTF = StatefulSessionBean.class;
 
     public StatefulSessionBeanImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, StatefulSessionBean.class);
+        super(parentObjectName, INTF);
     }
 }

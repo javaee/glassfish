@@ -41,9 +41,10 @@ import javax.management.ObjectName;
 
 public final class JMSResourceImpl
         extends J2EEResourceImplBase {
+    public static final Class<JMSResource> INTF = JMSResource.class;
 
     public JMSResourceImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, JMSResource.class);
+        super(parentObjectName, INTF);
     }
 }

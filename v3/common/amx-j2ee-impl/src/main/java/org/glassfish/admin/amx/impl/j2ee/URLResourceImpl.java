@@ -41,9 +41,10 @@ import javax.management.ObjectName;
 
 public final class URLResourceImpl
         extends J2EEManagedObjectImplBase {
+    public static final Class<URLResource> INTF = URLResource.class;
 
     public URLResourceImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, URLResource.class);
+        super(parentObjectName, INTF);
     }
 }

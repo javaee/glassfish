@@ -41,13 +41,13 @@ import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
 
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.util.SetUtil;
-import org.glassfish.admin.amx.util.StringUtil;
 
 public final class EJBModuleImpl extends J2EEModuleImplBase {
+    public static final Class<EJBModule> INTF = EJBModule.class;
 
     public EJBModuleImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, EJBModule.class);
+        super(parentObjectName, INTF);
     }
 
     private static final Set<String> EJB_TYPES	= SetUtil.newUnmodifiableStringSet(

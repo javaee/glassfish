@@ -41,9 +41,10 @@ import javax.management.ObjectName;
 
 public final class RMI_IIOPResourceImpl
         extends J2EEResourceImplBase {
+    public static final Class<RMI_IIOPResource> INTF = RMI_IIOPResource.class;
 
     public RMI_IIOPResourceImpl(
             final ObjectName parentObjectName) {
-        super(parentObjectName, RMI_IIOPResource.class);
+        super(parentObjectName, INTF);
     }
 }

@@ -38,11 +38,13 @@ package org.glassfish.admin.amx.impl.j2ee;
 import org.glassfish.admin.amx.j2ee.ResourceAdapter;
 
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.j2ee.J2EEManagedObject;
 
 public final class ResourceAdapterImpl extends J2EEManagedObjectImplBase {
+    public static final Class<? extends J2EEManagedObject> INTF = ResourceAdapter.class;
 
     public ResourceAdapterImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, ResourceAdapter.class);
+        super(parentObjectName, INTF);
     }
 }
 

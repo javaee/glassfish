@@ -115,7 +115,7 @@ public final class MapUtil
 	}
 	
     
-    private static <K,V> Map<K, V>
+    public static <K,V> Map<K, V>
     toMap(final Object[] params, final Class<K> keyClass, final Class<V> valueClass)
     {
         final Map<K, V> m = new HashMap<K, V>();

@@ -38,11 +38,13 @@ package org.glassfish.admin.amx.impl.j2ee;
 import org.glassfish.admin.amx.j2ee.JCAManagedConnectionFactory;
 
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.j2ee.J2EEManagedObject;
 
 public final class JCAManagedConnectionFactoryImpl
         extends J2EEManagedObjectImplBase {
+    public static final Class<? extends J2EEManagedObject> INTF = JCAManagedConnectionFactory.class;
 
     public JCAManagedConnectionFactoryImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, JCAManagedConnectionFactory.class);
+        super(parentObjectName, INTF);
     }
 }
