@@ -34,7 +34,13 @@
         <jar destfile="${deployplan.jar}">
             <fileset dir="${basedir}" includes="sun-web.xml"/>
         </jar>
-        <war destfile="${all.war}" webxml="web.xml">
+        
+        <!-- 
+             The manifest in the next task specifies a Main-Class.  It is not used except
+             to make sure the app client sniffer does not claim the web
+             module simply because it has a Main-Class setting.
+        -->
+        <war destfile="${all.war}" webxml="web.xml" manifest="META-INF/MANIFEST.MF">
             <webinf dir="." includes="sun-web.xml"/>
             <classes dir="${build}"/>
         </war>
