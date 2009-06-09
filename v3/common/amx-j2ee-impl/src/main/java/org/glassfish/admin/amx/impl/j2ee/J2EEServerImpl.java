@@ -234,6 +234,7 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase {
 
             final MBeanServerNotification notif = (MBeanServerNotification)notifIn;
             final ObjectName objectName = notif.getMBeanName();
+            if ( ! mJ2EEServer.getDomain().equals( objectName.getDomain() ) ) return;
             
             if ( notif.getType().equals( MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
             {
