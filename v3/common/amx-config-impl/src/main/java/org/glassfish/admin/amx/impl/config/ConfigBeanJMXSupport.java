@@ -8,8 +8,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +27,10 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.ObjectName;
 import javax.management.modelmbean.DescriptorSupport;
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeType;
+import javax.management.openmbean.OpenType;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -60,8 +67,7 @@ import org.jvnet.hk2.config.Element;
  * @author llc
  */
 @Taxonomy( stability=Stability.NOT_AN_INTERFACE )
-public class ConfigBeanJMXSupport {
-
+public class ConfigBeanJMXSupport {    
     /** bugs: these @Configured do not set @Attribute(key=true)
     Map classnmame to id field 
     private static final Map<String, String> CONFIGURED_BUGS = Collections.unmodifiableMap(MapUtil.newMap(
@@ -184,7 +190,7 @@ public class ConfigBeanJMXSupport {
                     // match types
                 }
                 
-                debug( "Matched DuckTyped method: " + name );
+                //debug( "Matched DuckTyped method: " + name );
                 info = candidate;
                 break;
             }
@@ -295,9 +301,17 @@ public class ConfigBeanJMXSupport {
         return mElemenInfos.size() == 0;
     }
 
+    /** partial list (quick check) of legal remoteable types */
     private static final Set<Class<?>> REMOTABLE = SetUtil.newSet( new Class<?>[] {
+        Void.class,
+        Boolean.class,
+        Character.class,
         String.class,
-        ObjectName.class
+        Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class, BigDecimal.class, BigInteger.class,
+        Date.class,
+        ObjectName.class,
+        CompositeType.class,
+        CompositeDataSupport.class
     });
     
     /**
@@ -305,34 +319,59 @@ public class ConfigBeanJMXSupport {
         Some @Configured types can be converted to ObjectName.
      */
     private static boolean isRemoteableType(final Class<?> clazz) {
+        // quick check for the 99% case
         if (    clazz.isPrimitive() ||
-                Number.class.isAssignableFrom(clazz) ||
-                REMOTABLE.contains(clazz) )
+                REMOTABLE.contains(clazz) ||
+                CompositeData.class.isAssignableFrom(clazz) ||
+                OpenType.class.isAssignableFrom(clazz)
+                )
         {
             return true;
         }
         
+        if ( clazz.isArray() )
+        {
+            return isRemoteableType( clazz.getComponentType() );
+        }
+        
+        if ( Collection.class.isAssignableFrom(clazz) )
+        {
+            // no way to tell, allow it
+            return true;
+        }
+        
+        if ( Map.class.isAssignableFrom(clazz) )
+        {
+            // no way to tell, allow it
+            return true;
+        }
+                
         if ( ConfigBeanProxy.class.isAssignableFrom(clazz) )
         {
             // represented as an ObjectName
             return true;
         }
-         
-        //final String name = clazz.getName();
-        //return name.startsWith("java.");
         
         return false;
     }
 
     private static boolean isRemoteableDuckTyped(final Method m, final DuckTyped duckTyped) {
+        boolean isRemotable = true;
+        
         final Class<?> returnType = m.getReturnType();
         if (! isRemoteableType(returnType)) {
-            return false;
+           return false;
         }
 
         final Class<?>[] sig = m.getParameterTypes();
         for (final Class<?> c : sig) {
             if (!isRemoteableType(c)) {
+                return false;
+            }
+            
+            // in an OSGI world, passing an argument of type Class is highly dubious
+            if ( c == Class.class )
+            {
                 return false;
             }
         }
@@ -514,6 +553,9 @@ public class ConfigBeanJMXSupport {
         return s;
     }
 
+    /**
+        DuckTyped methods are <em>always</em> exposed as operations, never as Attributes.
+     */
     public MBeanOperationInfo duckTypedToMBeanOperationInfo(final DuckTypedInfo info) {
         final Descriptor descriptor = descriptor(info.duckTyped());
 
@@ -522,7 +564,7 @@ public class ConfigBeanJMXSupport {
         final Class<?> type = remoteType( info.returnType() );
         
         final String description = "@DuckTyped " + name + " of " + mIntf.getName();
-        final int impact = MBeanOperationInfo.INFO; // how to tell?
+        final int impact = MBeanOperationInfo.UNKNOWN; // how to tell?
         
         final List<MBeanParameterInfo>  paramInfos = new ArrayList<MBeanParameterInfo>();
         int i = 0;
