@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+    <!--
+
+  @(#)package.html
+  
+  Taken from http://java.sun.com/j2se/javadoc/writingdoccomments/package-template
+
+-->
+    <title> Package documentation for the ${component.title} component of the ${project.title} </title>
+
+</head>
+<body bgcolor="white">
+
+Provides for functionality of the new command line interface implementation.
+
+
+<h2>Package Specification</h2>
+
+
+<h2>Related Documentation</h2>
+
+Please see: The design document and command line specification.
+<p>
+    The main classes for parsing are represented by the class diagram in this picture (Thanks to YUML -- for example,
+    see the YUML in action by clicking <a href="http://yuml.me/diagram/class/%5BNewCommand%5D++-1%5BCommandDesc%5D,%20%5BNewCommand%5D-ExecutesOn%3E%5BTargetServer|host;port;user;password;secure],%20[NewCommand]++-0..*%3E[Option%20|%20+name+;%20givenValue;],%20[NewCommand]++-0..*%3E[Operand%20|%20+name+;%20givenValues;],%20[CommandDesc]++-0..*%3E[OptionDesc],%20[CommandDesc]++-0..*%3E[OperandDesc],%20[Operand%20|%20+name+;%20givenValues;]%3C%3E-1%3E[OperandDesc],%20[Option%20|%20+name+;%20givenValue;]%3C%3E-1%3E[OptionDesc],%20[Parser]-Generates%3E[FirstPassResult],%20[FirstPassResult]++-1[TargetServer|host;port;user;password;secure],%20[Parser]-Generates%3E[SecondPassResult],%20[SecondPassResult]-Forms%3E[NewCommand],%20[Parser]-Throws%3E[ParserException]">here</a>.
+    <img src="doc-files/class-diagram.png" alt="class-diagram" width="600px" height="800px">
+    
+    The usecase diagram is shown below, at least for ctitical use cases (See <a href="http://yuml.me/diagram/usecase/%5Bargv%20from%20User%5D-(First%20Pass),%20(First%20Pass)%20%3E%20(Extract%20asadmin%20Program%20Options),%20(Extract%20asadmin%20Program%20Options)%20%3E%20(Determine%20TargetServer),(First%20Pass)%20%3E%20(Syntax%20Error),%20%5Bargv%20from%20User%5D%3E(First%20Pass%20Done),%20(First%20Pass%20Done)%3E(Second%20Pass),%20(First%20Pass%20Done)%3C(Command%20Metadata%20from%20TargetServer),%20(Second%20Pass)%3E(Syntactically%20Correct%20NewCommand)"> here </a>for YUML):
+    <img src="doc-files/usecase-diagram.png" alt="usecase-diagram">
+
+    As you can from the Javadoc of various classes, care has been taken not to expose the classes of this package
+    outside. The access specification has been used such that only few classes in this package are public. The Parser
+    class as of now supports only the backward compatible command line parsing in that the options of asadmin program
+    and options and operands for the commands appear after the command name. It's a two pass parser in that:
+    <ul>
+    <li>First pass extracts the program options and segragates program options from command arguments. Command arguments
+        may contain command options and its operands. The program options help reach the target server that determines
+        the server where command is actually implemented.
+        A Driver class then gets the command metadata from the server. This metadata along with the command arguments
+        are fed into the second pass.
+    </li>
+    <li>Second Pass is similar to first pass, the only diffrence being in its access to command metadata which first
+    pass does not have.
+    </li>
+    </ul>
+    At the end of both these passes, Parser guarantees that there are no syntax errors. There are JAXB generated classes
+    that get their metadata from an XML. This XML is the data serialization technique used. The client communicates
+    with the server and receives the metadata in the form of an XML which is then deserialized to the instance of
+    class CommandDesc. CommandDesc, OperandDesc and OptionDesc are JAXB generated classes.
+</p>
+<p>
+    A tricky part is supporting both old and new command syntaxes (i.e. implementation of the asadmin program option
+    and command option/operand separation). The command line should remain largely compatible with previous release.
+</p>
+<p>
+    Note that creation of the XML is <b> completely </b> driven by the annotations on a command implementation. This
+    is generic code running in the server and classes and interfaces supporting that are provided elsewhere.
+</p>
+<p>
+    Classes in the org.glassfish.enterprise.admin.ncli.comm package deal with the client->server communication. Since
+    all of the communication happens over HTTP/S, the classes in this package handle the raw HTTP communication like
+    creation of actual HTTP request, request headers, request POST, file upload, file download, handling of response
+    from the server etc.
+</p>
+
+<!-- Put @see and @since tags down here. -->
+@since GlassFish v3 September 2009
+</body>
+</html>

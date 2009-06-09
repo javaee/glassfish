@@ -109,6 +109,7 @@
                     <include>**/*.1</include>
                     <include>**/*.1m</include>
                     <include>**/*.5asc</include>
+                    <include>*command-names</include>
                 </includes>
             </resource>
             <resource>
@@ -148,8 +149,47 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-command-metadata-classes</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaLanguage>DTD</schemaLanguage>
+                    <schemaDirectory>src/main/resources</schemaDirectory>
+                    <generatePackage>org.glassfish.enterprise.admin.ncli.metadata</generatePackage>
+                    <schemaIncludes>
+                        <include>cmd-metadata.dtd</include>
+                    </schemaIncludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+	<reporting>
+	    <plugins>
+		<plugin>
+		    <artifactId>maven-javadoc-plugin</artifactId>
+		    <configuration>
+			<aggregate>true</aggregate>
+			<minmemory>128m</minmemory>
+			<maxmemory>512m</maxmemory>
+			<source>1.5</source>
+			<verbose>false</verbose>
+			<linksource>true</linksource>
+			<links>
+			    <link>http://java.sun.com/javase/6/docs/api/</link>
+			</links>
+			<show>private</show>
+		    </configuration>
+		</plugin>
+	    </plugins>
+	</reporting> 
     <dependencies>
         <dependency>
             <groupId>org.glassfish.admin</groupId>

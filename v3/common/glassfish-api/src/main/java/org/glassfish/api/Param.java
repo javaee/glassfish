@@ -60,7 +60,7 @@ public @interface Param {
      * Retuns the name of the parameter as it has be specified by the client when invoking
      * the command. By default the name is deducted from the name of the annotated element.
      * If the annotated element is a field, it is the filed name.
-     * If the annoated element is a mehod, it is the JavaBeans property name from the setter
+     * If the annoated element is a method, it is the JavaBeans property name from the setter
      * method name
      *
      * @return the parameter name.

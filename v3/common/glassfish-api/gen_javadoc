@@ -1,0 +1,5 @@
+#!/bin/bash
+PWD=`dirname $0`
+cd src/main/java
+javadoc -d ../../../javadoc -exclude org.glassfish.config:org.glassfish.admingui:org.glassfish.amx:org.glassfish.branding:org.glassfish.container:org.glassfish.content:org.glassfish.deployment:org.glassfish.embedded:org.glassfish.event:org.glassfish.invocation:org.glassfish.logging:org.glassfish.monitoring:org.glassfish.naming:org.glassfish.tests -linksource org/glassfish/api/admin/cli/*.java
+cd $PWD
