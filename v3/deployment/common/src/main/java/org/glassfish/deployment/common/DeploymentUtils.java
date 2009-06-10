@@ -50,10 +50,9 @@ import java.util.Enumeration;
 
 public class DeploymentUtils {
 
-    private static final String WEB_XML = "WEB-INF/web.xml";
-    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
-    private static final String WEB_INF_LIB = "WEB-INF/lib";
+    private static final String WEB_INF = "WEB-INF";
     private static final String JSP_SUFFIX = ".jsp";
+    private static final String HTML_SUFFIX = ".html";
     private static final String RA_XML = "META-INF/ra.xml";
     private static final String APPLICATION_XML = "META-INF/application.xml";    
     private static final String EAR_EXTENSION = ".ear";
@@ -70,14 +69,14 @@ public class DeploymentUtils {
                 return true;
             }
 
-            if (archive.exists(WEB_XML) || archive.exists(WEB_INF_CLASSES) || 
-                archive.exists(WEB_INF_LIB) ) {
+            if (archive.exists(WEB_INF)) { 
                 return true;
             } 
             Enumeration<String> entries = archive.entries();
-            while (entries  .hasMoreElements()) {
+            while (entries.hasMoreElements()) {
                 String entryName = entries.nextElement();
-                if (entryName.endsWith(JSP_SUFFIX)) {
+                if (entryName.endsWith(JSP_SUFFIX) || 
+                    entryName.endsWith(HTML_SUFFIX)) {
                     return true;
                 }
             }
