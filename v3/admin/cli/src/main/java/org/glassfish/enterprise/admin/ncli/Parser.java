@@ -64,20 +64,29 @@ final class Parser {
     FirstPassResult firstPass() throws ParserException {
         String cmd;
         FirstPassResult fpr;
+        Set<OptionDesc> known = POB.getAllOptionMetadata();
+        Map<String, String> givenProgramOptions = new HashMap<String, String>(); //given options as name value pairs
         if (indicatesCommandName(args[0])) {
+            //legacy syntax
             cmd = args[0];
             handleUnsupportedLegacyCommand(cmd);
-            Set<OptionDesc> known = POB.getAllOptionMetadata();
-            Map<String, String> givenProgramOptions = new HashMap<String, String>(); //given options as name value pairs
             int length = args.length-1;
             String[] argsToParse = new String[length];
             System.arraycopy(args, 1, argsToParse, 0, length);
             String[] cmdArgs = splitUsingMetadata(argsToParse, known, givenProgramOptions);  //may contain options and operands
-            fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs);
+            if (givenProgramOptions.size() > 0 && slc.contains(cmd)) { //there is at least one program option specified after command name that we know about
+                Set<String> names = givenProgramOptions.keySet();
+                String[] nameArray = names.toArray(new String[names.size()]);
+                warn("deprecated.syntax", cmd, Arrays.toString(nameArray));
+                fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs, true);
+            } else {
+                fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs); //uses new syntax, one way or the other
+            }
             return fpr;
         } else if (indicatesOption(args[0])) {
-            //depends on whether we want to support the program option and command option separation
-            throw new ParserException("As of now, command line must start with command name, not any of asadmin program options");
+            //new syntax
+//            String cmd = splitMetadataForNewSyntax(Arrays.copyOf(args, args.length);
+              throw new UnsupportedOperationException("not yet implemented");
         } else {
             throw new ParserException(lsm.get("parser.invalid.start", args[0]));
         }
@@ -109,7 +118,21 @@ final class Parser {
         }
         //it is a supported command; do nothing
     }
-    
+
+    /** This method is meant for first pass and second pass as well. For now, the first pass parses only for the legacy
+     * syntax. The correctness of this Parser largely depends on the correctness of this method.
+     * <p>
+     * Once we remove the old syntax support, first pass should not call this method.
+     *
+     * @param argsToParse String array that possibly complies with legacy syntax, or the leftover from first pass
+     * @param known Set of OptionDesc that is known at this point. For first pass it will be limited to the program options, for second pass, it will have command's metadata
+     * @param optionMap a Map for this method to populate as name-value pairs. This is where this method does some normalization, in that
+     *        a boolean option like -f (with name "force") will be identified as "force" -> "true" by this method.
+     * @return remaining arguments, for first pass these are unresolved options/operands. For second pass, in case of
+     *        successful parsing, this should be just contain operands as simple strings, further processing of which should
+     *        happen elsewhere
+     * @throws ParserException
+     */
     private static String[] splitUsingMetadata(String[] argsToParse, Set<OptionDesc> known, Map<String, String> optionMap) throws ParserException {
         //operates on argsToParse and splits it into program options and command options + operands based on given metadata (known)
         int si = 0;
@@ -175,7 +198,6 @@ final class Parser {
                 fillOperandsFromArgs(si+1, remainingArgs, argsToParse);
                 break;
             } else {
-                //throw new ParserException(lsm.get("invalid.argument.on.command.line", argument));
                 //this is an operand!
                 remainingArgs.add(argument);
                 si++;
@@ -184,6 +206,26 @@ final class Parser {
         return remainingArgs.toArray(new String[remainingArgs.size()]);
     }
 
+    private String splitMetadataForNewSyntax(String[] args2Parse, Set<OptionDesc> known, List<String> remaining) throws ParserException {
+        //idea is to only traverse till you get to the command, return the command name and add the remaining arguments to remaining.
+        //some logic seems to be repeated from the above method, but that's life
+        String cmd = null;
+        int si = 0; //see how si is incremented
+        while (si < args2Parse.length) {
+            String argument = args2Parse[si];
+            if (indicatesOption(argument)) {
+
+            } else if (indicatesCommandName(argument)) {
+
+            } else {
+                throw new ParserException("Encountered an argument that is neither a program option nor command name. This is a logic error.");
+            }
+        }
+        if (cmd == null) {
+            throw new ParserException(lsm.get("no.command.specified"));
+        }
+        return cmd;
+    }
     private static void handleOptionGivenNameValue(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown) throws ParserException {
         String name;
         OptionDesc pod;
@@ -254,5 +296,10 @@ final class Parser {
             throw new ParserException(lsm.get("password.not.allowed.on.command.line", od.getName()));
         filtrate.put(od.getName(), value);
     }
+
+    private void warn(String key, String... args) {   //it's a key in LocalStrings.properties
+        out.println(lsm.get(key, args));
+    }
+
 }
 

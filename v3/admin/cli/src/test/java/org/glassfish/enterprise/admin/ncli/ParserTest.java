@@ -111,10 +111,11 @@ public class ParserTest {
     @Test
     public void testIntermingled1() throws ParserException {
         //this uses the work-around
-        String[] cmdline = new String[]{"cmd", "--cmdopt=abcde", "-H", "internal.sun.com", "--port=9999", "-s"};
+        String[] cmdline = new String[]{"create-jdbc-resource", "--cmdopt=abcde", "-H", "internal.sun.com", "--port=9999", "-s"};
         Parser p = new Parser(cmdline);
         FirstPassResult fpr = p.firstPass();
         assertArrayEquals("arrays are not same", fpr.getCommandArguments(), new String[]{"--cmdopt=abcde"});
+        assertTrue(fpr.usesDeprecatedSyntax());
     }
     @Test
     public void testBooleanOptionList() throws ParserException {
@@ -138,5 +139,22 @@ public class ParserTest {
     public void rejectPassword2() throws ParserException {
         String[] cmdline = new String[]{"cmd", "-w", "secret"};
         new Parser(cmdline).firstPass();
+    }
+
+    @Test
+    public void assertDeprecated1() throws ParserException {
+        String cmd = "create-http-listener"; //this is a legacy command, now, we will specify it the legacy way, deliberately.
+        String[] cmdline = new String[]{cmd, "--host=localhost", "--port=1234", "--secure", "true", "listener1"};
+        Parser p = new Parser(cmdline);
+        FirstPassResult fpr = p.firstPass();
+        assertTrue(fpr.usesDeprecatedSyntax());
+    }
+    @Test
+    public void assertNotDeprecated1() throws ParserException {
+        String cmd = "possibly-new-command"; //this is a new command, now, we will specify it the legacy way, deliberately. Such specification lets program options be reused
+        String[] cmdline = new String[]{cmd, "--host=localhost", "--port=1234", "--secure", "true", "listener1"};
+        Parser p = new Parser(cmdline);
+        FirstPassResult fpr = p.firstPass();
+        assertFalse(fpr.usesDeprecatedSyntax());  //this is NOT deprecated as --host is reused byt possibly-new-command
     }
 }

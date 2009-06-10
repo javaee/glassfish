@@ -27,14 +27,29 @@ final class FirstPassResult {
     private final TargetServer ts;
     private final Set<Option> programOptions;
     private final String[] cmdArgs;
+    private final boolean usesDeprecatedSyntax;
 
-    /** The only constructor.
-     * 
+    /** Creates an instance of this class. This instance indicates a parsing result for a command
+     *  that follows the new syntax. See the new syntax <a href="https://glassfish.dev.java.net/nonav/v3/admin/planning/j109/admin-cli.html#asadminoptions">
+     *  here </a>. Call to this constructor should generated a <b> deprecation warning </b>.
+     *
      * @param cmdName String representing command name, may not be null
      * @param poPair A Map<String, String> between option names and their values
      * @param cmdArgs Unresolved command options and operands as string array
      */
     FirstPassResult(String cmdName, Map<String, String> poPair, String[] cmdArgs) {
+        this(cmdName, poPair, cmdArgs, false);
+    }
+
+    /** Creates an instance of this class. This instance indicates a parsing result for a command
+     *  that might follow the old syntax. See the new syntax <a href="https://glassfish.dev.java.net/nonav/v3/admin/planning/j109/admin-cli.html#asadminoptions">
+     *  here </a>.
+     * @param cmdName String representing command name, may not be null
+     * @param poPair A Map<String, String> between option names and their values
+     * @param cmdArgs Unresolved command options and operands as string array
+     * @param usesDeprecatedSyntax indicates whether this parsing results in command following the old syntax
+     */
+    public FirstPassResult(String cmdName, Map<String, String> poPair, String[] cmdArgs, boolean usesDeprecatedSyntax) {
         if (cmdName == null || poPair == null || cmdArgs == null)
             throw new IllegalArgumentException("null_arg");
         this.cmdName = cmdName;
@@ -42,6 +57,7 @@ final class FirstPassResult {
         this.ts             = initializeTargetServer();
         this.cmdArgs        = new String[cmdArgs.length];
         System.arraycopy(cmdArgs, 0, this.cmdArgs, 0, cmdArgs.length);
+        this.usesDeprecatedSyntax = usesDeprecatedSyntax;
     }
 
     /** Returns the name of the command to be run.
@@ -85,6 +101,14 @@ final class FirstPassResult {
      */
     Set<Option> getProgramOptions() {
         return programOptions;
+    }
+
+    /** Returns whether this result implies the command using the deprecated syntax.
+     *
+     * @return true if command line uses deprecated syntax, false otherwise
+     */
+    boolean usesDeprecatedSyntax() {
+        return usesDeprecatedSyntax;
     }
 
     // ALL Private ...
