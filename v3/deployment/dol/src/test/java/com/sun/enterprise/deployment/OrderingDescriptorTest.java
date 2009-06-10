@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
 
 /**
  * This class tests relative order sorting.
- * These tests are ported from jsf-ri TestFacesConfigOrdering.java.
+ * The first part of tests are ported from jsf-ri TestFacesConfigOrdering.java.
  *
  * @author Shing Wai Chan
  */
@@ -287,6 +287,17 @@ public class OrderingDescriptorTest {
             // expected
             System.out.println("Expected exception: " + ex);
         }
+    }
+
+    @Test
+    public void testCircleWithEmptyOthers() {
+        List<WebFragmentDescriptor> wfs = new ArrayList<WebFragmentDescriptor>();
+        wfs.add(createWebFragmentDescriptor("A", new String[] { "C" }, null));
+        wfs.add(createWebFragmentDescriptor("B", new String[] { "A" }, new String[] { OTHERS }));
+        wfs.add(createWebFragmentDescriptor("C", new String[] { OTHERS }, null));
+        OrderingDescriptor.sort(wfs);
+        String[] ids = { "C", "A", "B" };
+        validate(ids, wfs);
     }
 
     // ----- private methods

@@ -140,7 +140,7 @@ public class OrderingDescriptor extends Descriptor {
         }
 
         List<Node> remaining = new ArrayList<Node>(graph);
-        boolean needOthers = false;
+        boolean hasOthers = false;
 
         // build the edges
         // othersNode is not in the loop
@@ -156,7 +156,7 @@ public class OrderingDescriptor extends Descriptor {
                         wfNode.getInNodes().add(othersNode);
                         othersNode.getOutNodes().add(wfNode);
                         remaining.remove(othersNode);
-                        needOthers = true;
+                        hasOthers = true;
                     }
                     for (String name : after.getNames()) {
                         Node nameNode = name2NodeMap.get(name);
@@ -172,7 +172,7 @@ public class OrderingDescriptor extends Descriptor {
                         wfNode.getOutNodes().add(othersNode);
                         othersNode.getInNodes().add(wfNode);
                         remaining.remove(othersNode);
-                        needOthers = true;
+                        hasOthers = true;
                     }
                     for (String name : before.getNames()) {
                         Node nameNode = name2NodeMap.get(name);
@@ -192,15 +192,16 @@ public class OrderingDescriptor extends Descriptor {
             }
         }
 
-        // add others if necessary
-        if (needOthers) {
+        // add others to the end if necessary
+        if (hasOthers) {
             graph.add(othersNode);
         }
 
         List<Node> subgraph = new ArrayList<Node>(graph);
         subgraph.removeAll(remaining);
+        boolean hasRemaining = (remaining.size() > 0);
 
-        List<Node> sortedNodes = topologicalSort(subgraph);
+        List<Node> sortedNodes = topologicalSort(subgraph, hasRemaining);
         wfs.clear();
         boolean othersProcessed = false;
         for (Node node: sortedNodes) {
@@ -226,8 +227,11 @@ public class OrderingDescriptor extends Descriptor {
     /**
      * Note that this processing will modify the graph.
      * It is not intended for public.
+     * @param graph
+     * @param hasRemaining
+     * @return a sorted list of Node
      */
-    private static List<Node> topologicalSort(List<Node> graph) {
+    private static List<Node> topologicalSort(List<Node> graph, boolean hasRemaining) {
         List<Node> sortedNodes = new ArrayList<Node>();
 
         if (graph.size() == 0) {
@@ -243,9 +247,14 @@ public class OrderingDescriptor extends Descriptor {
         }
         
         if (roots.empty()) {
-            throw new IllegalStateException(localStrings.getLocalString(
-                    "enterprise.deployment.exceptioninvalidwebfragmentordering",
-                    "The web fragment ordering is not valid and possibly has cycling conflicts."));
+            // check if it is a circle with others and empty remaining
+            if (isCircleWithOthersAndNoRemaining(graph, hasRemaining, sortedNodes)) {
+                return sortedNodes;
+            } else {
+                throw new IllegalStateException(localStrings.getLocalString(
+                        "enterprise.deployment.exceptioninvalidwebfragmentordering",
+                        "The web fragment ordering is not valid and possibly has cycling conflicts."));
+            }
         }
 
         while (!roots.empty()) {
@@ -257,6 +266,7 @@ public class OrderingDescriptor extends Descriptor {
                 Node outNode = outNodesIter.next();
                 // remove the outcoming edge
                 outNodesIter.remove();
+                // remove corresponding incoming edge from the outNode
                 outNode.getInNodes().remove(node);
 
                 // if no incoming edge
@@ -279,6 +289,54 @@ public class OrderingDescriptor extends Descriptor {
                     "The web fragment ordering is not valid and possibly has cycling conflicts."));
         }
         return sortedNodes;
+    }
+
+    /**
+     * This method will check whether the graph does not have remaining vertices
+     * and is a circle with others. It return the sorted result in sortedNodes.
+     * @param graph  the input graph
+     * @param hasRemaining
+     * @param sortedNodes  output sorted result if it is a circle with empty others
+     * @return boolean indicating whether it is a circle with an empty others
+     */
+    private static boolean isCircleWithOthersAndNoRemaining(List<Node> graph,
+            boolean hasRemaining, List<Node>sortedNodes) {
+
+        boolean circleWithOthersAndNoRemaining = false;
+        int size = graph.size();
+        if (size == 0 || hasRemaining) {
+            return circleWithOthersAndNoRemaining;
+        }
+
+        Node nextNode = graph.get(size - 1);
+        if (nextNode.getWebFragmentDescriptor() == null) { // others
+            Set<Node> set = new LinkedHashSet<Node>();
+            int count = 0;
+            while ((count < size) &&
+                    nextNode.getOutNodes().size() == 1 &&
+                    nextNode.getInNodes().size() == 1) {
+
+                if (!set.add(nextNode)) {
+                    break;
+                }
+                nextNode = nextNode.getOutNodes().iterator().next();
+                count++;
+            }
+
+            if (set.size() == size) {
+                circleWithOthersAndNoRemaining = true;
+                Iterator<Node> iter = set.iterator();
+                // exclude others
+                if (iter.hasNext()) {
+                    iter.next();
+                }
+                while (iter.hasNext()) {
+                   sortedNodes.add(iter.next());
+                }
+            }
+        }
+
+        return circleWithOthersAndNoRemaining;
     }
 
     // for debug
