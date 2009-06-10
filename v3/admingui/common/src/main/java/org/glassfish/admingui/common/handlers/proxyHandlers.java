@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import javax.management.Attribute;
 
 import com.sun.jsftemplating.annotation.Handler;  
 import com.sun.jsftemplating.annotation.HandlerInput; 
@@ -219,12 +220,38 @@ public class proxyHandlers {
                     }
                 }
             }
-
             V3AMX.setAttributes( objectNameStr, attrs);
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+    
+         @Handler(id="updateStatus",
+        input={
+            @HandlerInput(name="objectNameStr", type=String.class, required=true),
+            @HandlerInput(name="enabled",   type=String.class),
+            @HandlerInput(name="selectedRows", type=List.class, required=true)}
+     )
+    public static void updateStatus(HandlerContext handlerCtx){
+         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+         AMXConfigProxy amx = (AMXConfigProxy) objectNameToProxy(objectNameStr);
+         String status = (String) handlerCtx.getInputValue("enabled");
+         List obj = (List) handlerCtx.getInputValue("selectedRows");
+         List<Map> selectedRows = (List) obj;
+         Attribute attr = null;
+         
+        try{
+            for(Map oneRow : selectedRows){
+                String Name = (String)oneRow.get("Name");
+                System.out.println("object name is "+objectNameStr+Name);
+                V3AMX.setAttribute(objectNameStr+Name, new Attribute("Enabled", status));
+            }
+        }catch(Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    
 
 
     @Handler(id="createProxy",
