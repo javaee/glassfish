@@ -35,26 +35,48 @@
 -->
 <!-- security/auditModules/auditModuleEdit.jsf -->
 
-<!initPage 
-    setAttribute(key="edit" value="#{true}" )
+
+<!initPage
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setResourceBundle(key="help_security" bundle="org.glassfish.security.admingui.Helplinks");
-    setPageSessionAttribute(key="helpKey" value="$resource{help_security.auditModuleEdit}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.auditModule.EditPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-    getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-    getRequestValue(key="name" value=>$page{name} );
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.auditModule.EditPageTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.EditPageTitleHelp}");
-    setPageSessionAttribute(key="helpKey" value="$resource{help.auditModuleEdit}");
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/auditModules/auditModuleEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/security/auditModules/auditModules.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="childType" value="audit-modules");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=audit-module,name=#{pageSession.Name}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
 
-#include "/security/auditModules/auditModule.inc"               
+    #include "/shared/restart.inc"
+            <sun:form id="propertyForm">
+        //#include treeBreadcrumbs.inc
+#include "/shared/alertMsg.inc"
 
+        <!-- Page Title -->
+        <sun:title id="propertyContentPage" title="$resource{i18nSecurity.auditModule.EditPageTitle}" helpText="$resource{$resource{i18nSecurity.auditModule.EditPageTitleHelp}}">
+#include "/shared/editPageButtons.inc"
+        </sun:title>
+        "<br><br>
+#include "/security/auditModules/auditModule.inc"
+#include "/shared/propertyDescTable.inc"
+
+	<sun:hidden id="helpKey" value="$resource{help_security.auditModuleEdit}" />
+</sun:form>
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
-

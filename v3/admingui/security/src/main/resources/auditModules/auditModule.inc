@@ -34,97 +34,23 @@
  holder.
 -->
 
-#include "/shared/restart.inc"    
-            <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
-
-    <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
-        <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" 
-                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-                <!command
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                    prepareSuccessfulMsg();        
-                    saveAuditModuleSettings(
-                        ConfigName="#{configName}",
-                        Name="#{name}",
-                        Edit="#{edit}",
-                        auditOn="#{auditOn}",
-                        Classname="#{classname}"
-                        newProps="${newProps}"
-                    );            
-            />    
-        </sun:button>
-
-        <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" 
-                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-            <!command
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                prepareSuccessfulMsg();        
-                saveAuditModuleSettings(
-                    ConfigName="#{configName}",
-                    Name="#{name}",
-                    Edit="#{edit}",
-                    auditOn="#{auditOn}",                        
-                    Classname="#{classname}"
-                    newProps="${newProps}"
-                );             
-                redirect(page="#{request.contextPath}/security/auditModules/auditModules.jsf?configName=#{configName}")
-            />
-        </sun:button>
-        <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-            <!command
-                redirect(page="#{request.contextPath}/security/auditModules/auditModules.jsf?configName=#{configName}");
-            />
-        </sun:button>
-        </sun:panelGroup>
-        </facet>   
-    </sun:title>
     <!-- PropertySheet .... -->
     <sun:propertySheet id="propertySheet" requiredFields="true">			 
-        <event>
-        <!beforeCreate
-            getAuditModuleSettings(
-                Edit="#{edit}",
-                ConfigName="#{configName}", 
-                Name="#{name}",
-                Classname=>$attribute{classname},
-                auditOn=>$attribute{auditOn},
-                Properties=>$page{props});   
-                getTableList(Properties="#{props}", TableList=>$attribute{tableList});      
-            />
-        </event>
-
+        
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="IdStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
-                <sun:staticText id="IdStatic" text="#{name}"/> 
+                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['Name']}"/>
             </sun:property> 
 
             <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                <sun:textField id="IdText" styleClass="required" text="#{name}" columns="$int{55}" required="#{true}" /> 
+                <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" required="#{true}" />
             </sun:property> 
 
             <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.Classname}">                           
-                <sun:textField id="ClassName" styleClass="required" text="#{classname}" columns="$int{55}" required="#{true}" /> 
-            </sun:property>
-
-            <sun:property id="auditOn" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.AuditModule.auditOn}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{auditOn}" />  
+                <sun:textField id="ClassName" styleClass="required" text="#{pageSession.valueMap['Classname']}" columns="$int{55}" required="#{true}" />
             </sun:property>
 
         </sun:propertySheetSection>
     </sun:propertySheet>    
-#include "/shared/propertyTable.inc"
-                <sun:hidden id="helpKey" value="#{helpKey}" />
-            </sun:form>
-            "<br/><br/>
-#include "/shared/changeButtonsJS.inc"         
 
 
