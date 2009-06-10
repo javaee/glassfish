@@ -231,23 +231,22 @@ final class StandardContextValve
     public void postInvoke(Request request, Response response)
         throws IOException, ServletException {
 
-        Object instances[] = 
+        Object[] listeners = 
             ((Context) container).getApplicationEventListeners();
 
-        if ((instances !=null ) &&
-                (instances.length > 0)) {
+        if ((listeners != null) && (listeners.length > 0)) {
             // create post-service event
             ServletRequestEvent event = new ServletRequestEvent
                 (((StandardContext) container).getServletContext(), 
                 request.getRequest());
-
-            for (int i = 0; i < instances.length; i++) {
-                if (instances[i] == null)
+            for (int i = 0; i < listeners.length; i++) {
+                int j = (listeners.length - 1) - i;
+                if (listeners[j] == null ||
+                        !(listeners[j] instanceof ServletRequestListener)) {
                     continue;
-                if (!(instances[i] instanceof ServletRequestListener))
-                    continue;
+                }
                 ServletRequestListener listener =
-                    (ServletRequestListener) instances[i];
+                    (ServletRequestListener) listeners[j];
                 // START SJSAS 6329662
                 container.fireContainerEvent(
                     ContainerEvent.BEFORE_REQUEST_DESTROYED,
@@ -258,7 +257,7 @@ final class StandardContextValve
                 } catch (Throwable t) {
                     log(sm.getString(
                         "standardContextValve.requestListener.requestDestroyed",
-                        instances[i].getClass().getName()),
+                        listener.getClass().getName()),
                         t);
                     ServletRequest sreq = request.getRequest();
                     sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
