@@ -44,6 +44,8 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Container;
+import org.apache.catalina.Manager;
+import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.core.StandardContext;
 import org.glassfish.internal.api.Globals;
@@ -127,6 +129,11 @@ public class Activator implements BundleActivator {
         wmConfig.setVirtualServers(vsId);
         wmConfig.setAppClassLoader(getClass().getClassLoader());
         standardContext.setWebModuleConfig(wmConfig);
+
+        // Since there is issue about locating user classes that are part
+        // of some OSGi bundle while deserializing, we switch off session
+        // persistence.
+        switchOffSessionPersistence(standardContext);
         vs.addChild(standardContext);
 //        StandardContext standardContext =
 //                StandardContext.class.cast(vs.findChild(contextPath));
@@ -143,5 +150,24 @@ public class Activator implements BundleActivator {
         vs.removeChild(standardContext);
         // TODO(Sahoo): Need to call stop on all wrappers if they are not
         // automatically stopped when removed from context.
+    }
+
+    private void switchOffSessionPersistence(StandardContext ctx) {
+        // See Jan's blog about how to switch off
+        // Session persistence:
+        // http://blogs.sun.com/jluehe/entry/how_to_disable_persisting_of
+        Manager mgr = ctx.getManager();
+        if (mgr == null) {
+            mgr = new StandardManager();
+            StandardManager.class.cast(mgr).setPathname(null);
+            ctx.setManager(mgr);
+        } else {
+            try {
+                StandardManager.class.cast(mgr).setPathname(null);
+            } catch (ClassCastException cce) {
+                System.out.println(mgr +
+                        " does not allow path name of session store to be configured.");
+            }
+        }
     }
 }
