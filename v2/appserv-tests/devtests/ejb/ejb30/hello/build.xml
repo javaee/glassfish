@@ -16,18 +16,15 @@
         <antcall target="session2"/>
         <antcall target="session2full"/>
         <antcall target="nopkg"/>
-
-
+        <antcall target="mdb"/>  
+        <antcall target="mdb2"/> <!-- @@@ fix message-destination-refs -->
+        <antcall target="session4"/> <!-- @@@ without @EJB injection in uncooked client
+-->
 	<!-- gradually reenable as possible
 
         <antcall target="session5"/> // Client class seems to be disappearing from client.jar after deployment. need to ask Tim
 
         <antcall target="session3"/> // depends on EMs working in ACC
-
-        <antcall target="session4"/> // depends on uncooked support in ACC
-
-        <antcall target="mdb"/>  
-        <antcall target="mdb2"/>
 
         <antcall target="session_standalone"/>  // same as session4
 	-->

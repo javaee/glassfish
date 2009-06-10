@@ -27,6 +27,7 @@
         <ant dir="ejbc" target="all"/>  
         <ant dir="ejb31" target="all"/>
         <ant dir="ejb30" target="all"/>
+        <ant dir="mdb" target="all"/> 
         <ant dir="timer" target="all"/>
 
 <!-- gradually reenable the existing tests as features come on line
@@ -34,7 +35,7 @@
         <ant dir="bmp" target="all"/>  
         <ant dir="cmp" target="all"/>  
         <ant dir="jms" target="all"/>  
-        <ant dir="mdb" target="all"/> 
+
 
         <ant dir="sfsb" target="all"/>
         <ant dir="util" target="all"/>

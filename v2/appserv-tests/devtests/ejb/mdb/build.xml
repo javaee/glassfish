@@ -13,7 +13,12 @@
 
     <target name="all">
         <antcall target="cmt"/>
-        <antcall target="msgbean"/>
+
+<!--- InitialContext lookup exception
+
+       <antcall target="msgbean"/> 
+-->
+
     </target>
 
     <target name="cmt">

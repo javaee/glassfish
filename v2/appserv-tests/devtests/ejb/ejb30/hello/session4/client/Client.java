@@ -2,6 +2,7 @@ package com.sun.s1asdev.ejb.ejb30.hello.session4.client;
 
 import java.io.*;
 import java.util.*;
+import javax.naming.InitialContext;
 import javax.ejb.EJB;
 import com.sun.s1asdev.ejb.ejb30.hello.session4.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
@@ -22,7 +23,8 @@ public class Client {
     public Client (String[] args) {
     }
 
-    @EJB(name="ejb/sful")
+    // can't use annotations from appclient that doesn't go through deployment in V3?
+    //    @EJB(name="ejb/sful")
     private static Sful sful;
 
     // NOTE : Do not reference Sful2 within annotations
@@ -34,13 +36,15 @@ public class Client {
     // interface is somewhere within the return
     // value of a business method.
 
-    @EJB
+    // @EJB
     private static Sless sless;
 
     public void doTest() {
 
         try {
+	    InitialContext ic = new InitialContext();
 
+	    sful = (Sful) ic.lookup("ejb_ejb30_hello_session4_Sful#com.sun.s1asdev.ejb.ejb30.hello.session4.Sful");
             System.out.println("invoking stateful");
             String sfulId = "1";
             sful.setId(sfulId);
@@ -63,6 +67,8 @@ public class Client {
             //            sful2.hello2();
 
             System.out.println("invoking stateless");
+
+	    sless = (Sless) ic.lookup("com.sun.s1asdev.ejb.ejb30.hello.session4.Sless");
             sless.hello();
 
             System.out.println("test complete");

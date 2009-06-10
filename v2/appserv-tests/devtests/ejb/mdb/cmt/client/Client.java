@@ -48,7 +48,9 @@ public class Client {
     public void doTest() {
         try {
             setup();
-            doTest("java:comp/env/jms/MsgBeanQueue", numMessages);
+	    doTest("jms/ejb_mdb_cmt_InQueue", numMessages);
+	    // @@@ message-destination-ref support
+	    // oTest("java:comp/env/jms/MsgBeanQueue", numMessages);
             stat.addStatus("cmt main", stat.PASS);
         } catch(Throwable t) {
             stat.addStatus("cmt main", stat.FAIL);
