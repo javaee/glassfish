@@ -73,7 +73,13 @@
                 <!command
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                             attrs="#{pageSession.valueMap}"
-                            convertToFalse="#{pageSession.convertToFalseList}" );
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            result => $attribute{objStr});
+                    if (#{pageSession.hasPropertyTable}){
+                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    }
                     redirect(page="#{parentPage}?configName=#{configName}")
                 />
             </sun:button>
