@@ -1089,7 +1089,7 @@ public class AMXImplBase extends MBeanImplBase
             }
 			else
 			{
-                cdebug( "No method found for " + operationName );
+                //cdebug( "No method found for " + operationName );
 				result	= invokeManually( operationName, args, types );
 			}
 		}
