@@ -44,26 +44,63 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getRealmsList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="childType" value="auth-realm");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nSecurity.msg.JS.confirmDeleteRealms}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/security/realms/realmNew.jsf?configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/security/realms/realms.jsf?configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/security/realms/realmEdit.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nSecurity.realm.TableTitle}");
-        setPageSessionAttribute(key="type" value="realms");
-        setPageSessionAttribute(key="hasAuditColumn" value="$boolean{false}");
-        setPageSessionAttribute(key="listPageLink" value="realms.jsf");
-        setPageSessionAttribute(key="createLink" value="realmNew.jsf");
-        setPageSessionAttribute(key="editLink" value="/security/realms/realmEdit.jsf");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteRealms}");
     />
     </event>
-#include "/shared/restart.inc"    
-            <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/restart.inc"
+
+<sun:form id="propertyForm">
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18nSecurity.realm.PageTitle}" 
-                 helpText="$resource{i18nSecurity.realm.PageHelp}"/>
+     <sun:title id="propertyContentPage" title="$resource{i18nSecurity.realm.PageTitle}"
+                 helpText="$resource{i18nSecurity.realm.PageHelp}" />
 		 "<br /> <br />
-#include "/security/configTable.inc"    
-             <sun:hidden id="helpKey" value="$resource{help_security.realms}" />
+
+<sun:table id="configs" title="#{tableTitle}"
+    deselectMultipleButton="$boolean{true}"
+    deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+    selectMultipleButton="$boolean{true}"
+    selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
+    <!afterCreate
+        getClientId(component="$this{component}" clientId=>$page{tableId});
+    />
+
+#include "/shared/listTableButtons.inc"
+
+   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+     <!afterCreate
+         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+        />
+    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+            <sun:checkbox id="select"
+                selected="#{td.value.selected}"
+                selectedValue="$boolean{true}" 
+                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)"
+            />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18nSecurity.jacc.table.nameCol}"  sort="Name" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="link" text="#{td.value.Name}"
+            url="#{pageSession.editLink}&name=#{td.value.Name}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18nSecurity.realm.colClassname}"   rowHeader="$boolean{true}" id="col2">
+        <staticText id="classnameCol" value="#{td.value.Classname}" />
+    </sun:tableColumn>
+
+  </sun:tableRowGroup>
+</sun:table>
+
+	<sun:hidden id="helpKey" value="$resource{help_security.realms}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"        
+#include "/shared/changeButtonsJS.inc"
+
 </define>
 </composition>
+
