@@ -62,7 +62,7 @@
                  helpText="$resource{i18nSecurity.realm.PageHelp}" />
 		 "<br /> <br />
 
-<sun:table id="configs" title="#{tableTitle}"
+<sun:table id="realmsTable" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"
     deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
     selectMultipleButton="$boolean{true}"
