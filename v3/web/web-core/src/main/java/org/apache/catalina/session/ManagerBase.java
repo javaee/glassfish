@@ -834,18 +834,17 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         }           
     }
 
+
     /**
      * Add this Session to the set of active Sessions for this Manager.
      *
      * @param session Session to be added
      */
     public void add(Session session) {
-
-        synchronized (sessions) {
-            sessions.put(session.getIdInternal(), session);
-            if( sessions.size() > maxActive ) {
-                maxActive=sessions.size();
-            }
+        sessions.put(session.getIdInternal(), session);
+        int size = sessions.size();
+        if (size > maxActive) {
+            maxActive = size;
         }
     }
     
@@ -856,9 +855,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param listener The listener to add
      */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-
         support.addPropertyChangeListener(listener);
-
     }
 
 
@@ -962,13 +959,10 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      *  processing this request
      */
     public Session findSession(String id) throws IOException {
-
-        if (id == null)
+        if (id == null) {
             return (null);
-        synchronized (sessions) {
-            return sessions.get(id);
         }
-
+        return sessions.get(id);
     }
     
     
@@ -1022,14 +1016,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * If this Manager has no active Sessions, a zero-length array is returned.
      */
     public Session[] findSessions() {
-
-        Session results[] = null;
-        synchronized (sessions) {
-            results = new Session[sessions.size()];
-            results = (Session[]) sessions.values().toArray(results);
-        }
-        return (results);
-
+        return sessions.values().toArray(new Session[0]);
     }
 
 
@@ -1039,11 +1026,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param session Session to be removed
      */
     public void remove(Session session) {
-
-        synchronized (sessions) {
-            sessions.remove(session.getIdInternal());
-        }
-
+        sessions.remove(session.getIdInternal());
     }
 
 
@@ -1347,42 +1330,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         Object o=s.getSession().getAttribute(key);
         if( o==null ) return null;
         return o.toString();
-    }
-
-
-    /**
-     * Returns information about the session with the given session id.
-     * 
-     * <p>The session information is organized as a HashMap, mapping 
-     * session attribute names to the String representation of their values.
-     *
-     * @param sessionId Session id
-     * 
-     * @return HashMap mapping session attribute names to the String
-     * representation of their values, or null if no session with the
-     * specified id exists, or if the session does not have any attributes
-     */
-    public HashMap<String, String> getSession(String sessionId) {
-        Session s = sessions.get(sessionId);
-        if (s == null) {
-            if (log.isLoggable(Level.INFO)) {
-                log.info("Session not found " + sessionId);
-            }
-            return null;
-        }
-
-        Enumeration<String> ee = s.getSession().getAttributeNames();
-        if (ee == null || !ee.hasMoreElements()) {
-            return null;
-        }
-
-        HashMap<String, String> map = new HashMap<String, String>();
-        while (ee.hasMoreElements()) {
-            String attrName = ee.nextElement();
-            map.put(attrName, getSessionAttribute(sessionId, attrName));
-        }
-
-        return map;
     }
 
 
