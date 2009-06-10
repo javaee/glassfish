@@ -6,7 +6,7 @@ import com.sun.ejte.ccl.reporter.*;
  * Unit test to ensure that ServletRequestListener implementations are
  * invoked at their requestInitialized method in the order in which they
  * have been declared, and are invoked at their requestDestroyed method
- * in reverse order.
+ * in reverse order, as clarified by the Servlet 3.0 spec.
  */
 public class WebTest {
 
