@@ -42,10 +42,15 @@
     <!facet image>
 	<sun:imageHyperlink imageURL="/resource/security/images/security.gif" url="/security/security.jsf?configName=#{configName}"  border="0" immediate="true" />
     </facet>
+
+    
     <dynamicTreeNode id="realms"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:j2eeType=X-SecurityServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
-        methodName="getAuthRealmConfigMap"
+        objectName="v3:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
+        useV3AMX="true"
+        amxChildType="auth-realm"
+        methodName=""
+        attributeName="name"
         childImageURL="/resource/security/images/security.gif"
         childExpanded="$boolean{false}"
         childURL="/security/realms/realmEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
@@ -56,10 +61,15 @@
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/realms/realms.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
     </dynamicTreeNode>
+
+
     <dynamicTreeNode id="auditModules"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:j2eeType=X-SecurityServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
-        methodName="getAuditModuleConfigMap"
+        objectName="v3:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
+        useV3AMX="true"
+        amxChildType="audit-module"
+        methodName=""
+        attributeName="name"
         childImageURL="/resource/security/images/security.gif"
         childExpanded="$boolean{false}"
         childURL="/security/auditModules/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
@@ -71,46 +81,24 @@
         </facet>
     </dynamicTreeNode>
     
-    <!--
-            <dynamicTreeNode id="jaccProviders"
+    <dynamicTreeNode id="jaccProviders"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="v3:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
+        useV3AMX="true"
+        amxChildType="jacc-provider"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/security/images/security.gif"
+        childExpanded="$boolean{false}"
+        childURL="/security/jacc/jaccProviderEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        text="$resource{i18n.tree.jaccProviders}"
+        url="/security/jacc/jaccProviders.jsf?configName=#{configName}"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/jacc/jaccProviders.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>
 
-            treeAdaptorClass="com.sun.enterprise.tools.admingui.tree.MBeanTreeAdaptor"
-            objectName="com.sun.appserv:type=configs,category=config"   
-            methodName="listJaccProviders"
-            parameters=""
-            paramTypes="java.lang.String"
-
-            attributeName="name"
-            childImageURL="/resource/security/images/security.gif"
-            childExpanded="$boolean{false}"
-            childURL="/configuration/jaccProviderEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
-            text="$resource{i18n.tree.jaccProviders}"
-            url="/configuration/jaccProviders.jsf?configName=#{configName}"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/jaccProviders.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
-            </facet>
-        </dynamicTreeNode>
-
-        <dynamicTreeNode id="auditModules"
-
-            treeAdaptorClass="com.sun.enterprise.tools.admingui.tree.MBeanTreeAdaptor"
-            objectName="com.sun.appserv:type=configs,category=config"  
-            methodName="listAuditModules"
-            parameters=""
-            paramTypes="java.lang.String"
-
-            attributeName="name"
-            childImageURL="/resource/security/images/security.gif"
-            childExpanded="$boolean{false}"
-            childURL="/configuration/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
-            text="$resource{i18n.tree.auditModules}"
-            url="/configuration/auditModules.jsf?configName=#{configName}"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/auditModules.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
-            </facet>
-        </dynamicTreeNode>
-        -->
+        
 
 </sun:treeNode>
