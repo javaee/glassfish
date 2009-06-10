@@ -37,7 +37,7 @@
 
 <sun:table id="configs" title="#{tableTitle}">
 
-#include "/web/grizzly/tableButtons.inc" 
+#include "/shared/listTableButtons.inc"
     
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
