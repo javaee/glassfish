@@ -1572,7 +1572,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 return ctx;
             } else {
                 String msg = rb.getString("webcontainer.duplicateContextRoot");
-                throw new Exception(MessageFormat.format(msg, vs.getID(), displayContextPath, wmName));
+                throw new Exception(MessageFormat.format(msg, vs.getID(),
+                    ctx.getModuleName(), displayContextPath, wmName));
             }
         }
 
