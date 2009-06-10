@@ -34,42 +34,42 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- jdbc/jdbcResources.jsf -->
+<!-- jdbc/adminObjectResources.jsf -->
+
 
 <!initPage
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcResources.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.adminObjectResources.pageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain,type=resources");
-        setPageSessionAttribute(key="childType" value="jdbc-resource");
-        setPageSessionAttribute(key="updateObjectNameStr" value="v3:pp=/domain/resources,type=jdbc-resource,name=");
+        setPageSessionAttribute(key="childType" value="admin-object-resource");
+        setPageSessionAttribute(key="updateObjectNameStr" value="v3:pp=/domain/resources,type=admin-object-resource,name=");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njdbc.msg.JS.confirmDeleteJR}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcResourceNew.jsf");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcResources.jsf");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcResourceEdit.jsf");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njdbc.msg.JS.confirmDeleteAO}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/adminObjectNew.jsf");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/adminObjectResources.jsf");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/adminObjectEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.resources}");
-        setPageSessionAttribute(key="hasPool" value="#{true}" );
-        setPageSessionAttribute(key="hasResType" value="#{false}" );
-        setPageSessionAttribute(key="editPoolLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+        setPageSessionAttribute(key="hasPool" value="#{false}" );
+        setPageSessionAttribute(key="hasResType" value="#{true}" );
     />
     </event>
 #include "/shared/restart.inc"    
 
             <sun:form id="propertyForm">
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResources.pageTitle}"
-                 helpText="$resource{i18njdbc.jdbcResources.pageTitleHelp}" />
+                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.adminObjectResources.pageTitle}"
+                 helpText="$resource{i18njdbc.adminObjectResources.pageTitleHelp}" />
 		 "<br /> <br />
 
 #include "/jdbc/resourcesTable.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcResources}" />
+	<sun:hidden id="helpKey" value="$resource{help_jdbc.adminObjectResources}" />
             </sun:form>
 </define>
 </composition>

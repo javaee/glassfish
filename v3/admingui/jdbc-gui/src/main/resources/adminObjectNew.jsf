@@ -34,42 +34,50 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- jdbc/jdbcResources.jsf -->
+<!-- jdbc/jdbcResourceNew.jsf -->
 
 <!initPage
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
+    setAttribute(key="edit" value="#{false}");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcResources.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.adminObject.NewPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain,type=resources");
-        setPageSessionAttribute(key="childType" value="jdbc-resource");
-        setPageSessionAttribute(key="updateObjectNameStr" value="v3:pp=/domain/resources,type=jdbc-resource,name=");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njdbc.msg.JS.confirmDeleteJR}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcResourceNew.jsf");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcResources.jsf");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcResourceEdit.jsf");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.resources}");
-        setPageSessionAttribute(key="hasPool" value="#{true}" );
-        setPageSessionAttribute(key="hasResType" value="#{false}" );
-        setPageSessionAttribute(key="editPoolLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/adminObjectNew.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/adminObjectResources.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources");
+        setPageSessionAttribute(key="childType" value="admin-object-resource");
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+        //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        
     />
     </event>
-#include "/shared/restart.inc"    
-
+#include "/shared/restart.inc"
             <sun:form id="propertyForm">
+        //#include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResources.pageTitle}"
-                 helpText="$resource{i18njdbc.jdbcResources.pageTitleHelp}" />
-		 "<br /> <br />
 
-#include "/jdbc/resourcesTable.inc"
+                <!-- Page Title #include "/jdbc/buttons.inc" -->
+                <sun:title id="propertyContentPage" title="$resource{i18njdbc.adminObject.NewPageTitle}" helpText="$resource{i18njdbc.adminObject.step1PageTitleHelp}">
+#include "/shared/editPageButtons.inc"
+                    </sun:title>
+                    "<br><br>
+#include "/jdbc/adminObjectAttr.inc"
+#include "/shared/propertyDescTable.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcResources}" />
+	<sun:hidden id="helpKey" value="$resource{help_jdbc.adminObjectNew1}" />
             </sun:form>
+                        "<br/>
+#include "/shared/changeButtonsJS.inc" 
 </define>
 </composition>

@@ -39,7 +39,7 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcResource.editPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.adminObjectResource.editPageTitle}" >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -47,14 +47,13 @@
     setPageSessionAttribute(key="edit" value="#{true}" );
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value="#{pageSession.Name}");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcResourceEdit.jsf");
-    setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcResources.jsf");
-    setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/resources,type=jdbc-resource,name=#{pageSession.Name}");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/adminObjectEdit.jsf");
+    setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/adminObjectResources.jsf");
+    setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/resources,type=admin-object-resource,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources");
-    setPageSessionAttribute(key="childType" value="jdbc-resource");
+    setPageSessionAttribute(key="childType" value="admin-object-resource");
     getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
     setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
-    getJdbcConnectionPools(jdbcConnectionPools=>$attribute{jdbcConnectionPools});
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //set the following for including buttons.inc
@@ -71,15 +70,15 @@
 #include "/shared/alertMsg.inc"
     
     <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResource.editPageTitle}" helpText="$resource{i18njdbc.jdbcResource.editPageTitleHelp}" >
+    <sun:title id="propertyContentPage" title="$resource{i18njdbc.adminObjectResource.editPageTitle}" helpText="$resource{i18njdbc.adminObjectResource.editPageHelp}" >
 #include "/shared/editPageButtons.inc"
     </sun:title>
     "<br><br>
     
-#include "/jdbc/jdbcResource.inc"
+#include "/jdbc/adminObjectAttr.inc"
 #include "/shared/propertyDescTable.inc"
     
-    <sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcResourceEdit}" />
+    <sun:hidden id="helpKey" value="$resource{help_jdbc.adminObjectEdit}" />
 </sun:form>
             "<br/>
 #include "/shared/changeButtonsJS.inc" 

@@ -22,8 +22,10 @@
     </dynamicTreeNode>
         <dynamicTreeNode id="connectionPoolResources"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-            objectName="amx:j2eeType=X-ResourcesConfig,name=na"   
-            methodName="getJDBCConnectionPoolConfigMap"
+            objectName="v3:pp=/domain,type=resources"
+            useV3AMX="true"
+            amxChildType="jdbc-connection-pool"  
+            methodName=""
             attributeName="name"
             childImageURL="/resource/jdbc/images/JDBC.gif"
             childExpanded="$boolean{false}"
@@ -34,6 +36,64 @@
             <!facet image>
                 <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
-        </dynamicTreeNode>
+        </dynamicTreeNode>       
  </sun:treeNode>
-
+<sun:treeNode id="Connectors"
+        text="$resource{i18n.tree.connectors}"
+        url="/jdbc/connectors.jsf"
+        imageURL="/resource/jdbc/images/connector.png"
+        >
+            
+        <dynamicTreeNode id="connectorResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="v3:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="connector-resource"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jdbc/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jdbc/connectorResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.connectorResources}"
+        url="/jdbc/connectorResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+        </dynamicTreeNode>                    
+     
+        <dynamicTreeNode id="adminObjectResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="v3:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="admin-object-resource"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jdbc/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jdbc/adminObjectEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.adminObjectResources}"
+        url="/jdbc/adminObjectResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>        
+ </sun:treeNode> 
+    <dynamicTreeNode id="mailResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="v3:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="mail-resource"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jdbc/images/javaMailSession.gif"
+        childExpanded="$boolean{false}"
+        childURL="/jdbc/mailResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.javaMailSessions}"
+        url="/jdbc/mailResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/mailResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>  

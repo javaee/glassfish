@@ -34,38 +34,38 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- jdbc/jdbcResource.inc -->
-<!-- used by jdbcResourceEdit.jsf and jdbcResourceNew.jsf -->
+<!-- jdbc/adminObjectAttr.inc -->
+<!-- used by adminObjectNew.jsf and adminObjectEdit.jsf -->
    
 
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
-        <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['JndiName']}" />
-        </sun:property>
-
         <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
             <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
         </sun:property>
 
-        <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njdbc.jdbcResource.poolHelp}">
-            <sun:dropDown id="PoolName" selected="#{pageSession.valueMap['PoolName']}" labels="$pageSession{jdbcList}"  values="$pageSession{jdbcList}" >
-            <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain,type=resources" type="jdbc-connection-pool" result="#{pageSession.jdbcList}");
-            />
-           </sun:dropDown>
-        </sun:property>   
-
-        <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
+        <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
+            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['JndiName']}" />
         </sun:property>
 
-        <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" />  
-       </sun:property>
+        <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  helpText="$resource{i18njdbc.adminObjectResource.resTypeHelp}">
+            <sun:textField id="ResType" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['ResType']}" required="#{true}"/>
+        </sun:property>   
+
+        <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}">
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels={ " ", "jmsra" }  values={ " ", "jmsra" } >
+            
+           </sun:dropDown>
+        </sun:property>
+        <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
+            <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
+        </sun:property>
+        <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
+        </sun:property>
         "<br /><br />
     </sun:propertySheetSection>
-</sun:propertySheet>    
+</sun:propertySheet> 
 
 
