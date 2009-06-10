@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="416"/>
+    <property name="TOTAL_EXPECTED" value="417"/>
 
     &commonSetup;
     &commonBuild;
@@ -199,6 +199,7 @@
         <ant dir="setMultiValuedResponseHeader" target="all"/>
         <ant dir="servletContextNullPathArgument" target="all"/>
         <ant dir="servletRequestParamsPreserveOrder" target="all"/>
+        <ant dir="servlet-3.0/servletRequestListenerInvocationOrder" target="all"/>
         <!--
         <ant dir="servletRequestGetPathInfoCollapseContiguousSlashes" target="all"/>
         -->
