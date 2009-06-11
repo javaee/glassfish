@@ -43,7 +43,7 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
     -->
 
-    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDefaultButton}"  primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
+    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDefaultButton}"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
         <!command
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         />
