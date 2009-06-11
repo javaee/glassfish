@@ -29,7 +29,7 @@ final class CommandMetadataCache {
      *
      */
     CommandMetadataCache() {
-        Set<CommandDesc> descs = new ConcurrentSkipListSet<CommandDesc>();
+        //Set<CommandDesc> descs = new ConcurrentSkipListSet<CommandDesc>();
         s2d = new ConcurrentHashMap<TargetServer, Set<CommandDesc>>();
     }
 
