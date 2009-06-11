@@ -233,8 +233,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      */
     public void clean(DeploymentContext dc) {
         UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
-        if( dcp.origin == OpsParams.Origin.undeploy){
-            if(dcp.cascade){
+        if( dcp != null && dcp.origin == OpsParams.Origin.undeploy){
+            if(dcp.cascade != null && dcp.cascade){
                 deleteAllResources(dcp.name(), dcp.target);
             }
         }
