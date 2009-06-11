@@ -60,7 +60,6 @@ public class ActivationHandler extends AbstractHandler {
 
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbstractHandler.class);
-    protected Logger logger = AnnotationUtils.getLogger();
     
     public Class<? extends Annotation> getAnnotationType() {
         return Activation.class;
