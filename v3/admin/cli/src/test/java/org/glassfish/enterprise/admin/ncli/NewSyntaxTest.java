@@ -6,6 +6,8 @@ import static org.glassfish.enterprise.admin.ncli.ParseUtilities.*;
 import static org.glassfish.enterprise.admin.ncli.ProgramOptionBuilder.*;
 import static org.glassfish.enterprise.admin.ncli.Constants.*;
 
+import java.util.Set;
+
 /** Tests for commands with the new syntax.
  * <p>
  *  <code>
@@ -57,7 +59,51 @@ public class NewSyntaxTest {
         Option propt = getOptionNamed(fpr.getProgramOptions(), PORT);
         assertEquals(""+DEFAULT_PORT, propt.getEffectiveValue());
 
+        propt = getOptionNamed(fpr.getProgramOptions(), HOST);
+        assertEquals(pHost, propt.getEffectiveValue());
+
         propt = getOptionNamed(fpr.getProgramOptions(), SECURE);
         assertEquals("false", propt.getEffectiveValue().toLowerCase());
+    }
+
+    @Test (expected = ParserException.class)
+    public void invalidProgramOption() throws ParserException {
+        String[] cmdline = new String[]{"--invalid", "some-command", "--option", "value", "operand"}; //there is no program option named invalid
+        new Parser(cmdline).firstPass();
+    }
+
+    @Test (expected = ParserException.class)
+    public void missingCommand() throws ParserException {
+        String[] cmdline = new String[]{"--host", "foo", "--port=1234", "-s", "-eI", "-u", "admin"}; // all valid program options, but no command :-)
+        new Parser(cmdline).firstPass();
+    }
+
+    @Test
+    public void allDefaults() throws ParserException {
+        String[] cmdline = new String[] {"command-alone"};
+        Set<Option> propts = new Parser(cmdline).firstPass().getProgramOptions();
+        for(Option propt : propts) {
+            String name  = propt.getName();
+            String value = propt.getEffectiveValue();
+            if (HOST.equals(name))
+                assertEquals(DEFAULT_HOST, value);
+            else if (PORT.equals(name))
+                assertEquals(DEFAULT_PORT + "", value);
+            else if (USER.equals(name))
+                assertEquals(DEFAULT_USER, value);
+            else if (SECURE.equals(name))
+                assertEquals(DEFAULT_SECURE.toLowerCase(), value.toLowerCase());
+            else if (ECHO.equals(name))
+                assertEquals(DEFAULT_ECHO.toLowerCase(), value.toLowerCase());
+            else if (TERSE.equals(name))
+                assertEquals(DEFAULT_TERSE.toLowerCase(), value.toLowerCase());
+            else if (INTERACTIVE.equals(name))
+                assertEquals(DEFAULT_INTERACTIVE.toLowerCase(), value.toLowerCase());
+            else if (PASSWORD.equals(name))
+                assertNull(value);
+            else {
+                //do nothing, we don't check passwordfile, although we should have defaulted password file!
+            }
+        }
     }
 }

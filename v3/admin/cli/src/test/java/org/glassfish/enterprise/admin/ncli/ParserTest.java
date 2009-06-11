@@ -150,11 +150,11 @@ public class ParserTest {
         assertTrue(fpr.usesDeprecatedSyntax());
     }
     @Test
-    public void assertNotDeprecated1() throws ParserException {
-        String cmd = "possibly-new-command"; //this is a new command, now, we will specify it the legacy way, deliberately. Such specification lets program options be reused
+    public void assertDeprecated2() throws ParserException {
+        String cmd = "possibly-new-command"; //this is a new command, but it is using the old syntax, it can't reuse the asadmin options then!
         String[] cmdline = new String[]{cmd, "--host=localhost", "--port=1234", "--secure", "true", "listener1"};
         Parser p = new Parser(cmdline);
         FirstPassResult fpr = p.firstPass();
-        assertFalse(fpr.usesDeprecatedSyntax());  //this is NOT deprecated as --host is reused by possibly-new-command
+        assertTrue(fpr.usesDeprecatedSyntax());  //this is deprecated as --host can't be reused by possibly-new-command
     }
 }

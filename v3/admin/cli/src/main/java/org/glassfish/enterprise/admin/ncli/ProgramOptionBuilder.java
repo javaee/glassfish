@@ -2,6 +2,7 @@ package org.glassfish.enterprise.admin.ncli;
 
 import org.glassfish.api.admin.cli.OptionType;
 import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
+import static org.glassfish.enterprise.admin.ncli.Constants.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -173,7 +174,7 @@ public final class ProgramOptionBuilder {
         OptionDesc s = new OptionDesc();
         s.setName(SECURE);
         s.setSymbol(Character.toString(SECURE_SYMBOL));
-        s.setDefaultValue("FALSE");
+        s.setDefaultValue(DEFAULT_SECURE);
         s.setRepeats("FALSE");
         s.setRequired("FALSE");
         s.setType(OptionType.BOOLEAN.name());
@@ -185,7 +186,7 @@ public final class ProgramOptionBuilder {
         OptionDesc i = new OptionDesc();
         i.setName(INTERACTIVE);
         i.setSymbol(Character.toString(INTERACTIVE_SYMBOL));
-        i.setDefaultValue("TRUE");
+        i.setDefaultValue(DEFAULT_INTERACTIVE);
         i.setRepeats("FALSE");
         i.setRequired("FALSE");
         i.setType(OptionType.BOOLEAN.name());
@@ -197,7 +198,7 @@ public final class ProgramOptionBuilder {
         OptionDesc e = new OptionDesc();
         e.setName(ECHO);
         e.setSymbol(Character.toString(ECHO_SYMBOL));
-        e.setDefaultValue("FALSE");
+        e.setDefaultValue(DEFAULT_ECHO);
         e.setRepeats("FALSE");
         e.setRequired("FALSE");
         e.setType(OptionType.BOOLEAN.name());
@@ -209,7 +210,7 @@ public final class ProgramOptionBuilder {
         OptionDesc t = new OptionDesc();
         t.setName(TERSE);
         t.setSymbol(Character.toString(TERSE_SYMBOL));
-        t.setDefaultValue("FALSE");
+        t.setDefaultValue(DEFAULT_TERSE);
         t.setRepeats("FALSE");
         t.setRequired("FALSE");
         t.setType(OptionType.BOOLEAN.name());

@@ -74,7 +74,8 @@ final class Parser {
             String[] argsToParse = new String[length];
             System.arraycopy(args, 1, argsToParse, 0, length);
             String[] cmdArgs = splitUsingMetadata(argsToParse, known, givenProgramOptions, true);  //may contain options and operands
-            if (givenProgramOptions.size() > 0 && slc.contains(cmd)) { //there is at least one program option specified after command name that we know about
+            // ANY command, new or old if conforms to this syntax, it is deprecated
+            if (givenProgramOptions.size() > 0) { //there is at least one program option specified after command name
                 Set<String> names = givenProgramOptions.keySet();
                 String[] nameArray = names.toArray(new String[names.size()]);
                 warn("deprecated.syntax", cmd, Arrays.toString(nameArray));
