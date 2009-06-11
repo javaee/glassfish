@@ -366,7 +366,7 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
     public Object stopDomain()
     {
         // as this module is going away, just hard code to use AMX.new
-        final ObjectName root = JMXUtil.newObjectName( "v3:pp=,type=DomainRoot,name=v3" );
+        final ObjectName root = JMXUtil.newObjectName( "v3:pp=,type=domain-root,name=v3" );
         try
         {
             return getMBeanServer().invoke( root, "stopDomain", null, null);
