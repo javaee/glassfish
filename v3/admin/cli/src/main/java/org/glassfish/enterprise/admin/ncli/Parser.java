@@ -65,7 +65,7 @@ final class Parser {
         String cmd;
         FirstPassResult fpr;
         Set<OptionDesc> known = POB.getAllOptionMetadata();
-        Map<String, String> givenProgramOptions = new HashMap<String, String>(); //given options as name value pairs
+        Map<String, String> givenProgramOptions = new LinkedHashMap<String, String>(); //given options as name value pairs
         if (indicatesCommandName(args[0])) {
             //legacy syntax
             cmd = args[0];
@@ -334,7 +334,7 @@ final class Parser {
     }
     private static void handleBooleanOptionList(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown, boolean pressOn) throws ParserException {
         Map<Character, String> symbol2Name = getSymbolToNameMap(known);        
-        Map<Character, String> trueOptions = new HashMap<Character, String>();
+        Map<Character, String> trueOptions = new LinkedHashMap<Character, String>();
         booleanOptionListToOptionMap(argument, trueOptions);
         Set<Character> symbols = trueOptions.keySet();
         for (char c : symbols) {
