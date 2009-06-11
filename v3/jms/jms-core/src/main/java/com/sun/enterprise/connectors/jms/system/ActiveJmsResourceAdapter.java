@@ -957,7 +957,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     }
 
     private String getMQVarDir(){
-        String asInstanceRoot = getServerEnvironment().getInitFilePath().getPath();
+        String asInstanceRoot = getServerEnvironment().getDomainRoot().getPath();
                             /*ApplicationServer.getServerContext().
                                   getInstanceEnvironment().getInstancesRoot();   */
         String mqInstanceDir =  asInstanceRoot + java.io.File.separator
@@ -1376,7 +1376,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
        List serversList =  getServers().getServer();
        for (int i =0; i < serversList.size(); i++){
            Server aserver = (Server) serversList.get(i);
-           if (getServerContext().getInstanceName().equals(aserver))
+           if (getServerContext().getInstanceName().equals(aserver.getName()))
                 return (aserver.getNodeAgentRef() == null);
        }
         return false;
