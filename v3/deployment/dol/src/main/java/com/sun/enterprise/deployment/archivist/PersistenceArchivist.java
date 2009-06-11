@@ -97,7 +97,6 @@ public class PersistenceArchivist extends ExtensionsArchivist {
      */
     protected Map<String, ReadableArchive> getProbablePersistenceRoots(ReadableArchive parentArchive, SubArchivePURootScanner subArchivePURootScanner) {
         Map<String, ReadableArchive> probablePersitenceArchives = new HashMap<String, ReadableArchive>();
-        // subArvivePath is empty => we are scanning parentArchive
         ReadableArchive  archiveToScan = subArchivePURootScanner.getSubArchiveToScan(parentArchive);
         if(archiveToScan != null) { // The subarchive exists
             Enumeration<String> entries = archiveToScan.entries();
