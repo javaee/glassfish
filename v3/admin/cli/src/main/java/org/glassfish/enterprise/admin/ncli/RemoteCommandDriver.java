@@ -50,6 +50,7 @@ public class RemoteCommandDriver {
     private static void debug(FirstPassResult fpr) {
         //TODO remove this method
         out("First Pass is Successful");
+        out("****Command uses NEW Syntax? " + !fpr.usesDeprecatedSyntax());
         out("Explicit/Default asadmin program options:");
         for (Option op : fpr.getProgramOptions()) {
             out("name: " + op.getName());
