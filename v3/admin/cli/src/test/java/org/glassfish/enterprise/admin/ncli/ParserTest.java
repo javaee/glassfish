@@ -155,6 +155,6 @@ public class ParserTest {
         String[] cmdline = new String[]{cmd, "--host=localhost", "--port=1234", "--secure", "true", "listener1"};
         Parser p = new Parser(cmdline);
         FirstPassResult fpr = p.firstPass();
-        assertFalse(fpr.usesDeprecatedSyntax());  //this is NOT deprecated as --host is reused byt possibly-new-command
+        assertFalse(fpr.usesDeprecatedSyntax());  //this is NOT deprecated as --host is reused by possibly-new-command
     }
 }

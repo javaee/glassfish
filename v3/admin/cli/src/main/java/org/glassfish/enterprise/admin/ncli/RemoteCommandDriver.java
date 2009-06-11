@@ -3,6 +3,8 @@ package org.glassfish.enterprise.admin.ncli;
 import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
 import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
 
+import java.util.Arrays;
+
 
 /**  The main class that is designed to work on arguments that are presented on a <i> command line </i>.
  *   It is designed for remote commands as of now.
@@ -30,7 +32,7 @@ public class RemoteCommandDriver {
         FirstPassResult fpr = parser.firstPass();
         String cmdName      = fpr.getCommandName();
         TargetServer ts     = fpr.getTargetServer();
-        debug("command is: " + cmdName);
+        debug(fpr);
         CommandDesc desc    = cache.get(cmdName, ts);
 
         if (desc == null)
@@ -45,8 +47,21 @@ public class RemoteCommandDriver {
         cache.put(cmdName, ts, desc);
     }
 
-    private static void debug(String s) {
-        System.out.println("Debug output: " + s);
+    private static void debug(FirstPassResult fpr) {
+        //TODO remove this method
+        out("First Pass is Successful");
+        out("Explicit/Default asadmin program options:");
+        for (Option op : fpr.getProgramOptions()) {
+            out("name: " + op.getName());
+            out("effective value: " + op.getEffectiveValue());
+        }
+        out("CmdName: " + fpr.getCommandName());
+        out("Command Options/Operands:" + Arrays.toString(fpr.getCommandArguments()));
+
+    }
+
+    private static void out(String s) {
+        System.out.println(s);
     }
 
     private CommandDesc getCommandMetadata(String cmdName, TargetServer from) {

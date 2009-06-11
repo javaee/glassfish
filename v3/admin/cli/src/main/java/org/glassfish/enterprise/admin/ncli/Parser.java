@@ -26,8 +26,8 @@ import java.util.*;
  *  The grammar for CLIP-compliant command line is rather complex and not fully specified in some cases. It's also not
  *  clear what happened to the CLIP OpenSolaris case, although a CLIP companion is available 
  *  <a href="http://arc.opensolaris.org/caselog/PSARC/2006/062/spec.opensolaris.clip.html"> here </a>. The parser also
- *  supports the old syntax (asadmin program options intermixed with command options) for compatibility
- *  new syntax (work TODO).
+ *  supports the old syntax (asadmin program options intermixed with command options) for compatibility and
+ *  new syntax.
  *
  *  All instances of this class are immutable.
  *
@@ -73,20 +73,22 @@ final class Parser {
             int length = args.length-1;
             String[] argsToParse = new String[length];
             System.arraycopy(args, 1, argsToParse, 0, length);
-            String[] cmdArgs = splitUsingMetadata(argsToParse, known, givenProgramOptions);  //may contain options and operands
+            String[] cmdArgs = splitUsingMetadata(argsToParse, known, givenProgramOptions, true);  //may contain options and operands
             if (givenProgramOptions.size() > 0 && slc.contains(cmd)) { //there is at least one program option specified after command name that we know about
                 Set<String> names = givenProgramOptions.keySet();
                 String[] nameArray = names.toArray(new String[names.size()]);
                 warn("deprecated.syntax", cmd, Arrays.toString(nameArray));
-                fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs, true);
+                fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs, true);  //uses deprecated syntax
             } else {
                 fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs); //uses new syntax, one way or the other
             }
             return fpr;
         } else if (indicatesOption(args[0])) {
             //new syntax
-//            String cmd = splitMetadataForNewSyntax(Arrays.copyOf(args, args.length);
-              throw new UnsupportedOperationException("not yet implemented");
+            List<String> cmdArgs = new ArrayList<String>();
+            cmd = splitMetadataForNewSyntax(Arrays.copyOf(args, args.length),known, givenProgramOptions, cmdArgs);
+            fpr = new FirstPassResult(cmd, givenProgramOptions, cmdArgs.toArray(new String[cmdArgs.size()]));
+            return fpr;
         } else {
             throw new ParserException(lsm.get("parser.invalid.start", args[0]));
         }
@@ -128,12 +130,14 @@ final class Parser {
      * @param known Set of OptionDesc that is known at this point. For first pass it will be limited to the program options, for second pass, it will have command's metadata
      * @param optionMap a Map for this method to populate as name-value pairs. This is where this method does some normalization, in that
      *        a boolean option like -f (with name "force") will be identified as "force" -> "true" by this method.
+     * @param pressOn represents if you are asked to continue in case known set of OptionDesc does not contain an option. Based
+     *        on value of this parameter, an option whose metadata is not known will be put into the arguments returned.
      * @return remaining arguments, for first pass these are unresolved options/operands. For second pass, in case of
      *        successful parsing, this should be just contain operands as simple strings, further processing of which should
      *        happen elsewhere
      * @throws ParserException
      */
-    private static String[] splitUsingMetadata(String[] argsToParse, Set<OptionDesc> known, Map<String, String> optionMap) throws ParserException {
+    private static String[] splitUsingMetadata(String[] argsToParse, Set<OptionDesc> known, Map<String, String> optionMap, boolean pressOn) throws ParserException {
         //operates on argsToParse and splits it into program options and command options + operands based on given metadata (known)
         int si = 0;
         /* implementation note: watch how si is incremented! */
@@ -142,11 +146,11 @@ final class Parser {
             String argument = argsToParse[si];
             if (indicatesOption(argument)) {
                 if (indicatesNegativeLongBooleanOption(argument)) {
-                    handleNegativeLongBooleanOption(known, argument, optionMap, remainingArgs);
+                    handleNegativeLongBooleanOption(known, argument, optionMap, remainingArgs, pressOn);
                     si++;
                 } else if (indicatesShortOption(argument)) {
                     if (hasOptionNameAndValue(argument)) {   //name and value specified as a single argument with =
-                        handleOptionGivenNameValue(known, argument, optionMap, remainingArgs);
+                        handleOptionGivenNameValue(known, argument, optionMap, remainingArgs, pressOn);
                         si++;
                     } else {  // it's a boolean option or an option followed by value as a separate argument, if non boolean
                         char c = getOptionSymbolFromShortOption(argument);
@@ -154,7 +158,7 @@ final class Parser {
                         if (od != null) { //it's boolean option
                             putHandlingConstraints(od, optionMap, "true");
                             si++;
-                        } else { // not a boolean option or a boolean option specified as --name true/false
+                        } else { // not a boolean option or a boolean option specified as -n true/false
                             if (si == (argsToParse.length-1))
                                 throw new ParserException(lsm.get("option.needs.value.symbol", Character.toString(c)));
                             OptionDesc lod = getOptionDescForSymbol(c, known);
@@ -169,7 +173,7 @@ final class Parser {
                 } else {
                     assert indicatesLongOption(argument) : "Programming Error: option should be a long option: " + argument;
                     if (hasOptionNameAndValue(argument)) {
-                        handleOptionGivenNameValue(known, argument, optionMap, remainingArgs);
+                        handleOptionGivenNameValue(known, argument, optionMap, remainingArgs, pressOn);
                         si++;
                     }  else {
                         String name = getOptionNameFromLongOption(argument);
@@ -191,7 +195,7 @@ final class Parser {
                     }
                 }
             } else if (indicatesBooleanOptionList(argument)) { //all boolean options combined
-                handleBooleanOptionList(known, argument, optionMap, remainingArgs);
+                handleBooleanOptionList(known, argument, optionMap, remainingArgs, pressOn);
                 si++;
             } else if (indicatesEndOfOptions(argument)) {
                 //command line ran out of options ;) return the arguments after "--" verbatim *and stop*
@@ -206,17 +210,70 @@ final class Parser {
         return remainingArgs.toArray(new String[remainingArgs.size()]);
     }
 
-    private String splitMetadataForNewSyntax(String[] args2Parse, Set<OptionDesc> known, List<String> remaining) throws ParserException {
-        //idea is to only traverse till you get to the command, return the command name and add the remaining arguments to remaining.
-        //some logic seems to be repeated from the above method, but that's life
+    private String splitMetadataForNewSyntax(String[] argsToParse, Set<OptionDesc> known, Map<String, String> optionMap, List<String> remainingArgs) throws ParserException {
+        //idea is to only traverse till you get to the command, return the command name and add the remainingArgs arguments to remainingArgs.
+        //there's a stunning violation of DRY principle, but that's life
         String cmd = null;
         int si = 0; //see how si is incremented
-        while (si < args2Parse.length) {
-            String argument = args2Parse[si];
+        while (si < argsToParse.length) {
+            String argument = argsToParse[si];
             if (indicatesOption(argument)) {
+                if (indicatesNegativeLongBooleanOption(argument)) {
+                    handleNegativeLongBooleanOption(known, argument, optionMap, remainingArgs, false);
+                    si++;
+                } else if (indicatesShortOption(argument)) {
+                    if (hasOptionNameAndValue(argument)) {   //name and value specified as a single argument with =
+                        handleOptionGivenNameValue(known, argument, optionMap, remainingArgs, false);
+                        si++;
+                    } else {  // it's a boolean option or an option followed by value as a separate argument, if non boolean
+                        char c = getOptionSymbolFromShortOption(argument);
+                        OptionDesc od = getOptionDescForBooleanOptionForSymbol(c, known);
+                        if (od != null) { //it's boolean option
+                            putHandlingConstraints(od, optionMap, "true");
+                            si++;
+                        } else { // not a boolean option or a boolean option specified as -n true/false
+                            if (si == (argsToParse.length-1))
+                                throw new ParserException(lsm.get("option.needs.value.symbol", Character.toString(c)));
+                            OptionDesc lod = getOptionDescForSymbol(c, known);
+                            if(lod != null) {
+                                putHandlingConstraints(lod, optionMap, argsToParse[si+1]);
+                                si += 2;
+                            } else {
+                                throw new ParserException(lsm.get("invalid.option", Character.toString(c)));
+                            }
+                        }
+                    }
+                } else {
+                    assert indicatesLongOption(argument) : "Programming Error: option should be a long option: " + argument;
+                    if (hasOptionNameAndValue(argument)) {
+                        handleOptionGivenNameValue(known, argument, optionMap, remainingArgs, false);
+                        si++;
+                    }  else {
+                        String name = getOptionNameFromLongOption(argument);
+                        OptionDesc od = getOptionDescForBooleanOptionForName(name, known);
+                        if (od != null) { //it's boolean option specified as --name
+                            putHandlingConstraints(od, optionMap, "true");
+                            si++;
+                        } else { // not a boolean option or a boolean option specified as --name true/false
+                            if (si == (argsToParse.length-1))
+                                throw new ParserException(lsm.get("option.needs.value.name", name));
+                            OptionDesc lod = getOptionDescForName(name, known);
+                            if(lod != null) {
+                                putHandlingConstraints(lod, optionMap, argsToParse[si+1]);
+                                si += 2;
+                            } else {
+                                throw new ParserException(lsm.get("invalid.option", name));
+                            }
+                        }
+                    }
+                }
 
-            } else if (indicatesCommandName(argument)) {
-
+            } else if(indicatesBooleanOptionList(argument)) {
+                handleBooleanOptionList(known, argument, optionMap, remainingArgs, false);
+                si++;
+            } else if (indicatesCommandName(argument)) { //we reached the command, clean up and stop!
+                fillOperandsFromArgs(si+1, remainingArgs, argsToParse);
+                return argument;    
             } else {
                 throw new ParserException("Encountered an argument that is neither a program option nor command name. This is a logic error.");
             }
@@ -226,7 +283,7 @@ final class Parser {
         }
         return cmd;
     }
-    private static void handleOptionGivenNameValue(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown) throws ParserException {
+    private static void handleOptionGivenNameValue(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown, boolean pressOn) throws ParserException {
         String name;
         OptionDesc pod;
         if (indicatesShortOption(argument)) {
@@ -248,18 +305,24 @@ final class Parser {
             }
             putHandlingConstraints(pod, filtrate, value); //this is a valid program option
         } else {
-            unknown.add(argument);
+            if (pressOn)
+                unknown.add(argument);
+            else
+                throw new ParserException(lsm.get("invalid.option", name));
         }
     }
 
-    private static void handleNegativeLongBooleanOption(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown) throws ParserException {
+    private static void handleNegativeLongBooleanOption(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown, boolean pressOn) throws ParserException {
         String name = getOptionNameFromLongOption(argument);
         String value = "false";
         OptionDesc od = getOptionDescForName(name, known);
         if (od != null) {
             putHandlingConstraints(od, filtrate, value);
         } else {
-            unknown.add(Option.toString(name, value));
+            if (pressOn)
+                unknown.add(Option.toString(name, value));
+            else
+                throw new ParserException(lsm.get("invalid.option", name));
         }
     }
 
@@ -269,7 +332,7 @@ final class Parser {
             si++;
         }
     }
-    private static void handleBooleanOptionList(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown) throws ParserException {
+    private static void handleBooleanOptionList(Set<OptionDesc> known, String argument, Map<String, String> filtrate, List<String> unknown, boolean pressOn) throws ParserException {
         Map<Character, String> symbol2Name = getSymbolToNameMap(known);        
         Map<Character, String> trueOptions = new HashMap<Character, String>();
         booleanOptionListToOptionMap(argument, trueOptions);
@@ -277,7 +340,10 @@ final class Parser {
         for (char c : symbols) {
             String optName = symbol2Name.get(c);
             if (optName == null) { // this is a possible symbol for command option
-                unknown.add(Option.toString(optName, "true"));
+                if (pressOn)
+                    unknown.add(Option.toString(optName, "true"));
+                else
+                    throw new ParserException(lsm.get("invalid.option", optName));
             } else { // this is definitely a program option
                 OptionDesc od = getOptionDescForName(optName, known);
                 putHandlingConstraints(od, filtrate, "true");
