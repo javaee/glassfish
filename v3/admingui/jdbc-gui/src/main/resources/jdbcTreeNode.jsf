@@ -44,7 +44,7 @@
         imageURL="/resource/jdbc/images/connector.png"
         >
             
-        <dynamicTreeNode id="connectorResources"
+        <!--<dynamicTreeNode id="connectorResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="v3:pp=/domain,type=resources"
         useV3AMX="true"
@@ -60,7 +60,7 @@
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
-        </dynamicTreeNode>                    
+        </dynamicTreeNode>      -->              
      
         <dynamicTreeNode id="adminObjectResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
