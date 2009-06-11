@@ -19,6 +19,9 @@
         <antcall target="eem_injection"/>
         <antcall target="eempropagation"/>
         <antcall target="extendedem"/>
+        <!-- do not include this test as it requires DerbyPool to use XA
+            <antcall target="tx_propagation"/>
+        -->
     </target>
 
     <target name="context">
