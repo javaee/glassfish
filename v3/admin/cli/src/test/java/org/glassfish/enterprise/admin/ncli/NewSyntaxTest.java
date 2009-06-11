@@ -54,6 +54,7 @@ public class NewSyntaxTest {
         FirstPassResult fpr = p.firstPass();
         assertFalse(fpr.usesDeprecatedSyntax());
         assertEquals(cmd, fpr.getCommandName());
+        assertArrayEquals(cmdArgs, fpr.getCommandArguments());
 
         //now test program options
         Option propt = getOptionNamed(fpr.getProgramOptions(), PORT);
@@ -81,7 +82,9 @@ public class NewSyntaxTest {
     @Test
     public void allDefaults() throws ParserException {
         String[] cmdline = new String[] {"command-alone"};
-        Set<Option> propts = new Parser(cmdline).firstPass().getProgramOptions();
+        FirstPassResult fpr = new Parser(cmdline).firstPass();
+        assertFalse(fpr.usesDeprecatedSyntax());
+        Set<Option> propts = fpr.getProgramOptions();
         for(Option propt : propts) {
             String name  = propt.getName();
             String value = propt.getEffectiveValue();
@@ -105,5 +108,29 @@ public class NewSyntaxTest {
                 //do nothing, we don't check passwordfile, although we should have defaulted password file!
             }
         }
+    }
+
+    @Test
+    public void symbol4Host() throws ParserException {
+        String host = "myhost";
+        String cmd = "cmd";
+        String[] cmdline = new String[]{"-H", host, cmd};
+        FirstPassResult fpr = new Parser(cmdline).firstPass();
+        assertFalse(fpr.usesDeprecatedSyntax());
+        Option op = getOptionNamed(fpr.getProgramOptions(), HOST);
+        assertNotNull(op);
+        assertEquals(op.getEffectiveValue(), host);
+    }
+
+    @Test
+    public void symbol4Port() throws ParserException {
+        String port = "1234";
+        String cmd = "cmd";
+        String[] cmdline = new String[]{"-p", port, cmd};
+        FirstPassResult fpr = new Parser(cmdline).firstPass();
+        assertFalse(fpr.usesDeprecatedSyntax());
+        Option op = getOptionNamed(fpr.getProgramOptions(), PORT);
+        assertNotNull(op);
+        assertEquals(op.getEffectiveValue(), port);
     }
 }
