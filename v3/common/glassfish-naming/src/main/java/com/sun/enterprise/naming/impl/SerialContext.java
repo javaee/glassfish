@@ -35,6 +35,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import javax.naming.*;
+import javax.naming.spi.ObjectFactory;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -49,7 +50,7 @@ import org.omg.CosNaming.NamingContextHelper;
 import javax.rmi.PortableRemoteObject;
 
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
-
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 
 import org.omg.CORBA.ORB;
@@ -119,6 +120,9 @@ public class SerialContext implements Context {
     // Allows special optimized intra-server naming service access
     private boolean intraServerLookups;
 
+    // Common Class Loader. It is used as a fallback classloader to locate
+    // GlassFish object factories.
+    private ClassLoader commonCL;
 
     /**
      * NOTE: ALL "stickyContext" LOGIC REMOVED FOR INITIAL V3 RELEASE.  WE'LLl
@@ -233,7 +237,10 @@ public class SerialContext implements Context {
         }
 
         orb = orbFromEnv;
-
+        if (habitat != null) { // can happen in test mode
+            ClassLoaderHierarchy clh = habitat.getByContract(ClassLoaderHierarchy.class);
+            if (clh != null) commonCL = clh.getCommonClassLoader();
+        }
     }
 
     /**
@@ -424,9 +431,7 @@ public class SerialContext implements Context {
                 if (obj instanceof Context) {
                     return new SerialContext(name, myEnv, habitat);
                 }
-                Object retObj = javax.naming.spi.NamingManager
-                        .getObjectInstance(obj, new CompositeName(name), null,
-                                myEnv);
+                Object retObj = getObjectInstance(name, obj);
 
                 return retObj;
             }
@@ -457,6 +462,97 @@ public class SerialContext implements Context {
             }
         }
 
+    }
+
+    private Object getObjectInstance(String name, Object obj) throws Exception
+    {
+        Object retObj = javax.naming.spi.NamingManager
+                .getObjectInstance(obj, new CompositeName(name), null,
+                        myEnv);
+        if (retObj == obj) {
+            // NamingManager.getObjectInstance() returns the same object
+            // when it can't find the factory class. Since NamingManager
+            // uses Thread's context class loader to locate factory classes,
+            // it may not be able to locate the various GlassFish factories
+            // when lookup is performed outside of a Java EE context like
+            // inside an OSGi bundle's activator.
+            // So, let's see if using CommonClassLoader helps or not.
+            // We will only try with CommonClassLoader when the passed object
+            // reference has a factory class name set.
+
+            ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+            if (tccl != commonCL) {
+                Reference ref = getReference(obj);
+                if (ref != null) {
+                    _logger.logp(Level.FINE, "SerialContext",
+                            "getObjectInstance",
+                            "Trying with CommonClassLoader for name {0} ",
+                            new Object[]{name});
+                    ObjectFactory factory = getObjectFactory(ref, commonCL);
+                    if (factory != null) {
+                        retObj = factory.getObjectInstance(
+                                ref, new CompositeName(name), null, myEnv);
+                    }
+                    if (retObj != obj) {
+                        _logger.logp(Level.FINE, "SerialContext",
+                                "getObjectInstance",
+                                "Found with CommonClassLoader");
+                    }
+                }
+            }
+        }
+        return retObj;
+    }
+
+    /**
+     * This method tries to check if the passed object is a Reference or
+     * Refenciable. If it is a Reference, it just casts it to a Reference and
+     * returns, else if it is a Referenceable, it tries to get a Reference from
+     * the Referenceable and returns that, otherwise, it returns null.
+     *
+     * @param obj
+     * @return
+     * @throws NamingException
+     */
+    private Reference getReference(Object obj) throws NamingException
+    {
+        Reference ref = null;
+        if (obj instanceof Reference) {
+            ref = (Reference) obj;
+        } else if (obj instanceof Referenceable) {
+            ref = ((Referenceable)(obj)).getReference();
+        }
+
+        return ref;
+    }
+
+    /**
+     * It tries to load the factory class for the given reference using the
+     * given class loader and return an instance of the same. Returns null
+     * if it can't load the class.
+     *
+     * @param ref
+     * @param cl
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    private ObjectFactory getObjectFactory(Reference ref, ClassLoader cl)
+            throws IllegalAccessException, InstantiationException
+    {
+        String factoryName = ref.getFactoryClassName();
+        if (factoryName != null) {
+            try
+            {
+                Class c = Class.forName(factoryName, false, cl);
+                return (ObjectFactory)c.newInstance();
+            }
+            catch (ClassNotFoundException e)
+            {
+                // ignore only CNFE, all other exceptions are considered errors
+            }
+        }
+        return null;
     }
 
     /**
