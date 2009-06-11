@@ -42,6 +42,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.api.Globals;
@@ -187,7 +188,7 @@ public class OSGiWebContainer
             throw new RuntimeException("No applications for bundle " + b);
         }
         ActionReport reporter = getReporter();
-        DeployCommandParameters opsParams = getUndeployParams(osgiAppInfo);
+        UndeployCommandParameters opsParams = getUndeployParams(osgiAppInfo);
         ExtendedDeploymentContext dc = new OSGiDeploymentContextImpl(reporter,
                 logger, osgiAppInfo.appInfo.getSource(), opsParams, env, b);
         dc.setArchiveHandler(new OSGiWarHandler());
@@ -195,12 +196,13 @@ public class OSGiWebContainer
         applications.remove(b);
         if (!osgiAppInfo.isDirectoryDeployment)
         {
-            FileUtils.whack(opsParams.path);
-            logger.logp(Level.INFO, "OSGiWebContainer", "undeploy",
-                    "Deleted {0}", new Object[]{opsParams.path});
+            // We can always assume dc.getSourceDir will return a valid file
+            // because we would have expanded the app during deployment.
+            cleanup(dc.getSourceDir());
         }
         logger.logp(Level.INFO, "OSGiWebContainer", "undeploy",
-                "Undeployed bundle {0} from {1}", new Object[]{b, opsParams.path});
+                "Undeployed bundle {0} from {1}", new Object[]{b,
+                osgiAppInfo.appInfo.getSource().getURI()});
     }
 
     public void undeployAll()
@@ -277,17 +279,11 @@ public class OSGiWebContainer
         return parameters;
     }
 
-    private DeployCommandParameters getUndeployParams(
+    private UndeployCommandParameters getUndeployParams(
             OSGiApplicationInfo osgiAppInfo)
     {
-        ReadableArchive sourceArchive = osgiAppInfo.appInfo.getSource();
-
-        // We can always assume that sourceArchive.getURI() is a valid file URI,
-        // as it points to either user supplied directory in case of
-        // directory deployment or to expansion directory in all other cases.
-        File sourceFile = new File(sourceArchive.getURI());
-        DeployCommandParameters parameters =
-                new DeployCommandParameters(sourceFile);
+        UndeployCommandParameters parameters =
+                new UndeployCommandParameters();
         parameters.name = osgiAppInfo.appInfo.getName();
         parameters.origin = DeployCommandParameters.Origin.undeploy;
         return parameters;
@@ -318,4 +314,13 @@ public class OSGiWebContainer
         throw new IOException("Not able to expand " + sourceArchive.getName() +
                 " in " + tmpFile);
     }
+
+    private void cleanup(File dir)
+    {
+        assert(dir.isDirectory() && dir.exists());
+        FileUtils.whack(dir);
+        logger.logp(Level.INFO, "OSGiWebContainer", "cleanup",
+                "Deleted {0}", new Object[]{dir});
+    }
+
 }
