@@ -321,11 +321,12 @@ public class AppClientContainer {
         }
 
         /*
-         * Attach any names defined in the app client.
+         * Attach any names defined in the app client.  Validate the descriptor
+         * first, then use it to bind names in the app client.  This order is
+         * important - for example, to set up message destination refs correctly.
          */
-        componentId = componentEnvManager.bindToComponentNamespace(client.getDescriptor(classLoader));
-
         client.validateDescriptor();
+        componentId = componentEnvManager.bindToComponentNamespace(client.getDescriptor(classLoader));
 
         /*
          * Arrange for cleanup now instead of during launch() because in some use cases
