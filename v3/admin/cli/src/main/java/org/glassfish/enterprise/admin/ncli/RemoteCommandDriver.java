@@ -32,12 +32,12 @@ public class RemoteCommandDriver {
         TargetServer ts     = fpr.getTargetServer();
         debug("command is: " + cmdName);
         CommandDesc desc    = cache.get(cmdName, ts);
-        NewCommand command  = null;
-        if (desc == null) {
+
+        if (desc == null)
             desc = getCommandMetadata(cmdName, fpr.getTargetServer()); //goes to server
-            SecondPassResult spr = parser.secondPass(desc, fpr.getCommandArguments());
-            command = spr.getFinalCommand();
-        }
+
+        SecondPassResult spr = parser.secondPass(desc, fpr.getCommandArguments());
+        NewCommand command = spr.getFinalCommand();
         //at this point, there are no syntax errors, server is running and command is fully formed
         //now, only command execution errors can occur
         assert command != null : "Command is null!";
