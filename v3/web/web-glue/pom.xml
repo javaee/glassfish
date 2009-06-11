@@ -248,7 +248,6 @@
             <!-- Needed to register URLStreamHandler -->
             <groupId>org.osgi</groupId>
             <artifactId>osgi_R4_core</artifactId>
-            <version>1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
