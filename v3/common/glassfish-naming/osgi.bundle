@@ -1,3 +1,4 @@
+Bundle-Activator: com.sun.enterprise.naming.util.NamingActivator
 -exportcontents: \
                         com.sun.enterprise.naming.impl; \
                         com.sun.enterprise.naming.spi; \

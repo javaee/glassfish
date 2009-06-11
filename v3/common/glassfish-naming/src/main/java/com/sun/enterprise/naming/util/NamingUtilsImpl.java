@@ -24,6 +24,7 @@ package com.sun.enterprise.naming.util;
 
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import com.sun.enterprise.naming.spi.NamingUtils;
+import static com.sun.enterprise.naming.util.ObjectInputOutputStreamFactoryFactory.*;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
@@ -77,7 +78,7 @@ public class NamingUtilsImpl
             try {
                 // first serialize the object
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                ObjectOutputStream oos = getFactory().createObjectOutputStream(bos);
                 oos.writeObject(obj);
                 oos.flush();
                 byte[] data = bos.toByteArray();
@@ -86,10 +87,7 @@ public class NamingUtilsImpl
 
                 // now deserialize it
                 ByteArrayInputStream bis = new ByteArrayInputStream(data);
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                ObjectInputStream ois = new ObjectInputStreamWithLoader(bis, cl);
-
-
+                ObjectInputStream ois = getFactory().createObjectInputStream(bis);
                 return ois.readObject();
             } catch (Exception ex) {
 
