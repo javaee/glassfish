@@ -37,22 +37,27 @@ package org.glassfish.admin.amx.impl.config;
 
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.AbstractQueue;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import java.util.concurrent.LinkedBlockingDeque;
 import javax.management.*;
 
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import static org.glassfish.admin.amx.core.AMXConstants.*;
-import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.core.Util;
+import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
+import static org.glassfish.admin.amx.impl.config.ConfigBeanJMXSupport.*;
+
 
 import org.glassfish.admin.amx.impl.config.AttributeResolverHelper;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
@@ -62,6 +67,7 @@ import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
 import org.glassfish.admin.amx.impl.util.UnregistrationListener;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.config.AttributeResolver;
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
@@ -70,17 +76,16 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 import static org.glassfish.admin.amx.intf.config.AnonymousElementList.*;
 
-import static org.glassfish.admin.amx.impl.config.ConfigBeanJMXSupport.*;
 
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.RetryableException;
 import org.jvnet.hk2.config.Transaction;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.TransactionListener;
-import org.jvnet.hk2.config.RetryableException;
 import org.jvnet.hk2.config.Transactions;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.WriteableView;
@@ -628,19 +633,9 @@ public class AMXConfigImpl extends AMXImplBase
             }
 
             Object result = info.method().invoke(getConfigBeanProxy(), args);
-
+            result = translateResult(result);
+            
             // cdebug( "invokeDuckMethod(): invoked: " + info.name() + ", got " + result );
-
-            // ConfigBean types must be mapped back to ObjectName; they can't go across the wire
-            if (result instanceof ConfigBeanProxy)
-            {
-                final Dom dom = Dom.unwrap((ConfigBeanProxy) result);
-                if (dom instanceof ConfigBean)
-                {
-                    result = ConfigBeanRegistry.getInstance().getObjectName((ConfigBean) dom);
-                //cdebug( "invokeDuckMethod(): converted to ObjectName: " + result );
-                }
-            }
 
             return result;
         }
@@ -649,7 +644,87 @@ public class AMXConfigImpl extends AMXImplBase
             throw new MBeanException(e);
         }
     }
+    
+    private ObjectName getObjectName( final ConfigBeanProxy cbp )
+    {
+        final Dom dom = Dom.unwrap(cbp);
+        
+        if ( dom instanceof ConfigBean )
+        {
+            return ConfigBeanRegistry.getInstance().getObjectName( (ConfigBean)dom );
+        }
+        
+        // we can't return a Dom over the wire
+        return null;
+    }
 
+    /**
+        Convert results that contain local ConfigBeanProxy into ObjectNames.
+        Ignore other items, passing through unchanged.
+     */
+    private Object translateResult(final Object result )
+    {
+        // short-circuit the common case
+        if ( result instanceof String ) return result;
+        
+        Object out = result;
+
+        // ConfigBean types must be mapped back to ObjectName; they can't go across the wire
+            
+        if ( result instanceof ConfigBeanProxy )
+        {
+            out = getObjectName( (ConfigBeanProxy)result );
+        }
+        else if ( result instanceof Collection )
+        {
+            final Collection<Object> c = (Collection)result;
+            final Collection<Object> translated = new ArrayList<Object>();
+            for( final Object item : c )
+            {
+                translated.add( translateResult(item) );
+            }
+            
+            if ( result instanceof Set )
+            {
+                out = new HashSet<Object>(translated);
+            }
+            else if ( result instanceof AbstractQueue )
+            {
+                out = new LinkedBlockingDeque(translated);
+            }
+            else
+            {
+                out = translated;
+            }
+        }
+        else if ( result instanceof Map )
+        {
+            final Map resultMap = (Map)result;
+            Map outMap = new HashMap();
+            for( final Object key : resultMap.keySet() )
+            {
+                outMap.put( translateResult(key), translateResult( resultMap.get(key) ) );
+            }
+            out = outMap;
+        }
+        else if ( result.getClass().isArray() )
+        {
+            final Class<?> componentType = result.getClass().getComponentType();
+            if ( ConfigBeanProxy.class.isAssignableFrom(componentType) )
+            {
+                final Object[] items = (Object[])result;
+                final ObjectName[] objectNames = new ObjectName[items.length];
+                for( int i = 0; i < items.length; ++i )
+                {
+                    objectNames[i]  = getObjectName( (ConfigBeanProxy)items[i] );
+                }
+                out = objectNames;
+            }
+        }
+        
+        return out;
+    }
+    
     /**
     Automatically figure out get<abc>Factory(),
     create<Abc>Config(), remove<Abc>Config().
