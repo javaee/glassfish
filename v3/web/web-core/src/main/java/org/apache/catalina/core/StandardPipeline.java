@@ -491,13 +491,10 @@ public class StandardPipeline
         }
 
         // Add this Valve to the set associated with this Pipeline
-        synchronized (valves) {
-            GlassFishValve results[] = new GlassFishValve[valves.length +1];
-            System.arraycopy(valves, 0, results, 0, valves.length);
-            results[valves.length] = valve;
-            valves = results;
-        }
-
+        GlassFishValve results[] = new GlassFishValve[valves.length +1];
+        System.arraycopy(valves, 0, results, 0, valves.length);
+        results[valves.length] = valve;
+        valves = results;
     }
 
 
@@ -556,16 +553,13 @@ public class StandardPipeline
      * such Valves, a zero-length array is returned.
      */
     public GlassFishValve[] getValves() {
-
-        if (basic == null)
+        if (basic == null) {
             return (valves);
-        synchronized (valves) {
-            GlassFishValve results[] = new GlassFishValve[valves.length + 1];
-            System.arraycopy(valves, 0, results, 0, valves.length);
-            results[valves.length] = basic;
-            return (results);
         }
-
+        GlassFishValve results[] = new GlassFishValve[valves.length + 1];
+        System.arraycopy(valves, 0, results, 0, valves.length);
+        results[valves.length] = basic;
+        return (results);
     }
 
 
@@ -674,35 +668,31 @@ public class StandardPipeline
      */
     public void removeValve(GlassFishValve valve) {
 
-        synchronized (valves) {
-
-            // Locate this Valve in our list
-            int j = -1;
-            for (int i = 0; i < valves.length; i++) {
-                if (valve == valves[i]) {
-                    j = i;
-                    break;
-                }
+        // Locate this Valve in our list
+        int j = -1;
+        for (int i = 0; i < valves.length; i++) {
+            if (valve == valves[i]) {
+                j = i;
+                break;
             }
-            if (j < 0)
-                return;
+        }
+        if (j < 0)
+            return;
 
-            // Remove this valve from our list
-            GlassFishValve results[] = new GlassFishValve[valves.length - 1];
-            int n = 0;
-            for (int i = 0; i < valves.length; i++) {
-                if (i == j)
-                    continue;
-                results[n++] = valves[i];
-            }
-            valves = results;
-            try {
-                if (valve instanceof Contained)
-                    ((Contained) valve).setContainer(null);
-            } catch (Throwable t) {
-                ;
-            }
-
+        // Remove this valve from our list
+        GlassFishValve results[] = new GlassFishValve[valves.length - 1];
+        int n = 0;
+        for (int i = 0; i < valves.length; i++) {
+            if (i == j)
+                continue;
+            results[n++] = valves[i];
+        }
+        valves = results;
+        try {
+            if (valve instanceof Contained)
+                ((Contained) valve).setContainer(null);
+        } catch (Throwable t) {
+            ;
         }
 
         // Stop this valve if necessary
