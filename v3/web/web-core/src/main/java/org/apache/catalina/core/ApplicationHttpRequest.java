@@ -956,8 +956,9 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     private void mergeParameters() {
 
-        if ((queryParamString == null) || (queryParamString.length() < 1))
+        if ((queryParamString == null) || (queryParamString.length() < 1)) {
             return;
+        }
 
         HashMap queryParameters = new HashMap();
         String encoding = getCharacterEncoding();
@@ -970,20 +971,27 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             ;
         }
         synchronized (parameters) {
-            Iterator keys = parameters.keySet().iterator();
+            // Merge any query parameters whose names are present in the
+            // original parameter map
+            Iterator<String> keys = parameters.keySet().iterator();
             while (keys.hasNext()) {
-                String key = (String) keys.next();
-                Object value = queryParameters.get(key);
-                if (value == null) {
-                    queryParameters.put(key, parameters.get(key));
-                    continue;
+                String key = keys.next();
+                Object queryValue = queryParameters.get(key);
+                if (queryValue != null) {
+                    parameters.put
+                        (key, mergeValues(queryValue, parameters.get(key)));
                 }
-                queryParameters.put
-                    (key, mergeValues(value, parameters.get(key)));
             }
-            parameters = queryParameters;
+            // Add any query parameters whose names are not present in the
+            // original parameter map
+            keys = queryParameters.keySet().iterator();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (parameters.get(key) == null) {
+                    parameters.put(key, queryParameters.get(key));
+                }
+            }
         }
-
     }
 
 
