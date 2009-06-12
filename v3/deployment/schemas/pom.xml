@@ -11,20 +11,51 @@
     <packaging>distribution-fragment</packaging>
     <name>Set of schemas for Java EE</name>
     
-    <build>
+    <properties>
+	  <jpa.schema.temp.location>${project.build.directory}/jpaSchemaFiles</jpa.schema.temp.location>
+	</properties>
+	<build>
         <plugins>
-            <plugin>
+		 <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+				  <execution>
+					<id>unpack</id> 
+					<goals>
+					  <goal>unpack</goal> <!-- bids to process-sources phase by default -->
+					</goals>
+					<!-- 
+						Extract orm*.xsd and persistence*.xsd into a temp location from javax.persistence.jar. 
+						The files would be extracted as javax/persistence/{file} under the location. 
+						It is not possible to specify to exclude javax/persistence prefix while extracting the file. 
+						The ant task below would copy the files under classes/glassfish/lib/schemas so that it
+						can be picked up in packaging phase.
+					-->
+					<configuration>
+						<artifactItems>
+						 <artifactItem>
+						   <groupId>org.eclipse.persistence</groupId>
+						   <artifactId>javax.persistence</artifactId>
+						   <includes>javax/persistence/orm*.xsd, javax/persistence/persistence*.xsd</includes>
+						   <outputDirectory>${jpa.schema.temp.location}</outputDirectory>
+						 </artifactItem>
+					   </artifactItems>
+					</configuration>
+				  </execution>
+				</executions>
+			  </plugin>
+     		<plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <phase>process-resources</phase>
                         <configuration>
                             <tasks>
-                                <jar file="target/schemas.jar">
-                                    <fileset dir="src/main/resources" />
-                                </jar>
-                                <attachArtifact file="target/schemas.jar" type="jar" classifier="resources" />
+								<copy todir="${project.build.directory}/classes/glassfish/lib/schemas" flatten="true">
+								  <fileset dir="${jpa.schema.temp.location}/javax/persistence"/>
+								 </copy> 
                             </tasks>
                         </configuration>
                         <goals>
@@ -47,4 +78,5 @@
             </extension>
         </extensions>
     </build>
+	
 </project>

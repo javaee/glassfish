@@ -765,6 +765,12 @@
                 <version>${schema2beans.version}</version>
             </dependency>
 
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>javax.persistence</artifactId>
+				<version>${javax-persistence-api.version}</version>
+			</dependency>
+
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.core</artifactId>
