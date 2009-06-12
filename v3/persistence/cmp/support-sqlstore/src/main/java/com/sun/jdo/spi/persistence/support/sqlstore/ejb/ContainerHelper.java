@@ -69,10 +69,28 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
      */
     public interface ContainerHelper {
 
+    /** Called in a CMP-supported environment to get a Container helper instance that
+     * will be passed unchanged to the required methods.  In a non-managed environment
+     * should not be called and throws JDOFatalInternalException.
+     * The info argument can be an array of Objects if necessary.
+     *
+     * @see getEJBObject(Object, Object)
+     * @see getEJBLocalObject(Object, Object)
+     * @see getEJBLocalObject(Object, Object, EJBContext)
+     * @see removeByEJBLocalObject(EJBLocalObject, Object)
+     * @see removeByPK(Object, Object)
+     * @param info Object with the request information that is application server
+     * specific.
+     * @throws JDOFatalInternalException.
+     * @return a Container instance as an Object.
+     */
+    Object getContainer(Object info);
+
     /** Called in a CMP-supported environment to get an EJBObject reference for this
      * primary key instance and Container instance. In a non-managed environment
      * is not called.
      * 
+     * @see getContainer(Object)
      * @param pk the primary key instance.
      * @param container a Container instance for the request.
      * @return a corresponding EJBObject instance (as an Object) to be used by 
@@ -83,6 +101,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /** Called in a CMP-supported environment to get an EJBLocalObject reference for this 
      * primary key instance and Container instance. In a non-managed environment 
      * is not called.
+     * @see getContainer(Object)
      * @param pk the primary key instance. 
      * @param container a Container instance for the request. 
      * @return a corresponding EJBLocalObject (as an Object) instance to be used 
@@ -95,6 +114,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
      * Allows the container to check if this method is called during ejbRemove
      * that is part of a cascade-delete remove.
      *
+     * @see getContainer(Object)
      * @param pk the primary key instance.
      * @param container a Container instance for the request.
      * @param context an EJBContext of the calling bean.
@@ -107,6 +127,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /** Called in a CMP-supported environment to remove a bean for a given 
      * EJBLocalObject and Container instance.
      * 
+     * @see getContainer(Object)
      * @param ejb the EJBLocalObject for the bean to be removed.
      * @param containerHelper a Container instance for the request. 
      */ 
@@ -115,6 +136,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /** Called in a CMP-supported environment to remove a bean for a given primary key
      * and Container instance.
      * 
+     * @see getContainer(Object)
      * @param pk the primary key for the bean to be removed.
      * @param container a Container instance for the request. 
      */  
@@ -123,6 +145,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /** Called in a CMP-supported environment to verify that the specified object
      * is of a valid local interface type.
      *
+     * @see getContainer(Object)
      * @param o the instance to validate.
      * @param container a Container instance for the request.
      */
@@ -131,6 +154,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /** Called in a CMP-supported environment to verify that the specified object
      * is of a valid remote interface type.
      *
+     * @see getContainer(Object)
      * @param o the instance to validate.
      * @param container a Container instance for the request.
      */
@@ -149,6 +173,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /** Called in a CMP supported environment. Notifies the container that 
      * ejbSelect had been called.
      *
+     * @see getContainer(Object)
      * @param container a Container instance for the request.
      */
     void preSelect(Object container);
@@ -156,6 +181,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /** Called in a CMP environment to lookup PersistenceManagerFactory
      * referenced by this Container instance as the CMP resource.
      *   
+     * @see getContainer(Object)
      * @param container a Container instance for the request.
      */  
     PersistenceManagerFactory getPersistenceManagerFactory(Object container);
@@ -163,6 +189,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
     /**
      * Called in CMP environment to get NumericConverter policy referenced
      * by this Container instance.
+     * @see getContainer(Object)
      * @param container a Container instance for the request
      * @return a valid NumericConverter policy type
      */

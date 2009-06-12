@@ -81,6 +81,7 @@ abstract class JDOConcreteBeanGenerator {
 
     Model model = null;        // used to look up various metadata
 
+    String appName = null;
     String beanName = null;
     String helperName = null;
     String concreteImplName = null;
@@ -179,17 +180,20 @@ abstract class JDOConcreteBeanGenerator {
      * @param methodHelper the AbstractMethodHelper instance that contains
      * all categorized methods and some other convenience methods for this bean.
      * @param beanName the ejb-name of this bean.
+     * @param appName the name of the application that contains this bean.
      * @param srcout that path to the generated source files.
      * @param classout that path to the compiled class files.
      * @return a Collection of generated source files.
      */
-    Collection<File> generate(AbstractMethodHelper methodHelper, String beanName,
+    Collection<File> generate(AbstractMethodHelper methodHelper, 
+                       String beanName, String appName, 
                        File srcout, File classout)
                        throws IOException {
 
         Collection<File> files = new ArrayList<File>();
 
         this.beanName = beanName;
+        this.appName = appName;
         this.abstractBean = nameMapper.getAbstractBeanClassForEjbName(beanName);
 
         String pkgName = CMPTemplateFormatter.getPackageName(abstractBean);
@@ -437,10 +441,11 @@ abstract class JDOConcreteBeanGenerator {
             CMPTemplateFormatter.otherVariablesTemplate,
             0, concreteImplWriter);
 
-        twoParams[0] = concreteImplName;
-        twoParams[1] = beanName;
+        threeParams[0] = concreteImplName;
+        threeParams[1] = beanName;
+        threeParams[2] = appName;
         CMPTemplateFormatter.addPrivateField(
-            CMPTemplateFormatter.hvformatter.format(twoParams),
+            CMPTemplateFormatter.hvformatter.format(threeParams),
             Modifier.TRANSIENT+Modifier.STATIC, 
             jdoHelperWriter);
 
@@ -968,16 +973,6 @@ abstract class JDOConcreteBeanGenerator {
                 Modifier.PUBLIC, CMPTemplateFormatter.Object_, 
                 CMPTemplateFormatter.getContainerBody,
                 jdoHelperWriter);
-
-        // Add Helper.setContainer() method.
-        jdoHelperWriter.addMethod(CMPTemplateFormatter.setContainer_, // name
-                Modifier.PUBLIC + Modifier.STATIC, // modifiers
-                CMPTemplateFormatter.void_, // returnType
-                param0, // parameterNames
-                objectType, // parameterTypes
-                null,// exceptions
-                CMPTemplateFormatter.setContainerBody, // body
-                null); // comments
 
         // Add getPCCLass to the helper class
         oneParam[0] = concreteImplName;

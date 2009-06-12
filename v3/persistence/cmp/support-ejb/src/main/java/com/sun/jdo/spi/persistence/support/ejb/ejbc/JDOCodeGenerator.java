@@ -56,6 +56,7 @@ import java.sql.SQLException;
 import org.glassfish.api.deployment.DeploymentContext;
 import com.sun.jdo.spi.persistence.support.ejb.codegen.GeneratorException;
 
+import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
 
@@ -131,6 +132,7 @@ public class JDOCodeGenerator
     private static QueryParser jdoqlParamDeclParser = new JDOQLParameterDeclarationParser();
     private String inputFilesPath;
     private String generatedXmlsPath;
+    private String appName;
     private File classout;
     private MappingGenerator mappingGenerator = null;
         
@@ -157,6 +159,7 @@ public class JDOCodeGenerator
         this.generatedXmlsPath = generatedXmlsPathName;
         this.inputFilesPath = bundlePathName;
         this.classout = ctx.getScratchDir("ejb"); // "generated/ejb" dir
+        this.appName = ctx.getModuleMetaData(Application.class).getRegistrationName();
 
         init(bundle, ctx.getClassLoader(), bundlePathName, false);
     }
@@ -385,7 +388,7 @@ public class JDOCodeGenerator
             // Concrete impl class generation must happen before generation of 
             // PC class as cmpGenerator will override cascadeDelete (DeleteAction)
             // property if it is set, and generatePC() saves .mapping file.
-            newfiles = cmpGenerator.generate(mh, beanName, srcout, classout);
+            newfiles = cmpGenerator.generate(mh, beanName, appName, srcout, classout);
             files.addAll(newfiles);
 
             newfiles = generatePC(ejbcmp, srcout, classout);
