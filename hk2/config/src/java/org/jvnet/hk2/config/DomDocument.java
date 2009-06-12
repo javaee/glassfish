@@ -141,7 +141,7 @@ public class DomDocument {
      * @return List of all @Configured subclasses
      * @throws ClassNotFoundException
      */
-    public List<ConfigModel> getAllModelsImplementing(Class intf) throws ClassNotFoundException {
+    public synchronized List<ConfigModel> getAllModelsImplementing(Class intf) throws ClassNotFoundException {
         if (implementorsOf.size()==0) {
             initXRef();
         }
