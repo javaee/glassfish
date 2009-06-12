@@ -92,6 +92,9 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
 
     @DuckTyped
     List<Application> getApplications();
+
+    @DuckTyped
+    List<Application> getApplicationsWithSnifferType(String snifferType);
     
     public class Duck {
         public static <T> List<T> getModules(Applications apps, Class<T> type) {
@@ -120,5 +123,35 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
         public static List<Application> getApplications(Applications apps) {
             return getModules(apps, Application.class);
         }
+
+        public static List<Application> getApplicationsWithSnifferType(
+            Applications apps, String snifferType) {
+            List <Application> result = new ArrayList<Application>();
+
+            List<Application> applications = 
+                getModules(apps, Application.class);      
+
+            for (Application app : applications) {
+                List<Engine> engineList = new ArrayList<Engine>();
+
+                // first add application level engines
+                engineList.addAll(app.getEngine());
+
+                // now add module level engines
+                for (Module module: app.getModule()) {
+                    engineList.addAll(module.getEngines());
+                }
+
+                for (Engine engine : engineList) {
+                    if (engine.getSniffer().equals(snifferType)) {
+                        result.add(app);
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
     }
 }
