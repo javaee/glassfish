@@ -1,5 +1,6 @@
 -exportcontents: \
                         com.sun.appserv.jdbc; \
+                        com.sun.appserv.server; \
                         org.glassfish.api; \
                         org.glassfish.api.admin; \
                         org.glassfish.api.admin.cli; \
