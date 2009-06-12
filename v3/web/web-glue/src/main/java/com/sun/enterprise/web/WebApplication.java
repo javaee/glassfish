@@ -36,6 +36,9 @@
 
 package com.sun.enterprise.web;
 
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import com.sun.enterprise.config.serverbeans.Module;
@@ -46,19 +49,12 @@ import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.enterprise.util.Result;
 import com.sun.logging.LogDomains;
-import java.util.Iterator;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.plugin.common.EnvEntry;
 import org.glassfish.web.plugin.common.ContextParam;
-
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
@@ -68,6 +64,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     private final WebModuleConfig wmInfo;
     private final Module moduleConfig;
     Properties props = null;
+    private Set<WebModule> webModules = new HashSet<WebModule>();
 
     public WebApplication(WebContainer container, WebModuleConfig config, Module moduleConfig, Properties props) {
         this.container = container;
@@ -76,8 +73,9 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         this.moduleConfig = moduleConfig;
     }
 
-
     public boolean start(ApplicationContext appContext) throws Exception {
+
+        webModules.clear();
 
         if (appContext!=null) {
             wmInfo.setAppClassLoader(appContext.getClassLoader());
@@ -101,7 +99,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         boolean isFailure = false;
         StringBuilder sb = null;
-        for (Result result : results) {
+        for (Result<WebModule> result : results) {
             if (result.isFailure()) {
                 if (sb == null) {
                     sb = new StringBuilder(result.exception().toString());
@@ -111,9 +109,13 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                 logger.log(Level.WARNING, result.exception().toString(),
                            result.exception());
                 isFailure = true;
+            } else {
+                webModules.add(result.result());
             }
         }
+
         if (isFailure) {
+            webModules.clear();
             throw new Exception(sb.toString());
         }
 
@@ -123,9 +125,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return true;
     }
 
-
     public boolean stop(ApplicationContext stopContext) {
-
 
         props = null;
 
@@ -138,7 +138,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return true;
     }
 
-
     /**
      * Suspends this application on all virtual servers.
      */
@@ -146,7 +145,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return container.suspendWebModule(
             wmInfo.getDescriptor().getContextRoot(), "null", null);
     }
-
 
     /**
      * Resumes this application on all virtual servers.
@@ -158,7 +156,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return start(null);
     }
 
-
     /**
      * Returns the class loader associated with this application
      *
@@ -168,9 +165,19 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return wmInfo.getAppClassLoader();
     }
 
-
     WebContainer getContainer() {
         return container;
+    }
+
+    /**
+     * Gets a set of all the WebModule instances (one per virtual
+     * server deployment) of this WebApplication.
+     * 
+     * <p>For each WebModule in the returned set, the corresponding
+     * ServletContext may be obtained by calling WebModule#getServletContext
+     */
+    public Set<WebModule> getWebModules() {
+        return webModules;
     }
 
     /**
@@ -222,8 +229,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             }
         }
     }
-
-
 
     /*
      * Convenience class for applying customizations to descriptor items.
