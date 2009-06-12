@@ -483,7 +483,8 @@ public class StandardContext
     /**
      * The watched resources for this application.
      */
-    private String watchedResources[] = new String[0];
+    private List<String> watchedResources =
+            Collections.synchronizedList(new ArrayList<String>());
 
     /**
      * The welcome files for this application.
@@ -3427,13 +3428,7 @@ public class StandardContext
      */
     public void addWatchedResource(String name) {
 
-        synchronized (watchedResources) {
-            String results[] = new String[watchedResources.length + 1];
-            for (int i = 0; i < watchedResources.length; i++)
-                results[i] = watchedResources[i];
-            results[watchedResources.length] = name;
-            watchedResources = results;
-        }
+        watchedResources.add(name);
         fireContainerEvent("addWatchedResource", name);
 
     }
@@ -4159,10 +4154,9 @@ public class StandardContext
 
 
     /**
-     * Return the set of watched resources for this Context. If none are 
-     * defined, a zero length array will be returned.
+     * Gets the watched resources defined for this web application.
      */
-    public String[] findWatchedResources() {
+    public List<String> getWatchedResources() {
         return watchedResources;
     }
 
@@ -4656,7 +4650,24 @@ public class StandardContext
         }
     }
 
+    
+    /**
+     * Checks whether this web application has any watched resources
+     * defined.
+     */
+    public boolean hasWatchedResources() {
+        return !watchedResources.isEmpty();
+    }
 
+
+    /**
+     * Clears any watched resources defined for this web application.
+     */
+    public void removeWatchedResources() {
+        watchedResources.clear();
+    }
+
+         
     /**
      * Remove the specified watched resource name from the list associated
      * with this Context.
@@ -4664,33 +4675,23 @@ public class StandardContext
      * @param name Name of the watched resource to be removed
      */
     public void removeWatchedResource(String name) {
-        
-        synchronized (watchedResources) {
-
-            // Make sure this watched resource is currently present
-            int n = -1;
-            for (int i = 0; i < watchedResources.length; i++) {
-                if (watchedResources[i].equals(name)) {
-                    n = i;
-                    break;
-                }
+        String match = null;
+        Iterator<String> i = watchedResources.iterator();
+        while (i.hasNext()) {
+            String watchedResource = i.next();
+            // Make sure this parameter is currently present
+            if (name.equals(watchedResource)) {
+                match = watchedResource;
+                break;
             }
-            if (n < 0)
-                return;
-
-            // Remove the specified watched resource
-            int j = 0;
-            String results[] = new String[watchedResources.length - 1];
-            for (int i = 0; i < watchedResources.length; i++) {
-                if (i != n)
-                    results[j++] = watchedResources[i];
-            }
-            watchedResources = results;
-
         }
-
-        fireContainerEvent("removeWatchedResource", name);
-
+        if (match != null) {
+            watchedResources.remove(match);
+            // Inform interested listeners
+            if (notifyContainerListeners) {
+                fireContainerEvent("removeWatchedResource", name);
+            }
+        }
     }
 
 

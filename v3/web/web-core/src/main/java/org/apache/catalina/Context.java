@@ -1076,10 +1076,9 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of watched resources for this Context. If none are 
-     * defined, a zero length array will be returned.
+     * Gets the watched resources defined for this web application.
      */
-    String[] findWatchedResources();
+    List<String> getWatchedResources();
 
 
     /**
@@ -1258,17 +1257,30 @@ public interface Context extends Container {
      * @param uri URI, relative to the web.xml file
      */
     void removeTaglib(String uri);
+    
+    
+    /**
+     * Checks whether this web application has any watched resources
+     * defined.
+     */
+    public boolean hasWatchedResources();
 
 
+    /**
+     * Clears any watched resources defined for this web application.
+     */
+    public void removeWatchedResources();
+
+    
     /**
      * Remove the specified watched resource name from the list associated
      * with this Context.
      * 
      * @param name Name of the watched resource to be removed
      */
-    void removeWatchedResource(String name);
-
-
+    public void removeWatchedResource(String name);
+        
+       
     /**
      * Remove the specified welcome file name from the list recognized
      * by this Context.
