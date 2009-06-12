@@ -120,8 +120,8 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
    private static final String NULL_APP_PROP = Util.makeProp(J2EE_APPLICATION, null);
 
     /**
-     * Deals with the special-case requirements of JSR 77:
-     * Some types require a J2EEApplication=null
+     * Deals with the special-case requirements of JSR 77: ancestor properties as well as
+     * some types require a J2EEApplication=null
      * @param server
      * @param nameIn
      * @return
@@ -164,7 +164,7 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
     }
 
     public long getstartTime() {
-        return (mStartTime);
+        return mStartTime;
     }
 
     protected String getServerName() {
