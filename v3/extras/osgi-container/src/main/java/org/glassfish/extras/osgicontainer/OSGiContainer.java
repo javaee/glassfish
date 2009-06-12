@@ -40,6 +40,14 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.internal.deployment.GenericDeployer;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.lang.ref.WeakReference;
+
+import com.sun.enterprise.module.Module;
 
 /**
  * OSGi container, will just be used to manage OSGi bundles through deployment
@@ -48,6 +56,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Jerome Dochez
  */
 @Service(name="osgi")
+@Scoped(Singleton.class)
 public class OSGiContainer implements Container {
 
     public Class<? extends Deployer> getDeployer() {
@@ -57,4 +66,5 @@ public class OSGiContainer implements Container {
     public String getName() {
         return "osgi";
     }
+
 }

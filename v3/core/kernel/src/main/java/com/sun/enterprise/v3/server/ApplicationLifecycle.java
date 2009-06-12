@@ -65,6 +65,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -183,6 +184,11 @@ public class ApplicationLifecycle implements Deployment {
                 for (EngineRef module : get("started", EngineRef.class)) {
                     module.stop(context);
                 }
+                try {
+                    PreDestroy.class.cast(context).preDestroy();
+                } catch (Exception e) {
+
+                }                
                 for (EngineRef module : get("loaded", EngineRef.class)) {
                     module.unload(context);
                 }

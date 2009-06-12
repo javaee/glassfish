@@ -806,7 +806,7 @@ public class FileUtils {
                         outChannel.write(byteBuffer);
                         byteBuffer.clear();
                     }
-                } while (read>0);
+                } while (read!=-1);
             } else {
                 ByteBuffer byteBuffer = ByteBuffer.allocate(Long.valueOf(size).intValue());
                 inChannel.read(byteBuffer);
@@ -852,7 +852,7 @@ public class FileUtils {
                             _utillogger.log(Level.FINE, "enterprise_util.rename_initial_success", new Object [] {
                                 fromFilePath, toFilePath } );
                         }
-                    } else {
+                    } else {        
                         _utillogger.log(FILE_OPERATION_LOG_LEVEL, "enterprise_util.retry_rename_success", new Object []
                             { fromFilePath, toFilePath, Integer.valueOf(retries) } );
                     }

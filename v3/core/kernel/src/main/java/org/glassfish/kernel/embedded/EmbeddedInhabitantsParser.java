@@ -44,6 +44,7 @@ import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.PublicAdminAdapter;
 import com.sun.enterprise.v3.admin.PrivateAdminAdapter;
 import com.sun.enterprise.v3.server.GFDomainXml;
+import com.sun.enterprise.v3.server.DomainXmlPersistence;
 import org.kohsuke.MetaInfServices;
 
 /**
@@ -68,6 +69,8 @@ public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
         parser.drop(PrivateAdminAdapter.class);
 
         parser.replace(GFDomainXml.class, EmbeddedDomainXml.class);
+        
+        parser.replace(DomainXmlPersistence.class, EmbeddedDomainPersistence.class);
 
     }
 }

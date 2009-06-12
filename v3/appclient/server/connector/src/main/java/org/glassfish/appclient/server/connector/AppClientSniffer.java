@@ -60,7 +60,7 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
 
     /**
      * Returns true if the passed file or directory is recognized by this
-     * instance.
+     * instance.                   
      *
      * @param location the file or directory to explore
      * @param loader class loader for this application

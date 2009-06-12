@@ -306,7 +306,9 @@ public final class EJBSecurityManager
                         this.contextId, this.codesource,
                         EJBMethodPermission.class,
                         this.ejbName);
-        auditManager = SecurityServicesUtil.getInstance().getAuditManager();
+        if (SecurityServicesUtil.getInstance()!=null) {
+            auditManager = SecurityServicesUtil.getInstance().getAuditManager();
+        }
     }
 
     /**

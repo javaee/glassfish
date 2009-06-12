@@ -100,7 +100,7 @@ public class EjbInWarArchivist
     }
 
     /**
-     * Returns the scanner for this archivist, usually it is the scanner regitered
+     * Returns the scanner for this archivist, usually it is the scanner registered
      * with the same module type as this archivist, but subclasses can return a
      * different version
      *

@@ -10,6 +10,7 @@ import java.net.URL;
 import java.io.IOException;
 
 import com.sun.enterprise.v3.server.GFDomainXml;
+import com.sun.enterprise.v3.server.DomainXmlPersistence;
 
 /**
  * Embedded domain.xml, can use externally pointed domain.xml
@@ -34,4 +35,5 @@ public class EmbeddedDomainXml extends GFDomainXml {
     protected void upgrade() {
         // for now, we don't upgrade in embedded mode...
     }
+
 }

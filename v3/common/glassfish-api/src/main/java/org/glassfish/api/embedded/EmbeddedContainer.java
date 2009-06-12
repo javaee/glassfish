@@ -35,6 +35,10 @@
  */
 package org.glassfish.api.embedded;
 
+import org.glassfish.api.container.Sniffer;
+
+import java.util.List;
+
 /**
  * Embedded container definition, although most containers will be bound
  * to a {@link Port} instance, it's not automatic, for instance JPA and
@@ -43,6 +47,8 @@ package org.glassfish.api.embedded;
  * @author Jerome Dochez
  */
 public interface EmbeddedContainer {
+
+    public Sniffer[] getSniffers();
 
     public void start();
 

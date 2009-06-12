@@ -215,7 +215,9 @@ public class SnifferManagerImpl implements SnifferManager {
 
     public void validateSniffers(Collection<Sniffer> snifferCol, DeploymentContext context) {
         for (Sniffer sniffer : snifferCol) {
-            String[] incompatTypes = sniffer.getIncompatibleSnifferTypes();    
+            String[] incompatTypes = sniffer.getIncompatibleSnifferTypes();
+            if (incompatTypes==null)
+                return;
             for (String type : incompatTypes) { 
                 for (Sniffer sniffer2 : snifferCol) {
                     if (sniffer2.getModuleType().equals(type)) {

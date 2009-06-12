@@ -41,6 +41,7 @@ import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -105,8 +106,18 @@ public abstract class DomainXml implements Populator {
         // run the upgrades...
         upgrade();
 
-        habitat.addIndex(new ExistingSingletonInhabitant(habitat.getComponent(Server.class, env.getInstanceName())),
+        decorate();
+    }
+
+    protected void decorate() {
+
+        Server server = habitat.getComponent(Server.class, env.getInstanceName());
+        habitat.addIndex(new ExistingSingletonInhabitant<Server>(server),
                          Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
+
+        habitat.addIndex(new ExistingSingletonInhabitant<Config>(habitat.getComponent(Config.class, server.getConfigRef())),
+                         Config.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
+        
     }
 
     protected void upgrade() {

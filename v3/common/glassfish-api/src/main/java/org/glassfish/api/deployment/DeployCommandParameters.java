@@ -140,5 +140,10 @@ public class DeployCommandParameters extends OpsParams {
 
     public DeployCommandParameters(File path) {
         this.path = path;
+        if (path.getName().lastIndexOf('.')!=-1) {
+            name=path.getName().substring(0, path.getName().lastIndexOf('.'));
+        } else {
+            name=path.getName();            
+        }
     }
 }

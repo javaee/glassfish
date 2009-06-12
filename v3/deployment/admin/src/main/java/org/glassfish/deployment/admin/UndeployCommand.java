@@ -40,6 +40,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -79,6 +80,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
     @Inject
     ArchiveFactory archiveFactory;
 
+    @Inject
+    Applications apps;
+
     public UndeployCommand() {
         origin = Origin.undeploy;
     }
@@ -95,13 +99,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
         ApplicationInfo info = deployment.get(name);
 
-        Named module = ConfigBeansUtilities.getModule(name);
-        Application application = null;
-        if (module instanceof Application) {
-            application = (Application) module;
-        }
+        Application application = apps.getModule(Application.class, name);
 
-        if (module==null) {
+        if (application==null) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE); 
             return;

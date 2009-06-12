@@ -240,6 +240,6 @@ public abstract class GenericSniffer implements Sniffer {
      *
      */
     public String[] getIncompatibleSnifferTypes() {
-        return new String[0];
+        return null;
     }
 }

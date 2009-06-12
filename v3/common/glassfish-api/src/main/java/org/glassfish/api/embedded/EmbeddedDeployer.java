@@ -37,6 +37,7 @@ package org.glassfish.api.embedded;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Properties;
 import java.util.Collection;
@@ -47,6 +48,7 @@ import java.io.File;
  *
  * @author Jerome Dochez
  */
+@Contract
 public interface EmbeddedDeployer {
 
     /**
@@ -83,7 +85,7 @@ public interface EmbeddedDeployer {
      * @param params deployment command parameters
      * @return the deployed application name
      */
-    public void deploy(ReadableArchive archive, DeployCommandParameters params);
+    public String deploy(ReadableArchive archive, DeployCommandParameters params);
 
     /**
      * Undeploys a previously deployed application

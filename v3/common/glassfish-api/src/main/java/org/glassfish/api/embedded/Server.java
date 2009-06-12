@@ -241,6 +241,16 @@ public class Server {
         }
     }
 
+    /**
+     * Returns the embedded deployer implementation, can be used to
+     * generically deploy applications to the embedded server.
+     *
+     * @return embedded deployer
+     */
+    public EmbeddedDeployer getDeployer() {
+        return habitat.getByContract(EmbeddedDeployer.class);
+    }
+
     private PlatformMain getMain() {
         ServiceLoader<PlatformMain> mains = ServiceLoader.load(PlatformMain.class, Server.class.getClassLoader());
         for (PlatformMain main : mains) {
@@ -250,6 +260,8 @@ public class Server {
         }
         return null;
     }
-    
+
+
+
 
 }

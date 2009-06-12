@@ -42,17 +42,17 @@ import org.glassfish.internal.deployment.GenericHandler;
 import org.glassfish.internal.api.DelegatingClassLoader;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.Singleton;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.jar.Manifest;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.net.URL;
 import java.net.URI;
+import java.lang.ref.WeakReference;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
@@ -66,6 +66,7 @@ import com.sun.enterprise.util.io.FileUtils;
  * @author Jerome Dochez
  */
 @Service(name="osgi")
+@Scoped(Singleton.class)
 public class OSGiArchiveHandler extends GenericHandler {
     
     @Inject
@@ -99,6 +100,28 @@ public class OSGiArchiveHandler extends GenericHandler {
         return manifest!=null && (manifest.getMainAttributes().getValue("Bundle-Name")!=null);
     }
 
+    private Map<Module, WeakReference<RefCountingClassLoader>> loaders = new HashMap<Module, WeakReference<RefCountingClassLoader>>();
+
+    // I would love to use PhantomReferences but there is an asynchronicity in its behavior that
+    // would clash with deploy/undeploy/redeploy cycles that need a complete clean up of the system.
+    public synchronized RefCountingClassLoader getClassLoader(ClassLoader parent, Module m) {
+
+        WeakReference<RefCountingClassLoader> ref = loaders.get(m);
+        if (ref!=null) {
+            if (ref.get()!=null) {
+                RefCountingClassLoader loader = ref.get();
+                loader.increment();
+                return loader;
+            }
+        }
+        // time to create one...
+        RefCountingClassLoader cl = new RefCountingClassLoader(parent, m);
+        ref = new WeakReference<RefCountingClassLoader>(cl);
+        loaders.put(m, ref);
+        cl.increment();
+        return cl;
+    }    
+
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
 
         //File source = new File(context.getSourceDir(), context.getSourceDir().list()[0]);
@@ -113,6 +136,9 @@ public class OSGiArchiveHandler extends GenericHandler {
 
         // add the new module or retrieve the existing one.
         final Module module = mr.add(moduleDef);
+
+        return getClassLoader(parent, module);
+        /*
         // we need to protect the class loader so we stop the bundle from the OSGi runtime
         // when the classloader is gced is stopped. Eventually the ApplicationContainer start/stop
         // will maintain the state of the application therefore of the classloader.
@@ -131,7 +157,7 @@ public class OSGiArchiveHandler extends GenericHandler {
         finders.add(new ProtectedClassLoader(parent, module.getClassLoader()));
         return new ProtectedDelegatingCL(parent, finders);
 
-
+         */
     }
 
     public static class ProtectedClassLoader implements DelegatingClassLoader.ClassFinder {

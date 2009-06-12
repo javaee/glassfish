@@ -47,10 +47,7 @@ import org.glassfish.config.support.ConfigurationPersistence;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-import java.io.File;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.logging.Logger;
 
 /**
@@ -72,16 +69,16 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
     public synchronized void save(DomDocument doc) throws IOException {
 
 
-        File destination = new File(env.getConfigDirPath(), "domain.xml");
+        File destination = getDestination();
         // get a temporary file
         File f = File.createTempFile("domain", ".xml", destination.getParentFile());
         if (f==null) {
-            throw new IOException("Cannot create temporary file when saving domain.xml");    
+            throw new IOException("Cannot create temporary file when saving domain.xml");
         }
         // write to the temporary file
         XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = null;
-        FileOutputStream fos = new FileOutputStream(f);
+        OutputStream fos = getOutputStream(f);
         try {
             writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos));
             IndentingXMLStreamWriter indentingXMLStreamWriter = new IndentingXMLStreamWriter(writer);
@@ -114,17 +111,27 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
             logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
             return;
         }
-        if (!destination.renameTo(backup)) {
-            logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
-            return;
-        }
-        // save the temp file to domain.xml
-        if (!f.renameTo(destination)) {
-            logger.severe("Could not rename " + f.getAbsolutePath() + " to " + destination.getAbsolutePath());
-            if (!backup.renameTo(destination)) {
-                logger.severe("Could not rename backup to" + destination.getAbsolutePath());               
+        if (destination!=null) {
+            if (!destination.renameTo(backup)) {
+                logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
+                return;
+            }
+            // save the temp file to domain.xml
+            if (!f.renameTo(destination)) {
+                logger.severe("Could not rename " + f.getAbsolutePath() + " to " + destination.getAbsolutePath());
+                if (!backup.renameTo(destination)) {
+                    logger.severe("Could not rename backup to" + destination.getAbsolutePath());
+                }
             }
         }
+    }
+
+    protected File getDestination() throws IOException {
+        return new File(env.getConfigDirPath(), "domain.xml");
+    }
+
+    protected OutputStream getOutputStream(File destination) throws IOException {
+        return new FileOutputStream(destination);
     }
 
 }

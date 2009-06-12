@@ -51,7 +51,7 @@ import com.sun.enterprise.util.io.FileUtils;
  *
  * @author dochez
  */
-public class DeploymentContextImpl implements ExtendedDeploymentContext {
+public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDestroy {
 
 
     ReadableArchive source;
@@ -113,6 +113,19 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         return logger;
     }
 
+    public void preDestroy() {
+        try {
+            PreDestroy.class.cast(sharableTemp).preDestroy();
+        } catch (Exception e) {
+          // ignore, the classloader does not need to be destroyed
+        }
+        try {
+            PreDestroy.class.cast(cloader).preDestroy();
+        } catch (Exception e) {
+          // ignore, the classloader does not need to be destroyed
+        }
+    }
+
     /**
      * Returns the class loader associated to this deployment request.
      * ClassLoader instances are usually obtained by the getClassLoader API on
@@ -128,10 +141,10 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     public ClassLoader getFinalClassLoader() {
 
         // someone got hold of our final class loader, the temp is automatically invalidated.
-        tempClassLoaderInvalidated = true;
-
-        // check if we are in prepare phase and the final class loader has been accessed...
         if (phase==Phase.PREPARE) {
+            tempClassLoaderInvalidated = true;
+
+            // check if we are in prepare phase and the final class loader has been accessed...
             if (finalClassLoaderAccessedDuringPrepare) {
                 Boolean force = false;
                 if (parameters instanceof DeployCommandParameters) {
@@ -182,6 +195,8 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         tempClassLoaderInvalidated=true;
 
     }
+
+
     
     public synchronized ClassLoader getClassLoader(boolean sharable) {
         // if we are in prepare phase, we need to return our sharable temporary class loader
