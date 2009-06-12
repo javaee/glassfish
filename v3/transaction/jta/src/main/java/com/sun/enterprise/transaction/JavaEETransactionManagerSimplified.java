@@ -221,7 +221,7 @@ public class JavaEETransactionManagerSimplified
      * Clears the transaction associated with the caller thread
      */
     public void clearThreadTx() {
-        transactions.set(null);
+        setCurrentTransaction(null);
         delegates.set(null);
     }
 
@@ -525,7 +525,7 @@ public class JavaEETransactionManagerSimplified
 
         // Do not need to use injection.
         tx.javaEETM = this;
-        transactions.set(tx);
+        setCurrentTransaction(tx);
         return tx;
     }
 
@@ -832,7 +832,7 @@ public class JavaEETransactionManagerSimplified
             }
 
         } finally {
-            transactions.set(null); // clear current thread's tx
+            setCurrentTransaction(null); // clear current thread's tx
             delegates.set(null);
         }
         // END IASRI 4662745
@@ -867,7 +867,7 @@ public class JavaEETransactionManagerSimplified
             }
 
         } finally {
-            transactions.set(null); // clear current thread's tx
+            setCurrentTransaction(null); // clear current thread's tx
             delegates.set(null);
             if(acquiredlock){
                 getDelegate().getReadLock().unlock(); // XXX releaseReadLock();
@@ -907,7 +907,7 @@ public class JavaEETransactionManagerSimplified
 
                     globalTransactions.put(jtsTx, tx);
                 }
-                transactions.set(tx); // associate tx with thread
+                setCurrentTransaction(tx); // associate tx with thread
                 return tx;
             }
 ** XXX CHECK WHAT'S NEEDED FOR XA DELEGATE XXX **/
@@ -941,7 +941,7 @@ public class JavaEETransactionManagerSimplified
             if ( !tx.isLocalTx() )
                 super.suspend();
 
-            transactions.set(null);
+            setCurrentTransaction(null);
             return tx;
         }
         else {
@@ -964,7 +964,7 @@ public class JavaEETransactionManagerSimplified
             if ( !javaEETx.isLocalTx() )
                 getDelegate().resume(javaEETx.getJTSTx());
 
-            transactions.set(javaEETx);
+            setCurrentTransaction(javaEETx);
         }
         else {
             getDelegate().resume(tobj); // probably a JTS imported tx

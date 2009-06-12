@@ -237,15 +237,13 @@ public final class GlassFishORBManager {
      * Returns whether an adapterName (from ServerRequestInfo.adapter_name)
      * represents an EJB or not.
      */
-    /**   TODO Enable later
-    public static boolean isEjbAdapterName(String[] adapterName) {
+    public boolean isEjbAdapterName(String[] adapterName) {
         boolean result = false;
         if (rfm != null)
             result = rfm.isRfmName(adapterName);
 
         return result;
     }
-    **/
 
     /**
      * Returns whether the operationName corresponds to an "is_a" call

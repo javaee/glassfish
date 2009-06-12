@@ -91,5 +91,11 @@
             <version>${glassfish-corba.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
+            <version>${project.parent.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 </project>

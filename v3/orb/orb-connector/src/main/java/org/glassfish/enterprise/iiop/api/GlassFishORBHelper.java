@@ -5,6 +5,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORB;
+import org.omg.PortableInterceptor.ServerRequestInfo;
 
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
@@ -150,6 +151,10 @@ public class GlassFishORBHelper implements PostConstruct {
     }
 
 
+    public int getOTSPolicyType() {
+        return orbFactory.getOTSPolicyType();    
+    }
+
     public int getCSIv2PolicyType() {
         return orbFactory.getCSIv2PolicyType();    
     }
@@ -172,6 +177,10 @@ public class GlassFishORBHelper implements PostConstruct {
 
     public int getORBPort(ORB orb) {
         return orbFactory.getORBPort(orb);
+    }
+      
+    public boolean isEjbCall(ServerRequestInfo sri) {
+        return orbFactory.isEjbCall(sri);
     }
       
     

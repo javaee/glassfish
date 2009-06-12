@@ -2,6 +2,7 @@ package org.glassfish.enterprise.iiop.api;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.omg.CORBA.ORB;
+import org.omg.PortableInterceptor.ServerRequestInfo;
 
 import java.util.Properties;
 
@@ -13,6 +14,8 @@ import java.util.Properties;
 public interface GlassFishORBFactory {
 
     public ORB createORB(Properties props);
+
+    public int getOTSPolicyType();
 
     public int getCSIv2PolicyType();
 
@@ -26,4 +29,5 @@ public interface GlassFishORBFactory {
 
     public int getORBPort(ORB orb); 
 
+    public boolean isEjbCall (ServerRequestInfo sri);
 }

@@ -6,6 +6,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORB;
+import org.omg.PortableInterceptor.ServerRequestInfo;
 
 import java.util.Properties;
 
@@ -28,6 +29,10 @@ public class GlassFishORBFactoryImpl
     public void postConstruct() {
         gfORBManager = new GlassFishORBManager(habitat);
         iiopUtils.setGlassFishORBManager(gfORBManager);
+    }
+
+    public int getOTSPolicyType() {
+        return POARemoteReferenceFactory.OTS_POLICY_TYPE;
     }
 
     public int getCSIv2PolicyType() {
@@ -59,6 +64,19 @@ public class GlassFishORBFactoryImpl
         return ((com.sun.corba.ee.spi.orb.ORB) orb).getORBData().getORBInitialPort();
     }
 
+    /**
+     * Returns true, if the incoming call is a EJB method call.
+     * This checks for is_a calls and ignores those calls. In callflow analysis
+     * when a component looks up another component, this lookup should be
+     * considered part of the same call coming in.
+     * Since a lookup triggers the iiop codebase, it will fire a new request start.
+     * With this check, we consider the calls that are only new incoming ejb
+     * method calls as new request starts.
+     */
+    public boolean isEjbCall (ServerRequestInfo sri) {
+        return (gfORBManager.isEjbAdapterName(sri.adapter_name()) &&
+                (!gfORBManager.isIsACall(sri.operation())));
+    }
 
     
 }

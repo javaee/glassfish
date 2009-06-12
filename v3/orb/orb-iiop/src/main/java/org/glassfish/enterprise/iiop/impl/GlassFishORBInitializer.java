@@ -117,15 +117,24 @@ public class GlassFishORBInitializer extends org.omg.CORBA.LocalObject
                     iiopUtils.getAllIIOPInterceptrFactories();
 
             for (IIOPInterceptorFactory factory : interceptorFactories) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Processing interceptor factory: " + factory);
+                }
                 ClientRequestInterceptor clientReq =
                         factory.createClientRequestInterceptor(info, codec);
                 ServerRequestInterceptor serverReq =
                         factory.createServerRequestInterceptor(info, codec);
 
                 if (clientReq != null) {
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "Registering client interceptor: " + clientReq);
+                    }
                     info.add_client_request_interceptor(clientReq);
                 }
                 if (serverReq != null) {
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "Registering server interceptor: " + serverReq);
+                    }
                     info.add_server_request_interceptor(serverReq);
                 }
             }

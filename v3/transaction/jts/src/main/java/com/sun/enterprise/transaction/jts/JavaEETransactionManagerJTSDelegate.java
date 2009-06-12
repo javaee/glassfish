@@ -217,6 +217,10 @@ public class JavaEETransactionManagerJTSDelegate
     }
 
     public int getStatus() throws SystemException {
+
+        // This is the 1st method called by BaseContainer.preInvokeTx
+        initTransactionManager();
+
         JavaEETransaction tx = javaEETM.getCurrentTransaction();
         if ( tx != null && tx.isLocalTx())
             return tx.getStatus();
