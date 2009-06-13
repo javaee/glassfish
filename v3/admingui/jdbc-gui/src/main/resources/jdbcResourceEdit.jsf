@@ -54,7 +54,6 @@
     setPageSessionAttribute(key="childType" value="jdbc-resource");
     getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
     setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
-    getJdbcConnectionPools(jdbcConnectionPools=>$attribute{jdbcConnectionPools});
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //set the following for including buttons.inc
