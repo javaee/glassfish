@@ -58,6 +58,11 @@
             
            </sun:dropDown>
         </sun:property>
+        <sun:property id="objectTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}" >
+            <sun:dropDown id="ObjectType" selected="#{pageSession.valueMap['ObjectType']}" labels={ "$resource{i18njdbc.connectors.User}" "$resource{i18njdbc.connectors.systemAll}" "$resource{i18njdbc.connectors.systemAdmin}" "$resource{i18njdbc.connectors.systemInstance}" } values={ "user" "system-all" "system-admin" "system-instance" } >
+           
+           </sun:dropDown>
+        </sun:property>   
         <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
             <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
         </sun:property>
