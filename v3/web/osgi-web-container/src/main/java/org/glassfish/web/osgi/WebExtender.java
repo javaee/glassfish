@@ -99,7 +99,14 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
                     deploy(bundle);
                 }
                 break;
-            case BundleEvent.STOPPING:
+            case BundleEvent.STOPPED:
+                // We undeploy in STOPPED event rather than STOPPING event
+                // to make it symmetrical. Had we decided to undeploy in
+                // STOPPING event, activator.stop() would have been called
+                // after the app gets undeployed, where as activator.start()
+                // would have been called after deployment. SO, activator
+                // could not do meaningful cleanup using Java EE components in stop().
+                //  Hence, we undeploy in STOPPED event.
                 if (isWebBundle(bundle))
                 {
                     undeploy(bundle);
