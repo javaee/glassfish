@@ -43,6 +43,7 @@ import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
 import static org.osgi.framework.Constants.IMPORT_PACKAGE;
+import static org.osgi.framework.Constants.EXPORT_PACKAGE;
 
 import java.io.IOException;
 import java.net.URL;
@@ -103,7 +104,7 @@ public class WARManifestProcessor
             final List<String> libs = new ArrayList<String>();
 
             // It is a StringBuilder, as a String is immutable.
-            final StringBuilder contextRoot = new StringBuilder();
+            final StringBuilder contextRootFromSunDD = new StringBuilder();
             JarHelper.accept(jis, new JarHelper.Visitor()
             {
                 public void visit(JarEntry je)
@@ -128,7 +129,7 @@ public class WARManifestProcessor
                         String contextRoot1 = parseContextRoot(jis);
                         if (contextRoot1 != null)
                         {
-                            contextRoot.append(contextRoot1);
+                            contextRootFromSunDD.append(contextRoot1);
                         }
                     }
                 }
@@ -137,15 +138,17 @@ public class WARManifestProcessor
             Manifest oldManifest = jis.getManifest();
             Manifest newManifest = new Manifest(oldManifest);
             Attributes attrs = newManifest.getMainAttributes();
-            String defaultContextRoot = contextRoot.length() == 0 ?
-                    generateContextRoot(url) : contextRoot.toString();
+            String defaultContextRoot = contextRootFromSunDD.length() == 0 ?
+                    generateContextRoot(url) : contextRootFromSunDD.toString();
             process(queryParams, attrs, Constants.WEB_CONTEXT_PATH, defaultContextRoot);
             process(queryParams, attrs, BUNDLE_MANIFESTVERSION,
                     DEFAULT_MAN_VERSION);
 
-            // exclude the leading '/' while using contextroot as name
-            String defaultSymName = defaultContextRoot.startsWith("/") ?
-                    defaultContextRoot.substring(1) : defaultContextRoot;
+            // We derive the symbolic name from context root.
+            // We exclude the leading '/' while using contextroot as name
+            String actualContextRoot = attrs.getValue(Constants.WEB_CONTEXT_PATH);
+            String defaultSymName = actualContextRoot.startsWith("/") ?
+                    actualContextRoot.substring(1) : actualContextRoot;
             process(queryParams, attrs, BUNDLE_SYMBOLICNAME,
                     defaultSymName);
             process(queryParams, attrs, BUNDLE_VERSION, null);
@@ -156,6 +159,7 @@ public class WARManifestProcessor
 
             process(queryParams, attrs, Constants.WEB_JSP_EXTRACT_LOCATION, null);
             process(queryParams, attrs, IMPORT_PACKAGE, DEFAULT_IMPORT_PACKAGE);
+            process(queryParams, attrs, EXPORT_PACKAGE, null);
 
             // We add this attribute until we have added support for
             // scanning class bytes to figure out import dependencies.
@@ -172,7 +176,8 @@ public class WARManifestProcessor
     {
         String contextRoot;
         // take the last part of path as context root.
-        String file = url.getFile();
+        String file = url.getPath(); // getPath() excludes query unlike getFile()
+
         // If it is a directory url, then remove the last /, so that we
         // can get the last component of the path.
         if (file.endsWith("/"))

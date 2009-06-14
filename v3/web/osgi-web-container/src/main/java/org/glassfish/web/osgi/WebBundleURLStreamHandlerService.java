@@ -42,6 +42,7 @@ import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
 import static org.osgi.framework.Constants.IMPORT_PACKAGE;
+import static org.osgi.framework.Constants.EXPORT_PACKAGE;
 import static org.glassfish.web.osgi.Constants.WEB_CONTEXT_PATH;
 import static org.glassfish.web.osgi.Constants.WEB_JSP_EXTRACT_LOCATION;
 import static org.glassfish.web.osgi.Constants.WEB_BUNDLE_SCHEME;
@@ -100,6 +101,7 @@ public class WebBundleURLStreamHandlerService
             BUNDLE_VERSION,
             BUNDLE_MANIFESTVERSION,
             IMPORT_PACKAGE,
+            EXPORT_PACKAGE,
             WEB_CONTEXT_PATH,
             WEB_JSP_EXTRACT_LOCATION
     };
