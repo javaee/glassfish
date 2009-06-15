@@ -26,10 +26,9 @@ package org.glassfish.persistence.jpa;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import com.sun.logging.LogDomains;
 
@@ -239,7 +238,9 @@ public class JPAApplication implements ApplicationContainer {
         logger.logp(Level.FINE, "JPAApplication", "loadPU", // NOI18N
                     "emf = {0}", emf); // NOI18N
 
-        providerContainerContractInfo.registerEMF(pInfo.getPersistenceUnitName(), pud.getPuRoot(), emf);
+        PersistenceUnitsDescriptor parent = pud.getParent();
+        RootDeploymentDescriptor containingBundle = parent.getParent();
+        providerContainerContractInfo.registerEMF(pInfo.getPersistenceUnitName(), pud.getPuRoot(), containingBundle, emf);
 
         if (isJava2DB) {
             java2dbEMFs.add(emf);

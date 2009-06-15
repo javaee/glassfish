@@ -175,7 +175,7 @@ public class EntityManagerFactoryWrapper
         case EJB_INVOCATION:
 
             EjbDescriptor ejbDesc = (EjbDescriptor) descriptor;
-            module = ejbDesc.getEjbBundleDescriptor();
+            module = (BundleDescriptor) ejbDesc.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
             app = module.getApplication();
 
             break;

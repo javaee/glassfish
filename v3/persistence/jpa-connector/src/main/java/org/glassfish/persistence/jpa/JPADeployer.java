@@ -218,9 +218,18 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
             return deploymentContext;
         }
 
-        public void registerEMF(String unitName, String persistenceRootUri, EntityManagerFactory emf) {
-            Application application = deploymentContext.getModuleMetaData(Application.class);
-            application.addEntityManagerFactory(unitName, persistenceRootUri, emf);
+        public void registerEMF(String unitName, String persistenceRootUri, RootDeploymentDescriptor containingBundle, EntityManagerFactory emf) {
+            // We register the EMF into the bundle that declared the corresponding PU. This limits visibility of the emf
+            // to containing module.
+            // See EMFWrapper.lookupEntityManagerFactory() for corresponding look up logic
+            if (containingBundle.isApplication()) {
+                // ear level pu
+                Application.class.cast(containingBundle).addEntityManagerFactory(
+                        unitName, persistenceRootUri, emf);
+            } else {
+                BundleDescriptor.class.cast(containingBundle).addEntityManagerFactory(
+                        unitName, emf);
+            }
         }
 
 

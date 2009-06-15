@@ -41,6 +41,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.naming.NamingException;
 import org.glassfish.api.deployment.DeploymentContext;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 
 
 /**
@@ -98,10 +99,11 @@ public interface ProviderContainerContractInfo {
 
     /**
      * Register the give emf with underlying container
-     * @param unitName Name of correspoding PersistenceUnit 
+     * @param unitName Name of correspoding PersistenceUnit
      * @param persistenceRootUri URI within application (excluding META-INF) for root of corresponding PersistenceUnit
-     * @param emf
+     * @param containingBundle The bundle that contains PU for the given EMF
+     * @param emf The emf that needs to be registered
      */
-    void registerEMF(String unitName, String persistenceRootUri, EntityManagerFactory emf);
+    void registerEMF(String unitName, String persistenceRootUri, RootDeploymentDescriptor containingBundle, EntityManagerFactory emf);
 
 }
