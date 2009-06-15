@@ -30,12 +30,27 @@
     <mkdir dir="${env.APS_HOME}/build/module/classes"/>   
     <mkdir dir="${env.APS_HOME}/build/module/archive"/>   
 </target>
+ <path id="classpath">
+
+        <fileset dir="${env.AS_HOME}/modules">
+                      <include name="*.jar"/>
+
+                   </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+                      <include name="*.jar"/>
+
+                   </fileset>
+
+
+    </path>
+
 
 <target name="test-compile">
     <echo message="Compiling into ${pkg-name}/${server}.class"/>
     <javac srcdir="." destdir="${env.APS_HOME}/build/module/classes" 
-        classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/jaxrpc-impl.jar:${env.S1AS_HOME}/lib/jaxws-impl.jar" 
-        includes="${pkg-name}/*.java"/>
+        includes="${pkg-name}/*.java">
+ <classpath refid="classpath"/>
+</javac>
 </target>
 
 <target name="compile-client">
