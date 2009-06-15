@@ -59,8 +59,8 @@ public class WebServicesDescriptorNode extends BundleNode
 {    
     public final static XMLElement ROOT_ELEMENT = 
         new XMLElement(WebServicesTagNames.WEB_SERVICES);
-    public final static String SCHEMA_ID = "javaee_web_services_1_2.xsd";
-    public final static String SPEC_VERSION = "1.2";
+    public final static String SCHEMA_ID = "javaee_web_services_1_3.xsd";
+    public final static String SPEC_VERSION = "1.3";
     private final static List<String> systemIDs = initSystemIDs();
 
     private final static List<String> initSystemIDs() {

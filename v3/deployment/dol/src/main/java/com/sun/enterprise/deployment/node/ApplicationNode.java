@@ -71,8 +71,9 @@ public class ApplicationNode extends BundleNode<Application> {
     
     public final static String SCHEMA_ID_14 = "application_1_4.xsd";
 
-    public final static String SCHEMA_ID = "application_5.xsd";
-    public final static String SPEC_VERSION = "5";
+    public final static String SCHEMA_ID_15 = "application_5.xsd";
+    public final static String SCHEMA_ID = "application_6.xsd";
+    public final static String SPEC_VERSION = "6";
     private final static List<String> systemIDs = initSystemIDs();
      
     // The XML tag associated with this Node
@@ -82,6 +83,7 @@ public class ApplicationNode extends BundleNode<Application> {
         List<String> systemIDs = new ArrayList<String>();
         systemIDs.add(SCHEMA_ID);
         systemIDs.add(SCHEMA_ID_14);
+        systemIDs.add(SCHEMA_ID_15);
         return Collections.unmodifiableList(systemIDs);
     }
     
