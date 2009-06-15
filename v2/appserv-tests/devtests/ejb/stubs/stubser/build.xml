@@ -17,6 +17,7 @@
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
       <delete file="homehandle"/>
+      <delete file="foohandle"/>
     </target>
  
     <target name="compile" depends="clean">

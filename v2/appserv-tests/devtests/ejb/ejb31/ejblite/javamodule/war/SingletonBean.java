@@ -19,6 +19,8 @@ public class SingletonBean {
 
     @EJB private  SingletonBean me;
 
+    @EJB private  StatefulBean sf;
+
     private SingletonBean sb2;
     private SingletonBean sb3;
     private SingletonBean sb4;

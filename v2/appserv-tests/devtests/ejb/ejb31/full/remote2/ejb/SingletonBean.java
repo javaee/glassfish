@@ -33,6 +33,10 @@ public class SingletonBean implements SingletonRemote {
 
 	try {
 
+	    Hello hGlobal = (Hello) new InitialContext().lookup("java:global/HBGlobal");
+	    System.out.println("hGlobal = " + hGlobal);
+	    System.out.println("hGlobal hello = " + hGlobal.hello());
+
 	     Future<String> futureSful = statefulBean.helloAsync();
 	    System.out.println("Stateful bean says " + futureSful.get());
 

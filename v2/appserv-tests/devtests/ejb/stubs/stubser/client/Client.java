@@ -13,7 +13,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class Client {
 
     private static final String HOME_HANDLE_FILE = "homehandle";
-    private static final String FOO_REF_FILE = "fooref";
+    private static final String FOO_HANDLE_FILE = "foohandle";
 
     private static SimpleReporterAdapter stat = 
         new SimpleReporterAdapter("appserv-tests");
@@ -48,13 +48,25 @@ public class Client {
         try {
             // when we lookup a FooHome *before* deserializing the home reference,
             // everything works
-            //System.out.println("Adding lookup before reconstitution ...");
-            //lookupHome();
+	    // @@@
+            System.out.println("Adding lookup before reconstitution ...");
+            lookupHome();
+
+            System.out.println("Attempting to reconstruct foo handle");
+	    Handle fh = (Handle) readFromFile(FOO_HANDLE_FILE);
+            Foo f = (Foo) fh.getEJBObject();
+	    f.callHello();
+	    
+	    System.out.println("successfully invoked foo via reconsituted handle");
 
             System.out.println("Attempting to reconstruct home handle as first" +
                                " operation in client");
             HomeHandle hh = (HomeHandle) readFromFile(HOME_HANDLE_FILE);
             invoke((FooHome) hh.getEJBHome());
+
+	    System.out.println("successfully invoked ejb via reconsituted home");
+
+	    
             stat.addStatus("ejbclient restart2", stat.PASS);
 
         } catch(Exception e) {
@@ -73,13 +85,23 @@ public class Client {
                                                                      
             System.err.println("Narrowed home!!");
             
+	   
+
             // create home handle
             HomeHandle hh = home.getHomeHandle();
             serializeToFile(HOME_HANDLE_FILE, hh);
             HomeHandle hh2 = (HomeHandle) readFromFile(HOME_HANDLE_FILE);
             home = (FooHome) hh2.getEJBHome();
 
-            invoke(home);
+            Foo f = invoke(home);
+            System.out.println("successfully invoked ejb via reconsituted home");
+
+	    // create SFSB instance handle file
+            Handle fh = f.getHandle();
+            serializeToFile(FOO_HANDLE_FILE, fh);
+            Handle fh2 = (Handle) readFromFile(FOO_HANDLE_FILE);
+            Foo f2 = (Foo) fh2.getEJBObject();
+	    f2.callHello();
 
             System.out.println("successfully invoked ejb");
 
@@ -110,7 +132,7 @@ public class Client {
         return home;
     }
             
-    private void invoke(FooHome fooHome) throws Exception {
+    private Foo invoke(FooHome fooHome) throws Exception {
 
         Foo f = fooHome.create();
         System.err.println("Got the EJB!!");
@@ -118,6 +140,8 @@ public class Client {
         // invoke method on the EJB
         System.out.println("invoking ejb");
         f.callHello();
+
+	return f;
 
     }
 

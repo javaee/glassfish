@@ -20,6 +20,7 @@
         <antcall target="schema"/>
         <antcall target="sfsbscnc"/>
         <antcall target="ear"/>
+        <antcall target="passact"/>
     </target>
 
     <target name="remote1">
@@ -57,6 +58,14 @@
             <ant dir="ear" target="all"/>
         <record name="ear.output" action="stop" />
     </target>
+
+    <target name="passact">
+        <record name="passact.output" action="start" />
+            <ant dir="passact" target="all"/>
+        <record name="passact.output" action="stop" />
+    </target>
+
+
 
     <target name="usage">
 	<echo>

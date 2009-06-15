@@ -52,12 +52,10 @@ public class Client {
                 hellos.add( (Hello) ic.lookup(lookupStr));
             }
 
-	    /** TODO enable when enabling passivation
             System.out.println("Sleeping to wait for passivation...");
             // Wait enough time for some passivation to happen.
-            Thread.sleep(15000);
+            Thread.sleep(10000);
             System.out.println("Waking up");
-	    **/
 
             int numPassivatedActivated = 0;
 
@@ -82,11 +80,9 @@ public class Client {
                 next.shutdown();
             }
 
-	    /** TODO wait until we enable passivation
             if ( numPassivatedActivated == 0 ) {
                 throw new Exception("Passivation/Activation could not be tested.  No Passivation/Activation occurred");
             }
-	    **/
 
 	    System.out.println("Hellos.size() : " + hellos.size() + " passivationCount: " + numPassivatedActivated);
 	    

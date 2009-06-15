@@ -152,6 +152,10 @@ public class HelloEJB implements Hello  {
 
     @PostActivate public void postActivate() {
         System.out.println("In HelloEJB::postActivate");
+
+	// @@@ temporary workaround until UserTransaction serialization is fixed
+	ut = context.getUserTransaction();	
+
         activateCount++;
     }
     
@@ -307,7 +311,9 @@ public class HelloEJB implements Hello  {
 
     private Common pre(int type, boolean tx, boolean businessView) 
     {
-	if ( tx ) try { ut.begin(); } catch ( Exception ex ) {}
+	if ( tx ) try { ut.begin(); } catch ( Exception ex ) {
+		ex.printStackTrace();
+	}
 
 	if ( type == Common.STATELESS )
             return businessView ? slessBusiness : sless;
@@ -327,7 +333,9 @@ public class HelloEJB implements Hello  {
 
     private float post(long begin, long end, boolean tx)
     {
-	if ( tx ) try { ut.commit(); } catch ( Exception ex ) {}
+	if ( tx ) try { ut.commit(); } catch ( Exception ex ) {
+		ex.printStackTrace();
+	    }
 	return (float)( ((double)(end-begin-overhead))/((double)ITERATIONS) * 1000.0 );
     }
 
