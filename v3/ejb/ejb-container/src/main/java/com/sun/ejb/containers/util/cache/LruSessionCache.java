@@ -482,7 +482,7 @@ public class LruSessionCache
 		//sfsbStoreMonitor.setActivationSize(data.length);
                 incrementLoadFromBackupCount();
                 object = IOUtils.deserializeObject(data, true,
-                        container.getClassLoader());
+                        container.getClassLoader(), container.getSFSBContainerClassLoader());
             }
         } catch ( Exception ex ) {
             _logger.log(Level.SEVERE, cacheName + ": Exception while "

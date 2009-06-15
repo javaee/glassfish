@@ -44,6 +44,8 @@ public interface SFSBContainerCallback {
 
     public ClassLoader getClassLoader();
 
+    public ClassLoader getSFSBContainerClassLoader();
+
     public int getPassivationBatchCount();
 
     public void invokePeriodically(long delay, long periodicity, Runnable target);

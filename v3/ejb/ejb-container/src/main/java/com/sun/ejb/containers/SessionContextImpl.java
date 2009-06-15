@@ -166,6 +166,10 @@ public final class SessionContextImpl
         return statefulSerializedAccessLock.writeLock();
     }
 
+    public void setStatefulWriteLock(SessionContextImpl other) {
+        statefulSerializedAccessLock = other.statefulSerializedAccessLock;
+    }
+
     @Override
     public TimerService getTimerService() throws IllegalStateException {
         if( isStateful ) {

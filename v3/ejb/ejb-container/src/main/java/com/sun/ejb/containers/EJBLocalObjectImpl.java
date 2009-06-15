@@ -85,6 +85,14 @@ public abstract class EJBLocalObjectImpl
     // False if this local object instance represents the LocalBusiness view
     private boolean isLocalHomeView;
 
+
+    // True this local object instance represents the client view of a bean
+    // with a no-interface view.
+    private boolean isOptionalLocalBusinessView;
+
+    private Object optionalLocalBusinessClientObject;
+
+
     private HashMap<String, Object> clientObjectMap =
         new HashMap<String, Object>();
     /**
@@ -100,6 +108,9 @@ public abstract class EJBLocalObjectImpl
     
     void mapClientObject(String intfClassName, Object obj) {
         clientObjectMap.put(intfClassName, obj);
+        if( isOptionalLocalBusinessView ) {
+            optionalLocalBusinessClientObject = obj;
+        }
     }
     
     Object getClientObject(String intfClassName) {
@@ -113,6 +124,19 @@ public abstract class EJBLocalObjectImpl
     boolean isLocalHomeView() {
         return isLocalHomeView;
     }
+
+    boolean isOptionalLocalBusinessView() {
+        return isOptionalLocalBusinessView;
+    }
+
+    void setIsOptionalLocalBusinessView(boolean flag) {
+        isOptionalLocalBusinessView = flag;
+    }
+
+    Object getOptionalLocalBusinessClientObject() {
+        return optionalLocalBusinessClientObject;
+    }
+
 
     /**
      * Since EJBLocalObject might be a dynamic proxy, the container can't assume
@@ -212,7 +236,7 @@ public abstract class EJBLocalObjectImpl
         
         return new SerializableLocalObject
             (container.getEjbDescriptor().getUniqueId(), isLocalHomeView,
-             primaryKey, getSfsbClientVersion());
+             isOptionalLocalBusinessView, primaryKey, getSfsbClientVersion());
     }
     
     private static final class SerializableLocalObject
@@ -220,6 +244,7 @@ public abstract class EJBLocalObjectImpl
     {
         private long containerId;
         private boolean localHomeView;
+        private boolean optionalLocalBusView;
         private Object primaryKey;
         private long version;   //Used only for SFSBs
         private transient static Logger _logger;
@@ -230,9 +255,11 @@ public abstract class EJBLocalObjectImpl
         
         SerializableLocalObject(long containerId, 
                                 boolean localHomeView,
+                                boolean optionalLocalBusinessView,
                                 Object primaryKey, long version) {
             this.containerId = containerId;
             this.localHomeView = localHomeView;
+            this.optionalLocalBusView = optionalLocalBusinessView;
             this.primaryKey = primaryKey;
             this.version = version;
         }
@@ -253,7 +280,8 @@ public abstract class EJBLocalObjectImpl
                 // Return the client EJBLocalObject. 
                 return ejbLocalObjectImpl.getClientObject();
             } else {
-                EJBLocalObjectImpl ejbLocalBusinessObjectImpl = 
+                EJBLocalObjectImpl ejbLocalBusinessObjectImpl = optionalLocalBusView ?
+                    container.getOptionalEJBLocalBusinessObjectImpl(primaryKey) :
                     container.getEJBLocalBusinessObjectImpl(primaryKey);
                 ejbLocalBusinessObjectImpl.setSfsbClientVersion(version);
                 // Return the client EJBLocalObject.  

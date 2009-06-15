@@ -60,12 +60,14 @@ public class EJBLocalObjectInvocationHandlerDelegate
     private Class intfClass;
     private long containerId;
     private EJBLocalObjectInvocationHandler delegate;
+    private boolean isOptionalLocalBusinessView;
     
     EJBLocalObjectInvocationHandlerDelegate(Class intfClass, long containerId,
             EJBLocalObjectInvocationHandler delegate) {
         this.intfClass = intfClass;
         this.containerId = containerId;
         this.delegate = delegate;
+        this.isOptionalLocalBusinessView = delegate.isOptionalLocalBusinessView();
     }
     
     public Object invoke(Object proxy, Method method, Object[] args) 
@@ -120,6 +122,7 @@ public class EJBLocalObjectInvocationHandlerDelegate
         
         return new SerializableLocalObjectDelegate(
             containerId, intfClass.getName(), delegate.getKey(),
+            isOptionalLocalBusinessView,
             delegate.getSfsbClientVersion());
     }
     
@@ -129,13 +132,15 @@ public class EJBLocalObjectInvocationHandlerDelegate
         private long containerId;
         private String intfClassName;
         private Object primaryKey;
+        private boolean isOptionalLocalBusinessView;
         private long version = 0L; //Used only for SFSBs
         
         SerializableLocalObjectDelegate(long containerId, 
-                String intfClassName, Object primaryKey, long version) {
+                String intfClassName, Object primaryKey, boolean isOptionalLocalBusView, long version) {
             this.containerId = containerId;
             this.intfClassName = intfClassName;
             this.primaryKey = primaryKey;
+            this.isOptionalLocalBusinessView = isOptionalLocalBusView;
             this.version = version;
         }
         
@@ -143,11 +148,15 @@ public class EJBLocalObjectInvocationHandlerDelegate
             throws IOException
         {
             BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
-            EJBLocalObjectImpl ejbLocalBusinessObjectImpl = 
+            EJBLocalObjectImpl ejbLocalBusinessObjectImpl = isOptionalLocalBusinessView ?
+                container.getOptionalEJBLocalBusinessObjectImpl(primaryKey) :
                 container.getEJBLocalBusinessObjectImpl(primaryKey);
             ejbLocalBusinessObjectImpl.setSfsbClientVersion(version);
-            // Return the client EJBLocalObject.  
-            return ejbLocalBusinessObjectImpl.getClientObject(intfClassName);
+            // Return the client EJBLocalObject.
+
+            return isOptionalLocalBusinessView ?
+                ejbLocalBusinessObjectImpl.getOptionalLocalBusinessClientObject() :
+                ejbLocalBusinessObjectImpl.getClientObject(intfClassName);
         }
     }
 }

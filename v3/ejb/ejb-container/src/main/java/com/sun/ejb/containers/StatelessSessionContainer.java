@@ -400,6 +400,14 @@ public class StatelessSessionContainer
         return theEJBLocalBusinessObjectImpl;
     }
 
+    /**
+    * Called from EJBLocalObjectImpl.getLocalObject() while deserializing
+    * a local business object reference.
+    */
+    EJBLocalObjectImpl getOptionalEJBLocalBusinessObjectImpl(Object key) {
+        return theOptionalEJBLocalBusinessObjectImpl;
+    }
+
 
     /**
     * Called from preInvoke which is called from the EJBObject

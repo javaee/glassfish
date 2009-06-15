@@ -60,6 +60,7 @@ import javax.ejb.ConcurrentAccessException;
 
 
 import org.omg.CORBA.*;
+import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ImplicitActivationPolicyValue;
 import org.omg.PortableServer.LifespanPolicyValue;
@@ -76,12 +77,16 @@ import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
 
 import com.sun.corba.ee.impl.naming.cosnaming.TransientNameService;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
+import com.sun.corba.ee.spi.orb.*;
+import com.sun.corba.ee.spi.ior.*;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.util.logging.*;
+import java.lang.Object;
+
 import com.sun.logging.*;
 
 
@@ -221,6 +226,30 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     {
          StubAdapter.connect(remoteObj,  orb);    
     }	
+
+
+    public boolean isStub(Object obj) {
+        return StubAdapter.isStub(obj);
+    }
+
+    public boolean isLocal(Object obj) {
+        return StubAdapter.isLocal(obj);
+    }
+
+    public byte[] getObjectID(org.omg.CORBA.Object obj) {
+
+        IOR ior = ((com.sun.corba.ee.spi.orb.ORB)orb).getIOR(obj, false);
+	    java.util.Iterator iter = ior.iterator();
+
+	    byte[] oid = null;
+	    if (iter.hasNext()) {
+		    TaggedProfile profile = (TaggedProfile) iter.next();
+		    ObjectKey objKey = profile.getObjectKey();
+		    oid = objKey.getId().getId();
+	    }
+
+        return oid;
+    }
 
     /**
      * Return true if the two object references refer to the same

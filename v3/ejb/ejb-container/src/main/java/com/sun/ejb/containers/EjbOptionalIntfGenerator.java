@@ -156,16 +156,10 @@ public class EjbOptionalIntfGenerator
         //ClassVisitor tv = cw;
         boolean isSuperClassSerializable = superClass.isAssignableFrom(Serializable.class);
 
-        String[] interfaces = null;
-
-        if (Serializable.class.isAssignableFrom(superClass)) {
-            interfaces = new String[] {
-                OptionalLocalInterfaceProvider.class.getName().replace('.', '/')};
-        } else {
-            interfaces = new String[] {
+        String[] interfaces = new String[] {
                 OptionalLocalInterfaceProvider.class.getName().replace('.', '/'),
-                Type.getType(Serializable.class).getInternalName()};
-        }
+                com.sun.ejb.spi.io.IndirectlySerializable.class.getName().replace('.', '/')
+        };
 
         tv.visit(V1_1, ACC_PUBLIC, subClassName.replace('.', '/'), null,
                 Type.getType(superClass).getInternalName(), interfaces);
@@ -184,6 +178,9 @@ public class EjbOptionalIntfGenerator
         mg.endMethod();
 
         generateSetDelegateMethod(tv, delegateClass, subClassName);
+
+        generateGetSerializableObjectFactoryMethod(tv, fldDesc, subClassName.replace('.', '/'));
+
         Set<java.lang.reflect.Method> allMethods = new HashSet<java.lang.reflect.Method>();
         
         for (Class clz = superClass; clz != Object.class; clz = clz.getSuperclass()) {
@@ -274,6 +271,22 @@ public class EjbOptionalIntfGenerator
         mg.endMethod();
 
     }
+
+    private static void generateGetSerializableObjectFactoryMethod(ClassVisitor classVisitor,
+                                                                   String fieldDesc,
+                                                                   String classDesc) {
+
+        MethodVisitor cv = classVisitor.visitMethod(ACC_PUBLIC, "getSerializableObjectFactory", "()Lcom/sun/ejb/spi/io/SerializableObjectFactory;", null, new String[] { "java/io/IOException" });
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(GETFIELD, classDesc, DELEGATE_FIELD_NAME, fieldDesc);
+        cv.visitTypeInsn(CHECKCAST, "com/sun/ejb/spi/io/IndirectlySerializable");
+        cv.visitMethodInsn(INVOKEINTERFACE, "com/sun/ejb/spi/io/IndirectlySerializable", "getSerializableObjectFactory", "()Lcom/sun/ejb/spi/io/SerializableObjectFactory;");
+        cv.visitInsn(ARETURN);
+        cv.visitMaxs(1, 1);
+
+        
+    }
+
 
     private static Type[] getExceptionTypes(java.lang.reflect.Method m) {
         Class[] exceptions = m.getExceptionTypes();

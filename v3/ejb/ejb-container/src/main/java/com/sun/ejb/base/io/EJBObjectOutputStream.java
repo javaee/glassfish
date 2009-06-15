@@ -37,19 +37,31 @@
 package com.sun.ejb.base.io;
 
 import com.sun.ejb.containers.BaseContainer;
+import com.sun.ejb.EJBUtils;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.ejb.containers.RemoteBusinessWrapperBase;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.ejb.spi.io.SerializableObjectFactory;
 import com.sun.logging.LogDomains;
 
+
+import com.sun.enterprise.util.Utility;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.enterprise.iiop.api.ProtocolManager;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+
+import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactoryFactory;
+import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactory;
+
 
 /**
  * A class that is used to passivate SFSB conversational state
@@ -70,6 +82,8 @@ class EJBObjectOutputStream
 
     private static final byte HOME_KEY = (byte)0xff;
 
+    private ObjectInputOutputStreamFactory outputStreamHelper;
+
     EJBObjectOutputStream(OutputStream out,
             boolean replaceObject)
         throws IOException
@@ -78,6 +92,9 @@ class EJBObjectOutputStream
         if (replaceObject == true) {
            enableReplaceObject(replaceObject);
         }
+
+        outputStreamHelper = ObjectInputOutputStreamFactoryFactory.getFactory();
+
     }
 
     /**
@@ -88,18 +105,23 @@ class EJBObjectOutputStream
         throws IOException
     {
 	Object result = obj;
+ 
+	// Until we've identified a remote object, we can't assume the orb is
+	// available in the container.  If the orb is not present, this will be null.
+        ProtocolManager protocolMgr = getProtocolManager();
+
 	if (obj instanceof IndirectlySerializable) {
 	    result = ((IndirectlySerializable) obj).getSerializableObjectFactory();
-        /*TODO
-    } else if (obj instanceof RemoteBusinessWrapperBase) {
+
+	} else if (obj instanceof RemoteBusinessWrapperBase) {
             result = getRemoteBusinessObjectFactory
                 ((RemoteBusinessWrapperBase)obj);
-	} else if (StubAdapter.isStub(obj) && StubAdapter.isLocal(obj)) {
+	} else if ((protocolMgr != null) && protocolMgr.isStub(obj) && protocolMgr.isLocal(obj)) {
 	    org.omg.CORBA.Object target = (org.omg.CORBA.Object) obj;
             // If we're here, it's always for the 2.x RemoteHome view.
             // There is no remote business wrapper class.
-	    result = getSerializableEJBReference(target, null);
-	    */
+	    result = getSerializableEJBReference(target, protocolMgr, null);
+
 	} else if ( obj instanceof Serializable ) {
 	    result = obj;
 	} else if (obj instanceof Context) {
@@ -117,7 +139,21 @@ class EJBObjectOutputStream
 	return result;
     }
 
-    /*TODO
+    public void annotateClass(Class<?> cl) throws IOException
+    {
+        outputStreamHelper.annotateClass(this, cl);           
+    }
+
+    /**
+     * Do all ProtocolManager access lazily and only request orb if it has already been
+     * initialized so that code doesn't make the assumption that an orb is available in
+     * this runtime.
+     */
+    private ProtocolManager getProtocolManager() {
+	GlassFishORBHelper orbHelper = EjbContainerUtilImpl.getInstance().getORBHelper();
+	return orbHelper.isORBInitialized() ? orbHelper.getProtocolManager() : null;
+    }
+
     private Serializable getRemoteBusinessObjectFactory
         (RemoteBusinessWrapperBase remoteBusinessWrapper) 
         throws IOException {
@@ -126,62 +162,59 @@ class EJBObjectOutputStream
         org.omg.CORBA.Object target = (org.omg.CORBA.Object) 
             remoteBusinessWrapper.getStub();
         return getSerializableEJBReference(target, 
+					   getProtocolManager(),
                       remoteBusinessWrapper.getBusinessInterfaceName());
     }
 
     private Serializable getSerializableEJBReference(org.omg.CORBA.Object obj,
+						     ProtocolManager protocolMgr,
                              String remoteBusinessInterface)
 	throws IOException
     {
-	Serializable result = (Serializable) obj;
-	try {
-	  	  
-	    IOR ior = ((com.sun.corba.ee.spi.orb.ORB)ORBManager.getORB()).getIOR(obj, false);  
-	    java.util.Iterator iter = ior.iterator();
+        Serializable result = (Serializable) obj;
+        try {
 
-	    byte[] oid = null;
-	    if (iter.hasNext()) {
-		TaggedProfile profile = (TaggedProfile) iter.next();
-		ObjectKey objKey = profile.getObjectKey();
-		oid = objKey.getId().getId();
-	    }
 
-	    long containerId = -1;
-	    int keyLength = -1;
-	    if ((oid != null) && (oid.length > INSTANCEKEY_OFFSET)) {
-		containerId = Utility.bytesToLong(oid, EJBID_OFFSET);
-		//To be really sure that is indeed a ref generated
-		//  by our container we do the following checks
-		keyLength = Utility.bytesToInt(oid, INSTANCEKEYLEN_OFFSET);
-        if (oid.length == keyLength + INSTANCEKEY_OFFSET) {
-		    boolean isHomeReference =
-			((keyLength == 1) && (oid[INSTANCEKEY_OFFSET] == HOME_KEY));
-		    if (isHomeReference) {
-			result = new SerializableS1ASEJBHomeReference(containerId);
-		    } else {
-                SerializableS1ASEJBObjectReference serRef =
-                    new SerializableS1ASEJBObjectReference(containerId,
-			    oid, keyLength, remoteBusinessInterface);
-                result = serRef;
-                if (serRef.isHAEnabled()) {
-                    SimpleKeyGenerator gen = new SimpleKeyGenerator();
-                    Object key = gen.byteArrayToKey(oid, INSTANCEKEY_OFFSET, 20);
-                    long version = SFSBClientVersionManager.getClientVersion(
-                            containerId, key);
-                    serRef.setSFSBClientVersion(key, version);
+            byte[] oid = protocolMgr.getObjectID(obj);
+
+
+            long containerId = -1;
+            int keyLength = -1;
+            if ((oid != null) && (oid.length > INSTANCEKEY_OFFSET)) {
+                containerId = Utility.bytesToLong(oid, EJBID_OFFSET);
+                //To be really sure that is indeed a ref generated
+                //  by our container we do the following checks
+                keyLength = Utility.bytesToInt(oid, INSTANCEKEYLEN_OFFSET);
+                if (oid.length == keyLength + INSTANCEKEY_OFFSET) {
+                    boolean isHomeReference =
+                        ((keyLength == 1) && (oid[INSTANCEKEY_OFFSET] == HOME_KEY));
+                    if (isHomeReference) {
+                        result = new SerializableS1ASEJBHomeReference(containerId);
+                    } else {
+                        SerializableS1ASEJBObjectReference serRef =
+                            new SerializableS1ASEJBObjectReference(containerId,
+                            oid, keyLength, remoteBusinessInterface);
+                        result = serRef;
+                        /* TODO
+                        if (serRef.isHAEnabled()) {
+                            SimpleKeyGenerator gen = new SimpleKeyGenerator();
+                            Object key = gen.byteArrayToKey(oid, INSTANCEKEY_OFFSET, 20);
+                            long version = SFSBClientVersionManager.getClientVersion(
+                                    containerId, key);
+                            serRef.setSFSBClientVersion(key, version);
+                        } */
+                    }
                 }
-		    }
-		}
+            }
+	    } catch (Exception ex) {
+	        _ejbLogger.log(Level.WARNING, "Exception while getting serializable object", ex);
+	        IOException ioEx = new IOException("Exception during extraction of instance key");
+	        ioEx.initCause(ex);
+	        throw ioEx;
 	    }
-	} catch (Exception ex) {
-	    _ejbLogger.log(Level.WARNING, "Exception while getting serializable object", ex);
-	    IOException ioEx = new IOException("Exception during extraction of instance key");
-	    ioEx.initCause(ex);
-	    throw ioEx;
-	}
-	return result;
+	    return result;
     }
-    */
+
 }
 
 final class SerializableJNDIContext
@@ -269,10 +302,11 @@ abstract class AbstractSerializableS1ASEJBReference
                 returnReference = (java.rmi.Remote)
                     IOUtils.deserializeObject(serializedRef, false,
                                              contextClassLoader);
-                /*TODO
-                StubAdapter.connect
-                    (returnReference, 
-                     (com.sun.corba.ee.spi.orb.ORB) ORBManager.getORB());*/
+                GlassFishORBHelper orbHelper = EjbContainerUtilImpl.getInstance().getORBHelper();
+                ProtocolManager protocolMgr = orbHelper.getProtocolManager();
+
+               protocolMgr.connectObject(returnReference); 
+
             } catch(IOException ioe) {
                 throw ioe;
             } catch(Exception e) {
@@ -297,23 +331,23 @@ final class SerializableS1ASEJBHomeReference
     public Object createObject()
         throws IOException
     {
-	Object result = null;
-	BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
-	//container can be null if the app has been undeployed
-	//  after this was serialized
-	if (container == null) {
-	    _ejbLogger.log(Level.WARNING, "ejb.base.io.EJBOutputStream.null_container "
-		+ debugStr);
-	    result = null;
-	} else {
+	    Object result = null;
+	    BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
+	    //container can be null if the app has been undeployed
+	    //  after this was serialized
+	    if (container == null) {
+	        _ejbLogger.log(Level.WARNING, "ejb.base.io.EJBOutputStream.null_container "
+		    + debugStr);
+	        result = null;
+	    } else {
             // Note that we can assume it's a RemoteHome stub because an
             // application never sees a reference to the internal 
             // Home for the Remote Business view.
-	    result = AbstractSerializableS1ASEJBReference.
+	        result = AbstractSerializableS1ASEJBReference.
                 doRemoteRefClassLoaderConversion(container.getEJBHomeStub());
-	}
+	    }
 
-	return result;
+	    return result;
     }
 }
 
@@ -354,59 +388,59 @@ final class SerializableS1ASEJBObjectReference
     public Object createObject()
         throws IOException
     {
-	Object result = null;
-	BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
-	//container can be null if the app has been undeployed
-	//  after this was serialized
-	if (container == null) {
-	    _ejbLogger.log(Level.WARNING, 
-                           "ejb.base.io.EJBOutputStream.null_container: "
-                           + debugStr);
-	    result = null;
-	} else {
-            try {
-                if( remoteBusinessInterface == null ) {
-                    java.rmi.Remote reference = container.
-                        createRemoteReferenceWithId(instanceKey, null);
-                    result = AbstractSerializableS1ASEJBReference.
-                        doRemoteRefClassLoaderConversion(reference);
-                        
-                } else {
-                    /*
-                    String generatedRemoteIntfName = EJBUtils.
-                        getGeneratedRemoteIntfName(remoteBusinessInterface);
+        Object result = null;
+        BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
+        //container can be null if the app has been undeployed
+        //  after this was serialized
+        if (container == null) {
+            _ejbLogger.log(Level.WARNING,
+                               "ejb.base.io.EJBOutputStream.null_container: "
+                               + debugStr);
+            result = null;
+        } else {
+                try {
+                    if( remoteBusinessInterface == null ) {
+                        java.rmi.Remote reference = container.
+                            createRemoteReferenceWithId(instanceKey, null);
+                        result = AbstractSerializableS1ASEJBReference.
+                            doRemoteRefClassLoaderConversion(reference);
 
-                    java.rmi.Remote remoteRef = container.
-                        createRemoteReferenceWithId(instanceKey, 
-                                                    generatedRemoteIntfName);
+                    } else {
 
-                    java.rmi.Remote newRemoteRef = 
-                        AbstractSerializableS1ASEJBReference.
-                            doRemoteRefClassLoaderConversion(remoteRef);
+                        String generatedRemoteIntfName = EJBUtils.
+                            getGeneratedRemoteIntfName(remoteBusinessInterface);
 
-                    
-                    Thread currentThread = Thread.currentThread();
-                    ClassLoader contextClassLoader =
-                        currentThread.getContextClassLoader();   
+                        java.rmi.Remote remoteRef = container.
+                            createRemoteReferenceWithId(instanceKey,
+                                                        generatedRemoteIntfName);
 
-                    result = EJBUtils.createRemoteBusinessObject
-                        (contextClassLoader, remoteBusinessInterface, 
-                         newRemoteRef);
-                    */     
+                        java.rmi.Remote newRemoteRef =
+                            AbstractSerializableS1ASEJBReference.
+                                doRemoteRefClassLoaderConversion(remoteRef);
+
+
+                        Thread currentThread = Thread.currentThread();
+                        ClassLoader contextClassLoader =
+                            currentThread.getContextClassLoader();
+
+                        result = EJBUtils.createRemoteBusinessObject
+                            (contextClassLoader, remoteBusinessInterface,
+                             newRemoteRef);
+
+                    }
+                    /*TODO
+                    if (haEnabled) {
+                        SFSBClientVersionManager.setClientVersion(
+                                containerId, sfsbKey, sfsbClientVersion);
+                    }*/
+                } catch(Exception e) {
+                    IOException ioex = new IOException("remote ref create error");
+                    ioex.initCause(e);
+                    throw ioex;
                 }
-                /*TODO
-                if (haEnabled) {
-                    SFSBClientVersionManager.setClientVersion(
-                            containerId, sfsbKey, sfsbClientVersion);
-                }*/
-            } catch(Exception e) {
-                IOException ioex = new IOException("remote ref create error");
-                ioex.initCause(e);
-                throw ioex;
-            }
-	}
+        }
 
-	return result;
+	    return result;
     }
 }
 

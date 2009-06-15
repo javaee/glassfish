@@ -82,6 +82,7 @@ public class OSGiObjectInputOutputStreamFactoryImpl
 
     private class OSGiObjectInputStream extends ObjectInputStream
     {
+
         public OSGiObjectInputStream(InputStream in) throws IOException
         {
             super(in);
@@ -91,18 +92,21 @@ public class OSGiObjectInputOutputStreamFactoryImpl
         protected Class<?> resolveClass(ObjectStreamClass desc)
                 throws IOException, ClassNotFoundException
         {
-            long bundleId = readLong();
-            if (bundleId != NOT_A_BUNDLE_ID) {
-                Bundle b = ctx.getBundle(bundleId);
-                return b.loadClass(desc.getName());
-            } else {
-                return super.resolveClass(desc);
+            Class clazz =
+                OSGiObjectInputOutputStreamFactoryImpl.this.resolveClass(this, desc);
+
+            if (clazz == null) {
+                clazz = super.resolveClass(desc);
             }
+
+            return clazz;
         }
 
     }
 
     private class OSGiObjectOutputStream extends ObjectOutputStream {
+
+
         private OSGiObjectOutputStream(OutputStream out) throws IOException
         {
             super(out);
@@ -111,13 +115,32 @@ public class OSGiObjectInputOutputStreamFactoryImpl
         @Override
         protected void annotateClass(Class<?> cl) throws IOException
         {
-            long id = NOT_A_BUNDLE_ID;
-            Bundle b = pkgAdm.getBundle(cl);
-            if (b != null) {
-                id = b.getBundleId();
-            }
-            writeLong(id);
+            OSGiObjectInputOutputStreamFactoryImpl.this.annotateClass(this, cl);
         }
     }
+
+    public Class<?> resolveClass(ObjectInputStream in, ObjectStreamClass desc)
+            throws IOException, ClassNotFoundException
+    {
+        long bundleId = in.readLong();
+        if (bundleId != NOT_A_BUNDLE_ID) {
+            Bundle b = ctx.getBundle(bundleId);
+            return b.loadClass(desc.getName());
+        } else {
+            return null;
+        }
+    }
+
+    public void annotateClass(ObjectOutputStream out, Class<?> cl) throws IOException
+    {
+        long id = NOT_A_BUNDLE_ID;
+        Bundle b = pkgAdm.getBundle(cl);
+        if (b != null) {
+            id = b.getBundleId();
+        }
+        out.writeLong(id);
+    }
+
+
 
 }

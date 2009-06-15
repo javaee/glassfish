@@ -96,6 +96,14 @@ public interface ProtocolManager {
      */
     Throwable mapException(Throwable exception);
 
+    /**
+     * True if object is a corba stub
+     */
+    boolean isStub(Object obj);
+
+    boolean isLocal(Object obj);
+
+    byte[] getObjectID(org.omg.CORBA.Object obj);
 
     /**
      * Connect the RMI object to the protocol.

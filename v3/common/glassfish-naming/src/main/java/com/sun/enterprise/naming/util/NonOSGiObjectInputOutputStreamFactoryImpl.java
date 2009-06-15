@@ -37,11 +37,7 @@
 
 package com.sun.enterprise.naming.util;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -60,5 +56,16 @@ public class NonOSGiObjectInputOutputStreamFactoryImpl
             throws IOException
     {
         return new ObjectOutputStream(out);
+    }
+
+    public Class<?> resolveClass(ObjectInputStream in, ObjectStreamClass desc)
+            throws IOException, ClassNotFoundException
+    {        
+        return null;
+    }
+
+    public void annotateClass(ObjectOutputStream out, Class<?> cl) throws IOException
+    {
+        return;
     }
 }

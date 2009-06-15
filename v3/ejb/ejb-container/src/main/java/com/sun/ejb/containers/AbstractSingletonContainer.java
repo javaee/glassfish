@@ -426,6 +426,14 @@ public abstract class AbstractSingletonContainer
         return theEJBLocalBusinessObjectImpl;
     }
 
+    /**
+    * Called from EJBLocalObjectImpl.getLocalObject() while deserializing
+    * a local business object reference.
+    */
+    EJBLocalObjectImpl getOptionalEJBLocalBusinessObjectImpl(Object key) {
+        return theOptionalEJBLocalBusinessObjectImpl;
+    }
+
 
     public void setSingletonLifeCycleManager(SingletonLifeCycleManager lcm) {
         this.lcm = lcm;

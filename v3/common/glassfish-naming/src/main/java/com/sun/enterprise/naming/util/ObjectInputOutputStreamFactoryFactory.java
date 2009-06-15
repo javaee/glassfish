@@ -40,7 +40,7 @@ package com.sun.enterprise.naming.util;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-/* package */ class ObjectInputOutputStreamFactoryFactory
+public class ObjectInputOutputStreamFactoryFactory
 {
     // default is non-OSGi factory
     private static ObjectInputOutputStreamFactory factory =

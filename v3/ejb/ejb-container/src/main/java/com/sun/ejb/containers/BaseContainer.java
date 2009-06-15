@@ -37,6 +37,7 @@ package com.sun.ejb.containers;
 
 import com.sun.ejb.*;
 import com.sun.ejb.codegen.ServiceInterfaceGenerator;
+import com.sun.ejb.codegen.AsmSerializableBeanGenerator;
 import com.sun.ejb.base.stats.MonitoringRegistryMediator;
 import com.sun.ejb.containers.interceptors.InterceptorManager;
 import com.sun.ejb.containers.util.MethodMap;
@@ -153,6 +154,8 @@ public abstract class BaseContainer
 
     protected ClassLoader loader = null;
     protected Class ejbClass = null;
+    protected Class sfsbSerializedClass = null;
+    protected AsmSerializableBeanGenerator sfsbSerializedClassLoader = null;
     protected Method ejbPassivateMethod = null;
     protected Method ejbActivateMethod = null;
     protected Method ejbRemoveMethod = null;
@@ -505,16 +508,23 @@ public abstract class BaseContainer
                         if( isStatefulSession ) {
 
 
-                            /** TODO need to do this as part of enabling support for
-                             *  passivation / activation.  Need to rewrite using ASM
-                             *  to avoid corba codegen dependency in Web Profile
+                            /**
+                             * If bean class isn't explicitly marked Serializable, generate
+                             * a subclass that is.   We do this with a generator that uses
+                             * ASM directly instead of the CORBA codegen library since none
+                             * of the corba .jars are part of the Web Profile.
+                             * There is also special handling required for the class loader
+                             * in which the serializable subclass is loaded.  That class loader
+                             * must be used during deserialization to find the class. 
                              */
-                             /*
                             if( !Serializable.class.isAssignableFrom(ejbClass) ) {
-                                ejbClass = EJBUtils.loadGeneratedSerializableClass
+                                sfsbSerializedClassLoader =
+                                    EJBUtils.getSerializableSubClassLoader
                                     (loader, ejbClass.getName());
-                              }
-                              */
+                                sfsbSerializedClass = sfsbSerializedClassLoader.getSerializableSubclass();
+                            }
+                            
+
 
                         }
                     }
@@ -843,17 +853,16 @@ public abstract class BaseContainer
     final boolean isBeanManagedTx() {
         return isBeanManagedTran;
     }
+
+    public final ClassLoader getContainerClassLoader() {
+        return loader;
+    }
     
     public final ClassLoader getClassLoader() {
         return loader;
     }
 
-    /**
-     * Method defined on JavaEEContainer
-     */
-    public final ClassLoader getContainerClassLoader() {
-        return getClassLoader();
-    }
+    
     
     final long getContainerId() {
         return ejbDescriptor.getUniqueId();
@@ -2252,7 +2261,12 @@ public abstract class BaseContainer
 
     EJBLocalObjectImpl getEJBLocalBusinessObjectImpl(Object key) {
 	throw new EJBException
-            ("Internal ERROR: BaseContainer.getEJBLocalObjectImpl called");
+            ("Internal ERROR: BaseContainer.getEJBLocalBusinessObjectImpl called");
+    }
+
+    EJBLocalObjectImpl getOptionalEJBLocalBusinessObjectImpl(Object key) {
+    throw new EJBException
+            ("Internal ERROR: BaseContainer.getOptionalEJBLocalBusinessObjectImpl called");
     }
 
     /**
@@ -3530,7 +3544,7 @@ public abstract class BaseContainer
         throws Exception {
 
         EJBLocalObjectInvocationHandler handler =
-            new EJBLocalObjectInvocationHandler(proxyInvocationInfoMap);
+            new EJBLocalObjectInvocationHandler(proxyInvocationInfoMap, false);
 
         EJBLocalObjectImpl localBusinessObjImpl = handler;
 
@@ -3556,7 +3570,7 @@ public abstract class BaseContainer
         throws Exception {
 
         EJBLocalObjectInvocationHandler handler =
-            new EJBLocalObjectInvocationHandler(proxyInvocationInfoMap);
+            new EJBLocalObjectInvocationHandler(proxyInvocationInfoMap, true);
 
         EJBLocalObjectImpl localBusinessObjImpl = handler;
 

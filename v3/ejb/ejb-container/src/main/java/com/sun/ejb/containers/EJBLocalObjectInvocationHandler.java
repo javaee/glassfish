@@ -95,16 +95,19 @@ public final class EJBLocalObjectInvocationHandler
      * Constructor used for Local Business view.
      */
       
-    public EJBLocalObjectInvocationHandler(MethodMap invocationInfoMap)
+    public EJBLocalObjectInvocationHandler(MethodMap invocationInfoMap,
+                                           boolean optionalLocalBusinessView)
         throws Exception {
 
         invocationInfoMap_ = invocationInfoMap;
         
         setIsLocalHomeView(false);
+        setIsOptionalLocalBusinessView(optionalLocalBusinessView);
 
         // NOTE : Container is not set on super-class until after 
         // constructor is called.
     }
+
 
     public void setProxy(Object proxy) {
         proxy_ = proxy;

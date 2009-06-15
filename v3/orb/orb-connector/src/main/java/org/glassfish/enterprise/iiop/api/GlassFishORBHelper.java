@@ -150,6 +150,9 @@ public class GlassFishORBHelper implements PostConstruct {
         return protocolManager;
     }
 
+    public boolean isORBInitialized() {
+	return (orb != null);
+    }
 
     public int getOTSPolicyType() {
         return orbFactory.getOTSPolicyType();    

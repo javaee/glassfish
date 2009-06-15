@@ -38,7 +38,7 @@ package com.sun.ejb;
 
 import com.sun.ejb.base.io.IOUtils;
 import com.sun.ejb.codegen.ClassGeneratorFactory;
-import com.sun.ejb.codegen.SerializableBeanGenerator;
+import com.sun.ejb.codegen.AsmSerializableBeanGenerator;
 import com.sun.ejb.codegen.GenericHomeGenerator;
 import com.sun.ejb.codegen.Remote30WrapperGenerator;
 import com.sun.ejb.codegen.RemoteGenerator;
@@ -530,34 +530,21 @@ public class EJBUtils {
         return generatedGenericEJBHomeClass;
     }
 
-    public static Class loadGeneratedSerializableClass
+    public static AsmSerializableBeanGenerator getSerializableSubClassLoader
         (ClassLoader appClassLoader,
             String developerClassName) throws Exception {
 
         String generatedSerializableClassName = 
             getGeneratedSerializableClassName(developerClassName);
-            
 
-        Class generatedSerializableClass = null;
-        try {
-            generatedSerializableClass = 
-                appClassLoader.loadClass(generatedSerializableClassName);
 
-        } catch(Exception e) {
-        }
+        Class developerClass = appClassLoader.loadClass(developerClassName);
+        AsmSerializableBeanGenerator gen = new AsmSerializableBeanGenerator
+                (appClassLoader, developerClass, generatedSerializableClassName);
+
+        gen.generateSerializableSubclass();
         
-        if( generatedSerializableClass == null ) {
-            
-            SerializableBeanGenerator gen = 
-                new SerializableBeanGenerator(appClassLoader,
-                                              developerClassName);
-
-            Class developerClass = appClassLoader.loadClass(developerClassName);
-            generatedSerializableClass = generateAndLoad(gen, generatedSerializableClassName,
-                    appClassLoader, developerClass);
-
-        }
-        return generatedSerializableClass;
+        return gen;
     }
 
     public static Class generateSEI(ClassGeneratorFactory cgf,
@@ -717,11 +704,12 @@ public class EJBUtils {
     }
 
 
-    public static void serializeObjectFields(Class clazz, 
+    public static void serializeObjectFields(
                                              Object instance,
                                              ObjectOutputStream oos) 
         throws IOException {
 
+        Class clazz = instance.getClass().getSuperclass();
         final ObjectOutputStream objOutStream = oos;
 
         // Write out list of fields eligible for serialization in sorted order.
@@ -758,11 +746,12 @@ public class EJBUtils {
         }
     }
 
-    public static void deserializeObjectFields(Class clazz,
+    public static void deserializeObjectFields(
                                                Object instance,
                                                ObjectInputStream ois) 
         throws IOException {
 
+        Class clazz = instance.getClass().getSuperclass();
         final ObjectInputStream objInputStream = ois;
 
         // Use helper method to get sorted list of fields eligible

@@ -231,29 +231,24 @@ public final class StatefulSessionContainer
 
 	        MethodDescriptor afterBeginMethodDesc = sessionDesc.getAfterBeginMethod();
             if( afterBeginMethodDesc != null ) {
-                afterBeginMethod = afterBeginMethodDesc.getMethod(sessionDesc);
-                if( afterBeginMethod == null ) {
-                    afterBeginMethod = ejbClass.getDeclaredMethod(afterBeginMethodDesc.getName());
-                }
+                afterBeginMethod = afterBeginMethodDesc.getDeclaredMethod(sessionDesc);
+
                 processSessionSynchMethod(afterBeginMethod);
             }
 
 	        MethodDescriptor beforeCompletionMethodDesc = sessionDesc.getBeforeCompletionMethod();
             if( beforeCompletionMethodDesc != null ) {
-                beforeCompletionMethod = beforeCompletionMethodDesc.getMethod(sessionDesc);
-                if( beforeCompletionMethod == null ) {
-                    beforeCompletionMethod =
-                        ejbClass.getDeclaredMethod(beforeCompletionMethodDesc.getName());
-                }
+                beforeCompletionMethod = beforeCompletionMethodDesc.getDeclaredMethod(sessionDesc);
+
                 processSessionSynchMethod(beforeCompletionMethod);
             }
             
 	        MethodDescriptor afterCompletionMethodDesc = sessionDesc.getAfterCompletionMethod();
             if( afterCompletionMethodDesc != null ) {
-                afterCompletionMethod = afterCompletionMethodDesc.getMethod(sessionDesc);
+                afterCompletionMethod = afterCompletionMethodDesc.getDeclaredMethod(sessionDesc);
                 if( afterCompletionMethod == null ) {
                     afterCompletionMethod =
-                        ejbClass.getDeclaredMethod(afterCompletionMethodDesc.getName(), Boolean.TYPE);
+                        afterCompletionMethodDesc.getDeclaredMethod(sessionDesc, new Class[] { Boolean.TYPE });
                 }
                 processSessionSynchMethod(afterCompletionMethod);
             }
@@ -520,6 +515,12 @@ public final class StatefulSessionContainer
         }
     }
 
+    // Return sfsb serializable subclass loader for use in loading class during
+    // deserialization since it won't be found by application class loader
+    public final ClassLoader getSFSBContainerClassLoader() {
+        return this.sfsbSerializedClassLoader;
+    }
+    
     /**
      * Create a new Session Bean and set Session Context.
      */
@@ -528,7 +529,8 @@ public final class StatefulSessionContainer
         EjbInvocation ejbInv = null;
         try {
             // create new (stateful) EJB
-            Object ejb = ejbClass.newInstance();
+            Object ejb = (sfsbSerializedClass != null) ?
+                    sfsbSerializedClass.newInstance() : ejbClass.newInstance();
 
             // create SessionContext and set it in the EJB
             SessionContextImpl context = new SessionContextImpl(ejb, this);
@@ -1274,9 +1276,6 @@ public final class StatefulSessionContainer
 
     EJBLocalObjectImpl getEJBLocalBusinessObjectImpl(Object sessionKey) {
 
-        // TODO Probably have to add something to handle no-interface
-        // view references here
-
         // Create an EJBLocalObject reference which
         // is *not* associated with a SessionContext.  That way, the
         // session bean context lookup will be done lazily whenever
@@ -1290,6 +1289,33 @@ public final class StatefulSessionContainer
 
         try {
             localBusinessObjImpl = instantiateEJBLocalBusinessObjectImpl();
+
+            localBusinessObjImpl.setKey(sessionKey);
+
+        } catch (Exception ex) {
+            EJBException ejbEx = new EJBException();
+            ejbEx.initCause(ex);
+            throw ejbEx;
+        }
+
+        return localBusinessObjImpl;
+    }
+
+    EJBLocalObjectImpl getOptionalEJBLocalBusinessObjectImpl(Object sessionKey) {
+
+        // Create an EJBLocalObject reference which
+        // is *not* associated with a SessionContext.  That way, the
+        // session bean context lookup will be done lazily whenever
+        // the reference is actually accessed.  This avoids I/O in the
+        // case that the reference points to a passivated session bean.
+        // It's also consistent with the deserialization approach used
+        // throughout the container.  e.g. a timer reference is deserialized
+        // from its handle without checking it against the timer database.
+
+        EJBLocalObjectImpl localBusinessObjImpl;
+
+        try {
+            localBusinessObjImpl = instantiateOptionalEJBLocalBusinessObjectImpl();
 
             localBusinessObjImpl.setKey(sessionKey);
 
@@ -1391,10 +1417,6 @@ public final class StatefulSessionContainer
 
             synchronized (sc) {
 
-                // TODO Current serialized locking logic does not handle passivation case
-                // As part of enabling passivation, need to revisit lock acquisition given
-                // the potential difference between sc and newSC
-
                 SessionContextImpl newSC = sc;
                 if (sc.getState() == BeanState.PASSIVATED) {
                     // This is possible if the EJB was passivated after
@@ -1409,6 +1431,8 @@ public final class StatefulSessionContainer
                         throw new NoSuchObjectLocalException(
                                 "The EJB does not exist. key: " + sessionKey);
                     }
+                    // Swap any stateful lock that was set on the original sc
+                    newSC.setStatefulWriteLock(sc);
                 }
                 // acquire the lock again, in case a new sc was returned.
                 synchronized (newSC) { //newSC could be same as sc
@@ -1960,14 +1984,11 @@ public final class StatefulSessionContainer
 
     // called asynchronously from the Recycler
     public final boolean passivateEJB(ComponentContext context) {
+
         SessionContextImpl sc = (SessionContextImpl) context;
 
-        // @@@ Have to enable this at a later time
-        // @@@ remember to add optional local view logic to clear out session ctx , etc.
-        
-        return true;
-        /*
         boolean success = false;
+
         try {
 
             if ((containerState != CONTAINER_STARTED) && (containerState != CONTAINER_STOPPED)) {
@@ -1987,10 +2008,13 @@ public final class StatefulSessionContainer
 
             Object ejb = sc.getEJB();
 
+
             long passStartTime = -1;
+            /* TODO 
             if (sfsbStoreMonitor.isMonitoringOn()) {
                 passStartTime = System.currentTimeMillis();
             }
+            */
 
             EjbInvocation ejbInv = invFactory.create(ejb, sc);
             invocationManager.preInvoke(ejbInv);
@@ -2029,7 +2053,7 @@ public final class StatefulSessionContainer
                         incrementMethodReadyStat();
                         return false;
                     }
-                    sfsbStoreMonitor.incrementPassivationCount(true);
+                    // TODO sfsbStoreMonitor.incrementPassivationCount(true);
                     transactionManager.componentDestroyed(sc);
 
                     decrementRefCountsForEEMs(sc);
@@ -2083,12 +2107,19 @@ public final class StatefulSessionContainer
                             localBusinessObjImpl.clearContext();
                             sc.setEJBLocalBusinessObjectImpl(null);
                         }
+                        if (hasOptionalLocalBusinessView ) {
+                            EJBLocalObjectImpl optLocalBusObjImpl =
+                                        sc.getOptionalEJBLocalBusinessObjectImpl();
+                            optLocalBusObjImpl.setSfsbClientVersion(version);
+                            optLocalBusObjImpl.clearContext();
+                            sc.setOptionalEJBLocalBusinessObjectImpl(null);
+                        }
                     }
                     if (_logger.isLoggable(TRACE_LEVEL)) {
                         logTraceInfo(sc, "Successfully passivated");
                     }
                 } catch (java.io.NotSerializableException nsEx) {
-                    sfsbStoreMonitor.incrementPassivationCount(false);
+                    // TODO sfsbStoreMonitor.incrementPassivationCount(false);
                     _logger.log(Level.WARNING, "Error during passivation: "
                             + sc + "; " + nsEx);
                     _logger.log(Level.FINE, "sfsb passivation error", nsEx);
@@ -2099,7 +2130,7 @@ public final class StatefulSessionContainer
                         _logger.log(Level.FINE, "error destroying bean", e);
                     }
                 } catch (Throwable ex) {
-                    sfsbStoreMonitor.incrementPassivationCount(false);
+                    // TODO sfsbStoreMonitor.incrementPassivationCount(false);
                     _logger.log(Level.WARNING, "ejb.sfsb_passivation_error",
                             new Object[]{ejbDescriptor.getName() + " <==> " + sc});
                     _logger.log(Level.WARNING, "sfsb passivation error. Key: "
@@ -2115,7 +2146,7 @@ public final class StatefulSessionContainer
                     if (passStartTime != -1) {
                         long timeSpent = System.currentTimeMillis()
                                 - passStartTime;
-                        sfsbStoreMonitor.setPassivationTime(timeSpent);
+                        // TODO sfsbStoreMonitor.setPassivationTime(timeSpent);
                     }
                 }
             } //synchronized
@@ -2126,7 +2157,7 @@ public final class StatefulSessionContainer
             _logger.log(Level.WARNING, "sfsb passivation error", ex);
         }
         return success;
-        */
+
     }
 
     public final int getPassivationBatchCount() {
@@ -2257,12 +2288,25 @@ public final class StatefulSessionContainer
                     if (hasLocalBusinessView) {
                         createEJBLocalBusinessObjectImpl(context);
                     }
+                    if (hasOptionalLocalBusinessView) {
+                        createOptionalEJBLocalBusinessObjectImpl(context);
+                    }
+                } else if( elo.isOptionalLocalBusinessView() ) {
+                    context.setOptionalEJBLocalBusinessObjectImpl(elo);
+                    if (hasLocalBusinessView) {
+                        createEJBLocalBusinessObjectImpl(context);
+                    }
+                    if (hasLocalHomeView) {
+                        createEJBLocalObjectImpl(context);
+                    }
                 } else {
                     context.setEJBLocalBusinessObjectImpl(elo);
                     if (hasLocalHomeView) {
                         createEJBLocalObjectImpl(context);
                     }
-
+                    if (hasOptionalLocalBusinessView) {
+                        createOptionalEJBLocalBusinessObjectImpl(context);
+                    }
                 }
 
                 if (hasRemoteHomeView) { // create remote obj too
@@ -2459,7 +2503,6 @@ public final class StatefulSessionContainer
 
             sessionBeanCache.shutdown();
 
-            /*
             while (true) {
                 ComponentContext ctx = null;
                 synchronized (asyncTaskSemaphore) {
@@ -2473,15 +2516,11 @@ public final class StatefulSessionContainer
                 }
                 passivateEJB(ctx);
             }
-            */
 
-            /*
-             ** @@@
-             * Skip session bean cache destruction until we can distinguish
-             *  between a shutdown and an undeploy
-             *
-             *  sessionBeanCache.destroy();
-             */
+
+
+            sessionBeanCache.destroy();
+
 
             try {
                 sfsbStoreManager.shutdown();
