@@ -858,14 +858,14 @@
                 <version>${jsf-impl.version}</version>
           </dependency>
           <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>osgi_R4_core</artifactId>
-                <version>1.0</version>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>1.2.0</version>
           </dependency>
           <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>osgi_R4_compendium</artifactId>
-                <version>1.0</version>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>1.2.0</version>
           </dependency>
             
         </dependencies>
