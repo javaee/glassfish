@@ -52,7 +52,6 @@ public class DeploymentUtils {
 
     private static final String WEB_INF = "WEB-INF";
     private static final String JSP_SUFFIX = ".jsp";
-    private static final String HTML_SUFFIX = ".html";
     private static final String RA_XML = "META-INF/ra.xml";
     private static final String APPLICATION_XML = "META-INF/application.xml";    
     private static final String EAR_EXTENSION = ".ear";
@@ -75,8 +74,7 @@ public class DeploymentUtils {
             Enumeration<String> entries = archive.entries();
             while (entries.hasMoreElements()) {
                 String entryName = entries.nextElement();
-                if (entryName.endsWith(JSP_SUFFIX) || 
-                    entryName.endsWith(HTML_SUFFIX)) {
+                if (entryName.endsWith(JSP_SUFFIX)) { 
                     return true;
                 }
             }
