@@ -78,9 +78,9 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class WebServiceHandler extends AbstractHandler {
 
-    protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+    protected Logger logger1 = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
-    private ResourceBundle rb = logger.getResourceBundle()   ;
+    private ResourceBundle rb = logger1.getResourceBundle()   ;
 
     /** Creates a new instance of WebServiceHandler */
     public WebServiceHandler() {
@@ -445,7 +445,7 @@ public class WebServiceHandler extends AbstractHandler {
             } catch (Exception e) {
                 //This can happen in the web.zip installation where there is no ejb
                 //Just logging the error
-                logger.fine(rb.getString("exception.thrown") + e.getMessage() );
+                logger1.fine(rb.getString("exception.thrown") + e.getMessage() );
             }
             Singleton singleton = null;
             try {
@@ -453,7 +453,7 @@ public class WebServiceHandler extends AbstractHandler {
             } catch (Exception e) {
                 //This can happen in the web.zip installation where there is no ejb
                 //Just logging the error
-                logger.fine(rb.getString("exception.thrown") + e.getMessage() );
+                logger1.fine(rb.getString("exception.thrown") + e.getMessage() );
             }
             String name;
 

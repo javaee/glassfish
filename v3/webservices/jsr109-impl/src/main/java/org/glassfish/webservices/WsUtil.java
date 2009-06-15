@@ -77,7 +77,7 @@ import java.lang.reflect.Method;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
+import org.glassfish.api.admin.ServerEnvironment;
 
 
 /**
@@ -707,7 +707,21 @@ public class WsUtil {
                                     if(serviceRef.getWsdlFileUri().startsWith("http")) {
                                         retVal = new URL(serviceRef.getWsdlFileUri());
                                     } else {
-                                        retVal = (new File(serviceRef.getWsdlFileUri())).toURL();
+                                        if ((serviceRef.getWsdlFileUri().startsWith("WEB-INF")|| serviceRef.getWsdlFileUri().startsWith("META-INF"))) {
+
+                                            //This can be the case when the toURL fails
+                                            //because in its implementation it looks for user.dir
+                                            // which sometimes can vary based on where vm is launched
+                                            // so in this case
+                                            //resolve from application path
+                                            WebServiceContractImpl wscImpl  = WebServiceContractImpl.getInstance();
+                                            ServerEnvironment se = wscImpl.getHabitat().getByContract(ServerEnvironment.class);
+
+                                            File appFile = new File(se.getApplicationRepositoryPath(),serviceRef.getBundleDescriptor().getApplication().getAppName());
+                                            retVal = new File(appFile,serviceRef.getWsdlFileUri()).toURL();
+                                        }else {
+                                            retVal = new File(serviceRef.getWsdlFileUri()).toURL();
+                                        }
                                     }
                                 }
                             }
