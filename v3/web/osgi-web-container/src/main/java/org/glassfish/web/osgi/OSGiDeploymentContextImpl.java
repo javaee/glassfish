@@ -87,6 +87,10 @@ public class OSGiDeploymentContextImpl extends DeploymentContextImpl
         super(actionReport, logger, source, params, env);
         this.bundle = bundle;
         setupClassLoader();
+
+        // We always this handler instead of going through discovery process
+        // which has issues.
+        setArchiveHandler(new OSGiWarHandler());
     }
 
     private void setupClassLoader() throws Exception

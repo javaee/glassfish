@@ -38,25 +38,26 @@
 package org.glassfish.web.osgi;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.web.WebApplication;
+import com.sun.enterprise.web.WebContainer;
+import com.sun.enterprise.web.WebModule;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.api.deployment.UndeployCommandParameters;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.EngineRef;
+import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.ServletContext;
+import java.net.URI;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,12 +66,14 @@ import java.util.logging.Logger;
  */
 public class OSGiWebContainer
 {
-    private static class OSGiApplicationInfo
+    // TODO(Sahoo): Integration with event admin service
+
+    static class OSGiApplicationInfo
     {
         ApplicationInfo appInfo;
         boolean isDirectoryDeployment;
+        Bundle bundle;
     }
-
     private Map<Bundle, OSGiApplicationInfo> applications =
             new HashMap<Bundle, OSGiApplicationInfo>();
 
@@ -83,126 +86,103 @@ public class OSGiWebContainer
 
     /**
      * Deploys a web application bundle in GlassFish Web container.
-     * This is where the fun is...
+     * This method is synchronized because we don't know if GlassFish
+     * deployment framework can handle concurrent requests or not.
      *
      * @param b Web Application Bundle to be deployed.
      */
-    public void deploy(final Bundle b) throws Exception
+    public synchronized void deploy(final Bundle b) throws Exception
     {
-        // The steps are described below:
-        // 1. Create an Archive from the bundle
-        //    - If the bundle has been installed with reference: scheme,
-        //    get hold hold of the underlying file and read from it, else
-        //    use the bundle directly to create the archive.
-        // 2. Prepare a context for deployment. This includes setting up
-        // various deployment options, setting up of an ArchiveHandler,
-        // expansion of the archive, etc.
-        // 3. Finally deploy and store the result in our inmemory map.
+        // deploy the java ee artifacts
 
-        ActionReport reporter = getReporter();
 
-        ReadableArchive archive = new OSGiBundleArchive(b);
-
-        // Try to obtain a handle to the underlying archive.
-        // First see if it is backed by a file or a directory, else treat
-        // it as a generic bundle.
-        File file = makeFile(archive);
-
-        // Set up a deployment context
-        OpsParams opsParams = getDeployParams(archive);
-        ExtendedDeploymentContext dc = new OSGiDeploymentContextImpl(reporter,
-                logger, archive, opsParams, env, b);
-        dc.setArchiveHandler(new OSGiWarHandler());
-
-        // expand if necessary, else set directory deployment to true
-        boolean isDirDeployment = file != null && file.isDirectory();
-        if (!isDirDeployment)
+        ActionReport report = getReport();
+        OSGiApplicationInfo osgiAppInfo = deployJavaEEArtifacts(b, report);
+        if (osgiAppInfo != null)
         {
-            archive = expand(archive, dc);
-            dc.setSource(archive); // set the new archive as source.
+            try {
+                ServletContext sc = setServletContextAttr(osgiAppInfo);
+                // TODO(Sahoo): Register Service only after we upgrade to
+                // next version of Felix that addresses bundle.getBundleContext
+                // bug in STARTING state.
+//                registerService(b, sc);
+            } catch (Exception e) {
+                logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
+                        "Rolling back deployment as exception occured", e);
+                undeployJavaEEArtifacts(osgiAppInfo, report);
+            }
+            applications.put(b, osgiAppInfo);
+            logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
+                    "deployed bundle {0} at {1}",
+                    new Object[]{b, osgiAppInfo.appInfo.getSource().getURI()});
         }
-
-        // Now actual deployment begins
-        deploy(b, dc, isDirDeployment);
-    }
-
-    private void deploy(Bundle b,
-                        ExtendedDeploymentContext dc,
-                        boolean dirDeployment)
-    {
-        // Need to declare outside to do proper cleanup of target dir
-        // when deployment fails. We can't rely on exceptions as
-        // deployer.deploy() eats most of the exceptions.
-        ApplicationInfo appInfo = null;
-        try
+        else
         {
-            appInfo = deployer.deploy(dc);
-            if (appInfo != null)
-            {
-                OSGiApplicationInfo osgiAppInfo = new OSGiApplicationInfo();
-                osgiAppInfo.appInfo = appInfo;
-                osgiAppInfo.isDirectoryDeployment = dirDeployment;
-                applications.put(b, osgiAppInfo);
-                logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
-                        "deployed bundle {0} at {1}",
-                        new Object[]{b, appInfo.getSource().getURI()});
-            }
-            else
-            {
-                logger.logp(Level.INFO, "OSGiWebContainer",
-                        "deploy", "failed to deploy = {0}", new Object[]{b});
-            }
-        }
-        finally
-        {
-            if (!dirDeployment && appInfo == null)
-            {
-                try
-                {
-                    File dir = dc.getSourceDir();
-                    assert (dir.isDirectory());
-                    FileUtils.whack(dir);
-                    logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
-                            "Deleted {0}", new Object[]{dir});
-                }
-                catch (Exception e2)
-                {
-                    logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
-                            "Exception while cleaning up target directory.", e2);
-                    // don't throw this anymore
-                }
-            }
+            logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
+                    "could not deploy bundle {0}. See previous messages for " +
+                            "further information",
+                    new Object[]{b});
         }
     }
 
     /**
-     * Undeploys a web application bundle.
-     *
+     * Does necessary deployment in Java EE container
      * @param b
+     * @param report
+     * @return
      */
-    public void undeploy(Bundle b) throws Exception
+    private OSGiApplicationInfo deployJavaEEArtifacts(Bundle b, ActionReport report)
+    {
+        JavaEEDeploymentRequest request = new JavaEEDeploymentRequest(
+                deployer, archiveFactory, env, report, b);
+        return request.execute();
+    }
+
+    /**
+     * Undeploys a web application bundle.
+     * This method is synchronized because we don't know if GlassFish
+     * deployment framework can handle concurrent requests or not.
+     *
+     * @param b Bundle to be undeployed
+     */
+    public synchronized void undeploy(Bundle b) throws Exception
     {
         OSGiApplicationInfo osgiAppInfo = applications.get(b);
         if (osgiAppInfo == null)
         {
             throw new RuntimeException("No applications for bundle " + b);
         }
-        ActionReport reporter = getReporter();
-        UndeployCommandParameters opsParams = getUndeployParams(osgiAppInfo);
-        ExtendedDeploymentContext dc = new OSGiDeploymentContextImpl(reporter,
-                logger, osgiAppInfo.appInfo.getSource(), opsParams, env, b);
-        dc.setArchiveHandler(new OSGiWarHandler());
-        deployer.undeploy(opsParams.name(), dc);
-        applications.remove(b);
-        if (!osgiAppInfo.isDirectoryDeployment)
+        ActionReport report = getReport();
+        undeployJavaEEArtifacts(osgiAppInfo, report);
+        URI location = osgiAppInfo.appInfo.getSource().getURI();
+        switch (report.getActionExitCode())
         {
-            // We can always assume dc.getSourceDir will return a valid file
-            // because we would have expanded the app during deployment.
-            cleanup(dc.getSourceDir());
+            case FAILURE:
+                logger.logp(Level.WARNING, "OSGiWebContainer", "undeploy",
+                        "Failed to undeploy {0} from {1}. See previous messages for " +
+                                "further information.", new Object[]{b, location});
+                break;
+            default:
+                logger.logp(Level.INFO, "OSGiWebContainer", "undeploy",
+                        "Undeployed bundle {0} from {1}", new Object[]{b, location});
+                break;
         }
-        logger.logp(Level.INFO, "OSGiWebContainer", "undeploy",
-                "Undeployed bundle {0} from {1}", new Object[]{b,
-                osgiAppInfo.appInfo.getSource().getURI()});
+        applications.remove(b);
+    }
+
+    /**
+     * Does necessary undeployment in Java EE container
+     * @param osgiAppInfo
+     * @param report
+     * @return
+     */
+    private ActionReport undeployJavaEEArtifacts(OSGiApplicationInfo osgiAppInfo,
+                                                 ActionReport report)
+    {
+        JavaEEUndeploymentRequest request = new JavaEEUndeploymentRequest(
+                deployer, env, report, osgiAppInfo);
+        request.execute();
+        return report;
     }
 
     public void undeployAll()
@@ -225,102 +205,54 @@ public class OSGiWebContainer
         }
     }
 
-    private ActionReport getReporter()
+    private ActionReport getReport()
     {
         return Globals.getDefaultHabitat().getComponent(ActionReport.class,
                 "plain");
     }
 
-    /**
-     * Return a File object that corresponds to this archive.
-     * return null if it can't determine the underlying file object.
-     *
-     * @param a The archive
-     * @return
-     */
-    private File makeFile(ReadableArchive a)
+
+    private ServletContext setServletContextAttr(OSGiApplicationInfo osgiAppInfo)
     {
-        try
+        ServletContext sc = getServletContext(osgiAppInfo.appInfo);
+        assert (sc != null);
+        sc.setAttribute(Constants.BUNDLE_CONTEXT_ATTR,
+                osgiAppInfo.bundle.getBundleContext());
+        return sc;
+    }
+
+    private ServletContext getServletContext(ApplicationInfo appInfo)
+    {
+        if (appInfo.getModuleInfos().size() == 1)
         {
-            return new File(a.getURI());
-        }
-        catch (Exception e)
-        {
-            // Ignore, if we can't convert
+            ModuleInfo m = appInfo.getModuleInfos().iterator().next();
+            EngineRef e = m.getEngineRefForContainer(WebContainer.class);
+            assert (e != null);
+            WebApplication a = (WebApplication) e.getApplicationContainer();
+            Set<WebModule> wms = a.getWebModules();
+            assert (wms.size() == 1); // we only deploy to default virtual server
+            if (wms.size() == 1)
+            {
+                return wms.iterator().next().getServletContext();
+            }
         }
         return null;
     }
 
-    private OpsParams getDeployParams(ReadableArchive sourceArchive)
+    private void registerService(Bundle b, ServletContext sc)
     {
-        DeployCommandParameters parameters = new DeployCommandParameters();
-        parameters.name = sourceArchive.getName();
-
-        // Set the contextroot explicitly, else it defaults to name.
-        try
+        Properties props = new Properties();
+        props.setProperty(Constants.OSGI_WEB_SYMBOLIC_NAME, b.getSymbolicName());
+        String cpath = (String) b.getHeaders().get(Constants.WEB_CONTEXT_PATH);
+        props.setProperty(Constants.OSGI_WEB_CONTEXTPATH, cpath);
+        String version = (String) b.getHeaders().get(BUNDLE_VERSION);
+        if (version != null)
         {
-            // We expect WEB_CONTEXT_ROOT to be always present.
-            // This is mandated in the spec.
-            parameters.contextroot = sourceArchive.getManifest().
-                    getMainAttributes().getValue(Constants.WEB_CONTEXT_PATH);
+            props.setProperty(Constants.OSGI_WEB_VERSION, version);
         }
-        catch (IOException e)
-        {
-            // ignore and continue
-        }
-        if (parameters.contextroot == null || parameters.contextroot.length() == 0)
-        {
-            throw new RuntimeException(Constants.WEB_CONTEXT_PATH +
-                    " manifest header is mandatory");
-        }
-        parameters.enabled = Boolean.TRUE;
-        parameters.origin = DeployCommandParameters.Origin.deploy;
-        parameters.force = true;
-        return parameters;
-    }
-
-    private UndeployCommandParameters getUndeployParams(
-            OSGiApplicationInfo osgiAppInfo)
-    {
-        UndeployCommandParameters parameters =
-                new UndeployCommandParameters();
-        parameters.name = osgiAppInfo.appInfo.getName();
-        parameters.origin = DeployCommandParameters.Origin.undeploy;
-        return parameters;
-    }
-
-    private ReadableArchive expand(ReadableArchive sourceArchive,
-                                   ExtendedDeploymentContext dc)
-            throws IOException
-    {
-        // ok we need to explode the directory somwhere and
-        // remember to delete it on shutdown
-        // We can't use archive name as it can contain file separator, so
-        // we shall use a temporary name
-        File tmpFile = File.createTempFile("osgiapp", "");
-
-        // create a directory in place of the tmp file.
-        tmpFile.delete();
-        tmpFile = new File(tmpFile.getAbsolutePath());
-        tmpFile.deleteOnExit();
-        if (tmpFile.mkdirs())
-        {
-            WritableArchive targetArchive = archiveFactory.createArchive(tmpFile);
-            new OSGiWarHandler().expand(sourceArchive, targetArchive, dc);
-            logger.logp(Level.INFO, "OSGiWebContainer", "expand",
-                    "Expanded at {0}", new Object[]{targetArchive.getURI()});
-            return archiveFactory.openArchive(tmpFile);
-        }
-        throw new IOException("Not able to expand " + sourceArchive.getName() +
-                " in " + tmpFile);
-    }
-
-    private void cleanup(File dir)
-    {
-        assert(dir.isDirectory() && dir.exists());
-        FileUtils.whack(dir);
-        logger.logp(Level.INFO, "OSGiWebContainer", "cleanup",
-                "Deleted {0}", new Object[]{dir});
+        b.getBundleContext().registerService(
+                ServletContext.class.getName(),
+                sc, props);
     }
 
 }
