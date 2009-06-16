@@ -64,7 +64,14 @@
                  helpText="$resource{i18n_web.configuration.threadPoolPageTitleHelp}" />
 		 "<br /> <br />
 
-<sun:table id="configs" title="#{tableTitle}">
+<sun:table id="configs" title="#{tableTitle}"
+    deselectMultipleButton="$boolean{true}"
+    deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+    selectMultipleButton="$boolean{true}"
+    selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
+    <!afterCreate
+        getClientId(component="$this{component}" clientId=>$page{tableId});
+    />
 
 #include "/shared/listTableButtons.inc"
 
@@ -73,7 +80,11 @@
          getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
         />
     <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
-            <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
+            <sun:checkbox id="select"
+                selected="#{td.value.selected}"
+                selectedValue="$boolean{true}"
+                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)"
+            />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.threadPool.threadPoolIdCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
@@ -103,5 +114,7 @@
 
 <sun:hidden id="helpKey" value="$resource{help_web.threadPools}" />
             </sun:form>
+            "<br>
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
