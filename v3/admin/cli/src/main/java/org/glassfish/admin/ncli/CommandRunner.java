@@ -96,9 +96,6 @@ public final class CommandRunner {
      */
     void parseMetaOptions(String[] argv) throws ParserException {
         Set<OptionDesc> known = POB.getAllOptionMetadata();
-        Map<String, String> givenProgramOptions =
-            new LinkedHashMap<String, String>();
-            // given options as name value pairs
         Map<String, String> metaOptions;        // parsed asadmin options
 
         if (argv.length == 0)
