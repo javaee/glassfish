@@ -42,24 +42,25 @@ import static org.glassfish.admin.ncli.ProgramOptionBuilder.*;
 
 import java.util.Set;
 
-/** A Junit4 test to test out the parser with various command lines. It works with examination of FirstPassResult
- *  and SecondPassResult.
- * 
+/**
+ * A Junit4 test to test out the parser with various command lines. It works with examination of FirstPassResult
+ * and SecondPassResult.
+ *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 public class ParserTest {
 
-    @Test (expected = ParserException.class)
+    @Test(expected = ParserException.class)
     public void handleUnsupportedLegacyCommandMethod() throws ParserException {
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(new String[]{"create-cluster", "create-instance"});
     }
 
     @Test
     public void testHost1() throws ParserException {
         final String value = "1.2.3.4";
-        final String CMD   = "foo";
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        final String CMD = "foo";
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(new String[]{CMD, Option.toCommandLineOption(HOST), value});  // foo --host 1.2.3.4
         Set<Option> pos = r.getProgramOptions();
         Option host = getOptionNamed(pos, HOST);
@@ -78,8 +79,8 @@ public class ParserTest {
     @Test
     public void testHost2() throws ParserException {
         final String value = "1.2.3.4";
-        final String CMD   = "foo";
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        final String CMD = "foo";
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(new String[]{CMD, Option.toCommandLineOption(HOST) + "=" + value});  // foo --host=1.2.3.4
         Set<Option> pos = r.getProgramOptions();
         Option host = getOptionNamed(pos, HOST);
@@ -98,14 +99,14 @@ public class ParserTest {
     @Test
     public void testAnyTwo1() throws ParserException {
         String hv = "foo.sun.com", pv = "3355", CMD = "bar";
-	CommandRunner r = new CommandRunner(System.out, System.err);
-        r.parseMetaOptions(new String[]{CMD, Option.toCommandLineOption(HOST), hv, Option.toCommandLineOption(PORT), pv }); //bar --host foo.sun.com --port 3355
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(new String[]{CMD, Option.toCommandLineOption(HOST), hv, Option.toCommandLineOption(PORT), pv}); //bar --host foo.sun.com --port 3355
         Option host = getOptionNamed(r.getProgramOptions(), HOST);
         Option port = getOptionNamed(r.getProgramOptions(), PORT);
         assertEquals(host.getEffectiveValue(), hv);
         assertEquals(port.getEffectiveValue(), pv);
 
-        r.parseMetaOptions(new String[]{CMD, Option.toCommandLineOption(HOST), hv, Option.toCommandLineOption(PORT_SYMBOL), pv }); //bar --host foo.sun.com --p 3355
+        r.parseMetaOptions(new String[]{CMD, Option.toCommandLineOption(HOST), hv, Option.toCommandLineOption(PORT_SYMBOL), pv}); //bar --host foo.sun.com --p 3355
         host = getOptionNamed(r.getProgramOptions(), HOST);
         port = getOptionNamed(r.getProgramOptions(), PORT);
         assertEquals(host.getEffectiveValue(), hv);
@@ -114,10 +115,10 @@ public class ParserTest {
 
     @Test
     public void testDefaults() throws ParserException {
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(new String[]{"cmd"});
         Option host = getOptionNamed(r.getProgramOptions(), HOST);
-        assertTrue("default value of host is not: "+ Constants.DEFAULT_HOST, Constants.DEFAULT_HOST.equals(host.getEffectiveValue()));
+        assertTrue("default value of host is not: " + Constants.DEFAULT_HOST, Constants.DEFAULT_HOST.equals(host.getEffectiveValue()));
 
         Option port = getOptionNamed(r.getProgramOptions(), PORT);
         int pn = Integer.parseInt(port.getEffectiveValue());
@@ -130,7 +131,7 @@ public class ParserTest {
         //this should throw a ParserException because we know nothing about -g and the only way in which we could
         //support this is if option name/symbol + value is specified as a single argument, i.e. -g=value or --gggg=value
         //this is the parser limitation as it does not have the metadata for the command!
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
     }
 
@@ -138,7 +139,7 @@ public class ParserTest {
     public void testWorkAroundLimitation1() throws ParserException {
         //this is opposite of testLimitation1
         String[] cmdline = new String[]{"cmd", "--host", "1.2.3.4", "-p=4555", "-g=some value"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
         String[] ca = r.getCommandArguments();
         assertArrayEquals("arrays are not same", ca, new String[]{"-g=some value"}); //note that first pass always removes -- or -
@@ -148,7 +149,7 @@ public class ParserTest {
     public void testIntermingled1() throws ParserException {
         //this uses the work-around
         String[] cmdline = new String[]{"create-jdbc-resource", "--cmdopt=abcde", "-H", "internal.sun.com", "--port=9999", "-s"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
         assertArrayEquals("arrays are not same", r.getCommandArguments(), new String[]{"--cmdopt=abcde"});
         assertTrue(r.usesDeprecatedSyntax());
@@ -157,7 +158,7 @@ public class ParserTest {
     @Test
     public void testBooleanOptionList() throws ParserException {
         String[] cmdline = new String[]{"cmd", "-eIt", "--", "abc"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
         Option bo = getOptionNamed(r.getProgramOptions(), INTERACTIVE);
         assertEquals(bo.getEffectiveValue(), "true");
@@ -167,26 +168,26 @@ public class ParserTest {
         assertEquals(bo.getEffectiveValue(), "true");
     }
 
-    @Test (expected=ParserException.class)
+    @Test(expected = ParserException.class)
     public void rejectPassword1() throws ParserException {
         String[] cmdline = new String[]{"cmd", "--password=secret"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
-	r.parseMetaOptions(cmdline);
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(cmdline);
     }
 
-    @Test (expected=ParserException.class)
+    @Test(expected = ParserException.class)
     public void rejectPassword2() throws ParserException {
         String[] cmdline = new String[]{"cmd", "-w", "secret"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
-	r.parseMetaOptions(cmdline);
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(cmdline);
     }
 
     @Test
     public void assertDeprecated1() throws ParserException {
         String cmd = "create-http-listener"; //this is a legacy command, now, we will specify it the legacy way, deliberately.
         String[] cmdline = new String[]{cmd, "--host=localhost", "--port=1234", "--secure", "true", "listener1"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
-	r.parseMetaOptions(cmdline);
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(cmdline);
         assertTrue(r.usesDeprecatedSyntax());
     }
 
@@ -194,8 +195,8 @@ public class ParserTest {
     public void assertDeprecated2() throws ParserException {
         String cmd = "possibly-new-command"; //this is a new command, but it is using the old syntax, it can't reuse the asadmin options then!
         String[] cmdline = new String[]{cmd, "--host=localhost", "--port=1234", "--secure", "true", "listener1"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
-	r.parseMetaOptions(cmdline);
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(cmdline);
         assertTrue(r.usesDeprecatedSyntax());  //this is deprecated as --host can't be reused by possibly-new-command
     }
 
