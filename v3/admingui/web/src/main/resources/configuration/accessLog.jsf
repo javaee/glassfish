@@ -37,118 +37,85 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-//<sun:page id="page1">
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName} default="server-config" );
-        getAccessLogSettings(ConfigName="#{configName}", Rotation=>$attribute{rotation}, Policy=>$attribute{policy}, Interval=>$attribute{interval}, Suffix=>$attribute{suffix}, Format=>$attribute{format});
-        getHttpService(
-                ConfigName="#{configName}",
-                Properties=>$page{props},
-                accessLogBufferSize=>$attribute{accessLogBufferSize}
-                accessLogWriteInterval=>$attribute{accessLogWriteInterval}
-                accessLoggingEnabled=>$attribute{accessLoggingEnabled}
-            );
-        getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-     />
-     </event>
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=access-log");
+        setPageSessionAttribute(key="childType" value="access-log");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/accessLog.jsf");
+        setPageSessionAttribute(key="convertToFalseList" value={"RotationEnabled"});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+    />
+    </event>
+
 #include "/shared/restart.inc"
-            <sun:form id="propertyForm">
+
+            <sun:form id="form1">
     //#include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
-                <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n_web.httpService.accesslog.pageTitle}"
-                    helpText="$resource{i18n_web.httpService.accesslog.pageTitleHelp}">
-                    <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
-                        <!command
-                            getAccessLogDefaultSettings(
-                                ConfigName="#{configName}", 
-                                Rotation=>$attribute{rotation}, 
-                                Policy=>$attribute{policy}, 
-                                Interval=>$attribute{interval}, 
-                                Suffix=>$attribute{suffix}, 
-                                Format=>$attribute{format}
-                            );                            
-                       />
-                    </sun:button>
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" text="$resource{i18n_web.button.Save}"
-                                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-                             <!command
-                                prepareSuccessfulMsg();
-                                saveAccessLogSettings(
-                                    ConfigName="#{configName}",
-                                    Rotation="#{rotation}",
-                                    Policy="#{policy}",
-                                    Interval="#{interval}",
-                                    Suffix="#{suffix}",
-                                    Format="#{format}"
-                                );
-                                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                                convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                                saveHttpService(
-                                    ConfigName="#{configName}",
-                                    newProps="${newProps}",
-                                    accessLogBufferSize="#{accessLogBufferSize}",
-                                    accessLogWriteInterval="#{accessLogWriteInterval}",
-                                    accessLoggingEnabled="#{accessLoggingEnabled}"
-                                );
-                               redirect(page="#{request.contextPath}/web/configuration/accessLog.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
+<sun:title id="propertyContentPage" title="$resource{i18n_web.httpService.accesslog.pageTitle}" helpText="$resource{i18n_web.httpService.accesslog.pageTitleHelp}" >
+#include "/shared/editPageButtons.inc"
+</sun:title>
+    <sun:propertySheet id="propertySheet">
+        <sun:propertySheetSection id="accessLog">
 
-                            />
-                        </sun:button>                      
-                    </sun:panelGroup>
-                    </facet>                     
-                </sun:title>
-                    <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">
-                        <sun:propertySheetSection id="httpService">
+        <!-- depending on issue #8503, will enable when that is fixed.
+        <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogging}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['SessionIdGeneratorClassname']}" />
+        </sun:property>
+        -->
+        <sun:property id="rotationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Rotation}" helpText="$resource{i18n_web.access.RotationHelp}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['RotationEnabled']}" selectedValue="true" >
+           </sun:checkbox>
+        </sun:property>
+        <sun:property id="rotationPolicyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationPolicy}" helpText="$resource{i18n_web.access.RotationPolicyHelp}">
+           <sun:dropDown id="RotationPolicy"  selected="#{pageSession.valueMap['RotationPolicy']}" labels={"time"} >
+            </sun:dropDown>
+         </sun:property>
+       <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationInterval}" helpText="$resource{i18n_web.access.RotationIntervalHelp}">
+            <sun:textField id="Interval" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['RotationIntervalInMinutes']}" />
+            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
+        </sun:property>
+        <sun:property id="suffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationSuffix}" helpText="$resource{i18n_web.access.RotationSuffixHelp}">
+            <sun:textField id="Suffix" columns="$int{30}" text="#{pageSession.valueMap['RotationSuffix']}" />
+        </sun:property>
 
-                        <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogging}">
-                            <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{accessLoggingEnabled}" />
-                        </sun:property>
-                        <sun:property id="rotationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Rotation}" helpText="$resource{i18n_web.access.RotationHelp}">
-                            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{rotation}" >
-                           </sun:checkbox>
-                        </sun:property>
-                        <sun:property id="rotationPolicyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationPolicy}" helpText="$resource{i18n_web.access.RotationPolicyHelp}">
-                           <sun:dropDown id="RotationPolicy"  selected="#{policy}" labels={"time"} >
-                            </sun:dropDown>
-                         </sun:property>
-                       <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationInterval}" helpText="$resource{i18n_web.access.RotationIntervalHelp}">
-                            <sun:textField id="Interval" styleClass="integer" columns="$int{30}" text="#{interval}" />
-                            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
-                        </sun:property>
-                        <sun:property id="suffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationSuffix}" helpText="$resource{i18n_web.access.RotationSuffixHelp}">
-                            <sun:textField id="Suffix" columns="$int{30}" text="#{suffix}" />
-                        </sun:property>
-                        <sun:property id="accessLogBufferSize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogBufferSize}" helpText="$resource{i18n.http.accessLogBufferSizeHelp}">
-                        <sun:textField id="accessLogBufferSize" styleClass="intAllowMinus" columns="$int{30}" text="#{accessLogBufferSize}" />
-                        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
-                        </sun:property>
-                        <sun:property id="accessLogWriteInterval"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogWriteInterval}" helpText="$resource{i18n.http.accessLogWriteIntervalHelp}">
-                            <sun:textField id="accessLogWriteInterval" styleClass="intAllowMinus" columns="$int{30}" text="#{accessLogWriteInterval}" />
-                            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
-                        </sun:property>
-                        <sun:property id="formatProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Format}" helpText="$resource{i18n_web.access.FormatHelp}">
-                            <sun:textField id="Format" columns="$int{80}" text="#{format}"/>
-                        </sun:property>
-                        </sun:propertySheetSection>
-                    </sun:propertySheet>
-        "<br/><br/>
+        <!-- depending on issue #8503, will enable when that is fixed.
+        <sun:property id="accessLogBufferSize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogBufferSize}" helpText="$resource{i18n.http.accessLogBufferSizeHelp}">
+        <sun:textField id="accessLogBufferSize" styleClass="intAllowMinus" columns="$int{30}" text="#{accessLogBufferSizeBytes}" />
+        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
+        </sun:property>
+        <sun:property id="accessLogWriteInterval"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogWriteInterval}" helpText="$resource{i18n.http.accessLogWriteIntervalHelp}">
+            <sun:textField id="accessLogWriteInterval" styleClass="intAllowMinus" columns="$int{30}" text="#{accessLogWriteIntervalSeconds}" />
+            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+        </sun:property>
+        -->
+        <sun:property id="formatProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Format}" helpText="$resource{i18n_web.access.FormatHelp}">
+            <sun:textField id="Format" columns="$int{90}" text="#{pageSession.valueMap['Format']}"/>
+        </sun:property>
+        </sun:propertySheetSection>
+    </sun:propertySheet>
+    "<br/>
+#include "/shared/propertyDescTable.inc"
 
-#include "/shared/propertyTable.inc"
+<sun:hidden id="helpKey" value="$resource{help_web.accessLog}" />
 
-	<sun:hidden id="helpKey" value="$resource{help_web.accessLog}" />
-            </sun:form>
+    </sun:form>
+    "<br/>
 #include "/shared/changeButtonsJS.inc"
-
 </define>
 </composition>
+
+
