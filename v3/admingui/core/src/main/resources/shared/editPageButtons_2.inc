@@ -74,9 +74,15 @@
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{pageSession.valueMap}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            result => $attribute{objStr});
+                        attrs="#{pageSession.valueMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        result => $attribute{objStr});
+                    if(#{pageSession.has2Objects}){
+                        createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"
+                            attrs="#{pageSession.valueMap2}"
+                            convertToFalse="#{pageSession.convertToFalseList2}"
+                            result => $attribute{objStr2});
+                    }
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
