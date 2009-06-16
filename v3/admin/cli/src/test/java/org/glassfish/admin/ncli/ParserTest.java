@@ -34,11 +34,11 @@
  * holder.
  */
 
-package org.glassfish.enterprise.admin.ncli;
+package org.glassfish.admin.ncli;
 
 import org.junit.*;
 import static org.junit.Assert.*;
-import static org.glassfish.enterprise.admin.ncli.ProgramOptionBuilder.*;
+import static org.glassfish.admin.ncli.ProgramOptionBuilder.*;
 
 import java.util.Set;
 

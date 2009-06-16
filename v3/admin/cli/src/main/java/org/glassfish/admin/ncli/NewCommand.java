@@ -34,10 +34,10 @@
  * holder.
  */
 
-package org.glassfish.enterprise.admin.ncli;
+package org.glassfish.admin.ncli;
 
 import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
-import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
+import org.glassfish.admin.ncli.comm.TargetServer;
 
 import java.util.Collections;
 import java.util.List;

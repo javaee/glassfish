@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.enterprise.admin.ncli;
+package org.glassfish.admin.ncli;
 
 import org.glassfish.api.admin.cli.OptionType;
 import org.glassfish.enterprise.admin.ncli.metadata.OperandDesc;

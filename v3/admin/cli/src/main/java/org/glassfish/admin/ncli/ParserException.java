@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.enterprise.admin.ncli;
+package org.glassfish.admin.ncli;
 
 /** Indicates an exception during parsing operation.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)

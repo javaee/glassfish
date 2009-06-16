@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.enterprise.admin.ncli;
+package org.glassfish.admin.ncli;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import org.glassfish.api.admin.cli.OptionType;

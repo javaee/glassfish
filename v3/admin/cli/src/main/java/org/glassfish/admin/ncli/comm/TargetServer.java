@@ -34,9 +34,9 @@
  *   holder.
  */
 
-package org.glassfish.enterprise.admin.ncli.comm;
+package org.glassfish.admin.ncli.comm;
 
-import static org.glassfish.enterprise.admin.ncli.Constants.*;
+import static org.glassfish.admin.ncli.Constants.*;
 
 /** Identifies a target administration server where the actual asadmin command is implemented. In the present
  *  scheme, a target server is a 5-tuple of <code> host name, port number, admin user name, admin password and

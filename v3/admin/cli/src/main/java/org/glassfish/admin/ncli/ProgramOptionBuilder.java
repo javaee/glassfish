@@ -34,11 +34,11 @@
  * holder.
  */
 
-package org.glassfish.enterprise.admin.ncli;
+package org.glassfish.admin.ncli;
 
 import org.glassfish.api.admin.cli.OptionType;
 import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
-import static org.glassfish.enterprise.admin.ncli.Constants.*;
+import static org.glassfish.admin.ncli.Constants.*;
 
 import java.util.Collections;
 import java.util.HashSet;

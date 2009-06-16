@@ -34,13 +34,13 @@
  * holder.
  */
 
-package org.glassfish.enterprise.admin.ncli;
+package org.glassfish.admin.ncli;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import org.glassfish.api.admin.cli.OptionType;
 import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
 import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
-import org.glassfish.enterprise.admin.ncli.comm.TargetServer;
+import org.glassfish.admin.ncli.comm.TargetServer;
 
 import java.io.*;
 import java.util.*;
