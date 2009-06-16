@@ -28,6 +28,7 @@ public class GlassFishORBFactoryImpl
 
     public void postConstruct() {
         gfORBManager = new GlassFishORBManager(habitat);
+        IIOPUtils.setInstance(iiopUtils);
         iiopUtils.setGlassFishORBManager(gfORBManager);
     }
 

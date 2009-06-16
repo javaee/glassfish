@@ -56,7 +56,6 @@ public class IIOPUtils implements PostConstruct {
     private GlassFishORBManager gfORBMgr;
 
     public void postConstruct() {
-        _me = this;
 
         processType = processEnv.getProcessType();
 
@@ -85,6 +84,11 @@ public class IIOPUtils implements PostConstruct {
 
     public static IIOPUtils getInstance() {
         return _me;
+    }
+
+
+    public static void setInstance(IIOPUtils utils) {
+        _me = utils;
     }
 
     void setGlassFishORBManager(GlassFishORBManager orbMgr) {
