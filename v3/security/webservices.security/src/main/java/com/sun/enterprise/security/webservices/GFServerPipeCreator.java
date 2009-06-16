@@ -64,14 +64,14 @@ import org.jvnet.hk2.component.Singleton;
  */
 @Service
 @Scoped(Singleton.class)
-public class ServerPipeCreator extends org.glassfish.webservices.ServerPipeCreator {
+public class GFServerPipeCreator extends org.glassfish.webservices.ServerPipeCreator {
     
     private static final String SECURITY_POLICY_NAMESPACE_URI_SUBMISSION = 
             "http://schemas.xmlsoap.org/ws/2005/07/securitypolicy";
     private static final String SECURITY_POLICY_NAMESPACE_URI_SPECVERSION= 
             "http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702";       
     
-    public ServerPipeCreator(){
+    public GFServerPipeCreator(){
         super();
     }
     

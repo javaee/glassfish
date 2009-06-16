@@ -51,7 +51,7 @@ public final class ConnectionContext implements Serializable {
     private boolean sslClientAuth = false;
     private boolean ssl = false;
     private IOR ior = null;
-    private Socket socket = null;
+    private transient Socket socket = null;
     private SocketInfo endpoint = null;
 
     /**

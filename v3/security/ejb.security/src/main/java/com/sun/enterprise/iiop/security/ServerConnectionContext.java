@@ -41,7 +41,7 @@ import java.net.Socket;
 
 
 public final class ServerConnectionContext implements Serializable {
-    private Socket socket = null;
+    private transient Socket socket = null;
 
     /**
      * Default constructor.
