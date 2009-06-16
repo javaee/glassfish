@@ -66,6 +66,8 @@ import java.text.DecimalFormat;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
+import org.glassfish.admingui.common.util.TargetUtil;
 
 
 
@@ -322,6 +324,47 @@ public class UtilHandlers {
             ex.printStackTrace();
             handlerCtx.setOutputValue("output", "");
         }
+    }
+
+
+    @Handler(id = "getListBoxOptions",
+    input = {
+        @HandlerInput(name = "availableList", type = List.class, required = true),
+        @HandlerInput(name = "selectedCommaString", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "availableListResult", type = List.class),
+        @HandlerOutput(name = "selectedOptions", type = String[].class)
+    })
+    public static void getListBoxOptions(HandlerContext handlerCtx) {
+        String selectedCommaString = (String) handlerCtx.getInputValue("selectedCommaString");
+        List<String> availableList = (List) handlerCtx.getInputValue("availableList");
+
+        String[] selectedOptions = null;
+        if (availableList != null && (availableList.size() > 0) ) {
+            selectedOptions = GuiUtil.stringToArray(selectedCommaString, ",");
+            if (selectedOptions != null && !(selectedOptions.length > 0)) {
+                //None is selected by default
+                selectedOptions = new String[]{availableList.get(0)};
+            }
+        }
+        handlerCtx.setOutputValue("availableListResult", availableList);
+        handlerCtx.setOutputValue("selectedOptions", selectedOptions);
+    }
+
+
+
+    @Handler(id = "convertArrayToCommaString",
+    input = {
+        @HandlerInput(name = "array", type = String[].class, required = true)},
+    output = {
+        @HandlerOutput(name = "commaString", type = String.class)})
+    public static void convertArrayToString(HandlerContext handlerCtx) {
+        String[] array = (String[])handlerCtx.getInputValue("array");
+        String commaString = "";
+		if( (array != null) && array.length > 0 ) {
+			commaString = GuiUtil.arrayToString(array, ",");
+		}
+        handlerCtx.setOutputValue("commaString", commaString);
     }
 
     /**
