@@ -4,6 +4,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../config/run.xml">
 <!ENTITY reporting   SYSTEM "file:./report.xml">
 ]>
 
@@ -11,9 +12,16 @@
 
     &commonSetup;
     &commonBuild;
+    &commonRun;
     &reporting;
 
     <target name="all">
+
+
+	<antcall target="start-database"/>
+
+        <ant target="startDomain"/>
+
         <delete>
            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
         </delete>
@@ -22,6 +30,7 @@
         </delete>
         <record name="ejb.output" action="start" />
 
+
         <ant dir="stubs" target="all"/>
         <ant dir="txprop" target="all"/>
         <ant dir="ejbc" target="all"/>  
@@ -29,20 +38,24 @@
         <ant dir="ejb30" target="all"/>
         <ant dir="mdb" target="all"/> 
         <ant dir="timer" target="all"/>
+        <ant dir="cmp" target="all"/>  
+        <ant dir="sfsb" target="all"/>
+        <ant dir="allowedmethods" target="all"/> 
+
 
 <!-- gradually reenable the existing tests as features come on line
 
         <ant dir="bmp" target="all"/>  
-        <ant dir="cmp" target="all"/>  
         <ant dir="jms" target="all"/>  
 
-
-        <ant dir="sfsb" target="all"/>
         <ant dir="util" target="all"/>
-
-
-        <ant dir="allowedmethods" target="all"/> // ok to go but so far only one that needs db
 -->
+
+        <echo message="Stopping app server instance"/>
+        <ant target="stopDomain"/>
+
+	<antcall target="stop-database"/>
+
 
         <record name="ejb.output" action="stop" />
         <antcall target="report"/>
@@ -59,6 +72,20 @@
         <ant dir="bmp" target="handle"/>  
         <ant dir="bmp" target="txtests"/> 
 -->
+    </target>
+
+    <target name="start-database" depends="init-common">
+        <echo message="Starting database"/>
+	<exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-database"/>
+	</exec>
+    </target>
+
+    <target name="stop-database" depends="init-common">
+        <echo message="Stopping database"/>
+	<exec executable="${ASADMIN}" failonerror="false">
+          <arg line="stop-database"/>
+	</exec>
     </target>
 
     <target name="allowedmethods">

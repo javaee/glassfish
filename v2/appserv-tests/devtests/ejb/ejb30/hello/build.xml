@@ -16,8 +16,15 @@
         <antcall target="session2"/>
         <antcall target="session2full"/>
         <antcall target="nopkg"/>
-        <antcall target="mdb"/>  
-        <antcall target="mdb2"/> <!-- @@@ fix message-destination-refs -->
+
+	<!-- reenable after next felix integration
+
+ <antcall target="mdb"/>  
+        <antcall target="mdb2"/> @@@ fix message-destination-refs 
+
+-->
+
+
         <antcall target="session4"/> <!-- @@@ without @EJB injection in uncooked client
 -->
 	<!-- gradually reenable as possible

@@ -16,10 +16,8 @@
         <antcall target="clientview"/>
         <antcall target="hello"/>
         <antcall target="interceptors"/>
+        <antcall target="persistence"/> 
 
-	<!--- gradually reenable as possible
-        <antcall target="persistence"/>  // no .ear support for EMs yet 
-	-->
     </target>
 
     <target name="clientview">

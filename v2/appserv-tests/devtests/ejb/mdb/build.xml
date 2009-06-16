@@ -12,10 +12,11 @@
     &reporting;
 
     <target name="all">
-        <antcall target="cmt"/>
+
+
 
 <!--- InitialContext lookup exception
-
+        <antcall target="cmt"/> 
        <antcall target="msgbean"/> 
 -->
 
