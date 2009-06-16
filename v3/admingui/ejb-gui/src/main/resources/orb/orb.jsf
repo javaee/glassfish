@@ -71,7 +71,7 @@
     <sun:form id="form1">
 #include "/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_ejb.headings.Orb}" helpText="$resource{i18n_ejb.orb.OrbInfo}" >
-#include "/shared/loadDefaultButton.inc"
+#include "/shared/editPageLoadDefaultButton.inc"
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
