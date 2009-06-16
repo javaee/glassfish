@@ -39,13 +39,11 @@
 <!initPage
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
-    setAttribute(key="edit" value="#{false}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.connectorResource.newPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        setPageSessionAttribute(key="edit" value="#{false}" );
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/connectorResourceNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/connectorResources.jsf");

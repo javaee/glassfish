@@ -39,7 +39,6 @@
 <!initPage
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
-    setAttribute(key="edit" value="#{false}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.adminObject.NewPageTitle}" >
 <!define name="content">
@@ -54,7 +53,7 @@
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc
-        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
