@@ -43,8 +43,6 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         setPageSessionAttribute(key="instanceName" value="server");       # we can hard code it here because this page is only for DAS                                   
-        setPageSessionAttribute(key="edit" value="#{true}" );
-        
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/admin-service,type=das-config");
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config],type=admin-service");

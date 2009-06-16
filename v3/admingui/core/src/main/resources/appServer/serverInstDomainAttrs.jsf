@@ -43,7 +43,6 @@
     <event>
         <!beforeCreate
             setSessionAttribute(key="serverInstTabs" value="domainAttrs");
-            setPageSessionAttribute(key="edit" value="#{true}" );
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             getRequestValue(key="name" value="#{pageSession.Name}");
             setPageSessionAttribute(key="objectNameStr", value="v3:pp=/,type=domain");
