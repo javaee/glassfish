@@ -147,10 +147,10 @@ public class V3AMX {
                 if (skipAttr.contains(key))
                     continue;
                 Object val = attrMap.get(key);
-                if ((val != null) && (!(val instanceof String))){
+                if ((val != null) && (!(val instanceof String)) && (!(val instanceof Boolean))){
                     continue;
                 }
-                Attribute attr = new Attribute(key, (String)val);
+                Attribute attr = new Attribute(key, val.toString());
                 attrList.add(attr);
             }
             setAttributes(objectName, attrList);
