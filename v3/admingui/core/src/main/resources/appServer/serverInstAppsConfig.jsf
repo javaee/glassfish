@@ -43,16 +43,42 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         setPageSessionAttribute(key="instanceName" value="server");       # we can hard code it here because this page is only for DAS                                   
-        setSessionAttribute(key="serverInstTabs" value="appConfig");
-        getServerAppsConfigAttributes(ConfigName="#{configName}", Reload=>$attribute{reload}, ReloadInterval=>$attribute{reloadInterval},
-            AutoDeploy=>$attribute{autoDeploy}, AdminTimeout=>$attribute{adminTimeout}, AutoDeployInterval=>$attribute{autoDeployInterval}, AutoDeployTimeout=>$attribute{autoDeployTimeout}, 
-            Verifier=>$attribute{verifier}, Precompile=>$attribute{precompile}, AutoDeployDirectory=>$attribute{autoDeployDirectory}, Properties=>$page{props});
-        getTableList(Properties="#{props}", TableList=>$attribute{tableList});
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/admin-service,type=das-config");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config],type=admin-service");
+        setPageSessionAttribute(key="childType" value="das-config");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"DynamicReloadEnabled" "AutodeployEnabled" "AutodeployVerifierEnabled" "AutodeployJspPrecompilationEnabled"});
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstAppsConfig.jsf");
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        
+        
         />
     </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
 #include "serverInstTabs.inc"
+#include "/shared/alertMsg.inc"
+   <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18n.server.AppsConfigPageTitle}" 
+        helpText="$resource{i18n.server.AppsConfigPageHelp}" >
+#include "/shared/editPageButtons.inc"
+    
+    "<br><br>
 #include "/shared/appConfig_2.inc"
-
+#include "/shared/propertyDescTable.inc"
+#include "/shared/editPageBottomButtons.inc"
+</sun:title>
+	<sun:hidden id="helpKey" value="$resource{help..serverInstAppsConfig}" />
+            </sun:form>
+</define>
+</composition>

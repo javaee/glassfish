@@ -43,15 +43,33 @@
     <event>
         <!beforeCreate
             setSessionAttribute(key="serverInstTabs" value="domainAttrs");
-            getServerDomainAttributes(AppRoot=>$attribute{appRoot}, LogRoot=>$attribute{logRoot}, Locale=>$attribute{locale});
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            getRequestValue(key="configName" value=>$page{configName} default="server-config");
+            getRequestValue(key="name" value="#{pageSession.Name}");
+            setPageSessionAttribute(key="objectNameStr", value="v3:pp=/,type=domain");
+            setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=,type=domain-root,name=v3");
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstDomainAttrs.jsf");
+             //set the following for including buttons.inc
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+            setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+            setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+             setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+            
         />   
     </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
 #include "serverInstTabs.inc"
 #include "/shared/alertMsg.inc"
-#include "/shared/domainAttributesCommon.inc"
+ <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18n.server.DomainAttrs}" >
+#include "/shared/editPageButtons.inc"
+    </sun:title>
+    "<br><br>
+#include "/appServer/domainAttributesCommon.inc"
 	<sun:hidden id="helpKey" value="$resource{help.serverInstDomainAttrs}" />
             </sun:form>
 </define>

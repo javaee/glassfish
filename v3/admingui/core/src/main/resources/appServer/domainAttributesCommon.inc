@@ -33,35 +33,19 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-                <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.server.DomainAttrs}" > 
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
-                            <!command
-                            saveServerDomainAttributes(
-                            AppRoot="#{appRoot}"
-                            LogRoot="#{logRoot}"
-                            Locale="#{locale}"
-                            );
-                            />
-                        </sun:button>
-                    </sun:panelGroup>
-                    </facet>                     
-                </sun:title>
+               
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.AppRoot}" helpText="$resource{i18n.server.AppRootHelp}">
-                                <sun:textField id="AppRoot" columns="$int{55}" text="#{requestScope.appRoot}"/> 
+                                <sun:textField id="AppRoot" columns="$int{55}" text="#{pageSession.valueMap['ApplicationRoot']}"/> 
                             </sun:property>                       
                             <sun:property id="logRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.LogRoot}" helpText="$resource{i18n.server.LogRootHelp}">                           
-                                <sun:textField id="LogRoot" columns="$int{55}" text="#{requestScope.logRoot}"/>     
+                                <sun:textField id="LogRoot" columns="$int{55}" text="#{pageSession.valueMap['LogRoot']}"/>     
                             </sun:property>                  
                             <sun:property id="localeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Locale}" helpText="$resource{i18n.server.LocaleHelp}">                           
-                                <sun:textField id="Locale" columns="$int{55}" text="#{requestScope.locale}"/>     
+                                <sun:textField id="Locale" columns="$int{55}" text="#{pageSession.valueMap['Locale']}"/>     
                             </sun:property>                                              
                         "<br /><br />
                         </sun:propertySheetSection>
