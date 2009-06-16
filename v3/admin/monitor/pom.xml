@@ -113,6 +113,14 @@
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.provider</groupId>
+            <artifactId>gfprobe-provider-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.gmbal</groupId>
+            <artifactId>gmbal</artifactId>
+        </dependency>
     </dependencies>
     <reporting>
         <plugins>
