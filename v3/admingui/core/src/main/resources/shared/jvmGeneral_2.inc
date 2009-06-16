@@ -39,58 +39,35 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jvm.GeneralTitle}" 
                     helpText="$resource{i18n.jvm.GeneralPageHelp}">
-                    <sun:button id="loadDefaults" style="margin-left: 8pt"  primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >    
-                        <!command
-                            getServerDefaultJvmAttributes(ConfigName="#{configName}", JavaHome=>$attribute{javaHome}, Options=>$attribute{javacOptions}, DebugEnabled=>$attribute{debugEnabled}, DebugOptions=>$attribute{debugOptions}, RmicOptions=>$attribute{rmicOptions}, BytecodePreprocessor=>$attribute{bytecodePreprocessor});
-                            />
-                    </sun:button>
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" 
-                                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " onKeyPress="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); "  >  
-                            <!command
-                            prepareSuccessfulMsg();
-                            saveServerJvmAttributes(
-                            ConfigName="#{configName}",
-                            JavaHome="#{javaHome}"
-                            JavacOptions="#{javacOptions}"
-                            DebugEnabled="#{debugEnabled}"
-                            DebugOptions="#{debugOptions}"
-                            RmicOptions="#{rmicOptions}"
-                            BytecodePreprocessor="#{bytecodePreprocessor}"
-                            );
-                            />
-                        </sun:button>
-                    </sun:panelGroup>
-                    </facet>                     
+#include "/shared/editPageButtons.inc"             
                 </sun:title>
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet" requiredFields="true">	
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="javaHomeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.JavaHomeLabel}" helpText="$resource{i18n.jvm.JavaHomeHelp}">
-                                <sun:textField id="JavaHome"  styleClass="required" columns="$int{55}" text="#{requestScope.javaHome}" required="#{true}"/> 
+                                <sun:textField id="JavaHome"  styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['JavaHome']}" required="#{true}"/> 
                             </sun:property>                       
                             <sun:property id="JavacOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.JavacOptionsLabel}" helpText="$resource{i18n.jvm.JavacOptionsHelp}">                           
-                                <sun:textField id="JavacOptions" columns="$int{55}" text="#{requestScope.javacOptions}"/>     
+                                <sun:textField id="JavacOptions" columns="$int{55}" text="#{pageSession.valueMap['JavacOptions']}"/>     
                             </sun:property>                        
                           <sun:property id="debugEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.DebugLabel}" helpText="$resource{i18n.jvm.DebugHelp}">
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.debugEnabled}" />      
+                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DebugEnabled']}" />      
                             </sun:property>
                             <sun:property id="DebugOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.DebugOptionsLabel}" helpText="$resource{i18n.jvm.DebugOptionsHelp}">
-                                <sun:textField id="DebugOptions" columns="$int{55}" text="#{requestScope.debugOptions}" />      
+                                <sun:textField id="DebugOptions" columns="$int{55}" text="#{pageSession.valueMap['DebugOptions']}" />      
                             </sun:property>
                             <sun:property id="RmicOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.RMICompileOptionsLabel}" helpText="$resource{i18n.jvm.RMICompileOptionsHelp}">
-                                <sun:textField id="RmicOptions" columns="$int{55}" text="#{requestScope.rmicOptions}"/>      
+                                <sun:textField id="RmicOptions" columns="$int{55}" text="#{pageSession.valueMap['RmicOptions']}"/>      
                             </sun:property> 
                             <sun:property id="bytecodePreprocessorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.BytecodePreprocessorLabel}" helpText="$resource{i18n.jvm.BytecodePreprocessorHelp}">
-                                <sun:textArea id="bytecodePreprocessor" rows="$int{8}" columns="$int{55}" text="#{requestScope.bytecodePreprocessor}"/>      
+                                <sun:textArea id="bytecodePreprocessor" rows="$int{8}" columns="$int{55}" text="#{pageSession.valueMap['BytecodePreprocessors']}"/>      
                             </sun:property>                  
                             "<br /><br />
                         </sun:propertySheetSection>
 
                     </sun:propertySheet>    
+#include "/shared/propertyDescTable.inc"
                     <sun:hidden id="helpKey" value="$resource{help.serverInstJvmGeneral}" />
             </sun:form>
 </define>

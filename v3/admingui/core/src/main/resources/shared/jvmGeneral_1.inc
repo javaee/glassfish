@@ -41,14 +41,25 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        # for EE, the following session attribute will just be ignored.
-        setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
-        setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
-        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        getServerJvmAttributes(ConfigName="#{configName}", JavaHome=>$attribute{javaHome}, 
-               JavacOptions=>$attribute{javacOptions}, DebugEnabled=>$attribute{debugEnabled},
-                    DebugOptions=>$attribute{debugOptions}, RmicOptions=>$attribute{rmicOptions}, 
-                    BytecodePreprocessor=>$attribute{bytecodePreprocessor});
+            # for EE, the following session attribute will just be ignored.
+            setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
+            setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            getRequestValue(key="configName" value=>$page{configName} default="server-config");
+            setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config],type=java-config");
+            setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=server-config");
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            setPageSessionAttribute(key="convertToFalseList" value={"DebugEnabled"});
+            setPageSessionAttribute(key="childType" value="java-config");            
+            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});            
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstJvmGeneral.jsf");
+            setPageSessionAttribute(key="skipAttrsList", value={"EnvClasspathIgnored" "ServerClasspath" "SystemClasspath" "ClasspathPrefix" "ClasspathSuffix" "NativeLibraryPathPrefix" "NativeLibraryPathSuffix"});
+             //set the following for including buttons.inc
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+            setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+            setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
 #include "/shared/restart.inc"
