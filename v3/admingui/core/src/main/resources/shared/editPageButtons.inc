@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- editPageButtons.inc -->
+<!-- shared/editPageButtons.inc -->
 
     <!-- To use this general include files for page buttons,  the following page Session attributes should be set:
         setPageSessionAttribute(key="edit" value="#{false}" );
@@ -43,50 +43,6 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
     -->
 
-    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDefaultButton}"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
-        <!command
-            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-        />
-    </sun:button>
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                if(#{pageSession.hasPropertySheet}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                    );
-                }
-                if (#{pageSession.hasPropertyTable}){
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                }
-                prepareSuccessfulMsg();
-                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
-                />
-            </sun:button>
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
-                <!command
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{pageSession.valueMap}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            result => $attribute{objStr});
-                    if (#{pageSession.hasPropertyTable}){
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                    }
-                    redirect(page="#{parentPage}?configName=#{configName}")
-                />
-            </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
+
+#include "/shared/editPageLoadDefaultButton.inc"
+#include "/shared/editPageButtons_2.inc"

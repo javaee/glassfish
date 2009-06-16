@@ -33,16 +33,19 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- editPageButtons.inc -->
+<!-- loadDefaultButton.inc -->
 
     <!-- To use this general include files for page buttons,  the following page Session attributes should be set:
-        setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
-        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
     -->
 
-    <sun:title  id="titleBottom" >
-#include "/shared/editPageButtons_2.inc"
-    </sun:title>
+    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDefaultButton}"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+        <!command
+            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+            if(#{pageSession.has2Objects}){
+                getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"  valueMap="#{pageSession.valueMap2}")
+
+            }
+        />
+    </sun:button>
+   
