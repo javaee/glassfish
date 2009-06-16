@@ -56,7 +56,7 @@ import com.sun.enterprise.deployment.*;
 public abstract class Generator {
 
 
-    protected static Logger _logger = LogDomains.getLogger(Generator.class, LogDomains.EJB_LOGGER);
+    protected static final Logger _logger = LogDomains.getLogger(Generator.class, LogDomains.EJB_LOGGER);
 
     protected String ejbClassSymbol;
 
