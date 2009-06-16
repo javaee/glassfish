@@ -3,60 +3,62 @@
  * and open the template in the editor.
  */
 
-package org.glassfish.admin.monitor.jvm.telemetry;
+package org.glassfish.admin.monitor.jvm;
 
-import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.monitoring.TelemetryProvider;
-import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
+import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.api.Startup;
 
 /**
  *
  * @author PRASHANTH ABBAGANI
  */
-@Service(name="jvm")
-@Scoped(Singleton.class)
-public class JVMTelemetryBootstrap implements TelemetryProvider, PostConstruct {
+@Service//(name="jvm")
+//@Scoped(Singleton.class)
+public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/ PostConstruct {
 
-    @Inject
-    Logger logger;
-    @Inject
-    private Domain domain;
-    @Inject
-    private MonitoringRuntimeDataRegistry mrdr;
-
-    private boolean jvmMonitoringEnabled = false;
-    private JVMStatsTelemetry jvmTM = null;
-    private TreeNode serverNode;
-
-    public JVMTelemetryBootstrap() {
-    }
+    //@Inject
+    //Logger logger;
 
     public void postConstruct(){
+        System.out.println (" In JVMStatsProviderBootstrap.PostConstruct ********");
+
         // to set log level, uncomment the following 
         // remember to comment it before checkin
         // remove this once we find a proper solution
-        Level dbgLevel = Level.FINEST;
-        Level defaultLevel = logger.getLevel();
-        if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
+        //Level dbgLevel = Level.FINEST;
+        //Level defaultLevel = logger.getLevel();
+        //if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
             //logger.setLevel(dbgLevel);
-        }
-        logger.finest("[Monitor]In the JVMTelemetry bootstrap ************");
+        //}
+        //logger.finest("[Monitor]In the JVMTelemetry bootstrap ************");
+        //Build the top level monitoring tree   
+        //buildTopLevelMonitoringTree();
 
-        //Build the top level monitoring tree
-        buildTopLevelMonitoringTree();        
+        /* register with monitoring */
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", new JVMClassLoadingStatsProvider());
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/compilation-system", new JVMCompilationStatsProvider());
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/garbage-collectors", new JVMGCStatsProvider());
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/memory", new JVMMemoryStatsProvider());
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/operating-system", new JVMOSStatsProvider());
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/runtime", new JVMRuntimeStatsProvider());
     }
-    
-    public void onLevelChange(String newLevel) {
+
+    public Lifecycle getLifecycle() {
+        return Startup.Lifecycle.SERVER;
+    }
+
+    /*public void onLevelChange(String newLevel) {
         boolean newLevelEnabledValue = getEnabledValue(newLevel);
         logger.finest("[Monitor]In the Level Change = " + newLevel + "  ************");
         if (jvmMonitoringEnabled != newLevelEnabledValue) {
@@ -113,7 +115,7 @@ public class JVMTelemetryBootstrap implements TelemetryProvider, PostConstruct {
 
     private void buildJVMTelemetry() {
         if (jvmTM == null) {
-            jvmTM = new JVMStatsTelemetry(serverNode, logger);
+            jvmTM = new JVMStatsProvider(serverNode, logger);
         }
     }
 
@@ -130,5 +132,5 @@ public class JVMTelemetryBootstrap implements TelemetryProvider, PostConstruct {
         } else { // asking to enable
             buildJVMTelemetry();
         }
-    }
+    }*/
 }
