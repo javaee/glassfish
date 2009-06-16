@@ -36,7 +36,7 @@
 
 package org.glassfish.admin.ncli;
 
-import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
+import org.glassfish.admin.ncli.metadata.CommandDesc;
 import org.glassfish.admin.ncli.comm.TargetServer;
 
 import java.util.Collections;
@@ -60,7 +60,7 @@ import java.util.List;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @see Option
  * @see Operand
- * @see org.glassfish.enterprise.admin.ncli.metadata.OptionDesc
+ * @see org.glassfish.admin.ncli.metadata.OptionDesc
  * @see CommandDesc
  */
 final class NewCommand {

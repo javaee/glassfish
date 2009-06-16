@@ -36,7 +36,7 @@
 
 package org.glassfish.admin.ncli;
 
-import org.glassfish.enterprise.admin.ncli.metadata.CommandDesc;
+import org.glassfish.admin.ncli.metadata.CommandDesc;
 import org.glassfish.admin.ncli.comm.TargetServer;
 
 import java.util.Map;

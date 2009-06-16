@@ -163,7 +163,7 @@
                 <configuration>
                     <schemaLanguage>DTD</schemaLanguage>
                     <schemaDirectory>src/main/resources</schemaDirectory>
-                    <generatePackage>org.glassfish.enterprise.admin.ncli.metadata</generatePackage>
+                    <generatePackage>org.glassfish.admin.ncli.metadata</generatePackage>
                     <schemaIncludes>
                         <include>cmd-metadata.dtd</include>
                     </schemaIncludes>

@@ -37,7 +37,7 @@
 package org.glassfish.admin.ncli;
 
 import org.glassfish.api.admin.cli.OptionType;
-import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
+import org.glassfish.admin.ncli.metadata.OptionDesc;
 
 import java.io.File;
 import java.util.ArrayList;

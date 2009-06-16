@@ -37,7 +37,7 @@
 package org.glassfish.admin.ncli;
 
 import org.glassfish.api.admin.cli.OptionType;
-import org.glassfish.enterprise.admin.ncli.metadata.OptionDesc;
+import org.glassfish.admin.ncli.metadata.OptionDesc;
 import static org.glassfish.admin.ncli.Constants.*;
 
 import java.util.Collections;
@@ -50,7 +50,7 @@ import java.util.Set;
  *
  *  This is modeled as a Singleton class.  That instance of this class is immutable.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
- * @see org.glassfish.enterprise.admin.ncli.metadata.OptionDesc
+ * @see org.glassfish.admin.ncli.metadata.OptionDesc
  */
 public final class ProgramOptionBuilder {
 

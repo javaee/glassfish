@@ -37,7 +37,7 @@
 package org.glassfish.admin.ncli;
 
 import org.glassfish.api.admin.cli.OptionType;
-import org.glassfish.enterprise.admin.ncli.metadata.OperandDesc;
+import org.glassfish.admin.ncli.metadata.OperandDesc;
 
 import java.io.File;
 
@@ -53,7 +53,7 @@ import java.io.File;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @see org.glassfish.api.admin.cli.OptionType
  * @see Option
- * @see org.glassfish.enterprise.admin.ncli.metadata.OperandDesc
+ * @see org.glassfish.admin.ncli.metadata.OperandDesc
  */
 final class Operand {
 

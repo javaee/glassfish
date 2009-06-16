@@ -36,21 +36,23 @@
 
 package org.glassfish.admin.ncli;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.glassfish.admin.ncli.ProgramOptionBuilder.*;
 import static org.glassfish.admin.ncli.Constants.*;
+import static org.glassfish.admin.ncli.ProgramOptionBuilder.*;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.Set;
 
-/** Tests for commands with the new syntax.
- * <p>
- *  <code>
- *  [asadmin-program-options] command-name [command-options-and-operands]
+/**
+ * Tests for commands with the new syntax.
+ * <p/>
+ * <code>
+ * [asadmin-program-options] command-name [command-options-and-operands]
  * </code>
- * <p>
- *  All the tests should assert that CommandRunner#usesDeprecatedSyntax()
- *  <b> is FALSE</b>.
+ * <p/>
+ * All the tests should assert that CommandRunner#usesDeprecatedSyntax()
+ * <b> is FALSE</b>.
+ *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 public class NewSyntaxTest {
@@ -59,11 +61,11 @@ public class NewSyntaxTest {
         String cmd = "foo";
 
         // this is the command line with *just* the command name on it.
-	// Everything should be defaulted in that case.
-	CommandRunner r = new CommandRunner(System.out, System.err);
-        r.parseMetaOptions(new String[] { cmd });
+        // Everything should be defaulted in that case.
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(new String[]{cmd});
         Set<Option> pos = r.getProgramOptions();
-        
+
         Option op = getOptionNamed(pos, HOST);
         assertEquals(DEFAULT_HOST, op.getEffectiveValue());
 
@@ -97,7 +99,7 @@ public class NewSyntaxTest {
         String GIVEN_HOST = "foo";
         String GIVEN_PORT = "4544";
         String[] cmdline = new String[]{"--host", GIVEN_HOST, "--port", GIVEN_PORT, "--secure", cmd, cmdArg1, cmdArg2};
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
         assertEquals(cmd, r.getCommandName());
         assertFalse(r.usesDeprecatedSyntax());
@@ -122,7 +124,7 @@ public class NewSyntaxTest {
         String[] cmdArgs = new String[]{arg1, arg2, arg3};
         String pHost = "asadminhost";
         String[] cmdline = new String[]{"--host", pHost, cmd, arg1, arg2, arg3};
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
         assertFalse(r.usesDeprecatedSyntax());
         assertEquals(cmd, r.getCommandName());
@@ -130,7 +132,7 @@ public class NewSyntaxTest {
 
         //now test program options
         Option propt = getOptionNamed(r.getProgramOptions(), PORT);
-        assertEquals(""+DEFAULT_PORT, propt.getEffectiveValue());
+        assertEquals("" + DEFAULT_PORT, propt.getEffectiveValue());
 
         propt = getOptionNamed(r.getProgramOptions(), HOST);
         assertEquals(pHost, propt.getEffectiveValue());
@@ -139,29 +141,29 @@ public class NewSyntaxTest {
         assertEquals("false", propt.getEffectiveValue().toLowerCase());
     }
 
-    @Test (expected = ParserException.class)
+    @Test(expected = ParserException.class)
     public void invalidProgramOption() throws ParserException {
         String[] cmdline = new String[]{"--invalid", "some-command", "--option", "value", "operand"}; //there is no program option named invalid
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
     }
 
-    @Test (expected = ParserException.class)
+    @Test(expected = ParserException.class)
     public void missingCommand() throws ParserException {
         String[] cmdline = new String[]{"--host", "foo", "--port=1234", "-s", "-eI", "-u", "admin"}; // all valid program options, but no command :-)
-	CommandRunner r = new CommandRunner(System.out, System.err);
+        CommandRunner r = new CommandRunner(System.out, System.err);
         r.parseMetaOptions(cmdline);
     }
 
     @Test
     public void allDefaults() throws ParserException {
-        String[] cmdline = new String[] {"command-alone"};
-	CommandRunner r = new CommandRunner(System.out, System.err);
-	r.parseMetaOptions(cmdline);
+        String[] cmdline = new String[]{"command-alone"};
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(cmdline);
         assertFalse(r.usesDeprecatedSyntax());
         Set<Option> propts = r.getProgramOptions();
-        for(Option propt : propts) {
-            String name  = propt.getName();
+        for (Option propt : propts) {
+            String name = propt.getName();
             String value = propt.getEffectiveValue();
             if (HOST.equals(name))
                 assertEquals(DEFAULT_HOST, value);
@@ -190,8 +192,8 @@ public class NewSyntaxTest {
         String host = "myhost";
         String cmd = "cmd";
         String[] cmdline = new String[]{"-H", host, cmd};
-	CommandRunner r = new CommandRunner(System.out, System.err);
-	r.parseMetaOptions(cmdline);
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(cmdline);
         assertFalse(r.usesDeprecatedSyntax());
         Option op = getOptionNamed(r.getProgramOptions(), HOST);
         assertNotNull(op);
@@ -203,8 +205,8 @@ public class NewSyntaxTest {
         String port = "1234";
         String cmd = "cmd";
         String[] cmdline = new String[]{"-p", port, cmd};
-	CommandRunner r = new CommandRunner(System.out, System.err);
-	r.parseMetaOptions(cmdline);
+        CommandRunner r = new CommandRunner(System.out, System.err);
+        r.parseMetaOptions(cmdline);
         assertFalse(r.usesDeprecatedSyntax());
         Option op = getOptionNamed(r.getProgramOptions(), PORT);
         assertNotNull(op);
