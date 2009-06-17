@@ -38,18 +38,46 @@
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
-        setAttribute(key="helpKey" value="$resource{help_web.virtualServerNew}");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.vs.NewTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.vs.NewTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.vs.NewPageHelp}");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/virtualServerNew.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="childType" value="virtual-server");
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="convertToFalseList" value={"AccessLoggingEnabled", "SsoEnabled"});
+        //setPageSessionAttribute(key="has2Objects" value="#{true}");
         setPageSessionAttribute(key="edit" value="#{false}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
-#include "virtualServerCommon.inc"
+#include "/shared/restart.inc"
+    <sun:form id="propertyForm">
+        //#include treeBreadcrumbs.inc
+#include "/shared/alertMsg.inc"
+
+    <sun:title id="propertyContentPage" title="$resource{i18n_web.vs.NewTitle}" helpText="$resource{i18n_web.vs.NewPageHelp}">
+#include "/shared/editPageLoadDefaultButton.inc"
+#include "/web/configuration/virtualServerButtons.inc"
+    </sun:title>
+    "<br>
+#include "/web/configuration/virtualServerAttrs.inc"
+#include "/shared/propertyDescTable.inc"
+    <sun:title id="title2">
+#include "/web/configuration/virtualServerButtons.inc"
+    </sun:title>
+    "<br>
+<sun:hidden id="helpKey" value="$resource{help_web.virtualServerNew}" />
+
+    </sun:form>
+    "<br/>
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>

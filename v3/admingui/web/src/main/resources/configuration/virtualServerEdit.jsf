@@ -34,27 +34,58 @@
  holder.
 -->
 <!-- configuration/virtualServerEdit.jsf -->
-<!-- TODO:  missing Description link for Hosts 
-	    missing Descrition link for logfile
--->
+
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
-    setAttribute(key="helpKey" value="$resource{help_web.virtualServerEdit}");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.vs.EditTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.vs.EditTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-    getRequestValue(key="configName", value=>$page{configName}  default="server-config");
-    getRequestValue(key="name", value=>$page{name});
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.vs.EditTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.vs.PageHelp}");
-    setPageSessionAttribute(key="edit" value="#{true}" );
-    />
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="childType" value="virtual-server");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=#{pageSession.Name}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        println("#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"AccessLoggingEnabled", "SsoEnabled"});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        />
     </event>
-#include "virtualServerCommon.inc"    
+#include "/shared/restart.inc"
+            <sun:form id="propertyForm">
+#include "/shared/alertMsg.inc"
+
+
+<sun:title id="propertyContentPage" title="$resource{i18n_web.vs.EditTitle}" helpText="$resource{i18n_web.vs.PageHelp}">
+#include "/shared/editPageLoadDefaultButton.inc"
+#include "/web/configuration/virtualServerButtons.inc"
+    </sun:title>
+    "<br>
+#include "/web/configuration/virtualServerAttrs.inc"
+#include "/shared/propertyDescTable.inc"
+    <sun:title id="title2">
+#include "/web/configuration/virtualServerButtons.inc"
+    </sun:title>
+    "<br>
+<sun:hidden id="helpKey" value="$resource{help_web.virtualServerEdit}" />
+
+    </sun:form>
+    "<br/>
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
+
+
+
 

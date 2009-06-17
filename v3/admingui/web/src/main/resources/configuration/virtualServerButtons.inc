@@ -34,62 +34,47 @@
  holder.
 -->
 
-        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" 
-                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-            <!command
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-            prepareSuccessfulMsg();
-            saveVirtualServerSettings(
-                ConfigName="#{configName}",
-                Name="#{name}",
-                Edit="#{edit}",                        
-                newProps="${newProps}",
-                Hosts="#{hosts}",
-                Http="#{http}",
-                Web="#{web}",
-                LogFile="#{logFile}",
-                StateOption="#{stateGp}",
-                accesslog="#{accesslog}",
-                accessLogBufferSize="#{accessLogBufferSize}",
-                accessLogWriteInterval="#{accessLogWriteInterval}",
-                docroot="#{docroot}",
-                sso="#{sso}",
-                accessLoggingFlag="#{accessLoggingFlagGp}"
-            );
-            redirect(page="#{request.contextPath}/web/configuration/virtualServerEdit.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{name}&configName=$pageSession{configName}");
-            />    
-        </sun:button>
+<!-- configuration/virtualServerButtons.inc -->
 
-    <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" 
-            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-        <!command
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-            saveVirtualServerSettings(
-                ConfigName="#{configName}",
-                Name="#{name}",
-                Edit="#{edit}",                        
-                newProps="${newProps}",
-                Hosts="#{hosts}",
-                Http="#{http}",
-                Web="#{web}",
-                LogFile="#{logFile}",
-                StateOption="#{stateGp}",
-                accesslog="#{accesslog}",
-                accessLogBufferSize="#{accessLogBufferSize}",
-                accessLogWriteInterval="#{accessLogWriteInterval}",
-                docroot="#{docroot}",
-                sso="#{sso}",
-                accessLoggingFlag="#{accessLoggingFlagGp}"
-            );            
-            redirect(page="#{request.contextPath}/web/configuration/virtualServers.jsf?configName=#{configName}")
-        />
-    </sun:button>
-    <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-        <!command
-            redirect(page="#{request.contextPath}/web/configuration/virtualServers.jsf?configName=#{configName}");
-        />
-  </sun:button>
+<!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
+                    mapPut(map="#{pageSession.valueMap}" key="NetworkListeners" value="$attribute{tmp}");
+                    mapPut(map="#{pageSession.valueMap}" key="State" value="#{requestScope.stateGp}");
+                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                    );
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    prepareSuccessfulMsg();
+                    redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                />
+            </sun:button>
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
+                    mapPut(map="#{pageSession.valueMap}" key="NetworkListeners" value="$attribute{tmp}");
+                    mapPut(map="#{pageSession.valueMap}" key="State" value="#{requestScope.stateGp}");
+                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                        attrs="#{pageSession.valueMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        result => $attribute{objStr});
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    redirect(page="#{parentPage}?configName=#{configName}")
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    redirect(page="#{parentPage}?configName=#{configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>

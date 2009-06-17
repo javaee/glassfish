@@ -41,35 +41,71 @@
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.vs.ListPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.vs.ListPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-    getRequestValue(key="configName" value=>$page{configName} default="server-config");
-    getVirtualServerList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
-    setPageSessionAttribute(key="tableTitle" value="$resource{i18n.vs.TableTitle}");
-    setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
-    setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/virtualServerNew.jsf");
-    setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf");
-    setPageSessionAttribute(key="hasPort" value="#{false}");
-    setPageSessionAttribute(key="hasClassname" value="#{false}");
-    setPageSessionAttribute(key="hasState" value="#{true}");
-    setPageSessionAttribute(key="hasPolicy" value="#{false}");
-    setPageSessionAttribute(key="hasHost" value="#{false}");    
-    setPageSessionAttribute(key="type" value="virtualServer");
-    setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteVS}");
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="childType" value="virtual-server");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteVS}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/virtualServerNew.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/configuration/virtualServers.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf?configName=#{configName}");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18n_web.vs.TableTitle}");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18n.vs.TableTitle}");
     />
     </event>
 #include "/shared/restart.inc"    
 
-            <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
+    <sun:form id="propertyForm">
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n.vs.ListPageTitle}"
-                 helpText="$resource{i18n.vs.ListPageHelp}" />
+        <sun:title id="propertyContentPage" title="$resource{i18n_web.vs.ListPageTitle}"
+                 helpText="$resource{i18n_web.vs.ListPageHelp}" />
 		 "<br /> <br />
-#include "configsTable.inc"                 
-	<sun:hidden id="helpKey" value="$resource{help_web.virtualServers}" />
+        <sun:table id="configs" title="#{tableTitle}"
+            deselectMultipleButton="$boolean{true}"
+            deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+            selectMultipleButton="$boolean{true}"
+            selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{tableId});
+            />
+
+#include "/shared/listTableButtons.inc"
+
+           <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+             <!afterCreate
+                 getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+                />
+            <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+                    <sun:checkbox id="select"
+                        selected="#{td.value.selected}"
+                        selectedValue="$boolean{true}"
+                        onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)"
+                    />
+            </sun:tableColumn>
+
+            <sun:tableColumn headerText="$resource{i18n.common.name.header}" sort="Name" rowHeader="$boolean{true}" id="col1">
+                <sun:hyperlink id="link" text="#{td.value.Name}"
+                    url="#{pageSession.editLink}&name=#{td.value.Name}" />
+            </sun:tableColumn>
+
+                 <sun:tableColumn headerText="$resource{i18n_web.vs.StateTableColumn}" sort="State" rowHeader="$boolean{true}" id="col2">
+                <staticText id="stateCol"  value="#{td.value.State}" />
+            </sun:tableColumn>
+
+            <sun:tableColumn headerText="$resource{i18n_web.vs.DefaultWebTableColumn}"  sort="DefaultWebModule" rowHeader="$boolean{true}" id="col3">
+                <staticText id="stateCol"  value="#{td.value.DefaultWebModule}" />
+            </sun:tableColumn>
+        </sun:tableRowGroup>
+        </sun:table>
+
+<sun:hidden id="helpKey" value="$resource{help_web.virtualServers}" />
             </sun:form>
+            "<br>
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
+
