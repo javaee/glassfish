@@ -35,24 +35,22 @@
  */
 package org.glassfish.web.admin.monitor;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.jvnet.hk2.component.PostConstruct;
-
-import org.glassfish.flashlight.statistics.*;
-import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
-import org.glassfish.flashlight.client.ProbeListener;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
 import org.glassfish.api.statistics.CountStatistic;
 import org.glassfish.api.statistics.TimeStatistic;
 import org.glassfish.api.statistics.impl.CountStatisticImpl;
 import org.glassfish.api.statistics.impl.TimeStatisticImpl;
-import java.util.HashMap;
-
+import org.glassfish.flashlight.statistics.*;
+import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
+import org.glassfish.flashlight.client.ProbeListener;
+import org.glassfish.flashlight.provider.annotations.ProbeParam;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Provides the monitoring data at the Web container level
@@ -112,7 +110,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
     public void postConstruct() {
     }
 
-    @ManagedAttribute(id="maxtime-count")
+    @ManagedAttribute(id="maxtime")
     @Description( "Provides the longest response time for a response - not a cumulative value, but the largest response time from among response times." )
     public TimeStatistic getMaximumTime() {
         TimeStatisticImpl maxTime = new TimeStatisticImpl(
@@ -128,7 +126,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
         return maxTime;
     }
 
-    @ManagedAttribute(id="requestcount-count")
+    @ManagedAttribute(id="requestcount")
     @Description( "Provides cumulative number of requests processed so far" )
     public CountStatistic getCount() {
         CountStatisticImpl requestCount = new CountStatisticImpl(
@@ -139,7 +137,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
         return requestCount;
     }
 
-    @ManagedAttribute(id="processingtime-count")
+    @ManagedAttribute(id="processingtime")
     @Description( "Provides cumulative value of the times taken to process each request The processing time is the average request processing times over the request count." )
     public TimeStatistic getTime() {
         TimeStatisticImpl processingTime = new TimeStatisticImpl(
@@ -155,85 +153,85 @@ public class HttpServiceStatsProvider implements PostConstruct {
         return processingTime;
     }
 
-    @ManagedAttribute(id="errorcount-count")
+    @ManagedAttribute(id="errorcount")
     @Description( "" )
     public CountStatistic getErrorCount() {
         return errorCount;
     }
     
-    @ManagedAttribute(id="count200-count")
+    @ManagedAttribute(id="count200")
     @Description( "" )
     public CountStatistic getError200Count() {
         return error200Count;
     }
     
-    @ManagedAttribute(id="count2xx-count")
+    @ManagedAttribute(id="count2xx")
     @Description( "" )
     public CountStatistic getError2xxCount() {
         return error2xxCount;
     }
     
-    @ManagedAttribute(id="count302-count")
+    @ManagedAttribute(id="count302")
     @Description( "" )
     public CountStatistic getError302Count() {
         return error302Count;
     }
     
-    @ManagedAttribute(id="count304-count")
+    @ManagedAttribute(id="count304")
     @Description( "" )
     public CountStatistic getError304Count() {
         return error304Count;
     }
 
-    @ManagedAttribute(id="count3xx-count")
+    @ManagedAttribute(id="count3xx")
     @Description( "" )
     public CountStatistic getError3xxCount() {
         return error3xxCount;
     }
 
-    @ManagedAttribute(id="count400-count")
+    @ManagedAttribute(id="count400")
     @Description( "" )
     public CountStatistic getError400Count() {
         return error400Count;
     }
 
-    @ManagedAttribute(id="count401-count")
+    @ManagedAttribute(id="count401")
     @Description( "" )
     public CountStatistic getError401Count() {
         return error401Count;
     }
 
-    @ManagedAttribute(id="count403-count")
+    @ManagedAttribute(id="count403")
     @Description( "" )
     public CountStatistic getError403Count() {
         return error403Count;
     }
 
-    @ManagedAttribute(id="count404-count")
+    @ManagedAttribute(id="count404")
     @Description( "" )
     public CountStatistic getError404Count() {
         return error404Count;
     }
 
-    @ManagedAttribute(id="count4xx-count")
+    @ManagedAttribute(id="count4xx")
     @Description( "" )
     public CountStatistic getError4xxCount() {
         return error4xxCount;
     }
 
-    @ManagedAttribute(id="count503-count")
+    @ManagedAttribute(id="count503")
     @Description( "" )
     public CountStatistic getError503Count() {
         return error503Count;
     }
 
-    @ManagedAttribute(id="count5xx-count")
+    @ManagedAttribute(id="count5xx")
     @Description( "" )
     public CountStatistic getError5xxCount() {
         return this.error5xxCount;
     }
 
-    @ManagedAttribute(id="countother-count")
+    @ManagedAttribute(id="countother")
     @Description( "" )
     public CountStatistic getErrorOtherCount() {
         return this.errorOtherCount;
