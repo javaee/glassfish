@@ -19,4 +19,4 @@ To install and run:
 - Run asupgrade or asupgrade.bat script. With no arguments it will
   bring up the GUI. Arguments are:
     asupgrade -c    -> Runs the cli
-    asupgrade -help	-> Shows all options
+    asupgrade -h	-> Shows all options
