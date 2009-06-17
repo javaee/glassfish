@@ -191,12 +191,6 @@ public ResultReport unConfigure (final PropertySheet aSheet, final boolean aVali
     	if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
 		WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
 		wsShortMgr.deleteFolder(folderName);
-	/* As a workaround also cleanup the folder created by Open Installer. */	
-		String theInstallHome = installDir.replace("\\", "-");
-		theInstallHome = theInstallHome.replace("/", "-");
-		theInstallHome = theInstallHome.replace(":", "-");
-                LOGGER.log(Level.INFO, "Removing Foldername" + folderName + " (" + theInstallHome + ")");
-		wsShortMgr.deleteFolder(folderName + " (" + theInstallHome + ")");
 	}
      }
      catch (Exception e) {
