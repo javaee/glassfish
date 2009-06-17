@@ -41,7 +41,12 @@
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );   // true is default
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );    //false is default
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );   //false is default
+        
         setPageSessionAttribute(key="has2Objects" value="#{true}" );        //false is default
+        For creating new objects, if #{pageSession.parentObjectNameStr2} is specified, it will be used as the parent for creating the 2nd config.
+        otherwise, it means the 2nd config is the sub-element, and the newly created object will be used as the parent to create
+        the 2nd object.
+
     -->
 
     <!facet pageButtonsTop>
@@ -78,10 +83,19 @@
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
                     if(#{pageSession.has2Objects}){
-                        createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"
-                            attrs="#{pageSession.valueMap2}"
-                            convertToFalse="#{pageSession.convertToFalseList2}"
-                            result => $attribute{objStr2});
+                        if (#{pageSession.parentObjectNameStr2}){
+                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"
+                                attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{objStr2});
+                        }
+                        if (!#{pageSession.parentObjectNameStr2}){
+                            //create as a sub-element
+                            createProxy(parentObjectNameStr="$attribute{objStr}" childType="#{pageSession.childType2}"
+                                attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{objStr2});
+                        }
                     }
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
