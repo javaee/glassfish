@@ -613,6 +613,7 @@ public class Request
         localPort = -1;
         localAddr = null;
         localName = null;        
+        multipart = null;
 
         attributes.clear();
         notes.clear();
