@@ -81,7 +81,6 @@
         <dependency>
             <groupId>com.sun.pkg</groupId>
 	    <artifactId>pkg-client</artifactId>
-	    <version>${uc-pkg-client.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>

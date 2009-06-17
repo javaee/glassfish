@@ -140,7 +140,6 @@
 	<dependency>
 	    <groupId>com.sun.pkg</groupId>
 	    <artifactId>pkg-client</artifactId>
-	    <version>${uc-pkg-client.version}</version>
 	</dependency>
 	<dependency>
             <groupId>org.glassfish.flashlight</groupId>

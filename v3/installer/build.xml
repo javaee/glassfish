@@ -58,7 +58,7 @@
 	<!-- This is a onetime task, so just do this once. -->
 	<target name="setup_dependencies" description="Pull in required dependencies for build/runtime of installer.">
 		<echo message="Setting up required IPS dependencies" />
-		<resolveArtifact groupID="com.sun.pkg.bootstrap" artifactId="pkg-bootstrap" property="pkg-bootstrap.jar" />
+		<resolveArtifact groupID="com.sun.pkg" artifactId="pkg-bootstrap" property="pkg-bootstrap.jar" />
 		<resolveArtifact groupID="com.sun.pkg" artifactId="pkg-client" property="pkg-client.jar" />
 
 		<echo message="Setting up required registration module dependencies" />
