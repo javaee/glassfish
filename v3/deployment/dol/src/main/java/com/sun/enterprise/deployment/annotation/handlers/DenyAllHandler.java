@@ -87,7 +87,7 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        if (validateAccessControlAnnotations(ainfo)) {
+        if (!validateAccessControlAnnotations(ainfo)) {
             return getDefaultFailedResult();
         }
 

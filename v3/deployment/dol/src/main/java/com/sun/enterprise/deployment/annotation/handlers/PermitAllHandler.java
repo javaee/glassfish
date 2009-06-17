@@ -87,7 +87,7 @@ public class PermitAllHandler extends AbstractCommonAttributeHandler implements 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        if (validateAccessControlAnnotations(ainfo)) {
+        if (!validateAccessControlAnnotations(ainfo)) {
             return getDefaultFailedResult();
         }
 
