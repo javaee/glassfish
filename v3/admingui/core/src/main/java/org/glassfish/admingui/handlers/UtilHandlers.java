@@ -66,8 +66,8 @@ import java.text.DecimalFormat;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
-import org.glassfish.admingui.common.util.TargetUtil;
 
 
 
@@ -330,7 +330,8 @@ public class UtilHandlers {
     @Handler(id = "getListBoxOptions",
     input = {
         @HandlerInput(name = "availableList", type = List.class, required = true),
-        @HandlerInput(name = "selectedCommaString", type = String.class, required = true)},
+        @HandlerInput(name = "selectedCommaString", type = String.class, required = true),
+        @HandlerInput(name = "addEmptyFirstChoice", type = String.class)},
     output = {
         @HandlerOutput(name = "availableListResult", type = List.class),
         @HandlerOutput(name = "selectedOptions", type = String[].class)
@@ -338,8 +339,15 @@ public class UtilHandlers {
     public static void getListBoxOptions(HandlerContext handlerCtx) {
         String selectedCommaString = (String) handlerCtx.getInputValue("selectedCommaString");
         List<String> availableList = (List) handlerCtx.getInputValue("availableList");
+        String addEmptyFirstChoice = (String) handlerCtx.getInputValue("addEmptyFirstChoice");
 
         String[] selectedOptions = null;
+        if (addEmptyFirstChoice != null){
+            if (availableList == null){
+                availableList = new ArrayList();
+            }
+            availableList.add(0, "");
+        }
         if (availableList != null && (availableList.size() > 0) ) {
             selectedOptions = GuiUtil.stringToArray(selectedCommaString, ",");
             if (selectedOptions != null && !(selectedOptions.length > 0)) {
