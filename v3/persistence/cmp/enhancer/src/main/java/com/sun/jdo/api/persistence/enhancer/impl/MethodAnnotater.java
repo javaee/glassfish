@@ -2484,10 +2484,12 @@ class MethodAnnotater
             case TC_INTERFACE:
             case TC_STRING:
                 words = 1;
+                break;
 
             case T_DOUBLE:
             case T_LONG:
                 words = 2;
+                break;
 
             default:
                 break;

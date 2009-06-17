@@ -87,22 +87,10 @@ public abstract class Model
 	/** Default instance of the model used by the enhancer. */
 	public static final Model ENHANCER;
 
-	/** Standard set of arguments for comparison with equals method.
-	 */
-	public static final String[] EQUALS_ARGS = {"java.lang.Object"}; //NOI18N
-
 	/** Standard set of empty arguments (for comparison with hashCode method
 	 * and no-arg constructor).
 	 */
 	public static final String[] NO_ARGS = new String[0];
-
-	/** Standard set of arguments for comparison with readObject method.
-	 */
-	public static final String[] READ_OBJECT_ARGS = {"java.io.ObjectInputStream"}; //NOI18N
-
-	/** Standard set of arguments for comparison with writeObject method.
-	 */
-	public static final String[] WRITE_OBJECT_ARGS = {"java.io.ObjectOutputStream"}; //NOI18N
 
 	/** Map of mapping class elements which have been loaded.  Keys are fully
 	 * qualified class names.
@@ -1721,6 +1709,27 @@ public abstract class Model
 		return new ModelValidator(this, className, classLoader, 
 			((bundle == null) ? getMessages() : bundle)).fullValidationCheck();
 	}
+
+    /** Standard set of arguments for comparison with readObject method.
+     */
+    public static String[] getReadObjectArgs() {
+        // Creating and returning a new array every time to prevent returning a mutable array
+        return new String[] {"java.io.ObjectInputStream"}; //NOI18N
+    }
+
+    /** Standard set of arguments for comparison with equals method.
+     */
+    public static String[] getEqualsArgs() {
+        // Creating and returning a new array every time to prevent returning a mutable array
+        return new String[] {"java.lang.Object"}; //NOI18N
+    }
+
+	/** Standard set of arguments for comparison with writeObject method.
+	 */
+    public static String[] getWriteObjectArgs() {
+        // Creating and returning a new array every time to prevent returning a mutable array 
+        return new String[] {"java.io.ObjectOutputStream"}; //NOI18N
+    }
 
 }
 

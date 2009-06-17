@@ -363,7 +363,7 @@ public class MappingGenerator {
             // if useUniqueTableName flag is true.
             // if useUniqueTableName flag is false, ejb name is used for 
             // table name and hash class name is ignored. 
-            if (useUniqueTableNames & hashClassName.equals(ejbName)) {
+            if (useUniqueTableNames && hashClassName.equals(ejbName)) {
                 hashClassName = JavaTypeHelper.getShortClassName(
                        nameMapper2.getPersistenceClassForEjbName(ejbName));
                 pcClasses.add(new DatabaseGenerator.NameTuple(

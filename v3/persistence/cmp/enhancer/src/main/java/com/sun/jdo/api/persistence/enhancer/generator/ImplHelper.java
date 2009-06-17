@@ -202,7 +202,7 @@ final class ImplHelper extends Assertion
                                        String fieldType,
                                        int fieldNumber)
     {
-        fieldType = normalizeClassName(fieldType);
+        normalizeClassName(fieldType);
         return new String[] {
             "// annotation: grant direct read access",
             "return " + fieldName + JavaClassWriterHelper.delim_
@@ -213,7 +213,7 @@ final class ImplHelper extends Assertion
                                         String fieldType,
                                         int fieldNumber)
     {
-        fieldType = normalizeClassName(fieldType);
+        normalizeClassName(fieldType);
         String[] bodies = new String[6];
         int i = 0;
         bodies[i++] = "// annotation: mediate read access";
@@ -237,7 +237,7 @@ final class ImplHelper extends Assertion
     {
         String[] bodies = new String[5];
         int i = 0;
-        fieldType = normalizeClassName(fieldType);
+        normalizeClassName(fieldType);
         bodies[i++] = "// annotation: check read access";
         bodies[i++] = (new StringBuffer("if ("))
                  .append(FIELDNAME_JDO_FLAGS).append(" > 0) {").toString();
@@ -252,7 +252,7 @@ final class ImplHelper extends Assertion
                                            int fieldNumber,
                                            String newvalue)
     {
-        fieldType = normalizeClassName(fieldType);
+        normalizeClassName(fieldType);
         return new String[] {
             "// annotation: grant direct write access",
             (new StringBuffer("this."))
@@ -296,7 +296,7 @@ final class ImplHelper extends Assertion
     {
         String[] bodies = new String[5];
         int i = 0;
-        fieldType = normalizeClassName(fieldType);
+        normalizeClassName(fieldType);
         bodies[i++] = "// annotation: check write access";
         bodies[i++] = "if (" + FIELDNAME_JDO_FLAGS + " != 0) {";
         bodies[i++] = "    " + FIELDNAME_JDO_STATE_MANAGER + ".loadForUpdate();";

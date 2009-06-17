@@ -2214,7 +2214,7 @@ public class ModelValidator
 			{
 				Model model = getModel();
 				Object equalsMethod = getNonObjectMethod(keyClassName, 
-					"equals", Model.EQUALS_ARGS); //NOI18N
+					"equals", Model.getEqualsArgs()); //NOI18N
 				Object hashCodeMethod = getNonObjectMethod(keyClassName, 
 					"hashCode", Model.NO_ARGS); //NOI18N
 
@@ -2387,7 +2387,7 @@ public class ModelValidator
 				{
 					// check readObject method
 					Object readMethod = model.getMethod(className, 
-						"readObject", Model.READ_OBJECT_ARGS); //NOI18N
+						"readObject", Model.getReadObjectArgs()); //NOI18N
 
 					if (!matchesMethod(readMethod, Modifier.PRIVATE,
 						Modifier.SYNCHRONIZED, "void")) // NOI18N
@@ -2400,7 +2400,7 @@ public class ModelValidator
 					
 					// check writeObject method
 					Object writeMethod = model.getMethod(className, 
-						"writeObject", Model.WRITE_OBJECT_ARGS); //NOI18N
+						"writeObject", Model.getWriteObjectArgs()); //NOI18N
 
 					if (!matchesMethod(writeMethod, Modifier.PRIVATE,
 						Modifier.SYNCHRONIZED, "void")) // NOI18N

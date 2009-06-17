@@ -195,7 +195,6 @@ public class DumpMapping
 				println(tabs, "[" + i + "] " + cg.getClass());  //NOI18N
 				println(tabs+1, "name           = " + cg.getName());  //NOI18N
 				println(tabs+1, "declaringClass = " + cg.getDeclaringClass());  //NOI18N
-				println(tabs+1, "fields         = " + cg.getFields());  //NOI18N
 			}
 			println(tabs, "<-- concurrency groups");  //NOI18N
 		}

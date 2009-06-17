@@ -48,6 +48,7 @@ import java.lang.reflect.*;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.jdo.api.persistence.model.RuntimeModel;
+import com.sun.jdo.api.persistence.model.Model;
 import com.sun.jdo.spi.persistence.support.ejb.model.util.NameMapper;
 import com.sun.jdo.api.persistence.model.jdo.RelationshipElement;
 import com.sun.jdo.api.persistence.model.jdo.PersistenceFieldElement;
@@ -305,9 +306,9 @@ public class DeploymentDescriptorModel extends RuntimeModel
 		if (isPCClassName(className))
 		{
 			if ((methodName.equals("readObject") && 	// NOI18N
-				argTypeNames.equals(READ_OBJECT_ARGS)) || 
+                    Arrays.equals(argTypeNames, getReadObjectArgs())) ||
 				(methodName.equals("writeObject") && 	// NOI18N
-				argTypeNames.equals(WRITE_OBJECT_ARGS)))
+                        Arrays.equals(argTypeNames, getWriteObjectArgs())))
 			{
 				returnObject = new MemberWrapper(methodName, 
 					Void.TYPE, Modifier.PRIVATE, (Class)getClass(className));
@@ -317,13 +318,13 @@ public class DeploymentDescriptorModel extends RuntimeModel
 			(NameMapper.PRIMARY_KEY_FIELD == keyClassType))
 		{
 			if (methodName.equals("equals") && 	// NOI18N
-				argTypeNames.equals(EQUALS_ARGS))
+                    Arrays.equals(argTypeNames, getEqualsArgs()))
 			{
 				returnObject = new MemberWrapper(methodName, 
 					Boolean.TYPE, Modifier.PUBLIC, (Class)getClass(className));
 			}
 			else if (methodName.equals("hashCode") && 	// NOI18N
-				argTypeNames.equals(NO_ARGS))
+                    Arrays.equals(argTypeNames, NO_ARGS))
 			{
 				returnObject = new MemberWrapper(methodName, 
 					Integer.TYPE, Modifier.PUBLIC, (Class)getClass(className));

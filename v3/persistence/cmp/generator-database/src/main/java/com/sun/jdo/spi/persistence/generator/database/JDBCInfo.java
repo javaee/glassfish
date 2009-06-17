@@ -273,7 +273,7 @@ class JDBCInfo {
             }
 
             if ((fieldsWithValues & MASK_LENGTH) == 0
-                || (other.length == NO_LENGTH)
+                || (NO_LENGTH.equals(other.length))
                 || (other.length.intValue() < this.length.intValue())) {
                 this.length = other.length;
             }

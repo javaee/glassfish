@@ -50,7 +50,7 @@ import java.io.DataOutputStream;
  * a class file.
  */
 
-final public class ClassFile implements VMConstants, Serializable {
+final public class ClassFile implements VMConstants {
 
   /* Class file constants */
   public static final int magic = 0xcafebabe;
