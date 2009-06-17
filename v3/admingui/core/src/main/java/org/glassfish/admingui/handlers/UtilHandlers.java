@@ -62,6 +62,7 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
+import java.util.Iterator;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -374,6 +375,58 @@ public class UtilHandlers {
 		}
         handlerCtx.setOutputValue("commaString", commaString);
     }
+    
+     //This is the reserve of the above method.
+    //We want to separator and display each jar in one line in the text box.
+    @Handler(id = "formatStringsforDisplay",
+    input = {
+        @HandlerInput(name = "string", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "formattedString", type = String.class)})
+    public static void formatStringsforDisplay(HandlerContext handlerCtx) {
+        
+        String values = (String) handlerCtx.getInputValue("string");
+        if (values == null || GuiUtil.isEmpty(values.trim())) {
+            handlerCtx.setOutputValue("formattedString", "");
+        } else {
+            String s1 = values.trim().replaceAll("\\.jar:", "\\.jar\\$\\{path.separator\\}");
+            String s2 = s1.replaceAll("\\.jar;", "\\.jar\\$\\{path.separator\\}");
+            String[] strArray = s2.split("\\$\\{path.separator\\}");
+            String result = "";
+            for (String s : strArray) {
+                result = result + s + "\n";
+            }
+
+            handlerCtx.setOutputValue("formattedString", result.trim());
+
+
+        }
+    }
+    
+    //This converts any tab/NL etc to ${path.separator} before passing to backend for setting.
+    //In domain.xml, it will be written out like  c:foo.jar${path.separator}c:bar.jar
+    @Handler(id = "formatPathSeperatorStringsforSaving",
+    input = {
+        @HandlerInput(name = "string", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "formattedString", type = String.class)})
+    public static void formatPathSeperatorStringsforSaving(HandlerContext handlerCtx) {
+        String values = (String) handlerCtx.getInputValue("string");
+        String token = "";
+        if ((values != null) &&
+                (values.toString().trim().length() != 0)) {
+            Iterator it = GuiUtil.parseStringList(values, "\t\n\r\f").iterator();
+            while (it.hasNext()) {
+                String nextToken = (String) it.next();
+                token += nextToken + PATH_SEPARATOR;
+            }
+            int end = token.length() - PATH_SEPARATOR.length();
+            if (token.lastIndexOf(PATH_SEPARATOR) == end) {
+                token = token.substring(0, end);
+            }
+        }
+        handlerCtx.setOutputValue("formattedString", token);
+    }    
 
     /**
      *
@@ -397,4 +450,6 @@ public class UtilHandlers {
 	}
 	LayoutDefinitionManager.addGlobalHandlerDefinition(def);
     }
+    
+    private static final String PATH_SEPARATOR = "${path.separator}";
 }
