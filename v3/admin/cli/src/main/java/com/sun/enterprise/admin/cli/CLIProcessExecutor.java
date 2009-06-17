@@ -54,7 +54,7 @@ import java.io.File;
 public class CLIProcessExecutor
 {
 
-    public void CLIProcessExecutor() {
+    public CLIProcessExecutor() {
         process = null;
     }
     
