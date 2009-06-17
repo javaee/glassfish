@@ -99,9 +99,6 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
 
                 TreeNode attrNode = TreeNodeFactory.createMethodInvoker(id, statsProvider, id, m);
                 parentNode.addChild(attrNode);
-
-                System.out.println("xxxxxxAttribute ID = " + id);
-                System.out.println("xxxxxxMethod Name = " + methodName);
             }
         }
 
