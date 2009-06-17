@@ -37,47 +37,73 @@
 
 #include "/shared/alertMsg.inc"      
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.jvm.PathSettingsTitle}"
-                    helpText="$resource{i18n.jvm.PathSettingsPageHelp}">
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-#include "/shared/jvmPathButtons.inc"
-                    </facet>    
-                    </sun:title>
-                   
+<sun:title id="propertyContentPage" title="$resource{i18n.jvm.PathSettingsTitle}" helpText="$resource{i18n.jvm.PathSettingsPageHelp}" >
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['ServerClasspath']}"  formattedString="#{requestScope.scp}");
+                    mapPut(map="#{pageSession.valueMap}" key="ServerClasspath" value="$attribute{scp}");
+                    formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['SystemClasspath']}"  formattedString="#{requestScope.syscp}");
+                    mapPut(map="#{pageSession.valueMap}" key="SystemClasspath" value="$attribute{syscp}");
+                    formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['ClasspathPrefix']}"  formattedString="#{requestScope.cpp}");
+                    mapPut(map="#{pageSession.valueMap}" key="ClasspathPrefix" value="$attribute{cpp}");
+                    formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['ClasspathSuffix']}"  formattedString="#{requestScope.cps}");
+                    mapPut(map="#{pageSession.valueMap}" key="ClasspathSuffix" value="$attribute{cps}");
+                    formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['NativeLibraryPathPrefix']}"  formattedString="#{requestScope.npp}");
+                    mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{npp}");
+                    formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['NativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
+                    mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathSuffix" value="$attribute{nps}");
+                    //convertArrayToCommaString(array="#{pageSession.selectedThreadPools}"  commaString="#{pageSession.valueMap['UseThreadPoolIds']}")
+                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}");
+                    prepareSuccessfulMsg();
+                    redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                />
+            </sun:button>
+
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    redirect(page="#{parentPage}?configName=#{configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
+
+</sun:title>                  
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="EnvironmentClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.EnvironmentClasspath}">
-                                <sun:checkbox label="$resource{i18n.common.Ignore}" selected="#{requestScope.ignoreEnvClasspath}" />         
+                                <sun:checkbox label="$resource{i18n.common.Ignore}" selected="#{pageSession.valueMap['EnvClasspathIgnored']}" selectedValue="true" />         
                             </sun:property>
                             <sun:property id="ServerClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ServerClasspath}" helpText="$resource{i18n.jvm.ServerClasspathHelp}">
-                                <sun:staticText id="ServerClasspath"  text="#{requestScope.serverClasspath}"/>       
+                                <sun:staticText id="ServerClasspath"  text="#{pageSession.valueMap['ServerClasspath']}"/>       
                             </sun:property>
                             <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.SystemClasspath}" helpText="$resource{i18n.jvm.SystemClasspathHelp}">
-                                <sun:textArea id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{requestScope.systemClasspath}"/>   
+                                <sun:textArea id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['SystemClasspath']}"/>   
                             </sun:property>
                             <sun:property id="ClasspathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ClasspathPrefix}" helpText="$resource{i18n.jvm.ClasspathPrefixHelp}">
-                                <sun:textArea id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{requestScope.classpathPrefix}"/>        
+                                <sun:textArea id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathPrefix']}"/>        
                             </sun:property>
                             <sun:property id="ClasspathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ClasspathSuffix}" helpText="$resource{i18n.jvm.ClasspathSuffixHelp}">
-                                <sun:textArea id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" text="#{requestScope.classpathSuffix}"/>        
+                                <sun:textArea id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathSuffix']}"/>        
                             </sun:property> 
                             <sun:property id="NativeLibraryPathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.NativeLibraryPathPrefix}" helpText="$resource{i18n.jvm.NativeLibraryPathPrefixHelp}">
-                                <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" text="#{requestScope.nativeLibPathPrefix}"/>      
+                                <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathPrefix']}"/>      
                             </sun:property>      
                             <sun:property id="NativeLibraryPathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.NativeLibraryPathSuffix}" helpText="$resource{i18n.jvm.NativeLibraryPathSuffixHelp}">
-                                <sun:textArea id="NativeLibraryPathSuffix" rows="$int{4}" columns="$int{75}" text="#{requestScope.nativeLibPathSuffix}"/>      
+                                <sun:textArea id="NativeLibraryPathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathSuffix']}"/>      
                             </sun:property>                  
                             "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>    
                      <sun:title  id="title2" >
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsBottom>
-#include "/shared/jvmPathButtons.inc"
-                    </facet>                            
+                    <!-- Buttons  -->         
+#include "/shared/editPageBottomButtons.inc"
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.serverInstJvmPathSettings}" />
             </sun:form>

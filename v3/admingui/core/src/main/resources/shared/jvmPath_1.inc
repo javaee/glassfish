@@ -40,15 +40,32 @@
 <!define name="content">
     <event>
         <!beforeCreate
-        setSessionAttribute(key="serverInstTabs" value="pathSettings");
-        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        getServerJvmPathSettings(ConfigName="#{configName}", SystemClasspath=>$attribute{systemClasspath}, 
-        IgnoreEnvClasspath=>$attribute{ignoreEnvClasspath}, 
-        ServerClasspath=>$attribute{serverClasspath}, 
-        ClasspathPrefix=>$attribute{classpathPrefix}, 
-        ClasspathSuffix=>$attribute{classpathSuffix}, 
-        NativeLibPathPrefix=>$attribute{nativeLibPathPrefix}, 
-        NativeLibPathSuffix=>$attribute{nativeLibPathSuffix});
+            setSessionAttribute(key="serverInstTabs" value="pathSettings");
+            getRequestValue(key="configName" value=>$page{configName} default="server-config");
+            setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config],type=java-config");
+            setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=server-config");
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['ServerClasspath']}"  formattedString="#{requestScope.scp}");
+            mapPut(map="#{pageSession.valueMap}" key="ServerClasspath" value="$attribute{scp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['SystemClasspath']}"  formattedString="#{requestScope.syscp}");
+            mapPut(map="#{pageSession.valueMap}" key="SystemClasspath" value="$attribute{syscp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['ClasspathPrefix']}"  formattedString="#{requestScope.cpp}");
+            mapPut(map="#{pageSession.valueMap}" key="ClasspathPrefix" value="$attribute{cpp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['ClasspathSuffix']}"  formattedString="#{requestScope.cps}");
+            mapPut(map="#{pageSession.valueMap}" key="ClasspathSuffix" value="$attribute{cps}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathPrefix']}"  formattedString="#{requestScope.npp}");
+            mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{npp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
+            mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{nps}");
+            setPageSessionAttribute(key="convertToFalseList" value={"EnvClasspathIgnored"});
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstJvmPathSettings.jsf");
+            setPageSessionAttribute(key="skipAttrsList", value={"RmicOptions" "JavacOptions" "JavaHome" "DebugOptions" "DebugEnabled" "BytecodePreprocessors"});
+             //set the following for including buttons.inc
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+            setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+            setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+             setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
 
         />   
     </event> 
