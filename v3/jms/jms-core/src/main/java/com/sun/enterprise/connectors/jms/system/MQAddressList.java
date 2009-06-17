@@ -523,7 +523,8 @@ public class MQAddressList {
 
     private JmsHost getResolvedJmsHost(Server as) throws Exception{
         logFine("getResolvedJmsHost " + as);
-        return getResolvedJmsHost(as);
+        //todo: Only required for cluster support. Commenting this out for now. 
+        return null; //getResolvedJmsHost(as);
     }
 
     private boolean isClustered() throws ConnectorRuntimeException {
