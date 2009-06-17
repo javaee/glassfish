@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.security.auth.login;
 
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import java.util.Map;
 import java.util.Enumeration;
@@ -53,6 +52,7 @@ import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.logging.*;
 import com.sun.logging.*;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -100,6 +100,7 @@ public class ClientCertificateLoginModule implements LoginModule {
     // testUser's PrincipalImpl
     private PrincipalImpl userPrincipal;
 
+    private AppClientSSL ssl;
     private SSLUtils sslUtils;
     
     /**
@@ -130,7 +131,7 @@ public class ClientCertificateLoginModule implements LoginModule {
 
 	// initialize any configured options
 	debug = "true".equalsIgnoreCase((String)options.get("debug"));
-        sslUtils = SecurityServicesUtil.getInstance().getHabitat().getComponent(SSLUtils.class);
+        sslUtils = Globals.getDefaultHabitat().getComponent(SSLUtils.class);
     }
 
 
@@ -256,7 +257,7 @@ public class ClientCertificateLoginModule implements LoginModule {
                 }
 	    }
             
-            AppClientSSL ssl = new AppClientSSL();
+            ssl = new AppClientSSL();
             ssl.setCertNickname(this.alias);
             sslUtils.setAppclientSsl(ssl);
             
@@ -323,8 +324,8 @@ public class ClientCertificateLoginModule implements LoginModule {
      */
     public boolean logout() throws LoginException {
 	// unset the alias
-        sslUtils.setAppclientSsl(null);
-    
+        ssl = null;
+        sslUtils.setAppclientSsl(ssl);
 	subject.getPrincipals().remove(userPrincipal);
 	succeeded = false;
 	succeeded = commitSucceeded;

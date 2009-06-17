@@ -124,7 +124,12 @@ public class X509CertificateCredential {
     public String toString() {
 	String s = "Realm=" + realm;
 	s = s + " alias=" + alias;
-	s = s + " X509Certificate=" + certChain;
+        StringBuffer certChainStr = new StringBuffer("");
+        for (int i=0; i < certChain.length; i++) {
+            certChainStr.append(certChain[i].toString());
+            certChainStr.append("\n");
+        }
+	s = s + " X509Certificate=" + certChainStr.toString();
 	return s;
     }
 

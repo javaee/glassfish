@@ -102,7 +102,7 @@ public final class SSLUtils implements PostConstruct {
     private TrustManager trustManager = null;
     private KeyStore mergedTrustStore = null;
     private Date initDate;
-    private static AppClientSSL appclientSsl = null;
+    private AppClientSSL appclientSsl = null;
     
     public void postConstruct() {
         try {

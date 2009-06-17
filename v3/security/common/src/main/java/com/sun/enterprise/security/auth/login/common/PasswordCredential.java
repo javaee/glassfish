@@ -157,7 +157,7 @@ public class PasswordCredential {
 	String s = "Realm=" + realm;
 	s = s + " Username=" + username;
 	s = s + " Password=" + "########";
-	s = s + " TargetName = " + target_name;
+	s = s + " TargetName = " + new String(target_name);
 	return s;
     }
 
