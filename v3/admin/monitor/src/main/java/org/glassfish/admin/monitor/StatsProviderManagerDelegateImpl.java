@@ -37,10 +37,10 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
 
     private TreeNode serverNode;
     //private ManagedObjectManager mom;
-    private HashMap momMap;
+    private HashMap momMap = new HashMap();
     //MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
     private static final String MONITORING_ROOT = "v3:pp=/,type=mon";
-    private static final String MONITORING_SERVER = "v3:pp=/mon,type=server-mon,name=server";
+    private static final String MONITORING_SERVER = "v3:pp=/mon,type=server-mon,name=das";
 
     StatsProviderManagerDelegateImpl(MonitoringRuntimeDataRegistry mrdr, Domain domain) {
         this.mrdr = mrdr;
@@ -51,7 +51,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
     }
 
     public void postConstruct() {
-
+        
         /* gmbal create root */
         try { 
             
@@ -104,7 +104,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
 
         /* gmbal registration */
         // For now create mom root using the statsProvider
-        /*
+        
         try {
             // 1 mom per statsProvider
             ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(new ObjectName(MONITORING_SERVER));
@@ -117,7 +117,6 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         } catch (Exception e) {
             e.printStackTrace();
         }
-        */
 
         /* config */
         //add configElement to monitoring level element if not already there - find out from Nandini
