@@ -219,6 +219,12 @@
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency> 
+       <dependency>
+           <groupId>org.glassfish.external</groupId>
+           <artifactId>jaxr-ra</artifactId>
+           <version>${project.version}</version>
+           <type>distribution-fragment</type>
+       </dependency>
     </dependencies>
 
     <profiles>
