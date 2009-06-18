@@ -144,20 +144,21 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                         return pathname.getName().endsWith(".jar") && ! pathname.isDirectory();
                     }
                 })) {
-                    final URI libJarURI = facadeServerURI(dc()).relativize(libJar.toURI());
+                    final URI libJarURIForFacade = earURI.relativize(libJar.toURI());
                     /*
-                     * Add a relative URI from the facade to this library JAR
-                     * to the class path.
+                     * Add a relative URI from where the facade will be to where
+                     * this library JAR will be, once they are both downloaded,
+                     * to the class path for the facade.
                      */
-                    classPathForFacade.append(' ').append(libJarURI.toASCIIString());
+                    classPathForFacade.append(' ').append(libJarURIForFacade.toASCIIString());
 
                     /*
                      * Process this library JAR to record the need to download it
-                     * and any JARs it depends on.
+                     * and any JARs or directories it depends on.
                      */
-                    URI jarURI = URI.create("jar:" + libJar.toURI().getRawSchemeSpecificPart());
+                    URI jarURI = URI.create("file:" + libJar.toURI().getRawSchemeSpecificPart());
                     processDependencies(earURI, jarURI, downloads, dependencyURIsProcessed,
-                            libJarURI);
+                            libJarURIForFacade);
                 }
             }
         }
@@ -243,8 +244,8 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             /*
              * Make sure the dependencyURI (which would have come from a JAR's
              * Class-Path) for this directory ends with a slash.  Otherwise
-             * the default system class loader, URLClassLoader, will NOT treat
-             * it as a directory.
+             * the default system class loader, based on URLClassLoader,
+             * will NOT treat it as a directory.
              */
             if (! dependencyURI.getPath().endsWith("/")) {
                 final String format = logger.getResourceBundle().
