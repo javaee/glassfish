@@ -40,6 +40,8 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.universal.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +50,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -76,6 +79,7 @@ abstract class AppClientDeployerHelper {
 //    private final String renamedOriginalJarFileName;
     protected final AppClientArchivist archivist;
 
+    private final ClassLoader gfClientModuleClassLoader;
     /**
      * Returns the correct concrete implementation of Helper.
      * @param dc the DeploymentContext for this deployment
@@ -84,23 +88,26 @@ abstract class AppClientDeployerHelper {
      */
     static AppClientDeployerHelper newInstance(
             final DeploymentContext dc,
-            final AppClientArchivist archivist) throws IOException {
+            final AppClientArchivist archivist,
+            final ClassLoader gfClientModuleLoader) throws IOException {
         ApplicationClientDescriptor bundleDesc = dc.getModuleMetaData(ApplicationClientDescriptor.class);
         Application application = bundleDesc.getApplication();
         boolean insideEar = ! application.isVirtual();
 
-        return (insideEar ? new NestedAppClientDeployerHelper(dc, bundleDesc, archivist)
-                          : new StandaloneAppClientDeployerHelper(dc, bundleDesc, archivist));
+        return (insideEar ? new NestedAppClientDeployerHelper(dc, bundleDesc, archivist, gfClientModuleLoader)
+                          : new StandaloneAppClientDeployerHelper(dc, bundleDesc, archivist, gfClientModuleLoader));
     }
 
     protected AppClientDeployerHelper(
             final DeploymentContext dc,
             final ApplicationClientDescriptor bundleDesc,
-            final AppClientArchivist archivist) throws IOException {
+            final AppClientArchivist archivist,
+            final ClassLoader gfClientModuleClassLoader) throws IOException {
         super();
         this.dc = dc;
         this.appClientDesc = bundleDesc;
         this.archivist = archivist;
+        this.gfClientModuleClassLoader = gfClientModuleClassLoader;
         this.facadeDirURI = facadeServerURI(dc);
     }
 
@@ -325,10 +332,13 @@ abstract class AppClientDeployerHelper {
         }
     }
 
-    protected InputStream openByteCodeStream(final String resourceName) throws URISyntaxException, MalformedURLException, IOException {
-       URI currentModule = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
-       URI classURI = currentModule.resolve("gf-client-module.jar!" + resourceName);
-       return URI.create("jar:" + classURI.toString()).toURL().openStream();
+    protected InputStream openByteCodeStream(final String resourceName) throws IOException {
+        URL url = gfClientModuleClassLoader.getResource(resourceName);
+        if (url == null) {
+            throw new IllegalArgumentException(resourceName);
+        }
+        InputStream is = url.openStream();
+        return is;
     }
 
     

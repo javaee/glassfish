@@ -35,10 +35,12 @@
  */
 package org.glassfish.appclient.server.core;
 
+import com.sun.enterprise.module.Module;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
 import java.util.jar.Attributes;
 import java.util.logging.Logger;
@@ -53,6 +55,7 @@ import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * AppClient module deployer.
@@ -116,7 +119,8 @@ import org.jvnet.hk2.component.Habitat;
  */
 @Service
 public class AppClientDeployer
-        extends JavaEEDeployer<AppClientContainerStarter, DummyApplication> {
+        extends JavaEEDeployer<AppClientContainerStarter, DummyApplication>
+        implements PostConstruct {
 
     private static Logger logger = LogDomains.getLogger(AppClientDeployer.class, LogDomains.ACC_LOGGER);
 
@@ -138,6 +142,8 @@ public class AppClientDeployer
     private static final Attributes.Name GLASSFISH_APPCLIENT_GROUP = new Attributes.Name("GlassFish-AppClient-Group");
 
     private static final String GENERATED_JAR_SUFFIX = "Client";
+    
+    private static final String GF_CLIENT_MODULE_NAME = "org.glassfish.appclient.gf-client-module";
 
     @Inject
     protected ServerContext sc;
@@ -151,7 +157,12 @@ public class AppClientDeployer
     @Inject
     private AppClientArchivist archivist;
 
+    @Inject
+    private ModulesRegistry modulesRegistry;
+
     private AppClientDeployerHelper helper = null;
+
+    private ClassLoader gfClientModuleClassLoader;
 
     public AppClientDeployer() {
     }
@@ -159,6 +170,13 @@ public class AppClientDeployer
     protected String getModuleType() {
         return "appclient";
     }
+
+    public void postConstruct() {
+        for (Module module : modulesRegistry.getModules(GF_CLIENT_MODULE_NAME)) {
+            gfClientModuleClassLoader = module.getClassLoader();
+        }
+    }
+
 
     @Override
     public MetaData getMetaData() {
@@ -191,7 +209,7 @@ public class AppClientDeployer
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         try {
-            helper = AppClientDeployerHelper.newInstance(dc, archivist);
+            helper = AppClientDeployerHelper.newInstance(dc, archivist, gfClientModuleClassLoader);
             helper.prepareJARs();
             downloadInfo.addArtifacts(params.name(), helper.downloads());
         } catch (Exception ex) {

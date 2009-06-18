@@ -359,14 +359,34 @@ public class AppClientContainer {
             throw new IllegalStateException();
         }
         Method mainMethod = getMainMethod();
-	    // build args to the main and call it
-	    Object params [] = new Object [1];
-	    params[0] = args;
-	    mainMethod.invoke(null, params);
+        // build args to the main and call it
+        Object params [] = new Object [1];
+        params[0] = args;
+
+        if (logger.isLoggable(Level.FINE)) {
+            dumpLoaderURLs();
+        }
+        mainMethod.invoke(null, params);
         state = State.STARTED;
     }
 
-   private Method getMainMethod() throws NoSuchMethodException, 
+    private void dumpLoaderURLs() {
+        final String sep = System.getProperty("line.separator");
+        final ClassLoader ldr = Thread.currentThread().getContextClassLoader();
+        if (ldr instanceof ACCClassLoader) {
+            final ACCClassLoader loader = (ACCClassLoader) ldr;
+            final URL[] urls = loader.getURLs();
+
+            final StringBuilder sb = new StringBuilder("Class loader URLs:");
+            for (URL url : urls) {
+                sb.append("  ").append(url.toExternalForm()).append(sep);
+            }
+            sb.append(sep);
+            logger.fine(sb.toString());
+        }
+    }
+    
+    private Method getMainMethod() throws NoSuchMethodException,
            ClassNotFoundException, IOException, SAXParseException,
            InjectionException {
 	    // determine the main method using reflection

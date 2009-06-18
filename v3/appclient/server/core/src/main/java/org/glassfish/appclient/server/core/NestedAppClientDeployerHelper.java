@@ -35,28 +35,27 @@
  */
 package org.glassfish.appclient.server.core;
 
-import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
-import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -70,6 +69,8 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private StringBuilder classPathForFacade = new StringBuilder();
 
     private final URI earURI;
+
+    private static Logger logger = LogDomains.getLogger(NestedAppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
 
     /**
      * records the downloads needed to support this app client,
@@ -85,13 +86,14 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     NestedAppClientDeployerHelper(
             final DeploymentContext dc,
             final ApplicationClientDescriptor bundleDesc,
-            final AppClientArchivist archivist) throws IOException {
-        super(dc, bundleDesc, archivist);
+            final AppClientArchivist archivist,
+            final ClassLoader gfClientModuleClassLoader) throws IOException {
+        super(dc, bundleDesc, archivist, gfClientModuleClassLoader);
         earURI = dc.getSource().getParentArchive().getURI();
-        processJARDependencies();
+        processDependencies();
     }
 
-    private void processJARDependencies() throws IOException {
+    private void processDependencies() throws IOException {
 
         /*
          * Init the class path for the facade so it refers to the developer's app client,
@@ -115,15 +117,20 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 facadeUserURI(dc())));
 
         /*
-         * jarURIsProcessed records URIs, relative to the original JAR as it will
+         * dependencyURIsProcessed records URIs, relative to the original JAR as it will
          * reside in the user's download directory, that have already been
-         * processed.  This allows us to avoid processing the same JAR more
+         * processed.  This allows us to avoid processing the same JAR or dir more
          * than once if more than one JAR depends on it.
          */
-        Set<URI> jarURIsProcessed = new HashSet<URI>();
+        Set<URI> dependencyURIsProcessed = new HashSet<URI>();
 
         String appClientURIWithinEAR = appClientDesc().getModuleDescriptor().getArchiveUri();
-        processJARDependencies(URI.create(appClientURIWithinEAR), downloads, jarURIsProcessed);
+        processDependencies(
+                earURI,
+                URI.create(appClientURIWithinEAR),
+                downloads,
+                dependencyURIsProcessed,
+                appClientURI);
 
         /*
          * Now incorporate the library JARs.
@@ -149,7 +156,8 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                      * and any JARs it depends on.
                      */
                     URI jarURI = URI.create("jar:" + libJar.toURI().getRawSchemeSpecificPart());
-                    processJARDependencies(jarURI, downloads, jarURIsProcessed);
+                    processDependencies(earURI, jarURI, downloads, dependencyURIsProcessed,
+                            libJarURI);
                 }
             }
         }
@@ -165,17 +173,23 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
      * and can be downloaded as a JAR (which is not the case for submodules
      * in directory-deployed EARs.
      *
-     * @param jarURI
-     * @param jarDependencies
-     * @param jarURIsProcessed
+     * @param baseURI base against which to resolve the dependency URI (could be
+     * the EAR's expansion URI, or could be the URI to a JAR containing a
+     * Class-Path element, for example)
+     * @param dependencyURI the JAR or directory entry representing a dependency
+     * @param downloads the full set of items to be downloaded to support the current client
+     * @param dependentURIsProcessed JAR and directory URIs already processed (so
+     * we can avoid processing the same JAR or directory multiple times)
      * @throws java.io.IOException
      */
-    private void processJARDependencies(
+    private void processDependencies(
+            final URI baseURI,
             final URI dependencyURI,
             final Set<FullAndPartURIs> downloads,
-            final Set<URI> jarURIsProcessed) throws IOException {
+            final Set<URI> dependencyURIsProcessed,
+            final URI containingJARURI) throws IOException {
 
-        if (jarURIsProcessed.contains(dependencyURI)) {
+        if (dependencyURIsProcessed.contains(dependencyURI)) {
             return;
         }
 
@@ -186,7 +200,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * we need to generate a JAR for download and build a FullAndPartURIs
          * object pointing to that generated JAR.
          */
-        URI dependencyFileURI = earURI.resolve(dependencyURI);
+        URI dependencyFileURI = baseURI.resolve(dependencyURI);
 
         /*
          * Make sure the URI has the scheme "file" and not "jar" because
@@ -204,11 +218,11 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             dependencyFileURI = URI.create(scheme + ":" + dependencyFileURI.getRawSchemeSpecificPart());
         }
 
-        File dependentJARFile = new File(dependencyFileURI);
-        if ( ! dependentJARFile.exists()) {
+        File dependentFile = new File(dependencyFileURI);
+        if ( ! dependentFile.exists()) {
             if (isSubmodule(dependencyURI)) {
-                dependentJARFile = JAROfExpandedSubmodule(dependencyURI);
-                dependencyFileURI = dependentJARFile.toURI();
+                dependentFile = JAROfExpandedSubmodule(dependencyURI);
+                dependencyFileURI = dependentFile.toURI();
             } else {
                 /*
                  * A JAR's Class-Path could contain non-existent JARs.  If there
@@ -221,11 +235,109 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         /*
          * The app might specify non-existent JARs in its Class-Path.
          */
-        if ( ! new File(dependencyFileURI).exists()) {
+        if ( ! dependentFile.exists()) {
             return;
         }
+        
+        if (dependentFile.isDirectory() && ! isSubmodule(dependencyURI)) {
+            /*
+             * Make sure the dependencyURI (which would have come from a JAR's
+             * Class-Path) for this directory ends with a slash.  Otherwise
+             * the default system class loader, URLClassLoader, will NOT treat
+             * it as a directory.
+             */
+            if (! dependencyURI.getPath().endsWith("/")) {
+                final String format = logger.getResourceBundle().
+                        getString("enterprise.deployment.appclient.dirURLnoSlash");
+                final String msg = MessageFormat.format(format, dependencyURI.getPath(),
+                            containingJARURI.toASCIIString());
+                logger.log(Level.WARNING, msg);
+                ActionReport warning = dc().getActionReport().addSubActionsReport();
+                warning.setMessage(msg);
+                warning.setActionExitCode(ActionReport.ExitCode.WARNING);
+            } else {
+            /*
+             * This is a directory.  Add all files within it to the set to be
+             * downloaded but do not traverse the manifest Class-Path of any
+             * contained JARs.
+             */
+            processDependentDirectory(dependentFile, baseURI, 
+                    dependencyURIsProcessed, downloads);
+            }
+        } else {
+            processDependentJAR(dependentFile, baseURI, 
+                    dependencyURI, dependencyFileURI, dependencyURIsProcessed, 
+                    downloads, containingJARURI);
+        }
+        
+    }
+    
+    private void processDependentDirectory(
+            final File dependentDirFile,
+            final URI baseURI,
+            final Set<URI> dependencyURIsProcessed,
+            final Set<FullAndPartURIs> downloads) {
+        
+        /*
+         * Iterate through this directory and its subdirectories, marking
+         * each contained file for download.
+         */
+        for (File f : dependentDirFile.listFiles()) {
+            if (f.isDirectory()) {
+                processDependentDirectory(f, baseURI, dependencyURIsProcessed, downloads);
+            } else {
+                URI dependencyFileURI = f.toURI();
+                DownloadableArtifacts.FullAndPartURIs fileDependency = new FullAndPartURIs(dependencyFileURI,
+                    earDirUserURI(dc()).resolve(earURI.relativize(dependencyFileURI)));
+                downloads.add(fileDependency);
+            }
+        }
+    }
+    
+    private void processDependentJAR(final File dependentFile,
+            final URI baseURI,
+            final URI dependencyURI,
+            final URI dependencyFileURI,
+            final Set<URI> dependencyURIsProcessed,
+            final Set<FullAndPartURIs> downloads,
+            final URI containingJARURI
+            ) throws IOException {
+
+        /*
+         * On the client we want the directory to look like this after the
+         * download has completed (for example):
+         *
+         *   downloadDir/  (as specified on the deploy command)
+         *      generated-dir-for-this-EAR's-artifacts/
+         *         clientFacadeJAR.jar
+         *         clientJAR.jar
+         *         lib/lib1.jar
+         *   ...
+         *
+         * The "part" portion of the FullAndPartURIs object needs to be the
+         * path of the downloaded item relative to the downloadDir in the
+         * layout above.
+         *
+         * To compute that:
+         *
+         * 1. We resolve the URI of the dependency against the base
+         * URI first.  (The base URI will be the directory where
+         * the EAR has been expanded for the app client JAR,
+         * then might be other paths as we traverse Class-Path chains from the
+         * manifests of various JARs we process).
+         *
+         * 2. Then relativize that against the directory on the
+         * server where the EAR has been expanded.  That gives
+         * us the relative path within this app's download directory on the
+         * client.
+
+         * 3. This app's download directory lies within the user-specified
+         * download directory (from the command line).  So we relativize
+         * the result so far once more, this time against the download
+         * directory on the client system.
+         */
         DownloadableArtifacts.FullAndPartURIs jarFileDependency = new FullAndPartURIs(dependencyFileURI,
-                earDirUserURI(dc()).resolve(dependencyURI));
+                earDirUserURI(dc()).resolve(earURI.relativize(baseURI.resolve(dependencyURI))));
 
         downloads.add(jarFileDependency);
 
@@ -246,8 +358,15 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         String jarClassPath = mainAttrs.getValue(Attributes.Name.CLASS_PATH);
         if (jarClassPath != null) {
             for (String elt : jarClassPath.split(" ")) {
-                processJARDependencies(jarFileDependency.getFull().resolve(elt),
-                        downloads, jarURIsProcessed);
+                /*
+                 * A Class-Path list might have multiple spaces as a separator.
+                 * Ignore empty elements.
+                 */
+                if (elt.trim().length() > 0) {
+                    processDependencies(dependencyFileURI, URI.create(elt),
+                            downloads, dependencyURIsProcessed,
+                            containingJARURI);
+                }
             }
         }
     }
