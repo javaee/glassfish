@@ -37,10 +37,13 @@
 package org.glassfish.admingui.common.handlers;
 
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.management.Attribute;
 
 import com.sun.jsftemplating.annotation.Handler;  
@@ -62,9 +65,8 @@ import org.glassfish.admingui.common.util.GuiUtil;
  *
  * @author Anissa Lam
  */
-public class proxyHandlers {
-
-    
+//TODO: Document these handlers
+public class ProxyHandlers {
     @Handler(id="getChildrenTable",
         input={
             @HandlerInput(name="objectNameStr", type=String.class, required=true),
@@ -75,23 +77,25 @@ public class proxyHandlers {
     public static void getChildrenTable(HandlerContext handlerCtx){
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
         String childType = (String) handlerCtx.getInputValue("childType");
+        List result = new ArrayList();
 
         AMXProxy amx = objectNameToProxy(objectNameStr);
-        Map<String, AMXProxy> children = amx.childrenMap(childType);
-        List result = new ArrayList();
-        for(AMXProxy oneChild : children.values()){
-            try{
-                AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) oneChild);
-                final Map<String,Object> attrs = helper.simpleAttributesMap();
-                HashMap oneRow = new HashMap();
-                 oneRow.put("selected", false);
-                for(String attrName : attrs.keySet()){
-                    oneRow.put(attrName, getA(attrs, attrName));
-                    //String enableURL= (enabled.equals("true"))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+        if (amx != null) {
+            Map<String, AMXProxy> children = amx.childrenMap(childType);
+            for(AMXProxy oneChild : children.values()){
+                try{
+                    AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) oneChild);
+                    final Map<String,Object> attrs = helper.simpleAttributesMap();
+                    HashMap oneRow = new HashMap();
+                     oneRow.put("selected", false);
+                    for(String attrName : attrs.keySet()){
+                        oneRow.put(attrName, getA(attrs, attrName));
+                        //String enableURL= (enabled.equals("true"))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+                    }
+                result.add(oneRow);
+                }catch(Exception ex){
+                    GuiUtil.handleException(handlerCtx, ex);
                 }
-            result.add(oneRow);
-            }catch(Exception ex){
-                GuiUtil.handleException(handlerCtx, ex);
             }
         }
         handlerCtx.setOutputValue("result", result);
@@ -225,7 +229,7 @@ public class proxyHandlers {
             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalse != null){
                 for(String sk : convertToFalse){
-                    if (attrs.keySet().contains(sk)){
+                    if (attrs.keySet().contains(sk)) {
                         if (attrs.get(sk) == null){
                             attrs.remove(sk);
                             attrs.put(sk, "false");
