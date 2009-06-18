@@ -44,6 +44,7 @@ package org.glassfish.ejb.security.factory;
 
 import com.sun.enterprise.security.factory.SecurityManagerFactory;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.logging.LogDomains;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 //TODOL : this class needs to go, after prelude
@@ -85,6 +86,8 @@ public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
     InvocationManager invMgr;
      
 
+    @Inject
+    AuditManager auditManager;
     /**
      * Creates a new instance of EJBSecurityManagerFactory
      */
@@ -206,5 +209,9 @@ public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
             }
         }
         return manager;
+    }
+    
+    public final AuditManager getAuditManager() {
+        return this.auditManager;
     }
 }

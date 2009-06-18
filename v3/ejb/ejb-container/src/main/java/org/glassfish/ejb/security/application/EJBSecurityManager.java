@@ -103,7 +103,7 @@ public final class EJBSecurityManager
         _logger = LogDomains.getLogger(EJBSecurityManager.class, LogDomains.EJB_LOGGER);
     } 
 
-    private AuditManager auditManager;
+    private  AuditManager auditManager;
 
     private static final PolicyContextHandlerImpl pcHandlerImpl =
             (PolicyContextHandlerImpl) PolicyContextHandlerImpl.getInstance();
@@ -306,9 +306,9 @@ public final class EJBSecurityManager
                         this.contextId, this.codesource,
                         EJBMethodPermission.class,
                         this.ejbName);
-        if (SecurityServicesUtil.getInstance()!=null) {
-            auditManager = SecurityServicesUtil.getInstance().getAuditManager();
-        }
+        
+        auditManager = this.ejbSFM.getAuditManager();
+        
     }
 
     /**
