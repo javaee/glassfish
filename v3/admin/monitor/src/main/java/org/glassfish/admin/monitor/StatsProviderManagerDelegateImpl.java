@@ -105,10 +105,10 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         /* gmbal registration */
         // For now create mom root using the statsProvider
         
-        try {
+        /*try {
             // 1 mom per statsProvider
             ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(new ObjectName(MONITORING_SERVER));
-            //mom.stripPackagePrefix();
+            mom.stripPackagePrefix();
             mom.createRoot(statsProvider);
             momMap.put(statsProvider, mom);
 
@@ -116,7 +116,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
             //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         /* config */
         //add configElement to monitoring level element if not already there - find out from Nandini
