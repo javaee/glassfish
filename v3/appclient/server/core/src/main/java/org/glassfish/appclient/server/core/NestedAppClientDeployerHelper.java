@@ -252,7 +252,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 final String msg = MessageFormat.format(format, dependencyURI.getPath(),
                             containingJARURI.toASCIIString());
                 logger.log(Level.WARNING, msg);
-                ActionReport warning = dc().getActionReport().addSubActionsReport();
+                ActionReport warning = dc().getActionReport();
                 warning.setMessage(msg);
                 warning.setActionExitCode(ActionReport.ExitCode.WARNING);
             } else {
