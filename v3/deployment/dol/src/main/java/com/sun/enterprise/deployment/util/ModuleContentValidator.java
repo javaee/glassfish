@@ -103,16 +103,16 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
 		    	   "enterprise.deployment.util.wsdlfilenotfound",
                            "wsdl file {0} does not exist for service-ref {1}",
                            new Object[] {wsdlFileUri, serviceRef.getName()});
-                    DOLUtils.getDefaultLogger().severe(msg);
-                    throw new RuntimeException(msg);
+                    DOLUtils.getDefaultLogger().warning(msg);
+                    //throw new RuntimeException(msg);
                 } 
             } catch(IOException ioe) {
                     String msg = localStrings.getLocalString(
 		    	   "enterprise.deployment.util.wsdlfilenotreadable",
                            "wsdl file {0}  for service-ref {1} cannot be opened : {2}",
                            new Object[] {wsdlFileUri, serviceRef.getName(), ioe.getMessage()});
-                    DOLUtils.getDefaultLogger().severe(msg);
-                    throw new RuntimeException(ioe);
+                    DOLUtils.getDefaultLogger().warning(msg);
+                   // throw new RuntimeException(ioe);
             }
         }
         

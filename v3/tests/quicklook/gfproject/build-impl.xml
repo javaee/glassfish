@@ -69,6 +69,13 @@
         <pathelement location="${class.output}"/>
         <pathelement location="${test.class.output}"/>
     </path>
+
+    <path id = "boot.classpath">
+        <fileset dir="${glassfish.home}/modules/endorsed">
+            <include name="**/*.jar"/>
+        </fileset>        
+    </path>
+
     
     <path id="class.path">
         <fileset dir="${glassfish.home}/modules">
@@ -336,6 +343,8 @@
             <classfileset dir="${build.classes.home}" includes="**/${testng.testclient}.class"/>
             <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
             <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+            <bootclasspath classpathref="boot.class.path"/>
+
         </testng>
     </target>
 
@@ -349,6 +358,8 @@
             <xmlfileset dir="." includes="testng.xml"/>
             <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
             <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+            <bootclasspath classpathref="boot.class.path"/>
+
         </testng>
     </target>
 
