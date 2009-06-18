@@ -34,11 +34,11 @@ own identifying information: Portions Copyright [yyyy]
 <property name="dev.authority" value="dev.glassfish.org"/>
 <property name="contrib.authority" value="contrib.glassfish.org"/>
 <property name="repository.url" value="http://pkg.glassfish.org/v3"/>
-<property name="dev.repository.url" value="${repository.url}/dev"/>
-<property name="contrib.repository.url" value="${repository.url}/contrib"/>
+<property name="dev.repository.url" value="${repository.url}/dev/"/>
+<property name="contrib.repository.url" value="${repository.url}/contrib/"/>
 <property name="sun.contrib.authority" value="contrib.glassfish.sun.com"/>
-<property name="sun.repository.url" value="http://pkg.sun.com/glassfish/v3/dev"/>
-<property name="sun.contrib.repository.url" value="http://pkg.sun.com/glassfish/v3/contrib"/>
+<property name="sun.repository.url" value="http://pkg.sun.com/glassfish/v3/dev/"/>
+<property name="sun.contrib.repository.url" value="http://pkg.sun.com/glassfish/v3/contrib/"/>
 
 <target name="init"> 
     
@@ -131,17 +131,7 @@ own identifying information: Portions Copyright [yyyy]
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-property description 'GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform.'"/>
     </exec>
-    <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-authority -P -O ${repo.url} '${dev.authority}'"/>
-    </exec>
-    <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-authority -O ${repo.url} '${contrib.authority}'"/>
-    </exec>
-    <!-- disabling sun contrib authority setup - not used until close to fcs
-    <exec dir="${image.dir}" executable="pkg" failonerror="true">
-	    <arg line="set-authority -O ${repo.url} '${sun.contrib.authority}'"/>
-    </exec>
-    -->
+   
 </target>
 
 <target name="install-package" depends="check-ips"
@@ -165,13 +155,37 @@ own identifying information: Portions Copyright [yyyy]
     <available file="${image.dir}/.org.opensolaris,pkg/cfg_cache" property="cache.present"/>
     <fail message="${image.dir}/.org.opensolaris,pkg/cfg_cache File NOT present, call create-local-image target first" unless="cache.present"/>
 
-    <antcall target="update-cfg-cache-for-dev-repository-urls"/> 
+    <antcall target="create-authorities"> 
+         <param name="image.dir" value="${image.dir}"/>
+    </antcall> 
 
-    <antcall target="update-cfg-cache-for-contrib-repository-urls"/> 
+    <!-- final origin URLs are already set in set-authority commands -->
+
+    <!--antcall target="update-cfg-cache-for-dev-repository-urls"/--> 
+
+    <!--antcall target="update-cfg-cache-for-contrib-repository-urls"/-->
+
     <!-- disabling sun contrib repo setup until close to fcs
     <antcall target="update-cfg-cache-for-sun-contrib-repository-urls"/>
     --> 
 </target>
+
+<target name="create-authorities" depends="check-ips"
+	description="Update cfg_cache for authorities">
+
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="set-authority -P -O ${dev.repository.url} '${dev.authority}'"/>
+    </exec>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="set-authority -O ${contrib.repository.url} '${contrib.authority}'"/>
+    </exec>
+    <!-- disabling sun contrib authority setup - not used until close to fcs
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+	    <arg line="set-authority -O ${repo.url} '${sun.contrib.authority}'"/>
+    </exec>
+    -->
+</target>
+
 
 <target name="update-cfg-cache-for-dev-repository-urls">
     <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
