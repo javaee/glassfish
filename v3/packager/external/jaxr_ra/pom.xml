@@ -94,6 +94,7 @@
             <artifactId>jaxr-ra</artifactId>
 	    <version>${jaxr.version}</version>
 	    <type>jar</type>
+	    <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
