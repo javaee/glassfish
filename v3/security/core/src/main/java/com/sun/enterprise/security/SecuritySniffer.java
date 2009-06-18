@@ -54,7 +54,7 @@ import java.lang.annotation.Annotation;
 /**
  * SecuritySniffer for security related activities
  */
-@Service
+@Service(name="Security")
 public class SecuritySniffer extends GenericSniffer {
 
     final String[] containers = { "com.sun.enterprise.security.SecurityContainer" };

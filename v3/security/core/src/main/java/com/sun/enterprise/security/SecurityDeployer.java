@@ -56,7 +56,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * Security Deployer which generate and clean the security policies
  *
  */
-@Service
+@Service(name="Security")
 public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApplication> implements PostConstruct  {
 
     private static final Logger _logger = LogDomains.getLogger(SecurityDeployer.class, LogDomains.SECURITY_LOGGER);

@@ -70,6 +70,7 @@
     </developers>
 
     <build>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
             <!-- Get hold of all the required artifacts -->
             <plugin>

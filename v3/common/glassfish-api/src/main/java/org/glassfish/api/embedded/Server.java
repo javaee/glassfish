@@ -36,7 +36,6 @@
 package org.glassfish.api.embedded;
 
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitants;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.*;
@@ -115,9 +114,16 @@ public class Server {
         }
 
         public Server build() {
-            return new Server(this);
+            synchronized(servers) {
+                if (!servers.containsKey(serverName)) {
+                    servers.put(serverName, new Server(this));
+                }
+                return servers.get(serverName);
+            }
         }
     }
+
+    private final static Map<String, Server> servers = new HashMap<String, Server>();
 
     public final String serverName;
     public final boolean loggerEnabled;
@@ -238,6 +244,9 @@ public class Server {
     public void stop() {
         for (EmbeddedContainer container : containers) {
             container.stop();
+        }
+        synchronized(servers) {
+            servers.remove(serverName);
         }
     }
 

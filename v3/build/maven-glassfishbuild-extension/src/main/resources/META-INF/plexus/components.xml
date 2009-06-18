@@ -11,6 +11,8 @@
           <package>org.jvnet.maven-antrun-extended-plugin:maven-antrun-extended-plugin:run</package>
           <install>org.apache.maven.plugins:maven-install-plugin:install</install>
           <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
+              <test-compile>com.sun.enterprise:hk2-maven-plugin:hk2-test-compile</test-compile>
+              <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
         </phases>
       </configuration>
     </component>

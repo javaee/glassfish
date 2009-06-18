@@ -48,7 +48,7 @@ import java.util.List;
  */
 public interface EmbeddedContainer {
 
-    public Sniffer[] getSniffers();
+    public List<Sniffer> getSniffers();
 
     public void start();
 

@@ -15,7 +15,7 @@ public class EmbeddedTest {
     @Test
     public void test() {
 
-        Server server = new Server.Builder("First").build();
+        Server server = new Server.Builder("build").build();
         server.createPort(8080);
     }
 }

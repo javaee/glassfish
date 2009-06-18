@@ -1,4 +1,5 @@
-package org.glassfish.tests.ejb;
+package org.glassfish.distributions.test;
+
 
 import org.junit.Test;
 import org.glassfish.api.embedded.Server;
@@ -6,7 +7,7 @@ import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.ejb.embedded.EjbEmbeddedInfo;
 import org.glassfish.ejb.embedded.EjbEmbeddedContainer;
-import org.glassfish.tests.ejb.sample.SimpleEjb;
+import org.glassfish.distributions.test.ejb.SampleEjb;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.net.URL;
 
 public class EmbeddedTest {
+
 
     @Test
     public void test() {
@@ -25,8 +27,8 @@ public class EmbeddedTest {
         EjbEmbeddedContainer ejbContainer = server.addContainer(ejbInfo);
         EmbeddedDeployer deployer = server.getDeployer();
 
-        URL source = SimpleEjb.class.getClassLoader().getResource("org/glassfish/tests/ejb/sample/SimpleEjb.class");
-        String p = source.getPath().substring(0, source.getPath().length()-"org/glassfish/tests/ejb/sample/SimpleEjb.class".length());
+        URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/ejb/SampleEjb.class");
+        String p = source.getPath().substring(0, source.getPath().length()-"org/glassfish/distributions/test/ejb/SimpleEjb.class".length());
 
         File path = new File(p);
         DeployCommandParameters dp = new DeployCommandParameters(path);
@@ -36,7 +38,7 @@ public class EmbeddedTest {
         // ok now let's look up the EJB...
         try {
             InitialContext ic = new InitialContext();
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/test-classes/SimpleEjb");
+            SampleEjb ejb = (SampleEjb) ic.lookup("java:global/test-classes/SampleEjb");
             if (ejb!=null) {
                 try {
                     System.out.println(ejb.saySomething());
