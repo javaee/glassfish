@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
@@ -81,6 +83,10 @@ public interface J2EEDomain
 	 */
  	@ManagedAttribute
 	public String[]	getservers();
+
+ 	@ManagedAttribute
+    @Description( "Get the ObjectName of the corresponding config MBean, if any" )
+    public ObjectName getCorrespondingConfig();
 }
 
 

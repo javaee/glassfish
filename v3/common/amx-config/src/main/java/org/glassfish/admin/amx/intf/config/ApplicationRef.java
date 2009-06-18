@@ -33,31 +33,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.impl.j2ee;
+package org.glassfish.admin.amx.intf.config;
 
-import java.util.Set;
-import org.glassfish.admin.amx.j2ee.EJBModule;
-import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
+import java.util.Map;
 
-import javax.management.ObjectName;
-import org.glassfish.admin.amx.util.SetUtil;
+/**
+Represents an &lt;application-ref&gt; element
+found within a &lt;server&gt element.
+ */
+public interface ApplicationRef extends Ref
+{
 
-public final class EJBModuleImpl extends J2EEModuleImplBase {
-    public static final Class<EJBModule> INTF = EJBModule.class;
+    /**
+    @return comma-delimited list of virtual servers
+     */
+    String getVirtualServers();
 
-    public EJBModuleImpl(
-            final ObjectName parentObjectName, final Metadata meta) {
-        super(parentObjectName, meta, INTF);
-    }
+    /**
+    See {@link #getVirtualServers}.
+     */
+    void setVirtualServers(final String virtualServers);
 
-    private static final Set<String> EJB_TYPES	= SetUtil.newUnmodifiableStringSet(
-        ENTITY_BEAN,
-        STATELESS_SESSION_BEAN,
-        STATEFUL_SESSION_BEAN,
-        MESSAGE_DRIVEN_BEAN
-    );
+    /**
+    <b>EE only</b>
+    Return the String flag that causes any and all load-balancers using
+    this application to consider this application unavailable to
+    them. Defaults to unavailable (false).
+     */
+    
+    public String getLBEnabled();
 
-    public String[] getejbs() {
-        return getChildrenAsStrings(EJB_TYPES);
-    }
+    /**
+    <b>EE only</b>
+    Set the String flag that causes any and all load-balancers using
+    this application to consider this application unavailable to
+    them.
+     */
+    public void setLBEnabled(final String lbEnabled);
+
+    /**
+    The time, in minutes, that it takes this application to reach
+    a quiescent state after having been disabled.
+    @since AppServer 9.0
+     */
+    
+    public String getDisableTimeoutInMinutes();
+
+    /**
+    @see #getDisableTimeoutInMinutes
+    @since AppServer 9.0
+     */
+    public void setDisableTimeoutInMinutes(final String timeout);
 }
+
+

@@ -47,8 +47,8 @@ public final class EntityBeanImpl
     public static final Class<EntityBean> INTF = EntityBean.class;
 		public
 	EntityBeanImpl(
-        final ObjectName parentObjectName )
+        final ObjectName parentObjectName, final Metadata meta)
 	{
-		super( parentObjectName, INTF );
+		super( parentObjectName, meta, INTF );
 	}
 }

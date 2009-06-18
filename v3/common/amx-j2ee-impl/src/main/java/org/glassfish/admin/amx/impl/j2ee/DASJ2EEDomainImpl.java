@@ -41,8 +41,8 @@ import javax.management.ObjectName;
  */
 public final class DASJ2EEDomainImpl extends J2EEDomainImpl {
 
-    public DASJ2EEDomainImpl(final ObjectName parentObjectName) {
-        super(parentObjectName);
+    public DASJ2EEDomainImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta);
     }
 }
 

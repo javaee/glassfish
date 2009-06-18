@@ -54,61 +54,12 @@ for enabling state management including start() and stop()
 public class DASJ2EEServerImpl extends J2EEServerImpl
         implements NotificationListener {
 
-    public DASJ2EEServerImpl(final ObjectName parentObjectName) {
-        super(parentObjectName);
+    public DASJ2EEServerImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta);
 
         Issues.getAMXIssues().notDone("DASJ2EEServer needs to account for DAS/non-DAS");
     }
-         
-    private static final boolean DUMMY_HIERARCHY = false;
-    
-    void registerDummyHierarchy()
-    {
-        cdebug( "REGISTERING VARIOUS *DUMMY* MBeans in J2EEServer " + getObjectName() );
-        Object impl;
-        ObjectName on = null;
 
-        final ObjectName self = getObjectName();
-        registerJ2EEChild( self, JavaMailResource.class, JavaMailResourceImpl.class, "javamail1");
-        registerJ2EEChild( self, RMI_IIOPResource.class, RMI_IIOPResourceImpl.class, "rmiiiop1");
-        registerJ2EEChild( self, JMSResource.class, JMSResourceImpl.class, "jms1");
-        registerJ2EEChild( self, URLResource.class, URLResourceImpl.class, "url1");
-        registerJ2EEChild( self, JDBCResource.class, JDBCResourceImpl.class, "jdbc1");
-        registerJ2EEChild( self, JTAResource.class, JTAResourceImpl.class, "jta1");
-        registerJ2EEChild( self, JNDIResource.class, JNDIResourceImpl.class, "jndi1");
-        registerJ2EEChild( self, JDBCDriver.class, JDBCDriverImpl.class, "jdbcdriver1");
-        registerJ2EEChild( self, JCAManagedConnectionFactory.class, JCAManagedConnectionFactoryImpl.class, "jcamcf1");
-        
-
-        final ObjectName resam = registerJ2EEChild( self, ResourceAdapterModule.class, ResourceAdapterModuleImpl.class, "ra1");
-        final ObjectName jca = registerJ2EEChild( resam, JCAResource.class, JCAResourceImpl.class, "jca1");
-        registerJ2EEChild( jca, JCAConnectionFactory.class, JCAConnectionFactoryImpl.class, "jcacf1");
-        
-        final ObjectName appclient = registerJ2EEChild( self, AppClientModule.class, AppClientModuleImpl.class, "appclient1");
-        
-        final ObjectName wms = registerJ2EEChild( self, WebModule.class, WebModuleImpl.class, "wm1");
-        registerJ2EEChild( wms, Servlet.class, ServletImpl.class, "servlet1");
-        registerJ2EEChild( wms, Servlet.class, ServletImpl.class, "servlet2");
-
-        final ObjectName ejbms = registerJ2EEChild( self, EJBModule.class, EJBModuleImpl.class, "ejbm1");
-        registerJ2EEChild( ejbms, StatelessSessionBean.class, StatelessSessionBeanImpl.class, "slsb1");
-        registerJ2EEChild( ejbms, StatefulSessionBean.class, StatefulSessionBeanImpl.class, "sfsb1");
-        registerJ2EEChild( ejbms, EntityBean.class, EntityBeanImpl.class, "eb1");
-        registerJ2EEChild( ejbms, MessageDrivenBean.class, MessageDrivenBeanImpl.class, "mdb1");
-        
-        final ObjectName app = registerJ2EEChild( self, J2EEApplication.class, J2EEApplicationImpl.class, "test-app");
-        
-        final ObjectName wminapp = registerJ2EEChild( app, WebModule.class, WebModuleImpl.class, "wm-in-app");
-        registerJ2EEChild( wminapp, Servlet.class, ServletImpl.class, "appservlet1");
-        registerJ2EEChild( wminapp, Servlet.class, ServletImpl.class, "appservlet2");
-
-        final ObjectName ejbmapp = registerJ2EEChild( app, EJBModule.class, EJBModuleImpl.class, "ejbm-in-app");
-        registerJ2EEChild( ejbmapp, StatelessSessionBean.class, StatelessSessionBeanImpl.class, "app-slsb1");
-        registerJ2EEChild( ejbmapp, StatefulSessionBean.class, StatefulSessionBeanImpl.class, "app-sfsb1");
-        registerJ2EEChild( ejbmapp, EntityBean.class, EntityBeanImpl.class, "app-eb1");
-        registerJ2EEChild( ejbmapp, MessageDrivenBean.class, MessageDrivenBeanImpl.class, "app-mdb1");
-    }
-    
 
     @Override
         protected void
@@ -118,14 +69,9 @@ public class DASJ2EEServerImpl extends J2EEServerImpl
         
         final ObjectNameBuilder builder = getObjectNames();
 
-        final JVMImpl jvm = new JVMImpl( getObjectName() );
+        final JVMImpl jvm = new JVMImpl( getObjectName(), defaultChildMetadata() );
         final ObjectName jvmObjectName = builder.buildChildObjectName( J2EETypes.JVM, null);
         registerChild( jvm, jvmObjectName );
-        
-        if ( DUMMY_HIERARCHY )
-        {
-            registerDummyHierarchy();
-        }
     }
     
     /*

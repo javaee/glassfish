@@ -45,8 +45,8 @@ public final class ServletImpl
 {
     public static final Class<Servlet> INTF = Servlet.class;
 
-    public ServletImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+    public ServletImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }
 

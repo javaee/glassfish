@@ -35,10 +35,11 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
+import java.util.Map;
+
 import org.glassfish.admin.amx.base.Singleton;
 
-
-import java.util.Map;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 
 /**
 Configuration for the &lt;applications&gt; element; it is an internal "node" which

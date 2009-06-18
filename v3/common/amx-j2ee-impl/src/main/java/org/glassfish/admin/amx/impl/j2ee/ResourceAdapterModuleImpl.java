@@ -44,8 +44,8 @@ public final class ResourceAdapterModuleImpl extends J2EEModuleImplBase {
     public static final Class<ResourceAdapterModule> INTF = ResourceAdapterModule.class;
 
     public ResourceAdapterModuleImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 
     public String[] getresourceAdapters() {

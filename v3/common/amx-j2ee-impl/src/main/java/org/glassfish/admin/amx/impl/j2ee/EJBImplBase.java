@@ -46,7 +46,8 @@ public abstract class EJBImplBase extends J2EEManagedObjectImplBase {
 
     public EJBImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends EJB> intf) {
-        super(parentObjectName, intf);
+        super(parentObjectName, meta, intf);
     }
 }

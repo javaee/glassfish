@@ -46,7 +46,7 @@ public final class JTAResourceImpl
     public static final Class<JTAResource> INTF = JTAResource.class;
 
     public JTAResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

@@ -48,8 +48,9 @@ public class J2EEModuleImplBase extends J2EEDeployedObjectImplBase {
 
     public J2EEModuleImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends J2EEModule> intf) {
-        super(parentObjectName, intf);
+        super(parentObjectName, meta, intf);
     }
 
     public String[] getjavaVMs() {

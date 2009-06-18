@@ -47,7 +47,7 @@ public final class JCAConnectionFactoryImpl
     public static final Class<? extends J2EEManagedObject> INTF = JCAConnectionFactory.class;
 
     public JCAConnectionFactoryImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

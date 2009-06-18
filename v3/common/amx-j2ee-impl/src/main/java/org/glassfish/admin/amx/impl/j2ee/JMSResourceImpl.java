@@ -44,7 +44,7 @@ public final class JMSResourceImpl
     public static final Class<JMSResource> INTF = JMSResource.class;
 
     public JMSResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

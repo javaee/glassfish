@@ -17,8 +17,7 @@ import org.jvnet.hk2.config.Units;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 
 /**
- * Various shortcut methods for working with AMX config MBeans, particularly attributes
- * and metadata.
+ * Various shortcut methods for working with AMX config MBeans, particularly attributes and metadata.
  * @author llc
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)

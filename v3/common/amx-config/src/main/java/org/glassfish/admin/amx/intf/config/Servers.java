@@ -48,22 +48,7 @@ groups all resources under itself.
 public interface Servers
         extends ConfigElement, ConfigCollectionElement, Singleton
 {
-    /**
-    Calls Container.getContaineeMap( XTypes.STANDALONE_SERVER_CONFIG ).
-    @return Map of items, keyed by name.
-
-     */
-    public Map<String, StandaloneServer> getStandaloneServer();
-
-    /**
-    Calls Container.getContaineeMap( XTypes.CLUSTERED_SERVER_CONFIG ).
-    @return Map of items, keyed by name.
-
-     */
-    public Map<String, ClusteredServer> getClusteredServer();
-// 	public void		removeStandaloneServerConfig( String name );
-//     
-// 	public void		removeClusteredServerConfig( String name );
+    public Map<String, Server> getServer();
 }
 
 

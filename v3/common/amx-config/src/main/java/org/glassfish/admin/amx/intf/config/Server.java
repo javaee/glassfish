@@ -63,18 +63,9 @@ public interface Server
      */
     public String getNodeAgentRef();
 
-    /**
-    Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).
-    @return Map of all DeployedItemRef MBean proxies, keyed by name.
+    public Map<String, ApplicationRef> getApplicationRef();
 
-     */
-    public Map<String, DeployedItemRef> getDeployedItemRef();
-
-    /**
-    Calls Container.getContaineeMap( XTypes.RESOURCE_REF_CONFIG ).
-    @return Map of all ResourceRef MBean proxies, keyed by name.
-
-     */
+   
     public Map<String, ResourceRef> getResourceRef();
 
     /**

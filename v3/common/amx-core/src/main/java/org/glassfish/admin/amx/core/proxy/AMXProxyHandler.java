@@ -94,7 +94,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
             return intf.cast(this);
         }
 
-        return getProxyFactory().getProxy(getObjectName(), getMBeanInfo(), intf);
+        return proxyFactory().getProxy(getObjectName(), getMBeanInfo(), intf);
 
     //throw new IllegalArgumentException( "Cannot convert " + getObjectName() +
     // " to interface " + intf.getName() + ", interfaceName from Descriptor = " + interfaceName());
@@ -143,14 +143,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     public final static String REMOVE_NOTIFICATION_LISTENER = "removeNotificationListener";
     private final static String QUERY = "query";
 
-    public ProxyFactory getProxyFactory()
-    {
-        return (ProxyFactory.getInstance(getMBeanServerConnection()));
-    }
 
-    private final DomainRoot getDomainRootProxy()
+    public final DomainRoot domainRootProxy()
     {
-        return getProxyFactory().getDomainRootProxy();
+        return proxyFactory().getDomainRootProxy();
     }
     
     private static final String STRING = String.class.getName();
@@ -162,7 +158,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
     protected <T extends AMXProxy> T getProxy(final ObjectName objectName, final Class<T> intf)
     {
-        return (getProxyFactory().getProxy(objectName, intf));
+        return (proxyFactory().getProxy(objectName, intf));
     }
 
     protected AMXProxy getProxy(final ObjectName objectName)
@@ -532,7 +528,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         }
         catch (IOException e)
         {
-            getProxyFactory().checkConnection();
+            proxyFactory().checkConnection();
             throw e;
         }
         catch (InstanceNotFoundException e)
@@ -583,7 +579,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         else if (result != null &&
                  result instanceof ObjectName[])
         {
-            //System.out.println( "_invoke: trying to make ObjectName[] into proxies " );
+            //System.out.println( "_invoke: trying to make ObjectName[] into proxies for " + method.getName() );
             final ObjectName[] items = (ObjectName[]) result;
 
             Class<? extends AMXProxy> proxyClass = AMXProxy.class;
@@ -594,15 +590,15 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
             if (Set.class.isAssignableFrom(returnType))
             {
-                result = getProxyFactory().toProxySet(items, proxyClass);
+                result = proxyFactory().toProxySet(items, proxyClass);
             }
             else if (List.class.isAssignableFrom(returnType))
             {
-                result = getProxyFactory().toProxyList(items, proxyClass);
+                result = proxyFactory().toProxyList(items, proxyClass);
             }
             else if (Map.class.isAssignableFrom(returnType))
             {
-                result = getProxyFactory().toProxyMap(items, proxyClass);
+                result = proxyFactory().toProxyMap(items, proxyClass);
             }
         }
 
@@ -703,7 +699,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
     public ProxyFactory proxyFactory()
     {
-        return getProxyFactory();
+        return (ProxyFactory.getInstance(getMBeanServerConnection()));
     }
 
     public MBeanServerConnection mbeanServerConnection()
@@ -745,7 +741,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
     public AMXProxy parent()
     {
-        return mParentObjectName == null ? null : getProxyFactory().getProxy(mParentObjectName);
+        return mParentObjectName == null ? null : proxyFactory().getProxy(mParentObjectName);
     }
 
     public String path()
@@ -792,7 +788,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
     public Set<AMXProxy> childrenSet(final ObjectName[] objectNames)
     {
-        return objectNames == null ? null : SetUtil.newSet(getProxyFactory().toProxy(objectNames));
+        return objectNames == null ? null : SetUtil.newSet(proxyFactory().toProxy(objectNames));
     }
 
     public Set<String> childrenTypes(final ObjectName[] objectNames)
@@ -1011,7 +1007,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     }
     
     public String java() {
-        final Tools tools  = getDomainRootProxy().getTools();
+        final Tools tools  = domainRootProxy().getTools();
         return tools.java( getObjectName() );
     }
     

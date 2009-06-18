@@ -46,8 +46,8 @@ public final class JCAResourceImpl
     public static final Class<JCAResource> INTF = JCAResource.class;
 
     public JCAResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }
 

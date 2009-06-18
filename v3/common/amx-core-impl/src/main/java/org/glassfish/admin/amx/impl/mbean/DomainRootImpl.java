@@ -37,6 +37,8 @@ package org.glassfish.admin.amx.impl.mbean;
 
 import org.glassfish.admin.amx.base.*;
 
+import org.glassfish.admin.amx.logging.Logging;
+
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import com.sun.appserv.server.util.Version;
 
@@ -168,6 +170,11 @@ public class DomainRootImpl extends AMXImplBase
                 
         childObjectName	= objectNames.buildChildObjectName( Ext.class );
         mbean	= new ExtImpl(self);
+        registerChild( mbean, childObjectName );
+        
+        final String serverName = "server";
+        childObjectName	= objectNames.buildChildObjectName( Logging.class );
+        mbean	= new LoggingImpl(self, serverName);
         registerChild( mbean, childObjectName );
                         
         childObjectName	= objectNames.buildChildObjectName( Tools.class );

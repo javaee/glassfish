@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 
 /**
@@ -64,4 +66,8 @@ public interface J2EEDeployedObject extends J2EEManagedObject, StateManageable
      */
     @ManagedAttribute
     public String getserver();
+
+ 	@ManagedAttribute
+    @Description( "Get the ObjectName of the corresponding config MBean, if any" )
+    public ObjectName getCorrespondingConfig();
 }

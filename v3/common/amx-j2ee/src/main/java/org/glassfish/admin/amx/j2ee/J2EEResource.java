@@ -36,6 +36,9 @@
  
 package org.glassfish.admin.amx.j2ee;
 
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.Description;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
@@ -48,8 +51,11 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(leaf=true)
 public interface J2EEResource extends J2EEManagedObject
 {
-
-
-
-
+ 	@ManagedAttribute
+    @Description( "Get the ObjectName of the corresponding config MBean, if any" )
+    public ObjectName getCorrespondingConfig();
+    
+ 	@ManagedAttribute
+    @Description( "Get the ObjectName of the corresponding config resource-ref" )
+    public ObjectName getCorrespondingRef();
 }

@@ -71,10 +71,10 @@ public interface Cluster
 	
 	/**
 		Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).
-		@return Map of DeployedItemRef MBean proxies, keyed by name.
+		@return Map of ApplicationRef MBean proxies, keyed by name.
 
 	 */
-	public Map<String,DeployedItemRef>	getDeployedItemRef();
+	public Map<String,ApplicationRef>	getDeployedItemRef();
 
 	/**
 		@return Map of ClusteredServer, keyed by name.

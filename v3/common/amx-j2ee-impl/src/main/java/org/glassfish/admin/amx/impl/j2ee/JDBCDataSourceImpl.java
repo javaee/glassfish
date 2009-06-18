@@ -44,7 +44,7 @@ public final class JDBCDataSourceImpl
         extends J2EEManagedObjectImplBase {
     public static final Class<? extends J2EEManagedObject> INTF = JDBCDataSource.class;
 
-    public JDBCDataSourceImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+    public JDBCDataSourceImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

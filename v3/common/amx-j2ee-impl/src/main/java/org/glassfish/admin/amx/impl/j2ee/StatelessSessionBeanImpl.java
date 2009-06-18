@@ -46,7 +46,7 @@ public final class StatelessSessionBeanImpl
     public static final Class<StatelessSessionBean> INTF = StatelessSessionBean.class;
 
     public StatelessSessionBeanImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

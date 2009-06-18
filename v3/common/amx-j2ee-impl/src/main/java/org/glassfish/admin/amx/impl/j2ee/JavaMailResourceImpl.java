@@ -44,7 +44,7 @@ public final class JavaMailResourceImpl
     public static final Class<JavaMailResource> INTF = JavaMailResource.class;
     
     public JavaMailResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

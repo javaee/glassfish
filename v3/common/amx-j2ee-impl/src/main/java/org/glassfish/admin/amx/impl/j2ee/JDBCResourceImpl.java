@@ -45,8 +45,8 @@ public final class JDBCResourceImpl
     public static final Class<JDBCResource> INTF = JDBCResource.class;
 
     public JDBCResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 
     public String[] getjdbcDataSources() {

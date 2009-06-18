@@ -505,7 +505,7 @@ public class AMXImplBase extends MBeanImplBase
         {
             //cdebug( "getAttributeInternal: found getter method for: " + name );
             result	= getAttributeByMethod( name, m );
-            debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
+            //debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
         }
         else if ( attributeTypeMatches(name, ObjectName.class) )
         {

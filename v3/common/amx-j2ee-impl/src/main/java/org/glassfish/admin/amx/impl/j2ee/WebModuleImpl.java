@@ -46,8 +46,8 @@ public final class WebModuleImpl extends J2EEModuleImplBase // implements WebMod
 {
     public static final Class<WebModule> INTF = WebModule.class;
 
-    public WebModuleImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+    public WebModuleImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
     
     public String[] getservlets() {

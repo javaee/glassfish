@@ -37,10 +37,10 @@ package org.glassfish.admin.amx.impl.util;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
+import org.glassfish.internal.api.Globals;
 
 import org.glassfish.api.Async;
 
@@ -58,12 +58,8 @@ import com.sun.enterprise.module.ModulesRegistry;
  */
 @Service
 @Async
-//@Scoped(Singleton.class)
-public final class InjectedValues
-    implements  PostConstruct, PreDestroy
+public class InjectedValues
 {
-    private static void debug( final String s ) { System.out.println(s); }
-    
     @Inject
     Habitat mHabitat;
     
@@ -84,31 +80,20 @@ public final class InjectedValues
     public ServerEnvironmentImpl getServerEnvironment() { return mServerEnvironment; }
     public UnprocessedConfigListener getUnprocessedConfigListener() { return mUnprocessedConfigListener; }
     public ModulesRegistry getModulesRegistry() { return mModulesRegistry; }
-
-    private static volatile InjectedValues INSTANCE = null;
     
+    public static Habitat getDefaultHabitat()
+    {
+        return Globals.getDefaultHabitat();
+    }
+    
+    public static InjectedValues getInstance()
+    {
+        return getDefaultHabitat().getByType(InjectedValues.class);
+    }
+
     public InjectedValues()
     {
-        //debug( "InjectedValues.InjectedValues()" );
     }
-    
-    public static InjectedValues getInstance() { return INSTANCE; }
-    
-    public void postConstruct()
-    {
-        //debug( "InjectedValues.postConstruct");
-        if ( INSTANCE != null && this != INSTANCE )
-        {
-            debug( "InjectedValues.postConstruct(): WARNING: more than one instance has been created" ); 
-        }
-        INSTANCE = this;
-    }
-
-    public void preDestroy() {
-        //debug( "InjectedValues.preDestroy");
-    }
-    
-   // public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
 
 

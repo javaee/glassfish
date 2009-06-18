@@ -49,103 +49,109 @@ import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 
 /**
-    Startup service that loads support for AMX config MBeans.  How this is to be
-    triggered is not yet clear.
+Startup service that loads support for AMX config MBeans.  How this is to be
+triggered is not yet clear.
  */
 @Service
 public final class AMXExtStartupService
-    implements  org.jvnet.hk2.component.PostConstruct,
-                org.jvnet.hk2.component.PreDestroy,
-                AMXExtStartupServiceMBean
+        implements org.jvnet.hk2.component.PostConstruct,
+        org.jvnet.hk2.component.PreDestroy,
+        AMXExtStartupServiceMBean
 {
-    private static void debug( final String s ) { System.out.println(s); }
-    
+    private static void debug(final String s)
+    {
+        System.out.println(s);
+    }
+
     @Inject
-    InjectedValues  mInjectedValues;
-    
+    InjectedValues mInjectedValues;
+
     @Inject//(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
     private MBeanServer mMBeanServer;
-    
-    
+
     private volatile boolean mLoaded = false;
-    
+
     public AMXExtStartupService()
     {
     }
-    
+
     public void postConstruct()
     {
         try
         {
-           final StandardMBean mbean = new StandardMBean(this, AMXExtStartupServiceMBean.class);
-           mMBeanServer.registerMBean( mbean, OBJECT_NAME );
+            final StandardMBean mbean = new StandardMBean(this, AMXExtStartupServiceMBean.class);
+            mMBeanServer.registerMBean(mbean, OBJECT_NAME);
         }
-        catch( JMException e )
+        catch (JMException e)
         {
             throw new Error(e);
         }
     }
 
-    public void preDestroy() {
+    public void preDestroy()
+    {
         unloadAMXMBeans();
     }
-    
+
     public DomainRoot getDomainRootProxy()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy(false);
+        return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy(false);
     }
-    
-        public synchronized ObjectName
-    loadAMXMBeans()
+
+    public synchronized ObjectName loadAMXMBeans()
     {
-        if ( ! mLoaded )
+        if (!mLoaded)
         {
-            FeatureAvailability.getInstance().waitForFeature( FeatureAvailability.AMX_CORE_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
-            FeatureAvailability.getInstance().waitForFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
-        
+            mLoaded = true;
+            FeatureAvailability.getInstance().waitForFeature(FeatureAvailability.AMX_CORE_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
+            FeatureAvailability.getInstance().waitForFeature(AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "AMXExtStartupService.loadAMXMBeans");
+
             ObjectName child;
-            AMXImplBase     mbean;
+            AMXImplBase mbean;
             final MBeanServer s = mMBeanServer;
-            final ObjectName parent = getDomainRootProxy().getExt().extra().objectName();
+            final ObjectName parent = getDomainRootProxy().getExt().objectName();
             final ObjectNameBuilder names = new ObjectNameBuilder(s, parent);
-               
-            child	= names.buildChildObjectName( LoggingPropertiesMgr.class );
-            mbean	= new LoggingPropertiesMgrImpl(parent);
-            registerChild( mbean, child );
+
+            child = names.buildChildObjectName(LoggingPropertiesMgr.class);
+            mbean = new LoggingPropertiesMgrImpl(parent);
+            registerChild(mbean, child);
+
+            child = names.buildChildObjectName(SystemStatus.class);
+            mbean = new SystemStatusImpl(parent);
+            registerChild(mbean, child);
+
+            child = names.buildChildObjectName(RealmsMgr.class);
+            mbean = new RealmsMgrImpl(parent);
+            registerChild(mbean, child);
+
+            child = names.buildChildObjectName(RuntimeMgr.class);
+            mbean = new RuntimeMgrImpl(parent);
+            registerChild(mbean, child);
             
-            child	= names.buildChildObjectName( SystemStatus.class );
-            mbean	= new SystemStatusImpl(parent);
-            registerChild( mbean, child );
-                        
-            child	= names.buildChildObjectName( RealmsMgr.class );
-            mbean	= new RealmsMgrImpl(parent);
-            registerChild( mbean, child );
-            
-            child	= names.buildChildObjectName( RuntimeMgr.class );
-            mbean	= new RuntimeMgrImpl(parent);
-            registerChild( mbean, child );
+            //final GmbalMOM mom = new GmbalMOM( s, getDomainRootProxy().objectName() );
+            //mom.registerChildren();
         }
         return null;
     }
-    
-        protected synchronized ObjectName
-    registerChild( final Object mbean, final ObjectName childObjectName )
+
+    protected synchronized ObjectName registerChild(final Object mbean, final ObjectName childObjectName)
     {
         try
         {
-            final ObjectName objectName = mMBeanServer.registerMBean( mbean, childObjectName ).getObjectName();
+            final ObjectName objectName = mMBeanServer.registerMBean(mbean, childObjectName).getObjectName();
             return objectName;
         }
-        catch ( Exception e )
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }
     }
-    
+
     public synchronized void unloadAMXMBeans()
     {
-       // final Set<ObjectName> children = MBeanTracker.getInstance();
+        // final Set<ObjectName> children = MBeanTracker.getInstance();
     }
+
 }
 
 

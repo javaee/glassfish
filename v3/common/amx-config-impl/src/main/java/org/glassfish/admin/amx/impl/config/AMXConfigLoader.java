@@ -432,6 +432,15 @@ public final class AMXConfigLoader extends MBeanImplBase
             {
                 e.printStackTrace();
             }
+            
+            // wait until config beans have been loaded as MBeans
+            mLoaderThread.waitInitialQueue();
+            
+            // Now the Config subsystem is ready: after the first queue of ConfigBeans are registered as MBeans
+            // and after the above MBeans are registered.
+            final ObjectName domainConfig = getDomainRootProxy().getDomain().objectName();
+            ImplUtil.getLogger().info( "AMX config read, domain config registered as " + domainConfig );
+            FeatureAvailability.getInstance().registerFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, domainConfig );
         }
         return null;
     }
@@ -441,11 +450,12 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         return mLoaderThread != null;
     }
-    
+        
     private final class AMXConfigLoaderThread extends Thread
     {
         private final PendingConfigBeansNew mPending;
         volatile boolean    mQuit = false;
+        private CountDownLatch mInitalQueueLatch = new CountDownLatch(1);
         
         AMXConfigLoaderThread( final PendingConfigBeansNew pending )
         {
@@ -496,6 +506,23 @@ public final class AMXConfigLoader extends MBeanImplBase
             }
         }
         
+        /** wait until the initial queue of MBeans has been processed */
+        public void waitInitialQueue()
+        {
+            final CountDownLatch latch = mInitalQueueLatch;
+            if ( latch != null )
+            {
+                try {
+                    latch.await();
+                }
+                catch( InterruptedException e )
+                {
+                    throw new RuntimeException(e);
+                }
+                mInitalQueueLatch = null;
+            }
+        }
+        
             protected void
         doRun() throws Exception
         {
@@ -516,8 +543,7 @@ public final class AMXConfigLoader extends MBeanImplBase
                 }
             }
             
-            final ObjectName domainConfig = getDomainRootProxy().getDomain().extra().objectName();
-            FeatureAvailability.getInstance().registerFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, domainConfig );
+            mInitalQueueLatch.countDown();
             
             // ongoing processing once initial queue has been emptied: blocking behavior
             while ( ! mQuit )

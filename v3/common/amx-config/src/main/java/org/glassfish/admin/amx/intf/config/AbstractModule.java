@@ -42,7 +42,7 @@ Functionality that all modules share.
  */
 public interface AbstractModule
         extends AMXProxy, Enabled, Description, ObjectType, NamedConfigElement,
-        DeployedItemRefReferent, PropertiesAccess
+        ApplicationRefReferent, PropertiesAccess
 {
 
     /**

@@ -33,13 +33,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.intf.config;
+package org.glassfish.admin.amx.impl.j2ee;
+
+import java.util.Map;
+import javax.management.ObjectName;
 
 /**
-Referent: "the object of a reference", in this case a marker 
-interface denoting that the item may be referred to by a
-{@link DeployedItemRefConfig}.
+ * Used to store extra data in MBeans without having to impact differing constructors.
+ * @author llc
  */
-public interface DeployedItemRefReferent extends RefReferent
-{
+public interface Metadata {
+    public <T> T getMetadata(final String name, final Class<T> clazz);
+
+    public void add( final String key, final Object value);
+
+    public ObjectName getConfig();
+    public ObjectName getCorrespondingRef();
+
+    public Map<String,Object> getAll();
+
+    /** ObjectName of corresponding Config MBean, if any */
+    public static final String CONFIG = "Config";
+
+    /** ObjectName of corresponding Config reference MBean, if any */
+    public static final String CORRESPONDING_REF = "CorrespondingRef";
+
+    /** Object reference to parent mbean (the object, not the ObjectName) */
+    public static final String PARENT = "Parent";
 }

@@ -44,7 +44,13 @@ public class J2EEResourceImplBase
 
     public J2EEResourceImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends J2EEResource> intf) {
-        super(parentObjectName, intf);
+        super(parentObjectName, meta, intf);
+    }
+
+    public ObjectName getCorrespondingRef()
+    {
+        return metadata().getCorrespondingRef();
     }
 }

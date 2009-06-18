@@ -47,7 +47,7 @@ public final class JNDIResourceImpl
 
 
     public JNDIResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

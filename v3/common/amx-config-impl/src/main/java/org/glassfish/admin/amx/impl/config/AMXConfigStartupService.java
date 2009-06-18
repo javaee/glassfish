@@ -105,7 +105,7 @@ public final class AMXConfigStartupService
     
     public DomainRoot getDomainRoot()
     {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy(false);
     }
     
         public ObjectName
@@ -129,9 +129,9 @@ public final class AMXConfigStartupService
 
             mLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans, mTransactions);
             mLoader.start();
+            // asynchronous start, caller must wait for 
         }
-        final ObjectName domainConfig = (ObjectName) FeatureAvailability.getInstance().waitForFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "" + this );
-        return domainConfig;
+        return getDomainConfig();
     }
     
     public synchronized void unloadAMXMBeans()

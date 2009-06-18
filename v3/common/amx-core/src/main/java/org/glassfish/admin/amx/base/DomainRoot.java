@@ -46,6 +46,7 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 
 import org.glassfish.admin.amx.core.PathnameConstants;
 import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.logging.Logging;
 
 
 /**
@@ -91,6 +92,12 @@ public interface DomainRoot extends AMXProxy
      */
     @ManagedAttribute
     public QueryMgr		getQueryMgr();
+    
+    /**
+        @return the singleton {@link Logging}.
+     */
+    @ManagedAttribute
+    public Logging		getLogging();
 
     /**
         @return the singleton {@link BulkAccess}.

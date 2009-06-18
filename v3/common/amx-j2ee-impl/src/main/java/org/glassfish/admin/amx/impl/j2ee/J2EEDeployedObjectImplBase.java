@@ -45,8 +45,9 @@ public class J2EEDeployedObjectImplBase extends J2EEManagedObjectImplBase // imp
 {
     public J2EEDeployedObjectImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends J2EEDeployedObject> intf) {
-        super(parentObjectName, intf);
+        super(parentObjectName, meta, intf);
     }
 
     public String getdeploymentDescriptor() {

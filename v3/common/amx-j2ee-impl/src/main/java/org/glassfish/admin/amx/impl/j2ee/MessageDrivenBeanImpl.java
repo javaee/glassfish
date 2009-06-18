@@ -43,7 +43,7 @@ public final class MessageDrivenBeanImpl extends EJBImplBase {
     public static final Class<MessageDrivenBean> INTF = MessageDrivenBean.class;
 
     public MessageDrivenBeanImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

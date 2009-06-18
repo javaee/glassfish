@@ -50,8 +50,9 @@ public class J2EELogicalServerImplBase
 
     public J2EELogicalServerImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends J2EELogicalServer> intf) {
-        super(parentObjectName, intf);
+        super(parentObjectName, meta, intf);
     }
 
     public int getstate() {

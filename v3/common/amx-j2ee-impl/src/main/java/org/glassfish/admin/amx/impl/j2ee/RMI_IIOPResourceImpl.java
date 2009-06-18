@@ -44,7 +44,7 @@ public final class RMI_IIOPResourceImpl
     public static final Class<RMI_IIOPResource> INTF = RMI_IIOPResource.class;
 
     public RMI_IIOPResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

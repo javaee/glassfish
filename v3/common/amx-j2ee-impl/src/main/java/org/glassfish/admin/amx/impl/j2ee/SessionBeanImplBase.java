@@ -44,7 +44,8 @@ public final class SessionBeanImplBase
 
     public SessionBeanImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends SessionBean> intf) {
-        super(parentObjectName, intf);
+        super(parentObjectName, meta, intf);
     }
 }

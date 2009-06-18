@@ -33,31 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.impl.j2ee;
+package org.glassfish.admin.amx.intf.config;
 
-import java.util.Set;
-import org.glassfish.admin.amx.j2ee.EJBModule;
-import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
-
-import javax.management.ObjectName;
-import org.glassfish.admin.amx.util.SetUtil;
-
-public final class EJBModuleImpl extends J2EEModuleImplBase {
-    public static final Class<EJBModule> INTF = EJBModule.class;
-
-    public EJBModuleImpl(
-            final ObjectName parentObjectName, final Metadata meta) {
-        super(parentObjectName, meta, INTF);
-    }
-
-    private static final Set<String> EJB_TYPES	= SetUtil.newUnmodifiableStringSet(
-        ENTITY_BEAN,
-        STATELESS_SESSION_BEAN,
-        STATEFUL_SESSION_BEAN,
-        MESSAGE_DRIVEN_BEAN
-    );
-
-    public String[] getejbs() {
-        return getChildrenAsStrings(EJB_TYPES);
-    }
+/**
+Referent: "the object of a reference", in this case a marker 
+interface denoting that the item may be referred to by a
+{@link DeployedItemRefConfig}.
+ */
+public interface ApplicationRefReferent extends RefReferent
+{
 }

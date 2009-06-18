@@ -44,7 +44,7 @@ public final class URLResourceImpl
     public static final Class<URLResource> INTF = URLResource.class;
 
     public URLResourceImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

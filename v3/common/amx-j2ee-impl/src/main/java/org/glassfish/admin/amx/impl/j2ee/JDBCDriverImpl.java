@@ -45,7 +45,7 @@ public final class JDBCDriverImpl
     public static final Class<? extends J2EEManagedObject> INTF = JDBCDriver.class;
 
     public JDBCDriverImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

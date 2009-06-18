@@ -33,57 +33,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.intf.config;
+package org.glassfish.admin.amx.impl.j2ee;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.management.ObjectName;
 
-/**
-Represents an &lt;application-ref&gt; element
-found within a &lt;server&gt element.
- */
-public interface DeployedItemRef extends Ref
-{
-
-    /**
-    @return comma-delimited list of virtual servers
-     */
-    String getVirtualServers();
-
-    /**
-    See {@link #getVirtualServers}.
-     */
-    void setVirtualServers(final String virtualServers);
-
-    /**
-    <b>EE only</b>
-    Return the String flag that causes any and all load-balancers using
-    this application to consider this application unavailable to
-    them. Defaults to unavailable (false).
-     */
+public final class MetadataImpl implements Metadata {
+    private final ConcurrentMap<String,Object>  mData;
     
-    public String getLBEnabled();
+    public MetadataImpl(final Map<String,Object> data )
+    {
+        mData = new ConcurrentHashMap<String,Object>(data);
+    }
 
-    /**
-    <b>EE only</b>
-    Set the String flag that causes any and all load-balancers using
-    this application to consider this application unavailable to
-    them.
-     */
-    public void setLBEnabled(final String lbEnabled);
+    public MetadataImpl( final Metadata meta)
+    {
+        this( meta.getAll() );
+    }
 
-    /**
-    The time, in minutes, that it takes this application to reach
-    a quiescent state after having been disabled.
-    @since AppServer 9.0
-     */
+    public MetadataImpl()
+    {
+        mData = new ConcurrentHashMap<String,Object>();
+    }
+
+    public Map<String,Object> getAll()
+    {
+        return Collections.unmodifiableMap(mData);
+    }
+
+    public void add( final String key, final Object value)
+    {
+        mData.put( key, value);
+    }
+
+    public void setConfig( final ObjectName config)
+    {
+        add( CONFIG, config);
+    }
     
-    public String getDisableTimeoutInMinutes();
+    public ObjectName getConfig()
+    {
+        return getMetadata( CONFIG, ObjectName.class);
+    }
 
-    /**
-    @see #getDisableTimeoutInMinutes
-    @since AppServer 9.0
-     */
-    public void setDisableTimeoutInMinutes(final String timeout);
+    public ObjectName getCorrespondingRef()
+    {
+        return getMetadata( CORRESPONDING_REF, ObjectName.class);
+    }
+
+    public void setCorrespondingRef( final ObjectName config)
+    {
+        add( CORRESPONDING_REF, config);
+    }
+    
+    public <T> T getMetadata(final String name, final Class<T> clazz)
+    {
+        final Object value = mData.get(name);
+        
+        return clazz.cast(value);
+    }
 }
-
-

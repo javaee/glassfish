@@ -44,7 +44,7 @@ public final class JCAManagedConnectionFactoryImpl
         extends J2EEManagedObjectImplBase {
     public static final Class<? extends J2EEManagedObject> INTF = JCAManagedConnectionFactory.class;
 
-    public JCAManagedConnectionFactoryImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+    public JCAManagedConnectionFactoryImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

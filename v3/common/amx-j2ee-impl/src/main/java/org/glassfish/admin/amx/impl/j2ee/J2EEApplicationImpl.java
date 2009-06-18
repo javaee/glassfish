@@ -47,8 +47,8 @@ public final class J2EEApplicationImpl
     public static final Class<J2EEApplication> INTF = J2EEApplication.class;
 
     public J2EEApplicationImpl(
-            final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+            final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 
     private static final Set<String> MODULE_TYPES	= SetUtil.newUnmodifiableStringSet(

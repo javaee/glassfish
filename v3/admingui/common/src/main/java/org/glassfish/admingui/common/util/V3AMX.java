@@ -26,7 +26,7 @@ import org.glassfish.admin.amx.core.proxy.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.intf.config.Config;
 import org.glassfish.admin.amx.intf.config.Configs;
-import org.glassfish.admin.amx.intf.config.DeployedItemRef;
+import org.glassfish.admin.amx.intf.config.ApplicationRef;
 import org.glassfish.admin.amx.intf.config.Domain;
 
 
@@ -203,7 +203,7 @@ public class V3AMX {
         try{
             String objectNameStr ="v3:pp=/domain/servers,type=server,name=server";
             AMXProxy  server = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
-            DeployedItemRef appRef = server.childrenMap("application-ref").get(appName).as(DeployedItemRef.class);
+            ApplicationRef appRef = server.childrenMap("application-ref").get(appName).as(ApplicationRef.class);
             NetworkListener listener = null;
             if (appRef == null) { // no application-ref found for this application, shouldn't happen for PE. TODO: think about EE
                 listener = getListener();

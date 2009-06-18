@@ -295,16 +295,14 @@ public final class ProxyFactory implements NotificationListener
 	}
 	
 	/**
-	    Return the DomainRoot.  AMX may not yet be fully 
-	    initialized; call getDomainRootProxy( true ) if AMX
-	    must be initialized upon return.
+	    Return the DomainRoot. AMX is guaranteed to be ready after this call returns.
 	    
 		@return the DomainRoot for this factory.
 	 */
 		public DomainRoot
 	getDomainRootProxy( )
 	{
-		return getDomainRootProxy( true );
+		return getDomainRootProxy( false );
 	}
 	
 	/**

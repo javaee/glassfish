@@ -42,7 +42,7 @@ import javax.management.ObjectName;
 public final class AppClientModuleImpl extends J2EEModuleImplBase {
     public static final Class<AppClientModule> INTF = AppClientModule.class;
 
-    public AppClientModuleImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+    public AppClientModuleImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
     }
 }

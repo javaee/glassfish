@@ -35,12 +35,12 @@
  */
 package org.glassfish.admin.amx.logging;
 
-
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
 	Supports accessing logging information in multiple ways.  The following are supported:
@@ -53,6 +53,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 	@since AS 9.0
  */
 @Taxonomy(stability = Stability.EXPERIMENTAL)
+@AMXMBeanMetadata(singleton=true, leaf=true)
 public interface Logging
 	extends LogRecordEmitter, LogQuery, LogFileAccess, LogAnalyzer, AMXProxy
 {

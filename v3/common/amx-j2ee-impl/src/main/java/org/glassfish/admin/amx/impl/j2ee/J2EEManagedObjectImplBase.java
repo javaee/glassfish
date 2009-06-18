@@ -23,29 +23,32 @@
 package org.glassfish.admin.amx.impl.j2ee;
 
 import java.lang.String;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.j2ee.Management;
+import javax.management.j2ee.ManagementHome;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
+import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.j2ee.J2EEManagedObject;
 import org.glassfish.admin.amx.j2ee.J2EEServer;
-import org.glassfish.admin.amx.util.StringUtil;
-import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
-
-import javax.management.j2ee.Management;
-import javax.management.j2ee.ManagementHome;
-
-import org.glassfish.admin.amx.intf.config.Domain;
-import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
-import org.glassfish.admin.amx.j2ee.J2EETypes;
 import org.glassfish.admin.amx.j2ee.StateManageable;
 import org.glassfish.admin.amx.util.SetUtil;
+import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+
+import org.glassfish.admin.amx.j2ee.J2EETypes;
+import static org.glassfish.admin.amx.j2ee.J2EETypes.*;
+
+
 
 /**
  */
@@ -56,19 +59,25 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
     private final boolean mStatisticsProvider;
     private final boolean mEventProvider;
 
+    private final Metadata mMeta;
+
     public J2EEManagedObjectImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends J2EEManagedObject> intf) {
-        this(parentObjectName, intf, false, false, false);
+        this(parentObjectName, meta, intf, false, false, false);
     }
 
     public J2EEManagedObjectImplBase(
             final ObjectName parentObjectName,
+            final Metadata meta,
             final Class<? extends J2EEManagedObject> intf,
             final boolean stateManageable,
             final boolean statisticsProvider,
             final boolean evengProvider) {
         super(parentObjectName, intf);
+
+        mMeta =meta;
 
         mStateManageable = stateManageable;
         mStatisticsProvider = statisticsProvider;
@@ -77,6 +86,25 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
         mStartTime = System.currentTimeMillis();
     }
 
+    protected MetadataImpl defaultChildMetadata()
+    {
+        final Map<String,Object> meta = new HashMap<String,Object>();
+        meta.put( Metadata.PARENT, this);
+        final MetadataImpl impl = new MetadataImpl(meta);
+
+        return impl;
+    }
+
+    protected Metadata metadata()
+    {
+        return mMeta;
+    }
+    
+    
+    public ObjectName getCorrespondingConfig()
+    {
+        return metadata().getConfig();
+    }
 
     protected Domain
     getDomainConfig()
@@ -106,18 +134,18 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
     /** types that require a J2EEApplication ancestor, even if null */
     private static final Set<String> REQUIRES_J2EE_APP	=
         SetUtil.newUnmodifiableStringSet(
-            J2EETypes.WEB_MODULE,
-            J2EETypes.RESOURCE_ADAPTER_MODULE,
-            J2EETypes.APP_CLIENT_MODULE,
-            J2EETypes.STATEFUL_SESSION_BEAN,
-            J2EETypes.STATELESS_SESSION_BEAN,
-            J2EETypes.ENTITY_BEAN,
-            J2EETypes.MESSAGE_DRIVEN_BEAN,
-            J2EETypes.SERVLET,
-            J2EETypes.RESOURCE_ADAPTER
+            WEB_MODULE,
+            RESOURCE_ADAPTER_MODULE,
+            APP_CLIENT_MODULE,
+            STATEFUL_SESSION_BEAN,
+            STATELESS_SESSION_BEAN,
+            ENTITY_BEAN,
+            MESSAGE_DRIVEN_BEAN,
+            SERVLET,
+            RESOURCE_ADAPTER
         );
    /** the required null J2EEApplication ancestor property */
-   private static final String NULL_APP_PROP = Util.makeProp(J2EE_APPLICATION, null);
+   private static final String NULL_APP_PROP = Util.makeProp( J2EE_APPLICATION, null);
 
     /**
      * Deals with the special-case requirements of JSR 77: ancestor properties as well as

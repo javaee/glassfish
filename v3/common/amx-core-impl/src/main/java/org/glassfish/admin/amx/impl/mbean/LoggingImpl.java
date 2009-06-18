@@ -62,6 +62,7 @@ import java.util.logging.LogRecord;
 /**
 	Implementation of {@link Logging}.
 	<p>
+    The following is a GlassFish V2 comment, and needs work for v3:<br>
     AMX Logging MBean is hooked directly into the logging subsystem
     via com.sun.enterprise.server.logging.FileandSyslogHandler which uses
     com.sun.enterprise.server.logging.AMXLoggingHook to instantiate
@@ -70,7 +71,6 @@ import java.util.logging.LogRecord;
 public final class LoggingImpl extends AMXImplBase
 	 //implements /*Logging,*/ LoggingImplHook
 {
-    private LogMBeanIntf	             mLogMBean;
     private final Map<Level,String>     mLevelToNotificationTypeMap;
     private final Map<String,NotificationBuilder>    mNotificationTypeToNotificationBuilderMap;
     
@@ -97,17 +97,13 @@ public final class LoggingImpl extends AMXImplBase
         return Util.newObjectName( AMXConstants.AMX_JMX_DOMAIN, props );
     }
 
-    private final static String	LOGMBEAN_OBJECT_NAME_PREFIX	=
-    	"com.sun.appserv:name=logmanager,category=runtime,server=";
-    
     /**
      */
-    public LoggingImpl( final String serverName )
+    public LoggingImpl( final ObjectName parent, final String serverName)
     {
-        super(  ObjectNameBuilder.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN), Logging.class );
+        super(  parent, Logging.class );
         
         mServerName = serverName;
-    	mLogMBean	= null;
         FILE_SEP   = System.getProperty( "file.separator" );
     	
     	mLevelToNotificationTypeMap = initLevelToNotificationTypeMap();
@@ -167,50 +163,26 @@ public final class LoggingImpl extends AMXImplBase
 		return all;
     }
     
+    /** FIXME */
+    private void unimplemented()
+    {
+        throw new RuntimeException( "Not implemented.");
+    }
     
-    	private Object
-    newProxy(
-    	final ObjectName	target,
-    	final Class<?>	    interfaceClass )
-    {
-    	return MBeanServerInvocationHandler.newProxyInstance(
-    				getMBeanServer(), target, interfaceClass, true );
-    }
-	
-    	private LogMBeanIntf
-    getLogMBean()
-    {
-        initLogMBean();
-    	return mLogMBean;
-    }
 
-        private void
-    initLogMBean()
-    {
-        if ( mLogMBean == null )
-         synchronized( this )
-        {
-            if ( mLogMBean == null )
-            {
-        		final ObjectName logMBeanObjectName	=
-        		Util.newObjectName( LOGMBEAN_OBJECT_NAME_PREFIX + mServerName );
-        		
-        		mLogMBean	= (LogMBeanIntf)newProxy( logMBeanObjectName, LogMBeanIntf.class );
-            }
-        }
-    }
-    
         public void
     setModuleLogLevel(
         final String module,
         final String level )
     {
+        unimplemented();
     	getLogMBean().setLogLevel( module, level );
     }
 
         public String
     getModuleLogLevel( final String module)
     {
+        unimplemented();
     	return getLogMBean().getLogLevel( module );
     }
 
@@ -226,6 +198,7 @@ public final class LoggingImpl extends AMXImplBase
         public String[]
     getLogFileKeys()
     {
+        unimplemented();
     	return new String[]	{ SERVER_KEY, ACCESS_KEY };
     }
 
@@ -237,6 +210,7 @@ public final class LoggingImpl extends AMXImplBase
     	
     	if ( SERVER_KEY.equals( key ) )
     	{
+            unimplemented();
     		result	= getLogMBean().getArchivedLogfiles();
     	}
     	else
@@ -251,6 +225,8 @@ public final class LoggingImpl extends AMXImplBase
         public synchronized String
     getLogFile( final String key, final String fileName )
     {
+        unimplemented();
+        
         if ( ! SERVER_KEY.equals( key ) )
         {
             throw new IllegalArgumentException( "" + key );
@@ -277,6 +253,7 @@ public final class LoggingImpl extends AMXImplBase
         public synchronized void
     rotateAllLogFiles()
     {
+        unimplemented();
     	getLogMBean().rotateNow( );
     }
 
@@ -285,14 +262,17 @@ public final class LoggingImpl extends AMXImplBase
         public synchronized void
     rotateLogFile( final String key )
     {
+        unimplemented();
+        
     	if ( ACCESS_KEY.equals( key ) )
     	{
     	    throw new IllegalArgumentException( "not supported: " + key );
-    		// getLogMBean().rotateAccessLog();
+    		//getLogMBean().rotateAccessLog();
     	}
     	else if ( SERVER_KEY.equals( key ) )
     	{
-    		rotateAllLogFiles();
+    		// rotateAllLogFiles();
+            unimplemented();
     	}
     	else
     	{
@@ -392,6 +372,8 @@ public final class LoggingImpl extends AMXImplBase
         final Set<String>     modules,
         final List<Attribute> nameValuePairs)
     {
+        unimplemented();
+            
         if ( name == null )
         {
             throw new IllegalArgumentException( "use MOST_RECENT_NAME, not null" );
@@ -426,6 +408,8 @@ public final class LoggingImpl extends AMXImplBase
         public Map<String,Number>[]
     getErrorInfo()
     {
+        unimplemented();
+        
         final List<Map<String,Object>>  infos    = getLogMBean().getErrorInformation();
         
         final Map<String,Number>[]  results  = TypeCast.asArray( new HashMap[ infos.size() ] );
@@ -471,6 +455,8 @@ public final class LoggingImpl extends AMXImplBase
             throw new IllegalArgumentException( level );
         }
         
+        unimplemented();
+        
         Map<String,Integer>  result =
             getLogMBean().getErrorDistribution( timestamp, Level.parse( level ) );
         
@@ -501,39 +487,52 @@ public final class LoggingImpl extends AMXImplBase
         public void
     setKeepErrorStatisticsForIntervals( final int num)
     {
+        unimplemented();
         getLogMBean().setKeepErrorStatisticsForIntervals( num );
     }
     
         public int
     getKeepErrorStatisticsForIntervals()
     {
+        return 0;
+        /*
+        unimplemented();
         return getLogMBean().getKeepErrorStatisticsForIntervals();
+        */
     }
 
         public void
     setErrorStatisticsIntervalMinutes(final long minutes)
     {
+        unimplemented();
         getLogMBean().setErrorStatisticsIntervalDuration( minutes );
     }
     
         public long
     getErrorStatisticsIntervalMinutes()
     {
+        return 0;
+        /*
+        unimplemented();
         return getLogMBean().getErrorStatisticsIntervalDuration();
+        */
     }
     
 	    public String[]
 	getLoggerNames()
 	{
+        return EMPTY_STRING_ARRAY;
+        /*unimplemented();
 	    final List<String>  names   =
 	        TypeCast.checkList( getLogMBean().getLoggerNames(), String.class );
 	    
-	    return names.toArray( EMPTY_STRING_ARRAY );
+	    return names.toArray( EMPTY_STRING_ARRAY ); */
 	}
 	
         public String[]
     getLoggerNamesUnder( final String loggerName )
     {
+        unimplemented();
 	    final List<String>  names   = TypeCast.checkList(
 	        getLogMBean().getLoggerNamesUnder( loggerName ), String.class );
 	    
@@ -545,6 +544,7 @@ public final class LoggingImpl extends AMXImplBase
         public String[]
     getDiagnosticCauses( final String messageID )
     {
+        unimplemented();
     	final List<String>	causes	= TypeCast.checkList( 
     		getLogMBean().getDiagnosticCausesForMessageId( messageID ), String.class );
     	
@@ -560,6 +560,7 @@ public final class LoggingImpl extends AMXImplBase
         public String[]
     getDiagnosticChecks( final String messageID )
     {
+        unimplemented();
     	final List<String>	checks	= TypeCast.checkList( 
     		getLogMBean().getDiagnosticChecksForMessageId( messageID ), String.class );
     	
@@ -576,6 +577,7 @@ public final class LoggingImpl extends AMXImplBase
         public String
     getDiagnosticURI( final String messageID )
     {
+        unimplemented();
     	return getLogMBean().getDiagnosticURIForMessageId( messageID );
     }
 
@@ -800,6 +802,63 @@ public final class LoggingImpl extends AMXImplBase
 	        ", filter = " + cn(filter) + ", handback = " + cn(handback) );
 	}
 	*/
+    
+    
+    private LogMBeanIntf getLogMBean() { return null; }
+    
+    /**
+        The interface to which delegation occured in V2.
+     */
+    interface LogMBeanIntf extends NotificationEmitter
+    {
+        public List getLoggerNames();
+
+        public List   getLoggerNamesUnder( String loggerName );
+        public String getLogLevel( String loggerName );
+        public void   setLogLevel( String loggerName, String level );
+        public void   setLogLevelForModule( String module, String level );
+
+        public AttributeList getLogRecordsUsingQuery( 
+            String  logFilename,
+            Long    fromRecord,
+            Boolean next,
+            Boolean forward,
+            Integer requestedCount,
+            Date    fromDate,
+            Date    toDate,
+            String  logLevel,
+            Boolean onlyLevel,
+            List    listOfModules,
+            Properties nameValueMap) ;
+        
+        public String[] getArchivedLogfiles();
+        public void rotateNow();
+        public void rotateAccessLog();
+
+        public String getLogFilesDirectory();
+        
+        public ArrayList	getDiagnosticCausesForMessageId( String messageID );
+        public ArrayList	getDiagnosticChecksForMessageId( String messageID );
+        public String       getDiagnosticURIForMessageId( String messageID );
+        
+        /**
+         * @return a list of Map objects. Each map object contains
+         * the tuple [TimeStamp, SevereCount, WarningCount].
+         */   
+        public List<Map<String,Object>> getErrorInformation();
+        
+        /**
+         * @return a list of Map objects. Each map object contains
+         * the tuple [ModuleId, SevereCount|WarningCount].
+         */    
+        public Map<String,Integer> getErrorDistribution( long timeStamp, Level level);
+        
+        public void setKeepErrorStatisticsForIntervals(int numberOfIntervals);
+        public int getKeepErrorStatisticsForIntervals();
+
+        public void setErrorStatisticsIntervalDuration(long minutes);
+        public long getErrorStatisticsIntervalDuration(); 
+    };
 }
 
 

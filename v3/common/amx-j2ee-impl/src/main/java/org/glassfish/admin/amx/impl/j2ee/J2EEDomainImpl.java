@@ -51,8 +51,8 @@ Base implementation for the J2EEDomain for DAS and non-DAS server instances.
 public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
     public static final Class<? extends J2EEManagedObject> INTF = J2EEDomain.class;
 
-    public J2EEDomainImpl(final ObjectName parentObjectName) {
-        super(parentObjectName, INTF);
+    public J2EEDomainImpl(final ObjectName parentObjectName, final Metadata meta) {
+        super(parentObjectName, meta, INTF);
 
         Issues.getAMXIssues().notDone("J2EEDomainImpl needs to account for DAS/non-DAS");
     }
@@ -83,12 +83,21 @@ public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
     {
         final ObjectNameBuilder builder = getObjectNames();
 
-        final DASJ2EEServerImpl impl = new DASJ2EEServerImpl( getObjectName() );
-        final String serverName = "das";
+        final String serverName = "server";
+        
+        final MetadataImpl meta = defaultChildMetadata();
+        meta.setConfig( getDomainConfig().getServers().getServer().get(serverName).objectName() );
+        
+        final DASJ2EEServerImpl impl = new DASJ2EEServerImpl( getObjectName(), meta);
         ObjectName serverObjectName = getObjectNames().buildChildObjectName( J2EETypes.J2EE_SERVER, serverName );
         serverObjectName = registerChild( impl, serverObjectName );
         //ImplUtil.getLogger().info( "Registered J2EEDomain as " + getObjectName() + " with J2EEServer of " + serverObjectName);
     }
 }
+
+
+
+
+
 
 
