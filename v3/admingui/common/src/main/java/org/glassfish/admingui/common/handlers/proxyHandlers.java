@@ -48,7 +48,6 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 
-
 import java.util.HashSet;
 import java.util.Set;
 import javax.management.ObjectName;
@@ -188,6 +187,20 @@ public class proxyHandlers {
         }
 
     }
+    
+        public static Map getDefaultProxyAttrsMap(String parentObjectNameStr, String childType) {
+        try{
+            String parentName = parentObjectNameStr;
+            String child = childType;
+            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
+            Map valueMap = amx.getDefaultValues(child, true);
+            return valueMap;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new HashMap();
+        }
+
+    }    
 
 
     @Handler(id="saveBeanAttributes",
@@ -334,6 +347,52 @@ public class proxyHandlers {
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
+    }
+    
+    @Handler(id="getApplicationByType",
+    input={
+        @HandlerInput(name="type",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="result",        type=List.class)})
+
+    public static void getApplicationByType(HandlerContext handlerCtx) {
+        String type = (String) handlerCtx.getInputValue("type");
+        AMXProxy amx = objectNameToProxy("v3:pp=/domain,type=applications");
+        Map<String, AMXProxy> children = amx.childrenMap("application");
+        List result = new ArrayList();
+        for (AMXProxy oneChild : children.values()) {
+            try {
+                AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) oneChild);
+                final Map<String, Object> attrs = helper.simpleAttributesMap();
+                for (String attrName : attrs.keySet()) {
+                    if (attrName.equals("Name")) {
+                        String appName = getA(attrs, "Name");
+                        Map<String, AMXProxy> module = objectNameToProxy("v3:pp=/domain/applications,type=application,name=" +appName ).childrenMap("module");
+                        for (AMXProxy oneModule : module.values()) {
+                            AMXConfigHelper helperModule = new AMXConfigHelper((AMXConfigProxy) oneModule);
+                            final Map<String, Object> modattrs = helperModule.simpleAttributesMap();
+                            for (String modName : modattrs.keySet()) {
+                                if (modName.equals("Children")) {
+                                    ObjectName[] engines = (ObjectName[]) modattrs.get(modName);
+                                    for (int i = 0; i < engines.length; i++) {
+                                        String enginename = engines[i].getKeyProperty("name");
+                                        if (enginename.equals(type)) {
+                                            result.add(appName);
+                                        }
+
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                GuiUtil.handleException(handlerCtx, ex);
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
     }
 
 
