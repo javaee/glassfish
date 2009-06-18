@@ -19,17 +19,18 @@ import java.beans.PropertyVetoException;
 public class EjbEmbeddedInfo implements EmbeddedContainerInfo<EjbEmbeddedContainer> {
 
     @Inject(optional=true)
-    EjbContainer ejbConfig=null;
+    EjbContainer ejbConfig = null;
 
-    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     @Inject
     EjbEmbeddedContainer container;
 
     EjbContainer getConfig() {
-        if (ejbConfig==null) {
+        if (ejbConfig == null) {
             try {
+                // Create configuration for ejb-container
                 ConfigSupport.apply(new SingleConfigCode<Config>() {
                     public Object run(Config c) throws PropertyVetoException, TransactionFailure {
                         EjbContainer ejb = c.createChild(EjbContainer.class);
