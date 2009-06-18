@@ -47,7 +47,7 @@ package com.sun.enterprise.tools.upgrade.common;
  * @author  prakash
  */
 
-public final class UpgradeConstants {
+public class UpgradeConstants {
     
     // class should not be instantiable
     private UpgradeConstants() {}

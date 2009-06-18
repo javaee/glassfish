@@ -42,7 +42,7 @@ import com.sun.enterprise.util.i18n.StringManager;
  *
  * @author rebeccas
  */
-public final class CLIConstants {
+public class CLIConstants {
 
     // class should not be instantiable
     private CLIConstants() {}
