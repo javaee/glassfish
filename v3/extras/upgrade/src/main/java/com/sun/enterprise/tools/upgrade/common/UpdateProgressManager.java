@@ -80,6 +80,8 @@ public class UpdateProgressManager {
     
     /*
      * This is needed to send  back gui the finish action.
+     *
+     * TODO: completely separate worker thread and event dispatch thread!
      */
     public void processUpgradeUpdateEvent(int progressState){
         UpgradeUpdateEvent de = new UpgradeUpdateEvent(this, progressState);

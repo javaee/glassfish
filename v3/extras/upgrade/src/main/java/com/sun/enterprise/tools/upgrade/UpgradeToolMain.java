@@ -260,28 +260,28 @@ public class UpgradeToolMain {
     
     public static void main(String [] args) {
         UpgradeToolMain main = new UpgradeToolMain();
-		boolean isCLIcmd = false;
-        for(int i=0;i<args.length;i++){
-			//- -c/--console option is not position dependent
-			if (args[i].equals(CLIConstants.CLI_OPTION_CONSOLE_SHORT) ||
-				args[i].equals(CLIConstants.CLI_OPTION_CONSOLE_LONG)){
-				isCLIcmd = true;
-			}
+        boolean isCLIcmd = false;
+        for (int i = 0; i < args.length; i++) {
+            //- -c/--console option is not position dependent
+            if (args[i].equals(CLIConstants.CLI_OPTION_CONSOLE_SHORT) ||
+                args[i].equals(CLIConstants.CLI_OPTION_CONSOLE_LONG)) {
+                isCLIcmd = true;
+            }
 
-			if (args[i].equals(CLIConstants.CLI_OPTION_HELP_SHORT) ||
-				args[i].equals(CLIConstants.CLI_OPTION_HELP_LONG)){
-				ARG_help tmpH = new ARG_help();
-				tmpH.exec();
-				System.exit(0);
-			}
+            if (args[i].equals(CLIConstants.CLI_OPTION_HELP_SHORT) ||
+                args[i].equals(CLIConstants.CLI_OPTION_HELP_LONG)) {
+                ARG_help tmpH = new ARG_help();
+                tmpH.exec();
+                System.exit(0);
+            }
         }
         
-		if (isCLIcmd){
-			main.startCLI(args);
+        if (isCLIcmd) {
+            main.startCLI(args);
             System.exit(0);
-		} else {
-			main.startGUI(args);
-		}
+        } else {
+            main.startGUI(args);
+        }
 
     }
 }

@@ -108,4 +108,9 @@ public abstract class ArgumentHandler {
 		//- some cmds may need to override this.
 		return _isValidParameter;
 	}
+
+    // needed to get target server
+    public CommonInfoModel getCommonInfo() {
+        return commonInfo;
+    }
 }

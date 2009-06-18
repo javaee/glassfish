@@ -37,7 +37,6 @@
 package com.sun.enterprise.tools.upgrade.gui;
 
 import java.awt.*;
-import java.awt.image.ImageObserver;
 
 // Referenced classes of package com.sun.wizards.awt:
 //            InsetsPanel
@@ -45,11 +44,6 @@ import java.awt.image.ImageObserver;
 public class ImagePanel extends InsetsPanel
 {
 
-    public static final int LEFT = 1;
-    public static final int CENTER = 2;
-    public static final int RIGHT = 3;
-    public static final int TOP = 1;
-    public static final int BOTTOM = 3;
     protected Image image;
     protected int hAlign;
     protected int vAlign;
@@ -91,11 +85,13 @@ public class ImagePanel extends InsetsPanel
         loaded = false;
     }
 
+    @Override
     public Dimension getMinimumSize()
     {
         return getPreferredSize();
     }
 
+    @Override
     public Dimension getPreferredSize()
     {
         Dimension dimension = new Dimension(0, 0);
@@ -107,6 +103,7 @@ public class ImagePanel extends InsetsPanel
         return dimension;
     }
 
+    @Override
     public synchronized boolean imageUpdate(Image image1, int i, int j, int k, int l, int i1)
     {
         if((i & 0x20) != 0)
@@ -120,6 +117,7 @@ public class ImagePanel extends InsetsPanel
         }
     }
 
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);

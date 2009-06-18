@@ -34,22 +34,17 @@
  * holder.
  */
 
-/*
- * InteractiveInputImpl.java
- *
- * Created on November 19, 2007, 12:23 PM
- *
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.File;
 import java.io.IOException;
 
-import com.sun.enterprise.tools.upgrade.logging.*;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
@@ -65,7 +60,11 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
  *
  * @author rebeccas
  */
-public class InteractiveInputImpl implements InteractiveInput{
+public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
+
+    private static final Logger logger =
+        LogService.getLogger(LogService.UPGRADE_LOGGER);
+    
 	private Map<String, ArgumentHandler> inputMap;
 	private StringManager sm = StringManager.getManager(InteractiveInputImpl.class);
 	
@@ -91,17 +90,17 @@ public class InteractiveInputImpl implements InteractiveInput{
 			adminPrompt();
 			adminPasswordPrompt();
 			masterPasswordPrompt();
-		}catch(Exception e) {
-			getLogger().log(Level.SEVERE,
-			sm.getString("enterprise.tools.upgrade.cli.unexpectedException"),
-			e);
+		}catch(IOException e) {
+            logger.log(Level.SEVERE,
+                sm.getString(
+                "enterprise.tools.upgrade.cli.unexpectedException"), e);
 		}		
 	}
 	
 	/**
 	 *  Collect the users response from stnd input.
 	 */
-	private String getResponse() throws Exception{
+	private String getResponse() throws IOException {
 		String response = null;
 		byte b[] = new byte[1024];
 		int c = System.in.read(b);
@@ -112,7 +111,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		return response.trim();
 	}
 	
-	private void sourcePrompt()throws Exception {
+	private void sourcePrompt() throws IOException {
 		ArgumentHandler tmpA = inputMap.get(CLIConstants.SOURCE_SHORT);
 		if (tmpA == null){
 			tmpA = inputMap.get(CLIConstants.SOURCE);
@@ -130,7 +129,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		if (tmpA.isValidParameter()){
 			tmpA.exec();
 		} else {
-			getLogger().severe(
+			logger.severe(
 				sm.getString("enterprise.tools.upgrade.cli.not_valid_source_install"));
 			inputMap.remove(CLIConstants.SOURCE_SHORT);
 			inputMap.remove(CLIConstants.SOURCE);
@@ -138,7 +137,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 	}
 	
-	private void targetPrompt()throws Exception{
+	private void targetPrompt() throws IOException{
 		ArgumentHandler tmpA = inputMap.get(CLIConstants.TARGET_SHORT);
 		if (tmpA == null){
 			tmpA = inputMap.get(CLIConstants.TARGET);
@@ -153,10 +152,12 @@ public class InteractiveInputImpl implements InteractiveInput{
 			inputMap.put(CLIConstants.TARGET,tmpA);
 		}
 
+        // in the interactive CLI case, we'll allow users to fix name clashes
+        tmpA.getCommonInfo().getTarget().setDirectoryMover(this);
 		if (tmpA.isValidParameter()){
 			tmpA.exec();
 		} else {
-			getLogger().severe(sm.getString("" +
+			logger.severe(sm.getString("" +
 				"enterprise.tools.upgrade.cli.not_valid_target_install"));
 			inputMap.remove(CLIConstants.TARGET_SHORT);
 			inputMap.remove(CLIConstants.TARGET);
@@ -164,7 +165,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		}
 	}
 	
-	private void adminPrompt()throws Exception{
+	private void adminPrompt() throws IOException{
 		ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINUSER_SHORT);
 		if (tmpA == null){
 			tmpA = inputMap.get(CLIConstants.ADMINUSER);
@@ -181,7 +182,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		tmpA.exec();
 	}
 	
-	private void adminPasswordPrompt()throws Exception{
+	private void adminPasswordPrompt() throws IOException{
 		ArgumentHandler tmpA = inputMap.get(CLIConstants.ADMINPASSWORD_SHORT);
 		if (tmpA == null){
 			tmpA = inputMap.get(CLIConstants.ADMINPASSWORD);
@@ -196,7 +197,7 @@ public class InteractiveInputImpl implements InteractiveInput{
 		tmpA.exec();
 	}
 	
-	private void masterPasswordPrompt()throws Exception{
+	private void masterPasswordPrompt() throws IOException{
 		ArgumentHandler tmpA = inputMap.get(CLIConstants.MASTERPASSWORD_SHORT);
 		if (tmpA == null){
 			tmpA = inputMap.get(CLIConstants.MASTERPASSWORD);
@@ -234,10 +235,6 @@ public class InteractiveInputImpl implements InteractiveInput{
         }
     }
 
-	private Logger getLogger() {
-		return LogService.getLogger(LogService.UPGRADE_LOGGER);
-	}
-	
 	public void helpUsage(String str){
 		System.out.println("\n" + str + "\n");
 		helpUsage();
@@ -250,4 +247,28 @@ public class InteractiveInputImpl implements InteractiveInput{
 	public void helpUsage(int exitCode) {
 		System.out.println("(FIX THIS) InteractiveInputImpl:helpUsage:exitcode: " + exitCode);
 	}
+
+    /**
+     * Ask the user whether or not to move the
+     * conflicting directory.
+     */
+    public boolean moveDirectory(File dir) {
+        try {
+            System.out.print(sm.getString(
+                "enterprise.tools.upgrade.cli.move_dir",
+                dir.getName()));
+            String response = getResponse();
+            String yesOption =
+                sm.getString("enterprise.tools.upgrade.cli.yes_option");
+            boolean move = yesOption.equalsIgnoreCase(response);
+            if (move) {
+                UpgradeUtils.rename(dir);
+            }
+            return move;
+        } catch (IOException ioe) {
+            // if this was going to happen, it would have before now
+            logger.warning(ioe.getLocalizedMessage());
+            return false;
+        }
+    }
 }

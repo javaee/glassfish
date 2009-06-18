@@ -34,43 +34,35 @@
  * holder.
  */
 
-/*
- * TargetAppSrvObj.java
- *
- * Created on November 29, 2007, 4:22 PM
- *
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.io.File;
-import java.util.logging.*;
-
-import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
+import com.sun.enterprise.util.i18n.StringManager;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author rebeccas
  */
-public class TargetAppSrvObj extends BaseDomainInfoObj{
+public class TargetAppSrvObj extends BaseDomainInfoObj {
+
     private static final Logger logger =
         LogService.getLogger(LogService.UPGRADE_LOGGER);
 
-    private StringManager sm;
+    private static final StringManager sm =
+        StringManager.getManager(TargetAppSrvObj.class);;
 
     //- Value indicates if an in-place upgrade of domains is supported by
     //- the traget appserver.  This value is specific to each product release
     //- and should be set accordingly V3 does not support in-place upgrade.
     private boolean isInPlaceUpgradeAllowed = false;
 
-	
-	/** Creates a new instance of TargetAppSrvObj */
-	public TargetAppSrvObj() {
-        sm = StringManager.getManager(TargetAppSrvObj.class);
-    }
-	
-	public boolean isValidPath(String s) {
+	// used only in interactive cases where the user can resolve a name conflict
+    private DirectoryMover directoryMover = null;
+    
+    public boolean isValidPath(String s) {
         File targetPathDir = new File(s);
         
         // fail if path doesn't exist
@@ -98,6 +90,11 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
             if (!tmpPath.exists()) {
                 return true;
             }
+            if (directoryMover != null &&
+                directoryMover.moveDirectory(tmpPath)) {
+                
+                return true;
+            }
             logger.log(Level.INFO, sm.getString(
                 "enterprise.tools.upgrade.target.dir_domain_exist",
                 tmpPath.getAbsolutePath()));
@@ -106,17 +103,17 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
     }
 
     @Override
-	public void setInstallDir(String s){ 
-		super.installDir = s;
-		if (s != null){
-			super.domainRoot = super.extractDomainRoot(s);
-		}
-	}
+    public void setInstallDir(String s) {
+        super.installDir = s;
+        if (s != null) {
+            super.domainRoot = super.extractDomainRoot(s);
+        }
+    }
 	
     @Override
 	public String getDomainDir(){
 		return getInstallDir() + "/" + super.domainName;
-	}	
+    }
 	
     @Override
 	public String getConfigXMLFile(){
@@ -139,5 +136,13 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
     public boolean isInPlaceUpgradeAllowed(){
         return isInPlaceUpgradeAllowed;
     }
-    
+
+    /*
+     * Set this if you want the user to have a chance to resolve
+     * directory name conflicts.
+     */
+    public void setDirectoryMover(DirectoryMover directoryMover) {
+        this.directoryMover = directoryMover;
+    }
+
 }

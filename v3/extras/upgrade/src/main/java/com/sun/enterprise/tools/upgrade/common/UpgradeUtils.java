@@ -63,9 +63,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class UpgradeUtils {
 	
-	private StringManager stringManager = StringManager.getManager(UpgradeUtils.class);
+	private final StringManager stringManager =
+        StringManager.getManager(UpgradeUtils.class);
 	
-	private static Logger logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
+	private static final Logger logger =
+        LogService.getLogger(LogService.UPGRADE_LOGGER);
+
 	private static UpgradeUtils upgradeUtils;
 	private static CommonInfoModel common;
 	
@@ -73,7 +76,7 @@ public class UpgradeUtils {
 	 * UpgradeUtils private constructor
 	 */
 	private UpgradeUtils(CommonInfoModel common) {
-		this.common = common;
+		UpgradeUtils.common = common;
 	}
 	
 	/**
@@ -295,4 +298,24 @@ public class UpgradeUtils {
 		File masterPasswordFile = new File(targetMasterPasswordFile);
 		return masterPasswordFile.delete();
 	}
+
+    /*
+     * Code used by DirectoryMover implementations to actually
+     * rename the directory if the user agrees. This code adds a '.original'
+     * extension unless one exists already. If so, further append .0, .1,
+     * etc.
+     */
+    public static void rename(File dir) {
+        assert (dir.exists());
+        File tempFile = new File(dir.getAbsolutePath() + ".original");
+        if (tempFile.exists()) {
+            String baseName = tempFile.getAbsolutePath();
+            int count = 0;
+            while (tempFile.exists()) {
+                tempFile = new File(baseName + "." + count++);
+            }
+        }
+        dir.renameTo(tempFile);
+    }
+    
 }

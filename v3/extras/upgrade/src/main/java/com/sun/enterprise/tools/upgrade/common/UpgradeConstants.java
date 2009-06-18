@@ -49,15 +49,18 @@ package com.sun.enterprise.tools.upgrade.common;
 
 public final class UpgradeConstants {
     
-    public static final String VERSION_91 = "9.1";	
-	public static final String VERSION_91_01 = "9.1_01";	//as91_ur1
-    public static final String VERSION_91_02 = "9.1_02";	//as91_ur2
-	public static final String VERSION_91_1 = "9.1.1";		// sailfin  (not to be upgraded to v3)
-	public static final String VERSION_3_0 = "3.0";		// GF_v3
-    public static final String VERSION_2_1 = "2.1";         // as91_ur2 ( Sun GlassFish Enterprise Server v2.1)
+    // class should not be instantiable
+    private UpgradeConstants() {}
 
+    public static final String VERSION_91 = "9.1";	
+    public static final String VERSION_91_01 = "9.1_01";	//as91_ur1
+    public static final String VERSION_91_02 = "9.1_02";	//as91_ur2
+    public static final String VERSION_91_1 = "9.1.1";		// sailfin  (not to be upgraded to v3)
+    public static final String VERSION_3_0 = "3.0";		// GF_v3
+    public static final String VERSION_2_1 = "2.1";         // as91_ur2 ( Sun GlassFish Enterprise Server v2.1)
+    
     public static final String DEVELOPER_PROFILE = "developer";
-	public static final String CLUSTER_PROFILE = "cluster";
+    public static final String CLUSTER_PROFILE = "cluster";
     public static final String ENTERPRISE_PROFILE = "enterprise";
     public static final String ALL_PROFILE = "All";
 
@@ -72,11 +75,11 @@ public final class UpgradeConstants {
     public static final String AS_BIN_DIRECTORY = "bin";
     public static final String AS_CONFIG_DIRECTORY = "config";
     public static final String AS_ADMIN_ENV_CONF_FILE = "asadminenv.conf";
-    public static final String AS_PROPERTY_ADMIN_PROFILE = "AS_ADMIN_PROFILE=";   
+    public static final String AS_PROPERTY_ADMIN_PROFILE = "AS_ADMIN_PROFILE=";
     public static final String ASADMIN_COMMAND = "asadmin";
     public static final String ASADMIN_BAT = "asadmin.bat";
-	public static final String DOMAIN_XML_FILE = "domain.xml";
-	public static final String DELIMITER = ";"; //-seperator for version edititon
+    public static final String DOMAIN_XML_FILE = "domain.xml";
+    public static final String DELIMITER = ";"; //-seperator for version edititon
     public static final String LOGGING_PROPERTIES = "logging.properties";
     public static final String SERVER_LOG_PROPERTY="com.sun.enterprise.server.logging.GFFileHandler.file";
     public static final String SERVER_LOG_DEFAULT="logs/server.log";
@@ -85,7 +88,4 @@ public final class UpgradeConstants {
     public static final String OS_NAME_IDENTIFIER = "os.name";
     public static final String OS_NAME_WINDOWS = "Windows";
 
-    /** Creates a new instance of UpgradeConstants */
-    public UpgradeConstants() {
-    }
 }

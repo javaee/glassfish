@@ -34,24 +34,22 @@
  * holder.
  */
 
-/*
- * CLIConstants.java
- *
- * Created on November 19, 2007, 4:37 PM
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.logging.*;
 
 /**
  *
  * @author rebeccas
  */
 public final class CLIConstants {
-	private static StringManager stringManager = StringManager.getManager(CLIConstants.class);
-    private static StringBuffer cliInstructions = new StringBuffer();
+
+    // class should not be instantiable
+    private CLIConstants() {}
+    
+    private static StringManager stringManager =
+        StringManager.getManager(CLIConstants.class);
+    private static final StringBuilder cliInstructions = new StringBuilder();
     static {
         cliInstructions.append("\n");
         cliInstructions.append(stringManager.getString("upgrade.common.upgrade_instructions"));
@@ -61,14 +59,14 @@ public final class CLIConstants {
         cliInstructions.append("\n");       
         cliInstructions.append("\n"); 
     }
-	public static final String CLI_USER_INSTRUCTIONS = cliInstructions.toString();
+    public static final String CLI_USER_INSTRUCTIONS = cliInstructions.toString();
 	
-	public static String defaultAdminUser = "admin";
-    public static String defaultAdminPassword = "adminadmin";
-    public static String defaultMasterPassword = "changeit";
+    public static final String defaultAdminUser = "admin";
+    public static final String defaultAdminPassword = "adminadmin";
+    public static final String defaultMasterPassword = "changeit";
 	
-	//- CLI options
-	public static final String SOURCE = "source";
+    //- CLI options
+    public static final String SOURCE = "source";
     public static final String SOURCE_SHORT = "s";
     public static final String TARGET = "target";
     public static final String TARGET_SHORT = "t";
@@ -79,17 +77,13 @@ public final class CLIConstants {
     public static final String MASTERPASSWORD = "masterpassword";
     public static final String MASTERPASSWORD_SHORT = "m";
 	
-	public static final String CLI_OPTION_CONSOLE_SHORT = "-c";
+    public static final String CLI_OPTION_CONSOLE_SHORT = "-c";
     public static final String CLI_OPTION_CONSOLE_LONG = "--console";
     public static final String CLI_OPTION_VERSION_UC_SHORT = "-V";
     public static final String CLI_OPTION_VERSION_LC_SHORT = "-v";
     public static final String CLI_OPTION_VERSION_LONG = "--version";  
     public static final String CLI_OPTION_HELP_SHORT = "-h";
-	public static final String CLI_OPTION_HELP_LONG = "--help";
+    public static final String CLI_OPTION_HELP_LONG = "--help";
     public static final String CLI_OPTION_NOPROMPT = "noprompt"; 
-	
-	/** Creates a new instance of CLIConstants */
-	public CLIConstants() {
-	}
 	
 }

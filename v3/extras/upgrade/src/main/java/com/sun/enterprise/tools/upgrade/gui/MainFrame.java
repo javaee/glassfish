@@ -47,10 +47,15 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import java.awt.GridBagConstraints;
-import java.io.*;
-import java.util.*;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.help.*;
+import javax.help.CSH;
 import javax.swing.*;
 
 /**
@@ -58,8 +63,18 @@ import javax.swing.*;
  *
  * @author:  Prakash Aradhya
  */
-public class MainFrame extends JFrame implements LogMessageListener, 
-        UpgradeUpdateListener {
+public class MainFrame extends JFrame implements DirectoryMover,
+    LogMessageListener, UpgradeUpdateListener {
+
+    private static final Logger logger = CommonInfoModel.getDefaultLogger();
+
+    // GUI panels
+    private enum Panels { DETAILS_COLLECTION_PANEL, PROGRESS_PANEL }
+
+    // state of the upgrade tool
+    private enum UpgradeState {
+        UPGRADE_STARTED, UPGRADE_FINISHED, DATA_COLLECTION_PENDING
+    }
 
     //private fields in GUI panel
     private JButton backButton = null;
@@ -69,51 +84,44 @@ public class MainFrame extends JFrame implements LogMessageListener,
     private JPanel JDialogContentPane = null;
     private JButton nextButton = null;
     private JPanel navigationPanel = null;
-    private int currentNavigationPanel = DETAILS_COLLECTION_PANEL;
     private ProgressPanel progressPanel = null;
     private DataCollectionPanel dataCollectionPanel = null;
+    private Panels currentNavigationPanel = Panels.DETAILS_COLLECTION_PANEL;
 
     //other private utility fields
     private CommonInfoModel commonInfoModel = CommonInfoModel.getInstance();
-    private Vector dialogListeners = new Vector();
-    private StringManager stringManager = StringManager.getManager(MainFrame.class);
-    private static Logger logger = CommonInfoModel.getDefaultLogger();
-
-    //static fields in GUI panel
-    private static final int DETAILS_COLLECTION_PANEL = 1;
-    private static final int PROGRESS_PANEL = 3;
-    
-    //fields that indicate the state of the upgrade tool
-    private static int UPGRADE_STARTED = 1;
-    private static int UPGRADE_FINISHED = 2;
-    private static int DATA_COLLECTION_PENDING = 3;
+    private List<DialogListener> dialogListeners =
+        new ArrayList<DialogListener>();
+    private StringManager stringManager =
+        StringManager.getManager(MainFrame.class);
 
     EventHandler eventHandler = new EventHandler();
 
     /**
      * MainFrame constructor
      */
-	public MainFrame() {
-        super.setTitle(stringManager.getString("upgrade.gui.mainframe.titleMessage", 
-                this.commonInfoModel.getTarget().getVersion()));
+    public MainFrame() {
+        super.setTitle(stringManager.getString(
+            "upgrade.gui.mainframe.titleMessage",
+            this.commonInfoModel.getTarget().getVersion()));
         initialize();
     }
     
     public void addDialogListener(DialogListener listener){
-        this.dialogListeners.addElement(listener);
+        dialogListeners.add(listener);
     }
     
     public void removeDialogListener(DialogListener listener){
-        this.dialogListeners.removeElement(listener);
+        dialogListeners.remove(listener);
     }
 
     /**
      * Return the JDialogContentPane property value.
-     * @return javax.swing.JPanel
+     * @return JPanel
      */
-    public javax.swing.JPanel getJDialogContentPane() {
+    public JPanel getJDialogContentPane() {
         if (JDialogContentPane == null) {
-            JDialogContentPane = new javax.swing.JPanel();
+            JDialogContentPane = new JPanel();
             JDialogContentPane.setName("JDialogContentPane");
             JDialogContentPane.setLayout(new java.awt.GridBagLayout());
 
@@ -140,7 +148,7 @@ public class MainFrame extends JFrame implements LogMessageListener,
             constraintsSeparator.fill = GridBagConstraints.HORIZONTAL;
             constraintsSeparator.weightx = 1.0;
             constraintsSeparator.insets = new java.awt.Insets(5, 0, 0, 0);
-            javax.swing.JSeparator separatorPanel = new javax.swing.JSeparator();
+            JSeparator separatorPanel = new JSeparator();
             getJDialogContentPane().add(separatorPanel, constraintsSeparator);
 
             GridBagConstraints constraintsbuttonsPanel = new GridBagConstraints();
@@ -169,9 +177,6 @@ public class MainFrame extends JFrame implements LogMessageListener,
     }
     
     public void processBackAction() {
-		if(currentNavigationPanel == DETAILS_COLLECTION_PANEL){
-			//
-		}
 		this.setCurrentNavigationPanel();
 	}
     
@@ -180,18 +185,18 @@ public class MainFrame extends JFrame implements LogMessageListener,
 		if(getnextButton().getActionCommand().equals("finish")){
 			de = new DialogEvent(this, DialogEvent.FINISH_ACTION);
 			this.dispose();
-		}else if(currentNavigationPanel == DETAILS_COLLECTION_PANEL){
+		}else if(Panels.DETAILS_COLLECTION_PANEL == currentNavigationPanel){
 			//Validate inputs
 			if (this.processArguments()){
 				printArguments();
 				de = new DialogEvent(this, DialogEvent.UPGRADE_ACTION);
-				this.currentNavigationPanel = PROGRESS_PANEL ;
+				this.currentNavigationPanel = Panels.PROGRESS_PANEL ;
 				CSH.setHelpIDString(gethelpButton(),"WIZARD_RESULT");
 				this.setCurrentNavigationPanel();
 			}else{
 				return;
 			}			
-		} else if(currentNavigationPanel == PROGRESS_PANEL){
+		} else if(Panels.PROGRESS_PANEL == currentNavigationPanel){
 			// should be a Finish button now.  Close the upgrade tool
 			de = new DialogEvent(this, DialogEvent.FINISH_ACTION);
 			this.dispose();
@@ -210,12 +215,12 @@ public class MainFrame extends JFrame implements LogMessageListener,
         constraintsPanel.fill = GridBagConstraints.BOTH;
         constraintsPanel.weightx = 1.0;
         constraintsPanel.weighty = 1.0;
-        if (PROGRESS_PANEL == currentNavigationPanel){
+        if (Panels.PROGRESS_PANEL == currentNavigationPanel){
             getnavigationPanel().add(getProgressPanel(), constraintsPanel);
-            this.setFrameNavigationState(this.UPGRADE_STARTED);
-        } else if (DETAILS_COLLECTION_PANEL == currentNavigationPanel){
+            this.setFrameNavigationState(UpgradeState.UPGRADE_STARTED);
+        } else if (Panels.DETAILS_COLLECTION_PANEL == currentNavigationPanel){
             getnavigationPanel().add(getDataCollectionPanel(), constraintsPanel);
-            this.setFrameNavigationState(DATA_COLLECTION_PENDING);
+            this.setFrameNavigationState(UpgradeState.DATA_COLLECTION_PENDING);
         }
         this.getJDialogContentPane().validate();
         this.repaint();
@@ -232,26 +237,27 @@ public class MainFrame extends JFrame implements LogMessageListener,
         if(this.progressPanel != null){
             this.progressPanel.updateProgress(evt);
             if(evt.getProgressState() == 100){
-                this.setFrameNavigationState(this.UPGRADE_FINISHED);
+                this.setFrameNavigationState(UpgradeState.UPGRADE_FINISHED);
             }
         }
     }
     
-    class UpgradeActionThread extends Thread{
-        private Vector dialogListeners;
+    class UpgradeActionThread extends Thread {
+        private List<DialogListener> dialogListeners;
         private DialogEvent de;
-        public UpgradeActionThread(Vector listeners, DialogEvent d){
+        public UpgradeActionThread(List<DialogListener> listeners, DialogEvent d){
             this.dialogListeners = listeners;
             this.de = d;
         }
+        @Override
         public void run(){
-            for(int i=0 ; i<this.dialogListeners.size(); i++){
-                ((DialogListener)dialogListeners.elementAt(i)).dialogProcessed(de);
+            for (DialogListener dl : dialogListeners) {
+                dl.dialogProcessed(de);
             }
         }
     }
     
-    class EventHandler implements java.awt.event.ActionListener {
+    class EventHandler implements ActionListener {
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() == MainFrame.this.getcancelButton())
                 processCancelAction();
@@ -264,30 +270,32 @@ public class MainFrame extends JFrame implements LogMessageListener,
     
 
     private void processCancelAction() {
-        int option = javax.swing.JOptionPane.showConfirmDialog(this,
-        stringManager.getString("upgrade.gui.mainframe.exitMessage"),
-        stringManager.getString("upgrade.gui.mainframe.exitMessageTitle"),
-        javax.swing.JOptionPane.YES_NO_OPTION,
-        javax.swing.JOptionPane.QUESTION_MESSAGE);
-        if (option == javax.swing.JOptionPane.NO_OPTION) {
+        int option = JOptionPane.showConfirmDialog(this,
+            stringManager.getString("upgrade.gui.mainframe.exitMessage"),
+            stringManager.getString("upgrade.gui.mainframe.exitMessageTitle"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+        if (option == JOptionPane.NO_OPTION) {
             return;
         }
-        logger.info("Before Recover Call");
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Before Recover Call");
+        }
         commonInfoModel.recover();
         DialogEvent de = new DialogEvent(this, DialogEvent.CANCEL_ACTION);
-        for(int i=0 ; i<this.dialogListeners.size(); i++){
-            ((DialogListener)dialogListeners.elementAt(i)).dialogProcessed(de);
+        for (DialogListener dl : dialogListeners) {
+            dl.dialogProcessed(de);
         }
         this.dispose();
     }
     
     /**
      * Return the backButton property value.
-     * @return javax.swing.JButton
+     * @return JButton
      */
-    private javax.swing.JButton getbackButton() {
+    private JButton getbackButton() {
         if (backButton == null) {
-            backButton = new javax.swing.JButton();
+            backButton = new JButton();
             backButton.setName("backButton");
             backButton.setText(stringManager.getString("upgrade.gui.mainframe.backbutton"));
         }
@@ -295,10 +303,10 @@ public class MainFrame extends JFrame implements LogMessageListener,
     }
 
     /**
-     * Return the JPanel1 property value.
-     * @return javax.swing.JPanel
+     * Return the JPanel property value.
+     * @return JPanel
      */
-    private javax.swing.JPanel getProgressPanel() {
+    private JPanel getProgressPanel() {
         if (progressPanel == null) {
             progressPanel = new ProgressPanel();
         }
@@ -308,11 +316,11 @@ public class MainFrame extends JFrame implements LogMessageListener,
 
     /**
      * Return the buttonsPanel property value.
-     * @return javax.swing.JPanel
+     * @return JPanel
      */
-    private javax.swing.JPanel getbuttonsPanel() {
+    private JPanel getbuttonsPanel() {
         if (buttonsPanel == null) {
-            buttonsPanel = new javax.swing.JPanel();
+            buttonsPanel = new JPanel();
             buttonsPanel.setName("buttonsPanel");
             buttonsPanel.setLayout(new java.awt.GridBagLayout());
             JPanel placeHolderPanel1 = new JPanel();
@@ -343,11 +351,11 @@ public class MainFrame extends JFrame implements LogMessageListener,
     
     /**
      * Return the cancelButton property value.
-     * @return javax.swing.JButton
+     * @return JButton
      */
-    private javax.swing.JButton getcancelButton() {
+    private JButton getcancelButton() {
         if (cancelButton == null) {
-            cancelButton = new javax.swing.JButton();
+            cancelButton = new JButton();
             cancelButton.setName("cancelButton");
             cancelButton.setText(stringManager.getString("upgrade.gui.mainframe.cancelbutton"));
         }
@@ -356,11 +364,11 @@ public class MainFrame extends JFrame implements LogMessageListener,
     
     /**
      * Return the helpButton property value.
-     * @return javax.swing.JButton
+     * @return JButton
      */
-    private javax.swing.JButton gethelpButton() {
+    private JButton gethelpButton() {
         if (helpButton == null) {
-            helpButton = new javax.swing.JButton();
+            helpButton = new JButton();
             helpButton.setName("helpButton");
             helpButton.setText(stringManager.getString("upgrade.gui.mainframe.helpbutton"));
             if(Utils.getHelpBroker() != null)
@@ -376,11 +384,11 @@ public class MainFrame extends JFrame implements LogMessageListener,
     
     /**
      * Return the navigationPanel property value.
-     * @return javax.swing.JPanel
+     * @return JPanel
      */
-    private javax.swing.JPanel getnavigationPanel() {
+    private JPanel getnavigationPanel() {
         if (navigationPanel == null) {
-            navigationPanel = new javax.swing.JPanel();
+            navigationPanel = new JPanel();
             navigationPanel.setName("navigationPanel");
             navigationPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -396,11 +404,11 @@ public class MainFrame extends JFrame implements LogMessageListener,
     
     /**
      * Return the nextButton property value.
-     * @return javax.swing.JButton
+     * @return JButton
      */
-    private javax.swing.JButton getnextButton() {
+    private JButton getnextButton() {
         if (nextButton == null) {
-            nextButton = new javax.swing.JButton();
+            nextButton = new JButton();
             nextButton.setName("nextButton");
             nextButton.setText(stringManager.getString("upgrade.gui.mainframe.nextbutton"));
             nextButton.setActionCommand("next");
@@ -423,8 +431,9 @@ public class MainFrame extends JFrame implements LogMessageListener,
                 setNextButtonStateForDataCollectionPanel();
             }
         });
-        this.addWindowListener(new java.awt.event.WindowAdapter(){
-            public void windowClosing(java.awt.event.WindowEvent e){
+        this.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
                 processCancelAction();
             }
         });
@@ -435,26 +444,25 @@ public class MainFrame extends JFrame implements LogMessageListener,
      */
     private void initialize() {
         setName("MainFrame");
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         setSize(725, 545);
         setContentPane(getJDialogContentPane());
         initConnections();
-        this.setFrameNavigationState(this.DATA_COLLECTION_PENDING);
+        this.setFrameNavigationState(UpgradeState.DATA_COLLECTION_PENDING);
         this.setBounds(new java.awt.Rectangle(100,100,this.getWidth(),this.getHeight()));
     }
     
-    
-    private void setFrameNavigationState(int state){
-        if(this.UPGRADE_FINISHED == state){
+    private void setFrameNavigationState(UpgradeState state){
+        if (UpgradeState.UPGRADE_FINISHED == state){
             getcancelButton().setEnabled(false);
             getnextButton().setEnabled(true);
             getnextButton().setActionCommand("finish");
             getnextButton().setText(stringManager.getString("upgrade.gui.mainframe.finishbutton"));
             getbackButton().setEnabled(false);
-        }else if(this.UPGRADE_STARTED == state){
+        } else if (UpgradeState.UPGRADE_STARTED == state){
             getnextButton().setEnabled(false);
             getbackButton().setEnabled(false);
-         }else{
+        } else {
             // Data collection panel is shown at this point
             getcancelButton().setEnabled(true);
 			//- settings via cmd-line checked for on startup
@@ -484,31 +492,33 @@ public class MainFrame extends JFrame implements LogMessageListener,
 			s.exec();
 		} else{
 			// pop up error message
-			javax.swing.JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(this,
 				stringManager.getString("upgrade.gui.mainframe.invalidSourceMsg"),
 				stringManager.getString("upgrade.gui.mainframe.invalidSourceTitle"),
-				javax.swing.JOptionPane.ERROR_MESSAGE);
+				JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
+        // in the GUI case, we'll allow users to fix domain name clashes
+        commonInfoModel.getTarget().setDirectoryMover(this);
 		ARG_target t = new ARG_target();
 		t.setRawParameters(dataCollectionPanel.getDestinationDirectoryPath());
 		if (t.isValidParameter()){
 			t.exec();
 		} else{
 			// pop up error message
-			javax.swing.JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(this,
 				stringManager.getString("upgrade.gui.mainframe.invalidTargetMsg"),
 				stringManager.getString("upgrade.gui.mainframe.invalidTargetTitle"),
-				javax.swing.JOptionPane.ERROR_MESSAGE);
+				JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 		
 		if(!commonInfoModel.isUpgradeSupported()){
-			javax.swing.JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(this,
 				stringManager.getString("upgrade.gui.mainframe.versionNotSupportedMsg"),
 				stringManager.getString("upgrade.gui.mainframe.versionNotSupportedTitle"),
-				javax.swing.JOptionPane.ERROR_MESSAGE);
+				JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 		
@@ -528,16 +538,16 @@ public class MainFrame extends JFrame implements LogMessageListener,
 			masterpswd.setRawParameters(masterPwd);
 			masterpswd.exec();
 ///		} else {
-///			javax.swing.JOptionPane.showMessageDialog(this,
+///			JOptionPane.showMessageDialog(this,
 ///				stringManager.getString("upgrade.gui.mainframe.invalidUserDetailsMsg"),
 ///				stringManager.getString("upgrade.gui.mainframe.invalidUserDetailsTitle"),
-///				javax.swing.JOptionPane.ERROR_MESSAGE);
+///				JOptionPane.ERROR_MESSAGE);
 ///			return false;
 ///		}
 		return true;
 	}
     
-    private javax.swing.JPanel getDataCollectionPanel() {
+    private JPanel getDataCollectionPanel() {
         if (dataCollectionPanel == null) {
             dataCollectionPanel = new DataCollectionPanel(commonInfoModel);
         }
@@ -558,6 +568,17 @@ public class MainFrame extends JFrame implements LogMessageListener,
 	}
 
     public boolean moveDirectory(File dir) {
+        String message = String.format(stringManager.getString(
+            "upgrade.gui.util.domainRenameOption", dir.getName()));
+        String title = stringManager.getString(
+            "upgrade.gui.util.domainNameConflict");
+        int option = JOptionPane.showConfirmDialog(this, message, title,
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (JOptionPane.OK_OPTION != option) {
+            return false;
+        }
+        UpgradeUtils.rename(dir);
         return true;
     }
 }
