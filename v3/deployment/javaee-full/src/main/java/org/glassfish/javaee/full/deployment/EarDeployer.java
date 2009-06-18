@@ -35,6 +35,7 @@
  */
 package org.glassfish.javaee.full.deployment;
 
+import com.sun.enterprise.module.Module;
 import java.io.OutputStream;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -61,6 +62,7 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.logging.LogDomains;
 
@@ -69,14 +71,13 @@ import java.util.logging.Logger;
 import java.io.IOException;
 import java.io.File;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DummyApplication;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * EarDeployer to deploy composite Java EE applications.
@@ -86,7 +87,7 @@ import org.glassfish.deployment.common.DummyApplication;
  */
 @Service
 @Scoped(PerLookup.class)
-public class EarDeployer implements Deployer {
+public class EarDeployer implements Deployer, PostConstruct {
 
 //    private static final Class GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS =
 //            org.glassfish.appclient.client.AppClientGroupFacade.class;
@@ -96,6 +97,7 @@ public class EarDeployer implements Deployer {
             "org.glassfish.appclient.client.AppClientGroupFacade";
 
     private static final Attributes.Name GLASSFISH_APPCLIENT_GROUP = new Attributes.Name("GlassFish-AppClient-Group");
+    private static final String GF_CLIENT_MODULE_NAME = "org.glassfish.appclient.gf-client-module";
 
     @Inject
     Habitat habitat;
@@ -120,6 +122,19 @@ public class EarDeployer implements Deployer {
 
     @Inject
     private DownloadableArtifacts artifacts;
+
+    @Inject
+    private ModulesRegistry modulesRegistry;
+
+    private ClassLoader gfClientModuleClassLoader;
+
+    public void postConstruct() {
+        for (Module module : modulesRegistry.getModules(GF_CLIENT_MODULE_NAME)) {
+            gfClientModuleClassLoader = module.getClassLoader();
+        }
+    }
+
+
 
     final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     
@@ -254,13 +269,15 @@ public class EarDeployer implements Deployer {
 
     }
 
-    private InputStream openByteCodeStream(final String classResourceName) throws URISyntaxException, MalformedURLException, IOException {
-        URI currentModule = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
-        URI classURI = currentModule.resolve("gf-client-module.jar!" + classResourceName);
-        return URI.create("jar:" + classURI.toString()).toURL().openStream();
-//        return getClass().getResourceAsStream(classResourceName);
+    protected InputStream openByteCodeStream(final String resourceName) throws IOException {
+        URL url = gfClientModuleClassLoader.getResource(resourceName);
+        if (url == null) {
+            throw new IllegalArgumentException(resourceName);
+        }
+        InputStream is = url.openStream();
+        return is;
     }
-
+    
     private class CompositeApplicationInfo extends ApplicationInfo {
 
         final Application application;
