@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="417"/>
+    <property name="TOTAL_EXPECTED" value="418"/>
 
     &commonSetup;
     &commonBuild;
@@ -194,6 +194,7 @@
         <ant dir="servletResourceInjectionFilter" target="all"/>
         <ant dir="servletResourceInjectionHttpSessionListener" target="all"/>
         <ant dir="servletResourceInjectionHttpSessionAttributeListener" target="all"/>
+        <ant dir="servletLoadOnStartupMultipleInit" target="all"/>
         <ant dir="cacheHelperRef" target="all"/>
         <ant dir="malformedQueryString" target="all"/>
         <ant dir="setMultiValuedResponseHeader" target="all"/>
