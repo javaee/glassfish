@@ -54,8 +54,10 @@
         </sun:property>   
 
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels={ " ", "jmsra" }  values={ " ", "jmsra" } >
-            
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" >
+                <!beforeCreate
+                     getApplicationByType(type="connector" result="#{pageSession.connectorList}");
+                />
            </sun:dropDown>
         </sun:property>
         <sun:property id="objectTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}" >
