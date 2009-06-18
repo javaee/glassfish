@@ -108,7 +108,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         try {
             // 1 mom per statsProvider
             ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(new ObjectName(MONITORING_SERVER));
-            mom.stripPackagePrefix();
+            //mom.stripPackagePrefix();
             mom.createRoot(statsProvider);
             momMap.put(statsProvider, mom);
 
