@@ -59,7 +59,6 @@
         <connection-pool></connection-pool>
         <http-protocol forced-response-type="text/plain; charset=iso-8859-1" default-response-type="text/plain; charset=iso-8859-1"></http-protocol>
         <http-file-cache globally-enabled="false" file-caching-enabled="false"></http-file-cache>
-        <property name="accessLoggingEnabled" value="false"></property>
       </http-service>
       <iiop-service>
         <orb use-thread-pool-ids="thread-pool-1"></orb>

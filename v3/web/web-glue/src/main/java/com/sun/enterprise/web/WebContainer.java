@@ -38,9 +38,6 @@ package com.sun.enterprise.web;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -107,9 +104,7 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
-import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.xmlparser.ParserUtils;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -847,6 +842,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // proxyHandler property
         connector.setProxyHandler(new ProxyHandlerImpl());
 
+        globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLogEnabled());
+        globalAccessLogWriteInterval = httpService.getAccessLog().getWriteIntervalSeconds();
+        globalAccessLogBufferSize = httpService.getAccessLog().getBufferSizeBytes();
         if (httpServiceProps != null) {
             for (Property httpServiceProp : httpServiceProps) {
                 String propName = httpServiceProp.getName();
@@ -857,20 +855,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
 
                 if ("connectionTimeout".equals(propName)) {
-                    connector.setConnectionTimeout(
-                                                Integer.parseInt(propValue));
+                    connector.setConnectionTimeout(Integer.parseInt(propValue));
                 } else if ("tcpNoDelay".equals(propName)) {
                     connector.setTcpNoDelay(ConfigBeansUtilities.toBoolean(propValue));
                 } else if ("traceEnabled".equals(propName)) {
                     connector.setAllowTrace(ConfigBeansUtilities.toBoolean(propValue));
-                } else if (Constants.ACCESS_LOGGING_ENABLED.equals(propName)) {
-                    globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(propValue);
-                } else if (Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY.equals(
-                                propName)) {
-                    globalAccessLogWriteInterval = propValue;
-                } else if (Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY.equals(
-                                propName)) {
-                    globalAccessLogBufferSize = propValue;
                 } else if ("authPassthroughEnabled".equals(propName)) {
                     connector.setAuthPassthroughEnabled(
                                     ConfigBeansUtilities.toBoolean(propValue));
@@ -882,8 +871,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     connector.setSSLSessionCacheSize(propValue);
                 } else if ("proxyHandler".equals(propName)) {
                     connector.setProxyHandler(propValue);
-                } else if (Constants.SSO_ENABLED.equals(propName)) {
-                    globalSSOEnabled = ConfigBeansUtilities.toBoolean(propValue);
                 } else {
                     _logger.log(Level.WARNING,
                         "pewebcontainer.invalid_http_service_property",
@@ -2547,11 +2534,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (VirtualServer.ADMIN_VS.equals(vsBean.getId())) {
             return;
         }
+        final VirtualServer vs = (VirtualServer)getEngine().findChild(vsBean.getId());
 
-        VirtualServer virtualServer = (VirtualServer)
-            getEngine().findChild(vsBean.getId());
-
-        if (virtualServer==null) {
+        if (vs ==null) {
             _logger.log(Level.WARNING, "Virtual server " + vsBean.getId() +
                     " cannot be updated, because it does not exist");
             return;
@@ -2560,18 +2545,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Must retrieve the old default-web-module before updating the
         // virtual server with the new vsBean, because default-web-module is
         // read from vsBean
-        String oldDefaultWebModule = virtualServer.getDefaultWebModuleID();
+        String oldDefaultWebModule = vs.getDefaultWebModuleID();
 
-        virtualServer.setBean(vsBean);
+        vs.setBean(vsBean);
 
-        virtualServer.setLogFile(vsBean.getLogFile(), logLevel, logHandler);
+        vs.setLogFile(vsBean.getLogFile(), logLevel, logHandler);
 
-        virtualServer.configureState();
+        vs.configureState();
 
-        virtualServer.clearAliases();
-        virtualServer.configureAliases();
+        vs.clearAliases();
+        vs.configureAliases();
 
-        virtualServer.reconfigureAccessLog(globalAccessLogBufferSize,
+        vs.reconfigureAccessLog(globalAccessLogBufferSize,
                                            globalAccessLogWriteInterval,
                                            habitat,
                                            domain,
@@ -2583,15 +2568,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             docroot = vsBean.getDocroot();
         }
         if (docroot != null) {
-            updateDocroot(docroot, virtualServer, vsBean);
+            updateDocroot(docroot, vs, vsBean);
         }
-        List<Property> props = virtualServer.getProperties();
+        List<Property> props = vs.getProperties();
         for (Property prop : props) {
-            updateHostProperties(vsBean, prop.getName(), prop.getValue(),
-                null);
+            updateHostProperties(vsBean, prop.getName(), prop.getValue(), null, vs);
         }
+        vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
+        vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
+            globalAccessLoggingEnabled);
 
-        int[] oldPorts = virtualServer.getPorts();
+        int[] oldPorts = vs.getPorts();
 
         List<String> listeners = StringUtils.parseStringList(
             vsBean.getNetworkListeners(), ",");
@@ -2610,18 +2597,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     _logger.log(Level.SEVERE,
                         "Listener " + listener +
                             " referenced by virtual server " +
-                            virtualServer.getName() + " does not exist");
+                            vs.getName() + " does not exist");
                 }
             }
             // Update the port numbers with which the virtual server is
             // associated
-            configureHostPortNumbers(virtualServer, networkListeners);
+            configureHostPortNumbers(vs, networkListeners);
         } else {
             // The virtual server is not associated with any http listeners
-            virtualServer.setPorts(new int[0]);
+            vs.setPorts(new int[0]);
         }
 
-        int[] newPorts = virtualServer.getPorts();
+        int[] newPorts = vs.getPorts();
 
         // Disassociate the virtual server from all http listeners that
         // have been removed from its http-listeners attribute
@@ -2640,7 +2627,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     if (oldPort == conn.getPort()) {
                         try {
                             conn.getMapperListener().unregisterHost(
-                                virtualServer.getJmxName());
+                                vs.getJmxName());
                         } catch (Exception e) {
                             throw new LifecycleException(e);
                         }
@@ -2671,7 +2658,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         }
                         try {
                             conn.getMapperListener().registerHost(
-                                virtualServer.getJmxName());
+                                vs.getJmxName());
                         } catch (Exception e) {
                             throw new LifecycleException(e);
                         }
@@ -2683,7 +2670,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Remove the old default web module if one was configured, by
         // passing in "null" as the default context path
         if (oldDefaultWebModule != null) {
-            updateDefaultWebModule(virtualServer, oldPorts, null);
+            updateDefaultWebModule(vs, oldPorts, null);
         }
 
         /*
@@ -2692,7 +2679,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * has already been deployed at the root context, we don't have
          * to do anything.
          */
-        WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain,
+        WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
                         habitat.getComponent(WebArchivist.class),
                         appRegistry);
         if ((wmInfo != null) && (wmInfo.getContextPath() != null) &&
@@ -2700,16 +2687,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 !"/".equals(wmInfo.getContextPath())) {
             // Remove dummy context that was created off of docroot, if such
             // a context exists
-            removeDummyModule(virtualServer);
-            updateDefaultWebModule(virtualServer,
-                                   virtualServer.getPorts(),
+            removeDummyModule(vs);
+            updateDefaultWebModule(vs,
+                                   vs.getPorts(),
                                    wmInfo);
         } else {
             WebModuleConfig wmc =
-                virtualServer.createSystemDefaultWebModuleIfNecessary(
+                vs.createSystemDefaultWebModuleIfNecessary(
                     habitat.getComponent(WebArchivist.class));
             if ( wmc != null) {
-                loadStandaloneWebModule(virtualServer,wmc);
+                loadStandaloneWebModule(vs,wmc);
             }
         }
 
@@ -2732,10 +2719,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public void updateHostProperties(
         com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
-        String name, String value, SecurityService securityService) {
-
-        VirtualServer vs = (VirtualServer)
-            getEngine().findChild(vsBean.getId());
+        String name, String value, SecurityService securityService, final VirtualServer vs) {
         if (vs == null) {
             return;
         }
@@ -2776,8 +2760,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 || "denyRemoteAddress".equals(name)) {
             vs.configureRemoteAddressFilterValve();
         } else if (Constants.SSO_ENABLED.equals(name)) {
-            vs.configureSingleSignOn(globalSSOEnabled,
-                                     webContainerFeatureFactory);
+            vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
         } else if ("authRealm".equals(name)) {
             vs.configureAuthRealm(securityService);
         } else if (name.startsWith("send-error")) {
@@ -2806,68 +2789,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * Update each virtual server with the sso-enabled and
          * access logging related properties of the updated http-service
          */
-        Property ssoEnabled = null;
-        Property accessLoggingEnabled = null;
-        Property accessLogWriteInterval = null;
-        Property accessLogBufferSize = null;
-        List<Property> props = httpService.getProperty();
-        if (props != null) {
-            for (Property prop : props) {
-                if (Constants.SSO_ENABLED.equals(prop.getName())) {
-                    ssoEnabled = prop;
-                    globalSSOEnabled = ConfigBeansUtilities.toBoolean(
-                            prop.getValue());
-                } else if (Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY.equals(
-                                prop.getName())) {
-                    accessLogWriteInterval = prop;
-                    globalAccessLogWriteInterval = prop.getValue();
-                } else if (Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY.equals(
-                                prop.getName())) {
-                    accessLogBufferSize = prop;
-                    globalAccessLogBufferSize = prop.getValue();
-                } else if (Constants.ACCESS_LOGGING_ENABLED.equals(
-                                prop.getName())) {
-                    accessLoggingEnabled = prop;
-                    globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(
-                            prop.getValue());
-                }
-            }
-        }
+        globalSSOEnabled = ConfigBeansUtilities.toBoolean(httpService.getSsoEnabled());
+        globalAccessLogWriteInterval = httpService.getAccessLog().getWriteIntervalSeconds();
+        globalAccessLogBufferSize = httpService.getAccessLog().getBufferSizeBytes();
+        globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLogEnabled());
 
         List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers =
             httpService.getVirtualServer();
-        if (virtualServers != null
-                && (ssoEnabled != null || accessLoggingEnabled != null
-                    || accessLogWriteInterval != null
-                    || accessLogBufferSize != null)) {
-            for (com.sun.enterprise.config.serverbeans.VirtualServer virtualServer :
-                    virtualServers) {
-                if (ssoEnabled != null) {
-                    updateHostProperties(virtualServer,
-                                         ssoEnabled.getName(),
-                                         ssoEnabled.getValue(),
-                        null);
-                }
-                if (accessLoggingEnabled != null) {
-                    updateHostProperties(virtualServer,
-                                         accessLoggingEnabled.getName(),
-                                         accessLoggingEnabled.getValue(),
-                        null);
-                }
-                if (accessLogWriteInterval != null) {
-                    updateHostProperties(virtualServer,
-                                         accessLogWriteInterval.getName(),
-                                         accessLogWriteInterval.getValue(),
-                        null);
-                }
-                if (accessLogBufferSize != null) {
-                    updateHostProperties(virtualServer,
-                                         accessLogBufferSize.getName(),
-                                         accessLogBufferSize.getValue(),
-                        null);
-                }
-                updateHost(virtualServer);
-            }
+        for (com.sun.enterprise.config.serverbeans.VirtualServer virtualServer : virtualServers) {
+            final VirtualServer vs = (VirtualServer) getEngine().findChild(virtualServer.getId());
+            vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
+            vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
+                globalAccessLoggingEnabled);
+            updateHost(virtualServer);
         }
 
         Collection<NetworkListener> listeners = habitat.getAllByType(NetworkListener.class);

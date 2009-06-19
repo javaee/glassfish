@@ -169,7 +169,7 @@ public class CreateHttpListener implements AdminCommand {
         try {
             ConfigSupport.apply(new SingleConfigCode<NetworkConfig>() {
                 public Object run(final NetworkConfig configParam) throws TransactionFailure {
-                    ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
+                    return ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
                         public Object run(NetworkListeners listenersParam)
                             throws TransactionFailure, PropertyVetoException {
                             final NetworkListener newListener = listenersParam.createChild(NetworkListener.class);
@@ -191,10 +191,9 @@ public class CreateHttpListener implements AdminCommand {
                             }
 */
                             listenersParam.getNetworkListener().add(newListener);
-                            return listenersParam;
+                            return newListener;
                         }
                     }, configParam.getNetworkListeners());
-                    return null;
                 }
             }, networkConfig);
             //now change the associated virtual server

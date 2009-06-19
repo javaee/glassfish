@@ -52,6 +52,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.Attribute;
 
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPServiceConfig", singleton=true)
 @Configured
@@ -218,12 +219,35 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     @DuckTyped
     VirtualServer getVirtualServerByName(String name);
-
     
     @DuckTyped
     @Deprecated
     HttpListener getHttpListenerById(String id);
-    
+
+    @Attribute(defaultValue = "false")
+    String getAccessLogEnabled();
+
+    void setAccessLogEnabled(String enabled);
+
+    /**
+     * If true, single sign-on is enabled by default for all web applications on all virtual servers on this
+     * server instance that are configured for the same realm. If false, single sign-on is disabled by
+     * default for all virtual servers, and users must authenticate separately to every application on each
+     * virtual server. The sso-enabled property setting of the virtual-server element can override this
+     * setting for an individual virtual server or inherit the value by using "inherit."
+     *
+     * @return possible object is {@link String }
+     */
+    @Attribute(defaultValue = "false")
+    String getSsoEnabled();
+
+    /**
+     * Sets the value of the sso-enabled property.
+     *
+     * @param value allowed object is {@link String }
+     */
+    void setSsoEnabled(String value);
+
     class Duck {
         public static VirtualServer getVirtualServerByName(HttpService target, String name) {
             for (VirtualServer v : target.getVirtualServer()) {
@@ -250,7 +274,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
     props={
     @PropertyDesc(name="monitoring-cache-enabled", defaultValue="true", dataType=Boolean.class,
         description="Enables the monitoring cache"),
-        
+
     @PropertyDesc(name="monitoring-cache-refresh-in-millis", defaultValue="5000", dataType=NonNegativeInteger.class,
         description="Specifies the interval between refreshes of the monitoring cache"),
         
@@ -262,7 +286,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
         
     @PropertyDesc(name="ssl-session-timeout", defaultValue="100", dataType=NonNegativeInteger.class,
         description="Specifies the interval at which SSL2 sessions are cached"),
-        
+
     @PropertyDesc(name="recycle-objects", defaultValue="true", dataType=Boolean.class,
         description="Whether to recycle internal objects instead of using the VM garbage collector"),
         
@@ -303,46 +327,26 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
     Only used if authPassthroughEnabled is set to true. Each “http-listener” 
     on page 37 subelement can override the setting for itself. 
     */
+
     @PropertyDesc(name="proxyHandler", defaultValue="com.sun.enterprise.web.web.ProxyHandlerImpl",
         description="Specifies the fully qualified class name of a custom implementation of com.sun.appserv.ProxyHandler. " +
         "Only used if authPassthroughEnabled is set to true. Each http-listener can override the setting for itself"),
         
-    @PropertyDesc(name="proxiedProtocol", values={"ws/tcp", "http", "https", "tls"},
-        description="A comma-separated list of protocols that can use the same port. " +
-            "Specifying this property at the http-service level overrides settings at the " +
-            "http-listener. If this property is not set at either level, this feature is disabled"),
-        
     @PropertyDesc(name="bufferSize", defaultValue="4096", dataType=NonNegativeInteger.class,
         description="Size in bytes of the buffer to be provided for input streams created by HTTP listeners"),
-        
+
     @PropertyDesc(name="connectionTimeout", defaultValue="30", dataType=NonNegativeInteger.class,
         description="Number of seconds HTTP listeners wait, after accepting a connection, for the request URI line to be presented"),
         
     @PropertyDesc(name="maxKeepAliveRequests", defaultValue="250", dataType=NonNegativeInteger.class,
         description="Maximum number of HTTP requests that can be pipelined until the connection is closed by the server. " +
             "Set this property to 1 to disable HTTP/1.0 keep-alive, as well as HTTP/1.1 keep-alive and pipelining"),
-        
+
     @PropertyDesc(name="traceEnabled", defaultValue="true", dataType=Boolean.class,
         description="Enables the TRACE operation. Set  to false to make the server less susceptible to cross-site scripting attacks"),
         
     @PropertyDesc(name="accessLoggingEnabled", defaultValue="false", dataType=Boolean.class,
         description="Controls access logging for all virtual-server that do not specify this property"),
-        
-    @PropertyDesc(name="accessLogBufferSize", defaultValue="32768", dataType=NonNegativeInteger.class,
-        description="Size in bytes of the buffer where access log calls are stored. If the value is less than 5120, " +
-            "a warning message is issued, and the value is set to 5120"),
-        
-    @PropertyDesc(name="accessLogWriterInterval", defaultValue="300", dataType=NonNegativeInteger.class,
-        description="Number of seconds before the log is written to the disk. The access log is written when the " +
-            "buffer is full or when the interval expires. If the value is 0, the buffer is always written even if it is not full. " +
-            "This means that each time the server is accessed, the log message is stored directly to the file"),
-        
-    @PropertyDesc(name="sso-enabled", defaultValue="false", dataType=Boolean.class,
-        description="If true, single sign-on is enabled by default for all web applications on all " +
-            "virtual servers on this server instance that are configured for the same realm. If false, " +
-            "single sign-on is disabled by default for all virtual servers, and users must authenticate separately to " +
-            "every application on each virtual server. The sso-enabled property setting of the virtual-server " +
-            "element overrides this setting for an individual virtual server."),
         
     @PropertyDesc(name="disableUploadTimeout", defaultValue="true", dataType=Boolean.class,
         description="If false, the connection for a servlet that reads bytes slowly is closed after the 'connectionUploadTimeout' is reached"),
@@ -353,13 +357,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
     @PropertyDesc(name="uriEncoding", defaultValue="UTF-8",
         description="Specifies the character set used to decode the request URIs received on http-listeners that " +
             "do not define this property. Must be a valid IANA character set name")
-        
 })
-
     @Element("property")
     List<Property> getProperty();
-
 }
-
-
-

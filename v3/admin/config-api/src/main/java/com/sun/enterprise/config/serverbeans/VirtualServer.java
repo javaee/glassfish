@@ -243,7 +243,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(defaultValue="false")
+    @Attribute(defaultValue="inherit")
     String getSsoEnabled();
 
     /**
@@ -261,7 +261,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(defaultValue="false")
+    @Attribute(defaultValue="inherit")
     String getAccessLoggingEnabled();
 
     /**

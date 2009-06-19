@@ -1748,19 +1748,9 @@ public class VirtualServer extends StandardHost {
             return false;
         }
 
-        String ssoEnabled = null;
-        Property ssoProperty = vsBean.getProperty(Constants.SSO_ENABLED);
-        if (ssoProperty == null || ssoProperty.getValue() == null) {
-            ssoEnabled = vsBean.getSsoEnabled();
-        } else {
-            ssoEnabled = ssoProperty.getValue();
-        }
-
-        if (ssoEnabled == null) {
-            return globalSSOEnabled;
-        } else {
-            return ConfigBeansUtilities.toBoolean(ssoEnabled);
-        }
+        String ssoEnabled = vsBean.getSsoEnabled();
+        return "inherit".equals(ssoEnabled) && globalSSOEnabled
+            || ConfigBeansUtilities.toBoolean(ssoEnabled); 
     }
 
 
@@ -1779,12 +1769,9 @@ public class VirtualServer extends StandardHost {
             return false;
         }
 
-        Property prop = vsBean.getProperty(Constants.ACCESS_LOGGING_ENABLED);
-        if (prop == null || prop.getValue() == null) {
-            return globalAccessLoggingEnabled;
-        } else {
-            return ConfigBeansUtilities.toBoolean(prop.getValue());
-        }
+        String enabled = vsBean.getAccessLoggingEnabled();
+        return "inherit".equals(enabled) && globalAccessLoggingEnabled
+            || ConfigBeansUtilities.toBoolean(enabled);
     }
 
 

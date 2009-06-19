@@ -19,6 +19,7 @@ import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -51,34 +52,104 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     public void postConstruct() {
         try {
             final Config config = domain.getConfigs().getConfig().get(0);
-            if (!config.getHttpService().getHttpListener().isEmpty()) {
-                ConfigSupport.apply(new SingleConfigCode<Domain>() {
-                    public Object run(Domain param) throws TransactionFailure {
-                        migrateSettings(param);
-                        return null;
-                    }
-                }, domain);
-            }
-            if (config.getNetworkConfig().getNetworkListeners().getThreadPool() != null) {
-                ThreadPools threadPools = config.getThreadPools();
-                if (threadPools == null) {
-                    threadPools = createThreadPools();
-                }
-                ConfigSupport.apply(new SingleConfigCode<ThreadPools>() {
-                    public Object run(ThreadPools param) throws TransactionFailure {
-                        migrateThreadPools(param);
-                        return null;
-                    }
-                }, threadPools);
-            }
+            processHttpListeners(config);
+            promoteHttpServiceProperties(config.getHttpService());
+            promoteVirtualServerProperties(config.getHttpService());
+            moveThreadPools(config);
         } catch (TransactionFailure tf) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading application grizzly related items."
-                + "  Please redeploy", tf);
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.  Please redeploy", tf);
             throw new RuntimeException(tf);
         } catch (PropertyVetoException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading application grizzly related items."
-                + "  Please redeploy", e);
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.  Please redeploy", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void moveThreadPools(Config config) throws TransactionFailure, PropertyVetoException {
+        if (config.getNetworkConfig().getNetworkListeners().getThreadPool() != null) {
+            ThreadPools threadPools = config.getThreadPools();
+            if (threadPools == null) {
+                threadPools = createThreadPools();
+            }
+            ConfigSupport.apply(new SingleConfigCode<ThreadPools>() {
+                public Object run(ThreadPools param) throws TransactionFailure {
+                    migrateThreadPools(param);
+                    return null;
+                }
+            }, threadPools);
+        }
+    }
+
+    private void promoteVirtualServerProperties(final HttpService service) throws TransactionFailure {
+        for (VirtualServer virtualServer : service.getVirtualServer()) {
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+                @Override
+                public Object run(VirtualServer param) throws PropertyVetoException {
+                    if(param.getHttpListeners() != null && !"".equals(param.getHttpListeners())) {
+                        param.setNetworkListeners(param.getHttpListeners());
+                    }
+                    param.setHttpListeners(null);
+                    final List<Property> propertyList = new ArrayList<Property>(param.getProperty());
+                    final Iterator<Property> it = propertyList.iterator();
+                    while (it.hasNext()) {
+                        final Property property = it.next();
+                        if ("docroot".equals(property.getName())) {
+                            param.setDocroot(property.getValue());
+                            it.remove();
+                        } else if ("accesslog".equals(property.getName())) {
+                            param.setAccessLog(property.getValue());
+                            it.remove();
+                        } else if ("sso-enabled".equals(property.getName())) {
+                            param.setSsoEnabled(property.getValue());
+                            it.remove();
+                        }
+                    }
+                    param.getProperty().clear();
+                    param.getProperty().addAll(propertyList);
+                    return null;
+                }
+            }, virtualServer);
+        }
+    }
+
+    private void promoteHttpServiceProperties(final HttpService service) throws TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<HttpService>() {
+            @Override
+            public Object run(HttpService param) {
+                final List<Property> propertyList = new ArrayList<Property>(param.getProperty());
+                final Iterator<Property> it = propertyList.iterator();
+                while (it.hasNext()) {
+                    final Property property = it.next();
+                    if ("accessLoggingEnabled".equals(property.getName())) {
+                        param.setAccessLogEnabled(property.getValue());
+                        it.remove();
+                    } else if ("accessLogBufferSize".equals(property.getName())) {
+                        param.getAccessLog().setBufferSizeBytes(property.getValue());
+                        it.remove();
+                    } else if ("accessLogWriterInterval".equals(property.getName())) {
+                        param.getAccessLog().setWriteIntervalSeconds(property.getValue());
+                        it.remove();
+                    } else if ("sso-enabled".equals(property.getName())) {
+                        param.setSsoEnabled(property.getValue());
+                        it.remove();
+                    }
+                }
+                param.getProperty().clear();
+                param.getProperty().addAll(propertyList);
+                return null;
+            }
+        }, service);
+
+    }
+
+    private void processHttpListeners(Config config) throws TransactionFailure {
+        if (!config.getHttpService().getHttpListener().isEmpty()) {
+            ConfigSupport.apply(new SingleConfigCode<Domain>() {
+                public Object run(Domain param) throws TransactionFailure {
+                    migrateSettings(param);
+                    return null;
+                }
+            }, domain);
         }
     }
 
@@ -116,58 +187,6 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         migrateRequestProcessing(config, service);
         migrateKeepAlive(config, service);
         migrateConnectionPool(config, service);
-        migrateVirtualServers(service);
-        ConfigSupport.apply(new SingleConfigCode<HttpService>() {
-            @Override
-            public Object run(HttpService param) {
-                final List<Property> propertyList = new ArrayList<Property>(param.getProperty());
-                final Iterator<Property> it = propertyList.iterator();
-                while (it.hasNext()) {
-                    final Property property = it.next();
-                    if ("accessLoggingEnabled".equals(property.getName())) {
-                        it.remove();
-                    }
-                }
-                param.getProperty().clear();
-                param.getProperty().addAll(propertyList);
-                return null;
-            }
-        }, service);
-    }
-
-    private void migrateVirtualServers(final HttpService service) throws TransactionFailure {
-        for (VirtualServer virtualServer : service.getVirtualServer()) {
-            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                @Override
-                public Object run(VirtualServer param) throws PropertyVetoException {
-                    param.setNetworkListeners(param.getHttpListeners());
-                    param.setHttpListeners(null);
-                    for (Property property : service.getProperty()) {
-                        if ("accessLoggingEnabled".equals(property.getName())) {
-                            param.setAccessLoggingEnabled(property.getValue());
-                        }
-                    }
-                    final List<Property> propertyList = new ArrayList<Property>(param.getProperty());
-                    final Iterator<Property> it = propertyList.iterator();
-                    while (it.hasNext()) {
-                        final Property property = it.next();
-                        if ("docroot".equals(property.getName())) {
-                            param.setDocroot(property.getValue());
-                            it.remove();
-                        } else if ("accesslog".equals(property.getName())) {
-                            param.setAccessLog(property.getValue());
-                            it.remove();
-                        } else if ("sso-enabled".equals(property.getName())) {
-                            param.setSsoEnabled(property.getValue());
-                            it.remove();
-                        }
-                    }
-                    param.getProperty().clear();
-                    param.getProperty().addAll(propertyList);
-                    return null;
-                }
-            }, virtualServer);
-        }
     }
 
     private void migrateConnectionPool(NetworkConfig config, HttpService httpService) throws TransactionFailure {

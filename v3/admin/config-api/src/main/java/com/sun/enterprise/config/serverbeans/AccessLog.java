@@ -150,4 +150,24 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link String }
      */
     void setRotationEnabled(String value) throws PropertyVetoException;
+
+    /**
+     * Size in bytes of the buffer where access log calls are stored. If the value is less than 5120, a warning
+     *  message is issued, and the value is set to 5120
+     */
+    @Attribute(defaultValue = "32768")
+    String getBufferSizeBytes();
+
+    void setBufferSizeBytes(String value);
+
+    /**
+     * Number of seconds before the log is written to the disk. The access log is written when the buffer is
+     * full or when the interval expires. If the value is 0, the buffer is always written even if it is not full.
+     * This means that each time the server is accessed, the log message is stored directly to the file
+     * @return
+     */
+    @Attribute(defaultValue = "300")
+    String getWriteIntervalSeconds();
+    
+    void setWriteIntervalSeconds(String value);
 }

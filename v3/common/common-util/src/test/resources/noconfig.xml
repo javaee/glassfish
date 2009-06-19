@@ -46,17 +46,8 @@
     <config name="server-configxx">
       <http-service>
         <access-log rotation-suffix="yyyy-MM-dd" rotation-interval-in-minutes="15" />
-        <virtual-server id="server" network-listeners="http-listener-1,http-listener-2">
-          <property name="docroot" value="${com.sun.aas.instanceRoot}/docroot" />
-          <property name="accesslog" value="${com.sun.aas.instanceRoot}/logs/access" />
-          <property name="sso-enabled" value="false" />
-        </virtual-server>
-        <virtual-server id="__asadmin" network-listeners="admin-listener">
-          <property name="docroot" value="${com.sun.aas.instanceRoot}/docroot" />
-          <property name="accesslog" value="${com.sun.aas.instanceRoot}/logs/access" />
-          <property name="sso-enabled" value="false" />
-        </virtual-server>
-        <property name="accessLoggingEnabled" value="false" />
+        <virtual-server id="server" network-listeners="http-listener-1,http-listener-2"/>
+        <virtual-server id="__asadmin" network-listeners="admin-listener"/>
       </http-service>
       <iiop-service>
         <orb use-thread-pool-ids="thread-pool-1" />
