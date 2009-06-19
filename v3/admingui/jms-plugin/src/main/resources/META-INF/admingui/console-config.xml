@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jms">
+    <integration-point  id="jms_resources_nodes"
+                        type="org.glassfish.admingui:navNode"
+                        priority="200"
+                        parentId="resources"
+                        content="resourcesNodes.jsf" />
+
+    <integration-point  id="jms_configuration_nodes"
+                        type="org.glassfish.admingui:navNode"
+                        priority="300"
+                        parentId="configuration"
+                        content="configurationNodes.jsf" />
+</console-config> 

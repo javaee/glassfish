@@ -1,0 +1,12 @@
+<gf:navNode id="jmsResources"
+	    label="$resource{i18n.tree.jmsResources}"
+	    icon="#{request.contextPath}/resource/images/jms.gif">
+    <gf:navNode id="jmsConnFact"
+                label="$resource{i18n.connectionFactories.pageTitle}"
+                url="/jms/jmsConnections.jsf">
+    </gf:navNode>
+    <gf:navNode id="jmsDestRes"
+                label="$resource{i18n.destinationResources.pageTitle}"
+                url="/jms/jmsDestinations.jsf">
+    </gf:navNode>
+</gf:navNode>
