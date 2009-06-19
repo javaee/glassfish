@@ -90,11 +90,12 @@
                 </sun:listbox>
             </sun:property>
 
-
-#getChildrenByType
         <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.DefaultWeb}" helpText="$resource{i18n_web.vs.DefaultWebHelp}">
-            <sun:dropDown id="Web" labels="$attribute{modules}" selected="#{pageSession.valueMap['DefaultWebModule']}" >
-            </sun:dropDown>
+            <sun:dropDown id="Web" labels="$pageSession{modules}" selected="#{pageSession.valueMap['DefaultWebModule']}" />
+            <!beforeCreate
+                getApplicationBySnifferType(type="web" fullName="#{true}" result="#{requestScope.modList}")
+                addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
+            />
         </sun:property>
         <sun:property id="logFileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.LogFile}" helpText="$resource{i18n_web.vs.LogFileHelp}">
             <sun:textField id="LogFile" columns="$int{55}" text="#{pageSession.valueMap['LogFile']}" />
@@ -131,4 +132,5 @@
 
     </sun:propertySheetSection>
 </sun:propertySheet>
+"<br><br>
 
