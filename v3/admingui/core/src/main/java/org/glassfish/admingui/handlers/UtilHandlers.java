@@ -327,6 +327,27 @@ public class UtilHandlers {
         }
     }
 
+    /*
+     * Add an empty string as the first element to the list.
+     * This is useful as the labels/values of a dropdown list, where user is not required
+     * to select a value in the list.  eg. virtualServer in the deployment screen,
+     * defaultWebModule in the server etc.
+     */
+
+    @Handler(id = "addEmptyFirstElement",
+    input = {
+        @HandlerInput(name = "in", type = List.class, required = true)},
+    output = {
+        @HandlerOutput(name = "out", type = List.class)
+    })
+    public static void addEmptyFirstElement(HandlerContext handlerCtx) {
+        List<String> in = (List) handlerCtx.getInputValue("in");
+        ArrayList ar = new ArrayList(in);
+        ar.add(0, "");
+        handlerCtx.setOutputValue("out", ar);
+    }
+
+
 
     @Handler(id = "getListBoxOptions",
     input = {
