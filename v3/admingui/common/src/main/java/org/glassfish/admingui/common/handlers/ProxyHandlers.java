@@ -37,13 +37,10 @@
 package org.glassfish.admingui.common.handlers;
 
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.management.Attribute;
 
 import com.sun.jsftemplating.annotation.Handler;  
@@ -366,12 +363,18 @@ public class ProxyHandlers {
         List result = new ArrayList();
         for (AMXProxy oneChild : children.values()) {
             try {
+
+
                 AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) oneChild);
                 final Map<String, Object> attrs = helper.simpleAttributesMap();
                 for (String attrName : attrs.keySet()) {
                     if (attrName.equals("Name")) {
                         String appName = getA(attrs, "Name");
                         Map<String, AMXProxy> module = objectNameToProxy("v3:pp=/domain/applications,type=application,name=" +appName ).childrenMap("module");
+
+                        //The above 6 lines can be writen as
+                        //Map <String, AMXProxy> module = oneChild.childrenMap("module");
+                        //
                         for (AMXProxy oneModule : module.values()) {
                             AMXConfigHelper helperModule = new AMXConfigHelper((AMXConfigProxy) oneModule);
                             final Map<String, Object> modattrs = helperModule.simpleAttributesMap();
@@ -394,6 +397,57 @@ public class ProxyHandlers {
                 }
             } catch (Exception ex) {
                 GuiUtil.handleException(handlerCtx, ex);
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+
+
+
+    /**
+     *	<p> This handler goes through all the deployed application to search for all the application that has at least one module
+     *  <p> with the specified sniffer.
+     *
+     *  <p> Input  value: "type" -- the name of the sniffer
+     *  <p> Input  value: "fullName" -- boolean that indicates if the returned name should be presented as application#module name
+     *  <p> or just the module name.   eg. myApp#myModule  vs  myModule
+     *  <p> Input value: "result"  -- Type: <code> java.util.List</code></p>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id="getApplicationBySnifferType",
+    input={
+        @HandlerInput(name="type",   type=String.class, required=true),
+        @HandlerInput(name="fullName",   type=Boolean.class)},
+    output={
+        @HandlerOutput(name="result",        type=List.class)})
+
+    public static void getApplicationBySnifferType(HandlerContext handlerCtx) {
+        String type = (String) handlerCtx.getInputValue("type");
+        Boolean fullName = (Boolean) handlerCtx.getInputValue("fullName");
+        if (fullName==null)
+            fullName = false;
+
+        AMXProxy amx = objectNameToProxy("v3:pp=/domain,type=applications");
+        Map<String, AMXProxy> applications = amx.childrenMap("application");
+        List result = new ArrayList();
+        eachApp:  for (AMXProxy oneApp : applications.values()) {
+            Map<String, AMXProxy> modules = oneApp.childrenMap("module");
+            for(AMXProxy oneModule: modules.values()){
+                Map<String, AMXProxy> engines = oneModule.childrenMap("engine");
+                for(AMXProxy oneEngine: engines.values()){
+                    if (oneEngine.getName().equals(type)){
+                        String appName = oneApp.getName();
+                        if (fullName){
+                            AMXProxy earSniffer = oneApp.childrenMap("engine").get(SNIFFER_EAR);
+                            result.add( (earSniffer == null)? appName :appName + "#" + oneModule.getName());
+                            continue;
+                        }else{
+                            result.add(appName);
+                            continue eachApp;
+                        }
+                    }
+                }
             }
         }
         handlerCtx.setOutputValue("result", result);
@@ -459,14 +513,9 @@ public class ProxyHandlers {
     }
 
 
+    private static final String SNIFFER_EAR = "ear";
     //mbean Attribute Name
-    private static List httpServiceSkipPropsList = new ArrayList();
     private static final String PROPERTY_NAME = "Name";
     private static final String PROPERTY_VALUE = "Value";
     private static final String PROPERTY_DESC = "Description";
-    static {
-        httpServiceSkipPropsList.add("accessLogBufferSize");
-        httpServiceSkipPropsList.add("accessLogWriteInterval");
-        httpServiceSkipPropsList.add("accessLoggingEnabled");
-    }
 }
