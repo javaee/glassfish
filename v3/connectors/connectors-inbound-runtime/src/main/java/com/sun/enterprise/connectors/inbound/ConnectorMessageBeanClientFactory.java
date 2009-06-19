@@ -38,9 +38,11 @@
 package com.sun.enterprise.connectors.inbound;
 
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.ejb.spi.MessageBeanClientFactory;
 import org.glassfish.ejb.spi.MessageBeanClient;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * MessageBeanClientFactory for connector message bean clients.
@@ -50,6 +52,9 @@ import org.jvnet.hk2.annotations.Service;
 @Service(name="ConnectorMessageBeanClientFactory") //name by which MDB container will refer connectors impl.
 public final class ConnectorMessageBeanClientFactory
         implements MessageBeanClientFactory {
+
+    @Inject
+    private ConnectorRuntime runtime; //initialize connector-runtime if already not done
 
     /**
      * Creates a <code>ConnectorMessageBeanClient</code>
