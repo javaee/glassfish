@@ -800,19 +800,23 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         }
     }
 
-    // return a short unique representation of this BundleDescriptor
-    public String getUniqueFriendlyId() {
-        String uniqueId;
+
+    public String getModuleName() {
+        String moduleName = null;
 
         // for standalone jars, return its registration name
         // for applications, return the module uri
-
         if (getApplication().isVirtual()) {
-            uniqueId = getApplication().getRegistrationName();
+            moduleName = getApplication().getRegistrationName();
         } else {
-            uniqueId = getModuleDescriptor().getArchiveUri();
+            moduleName = getModuleDescriptor().getArchiveUri();
         }
-        return FileUtils.makeFriendlyFilename(uniqueId);
+        return moduleName;
+    }
+
+    // return a short unique representation of this BundleDescriptor
+    public String getUniqueFriendlyId() {
+        return FileUtils.makeFriendlyFilename(getModuleName());
     }
 
 }
