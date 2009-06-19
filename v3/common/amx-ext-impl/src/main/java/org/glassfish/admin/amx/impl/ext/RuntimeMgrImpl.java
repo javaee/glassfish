@@ -49,6 +49,8 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 
 import com.sun.enterprise.security.ssl.SSLUtils;
+import javax.management.JMException;
+import javax.management.remote.JMXServiceURL;
 import org.glassfish.admin.amx.base.RuntimeMgr;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
@@ -65,6 +67,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.admin.amx.impl.util.InjectedValues;
+import org.glassfish.admin.mbeanserver.BooterNewMBean;
 
 
 /**
@@ -250,6 +253,20 @@ public final class RuntimeMgrImpl extends AMXImplBase
             return new String[0];
         }
     }
+    
+        public JMXServiceURL[]
+    getJMXServiceURLs()
+    {
+        try
+        {
+            return (JMXServiceURL[])getMBeanServer().getAttribute( BooterNewMBean.OBJECT_NAME, "JMXServiceURLs" );
+        }
+        catch ( final JMException e )
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 
 

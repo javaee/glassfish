@@ -252,6 +252,7 @@ public final class SetUtil
 	    return Collections.unmodifiableSet( newStringSet( args ) );
 	}
 	
+    /*
 	    public static Set<String>
 	newStringSet( final Object... args)
 	{
@@ -260,6 +261,19 @@ public final class SetUtil
 	    for( final Object o : args )
 	    {
 	        set.add( o == null ? null : "" + o );
+	    }
+	    return set;
+	}
+    */
+    
+	    public static <T> Set<T>
+	newTypedSet( final T... args)
+	{
+	    final Set<T>   set   = new HashSet<T>();
+	    
+	    for( final T o : args )
+	    {
+	        set.add( o);
 	    }
 	    return set;
 	}

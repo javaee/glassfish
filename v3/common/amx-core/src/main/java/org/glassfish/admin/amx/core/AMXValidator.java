@@ -55,6 +55,7 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.OpenType;
+import javax.management.remote.JMXServiceURL;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
@@ -209,16 +210,23 @@ public final class AMXValidator
     {
         return ExceptionUtil.toString(ExceptionUtil.getRootCause(t));
     }
+    
+    /** types that are not open types, but that we deem acceptable for a remote API */
+    private static Set<Class> EXTRA_ALLOWED_TYPES = SetUtil.newTypedSet(
+         (Class)JMXServiceURL.class
+    );
 
-    private static boolean isObviousOpenType(final Class<?> c)
+    private static boolean isAcceptableRemoteType(final Class<?> c)
     {
-        if (c.isPrimitive() || OpenType.ALLOWED_CLASSNAMES_LIST.contains(c.getName()))
+        if (c.isPrimitive() ||
+            EXTRA_ALLOWED_TYPES.contains(c) ||
+            OpenType.ALLOWED_CLASSNAMES_LIST.contains(c.getName()))
         {
             return true;
         }
 
         // quick checks for other common cases
-        if (c.isArray() && isObviousOpenType(c.getComponentType()))
+        if (c.isArray() && isAcceptableRemoteType(c.getComponentType()))
         {
             return true;
         }
@@ -238,7 +246,7 @@ public final class AMXValidator
             return;
         }
         final Class<?> clazz = value.getClass();
-        if (isObviousOpenType(clazz))
+        if (isAcceptableRemoteType(clazz))
         {
             return;
         }
@@ -251,7 +259,7 @@ public final class AMXValidator
 
         if (clazz.isArray())
         {
-            if (!isObviousOpenType(clazz.getComponentType()))
+            if (!isAcceptableRemoteType(clazz.getComponentType()))
             {
                 final Object[] a = (Object[]) value;
                 for (final Object o : a)

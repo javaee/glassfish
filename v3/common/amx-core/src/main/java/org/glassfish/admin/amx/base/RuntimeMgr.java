@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.base;
 
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
@@ -100,6 +101,10 @@ public interface RuntimeMgr extends AMXProxy, Utility, Singleton
     
     @ManagedAttribute
     public String[] getSupportedCipherSuites();
+    
+    @ManagedAttribute
+    @Description( "Return the available JMXServiceURLs in no particular order" )
+    public String[] getJMXServiceURLs();
 }
 
 
