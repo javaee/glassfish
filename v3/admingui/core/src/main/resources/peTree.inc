@@ -151,6 +151,16 @@
 	    imageURL="/resource/images/configurations.gif"
 	    expanded="$boolean{true}"
 	    >
+
+        //Admin Service
+        <sun:treeNode id="adminService"
+            text="$resource{i18n.tree.adminService}"
+            url="/configuration/jmxConnectorEdit.jsf?configName=#{configName}"
+            imageURL="/resource/images/connector.png"
+            target="main"
+            >
+        </sun:treeNode>
+
 	</sun:treeNode>
     <sun:treeNode id="systemProps"
         text="$resource{i18n.tree.systemProps}"
