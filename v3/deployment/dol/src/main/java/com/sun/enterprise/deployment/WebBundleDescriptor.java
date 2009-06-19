@@ -117,6 +117,8 @@ public class WebBundleDescriptor extends BundleDescriptor
     //
     private Map<String, String> extensionProperty = null;
 
+    private Map<String, String> jarName2WebFragNameMap = null;
+
     /**
      * Constrct an empty web app [{0}].
      */
@@ -1471,6 +1473,24 @@ public class WebBundleDescriptor extends BundleDescriptor
                     (ServletFilterDescriptor) itr.next();
             aVisitor.accept(servletFilterDescriptor);
         }
+    }
+
+    public void putJarNameWebFragmentNamePair(String jarName, String webFragName) {
+        if (jarName2WebFragNameMap == null) {
+            jarName2WebFragNameMap = new HashMap<String, String>();
+        }
+        jarName2WebFragNameMap.put(jarName, webFragName);
+    }
+
+    /**
+     * This method return an unmodifiable version of jarName2WebFragNameMap.
+     * @return unmodifiable version of jarName2WebFragNameMap
+     */
+    public Map<String, String> getJarNameToWebFragmentNameMap() {
+        if (jarName2WebFragNameMap == null) {
+            jarName2WebFragNameMap = new HashMap<String, String>();
+        }
+        return Collections.unmodifiableMap(jarName2WebFragNameMap);
     }
 
     /* ----

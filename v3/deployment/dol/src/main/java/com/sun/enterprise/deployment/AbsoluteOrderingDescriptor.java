@@ -77,6 +77,10 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
         return Collections.unmodifiableList(absOrder);
     }
 
+    /**
+     * This method return the WebFragmentDescriptor in absolute order.
+     * Note that the number of element return may be less than that of the original list.
+     */
     public List<WebFragmentDescriptor> order(List<WebFragmentDescriptor> wfs) {
         List<WebFragmentDescriptor> wfList = new ArrayList<WebFragmentDescriptor>();
         if (wfs != null && wfs.size() > 0) {

@@ -367,6 +367,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
                 wfDesc.setJarName(lib.substring(lib.lastIndexOf('/') + 1));    
                 wfList.add(wfDesc);
 
+                descriptor.putJarNameWebFragmentNamePair(wfDesc.getJarName(), wfDesc.getName());
+
             }
 
             if (descriptor.getAbsoluteOrderingDescriptor() != null) {
