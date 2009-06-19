@@ -25,7 +25,8 @@
   </servers>
  <configs>
    <config name="%%%CONFIG_MODEL_NAME%%%">
-     <http-service> 
+      <http-service>
+        <access-log rotation-interval-in-minutes="15" rotation-suffix="yyyy-MM-dd"/>
         <virtual-server id="server" network-listeners="http-listener-1,http-listener-2"/>
         <virtual-server id="__asadmin" network-listeners="admin-listener"/>
       </http-service>
