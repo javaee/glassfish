@@ -39,6 +39,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.management.MBeanServer;
 import javax.management.Notification;
+import javax.management.ObjectName;
 import javax.management.NotificationListener;
 import javax.management.ListenerNotFoundException;
 
@@ -311,7 +312,20 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             
             final JMXConnectorServer server = starter.startRMIConnector("jmxrmi");
             final JMXServiceURL url = server.getAddress();
+           
+            Util.getLogger().info( "Started JMXConnector, JMXService URL = " + url );
             
+            try
+            {
+                ObjectName objectName =  new ObjectName( "jmxremote:type=jmx-connector,name=jmxrmi" );
+                objectName = mMBeanServer.registerMBean( server, objectName).getObjectName();
+            }
+            catch ( final Exception e )
+            {
+                // it's not critical to have it registered as an MBean
+                e.printStackTrace();
+            }
+
             // test that it works
             /*
             final JMXConnector conn = JMXConnectorFactory.connect(url);
@@ -319,7 +333,6 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             mbsc.getDomains();
             */
             
-            Util.getLogger().info( "Started JMXConnector, JMXService URL = " + url );
             return server;
         }
         
