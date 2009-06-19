@@ -60,7 +60,7 @@ import javax.validation.constraints.NotNull;
 /* @XmlType(name = "", propOrder = {
     "providerConfig"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MessageSecurityConfig", singleton=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MessageSecurityConfig")
 @Configured
 public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
 
@@ -74,7 +74,7 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(key=true)
     @NotNull
     public String getAuthLayer();
 
