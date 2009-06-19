@@ -103,6 +103,9 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
             cloader.setResources(r);
             cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
+            if (context.getScratchDir("jsp") != null) {
+                cloader.setWorkDir(context.getScratchDir("jsp"));
+            }
 
             if (context.getArchiveHandler().getClass(
                 ).getAnnotation(Service.class).name().equals("ear")) {
