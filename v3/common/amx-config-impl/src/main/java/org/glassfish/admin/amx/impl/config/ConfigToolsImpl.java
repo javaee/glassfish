@@ -51,7 +51,7 @@ public class ConfigToolsImpl extends AMXImplBase {
         return null;
     }
     
-    private static SystemProperty findProperty( final List<SystemProperty> props, final String name )
+    private static SystemProperty findSystemProperty( final List<SystemProperty> props, final String name )
     {
         for( final SystemProperty prop : props )
         {
@@ -156,7 +156,7 @@ public class ConfigToolsImpl extends AMXImplBase {
                 
                 // Better to modify the existing property, but how to join the transaction?
                 // Remove conflicting Property first
-                SystemProperty prop = findProperty( props, name );
+                SystemProperty prop = findSystemProperty( props, name );
                 if ( prop != null )
                 {
                     props.remove(prop);
