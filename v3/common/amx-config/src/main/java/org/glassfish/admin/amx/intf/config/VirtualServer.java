@@ -72,4 +72,20 @@ public interface VirtualServer
     Get the HTTPAccessLog MBean.
      */
     public HTTPAccessLog getHTTPAccessLog();
+    
+    /** @since GlassFish V3 */
+    public String getSsoEnabled();
+    public void setSsoEnabled(String value);
+    
+    /** @since GlassFish V3 */
+    public String getAccessLoggingEnabled();
+    public void setAccessLoggingEnabled(String value);
+    
+    /** @since GlassFish V3 */
+    public String getAccessLog();
+    public void setAccessLog(String value);
+    
+    /** @since GlassFish V3 */
+    public String getNetworkListeners();
+    public void setNetworkListeners(String value);
 }
