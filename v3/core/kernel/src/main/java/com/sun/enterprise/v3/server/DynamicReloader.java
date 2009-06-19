@@ -57,6 +57,7 @@ import org.jvnet.hk2.component.Habitat;
 public class DynamicReloader implements Runnable {
 
     private static final String RELOAD_FILE_NAME = ".reload";
+    private static final String IS_LIFECYCLE = "isLifecycle";
     
     private AtomicBoolean inProgress;
     
@@ -89,6 +90,11 @@ public class DynamicReloader implements Runnable {
          for (Named m : applications.getModules()) {
              if (m instanceof Application) {
                  Application app = (Application) m;
+                 if (Boolean.valueOf(app.getDeployProperties().getProperty
+                     (IS_LIFECYCLE))) {
+                     // skip lifecycle modules
+                     continue;
+                 }
                  AppReloadInfo info = new AppReloadInfo(app);
                  appReloadInfo.put(app.getName(), info);
                  logger.fine("[Reloader] Monitoring " + app.getName() + " at " + app.getLocation());
@@ -137,7 +143,11 @@ public class DynamicReloader implements Runnable {
         for (Named m : applications.getModules()) {
             if (m instanceof Application) {
                 Application app = (Application) m;
-                
+                if (Boolean.valueOf(app.getDeployProperties().getProperty
+                    (IS_LIFECYCLE))) {
+                    // skip lifecycle modules
+                    continue;
+                }
                 AppReloadInfo reloadInfo = findOrCreateAppReloadInfo(app);
                 if (reloadInfo.needsReload()) {
                     logger.fine("[Reloader] Selecting app " + reloadInfo.getApplication().getName() + " to reload");

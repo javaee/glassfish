@@ -87,7 +87,7 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
     public String target = "server";
 
     @Param(optional=true)
-    public Properties properties = null;
+    public Properties property = null;
 
     @Inject
     Deployment deployment;
@@ -109,14 +109,15 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
 
         DeployCommandParameters commandParams = new DeployCommandParameters();
         commandParams.name = name;
+        commandParams.enabled = enabled;
 
         // create a dummy context to hold params and props
         ExtendedDeploymentContext deploymentContext = new DeploymentContextImpl(report, logger, null, commandParams, null);
 
         Properties appProps = deploymentContext.getAppProps();
 
-        if (properties!=null) {
-            appProps.putAll(properties);
+        if (property!=null) {
+            appProps.putAll(property);
         }
 
         // set to default "user", deployers can override it

@@ -743,18 +743,31 @@ public class ApplicationLifecycle implements Deployment {
                     app.setContextRoot(appProps.getProperty(
                         ServerTags.CONTEXT_ROOT));
                 }
-                app.setLocation(appProps.getProperty(
-                    ServerTags.LOCATION));
-                app.setObjectType(appProps.getProperty(
-                    ServerTags.OBJECT_TYPE));
-                app.setDirectoryDeployed(appProps.getProperty(
-                    ServerTags.DIRECTORY_DEPLOYED));
+                if (appProps.getProperty(ServerTags.LOCATION) != null) {
+                    app.setLocation(appProps.getProperty(
+                        ServerTags.LOCATION));
+                    // always set the enable attribute of application to true
+                    app.setEnabled(String.valueOf(true));
+                } else {
+                    // this is not a regular javaee module 
+                    app.setEnabled(deployParams.enabled.toString());
+                }
+                if (appProps.getProperty(ServerTags.OBJECT_TYPE) != null) {
+                    app.setObjectType(appProps.getProperty(
+                        ServerTags.OBJECT_TYPE));
+                }
+                if (appProps.getProperty(ServerTags.DIRECTORY_DEPLOYED) 
+                    != null) {
+                    app.setDirectoryDeployed(appProps.getProperty(
+                        ServerTags.DIRECTORY_DEPLOYED));
+                }
 
-                // always set the enable attribute of application to true
-                app.setEnabled(String.valueOf(true));
 
                 apps.getModules().add(app);
-                applicationInfo.save(app);
+             
+                if (applicationInfo != null) {
+                    applicationInfo.save(app);
+                }
 
                 // property element
                 // trim the properties that have been written as attributes

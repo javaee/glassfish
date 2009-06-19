@@ -231,6 +231,8 @@ public class AppServerStartup implements ModuleStartup {
             }
         }
 
+        events.send(new Event(EventTypes.SERVER_STARTUP), false);
+
         // finally let's calculate our starting times
 
 
@@ -274,7 +276,7 @@ public class AppServerStartup implements ModuleStartup {
             }
         }
 
-        events.send(new Event(EventTypes.SERVER_READY));
+        events.send(new Event(EventTypes.SERVER_READY), false);
 
     }
 

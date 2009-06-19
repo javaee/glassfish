@@ -25,7 +25,10 @@ package com.sun.enterprise.v3.server;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -36,6 +39,7 @@ import org.jvnet.hk2.component.Singleton;
 import javax.naming.InitialContext;
 import java.io.File;
 import java.util.Map;
+import java.util.List;
 
 /**
  * This is the Server Context object.
@@ -54,6 +58,9 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    ClassLoaderHierarchy clh;
 
     File instanceRoot;
     String instanceName = "server"; // weird
@@ -98,19 +105,25 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public InitialContext getInitialContext() {
-        return null;
+        GlassfishNamingManager gfNamingManager = 
+            habitat.getComponent(GlassfishNamingManager.class);
+        return (InitialContext)gfNamingManager.getInitialContext();
     }
 
     public ClassLoader getCommonClassLoader() {
-        return null;
+        return clh.getCommonClassLoader();
     }
 
     public ClassLoader getSharedClassLoader() {
-        return null;
+        return clh.getConnectorClassLoader(null);
     }
 
     public ClassLoader getLifecycleParentClassLoader() {
-        return null;
+        return clh.getConnectorClassLoader(null);
+    }
+
+    public InvocationManager getInvocationManager() {
+        return habitat.getComponent(InvocationManager.class);
     }
 
     public String getDefaultDomainName() {

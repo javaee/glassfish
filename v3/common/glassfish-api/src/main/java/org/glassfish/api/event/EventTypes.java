@@ -53,10 +53,12 @@ public final class EventTypes<T> {
 
     
     // stock events.
+    public static final String SERVER_STARTUP_NAME = "server_startup";
     public static final String SERVER_READY_NAME = "server_ready";
     public static final String PREPARE_SHUTDOWN_NAME = "prepare_shutdown";
     public static final String SERVER_SHUTDOWN_NAME = "server_shutdown";
 
+    public static final EventTypes SERVER_STARTUP = create(SERVER_STARTUP_NAME);
     public static final EventTypes SERVER_READY = create(SERVER_READY_NAME);
     public static final EventTypes SERVER_SHUTDOWN = create(SERVER_SHUTDOWN_NAME);
     public static final EventTypes PREPARE_SHUTDOWN = create(PREPARE_SHUTDOWN_NAME);

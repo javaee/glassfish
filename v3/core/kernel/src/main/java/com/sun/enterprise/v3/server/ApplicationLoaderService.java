@@ -112,6 +112,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     Startup resourceManager;
 
     private static final String IS_COMPOSITE = "isComposite";
+    private static final String IS_LIFECYCLE = "isLifecycle";
 
     /**
      * Retuns the lifecyle of the service.
@@ -241,6 +242,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             for (Engine engine : module.getEngines()) {
                 snifferTypes.add(engine.getSniffer());
             }
+        }
+
+        // lifecycle modules are loaded separately
+        if (Boolean.valueOf(app.getDeployProperties().getProperty
+            (IS_LIFECYCLE))) {
+            return;
         }
 
         if (snifferTypes.isEmpty()) {
