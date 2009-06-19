@@ -119,8 +119,8 @@
              </sun:property>
              <sun:property id="RemPolicyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbSettings.remSelectionLabel}" helpText="$resource{i18n_ejb.ejbSettings.remSelectionHelp}">
                  <sun:dropDown id="RemPolicy"
-                    labels={"","$resource{i18n_ejb.ejbSettings.removalSelection.nru}", "$resource{i18n_ejb.ejbSettings.removalSelection.fifo}", "$resource{i18n_ejb.ejbSettings.removalSelection.lru}" }
-                    values={"", "nru", "fifo", "lru" }
+                    labels={"$resource{i18n_ejb.ejbSettings.removalSelection.nru}", "$resource{i18n_ejb.ejbSettings.removalSelection.fifo}", "$resource{i18n_ejb.ejbSettings.removalSelection.lru}" }
+                    values={"nru", "fifo", "lru" }
                     selected="#{pageSession.valueMap['VictimSelectionPolicy']}"  />
              </sun:property>
              <sun:property id="CacheIdleProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbSettings.cacheIdleLabel}" helpText="$resource{i18n_ejb.ejbSettings.cacheIdleHelp}">
