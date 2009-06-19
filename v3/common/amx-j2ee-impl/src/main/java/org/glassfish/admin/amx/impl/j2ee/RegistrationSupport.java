@@ -100,7 +100,8 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 
 /**
-Handles registrations of resources and applications associated with a J2EEServer.
+    Handles registrations of resources and applications associated with a J2EEServer.
+    There must be one and only one of these instances per J2EEServer.
  */
 final class RegistrationSupport
 {
@@ -109,8 +110,11 @@ final class RegistrationSupport
         System.out.println("" + o);
     }
 
-    /** Maps the ObjectName of a config MBean to that of a JSR 77 MBean */
-    private static final Map<ObjectName, ObjectName> mConfigTo77 = new HashMap<ObjectName, ObjectName>();
+    /**
+        Associates the ObjectName of a ResourceRef or ApplicationRef with its corresponding
+        top-level JSR 77 MBean. Children of those JSR 77 MBeans come and go with their parent.
+     */
+    private final Map<ObjectName, ObjectName> mConfigRefTo77 = new HashMap<ObjectName, ObjectName>();
 
     private final J2EEServer mJ2EEServer;
 
@@ -118,19 +122,32 @@ final class RegistrationSupport
 
     private final ProxyFactory mProxyFactory;
 
-    private final ResourceRefListener mResourceRefListener;
+    private final RefListener mResourceRefListener;
 
+    /** The Server config for this J2EEServer */
+    private final Server mServerConfig;
+    
+    /** type of any resource ref */
+    private final String mResourceRefType;
+    
+    /** type of any application ref */
+    private final String mApplicationRefType;
+    
     public RegistrationSupport(final J2EEServer server)
     {
         mJ2EEServer = server;
         mMBeanServer = (MBeanServer) server.extra().mbeanServerConnection();
         mProxyFactory = server.extra().proxyFactory();
 
+        mResourceRefType    = Util.deduceType(ResourceRef.class);
+        mApplicationRefType = Util.deduceType(ApplicationRef.class);
+        mServerConfig = getDomainConfig().getServers().getServer().get( mJ2EEServer.getName() );
+
         final ObjectName test = mJ2EEServer.objectName();
 
-        mResourceRefListener = new ResourceRefListener(mMBeanServer, mJ2EEServer.objectName(), getServerConfig());
+        mResourceRefListener = new RefListener();
 
-        registerApplications(getServerConfig());
+        registerApplications();
     }
 
     protected void cleanup()
@@ -163,10 +180,6 @@ final class RegistrationSupport
         return AMXConfigUtil.getDomainConfig(mJ2EEServer);
     }
 
-    private Server getServerConfig()
-    {
-        return getDomainConfig().getServers().getServer().get( mJ2EEServer.getName() );
-    }
 
     private ObjectName createAppMBeans(final Application application, final Metadata meta)
     {
@@ -545,38 +558,54 @@ final class RegistrationSupport
         return modLocation;
     }
 
-    protected void registerApplications(final Server serverConfig)
+    protected void registerApplications()
+    {
+        final Map<String, ApplicationRef> appRefConfigs = mServerConfig.getApplicationRef();
+        for (final ApplicationRef ref : appRefConfigs.values())
+        {
+            final ObjectName objectName = processApplicationRef(ref);
+        }
+    }
+    
+   /**
+        Examine the MBean to see if it is a ResourceRef that should be manifested under this server,
+        and if so, register a JSR 77 MBean for it.
+     */
+    public ObjectName processApplicationRef(final ApplicationRef ref)
     {
         // find all applications
-        final Map<String, ApplicationRef> appRefConfigs = serverConfig.getApplicationRef();
         final ApplicationRegistry appRegistry = J2EEInjectedValues.getInstance().getApplicationRegistry();
 
         final MetadataImpl meta = new MetadataImpl();
-        for (final ApplicationRef ref : appRefConfigs.values())
+        meta.setCorrespondingRef(ref.objectName());
+        
+        final String appName = ref.getName();
+        
+        final ApplicationInfo appInfo = appRegistry.get(appName);
+        if (appInfo == null)
         {
-            meta.setCorrespondingRef(ref.objectName());
-            
-            final String appName = ref.getName();
-            
-            final ApplicationInfo appInfo = appRegistry.get(appName);
-            if (appInfo == null)
-            {
-                ImplUtil.getLogger().info("Unable to get ApplicationInfo for application: " + appName);
-                continue;
-            }
-            final Application app = appInfo.getMetaData(Application.class);
-            
-            final org.glassfish.admin.amx.intf.config.Application appConfig = AMXConfigUtil.getApplicationByName(ref, appName);
-            if ( appConfig == null )
-            {
-                ImplUtil.getLogger().warning("Unable to get Application config for: " + appName);
-                continue;
-            }
-            
-            meta.setConfig( appConfig.objectName() );
-            final ObjectName objectName = createAppMBeans(app, meta);
+            ImplUtil.getLogger().info("Unable to get ApplicationInfo for application: " + appName);
+            return null;
         }
+        final Application app = appInfo.getMetaData(Application.class);
+        
+        final org.glassfish.admin.amx.intf.config.Application appConfig = AMXConfigUtil.getApplicationByName(ref, appName);
+        if ( appConfig == null )
+        {
+            ImplUtil.getLogger().warning("Unable to get Application config for: " + appName);
+            return null;
+        }
+        
+        meta.setConfig( appConfig.objectName() );
+        final ObjectName mbean77 = createAppMBeans(app, meta);
+        synchronized (mConfigRefTo77)
+        {
+            mConfigRefTo77.put(ref.objectName(), mbean77);
+        }
+
+        return mbean77;
     }
+
 
     protected <I extends J2EEManagedObject, C extends J2EEManagedObjectImplBase> ObjectName registerJ2EEChild(
             final ObjectName parent,
@@ -604,6 +633,63 @@ final class RegistrationSupport
         return objectName;
     }
 
+      
+    /**
+        Examine the MBean to see if it is a ResourceRef that should be manifested under this server,
+        and if so, register a JSR 77 MBean for it.
+     */
+    public ObjectName processResourceRef(final ResourceRef ref)
+    {
+        if (!mResourceRefType.equals(ref.type()))
+        {
+            throw new IllegalArgumentException("Not a resource-ref: " + ref.objectName());
+        }
+
+        if ( ! mServerConfig.objectName().equals(ref.parent().objectName()))
+        {
+            cdebug("ResourceRef is not a child of server " + mServerConfig.objectName());
+            return null;
+        }
+
+        // find the referenced resource
+        final AMXConfigProxy amxConfig = AMXConfigUtil.getResourceByName(getDomainConfig().getResources(), ref.getName());
+        if (amxConfig == null)
+        {
+            throw new IllegalArgumentException("ResourceRef refers to non-existent resource: " + ref);
+        }
+
+        final String configType = amxConfig.type();
+        final Class<J2EEManagedObjectImplBase> implClass = RESOURCE_TYPES.get(configType);
+        if (implClass == null)
+        {
+            ImplUtil.getLogger().info("Unrecognized resource type for JSR 77 purposes: " + amxConfig.objectName());
+            return null;
+        }
+        final Class<J2EEManagedObject> intf = (Class) ClassUtil.getFieldValue(implClass, "INTF");
+        final String j2eeType = Util.deduceType(intf);
+
+        ObjectName mbean77 = null;
+        try
+        {
+            final MetadataImpl meta = new MetadataImpl();
+            meta.setCorrespondingRef(ref.objectName());
+            meta.setConfig(amxConfig.objectName());
+            
+            mbean77 = registerJ2EEChild(mJ2EEServer.objectName(), meta, intf, implClass, amxConfig.getName());
+            synchronized (mConfigRefTo77)
+            {
+                mConfigRefTo77.put(ref.objectName(), mbean77);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    //cdebug( "Registered " + child + " for  config resource " + amx.objectName() );
+        return mbean77;
+    }
+
+
     /**
     Listen for registration/unregistration of {@link ResourceRef},
     and associate them with JSR 77 MBeans for this J2EEServer.
@@ -611,79 +697,12 @@ final class RegistrationSupport
     world by tracking registration and unregistration of AMX config MBeans of
     type ResourceRef.
      */
-    private final class ResourceRefListener implements NotificationListener
+    private final class RefListener implements NotificationListener
     {
-        private final MBeanServer mServer;
-
-        private final ObjectName mJ2EEServer;
-
-        /** the parent MBeans for config resources MBeans */
-        private final Server mServerConfig;
-
-        private final String mResourceRefType;
-
-        public ResourceRefListener(final MBeanServer server, final ObjectName j2eeServer, final Server serverConfig)
+        public RefListener()
         {
-            mServer = server;
-            mJ2EEServer = j2eeServer;
-            mServerConfig = serverConfig;
-
-            mResourceRefType = Util.deduceType(ResourceRef.class);
         }
-
-        /**
-        Consider the MBean to see if it is a ResourceRef that should be manifested under this server.
-         */
-        public void register(final ResourceRef ref)
-        {
-            if (!mResourceRefType.equals(ref.type()))
-            {
-                throw new IllegalArgumentException("Not a resource-ref: " + ref.objectName());
-            }
-
-            if (!mServerConfig.objectName().equals(ref.parent().objectName()))
-            {
-                cdebug("ResourceRef is not a child of server " + mServerConfig.objectName());
-                return;
-            }
-
-            // find the referenced resource
-            final AMXConfigProxy amxConfig = AMXConfigUtil.getResourceByName(getDomainConfig().getResources(), ref.getName());
-            if (amxConfig == null)
-            {
-                throw new IllegalArgumentException("ResourceRef refers to non-existent resource: " + ref);
-            }
-
-            final String configType = amxConfig.type();
-            final Class<J2EEManagedObjectImplBase> implClass = RESOURCE_TYPES.get(configType);
-            if (implClass == null)
-            {
-                ImplUtil.getLogger().info("Unrecognized resource type for JSR 77 purposes: " + amxConfig.objectName());
-                return;
-            }
-            final Class<J2EEManagedObject> intf = (Class) ClassUtil.getFieldValue(implClass, "INTF");
-            final String j2eeType = Util.deduceType(intf);
-
-            try
-            {
-                final MetadataImpl meta = new MetadataImpl();
-                meta.setCorrespondingRef(ref.objectName());
-                meta.setConfig(amxConfig.objectName());
-                
-                final ObjectName mbean77 = registerJ2EEChild(mJ2EEServer, meta, intf, implClass, amxConfig.getName());
-                synchronized (mConfigTo77) // prevent race condition where MBean is unregistered before we can put it into our Map
-                {
-                    mConfigTo77.put(ref.objectName(), mbean77);
-                }
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-
-        //cdebug( "Registered " + child + " for  config resource " + amx.objectName() );
-        }
-
+      
         public void handleNotification(final Notification notifIn, final Object handback)
         {
             if (!(notifIn instanceof MBeanServerNotification))
@@ -693,24 +712,37 @@ final class RegistrationSupport
 
             final MBeanServerNotification notif = (MBeanServerNotification) notifIn;
             final ObjectName objectName = notif.getMBeanName();
-            if (!mJ2EEServer.getDomain().equals(objectName.getDomain()))
+            if ( ! mJ2EEServer.objectName().getDomain().equals(objectName.getDomain()))
             {
                 return;
             }
+            
+            final String type = Util.getTypeProp(objectName);
 
             if (notif.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION))
             {
-                final ResourceRef ref = mProxyFactory.getProxy(objectName, ResourceRef.class);
-                register(ref);
+                if ( type.equals( mResourceRefType ) )
+                {
+                    cdebug( "NEW ResourceRef MBEAN REGISTERED: " + objectName);
+                    final ResourceRef ref = mProxyFactory.getProxy(objectName, ResourceRef.class);
+                    processResourceRef(ref);
+                }
+                else if ( type.equals( mApplicationRefType ) )
+                {
+                    cdebug( "NEW ApplicationRef MBEAN REGISTERED: " + objectName);
+                    final ApplicationRef ref = mProxyFactory.getProxy(objectName, ApplicationRef.class);
+                    processApplicationRef(ref);
+                }
             }
             else if (notif.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION))
             {
                 // determine if it's a config for which a JSR 77  MBean is registered
-                synchronized (mConfigTo77)
+                synchronized (mConfigRefTo77)
                 {
-                    final ObjectName mbean77 = mConfigTo77.remove(objectName);
+                    final ObjectName mbean77 = mConfigRefTo77.remove(objectName);
                     if (mbean77 != null)
                     {
+                        cdebug( "UNREGISTERING MBEAN FOR REF: " + objectName);
                         try
                         {
                             mMBeanServer.unregisterMBean(mbean77);
@@ -726,21 +758,21 @@ final class RegistrationSupport
 
         public void startListening()
         {
-            // important: register a listener *first* so that we don't miss anything 
+            // important: processResourceRef a listener *first* so that we don't miss anything
             try
             {
-                mServer.addNotificationListener(JMXUtil.getMBeanServerDelegateObjectName(), this, null, null);
+                mMBeanServer.addNotificationListener(JMXUtil.getMBeanServerDelegateObjectName(), this, null, null);
             }
             catch (final JMException e)
             {
                 throw new RuntimeException(e);
             }
 
-            // register all existing ResourceRefs
+            // register all existing 
             final Map<String, ResourceRef> resourceRefs = mServerConfig.getResourceRef();
             for (final ResourceRef ref : resourceRefs.values())
             {
-                register(ref);
+                processResourceRef(ref);
             }
         }
 
@@ -748,7 +780,7 @@ final class RegistrationSupport
         {
             try
             {
-                mServer.removeNotificationListener(JMXUtil.getMBeanServerDelegateObjectName(), this);
+                mMBeanServer.removeNotificationListener(JMXUtil.getMBeanServerDelegateObjectName(), this);
             }
             catch (final JMException e)
             {
