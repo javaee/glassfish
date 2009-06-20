@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.j2ee;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
-@AMXMBeanMetadata(type=J2EETypes.JCA_MANAGED_CONNECTION_FACTORY, leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JCA_MANAGED_CONNECTION_FACTORY, leaf=true, singleton=true)
 public interface JCAManagedConnectionFactory extends J2EEManagedObject
 {
 

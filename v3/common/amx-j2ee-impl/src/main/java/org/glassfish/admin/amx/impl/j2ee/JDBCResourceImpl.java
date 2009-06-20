@@ -38,10 +38,11 @@ package org.glassfish.admin.amx.impl.j2ee;
 import org.glassfish.admin.amx.j2ee.JDBCResource;
 
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
+import org.glassfish.admin.amx.j2ee.JDBCDataSource;
 
-public final class JDBCResourceImpl
-        extends J2EEResourceImplBase {
+public final class JDBCResourceImpl extends J2EEResourceImplBase {
     public static final Class<JDBCResource> INTF = JDBCResource.class;
 
     public JDBCResourceImpl(
@@ -51,5 +52,16 @@ public final class JDBCResourceImpl
 
     public String[] getjdbcDataSources() {
         return getChildrenAsStrings( J2EETypes.JDBC_DATA_SOURCE );
+    }
+    
+    @Override
+    protected void registerChildren()
+    {
+        super.registerChildren();
+        
+        // register a JDBCDataSource as per JSR 77 spec requirements.  We have only one.
+        final JDBCDataSourceImpl dataSourceImpl = new JDBCDataSourceImpl( getObjectName(), defaultChildMetadata());
+        ObjectName dataSourceON = new ObjectNameBuilder( getMBeanServer(), getObjectName()).buildChildObjectName(J2EETypes.JDBC_DATA_SOURCE, getName() );
+        dataSourceON = registerChild( dataSourceImpl, dataSourceON );
     }
 }

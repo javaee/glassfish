@@ -37,7 +37,7 @@ package org.glassfish.admin.amx.j2ee;
 
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-@AMXMBeanMetadata(type=J2EETypes.JDBC_DRIVER, leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JDBC_DRIVER, leaf=true, singleton=true)
 public interface JDBCDriver extends J2EEManagedObject
 {
 }

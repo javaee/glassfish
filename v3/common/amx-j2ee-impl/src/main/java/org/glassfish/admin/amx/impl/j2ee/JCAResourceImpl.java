@@ -41,12 +41,11 @@ import javax.management.ObjectName;
 
 /**
  */
-public final class JCAResourceImpl
-        extends J2EEResourceImplBase {
+public final class JCAResourceImpl extends J2EEResourceImplBase {
     public static final Class<JCAResource> INTF = JCAResource.class;
 
-    public JCAResourceImpl(
-            final ObjectName parentObjectName, final Metadata meta) {
+    public JCAResourceImpl( final ObjectName parentObjectName, final Metadata meta)
+    {
         super(parentObjectName, meta, INTF);
     }
 }

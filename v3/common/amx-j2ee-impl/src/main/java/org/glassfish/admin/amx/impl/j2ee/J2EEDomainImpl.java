@@ -86,7 +86,7 @@ public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
         final String serverName = "server";
         
         final MetadataImpl meta = defaultChildMetadata();
-        meta.setConfig( getDomainConfig().getServers().getServer().get(serverName).objectName() );
+        meta.setCorrespondingConfig( getDomainConfig().getServers().getServer().get(serverName).objectName() );
         
         final DASJ2EEServerImpl impl = new DASJ2EEServerImpl( getObjectName(), meta);
         ObjectName serverObjectName = getObjectNames().buildChildObjectName( J2EETypes.J2EE_SERVER, serverName );

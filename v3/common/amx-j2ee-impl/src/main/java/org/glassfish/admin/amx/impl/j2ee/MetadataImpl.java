@@ -68,15 +68,21 @@ public final class MetadataImpl implements Metadata {
     {
         mData.put( key, value);
     }
-
-    public void setConfig( final ObjectName config)
+    
+    public void remove( final String key)
     {
-        add( CONFIG, config);
+        mData.remove( key );
     }
     
-    public ObjectName getConfig()
+
+    public void setCorrespondingConfig( final ObjectName config)
     {
-        return getMetadata( CONFIG, ObjectName.class);
+        add( CORRESPONDING_CONFIG, config);
+    }
+    
+    public ObjectName getCorrespondingConfig()
+    {
+        return getMetadata( CORRESPONDING_CONFIG, ObjectName.class);
     }
 
     public ObjectName getCorrespondingRef()

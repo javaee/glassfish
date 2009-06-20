@@ -47,13 +47,13 @@ public interface Metadata {
 
     public void add( final String key, final Object value);
 
-    public ObjectName getConfig();
+    public ObjectName getCorrespondingConfig();
     public ObjectName getCorrespondingRef();
 
     public Map<String,Object> getAll();
 
     /** ObjectName of corresponding Config MBean, if any */
-    public static final String CONFIG = "Config";
+    public static final String CORRESPONDING_CONFIG = "Config";
 
     /** ObjectName of corresponding Config reference MBean, if any */
     public static final String CORRESPONDING_REF = "CorrespondingRef";

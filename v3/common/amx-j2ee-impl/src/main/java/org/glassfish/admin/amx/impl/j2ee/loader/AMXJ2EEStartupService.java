@@ -124,7 +124,7 @@ public final class AMXJ2EEStartupService
         final String domainName = Util.getNameProp(domainRoot);
 
         final Metadata metadata = new MetadataImpl();
-        metadata.add( Metadata.CONFIG, domainRootProxy.child(Domain.class).objectName());
+        metadata.add( Metadata.CORRESPONDING_CONFIG, domainRootProxy.child(Domain.class).objectName());
         
         final J2EEDomainImpl impl = new J2EEDomainImpl(domainRoot, metadata);
         ObjectName objectName = objectNames.buildChildObjectName( J2EEDomain.class );

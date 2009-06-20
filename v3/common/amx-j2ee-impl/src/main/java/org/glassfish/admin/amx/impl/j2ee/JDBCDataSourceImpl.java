@@ -39,12 +39,32 @@ import org.glassfish.admin.amx.j2ee.JDBCDataSource;
 
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.j2ee.J2EEManagedObject;
+import org.glassfish.admin.amx.j2ee.J2EETypes;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
-public final class JDBCDataSourceImpl
-        extends J2EEManagedObjectImplBase {
+public final class JDBCDataSourceImpl extends J2EEManagedObjectImplBase {
     public static final Class<? extends J2EEManagedObject> INTF = JDBCDataSource.class;
 
     public JDBCDataSourceImpl(final ObjectName parentObjectName, final Metadata meta) {
         super(parentObjectName, meta, INTF);
     }
+    
+    public String getjdbcDriver()
+    {
+        final ObjectName objectName = child( J2EETypes.JDBC_DRIVER );
+        
+        return objectName == null ? null : objectName.toString();
+    }
+    
+    @Override
+    protected void registerChildren()
+    {
+        super.registerChildren();
+        
+        // register a JDBCDriver as per JSR 77 spec requirements.  We have only one.
+        final JDBCDriverImpl driverImpl = new JDBCDriverImpl( getObjectName(), defaultChildMetadata() );
+        ObjectName driverON = new ObjectNameBuilder( getMBeanServer(), getObjectName()).buildChildObjectName(J2EETypes.JDBC_DRIVER, getName());
+        driverON = registerChild( driverImpl, driverON );
+    }
+
 }

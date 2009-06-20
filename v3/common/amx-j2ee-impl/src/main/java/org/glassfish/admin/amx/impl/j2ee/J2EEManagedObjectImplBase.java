@@ -103,7 +103,7 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
     
     public ObjectName getCorrespondingConfig()
     {
-        return metadata().getConfig();
+        return metadata().getCorrespondingConfig();
     }
 
     protected Domain

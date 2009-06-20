@@ -36,9 +36,12 @@
 package org.glassfish.admin.amx.j2ee;
 
 import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 
-
-@AMXMBeanMetadata(type=J2EETypes.JDBC_DATA_SOURCE, leaf=true)
+@AMXMBeanMetadata(type=J2EETypes.JDBC_DATA_SOURCE)
 public interface JDBCDataSource extends J2EEManagedObject
 {
+    /** ObjectName */
+    @ManagedAttribute
+    public String getjdbcDriver();
 }

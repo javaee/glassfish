@@ -46,6 +46,26 @@ public final class ResourceAdapterImpl extends J2EEManagedObjectImplBase {
     public ResourceAdapterImpl(final ObjectName parentObjectName, final Metadata meta) {
         super(parentObjectName, meta, INTF);
     }
+    
+    /*
+    public String getjcaResource()
+    {
+        final ObjectName objectName = child( J2EETypes.JCA_RESOURCE );
+        // required, but play defense anyway
+        return objectName == null ? null : objectName.toString();
+    }
+    
+    @Override
+    protected void registerChildren()
+    {
+        super.registerChildren();
+        
+        // register a JDBCDataSource as per JSR 77 spec requirements.  We have only one.
+        final JCAResourceImpl impl = new JCAResourceImpl( getObjectName(), defaultChildMetadata());
+        ObjectName dataSourceON = new ObjectNameBuilder( getMBeanServer(), getObjectName()).buildChildObjectName(J2EETypes.JCA_RESOURCE, getName() );
+        dataSourceON = registerChild( dataSourceImpl, dataSourceON );
+    }
+    */
 }
 
 

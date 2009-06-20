@@ -91,10 +91,8 @@ public interface Application
     @see #getAvailabilityEnabled
      */
     public void setAvailabilityEnabled(String enabled);
-
-    public Map<String, WebServiceEndpoint> getWebServiceEndpoint();
-
-    public Map<String, Module> getModule();
+    
+    public Map<String,Module> getModule();
 }
 
 

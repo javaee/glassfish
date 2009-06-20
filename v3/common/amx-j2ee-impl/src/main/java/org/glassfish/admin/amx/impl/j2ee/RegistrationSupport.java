@@ -181,9 +181,12 @@ final class RegistrationSupport
     }
 
 
-    private ObjectName createAppMBeans(final Application application, final Metadata meta)
+    private ObjectName createAppMBeans(
+        org.glassfish.admin.amx.intf.config.Application appConfig,
+        final Application application,
+        final MetadataImpl meta)
     {
-        final String appLocation = "somewhere";
+        final String appLocation = appConfig.getLocation();
 
         final boolean isStandalone = application.isVirtual();
         ObjectName parentMBean = null;
@@ -200,7 +203,7 @@ final class RegistrationSupport
 
         for (final EjbBundleDescriptor desc : application.getEjbBundleDescriptors())
         {
-            final ObjectName objectName = registerEjbModuleAndItsComponents(parentMBean, desc, appLocation);
+            final ObjectName objectName = registerEjbModuleAndItsComponents(parentMBean, meta, appConfig, desc);
             if (isStandalone)
             {
                 assert (top != null);
@@ -210,7 +213,7 @@ final class RegistrationSupport
 
         for (final WebBundleDescriptor desc : application.getWebBundleDescriptors())
         {
-            final ObjectName objectName = registerWebModuleAndItsComponents(parentMBean, desc, appLocation);
+            final ObjectName objectName = registerWebModuleAndItsComponents(parentMBean, meta, appConfig, desc);
             if (isStandalone)
             {
                 assert (top != null);
@@ -220,51 +223,60 @@ final class RegistrationSupport
 
         for (final ConnectorDescriptor desc : application.getRarDescriptors())
         {
-            top = registerResourceAdapterModuleAndItsComponents(parentMBean, desc, appLocation);
+            top = registerResourceAdapterModuleAndItsComponents(parentMBean, meta, appConfig, desc, appLocation);
         }
 
         for (final ApplicationClientDescriptor desc : application.getApplicationClientDescriptors())
         {
-            top = registerAppClient(parentMBean, desc, appLocation);
+            top = registerAppClient(parentMBean, meta, appConfig, desc);
         }
 
         ImplUtil.getLogger().info("Registered JSR 77 MBeans for application/module: " + top);
         return top;
     }
+    
+        private org.glassfish.admin.amx.intf.config.Module
+    getModuleConfig( final org.glassfish.admin.amx.intf.config.Application appConfig, final String name)
+    {
+        final Map<String, org.glassfish.admin.amx.intf.config.Module> modules =
+            appConfig.childrenMap(org.glassfish.admin.amx.intf.config.Module.class);
+        
+        if ( modules.get(name) == null )
+        {
+            throw new IllegalArgumentException( "Can't find module named " + name + " in " + appConfig );
+        }
+        
+        return modules.get(name);
+    }
 
     /* Register ejb module and its' children ejbs which is part of an application */
     private ObjectName registerEjbModuleAndItsComponents(
             final ObjectName parentMBean,
-            final EjbBundleDescriptor ejbBundleDescriptor,
-            final String appLocation)
-    {
-        final ObjectName objectName = createEJBModuleMBean(parentMBean, ejbBundleDescriptor, appLocation);
-
-        for (final EjbDescriptor desc : ejbBundleDescriptor.getEjbs())
-        {
-            createEJBMBean(parentMBean, desc);
-        }
-        return objectName;
-    }
-
-    /* Create ejb module mBean */
-    private ObjectName createEJBModuleMBean(
-            final ObjectName parentMBean,
-            final EjbBundleDescriptor ejbBundleDescriptor,
-            final String appLocation)
+            final MetadataImpl meta,
+            final org.glassfish.admin.amx.intf.config.Application appConfig,
+            final EjbBundleDescriptor ejbBundleDescriptor )
     {
         final String xmlDesc = getStringForDDxml(getModuleLocation(ejbBundleDescriptor, "EJBModule"));
         final String moduleName = getModuleName(ejbBundleDescriptor);
         final String applicationName = getApplicationName(ejbBundleDescriptor);
-
-        final Metadata meta = new MetadataImpl();
+        final String appLocation = appConfig.getLocation();
+        
+        final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, moduleName );
+        meta.setCorrespondingConfig(moduleConfig.objectName());
+        
         final ObjectName objectName = registerJ2EEChild(parentMBean, meta, EJBModule.class, EJBModuleImpl.class, moduleName);
 
+        meta.remove( Metadata.CORRESPONDING_CONFIG );   // none for an EJB MBean
+        for (final EjbDescriptor desc : ejbBundleDescriptor.getEjbs())
+        {
+            createEJBMBean(parentMBean, meta, desc);
+        }
         return objectName;
     }
 
     private ObjectName createEJBMBean(
             final ObjectName parentMBean,
+            final MetadataImpl meta,
             final EjbDescriptor ejbDescriptor)
     {
         final String ejbName = ejbDescriptor.getName();
@@ -297,48 +309,49 @@ final class RegistrationSupport
             }
         }
 
-        final Metadata meta = new MetadataImpl();
         return registerJ2EEChild(parentMBean, meta, intf, impl, ejbName);
     }
 
     /* Register web module and its' children which is part of an application */
     private ObjectName registerWebModuleAndItsComponents(
             final ObjectName parentMBean,
-            final WebBundleDescriptor webBundleDescriptor,
-            final String appLocation)
+            final MetadataImpl meta,
+            final org.glassfish.admin.amx.intf.config.Application appConfig,
+            final WebBundleDescriptor webBundleDescriptor )
     {
-        final ObjectName webModuleObjectName = createWebModuleMBean(parentMBean, webBundleDescriptor, appLocation);
+        final String xmlDesc = getStringForDDxml(getModuleLocation(webBundleDescriptor, "WebModule"));
+        final String moduleName = getModuleName(webBundleDescriptor);
+        final String appLocation = appConfig.getLocation();
+        
+        final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, moduleName );
+        meta.setCorrespondingConfig(moduleConfig.objectName());
 
+        final ObjectName webModuleObjectName = registerJ2EEChild(parentMBean, meta, WebModule.class, WebModuleImpl.class, moduleName);
+
+        meta.remove( Metadata.CORRESPONDING_CONFIG );   // none for a Servlet
         for (final WebComponentDescriptor desc : webBundleDescriptor.getWebComponentDescriptors())
         {
             final String servletName = desc.getCanonicalName();
-            final Metadata meta = new MetadataImpl();
+            
             final ObjectName on = registerJ2EEChild(webModuleObjectName, meta, Servlet.class, ServletImpl.class, servletName);
         }
 
         return webModuleObjectName;
     }
 
-    private ObjectName createWebModuleMBean(
-            final ObjectName parentMBean,
-            final WebBundleDescriptor webBundleDescriptor,
-            final String appLocation)
-    {
-        final String xmlDesc = getStringForDDxml(getModuleLocation(webBundleDescriptor, "WebModule"));
-        final String moduleName = getModuleName(webBundleDescriptor);
-
-        final Metadata meta = new MetadataImpl();
-        return registerJ2EEChild(parentMBean, meta, WebModule.class, WebModuleImpl.class, moduleName);
-    }
-
     public ObjectName registerResourceAdapterModuleAndItsComponents(
             final ObjectName parentMBean,
+            final MetadataImpl meta,
+            final org.glassfish.admin.amx.intf.config.Application appConfig,
             final ConnectorDescriptor bundleDesc,
             final String appLocation)
     {
-        final ObjectName objectName = createRARModuleMBean(parentMBean, bundleDesc, appLocation);
-
-        final Metadata meta = new MetadataImpl();
+        meta.setCorrespondingConfig(appConfig.objectName());
+        final ObjectName objectName = createRARModuleMBean(parentMBean, meta, appConfig, bundleDesc);
+        
+        final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, getModuleName(bundleDesc) );
+        meta.setCorrespondingConfig(moduleConfig.objectName());
+        
         final ObjectName rarObjectName = registerJ2EEChild(objectName, meta, ResourceAdapter.class, ResourceAdapterImpl.class, bundleDesc.getName());
 
         return objectName;
@@ -346,9 +359,12 @@ final class RegistrationSupport
 
     private ObjectName createRARModuleMBean(
             final ObjectName parentMBean,
-            final ConnectorDescriptor bundleDesc,
-            final String appLocation)
+            final MetadataImpl meta,
+            final org.glassfish.admin.amx.intf.config.Application appConfig,
+            final ConnectorDescriptor bundleDesc )
     {
+        final String appLocation = appConfig.getLocation();
+        
         // get the string for deployment descriptor file
         // fix for CTS bug# 6411637
         // if resource adapter module name is one of connector system apps
@@ -369,7 +385,6 @@ final class RegistrationSupport
         final String xmlDesc = getStringForDDxml(modLocation);
         final String resAdName = getModuleName(bundleDesc);
 
-        final Metadata meta = new MetadataImpl();
         final ObjectName objectName = registerJ2EEChild(parentMBean, meta, ResourceAdapterModule.class, ResourceAdapterModuleImpl.class, resAdName);
 
         return objectName;
@@ -378,9 +393,11 @@ final class RegistrationSupport
     /* Register application client module */
     public ObjectName registerAppClient(
             final ObjectName parentMBean,
-            final ApplicationClientDescriptor bundleDesc,
-            final String appLocation)
+            final MetadataImpl meta,
+            final org.glassfish.admin.amx.intf.config.Application appConfig,
+            final ApplicationClientDescriptor bundleDesc)
     {
+        final String appLocation = appConfig.getLocation();
         final String xmlDesc = getStringForDDxml(getModuleLocation(bundleDesc, "AppClientModule"));
 
         String applicationName = null;
@@ -396,7 +413,6 @@ final class RegistrationSupport
             applicationName = bundleDesc.getName();
         }
 
-        final Metadata meta = new MetadataImpl();
         return registerJ2EEChild(parentMBean, meta, AppClientModule.class, AppClientModuleImpl.class, applicationName);
     }
 
@@ -596,8 +612,8 @@ final class RegistrationSupport
             return null;
         }
         
-        meta.setConfig( appConfig.objectName() );
-        final ObjectName mbean77 = createAppMBeans(app, meta);
+        meta.setCorrespondingConfig( appConfig.objectName() );
+        final ObjectName mbean77 = createAppMBeans(appConfig, app, meta);
         synchronized (mConfigRefTo77)
         {
             mConfigRefTo77.put(ref.objectName(), mbean77);
@@ -609,7 +625,7 @@ final class RegistrationSupport
 
     protected <I extends J2EEManagedObject, C extends J2EEManagedObjectImplBase> ObjectName registerJ2EEChild(
             final ObjectName parent,
-            final Metadata metadata,
+            final Metadata metadataIn,
             final Class<I> intf,
             final Class<C> clazz,
             final String name)
@@ -617,7 +633,9 @@ final class RegistrationSupport
         ObjectName objectName = null;
         
         final String j2eeType = Util.deduceType(intf);
-            
+        
+        // must make a copy! May be an input value that is reused by caller
+        final Metadata metadata = new MetadataImpl(metadataIn);
         try
         {
             final Constructor<C> c = clazz.getConstructor(ObjectName.class, Metadata.class);
@@ -673,7 +691,7 @@ final class RegistrationSupport
         {
             final MetadataImpl meta = new MetadataImpl();
             meta.setCorrespondingRef(ref.objectName());
-            meta.setConfig(amxConfig.objectName());
+            meta.setCorrespondingConfig(amxConfig.objectName());
             
             mbean77 = registerJ2EEChild(mJ2EEServer.objectName(), meta, intf, implClass, amxConfig.getName());
             synchronized (mConfigRefTo77)
