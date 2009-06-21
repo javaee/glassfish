@@ -35,7 +35,7 @@
  */
 package org.glassfish.api.embedded.web;
 
-import org.glassfish.api.embedded.EmbeddedContainerInfo;
+import org.glassfish.api.embedded.ContainerBuilder;
 
 import java.net.URL;
 import java.io.File;
@@ -45,7 +45,7 @@ import java.io.File;
  *
  * @author Jerome Dochez
  */
-public abstract class WebContainerInfo implements EmbeddedContainerInfo<EmbeddedWebContainer> {
+public abstract class WebContainerInfo implements ContainerBuilder<EmbeddedWebContainer> {
 
     URL     defaultWebXml;
     String  listenerName;

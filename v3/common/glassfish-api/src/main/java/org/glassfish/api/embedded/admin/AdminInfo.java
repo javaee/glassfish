@@ -35,8 +35,7 @@
  */
 package org.glassfish.api.embedded.admin;
 
-import org.glassfish.api.embedded.EmbeddedContainerInfo;
-import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.ContainerBuilder;
 
 /**
  * So far, the admin container does not require much configuration but we
@@ -45,6 +44,6 @@ import org.glassfish.api.embedded.Server;
  *
  * @author Jerome Dochez
  */
-public abstract class AdminInfo implements EmbeddedContainerInfo<EmbeddedAdminContainer> {
+public abstract class AdminInfo implements ContainerBuilder<EmbeddedAdminContainer> {
 
 }

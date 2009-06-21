@@ -3,9 +3,8 @@ package org.glassfish.tests.ejb;
 import org.junit.Test;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.ContainerBuilder;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.ejb.embedded.EjbEmbeddedInfo;
-import org.glassfish.ejb.embedded.EjbEmbeddedContainer;
 import org.glassfish.tests.ejb.sample.SimpleEjb;
 
 import javax.naming.InitialContext;
@@ -21,8 +20,7 @@ public class EmbeddedTest {
         Server.Builder builder = new Server.Builder("build");
 
         Server server = builder.build();
-        EjbEmbeddedInfo ejbInfo = server.createConfig(EjbEmbeddedInfo.class);
-        EjbEmbeddedContainer ejbContainer = server.addContainer(ejbInfo);
+        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
         EmbeddedDeployer deployer = server.getDeployer();
 
         URL source = SimpleEjb.class.getClassLoader().getResource("org/glassfish/tests/ejb/sample/SimpleEjb.class");

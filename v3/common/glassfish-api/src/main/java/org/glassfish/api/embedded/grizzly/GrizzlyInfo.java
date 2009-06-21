@@ -35,14 +35,14 @@
  */
 package org.glassfish.api.embedded.grizzly;
 
-import org.glassfish.api.embedded.EmbeddedContainerInfo;
+import org.glassfish.api.embedded.ContainerBuilder;
 
 import java.util.Properties;
 
 /**
  * 
  */
-public abstract class GrizzlyInfo implements EmbeddedContainerInfo<GrizzlyContainer> {
+public abstract class GrizzlyInfo implements ContainerBuilder<GrizzlyContainer> {
 
     Properties props = new Properties();
 

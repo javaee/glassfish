@@ -35,6 +35,8 @@
  */
 package org.glassfish.api.embedded;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * Defines the configuration for an embdded interface. This is mostly a
  * tag interface that will be implemented by the embedded container
@@ -43,7 +45,12 @@ package org.glassfish.api.embedded;
  *
  * @author Jerome Dochez
  */
-public interface EmbeddedContainerInfo<T extends EmbeddedContainer> {
+@Contract
+public interface ContainerBuilder<T extends EmbeddedContainer> {
+
+    public enum Type { ejb, web, jruby }
+
+    void attach(Port.PortType type, Port port);
 
     T create(Server server);
 }

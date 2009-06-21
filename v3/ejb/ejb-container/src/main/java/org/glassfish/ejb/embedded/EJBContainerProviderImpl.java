@@ -51,8 +51,6 @@ import javax.ejb.spi.EJBContainerProvider;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.ejb.embedded.EjbEmbeddedInfo;
-import org.glassfish.ejb.embedded.EjbEmbeddedContainer;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 
 /**
@@ -108,8 +106,8 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             if (container == null) {
                 Server.Builder builder = new Server.Builder("GFEJBContainerProviderImpl");
                 Server server = builder.build();
-                EjbEmbeddedInfo ejbInfo = server.createConfig(EjbEmbeddedInfo.class);
-                EjbEmbeddedContainer ejbContainer = server.addContainer(ejbInfo);
+                EjbBuilder ejb = server.createConfig(EjbBuilder.class);
+                EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
                 EmbeddedDeployer deployer = server.getDeployer();
 
                 container = new EJBContainerImpl(ejbContainer, deployer);

@@ -5,8 +5,9 @@ import org.junit.Test;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.ejb.embedded.EjbEmbeddedInfo;
-import org.glassfish.ejb.embedded.EjbEmbeddedContainer;
+import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.ContainerBuilder;
 import org.glassfish.distributions.test.ejb.SampleEjb;
 
 import javax.naming.InitialContext;
@@ -18,13 +19,12 @@ public class EmbeddedTest {
 
 
     @Test
-    public void test() {
+    public void testEjb() {
 
         Server.Builder builder = new Server.Builder("build");
 
         Server server = builder.build();
-        EjbEmbeddedInfo ejbInfo = server.createConfig(EjbEmbeddedInfo.class);
-        EjbEmbeddedContainer ejbContainer = server.addContainer(ejbInfo);
+        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
         EmbeddedDeployer deployer = server.getDeployer();
 
         URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/ejb/SampleEjb.class");
@@ -51,5 +51,13 @@ public class EmbeddedTest {
         }
 
         deployer.undeploy(appName);
+    }
+
+    @Test
+    public void testWeb() {
+        Server.Builder builder = new Server.Builder("build");
+        Server server = builder.build();
+        Port http = server.createPort(8080);
+
     }
 }

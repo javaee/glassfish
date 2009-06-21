@@ -66,7 +66,7 @@ public class Server {
          */
         public Builder(String id) {
             this.serverName = id;
-        }
+        }                              
 
         /**
          * Enables or disables the logger for this server
@@ -121,6 +121,12 @@ public class Server {
                 return servers.get(serverName);
             }
         }
+
+        public static List<String> getServerNames() {
+            List<String> names = new ArrayList<String>();
+            names.addAll(servers.keySet());
+            return names;
+        }
     }
 
     private final static Map<String, Server> servers = new HashMap<String, Server>();
@@ -155,6 +161,11 @@ public class Server {
         
     }
 
+    @SuppressWarnings("unchecked")
+    public ContainerBuilder<EmbeddedContainer> createConfig(ContainerBuilder.Type type) {
+        return habitat.getComponent(ContainerBuilder.class, type.toString());
+    }
+
     /**
      * Creates a new embedded container configuration of a type.
      *
@@ -162,7 +173,7 @@ public class Server {
      * @param <T> type of the embedded container
      * @return the configuration to configure a container of type <T>
      */
-    public <T extends EmbeddedContainerInfo> T createConfig(Class<T> configType) {
+    public <T extends ContainerBuilder<?>> T createConfig(Class<T> configType) {
         return habitat.getComponent(configType);        
     }
 
@@ -177,13 +188,13 @@ public class Server {
      * @param <T> type of the container
      * @return instance of the container <T>
      */
-    public <T extends EmbeddedContainer> T addContainer(EmbeddedContainerInfo<T> info) {
+    public <T extends EmbeddedContainer> T addContainer(ContainerBuilder<T> info) {
         T container = info.create(this);
         if (container!=null && containers.add(container)) {
             return container;
         }
         return null;
-        
+
     }
 
 

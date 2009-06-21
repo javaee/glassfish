@@ -1,36 +1,56 @@
 package org.glassfish.ejb.embedded;
 
-import org.glassfish.api.embedded.EmbeddedContainerInfo;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.embedded.EmbeddedContainer;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.container.Sniffer;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Config;
 
 import java.beans.PropertyVetoException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Jerome Dochez
  */
 @Service(name="ejb")
-public class EjbEmbeddedInfo implements EmbeddedContainerInfo<EjbEmbeddedContainer> {
-
-    @Inject(optional=true)
-    EjbContainer ejbConfig = null;
-
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config config;
+public class EjbBuilder implements ContainerBuilder<EmbeddedEjbContainer> {
 
     @Inject
-    EjbEmbeddedContainer container;
+    Habitat habitat;    
+
+    @Inject(optional=true)
+    EjbContainer ejbConfig=null;
+
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
+
+    volatile EmbeddedEjbContainer instance=null;
+    
+
+    public void attach(Port.PortType type, Port port) {
+
+    }
+
+
+    public synchronized EmbeddedEjbContainer create(org.glassfish.api.embedded.Server server) {
+        if (instance==null) {
+            instance =  new EmbeddedEjbContainer(this);
+        }
+        return instance;
+    }
 
     EjbContainer getConfig() {
-        if (ejbConfig == null) {
+        if (ejbConfig==null) {
             try {
-                // Create configuration for ejb-container
                 ConfigSupport.apply(new SingleConfigCode<Config>() {
                     public Object run(Config c) throws PropertyVetoException, TransactionFailure {
                         EjbContainer ejb = c.createChild(EjbContainer.class);
@@ -46,7 +66,5 @@ public class EjbEmbeddedInfo implements EmbeddedContainerInfo<EjbEmbeddedContain
         return ejbConfig;
     }
 
-    public EjbEmbeddedContainer create(org.glassfish.api.embedded.Server server) {
-        return container;
-    }
 }
+

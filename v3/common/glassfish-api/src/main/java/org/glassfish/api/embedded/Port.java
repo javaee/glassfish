@@ -49,6 +49,9 @@ import java.util.Properties;
  */
 @Contract
 public interface Port {
+
+    // we will need more port types.
+    public enum PortType { http, https, iiop };
     
     public void bind(int portNumber);
 

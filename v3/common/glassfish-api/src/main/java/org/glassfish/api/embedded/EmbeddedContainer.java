@@ -36,6 +36,7 @@
 package org.glassfish.api.embedded;
 
 import org.glassfish.api.container.Sniffer;
+import org.jvnet.hk2.annotations.Contract;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ import java.util.List;
  *
  * @author Jerome Dochez
  */
+@Contract
 public interface EmbeddedContainer {
 
     public List<Sniffer> getSniffers();

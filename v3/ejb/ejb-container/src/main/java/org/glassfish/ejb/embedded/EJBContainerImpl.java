@@ -52,7 +52,7 @@ import javax.ejb.EJBException;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.ejb.embedded.EjbEmbeddedContainer;
+import org.glassfish.ejb.embedded.EmbeddedEjbContainer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
 /**
@@ -66,7 +66,7 @@ public class EJBContainerImpl extends EJBContainer {
     private static final Logger _logger =
             LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
-    private final EjbEmbeddedContainer ejbContainer;
+    private final EmbeddedEjbContainer ejbContainer;
 
     private final EmbeddedDeployer deployer;
 
@@ -74,8 +74,8 @@ public class EJBContainerImpl extends EJBContainer {
 
     /**
      * Construct new EJBContainerImpl instance 
-     */
-    EJBContainerImpl(EjbEmbeddedContainer ejbContainer, EmbeddedDeployer deployer) {
+     */                                               
+    EJBContainerImpl(EmbeddedEjbContainer ejbContainer, EmbeddedDeployer deployer) {
         this.ejbContainer = ejbContainer;
         this.deployer = deployer;
     }

@@ -70,6 +70,10 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
 
 
         File destination = getDestination();
+        if (destination==null) {
+            logger.fine("domain.xml not persisted, null destination");
+            return;
+        }
         // get a temporary file
         File f = File.createTempFile("domain", ".xml", destination.getParentFile());
         if (f==null) {
