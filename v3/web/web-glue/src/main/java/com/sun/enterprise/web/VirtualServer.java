@@ -1082,7 +1082,8 @@ public class VirtualServer extends StandardHost {
         List hosts = StringUtils.parseStringList(vsBean.getHosts(), ",");
         for (int i=0; i < hosts.size(); i++ ){
             String alias = hosts.get(i).toString();
-            if ( !alias.equalsIgnoreCase("localhost.localdomain")){
+            if ( !alias.equalsIgnoreCase("localhost") &&
+                    !alias.equalsIgnoreCase("localhost.localdomain")){
                 addAlias(alias);
             }
         }
