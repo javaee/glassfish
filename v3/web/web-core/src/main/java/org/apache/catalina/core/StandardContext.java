@@ -55,6 +55,7 @@
 package org.apache.catalina.core;
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.concurrent.*;
@@ -240,6 +241,17 @@ public class StandardContext
     */
     protected transient ApplicationContext context = null;
     // END RIMOD 4894300
+
+    /**
+     * Restricted ServletContext, some of whose methods (namely the
+     * configuration methods added by Servlet 3.0) throw an
+     * IllegalStateException if invoked by a ServletContextListener
+     * declared in a Tag Library Descriptor (TLD) resource of a web
+     * fragment JAR file excluded from absolute ordering.
+     *
+     * See IT 8565 for additional details.
+     */
+    protected transient ServletContext restrictedContext = null;
 
     /**
      *  Is the context initialized. 
@@ -1762,6 +1774,24 @@ public class StandardContext
 
         return (context.getFacade());
 
+    }
+
+
+    /**
+     * Gets the restricted ServletContext, some of whose methods (namely
+     * the configuration methods added by Servlet 3.0) throw an
+     * IllegalStateException if invoked by a ServletContextListener
+     * declared in a Tag Library Descriptor (TLD) resource of a web
+     * fragment JAR file excluded from absolute ordering.
+     *
+     * See IT 8565 for additional details.
+     */
+    public ServletContext getRestrictedServletContext() {
+        if (restrictedContext == null) {
+            restrictedContext =
+                RestrictedServletContext.newInstance(getServletContext());
+        }
+        return restrictedContext;
     }
 
 
@@ -7177,4 +7207,74 @@ public class StandardContext
         // Deliberate noop
     }
 
+    
+    /**
+     * Restricted ServletContext, some of whose methods (namely the
+     * configuration methods added by Servlet 3.0) throw an
+     * IllegalStateException if invoked by a ServletContextListener
+     * declared in a Tag Library Descriptor (TLD) resource of a web
+     * fragment JAR file excluded from absolute ordering.
+     *
+     * See IT 8565 for additional details.
+     */
+    static class RestrictedServletContext implements InvocationHandler {
+
+        private static final List<String> restrictedMethods =
+            Arrays.asList(
+                "setInitParameter",
+                "addServlet",
+                "createServlet",
+                "getServletRegistration",
+                "getServletRegistrations", 
+                "addFilter",
+                "createFilter",
+                "getFilterRegistration",
+                "getFilterRegistrations",
+                "getSessionCookieConfig",
+                "setSessionTrackingModes",
+                "getDefaultSessionTrackingModes",
+                "getEffectiveSessionTrackingModes");
+
+        /*
+         * The ServletContext to which to delegate the invocation of any
+         * unrestricted methods
+         */
+        private ServletContext delegate;
+
+        /**
+         * Constructor
+         */
+        public RestrictedServletContext(ServletContext delegate) {
+            this.delegate = delegate;
+        }
+
+        static public ServletContext newInstance(ServletContext obj) {
+            return (ServletContext)
+                Proxy.newProxyInstance(obj.getClass().getClassLoader(),
+                    new Class[] { ServletContext.class },
+                    new RestrictedServletContext(obj));
+        }
+
+        public Object invoke(Object proxy, Method m, Object[] args)
+                throws Throwable {
+
+            if (restrictedMethods.contains(m.getName())) {
+                throw new IllegalStateException("Not allowed to call " +
+                    m.getName());
+            }
+
+            Object result;
+            try {
+                result = m.invoke(delegate, args);
+            } catch (InvocationTargetException e) {
+                throw e.getTargetException();
+            } catch (Exception e) {
+                throw new RuntimeException(
+                    "Unexpected invocation exception: " +
+                    e.getMessage());
+            }
+
+            return result;
+        }
+    }
 }
