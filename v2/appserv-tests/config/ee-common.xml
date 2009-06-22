@@ -292,6 +292,9 @@
 <!-- ================================================================ -->
 <target name="create-custom-resource-common" depends="init-common">
 <echo message="Creating custom resource ${custom.resource.name}" level="verbose"/>
+   <property name="extra.params" value=""/>
+   <property name="custom.resource.enable" value="true"/>
+   <property name="target.name" value="server"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="create-custom-resource"/>
     <arg line="${as.props}"/>
@@ -299,6 +302,7 @@
     <arg line="--factoryclass ${custom.resource.class}"/>
     <arg line="--enabled ${custom.resource.enable}"/>
     <arg line="--target ${target.name}"/>
+    <arg line=" ${extra.params}"/>
     <arg line="${custom.resource.name}"/>
   </exec>
 </target>
@@ -307,6 +311,7 @@
 <!-- Target to delete a custom resource  -->
 <!-- ================================================================ -->
 <target name="delete-custom-resource-common" depends="init-common">
+   <property name="target.name" value="server"/>
 <echo message="Deleting custom resource ${custom.resource.name}" level="verbose"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="delete-custom-resource"/>
