@@ -63,8 +63,6 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import com.sun.appserv.management.config.IIOPServiceConfig;
 import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
-import com.sun.appserv.management.ext.logging.LogFileAccess;
-import com.sun.appserv.management.monitor.ServerRootMonitor;
 
 import java.util.StringTokenizer;
 import javax.faces.context.ExternalContext;
@@ -180,64 +178,6 @@ public class InstanceHandler {
         return "";
     }
 
-    /**
-     *	<p> This handler rotate the log files of the server instance, instance should be running.
-     *  <p> Input  value: "instanceName" -- Type: <code> java.lang.String</code></p>
-     */
-    @Handler(id = "rotateLogFile",
-    input = {
-        @HandlerInput(name = "instanceName", type = String.class, required = true)
-    })
-    public static void rotateLogFile(HandlerContext handlerCtx) {
-        String instanceName = (String) handlerCtx.getInputValue("instanceName");
-        if (GuiUtil.isEmpty(instanceName)) {
-            return;   //do nothing.
-        }
-        ServerRootMonitor monitor = AMXRoot.getInstance().getMonitoringRoot().getServerRootMonitorMap().get(instanceName);
-        if (monitor == null) {
-            //most likely, server is not running, shouldn't get here
-            //TODO: log an internal error msg ?
-        } else {
-            monitor.getLogging().rotateLogFile(LogFileAccess.SERVER_KEY);
-        }
-    }
-
-    /**
-     *	<p> This handler returns the configuration Name of the instance or cluster</p>
-     *  <p> Input  value: "target" -- Type: <code> java.lang.String</code></p>
-     *  <p> Output value: "configName" -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id = "getConfigNameOfTarget",
-    input = {
-        @HandlerInput(name = "target", type = String.class, required = true)
-    },
-    output = {
-        @HandlerOutput(name = "configName", type = String.class)
-    })
-    public static void getConfigNameOfTarget(HandlerContext handlerCtx) {
-
-        String target = (String) handlerCtx.getInputValue("target");
-        String configName = AMXRoot.getInstance().getConfigByInstanceOrClusterName(target).getName();
-        handlerCtx.setOutputValue("configName", configName);
-    }
-
-    /**
-     *	<p> This handler upgrade the profile from developer profile to cluster profile</p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id = "upgradeProfile")
-    public static void upgradeProfile(HandlerContext handlerCtx) {
-        /* TODO-V3
-        try{
-        String[] params = {"cluster"};
-        String[] signature = {"java.lang.String"};
-        JMXUtil.invoke("com.sun.appserv:type=domain,category=config", "addClusteringSupportUsingProfile", params, signature);
-        }catch(Exception ex){
-        GuiUtil.handleException(handlerCtx, ex);
-        }
-         */
-    }
 
     /**
      *	<p> This handler stops DAS immediately.</p>
