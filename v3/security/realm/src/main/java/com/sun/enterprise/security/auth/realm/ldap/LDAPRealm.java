@@ -50,8 +50,7 @@ import javax.naming.directory.SearchResult;
 import javax.security.auth.login.LoginException;
 import java.security.Principal;
 // imported from the ldap booster pack
-//V3:Commented till we publish ldapbp to maven
-//import com.sun.jndi.ldap.obj.GroupOfURLs;
+import com.sun.jndi.ldap.obj.GroupOfURLs;
 import javax.security.auth.x500.X500Principal;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
@@ -560,8 +559,8 @@ public final class LDAPRealm extends IASRealm
             while(e.hasMore()) {
                 SearchResult res = (SearchResult)e.next();
                 Object searchedObject = res.getObject();
-                 //TODO V3:Commented
-/*
+                
+
                 if (searchedObject instanceof GroupOfURLs){ // dynamic group
                    
                     GroupOfURLs gurls = (GroupOfURLs) searchedObject;
@@ -577,7 +576,7 @@ public final class LDAPRealm extends IASRealm
                     }
                     
                 } 
-*/
+
                 // recommended by Jaya Hangal from JDK team
                 if (searchedObject instanceof Context) {
                     ((Context)searchedObject).close();
