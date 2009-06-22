@@ -72,6 +72,14 @@
                             <sun:staticText text="$resource{i18n.tree.connectorResources}" />
                             </sun:hyperlink>
                         </sun:property>
+                        <sun:property>
+                        <sun:hyperlink 
+                            toolTip="$resource{i18n.tree.connectorConnectionPools.tooltip}"
+                            url="/jdbc/connectorConnectionPools.jsf" >
+                            <sun:image url="/resource/jdbc/images/connector.png" />
+                            <sun:staticText text="$resource{i18n.tree.connectorConnectionPools}" />
+                            </sun:hyperlink>
+                        </sun:property>
                     </sun:propertySheetSection>
                 </sun:propertySheet>
                 <sun:hidden id="helpKey" value="$resource{help_jdbc.connectors}" />
