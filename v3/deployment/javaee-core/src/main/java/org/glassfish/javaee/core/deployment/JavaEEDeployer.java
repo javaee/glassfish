@@ -26,18 +26,23 @@ package org.glassfish.javaee.core.deployment;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import org.glassfish.deployment.common.DeploymentException;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
+import java.util.List;
+import java.net.URL;
 
 /**
  * Convenient superclass for JavaEE Deployer implementations.
@@ -51,6 +56,9 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
     @Inject
     protected ApplicationRegistry appRegistry;
+
+    @Inject
+    protected Habitat habitat;
 
     @Inject(name="application_undeploy", optional=true)
     protected ApplicationVisitor undeploymentVisitor=null;
@@ -66,6 +74,49 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         return new MetaData(false, null, null);
     }
 
+     
+    /**
+     * Returns the classpath associated with this module
+     * Can be used to compile generated cmp classes,
+     * rmi stubs etc.
+     *
+     * @return the classpath for this module
+     */
+    protected String getModuleClassPath(DeploymentContext ctx) {
+        // get the base module classpath
+        // this includes the system classpath and deploy time lib libraries
+        StringBuilder classpath = new StringBuilder
+            (ASClassLoaderUtil.getModuleClassPath(habitat, ctx));
+
+        try {
+            // add the module dir
+            classpath.append(ctx.getSourceDir().toURI().getPath());
+            classpath.append(File.pathSeparator);
+
+            // add the stubs dir
+            classpath.append(ctx.getScratchDir("ejb").toURI().getPath());
+            classpath.append(File.pathSeparator);
+
+            // add the ear lib libraries if it's ear
+            Application app = ctx.getModuleMetaData(Application.class); 
+            if (!app.isVirtual()) {
+                ReadableArchive parentArchive = 
+                    ctx.getSource().getParentArchive();
+                List<URL> earLibURLs = 
+                    ASClassLoaderUtil.getAppLibDirLibrariesAsList(new File(
+                        parentArchive.getURI()), app.getLibraryDirectory());  
+
+                for (URL url : earLibURLs) { 
+                    classpath.append(url.toURI().getPath());
+                    classpath.append(File.pathSeparator);
+                }
+            }
+        } catch (Exception e) {
+            // log a warning
+        }
+
+        return classpath.toString();
+    }
 
     /*
      * Gets the common instance classpath, which is composed of the
