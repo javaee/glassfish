@@ -44,6 +44,8 @@
                     convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
                     mapPut(map="#{pageSession.valueMap}" key="NetworkListeners" value="$attribute{tmp}");
                     mapPut(map="#{pageSession.valueMap}" key="State" value="#{requestScope.stateGp}");
+                    mapPut(map="#{pageSession.valueMap}" key="SsoEnabled" value="#{requestScope.ssoGroup}");
+                    mapPut(map="#{pageSession.valueMap}" key="AccessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
@@ -61,6 +63,8 @@
                     convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
                     mapPut(map="#{pageSession.valueMap}" key="NetworkListeners" value="$attribute{tmp}");
                     mapPut(map="#{pageSession.valueMap}" key="State" value="#{requestScope.stateGp}");
+                    mapPut(map="#{pageSession.valueMap}" key="SsoEnabled" value="#{requestScope.ssoGroup}");
+                    mapPut(map="#{pageSession.valueMap}" key="AccessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"

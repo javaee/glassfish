@@ -58,20 +58,16 @@
              "<br />
          </sun:property>
 
-         <!--
-         <sun:property id="sso"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.sso}">
-             <sun:radioButton id="on"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="true" />
+         <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.sso}">
+             <sun:radioButton id="httpS"  name="ssoGroup" label="$resource{i18n_web.vs.controlByHS}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="inherit" />
+             " <b>$resource{i18n_web.vs.httpLink, $pageSession{configName}}</b>
+             # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
              "<br />
-             <sun:radioButton id="off"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="false" />
+             <sun:radioButton id="ena"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="on" />
              "<br />
-             <sun:radioButton id="disabled"  name="ssoGroup" label="$resource{i18n_web.vs.StateDisabled}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="disabled" />
-            "<br />
+             <sun:radioButton id="dis"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="off" />
+             "<br />
          </sun:property>
-        -->
-
-        <sun:property id="sso"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.sso}" helpText="$resource{i18n_web.vs.ssoHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="true" />
-        </sun:property>
 
         <sun:property id="nwProps"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.NetworkListeners}" helpText="$resource{i18n_web.vs.NetworkListenersHelp}">
             <sun:listbox id="nw" immediate="#{true}" multiple="#{true}"  rows="$int{4}" 
@@ -109,22 +105,16 @@
 
     <sun:propertySheetSection id="al" label="$resource{i18n_web.vs.accessLog}">
 
-        <!-- TODO add this back in when accessLoggingEnabled is not a boolean.
         <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.accessLogging}">
-             <sun:radioButton id="httpS"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.controlByHS}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="off" />
+             <sun:radioButton id="httpS"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.controlByHS}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="inherit" />
              " <b>$resource{i18n_web.vs.httpLink, $pageSession{configName}}</b>
              # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
              "<br />
-             <sun:radioButton id="ena"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="true" />
+             <sun:radioButton id="ena"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="on" />
              "<br />
-             <sun:radioButton id="dis"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="false" />
+             <sun:radioButton id="dis"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="off" />
              "<br />
          </sun:property>
-         -->
-
-         <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.accessLogging}" helpText="$resource{i18n_web.vs.accessLoggingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="true" />
-        </sun:property>
 
         <sun:property id="accesslog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.path}" helpText="$resource{i18n_web.vs.pathHelp}">
             <sun:textField id="accesslog" columns="$int{55}" text="#{pageSession.valueMap['AccessLog']}" />

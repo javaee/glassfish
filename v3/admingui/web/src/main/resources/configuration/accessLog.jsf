@@ -39,20 +39,30 @@
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.pageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=access-log");
-        setPageSessionAttribute(key="childType" value="access-log");
+
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="childType" value="http-service");
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/accessLog.jsf");
-        setPageSessionAttribute(key="convertToFalseList" value={"RotationEnabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"SsoEnabled", "AccessLogEnabled" });
+
+        setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
+        setPageSessionAttribute(key="parentObjectNameStr2", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="childType2" value="access-log");
+        setPageSessionAttribute(key="objectNameStr2" value="v3:pp=/domain/configs/config[server-config]/http-service,type=access-log");
+        setPageSessionAttribute(key="convertToFalseList2" value={"RotationEnabled"});
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
+
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="has2Objects" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
@@ -65,45 +75,51 @@
             <sun:form id="form1">
     //#include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
-<sun:title id="propertyContentPage" title="$resource{i18n_web.httpService.accesslog.pageTitle}" helpText="$resource{i18n_web.httpService.accesslog.pageTitleHelp}" >
+<sun:title id="propertyContentPage" title="$resource{i18n_web.httpService.pageTitle}" helpText="$resource{i18n_web.httpService.pageTitleHelp}" >
 #include "/shared/editPageButtons.inc"
 </sun:title>
     <sun:propertySheet id="propertySheet">
-        <sun:propertySheetSection id="accessLog">
 
-        <!-- depending on issue #8503, will enable when that is fixed.
-        <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogging}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['SessionIdGeneratorClassname']}" />
+        <sun:propertySheetSection id="http" >
+            <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.SsoEnbaled}">
+                <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="true"/>
+            </sun:property>
+        </sun:propertySheetSection>
+    
+        <sun:propertySheetSection id="accessLog" label="$resource{i18n_web.access.SectionTitle}">
+
+        <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.accessLogging}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['AccessLogEnabled']}" selectedValue="true"/>
         </sun:property>
-        -->
+
         <sun:property id="rotationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Rotation}" helpText="$resource{i18n_web.access.RotationHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['RotationEnabled']}" selectedValue="true" >
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['RotationEnabled']}" selectedValue="true" >
            </sun:checkbox>
         </sun:property>
         <sun:property id="rotationPolicyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationPolicy}" helpText="$resource{i18n_web.access.RotationPolicyHelp}">
-           <sun:dropDown id="RotationPolicy"  selected="#{pageSession.valueMap['RotationPolicy']}" labels={"time"} >
+           <sun:dropDown id="RotationPolicy"  selected="#{pageSession.valueMap2['RotationPolicy']}" labels={"time"} >
             </sun:dropDown>
          </sun:property>
        <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationInterval}" helpText="$resource{i18n_web.access.RotationIntervalHelp}">
-            <sun:textField id="Interval" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['RotationIntervalInMinutes']}" />
+            <sun:textField id="Interval" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap2['RotationIntervalInMinutes']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
         </sun:property>
         <sun:property id="suffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationSuffix}" helpText="$resource{i18n_web.access.RotationSuffixHelp}">
-            <sun:textField id="Suffix" columns="$int{30}" text="#{pageSession.valueMap['RotationSuffix']}" />
+            <sun:textField id="Suffix" columns="$int{30}" text="#{pageSession.valueMap2['RotationSuffix']}" />
         </sun:property>
 
-        <!-- depending on issue #8503, will enable when that is fixed.
-        <sun:property id="accessLogBufferSize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogBufferSize}" helpText="$resource{i18n.http.accessLogBufferSizeHelp}">
-        <sun:textField id="accessLogBufferSize" styleClass="intAllowMinus" columns="$int{30}" text="#{accessLogBufferSizeBytes}" />
+        <sun:property id="accessLogBufferSize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.accessLogBufferSize}" helpText="$resource{i18n_web.access.accessLogBufferSizeHelp}">
+        <sun:textField id="accessLogBufferSize" styleClass="intAllowMinus" columns="$int{30}" text="#{pageSession.valueMap2['BufferSizeBytes']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
-        <sun:property id="accessLogWriteInterval"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.http.accessLogWriteInterval}" helpText="$resource{i18n.http.accessLogWriteIntervalHelp}">
-            <sun:textField id="accessLogWriteInterval" styleClass="intAllowMinus" columns="$int{30}" text="#{accessLogWriteIntervalSeconds}" />
+
+        <sun:property id="accessLogWriteInterval"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.accessLogWriteInterval}" helpText="$resource{i18n_web.access.accessLogWriteIntervalHelp}">
+            <sun:textField id="accessLogWriteInterval" styleClass="intAllowMinus" columns="$int{30}" text="#{pageSession.valueMap2['WriteIntervalSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
-        -->
+
         <sun:property id="formatProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Format}" helpText="$resource{i18n_web.access.FormatHelp}">
-            <sun:textField id="Format" columns="$int{90}" text="#{pageSession.valueMap['Format']}"/>
+            <sun:textField id="Format" columns="$int{90}" text="#{pageSession.valueMap2['Format']}"/>
         </sun:property>
         </sun:propertySheetSection>
     </sun:propertySheet>

@@ -53,7 +53,6 @@
         setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         println("#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"AccessLoggingEnabled", "SsoEnabled"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

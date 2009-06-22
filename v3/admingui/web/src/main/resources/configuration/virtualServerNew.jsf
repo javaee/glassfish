@@ -49,8 +49,6 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         setPageSessionAttribute(key="childType" value="virtual-server");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-        setPageSessionAttribute(key="convertToFalseList" value={"AccessLoggingEnabled", "SsoEnabled"});
-        //setPageSessionAttribute(key="has2Objects" value="#{true}");
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
