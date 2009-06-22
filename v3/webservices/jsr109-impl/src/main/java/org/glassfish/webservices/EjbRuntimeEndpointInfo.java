@@ -36,6 +36,9 @@
 package org.glassfish.webservices;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.logging.LogDomains;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 
@@ -51,6 +54,7 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.MTOMFeature;
 import java.util.ResourceBundle;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.File;
@@ -122,18 +126,19 @@ public class EjbRuntimeEndpointInfo {
         // after invManager.preInvoke but the Invocation.contextData has to be set
         // before invManager.preInvoke. So the steps of configuring jaxws handlers and
         // init'ing jaxws is done here - this sequence is important
-        /*if (adapter==null) {
+        if (adapter==null) {
             synchronized(this) {
                 if(adapter == null) {
                     try {
                         // Set webservice context here
                         // If the endpoint has a WebServiceContext with @Resource then
                         // that has to be used
-                        Invocation tmpInv = new Invocation();
+                     /*   Invocation tmpInv = new Invocation();
                         tmpInv.isWebService = true;
                         tmpInv.container = container;
                         tmpInv.transactionAttribute = Container.TX_NOT_INITIALIZED;
-                        invManager.preInvoke(tmpInv);
+                        invManager.preInvoke(tmpInv);*/
+
                         EjbDescriptor ejbDesc = endpoint.getEjbComponentImpl();
                         Iterator<ResourceReferenceDescriptor> it = ejbDesc.getResourceReferenceDescriptors().iterator();
                         while(it.hasNext()) {
@@ -155,7 +160,7 @@ public class EjbRuntimeEndpointInfo {
                                     javax.naming.InitialContext ic = new javax.naming.InitialContext();
                                     wsCtxt = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
                                 } catch (Throwable t) {
-                                    // Swallowed intentionally
+                                    logger.fine("Error In EjbRuntimeEndpointInfo" + t.getCause());
                                 }
                             }
                         }
@@ -166,11 +171,11 @@ public class EjbRuntimeEndpointInfo {
                         logger.severe("Cannot initialize endpoint " + endpoint.getName() + " : error is : " + t.getMessage());
                         return null;
                     } finally {
-                        invManager.postInvoke(invManager.getCurrentInvocation());
+                //TODOBM fixme        invManager.postInvoke(invManager.getCurrentInvocation());
                     }
                 }
             }
-        }*/
+        }
 
         if(doPreInvoke) {
               inv =  container.startInvocation();

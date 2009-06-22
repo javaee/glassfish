@@ -42,12 +42,12 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.deployment.InjectionTarget;
-import com.sun.enterprise.container.common.impl.util.InjectionManagerImpl;
+
 import com.sun.enterprise.container.common.spi.util.InjectionException;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 
 import java.util.Iterator;
 
-import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 
 import org.glassfish.api.invocation.InvocationManager;
@@ -78,11 +78,12 @@ public class ResourceInjectorImpl extends ResourceInjector {
     public void inject(WSWebServiceContext context, Object instance)
                     throws WebServiceException {
 
-       /*try {
+        try {
             // Set proper component context
             invMgr.preInvoke(inv);
             // Injection first
-            new InjectionManagerImpl().injectInstance(instance);
+            InjectionManager injManager = WebServiceContractImpl.getInstance().getHabitat().getByContract(InjectionManager.class);
+            injManager.injectInstance(instance);
 
             // Set webservice context here
             // If the endpoint has a WebServiceContext with @Resource then
@@ -113,6 +114,9 @@ public class ResourceInjectorImpl extends ResourceInjector {
                     }
                     if(wsc != null) {
                         wsc.setContextDelegate(context);
+                        //needed to support isUserInRole() on WSC;
+                        wsc.setServletName(bundle.getWebComponentDescriptors());
+
                     }
                 }
             }
@@ -120,6 +124,6 @@ public class ResourceInjectorImpl extends ResourceInjector {
             throw new WebServiceException(ie);
         } finally {
             invMgr.postInvoke(inv);
-        }*/
+        }
     }
 }

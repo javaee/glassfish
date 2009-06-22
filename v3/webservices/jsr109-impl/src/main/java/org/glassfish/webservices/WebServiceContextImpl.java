@@ -38,11 +38,14 @@ package org.glassfish.webservices;
 
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import org.glassfish.api.invocation.InvocationManager;
 
 import javax.xml.ws.EndpointReference;
 import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
+import java.util.Set;
+import java.util.Iterator;
 
 /**
  * <p><b>NOT THREAD SAFE: mutable instance variables</b>
@@ -54,6 +57,10 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
     public static final ThreadLocal principal = new ThreadLocal();
 
     private WSWebServiceContext jaxwsContextDelegate;
+
+    private final String JAXWS_SERVLET = "com.sun.enterprise.webservice.JAXWSServlet";
+
+    private String servletName;
     
     public void setContextDelegate(WSWebServiceContext wsc) {
         this.jaxwsContextDelegate = wsc;
@@ -115,4 +122,24 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
     public Packet getRequestPacket() {
         return this.jaxwsContextDelegate.getRequestPacket();
     }
+
+    void setServletName(Set webComponentDescriptors) {
+        Iterator it = webComponentDescriptors.iterator();
+        String endpointName = null;
+        while (it.hasNext()) {
+            WebComponentDescriptor desc = (WebComponentDescriptor)it.next();
+            String name = desc.getCanonicalName();
+            if (JAXWS_SERVLET.equals(desc.getWebComponentImplementation())) {
+                endpointName = name;
+            }
+            if (desc.getSecurityRoleReferences().hasMoreElements()) {
+                servletName = name;
+                break;
+            }
+        }
+        if (servletName == null) {
+            servletName = endpointName;
+        }
+    }
+
 }
