@@ -363,8 +363,6 @@ public class ProxyHandlers {
         List result = new ArrayList();
         for (AMXProxy oneChild : children.values()) {
             try {
-
-
                 AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) oneChild);
                 final Map<String, Object> attrs = helper.simpleAttributesMap();
                 for (String attrName : attrs.keySet()) {
@@ -512,7 +510,44 @@ public class ProxyHandlers {
         }
     }
 
+    @Handler(id="updateProxyProperties",
+    input={
+        @HandlerInput(name="propertyList", type=List.class, required=true)},
+    output={
+        @HandlerOutput(name="TableList", type=List.class)})
+    public static void updateProxyProperties(HandlerContext handlerCtx) {
+        try {
+            List<Map<String, String>> propertyList = (List) handlerCtx.getInputValue("propertyList");
+            List newList = new ArrayList();
+            Set propertyNames = new HashSet();
+            if (propertyList != null && propertyList.size() != 0) {
+                for (Map<String, String> oneRow : propertyList) {
+                    Map newRow = new HashMap();
+                    newRow.put("selected", false);
+                    final String name = oneRow.get(PROPERTY_NAME);
+                    if (GuiUtil.isEmpty(name)) {
+                        continue;
+                    }
+                    String value = oneRow.get(PROPERTY_VALUE);
+                    if (GuiUtil.isEmpty(value)) {
+                        value = "";
+                    }
+                    newRow.put(PROPERTY_NAME, name);
+                    newRow.put(PROPERTY_VALUE, value);
+                    String desc = (String) oneRow.get(PROPERTY_DESC);
+                    if (!GuiUtil.isEmpty(desc)) {
+                        newRow.put(PROPERTY_DESC, desc);
+                    }
+                    newList.add(newRow);
+                }
+            }
+            handlerCtx.setOutputValue("TableList", newList);
 
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+    
     private static final String SNIFFER_EAR = "ear";
     //mbean Attribute Name
     private static final String PROPERTY_NAME = "Name";
