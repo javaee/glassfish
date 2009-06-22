@@ -203,6 +203,13 @@ public interface ConnectorRuntime extends ConnectorConstants{
     public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName);
 
     /**
+     * Provides the list of built in custom resources by
+     * resource-type and factory-class-name pair.
+     * @return map of resource-type & factory-class-name 
+     */
+    public Map<String,String> getBuiltInCustomResources();
+
+    /**
      * Provides specified ThreadPool or default ThreadPool from server
      * @param threadPoolId Thread-pool-id
      * @return ThreadPool

@@ -652,4 +652,31 @@ public class ConnectorsUtil {
         }
         return shutdownTimeout * 1000L;
     }
+
+    /**
+     * Provides the list of built in custom resources by
+     * resource-type and factory-class-name pair.
+     * @return map of resource-type & factory-class-name
+     */
+    public static Map<String,String> getBuiltInCustomResources(){
+        Map<String, String> resourcesMap = new HashMap<String, String>();
+
+        resourcesMap.put("JavaBean", "org.glassfish.resources.custom.JavaBeanFactory" );
+
+        resourcesMap.put("int", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("long", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("double", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("float", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("char", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("short", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("byte", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("boolean", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("String", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+
+        resourcesMap.put("java.net.URL", "org.glassfish.resources.custom.URLObjectFactory" );
+
+        resourcesMap.put("java.util.Properties", "org.glassfish.resources.custom.PropertiesFactory" );
+
+        return resourcesMap;
+    }
 }

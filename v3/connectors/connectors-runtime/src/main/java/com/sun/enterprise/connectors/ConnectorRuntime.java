@@ -445,6 +445,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
+     * Provides the list of built in custom resources by
+     * resource-type and factory-class-name pair.
+     * @return map of resource-type & factory-class-name
+     */
+    public Map<String,String> getBuiltInCustomResources(){
+        return ConnectorsUtil.getBuiltInCustomResources();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public String[] getConnectionDefinitionNames(String rarName)
