@@ -1,5 +1,0 @@
-<!composition template="/templates/javaOneTemplate.tpl">
-<!define name="content">
-    "Content Goes Here
-</define>
-</composition>
