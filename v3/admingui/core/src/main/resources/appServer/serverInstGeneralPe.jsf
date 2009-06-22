@@ -116,10 +116,6 @@
                                 <sun:staticText id="debugPort" text="#{requestScope.debugPort}"/>     
                             "<br /><br />
                             </sun:property>
-                            
-                            <sun:property id="updateProp"  rendered="#{isAdminServer}" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" label="#{updateCenterMsg}" >    
-                                <sun:staticText id="update" text=" " />
-                            </sun:property>
                         </sun:propertySheetSection>
 
                     </sun:propertySheet>    
