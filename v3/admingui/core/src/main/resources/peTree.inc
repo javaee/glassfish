@@ -118,8 +118,9 @@
 	
     <dynamicTreeNode id="applications"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:j2eeType=X-ApplicationsConfig,name=na"
-        methodName="getApplicationConfigMap"
+        objectName="v3:pp=/domain,type=applications"
+        useV3AMX="true"
+        methodName=""
         text="$resource{i18n.tree.applications}"
         url="/applications/applications.jsf"
         expanded="$boolean{false}"
