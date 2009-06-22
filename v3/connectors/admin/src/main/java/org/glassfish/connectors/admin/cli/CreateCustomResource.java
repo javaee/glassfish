@@ -61,7 +61,7 @@ import java.util.Properties;
  */
 @Service(name="create-custom-resource")
 @Scoped(PerLookup.class)
-@I18n("create.admin.object")
+@I18n("create.custom.resource")
 public class CreateCustomResource implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
@@ -170,13 +170,13 @@ public class CreateCustomResource implements AdminCommand {
                 targetServer.createResourceRef(enabled.toString(), jndiName);
             }
             report.setMessage(localStrings.getLocalString(
-                    "create.admin.object.success",
-                    "Administered object {0} created.", jndiName));
+                    "create.custom.resource.success",
+                    "Custom Resource {0} created.", jndiName));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (TransactionFailure tfe) {
             report.setMessage(localStrings.getLocalString(
-                    "create.admin.object.fail",
-                    "Unable to create administered object {0}.", jndiName) +
+                    "create.custom.resource.fail",
+                    "Unable to create custom resource {0}.", jndiName) +
                     " " + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
