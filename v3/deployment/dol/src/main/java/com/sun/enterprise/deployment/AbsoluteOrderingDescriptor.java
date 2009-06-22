@@ -55,6 +55,8 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
 
     private List absOrder = new ArrayList();
 
+    private boolean hasOthers;
+
     public void addName(String name) {
         if (absOrder.add(name) == false) {
             throw new IllegalStateException(localStrings.getLocalString(
@@ -71,10 +73,20 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
                     "[{0}] is already defined in the absolute-ordering.",
                     new Object[] { "others" }));
         }
+
+        hasOthers = true;
     }
 
     public List getOrdering() {
         return Collections.unmodifiableList(absOrder);
+    }
+
+    /**
+     * @return true if this AbsoluteOrderingDescriptor contains an
+     * others element, false otherwise
+     */
+    public boolean hasOthers() {
+        return hasOthers;
     }
 
     /**
