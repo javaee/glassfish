@@ -41,10 +41,6 @@ import org.glassfish.flashlight.datatree.MethodInvoker;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.flashlight.statistics.Counter;
-import org.glassfish.flashlight.statistics.TimeStats;
-import org.glassfish.flashlight.statistics.TimeStatsMillis;
-import org.glassfish.flashlight.statistics.Average;
-import org.glassfish.flashlight.statistics.TimeStatsNanos;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -60,9 +56,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-//import org.glassfish.admingui.util.AMXRoot;
 
 /**
  *
