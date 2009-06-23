@@ -50,7 +50,7 @@ import java.security.ProtectionDomain;
  * @author Mitesh Meswani
  */
 @Service
-public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
+public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationContainer> {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
@@ -109,18 +109,18 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
                     currentBundle = application;
                 }
 
-              // Initialize pus for only this bundle here to enable transformers to work properly. This is because classloader from deploymentcontext is for this bundle only
-              // Retrieve them in load() and put them in corresponding JPAContainer instance and close them in corresponding stop()
+                // Initialize pus for only this bundle here to enable transformers to work properly. 
+                // This is because classloader from deploymentcontext is for this bundle only
                 Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
                     for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
-                        List<PersistenceUnitDescriptor> pusToInitialize = new ArrayList<PersistenceUnitDescriptor>();
                         for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
                             if(referencedPus.contains(pud)) {
-                                pusToInitialize.add(pud);
+                                PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, new ProviderContainerContractInfoImpl(context, connectorRuntime));
+                                // Store the puLoader in context. It is retreived in load() to execute java2db and to
+                                // store the loaded emfs in a JPAApplicationContainer object for cleanup
+                                context.addTransientAppMetaData(getUniquePuIdentifier(pud), puLoader );
                             }
                         }
-                        JPAApplication jpaApp = new JPAApplication(pusToInitialize, new ProviderContainerContractInfoImpl(context, connectorRuntime));
-                        context.addTransientAppMetaData(persistenceUnitsDescriptor.getAbsolutePuRoot(), jpaApp );
                     }
             }
 
@@ -131,27 +131,39 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
      * @inheritDoc
      */
     @Override
-    public JPAApplication load(JPAContainer container, DeploymentContext context) {
-        JPAApplication jpaApp = null; //TODO Needs to be removed once prepare clean up is done
+    public JPApplicationContainer load(JPAContainer container, DeploymentContext context) {
         RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
         if (currentBundle == null) {
             // We are being called for an application
             currentBundle = context.getModuleMetaData(Application.class);
         }
 
+        List<EntityManagerFactory> emfsInitializedForThisBundle = new ArrayList<EntityManagerFactory>();
         Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
         for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
-            //TODO PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persitence.xml except
-            // when the bundle is an application which can have multiple persitence.xml under jars in root of ear and lib.
-            // For that case we would only return JPAApplication corresponding to last persistence.xml here which would result in
-            // the emfs not being closed. Fix this post EA.
-            jpaApp = context.getTransientAppMetaData(persistenceUnitsDescriptor.getAbsolutePuRoot(), JPAApplication.class);
-            if (jpaApp != null) {
-                jpaApp.doJava2DB(context);
+            for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
+                //PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persitence.xml except
+                // when the bundle is an application which can have multiple persitence.xml under jars in root of ear and lib.
+                PersistenceUnitLoader puLoader = context.getTransientAppMetaData(getUniquePuIdentifier(pud), PersistenceUnitLoader.class);
+                if (puLoader != null) {
+                    emfsInitializedForThisBundle.add(puLoader.getEMF());
+                    puLoader.doJava2DB();
+                }
             }
         }
-        return jpaApp;
+        return new JPApplicationContainer(emfsInitializedForThisBundle);
     }
+
+    /**
+     * Returns unique identifier for this pu within application
+     * @param pud The given pu
+     * @return Absolute pu root + pu name
+     */
+    private static String getUniquePuIdentifier(PersistenceUnitDescriptor pud) {
+        return pud.getAbsolutePuRoot() + pud.getName();
+     }
+
+
 
 
     private static class ProviderContainerContractInfoImpl
@@ -212,6 +224,14 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
         public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
             return DataSource.class.cast(connectorRuntime.lookupNonTxResource(dataSourceName, false));
+        }
+
+        /**
+         * @return true if applicationj is being deployed false other wise (for example if it is an appserver restart)
+         */
+        public boolean isDeploy() {
+            OpsParams params = deploymentContext.getCommandParameters(OpsParams.class);
+            return params.origin == OpsParams.Origin.deploy;
         }
 
         public DeploymentContext getDeploymentContext() {

@@ -125,6 +125,11 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
         return null;
     }
 
+    public boolean isDeploy() {
+        // Returns whether an application is being deployed into server. For an AppClient it is always false
+        return false;
+    }
+
     public void registerEMF(String unitName, String persistenceRootUri, RootDeploymentDescriptor containingBundle, EntityManagerFactory emf) {
         emfs.add(emf);
     }

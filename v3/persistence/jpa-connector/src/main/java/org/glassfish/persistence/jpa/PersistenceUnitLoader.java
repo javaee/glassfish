@@ -23,9 +23,6 @@
 
 package org.glassfish.persistence.jpa;
 
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.ApplicationContext;
-import org.glassfish.api.deployment.DeploymentContext;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
@@ -39,56 +36,32 @@ import javax.persistence.spi.PersistenceProvider;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
-import java.util.Collection;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represents a JPA Application
+ * Loads emf correspoding to a PersistenceUnit. Executes java2db if required.
  * @author Mitesh Meswani
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JPAApplication implements ApplicationContainer {
-
-    /**
-     * All the PUS referenced by the components of this application.
-     * A component references by a PU using one of the four methods:
-     * \@PersistenceContext, @PersistenceUnit,
-     * <persistence-context-ref> and <persistence-unit-ref>.
-
-     */
-    Collection<PersistenceUnitDescriptor> referencedPus = new ArrayList<PersistenceUnitDescriptor>();
+public class PersistenceUnitLoader {
 
     /**
      * Conduit to talk with container
      */
-    ProviderContainerContractInfo providerContainerContractInfo;
+    private ProviderContainerContractInfo providerContainerContractInfo;
 
-    /**
-     * All the EMFs loaded for this application
-     */
-    Collection<EntityManagerFactory> loadedEMFs = new ArrayList<EntityManagerFactory>();
+    private EntityManagerFactory emf;
 
-    /**
-     * All the EMFs loaded for this application
-     */
-    Collection<EntityManagerFactory> java2dbEMFs = new ArrayList<EntityManagerFactory>();
+    private boolean java2db;
 
     /**
      * The processor instance for the Java2DB work.
      */
-    JPAJava2DBProcessor processor;
+    private JPAJava2DBProcessor processor;
 
-    /**
-     * logger to log loader messages
-     */
-    private static Logger logger = LogDomains.getLogger(JPAApplication.class, LogDomains.LOADER_LOGGER);
-
-    /**
-     * Base Integration properties for various providers
-     */
-    private static Map<String, String> baseIntegrationProperties;
+    // TODO change logger name from DPL_LOGGER to persistence logger
+    private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.DPL_LOGGER);
 
     /**
      * Integration properties that include Java2DB support
@@ -99,9 +72,8 @@ public class JPAApplication implements ApplicationContainer {
      * Integration properties for loading PUs for execution
      */
     private static Map<String, String> integrationPropertiesWithoutJava2DB;
-    
-    JPAApplication(Collection<PersistenceUnitDescriptor> allReferencedPus, ProviderContainerContractInfo providerContainerContractInfo) {
-       this.referencedPus = allReferencedPus;
+
+    PersistenceUnitLoader(PersistenceUnitDescriptor puToInstatntiate, ProviderContainerContractInfo providerContainerContractInfo) {
        this.providerContainerContractInfo = providerContainerContractInfo;
 
        // A hack to work around EclipseLink issue https://bugs.eclipse.org/bugs/show_bug.cgi?id=248328 for prelude
@@ -109,10 +81,15 @@ public class JPAApplication implements ApplicationContainer {
        // set the system property required by EclipseLink before we load it.
        setSystemPropertyToEnableDoPrivilegedInEclipseLink();
 
-       //PUs need to be loaded here so that transformers can be registered into Deploymentcontext in correct phase
-       loadAllPus();
-
+       emf = loadPU(puToInstatntiate);
    }
+
+    /**
+     * @return The emf loaded.
+     */
+    EntityManagerFactory getEMF() {
+        return emf;
+    }
 
     private void setSystemPropertyToEnableDoPrivilegedInEclipseLink() {
         final String PROPERTY_NAME = "eclipselink.security.usedoprivileged";
@@ -124,75 +101,6 @@ public class JPAApplication implements ApplicationContainer {
         }
     }
 
-
-    //-------------- Begin Methods implementing ApplicationContainer interface -------------- //
-    public Object getDescriptor() {
-        return null;
-    }
-
-    public boolean start(ApplicationContext startupContxt) {
-        return true;
-    }
-
-    public boolean stop(ApplicationContext stopContext) {
-        closeAllEMFs();
-        return true;
-    }
-
-    /**
-     * Suspends this application container.
-     *
-     * @return true if suspending was successful, false otherwise.
-     */
-    public boolean suspend() {
-        // Not (yet) supported
-        return false;
-    }
-
-    /**
-     * Resumes this application container.
-     *
-     * @return true if resumption was successful, false otherwise.
-     */
-    public boolean resume() {
-        // Not (yet) supported
-        return false;
-    }
-
-    public ClassLoader getClassLoader() {
-        //TODO: Check with Jerome. Should this return anything but null? currently it does not seem so.
-        return null;
-    }
-
-    //-------------- End Methods implementing ApplicationContainer interface -------------- //
-
-    private void loadAllPus() {
-        String applicationLocation = providerContainerContractInfo.getApplicationLocation();
-        final boolean fineMsgLoggable = logger.isLoggable(Level.FINE);
-        if(fineMsgLoggable) {
-            logger.fine("Loading persistence units for application: " +
-                    applicationLocation);
-        }
-
-        // XXX  - use DeploymentContext directly instead of creating helper instance first
-        Java2DBProcessorHelper helper = new Java2DBProcessorHelper(
-                providerContainerContractInfo.getDeploymentContext());
-
-        boolean isDeploy = helper.isDeploy();
-        if (isDeploy) {
-            processor = new JPAJava2DBProcessor(helper);
-        }
-
-        for(PersistenceUnitDescriptor pu : referencedPus) {
-            EntityManagerFactory emf = loadPU(pu);
-            loadedEMFs.add(emf);
-        }
-        if(fineMsgLoggable) {
-            logger.fine("Finished loading persistence units for application: " +
-                    applicationLocation);
-        }
-    }
-
     /**
      * Loads an individual PersistenceUnitDescriptor and registers the
      * EntityManagerFactory in appropriate DOL structure.
@@ -200,13 +108,18 @@ public class JPAApplication implements ApplicationContainer {
      * @param pud PersistenceUnitDescriptor to be loaded.
      */
     private EntityManagerFactory loadPU(PersistenceUnitDescriptor pud) {
-        if(logger.isLoggable(Level.FINE)) {
-            logger.fine("loading pud " + pud.getPuRoot()); // NOI18N
-        }
+
+
         PersistenceUnitInfo pInfo = new PersistenceUnitInfoImpl(pud, providerContainerContractInfo);
-        if(logger.isLoggable(Level.FINE)) {
+
+        String applicationLocation = providerContainerContractInfo.getApplicationLocation();
+        final boolean fineMsgLoggable = logger.isLoggable(Level.FINE);
+        if(fineMsgLoggable) {
+            logger.fine("Loading persistence unit for application: \"" + applicationLocation + "\"pu Root is: " +
+                    pud.getPuRoot());
             logger.fine("PersistenceInfo for this pud is :\n" + pInfo); // NOI18N
         }
+
         PersistenceProvider provider;
         try {
             // See we use application CL as opposed to system CL to loadPU
@@ -229,40 +142,45 @@ public class JPAApplication implements ApplicationContainer {
             throw new RuntimeException(e);
         }
 
-        boolean isJava2DB = (processor == null) ? false : processor.isJava2DbPU(pud);
-        Map<String, String> overrides = (isJava2DB)? integrationPropertiesWithJava2DB : 
+        // XXX  - use DeploymentContext directly instead of creating helper instance first
+
+        boolean isDeploy = providerContainerContractInfo.isDeploy();
+        if (isDeploy) {
+            processor = new JPAJava2DBProcessor(new Java2DBProcessorHelper(providerContainerContractInfo.getDeploymentContext()));
+            java2db = processor.isJava2DbPU(pud);
+        }
+
+        Map<String, String> overrides = (java2db)? integrationPropertiesWithJava2DB :
                 integrationPropertiesWithoutJava2DB;
 
         EntityManagerFactory emf = provider.createContainerEntityManagerFactory(
                 pInfo, overrides);
-        logger.logp(Level.FINE, "JPAApplication", "loadPU", // NOI18N
-                    "emf = {0}", emf); // NOI18N
+
+        if (fineMsgLoggable) {
+            logger.logp(Level.FINE, "PersistenceUnitLoader", "loadPU", // NOI18N
+                        "emf = {0}", emf); // NOI18N
+        }
 
         PersistenceUnitsDescriptor parent = pud.getParent();
         RootDeploymentDescriptor containingBundle = parent.getParent();
         providerContainerContractInfo.registerEMF(pInfo.getPersistenceUnitName(), pud.getPuRoot(), containingBundle, emf);
 
-        if (isJava2DB) {
-            java2dbEMFs.add(emf);
+        if(fineMsgLoggable) {
+            logger.fine("Finished loading persistence unit for application: " +  // NOI18N
+                    applicationLocation);
         }
-
         return emf;
     }
 
     /**
      * Called during load when the correct classloader and transformer had been
      * already set.
-     * For all EMFs that require Java2DB, call createEntityManager() to populate
+     * For emf that require Java2DB, call createEntityManager() to populate
      * the DDL files, then iterate over those files and execute each line in them.
      */
-    protected void doJava2DB(DeploymentContext ctx) {
-        if (java2dbEMFs.size() == 0) {
-            // Nothing to do.
-            return;
-        }
-
-        final boolean fineMsgLoggable = logger.isLoggable(Level.FINE);
-        for (EntityManagerFactory emf : java2dbEMFs) {
+    void doJava2DB() {
+        if (java2db) {
+            final boolean fineMsgLoggable = logger.isLoggable(Level.FINE);
             EntityManager em = null;
             try {
                 if(fineMsgLoggable) {
@@ -281,42 +199,16 @@ public class JPAApplication implements ApplicationContainer {
             if(fineMsgLoggable) {
                 logger.fine("---> Done Create EM"); // NOI18N
             }
-        }
-        if(fineMsgLoggable) {
-            logger.fine("<--- To Create Tables"); // NOI18N
-        }
+            if(fineMsgLoggable) {
+                logger.fine("<--- To Create Tables"); // NOI18N
+            }
 
-        processor.createTablesInDB();
+            processor.createTablesInDB();
 
-        if(fineMsgLoggable) {
-            logger.fine("---> Done Create Tables"); // NOI18N
-        }
-    }
-
-    private void closeAllEMFs() {
-        String applicationLocation = providerContainerContractInfo.getApplicationLocation();
-        final boolean fineMsgLoggable = logger.isLoggable(Level.FINE);
-        if(fineMsgLoggable) {
-            logger.fine("Unloading persistence units for application: " + // NOI18N
-                    applicationLocation );
-            logger.logp(Level.FINE, "JPAApplication", "closeEMFs", // NOI18N
-                    "loadedEMFs.size() = {0}", // NOI18N
-                    loadedEMFs.size());
-        }
-        for (EntityManagerFactory emf : loadedEMFs) {
-            try {
-                logger.logp(Level.FINE, "JPAApplication",
-                        "closeEMFs", "emf = {0}", emf);
-                emf.close();
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
+            if(fineMsgLoggable) {
+                logger.fine("---> Done Create Tables"); // NOI18N
             }
         }
-        if(fineMsgLoggable) {
-            logger.fine("Finished unloading persistence units for application: " + // NOI18N
-                    applicationLocation);
-        }
-
     }
 
     static {
@@ -360,13 +252,13 @@ public class JPAApplication implements ApplicationContainer {
 
         // use an unmodifiable map as we pass this to provider and we don't
         // provider to change this.
-        baseIntegrationProperties = Collections.unmodifiableMap(props);
+        Map<String, String> baseIntegrationProperties = Collections.unmodifiableMap(props);
 
         // ------------------- Java2DB -------------------------
 
         // Create map for Java2DB that includes base properties 
         // and Java2DB specific.
-        Map<String, String> java2dbProps = new HashMap(props);
+        Map<String, String> java2dbProps = new HashMap<String, String>(baseIntegrationProperties);
 
         final String DROP_AND_CREATE         = "drop-and-create-tables"; //NOI18N
         final String TOPLINK_DDL_GENERATION     = "toplink.ddl-generation"; // NOI18N
@@ -389,7 +281,7 @@ public class JPAApplication implements ApplicationContainer {
         // ------------------- Non-Java2DB -------------------------
 
         // Create map for non-Java2DB case, which is the load or Java2DB is not specified.
-        Map<String, String> nonjava2dbProps = new HashMap(props);
+        Map<String, String> nonjava2dbProps = new HashMap<String, String>(baseIntegrationProperties);
 
         final String ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY =
                 "eclipselink.ddl-generation.output-mode"; // NOI18N

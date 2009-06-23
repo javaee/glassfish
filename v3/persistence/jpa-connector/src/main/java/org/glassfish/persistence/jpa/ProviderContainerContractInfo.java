@@ -93,6 +93,12 @@ public interface ProviderContainerContractInfo {
     DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException;
 
     /**
+     * Answers whether an application is being deployed
+     * @return true if application is being deployed false otherwise
+     */
+    boolean isDeploy();
+
+    /**
      * @return DeploymentContext associated with this instance.
      */
     DeploymentContext getDeploymentContext();
