@@ -42,20 +42,17 @@ import com.sun.jsftemplating.component.factory.tree.TreeAdaptor;
 import com.sun.jsftemplating.component.factory.tree.TreeAdaptorBase;
 import com.sun.jsftemplating.layout.descriptors.LayoutComponent;
 import com.sun.jsftemplating.layout.event.CommandActionListener;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import javax.faces.component.ActionSource;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -219,8 +216,7 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	    // In this implementation _objectName represents the top-level,
 	    // we need to find its children here
 	    if (_children != null) {
-		return _children;
-	    }
+		return _children;	    }
             
             try{
                 if (_useV3AMX == true ){
@@ -239,22 +235,9 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
                             }
                         }
                 }else {
-                    Set<AMX> amxBeans = AMXRoot.getInstance().getQueryMgr().queryPatternSet(new ObjectName(_objectName));
-                    if (amxBeans.isEmpty()){
-                        System.out.println("Tree:  Cannot find AMX Object: " + _objectName);
-                        return null;
-                    }else{
-                        AMX amxBean = (AMX) amxBeans.toArray()[0];
-                        //TODO: as we are using AMX to get the list of subnodes, AMX API NEVER require a parameter for this kind of operations.
-                        //If there is such case, we may want to add code to support that instead of hard coding null here.
-                        //for v3 prelude, i just leave it as null.
-                        Method m = amxBean.getClass().getDeclaredMethod( _methodName,  (java.lang.Class[]) null);
-                        Map mapOfBeans = (Map)  m.invoke(amxBean, (java.lang.Object[]) null);
-                        if (mapOfBeans != null){
-                            _children = new ArrayList(mapOfBeans.values());
-                        }
-                    }
+                    System.out.println("!!!!!!!!!!! NOT USING V3AMX for MBeanTreeAdaptor : " + _objectName);
                 }
+
             }catch (Exception ex3){
                 ex3.printStackTrace();
 
