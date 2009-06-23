@@ -75,19 +75,19 @@
      <sun:propertySheet id="propertySheet">
          <!-- Text Field section -->
          <sun:propertySheetSection id="propertySectionTextField">
-             <sun:property id="MinSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.minSizeLabel}" helpText="$resource{i18n_ejb.ejbSettings.minSizeHelp}">
+             <sun:property id="MinSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.minSizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.minSizeHelp}">
                  <sun:textField id="MinSize" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['SteadyPoolSize']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejb.ejb.NumBeans}"/>
              </sun:property>
-             <sun:property id="MaxSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.maxSizeLabel}" helpText="$resource{i18n_ejb.ejbSettings.maxSizeHelp}">
+             <sun:property id="MaxSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.maxSizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.maxSizeHelp}">
                  <sun:textField id="MaxSize" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['MaxPoolSize']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejb.ejb.NumBeans}"/>
              </sun:property>
-             <sun:property id="PoolResizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.poolResizeLabel}" helpText="$resource{i18n_ejb.ejbSettings.poolResizeHelp}">
+             <sun:property id="PoolResizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.poolResizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.poolResizeHelp}">
                  <sun:textField id="PoolResize" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['PoolResizeQuantity']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejb.ejb.NumBeans}"/>
              </sun:property>
-             <sun:property id="TimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbMdbSettings.timeoutLabel}" helpText="$resource{i18n_ejb.ejbMdbSettings.timeoutHelp}">
+             <sun:property id="TimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbMdbSettings.timeoutLabel}" helpText="$resource{i18n_ejbLite.ejbMdbSettings.timeoutHelp}">
                  <sun:textField id="Timeout" styleClass="integer" columns="$int{20}" style="padding-bottom 8pt" text="#{pageSession.valueMap['IdleTimeoutInSeconds']}" />
                  <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
              </sun:property>
