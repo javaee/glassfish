@@ -85,7 +85,18 @@
             <groupId>org.glassfish.orb</groupId>
             <artifactId>orb-iiop</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-ejb-plugin</artifactId>
+            <version>${project.version}</version>
         </dependency> 
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-corba-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
          <!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
        <dependency>        
