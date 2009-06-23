@@ -86,7 +86,9 @@
         <module>community-theme</module>
         <module>web</module>
         <module>jdbc-gui</module>
-        <module>ejb-gui</module>
+        <module>ejb</module>
+        <module>ejb-lite</module>
+        <module>corba</module>
         <module>security</module>
         <module>updatecenter</module>
         <module>war</module>
