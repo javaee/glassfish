@@ -495,6 +495,21 @@ FIXME: 7-31-08 -- FIX by importing woodstock api's.
         return habitat;
     }
     
+    public static List<Map<String, Object>> convertArrayToListOfMap(Object[] values, String key) {
+        List<Map<String, Object>> list = new ArrayList();
+        if (values != null) {
+            Map<String, Object> map = null;
+            for (Object val : values) {
+                map = new HashMap<String, Object>();
+                map.put(key, val);
+                map.put("selected", false);
+                list.add(map);
+            }
+        }
+
+        return list;
+    }    
+    
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
 }
