@@ -78,9 +78,9 @@ interface Launchable {
 
     URI getURI();
 
-    static class LauchableUtil {
+    static class LaunchableUtil {
 
-        private static final LocalStringManager localStrings = new LocalStringManagerImpl(Launchable.LauchableUtil.class);
+        private static final LocalStringManager localStrings = new LocalStringManagerImpl(Launchable.LaunchableUtil.class);
         static Launchable newLaunchable(final URI uri,
                 final String callerSuppliedMainClassName,
                 final String callerSuppliedAppName) throws IOException, BootException, URISyntaxException, XMLStreamException, SAXParseException, UserError {

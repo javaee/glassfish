@@ -144,7 +144,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
     public AppClientContainer newContainer(final Class mainClass,
             final CallbackHandler callerSpecifiedCallbackHandler) throws Exception {
         prepareHabitatAndNaming();
-        Launchable client = Launchable.LauchableUtil.newLaunchable(mainClass);
+        Launchable client = Launchable.LaunchableUtil.newLaunchable(mainClass);
         AppClientContainer container = createContainer(client, callerSpecifiedCallbackHandler);
         return container;
     }
@@ -158,7 +158,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
             final String callerSpecifiedMainClassName,
             final String callerSpecifiedAppClientName) throws Exception, UserError {
         prepareHabitatAndNaming();
-        Launchable client = Launchable.LauchableUtil.newLaunchable(
+        Launchable client = Launchable.LaunchableUtil.newLaunchable(
                 clientURI,
                 callerSpecifiedMainClassName,
                 callerSpecifiedAppClientName);

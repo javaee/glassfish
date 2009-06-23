@@ -221,7 +221,7 @@ public class FacadeLaunchable implements Launchable {
             ReadableArchive clientRA = af.openArchive(clientURI);
             /*
              * Look for an entry corresponding to the
-             * main class or app name the caller requested.  Treat as a
+             * main class or app name the caller requested.  Treat as a%
              * special case if the user specifies no main class and no
              * app name - use the first app client present.  Also use the
              * first app client if there is only one present; warn if
@@ -229,15 +229,25 @@ public class FacadeLaunchable implements Launchable {
              * match the single app client that's present.
              */
             FacadeLaunchable facade = null;
-            if ((callerSpecifiedMainClassName == null && callerSpecifiedAppClientName == null) || archiveURIs.length == 1) {
-                facade = new FacadeLaunchable(clientFacadeRA, facadeMainAttrs, clientRA, facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS));
-                if (!Launchable.LauchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName) || !Launchable.LauchableUtil.matchesName(clientRA, callerSpecifiedAppClientName)) {
+            if (archiveURIs.length == 1) {
+                facade = new FacadeLaunchable(clientFacadeRA, facadeMainAttrs,
+                        clientRA, facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS));
+                /*
+                 * If the user specified a main class or an app name then warn
+                 * if that value does not match the one client we found - but
+                 * go ahead an run it anyway.
+                 */
+                if ((callerSpecifiedMainClassName != null &&
+                        ! Launchable.LaunchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName))
+                    ||
+                    (callerSpecifiedAppClientName != null &&
+                        ! Launchable.LaunchableUtil.matchesName(clientRA, callerSpecifiedAppClientName))) {
                     final String msg = localStrings.getLocalString(FacadeLaunchable.class, "appclient.singleNestedClientNoMatch", "Using the only client in {0} even though it does not match the specified main class name or client name", new Object[]{groupFacadeURI});
                     logger.warning(msg);
                 }
-            } else if (Launchable.LauchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
+            } else if (Launchable.LaunchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
                 facade = new FacadeLaunchable(clientFacadeRA, facadeMainAttrs, clientRA, callerSpecifiedMainClassName);
-            } else if (Launchable.LauchableUtil.matchesName(clientRA, callerSpecifiedAppClientName)) {
+            } else if (Launchable.LaunchableUtil.matchesName(clientRA, callerSpecifiedAppClientName)) {
                 facade = new FacadeLaunchable(clientFacadeRA, facadeMainAttrs, clientRA, facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS));
             }
             if (facade != null) {
