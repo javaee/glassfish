@@ -55,9 +55,6 @@
         getRequestValue(key="appType" value=>$page{appType});
         getRequestValue(key="target" value=>$page{target});
         setPageSessionAttribute(key="enabled" value="#{true}");
-        if( $session{supportCluster}) {
-            #getTargetsOptionsList(defaultTarget="$pageSession{target}"AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
-        }
     />
     </event>
 #include "/shared/restart.inc"  
