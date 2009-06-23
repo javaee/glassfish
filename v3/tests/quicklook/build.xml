@@ -40,7 +40,6 @@
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
-     <import file="${basedir}/gfproject/v3-targets.xml"/>
     
     <description>Builds, tests, and runs the project V3 Quicklook</description>
     <target name="all_wd" depends="clean">
