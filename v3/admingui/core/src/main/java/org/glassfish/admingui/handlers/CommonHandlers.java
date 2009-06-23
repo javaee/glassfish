@@ -45,16 +45,12 @@
 
 package org.glassfish.admingui.handlers;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.AMXUtil;
-import com.sun.enterprise.util.SystemPropertyConstants;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -63,23 +59,21 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.util.Util;
 
 import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.config.PropertiesAccess;
 import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
-
 
 import com.sun.webui.jsf.component.Calendar;
 
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.DASConfig;
 
-import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Cookie;
+import org.glassfish.admingui.common.util.AMX;
 import org.glassfish.admingui.common.util.MiscUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.util.HtmlAdaptor;
 
 
@@ -88,20 +82,7 @@ public class CommonHandlers {
     /** Creates a new instance of CommonHandlers */
     public CommonHandlers() {
     }
-    
-    /**
-     *	<p> This handler returns true if clusters are supported  </p>
-     *
-     *  <p> Output value: "isEE" -- Type: <code>Boolean</code>/</p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="isEE",
-    output={
-        @HandlerOutput(name="isEE", type=Boolean.class)})
-        public static void isEE(HandlerContext handlerCtx) {
-            handlerCtx.setOutputValue("isEE", AMXRoot.getInstance().isEE());    
-    }
-    
+
     /**
      * <p> This handler will be called during initialization when Cluster Support is detected.
      */
@@ -116,7 +97,7 @@ public class CommonHandlers {
         sessionMap.put("appclientSummaryView", true);
         sessionMap.put("rarSummaryView", true);
         sessionMap.put("lifecycleSummaryView", true);
-        
+    
         sessionMap.put("adminObjectSummaryView", true);
         sessionMap.put("connectorResSummaryView", true);
         sessionMap.put("customResSummaryView", true);
@@ -126,7 +107,7 @@ public class CommonHandlers {
         sessionMap.put("jmsConnectionSummaryView", true);
         sessionMap.put("jmsDestinationSummaryView", true);
     }
-    
+
     /**
      * <p> This handler will be called during initialization for doing any initialization.
      */
@@ -138,36 +119,7 @@ public class CommonHandlers {
         //Ensure this method is called once per session
         Object initialized = sessionMap.get("_SESSION_INITIALIZED");
         if (initialized != null) 
-            return;
-        
-        /* TODO-V3  
-        try{
-            
-            //Get number of new updates available
-            int numUpdates = domainRoot.getUpdateStatus().getNumModules();
-            GuiUtil.setSessionValue(UPDATE_CENTER_NUM_UPDATES, ""+numUpdates);
-        
-            //Get number of new software available
-            //int numNewModules = amxRoot.getUpdateStatus().getNumNewSoftware();
-            int numNewModules = numUpdates;   //TODO
-            GuiUtil.setSessionValue(UPDATE_CENTER_NUM_SOFTWARES, ""+numNewModules);
-
-            String msg = GuiUtil.getMessage("updateCenter.commonTask.noNewUpdates");
-            if (numNewModules != 0){
-                msg = GuiUtil.getMessage("updateCenter.commonTask.hasNewModules",  new Object[]{numNewModules});
-            }else
-            if (numUpdates != 0){
-                msg = GuiUtil.getMessage("updateCenter.commonTask.hasNewUpdates",  new Object[]{numUpdates});
-            
-            }
-            GuiUtil.setSessionValue("updateCenterTaskName", msg);
-        }catch(Exception ex){
-            //ex.printStackTrace();    was told that we shouldn't log update center exception
-            sessionMap.put(UPDATE_CENTER_NUM_UPDATES, "0");
-            sessionMap.put(UPDATE_CENTER_NUM_SOFTWARES, "0");
-        }
-        */
-        
+       
         try{
             sessionMap.put("domainName", domainRoot.getAppserverDomainName());
         }catch(Exception ex){
@@ -183,11 +135,8 @@ public class CommonHandlers {
             ServletRequest srequest = (ServletRequest) request;
             String serverName = srequest.getServerName();
             HtmlAdaptor.registerHTMLAdaptor(AMXRoot.getInstance().getMBeanServerConnection());
-            //String serverPortStr = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getHTTPListenerConfigMap().get("admin-listener").getPort();
-            //int serverPort = Integer.parseInt(serverPortStr);
-            int serverPort = 4848;
             sessionMap.put("serverName", serverName);
-            sessionMap.put("serverPort", serverPort);
+            sessionMap.put("serverPort", V3AMX.getAdminPort());
             sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
         }else{
             //should never get here.
@@ -199,7 +148,9 @@ public class CommonHandlers {
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));
         sessionMap.put("reqNum", GuiUtil.getMessage("msg.JS.enterNumericValue"));
         sessionMap.put("reqPort", GuiUtil.getMessage("msg.JS.enterPortValue"));
-        sessionMap.put("_SESSION_INITIALIZED","TRUE");
+        sessionMap.put("RUNTIME", AMX.RUNTIME);
+        sessionMap.put("DOMAIN_ROOT", AMX.DOMAIN_ROOT);
+        sessionMap.put("ADMIN_LISTENER", AMX.ADMIN_LISTENER);
         
         ConfigConfig config = AMXRoot.getInstance().getConfig("server-config");
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
@@ -271,8 +222,7 @@ public class CommonHandlers {
         output={
         @HandlerOutput(name="version", type=String.class)})
     public static void getAppServerVersion(HandlerContext handlerCtx) {
-        
-        String version = AMXRoot.getInstance().getDomainRoot().getApplicationServerFullVersion();
+        String version = (String) V3AMX.getAttrsMap(AMX.DOMAIN_ROOT).get("ApplicationServerFullVersion");
         handlerCtx.setOutputValue("version", version);
     }
 
@@ -286,8 +236,8 @@ public class CommonHandlers {
         output={
         @HandlerOutput(name="fullVersion", type=String.class)})
     public static void getAppServerFullVersion(HandlerContext handlerCtx) {
-        String version = AMXRoot.getInstance().getDomainRoot().getApplicationServerFullVersion();
-        handlerCtx.setOutputValue("fullVersion", version); 
+        String version = (String) V3AMX.getAttrsMap(AMX.DOMAIN_ROOT).get("ApplicationServerFullVersion");
+        handlerCtx.setOutputValue("fullVersion", version);
     }
     
      /**
@@ -317,26 +267,7 @@ public class CommonHandlers {
     }
     
     
-    
-    /**
-     * <p> This handler returns the config name of the specified instance or cluster.
-     *
-     * <p> Input value: "target" -- Type: <code>String</code> <p>
-     * <p> Output Value: "configName" -- Type: <code>String</code> <p>
-     *@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getConfigName",
-    input={
-        @HandlerInput(name="target", type=String.class, required=true )},
-    output={
-        @HandlerOutput(name="configName", type=String.class)}
-    )
-    public static void getConfigName(HandlerContext handlerCtx) {
-        
-        String target = (String) handlerCtx.getInputValue("target");
-        String configName = AMXRoot.getInstance().getConfigName(target);
-        handlerCtx.setOutputValue("configName", configName);
-   } 
+
     /**
      * <p> This handler returns the encoded String using the type specified.
      * <p> If type is not specified, it defaults to UTF-8.
@@ -545,156 +476,8 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("RestartRequired", changes.size() > 0); 
         handlerCtx.setOutputValue("unprocessedChanges", changes); 
     }
-    
-    /**
-     * <p> Get the Property Value of the AMX mbean.<p>
-     *
-     */
-    @Handler(id="getPropsValue",
-    input={
-        @HandlerInput(name="mbean", type=PropertiesAccess.class, required=true),
-        @HandlerInput(name="propsName", type=java.util.List.class, required=true)},
-    output={
-        @HandlerOutput(name="propsValue", type=java.util.List.class)}
-    )
-    public void getPropsValue(HandlerContext handlerCtx) {
-        
-        PropertiesAccess mbean = (PropertiesAccess)handlerCtx.getInputValue("mbean");
-        List<String> propsName = (List)handlerCtx.getInputValue("propsName");
-        if (mbean==null){
-            if (propsName != null){
-                handlerCtx.setOutputValue("propsValue", new ArrayList(propsName.size()));
-            }
-            return;
-        }
-        Map<String, PropertyConfig>  mbeanProps = mbean.getPropertyConfigMap();
-        List propsValue = new ArrayList(propsName.size());
-        for(String nm : propsName){
-           String value = mbeanProps.get(nm).getValue();
-           propsValue.add( (value==null) ? "" : value);
-        }
-        handlerCtx.setOutputValue("propsValue", propsValue);
-    }
-    
-    /**
-     * <p> Save the Property Value of the AMX mbean.<p>
-     *
-     */
-    @Handler(id="savePropsValue",
-    input={
-        @HandlerInput(name="mbean", type=PropertiesAccess.class, required=true),
-        @HandlerInput(name="propsName", type=java.util.List.class, required=true),
-        @HandlerInput(name="propsValue", type=java.util.List.class, required=true)}
-    )
-    public void savePropsValue(HandlerContext handlerCtx) {
-        
-        PropertiesAccess mbean = (PropertiesAccess)handlerCtx.getInputValue("mbean");
-        List<String> propsName = (List)handlerCtx.getInputValue("propsName");
-        List<String> propsValue = (List)handlerCtx.getInputValue("propsValue");
-        if (mbean==null){
-            //TODO: log error
-            return;
-        }
-        for(int i=0; i<propsName.size(); i++){
-           AMXUtil.setPropertyValue(mbean, propsValue.get(i), propsName.get(i));
-        }
-    }
-    
-    
-    /**
-     * <P> returns the list of Properties of the specified mbean.
-     * The list returned will not contain the specified "ignoreProps"
-     */
-     @Handler(id="getMbeanProperties",
-    input={
-        @HandlerInput(name="mbean", type=PropertiesAccess.class, required=true),
-        @HandlerInput(name="ignoreProps", type=java.util.List.class)},
-    output={
-        @HandlerOutput(name="result", type=Map.class)}
-    )
-    public void getMbeanProperties(HandlerContext handlerCtx) {
-        
-        PropertiesAccess mbean = (PropertiesAccess)handlerCtx.getInputValue("mbean");
-        List<String> ignoreProps = (List)handlerCtx.getInputValue("ignoreProps");
-        Map<String,PropertyConfig> allProps = mbean.getPropertyConfigMap();
-        
-        if (ignoreProps != null ){
-            for(String nm : ignoreProps){
-                if (allProps.get(nm) != null){
-                    allProps.remove(nm);
-                }
-            }
-        }
-        handlerCtx.setOutputValue("result", allProps);
-     }
-     
-    /**
-     * <p> Get the Property Value of the AMX mbean.<p>
-     *
-     */
-    @Handler(id="getChartingCookieName",
-    output={
-        @HandlerOutput(name="cookieName", type=String.class)}
-    )
-    public void getChartingCookieName(HandlerContext handlerCtx) {
-        String userName = (String) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("userName");
-        handlerCtx.setOutputValue("cookieName", userName + "." + CHARTING_COOKIE_NAME);
-    }
-    
-    
-    /**
-     * <p> returns the charting cookie value. 
-     *
-     */
-    @Handler(id="getChartingCookieInfo",
-    output={
-        @HandlerOutput(name="name", type=String.class),
-        @HandlerOutput(name="doCharting", type=Boolean.class),
-        @HandlerOutput(name="setCookieTo", type=String.class)}
-    )
-    public void getChartingCookieInfo(HandlerContext handlerCtx) {
-        String userName = (String) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("userName");
-        String cookieName =  userName + "." + CHARTING_COOKIE_NAME;
-        Map<String, Object> cookies = handlerCtx.getFacesContext().getExternalContext().getRequestCookieMap();
-        Cookie cookie = (Cookie) cookies.get(cookieName);
-        String value = (cookie == null) ? "" : cookie.getValue();
-        handlerCtx.setOutputValue("name", cookieName);
-        handlerCtx.setOutputValue("doCharting", value.equals("true"));
-        handlerCtx.setOutputValue("setCookieTo", (value.equals("true"))?  "false" : "true");
-    }
 
-    /**
-     * <p> returns update center info. 
-     *
-     */
-    @Handler(id="getUpdateCenterInfo",
-    output={
-        @HandlerOutput(name="updates", type=String.class),
-        @HandlerOutput(name="modules", type=String.class),
-        @HandlerOutput(name="tool", type=String.class),
-        @HandlerOutput(name="wiki", type=String.class)}
-    )
-    public void getUpdateCenterInfo(HandlerContext handlerCtx) {
-        //Get number of new updates available
-        String numUpdates = (String) GuiUtil.getSessionValue(UPDATE_CENTER_NUM_UPDATES);
-        //Get number of new software available
-        String numNewModules = (String) GuiUtil.getSessionValue(UPDATE_CENTER_NUM_SOFTWARES);
-        
-        //Get Update Center tools location
-        String installRoot = System.getProperty(
-                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-        if (installRoot == null) {
-            installRoot="install-root";
-        }
-        String updateTool = installRoot + File.separator + "updatecenter" +
-                File.separator + "bin" + File.separator + "updatetool";
-        updateTool = updateTool.replace('\\', '/');
-        
-        handlerCtx.setOutputValue("updates", numUpdates);
-        handlerCtx.setOutputValue("modules", numNewModules);
-        handlerCtx.setOutputValue("tool", updateTool);
-        handlerCtx.setOutputValue("wiki", "http://wiki.updatecenter.java.net/Wiki.jsp?page=GettingStarted");        
-    }
+ 
     /**
      * <p> This handler sets a property on an object which is stored in an existing key
      * For example "advance.lazyConnectionEnlistment".  <strong>Note</strong>:  This does
