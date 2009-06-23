@@ -78,11 +78,12 @@
             <sun:property id="JmxProtocolProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxProtocolLabel}" >
                 <sun:staticText id="JmxProtocol" text="#{pageSession.valueMap2['Protocol']}" />
             </sun:property>
-            <!--
             <sun:property id="JmxServUrlProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxServUrlLabel}" >
-                <sun:staticText id="JmxServUrl" text="#{pageSession.valueMap2['Port']}" />
+                <sun:staticText id="JmxServUrl" text="#{pageSession.jmxURL}" />
+                <!beforeCreate
+                    getProxyAttribute(objectNameStr="#{sessionScope.RUNTIME}" attrName="JMXServiceURLs" index="0" value="#{pageSession.jmxURL}")
+                />
             </sun:property>
-            -->
             <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.securityLabel}" >
                 <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap2['SecurityEnabled']}" />
             </sun:property>
