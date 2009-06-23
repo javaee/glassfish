@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="ejb">
+     <!-- Adding Tabs to the EJB Container page for MDB and EJB Timer -->
+        <integration-point
+                id="ejbtabs"
+                type="org.glassfish.ejb.admingui:ejbContainerTabs"
+                priority="20"
+                parentId="ejbContainerTabs"
+                content="configuration/mdbEjbTimerTabs.inc"
+        />
+</console-config>
