@@ -155,6 +155,8 @@
                 <pathelement location="${build.classes.home}"/>
                 <pathelement location="${basedir}/etc"/>
             </classpath>
+            <sysproperty key="-Djava.endorsed.dirs" value="${glassfish.home}/modules/endorsed"/>
+
         </java>
     </target>
 

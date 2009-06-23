@@ -288,9 +288,6 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
                         jaxwsEndPtFound = true;
 
 
-                        QName servicename = endpoint.getServiceName();
-
-
                         Thread.currentThread().setContextClassLoader(dc.getClassLoader())  ;
 
                     } else {
@@ -330,7 +327,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
      *
      * @return the meta data for this Deployer
      */
-    @Override
+
     public MetaData getMetaData() {
         return new MetaData(false, null, new Class[] {Application.class});
     }

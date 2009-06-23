@@ -292,6 +292,7 @@
         <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+
     </testng>
 </target>
 
@@ -305,6 +306,7 @@
         <xmlfileset dir="." includes="testng.xml"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+
     </testng>
 </target>
 
@@ -343,7 +345,10 @@
             <classfileset dir="${build.classes.home}" includes="**/${testng.testclient}.class"/>
             <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
             <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+            <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
             <bootclasspath classpathref="boot.class.path"/>
+<sysproperty key="-Djava.endorsed.dirs" value="${glassfish.home}/modules/endorsed"/>
+
 
         </testng>
     </target>
@@ -358,7 +363,10 @@
             <xmlfileset dir="." includes="testng.xml"/>
             <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
             <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+            <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
             <bootclasspath classpathref="boot.class.path"/>
+<sysproperty key="-Djava.endorsed.dirs" value="${glassfish.home}/modules/endorsed"/>
+
 
         </testng>
     </target>
