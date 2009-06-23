@@ -72,7 +72,7 @@ public class AsadminMain {
         className = main.getClass().getName();
 
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
-        String command = args[0];
+        command = args[0];
         try {
             exitCode = main.local(args);
         }
@@ -150,8 +150,14 @@ public class AsadminMain {
     }
     public int remote(String[] args) {
         try {
-            CLIRemoteCommand rc = new CLIRemoteCommand(args);
-            rc.runCommand();
+	    if (System.getenv("ASADMIN_NEW") != null) {
+		NCLIRemoteCommand rc = new NCLIRemoteCommand(args);
+		command = rc.getCommandName();
+		rc.runCommand();
+	    } else {
+		CLIRemoteCommand rc = new CLIRemoteCommand(args);
+		rc.runCommand();
+	    }
             return SUCCESS;
         }
         catch (Throwable ex) {
@@ -272,6 +278,7 @@ public class AsadminMain {
     private       static String[] copyOfArgs;
     private       static String classPath;
     private       static String className;
+    private       static String command;
     private       static Map<String, String> systemProps;
 
     static {
