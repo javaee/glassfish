@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="corba">
+        <integration-point 
+                id="corba"
+                type="org.glassfish.admingui:navNode" 
+                priority="250"
+                parentId="configuration" 
+                content="corbaPluginTreeNode.jsf"
+        />
+</console-config>
