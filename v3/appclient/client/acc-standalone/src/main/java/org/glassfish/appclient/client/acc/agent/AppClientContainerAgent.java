@@ -230,7 +230,7 @@ public class AppClientContainerAgent {
                  * needs to prepare the container.  (This is done as part of the
                  * AppClientContainer.start() processing in the public API.
                  */
-                acc.prepare();
+                acc.prepare(inst);
             }
             
             /*
