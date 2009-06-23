@@ -56,9 +56,22 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
 
 import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
+
+import javax.management.ObjectName;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
+import org.glassfish.admin.amx.intf.config.ConfigTools;
 
 import com.sun.appserv.management.config.IIOPServiceConfig;
 import com.sun.appserv.management.config.IIOPListenerConfig;
@@ -178,7 +191,70 @@ public class InstanceHandler {
         return "";
     }
 
+@Handler(id="getProfilerAttrs",
+    output={
+        @HandlerOutput(name="objectName",        type=String.class),
+        @HandlerOutput(name="edit",        type=Boolean.class)})
 
+        public static void getProfilerAttrs(HandlerContext handlerCtx) {
+        ObjectName objName = null;
+        Boolean edit = false; 
+        try{
+            AMXProxy amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName("v3:pp=/domain/configs/config[server-config],type=java-config"));
+            objName = (ObjectName) amx.attributesMap().get("Profiler");
+            if (objName != null) {
+                edit = true;
+            }
+            handlerCtx.setOutputValue("edit", edit);
+            handlerCtx.setOutputValue("objectName", objName);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            handlerCtx.setOutputValue("edit", false); 
+        }
+    }    
+
+ @Handler(id="getJvmOptionsValues",
+    input={
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="result", type=java.util.List.class)})
+
+        public static void getJvmOptionsValues(HandlerContext handlerCtx) {
+        List result = new ArrayList();
+        try{
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+            final String[] options = (String[])amx.attributesMap().get("JvmOptions");
+            handlerCtx.setOutputValue("result", GuiUtil.convertArrayToListOfMap(options, "Value"));
+        }catch (Exception ex){
+            ex.printStackTrace();
+            handlerCtx.setOutputValue("result", new HashMap());
+        }
+    }   
+ 
+     @Handler(id="saveJvmOptionValues",
+    input={
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
+        @HandlerInput(name="options",   type=List.class)} )
+       public static void saveJvmOptionValues(HandlerContext handlerCtx) {
+        List newList = new ArrayList();
+        try {
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            ObjectName objectName = new ObjectName(objectNameStr);
+            List<Map<String, String>> options = (List) handlerCtx.getInputValue("options");
+            AttributeList attrList = new AttributeList();
+            for (Map<String, String> oneRow : options) {
+                String value = oneRow.get(PROPERTY_VALUE);
+                if (!GuiUtil.isEmpty(value)) {
+                    newList.add(value);
+                }
+            }
+            V3AMX.setAttribute(objectName, new Attribute("JvmOptions", (String[]) newList.toArray(new String[0])));
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+    
     /**
      *	<p> This handler stops DAS immediately.</p>
      */
@@ -186,6 +262,8 @@ public class InstanceHandler {
     public static void stopDAS(HandlerContext handlerCtx) {
         AMXRoot.getInstance().getDomainRoot().executeREST(DomainRoot.STOP_DOMAIN);
     }
+    
+    private static final String PROPERTY_VALUE = "Value";
 }
         
  
