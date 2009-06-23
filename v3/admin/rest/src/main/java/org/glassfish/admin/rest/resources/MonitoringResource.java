@@ -53,7 +53,8 @@ import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 /**
  * @author rajeshwar patil
  */
-@Path("monitoring{path:.*}")
+//@Path("monitoring{path:.*}")
+@Path("domain{path:.*}")
 public class MonitoringResource {
 
     @PathParam("path")

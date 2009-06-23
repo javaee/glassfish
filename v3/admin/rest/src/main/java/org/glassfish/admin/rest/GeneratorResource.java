@@ -60,8 +60,8 @@ import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 
 /**
- *
  * @author Ludovic Champenois ludo@dev.java.net
+ * @author Rajeshwar Patil
  */
 @Path("/generator/")
 public class GeneratorResource {
@@ -230,6 +230,9 @@ public class GeneratorResource {
         out.write("\t\treturn resource;\n");
         out.write("\t}\n\n");
         generateCommand("List" + beanName, out);
+
+        out.write("\n");
+        generateGetPostCommandMethod("List" + beanName, out);
 
         out.write("}\n");
 
@@ -452,8 +455,8 @@ public class GeneratorResource {
                     System.out.println("command param name is" + pm.getParam().name());
                 }
                 ///\"" + a + "
-                out.write("@Path(\"commands/" + MappingConfigBeansToCommands[i][1] + " \")\n");
-                out.write("@GET\n");
+                out.write("@Path(\"commands/" + MappingConfigBeansToCommands[i][1] + "\")\n");
+                out.write("@POST\n");
                 String ret = "org.jvnet.hk2.config.Dom";
                 if (resourceName.startsWith("List")) {
                     ret = "List<org.jvnet.hk2.config.Dom>";
@@ -518,13 +521,35 @@ public class GeneratorResource {
         return ret;
     }
 
+
+    void generateGetPostCommandMethod(String resourceName, BufferedWriter out) throws IOException {
+        String commandName = getPostCommandName(resourceName);
+        out.write("public String getPostCommand() {\n");
+        if (commandName != null) {
+            out.write("\treturn \"" + commandName + "\";\n");
+        } else {
+            out.write("\treturn " + commandName + ";\n");
+        }
+        out.write("}\n");
+    }
+
+
+    private String getPostCommandName(String resourceName) {
+        //FIXME - fetch command name from config bean(RestRedirect annotation).
+        for (int i = 0; i < MappingConfigBeansToPOSTCommands.length; i++) {
+            if (resourceName.equals(MappingConfigBeansToPOSTCommands[i][0])) {
+                    return MappingConfigBeansToPOSTCommands[i][1];
+            }
+        }
+        return null; //POST is not mapped to any create command for this resource
+    }
+
     /*
      * temporary mapping to add Admin Commands to some of our configbeans
      *
      * */
     
     private static String MappingConfigBeansToCommands[][] = {
-
         {"Domain", "stop-domain"},
         {"Domain", "restart-domain"},
         {"Domain", "uptime"},
@@ -614,4 +639,39 @@ public class GeneratorResource {
 
 
      **/};
+
+
+    private static String MappingConfigBeansToPOSTCommands[][] = {
+        {"ListApplication", "deploy"},
+        {"Application", "redeploy"},
+        {"ListAdminObjectResource", "create-admin-object"},
+        {"ListCustomResource", "create-custom-resource"},
+        {"ListJdbcResource", "create-jdbc-resource"},
+        //  {"ListExternalJndiResource", ""},
+        {"ListJdbcConnectionPool", "create-jdbc-connection-pool"},
+        {"ListConnectorResource", "create-connector-resource"},
+        {"ListMailResource", "create-javamail-resource"},
+        //{"ListWorkSecurityMap", ""},
+        {"ListResourceAdapterConfig", "create-resource-adapter-config"},
+        {"ListConnectorConnectionPool", "create-connector-connection-pool"},
+        //{"ListPersistenceManagerFactoryResource", ""},
+
+        {"ListAuthRealm", "create-auth-realm"},
+        {"ListAuditModule", "create-audit-module"},
+        //{"", "create-connector-work-security-map"},
+        //  {"", "create-file-user"},
+        {"ListHttpListener", "create-http-listener"},
+        {"ListIiopListener", "create-iiop-listener"},
+        {"ListJmsHost", "create-jms-host"},
+        //    {"", "create-jmsResource"},
+        //    {"", "create-jmsdest"},
+        //   {"", "create-jvm-options"},
+        {"ListMessageSecurityConfig", "create-message-security-provider"},
+        //    {"", "create-password-alias"},
+        {"JavaConfig", "create-profiler"},
+        {"ListResourceRef", "create-resource-ref"},
+        ////    {"", "create-ssl"},
+        {"ListSystemProperty", "create-system-properties"},
+        {"ListVirtualServer", "create-virtual-server"},
+     };
 }

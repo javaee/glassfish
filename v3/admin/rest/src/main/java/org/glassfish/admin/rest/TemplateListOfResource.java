@@ -35,32 +35,41 @@
  */
 package org.glassfish.admin.rest;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import com.sun.jersey.api.core.ResourceContext;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import com.sun.jersey.api.core.ResourceContext;
+
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandRunner;
+
+
 /**
- *
  * @author Ludovic Champenois ludo@dev.java.net
+ * @author Rajeshwar Patil
  */
-public class TemplateListOfResource<E extends ConfigBeanProxy> {
+public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
     @Context
     protected UriInfo uriInfo;
@@ -71,6 +80,7 @@ public class TemplateListOfResource<E extends ConfigBeanProxy> {
     /** Creates a new instance of xxxResource */
     public TemplateListOfResource() {
     }
+
 
     @GET
     @Produces({"application/json", "text/html", "application/xml"})
@@ -90,39 +100,112 @@ public class TemplateListOfResource<E extends ConfigBeanProxy> {
         }
 
         return domList;
-
     }
+
 
     public void setEntity(List<E> p) {
         entity = p;
     }
 
+
     public List<E> getEntity() {
         return entity;
     }
 
-    @POST
-    @Consumes("application/json")
-    public Response createEntity(InputStream data) {
 
+    @POST //create
+    @Produces(MediaType.TEXT_HTML)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    public Response CreateResource(HashMap<String, String> data) {
         try {
+            if (data.containsKey("error")) {
+                return Response.status(415).entity("Unable to parse the input entity. Please check the syntax.").build();//unsupported media
+            }
 
-            // Example creating a new http-listener element under http-service
-            //TODO
-            Map<String, String> attributes = new HashMap<String, String>();
-            attributes.put("id", "test-listener");
-            attributes.put("enabled", "true");
-            ///ConfigSupport.createAndSet(getEntity()., HttpListener.class, attributes);
+            //Command to execute
+            String commandName = getPostCommand();
+            adjustParameters(data);
+            String resourceToCreate = uriInfo.getAbsolutePath() +
+                "/" + data.get("DEFAULT");
 
-            //  Customer customer = buildCustomer(null, customerData);
-            //  long customerId = persist(customer, 0);
-            System.out.println("POST IS CALLED" + data);
+            if (null != commandName) {
+                CommandRunner cr = RestService.habitat.getComponent(CommandRunner.class);
+                ActionReport ar = RestService.habitat.getComponent(ActionReport.class);
+                Properties p = new Properties();
+                CommandModel cm = cr.getModel(commandName, RestService.logger);
+                java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
+                //print(params);
+                p.putAll(data);
 
-            return Response.created(URI.create("/" + "HGHGHGHGHGHGHGKEYKEY!!!!!!")).build();
+                cr.doCommand(commandName, p, ar);
+
+                ActionReport.ExitCode exitCode = ar.getActionExitCode();
+                if (exitCode == ActionReport.ExitCode.SUCCESS) {
+                    return Response.status(201).entity("\"" + resourceToCreate +  //201 - created
+                    "\"" + " created successfully.").build();
+                }
+
+                String errorMessage = getErrorMessage(data, ar);
+                return Response.status(400).entity(errorMessage).build(); // 400 - bad request
+            }
+            return Response.status(403).entity("POST on \"" +   // 403 - forbidden
+                resourceToCreate + "\" is forbidden.").build();
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
+    }
 
 
+    private void print(Collection<CommandModel.ParamModel> params) {
+        for (CommandModel.ParamModel pm : params) {
+            System.out.println("Command Param: " + pm.getName());
+            System.out.println("Command Param Type: " + pm.getType());
+            System.out.println("Command Param Name: " + pm.getParam().name());
+            System.out.println("Command Param Shortname: " + pm.getParam().shortName());
+        }
+    }
+
+
+    abstract public String getPostCommand();
+
+
+    private void adjustParameters(HashMap<String, String> data) {
+        if (data != null) {
+            if (!(data.containsKey("DEFAULT"))) {
+                boolean isRenamed = renameParameter(data, "name", "DEFAULT");
+                if (!isRenamed) {
+                    renameParameter(data, "id", "DEFAULT");
+                }
+            }
+        }
+    }
+
+
+    private boolean renameParameter(HashMap<String, String> data,
+        String parameterToRename, String newName) {
+        if ((data.containsKey(parameterToRename))) {
+            String value = data.get(parameterToRename);
+            data.remove(parameterToRename);
+            data.put(newName, value);
+            return true;
+        }
+        return false;
+    }
+
+
+    private String getErrorMessage(HashMap<String, String> data, ActionReport ar) {
+        String message;
+        //error info
+        message = ar.getMessage();
+
+        if (data.isEmpty()) {
+            try {
+                //usage info
+                message = ar.getTopMessagePart().getChildren().get(0).getMessage();
+            } catch (Exception e) {
+                message = ar.getMessage();
+            }
+        }
+        return message;
     }
 }

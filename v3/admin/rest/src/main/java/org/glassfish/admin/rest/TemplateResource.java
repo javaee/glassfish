@@ -66,8 +66,8 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
- *
  * @author Ludovic Champenois ludo@dev.java.net
+ * Rajeshwar Patil
  */
 public class TemplateResource<E extends ConfigBeanProxy> {
 
@@ -98,16 +98,16 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
-
         }
 
         return Dom.unwrap(getEntity());
+   }
 
-    }
 
     public ConfigBean getConfigBean() {
         return (ConfigBean) Dom.unwrap(getEntity());
     }
+
 
     @POST //create
     @Produces(MediaType.TEXT_HTML)
@@ -119,9 +119,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             System.out.println("value=" + data.get(name));
         }
 
-
-        boolean redirectProcessed = processRedirectsAnnotation(RestRedirect.OpType.POST, data);
-        if (redirectProcessed){
+        ActionReport actionReport = processRedirectsAnnotation(RestRedirect.OpType.POST, data);
+        if (actionReport != null){
         return Dom.unwrap(getEntity());
         }
         //data.get("submit");
@@ -137,25 +136,76 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         return Dom.unwrap(getEntity());
     }
 
+
     @PUT  //update
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response updateEntity(HashMap<String, String> data) {
-        return updateConfig(data);
-        ///return Dom.unwrap(getEntity());
+        try {
+            if (data.containsKey("error")) {
+             return Response.status(415).entity(
+                 "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
+            }
+
+            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
+            mapOfChanges.put(getConfigBean(), data);
+            RestService.configSupport.apply(mapOfChanges); //throws TransactionFailure
+            return Response.ok().entity("\"" + uriInfo.getAbsolutePath() + "\" updated successfully").build();
+        } catch (TransactionFailure ex) {
+            System.out.println("exception" + ex);
+            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
     @DELETE
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public void delete(HashMap<String, String> data) {
+    public Response delete(HashMap<String, String> data) {
+        //User can not directly delete the resource. User can only
+        //do so implicitly through asadmin command
+        try {
+            if (data.containsKey("error")) {
+                return Response.status(415).entity(
+                    "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
+            }
 
-        System.out.println("Delete IS CALLED for" + getEntity());
-        for (String name : data.keySet()) {
-            System.out.println("name=" + name);
-            //System.out.println("value=" + data.get(name));
+            adjustParameters(data);
+            if (data.get("DEFAULT") == null) {
+                addDefaultParameter(data);
+            }
+
+            String resourceName = getResourceName(uriInfo.getAbsolutePath().getPath(), "/");
+            if (!data.get("DEFAULT").equals(resourceName)) {
+                return Response.status(403).entity("Resource not deleted. Value of \"name\" should be the name of this resource.").build(); //forbidden
+            }
+
+            ActionReport actionReport = 
+                processRedirectsAnnotation(RestRedirect.OpType.DELETE, data);
+
+            if (actionReport != null) {
+                ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+                if (exitCode == ActionReport.ExitCode.SUCCESS) {
+                    return Response.status(200).entity("\"" + uriInfo.getAbsolutePath() +  //200 - ok
+                    "\"" + " deleted successfully.").build();
+                }
+
+                String errorMessage = actionReport.getMessage();
+                try {
+                    String usageMessage = 
+                        actionReport.getTopMessagePart().getChildren().get(0).getMessage();
+                    errorMessage = errorMessage + "\n" + usageMessage;
+                } catch (Exception e) {
+                    //ignore
+                }
+                return Response.status(400).entity(errorMessage).build(); // 400 - bad request
+            }
+            return Response.status(403).entity("DELETE on \"" +   // 403 - forbidden
+                uriInfo.getAbsolutePath() + "\" is forbidden.").build();
+        } catch (Exception e) {
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
-        processRedirectsAnnotation(RestRedirect.OpType.DELETE, data);
-
     }
+
+
     /*
      * see if we can understand the configbeans annotations like:
      * @RestRedirects(
@@ -166,7 +216,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
      *
      * */
 
-    private boolean processRedirectsAnnotation(RestRedirect.OpType type , HashMap<String, String> data) {
+    private ActionReport processRedirectsAnnotation(RestRedirect.OpType type , HashMap<String, String> data) {
 
         Class<? extends ConfigBeanProxy> cbp = null;
         try {
@@ -180,56 +230,66 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
             RestRedirect[] values = restRedirects.value();
             for (RestRedirect r : values) {
-                System.out.println("command name=" + r.commandName());
-                System.out.println("command type=" + r.opType());
+                //System.out.println("command name=" + r.commandName());
+                //System.out.println("command type=" + r.opType());
                 if (r.opType().equals(type)) {
                     CommandRunner cr = RestService.habitat.getComponent(CommandRunner.class);
                     ActionReport ar = RestService.habitat.getComponent(ActionReport.class);
                     Properties p = new Properties();
                     CommandModel cm = cr.getModel(r.commandName(), RestService.logger);
                     java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
-                    for (CommandModel.ParamModel pm : params) {
-                        System.out.println("command param is" + pm.getName());
-                        System.out.println("command param type is" + pm.getType());
-                        System.out.println("command param name is" + pm.getParam().name());
-                        System.out.println("command param shortname is" + pm.getParam().shortName());
-
-                    }
-
                     p.putAll(data);
 
-
                     cr.doCommand(r.commandName(), p, ar);
-                    System.out.println("exec command" + ar.getActionExitCode());
-                    return true;//processed
+                    return ar;//processed
                 }
             }
         }
-        return false;//not processed
-
+        return null;//not processed
     }
 
-    public Response updateConfig(HashMap<String, String> data) {
-        if (data.containsKey("error")) {
-            return Response.status(415).entity(data.get("error")).build();//unsupported media
+
+    private void adjustParameters(HashMap<String, String> data) {
+        if (data != null) {
+            if (!(data.containsKey("DEFAULT"))) {
+                boolean isRenamed = renameParameter(data, "name", "DEFAULT");
+                if (!isRenamed) {
+                    renameParameter(data, "id", "DEFAULT");
+                }
+            }
+        }
+    }
+
+
+    private boolean renameParameter(HashMap<String, String> data,
+        String parameterToRename, String newName) {
+        if ((data.containsKey(parameterToRename))) {
+            String value = data.get(parameterToRename);
+            data.remove(parameterToRename);
+            data.put(newName, value);
+            return true;
+        }
+        return false;
+    }
+
+
+    private void addDefaultParameter(HashMap<String, String> data) {
+        int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
+        String defaultParameterValue = uriInfo.getAbsolutePath().getPath().substring(index + 1);
+        data.put("DEFAULT", defaultParameterValue);
+     }
+
+
+    private String getResourceName(String absoluteName, String delimiter) {
+        if(null == absoluteName){
+            return absoluteName;
+        }
+        int index = absoluteName.lastIndexOf(delimiter);
+        if( index != -1) {
+            index = index + delimiter.length();
+            return absoluteName.substring(index);
         } else {
-            for (String name : data.keySet()) {
-                System.out.println("name=" + name);
-                //System.out.println("value=" + data.get(name));
-            }
-
-
-            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
-            mapOfChanges.put(getConfigBean(), data);
-
-            try {
-                RestService.configSupport.apply(mapOfChanges); //throws TransactionFailure
-            } catch (TransactionFailure ex) {
-                System.out.println("exception" + ex);
-                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-            }
-
-            return Response.ok().entity(uriInfo.getAbsolutePath() + " update successful").build();
+            return absoluteName;
         }
     }
 }

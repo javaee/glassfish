@@ -69,6 +69,8 @@ public class DomProviderUtil {
      * returns just the name of the given fully qualified name.
      */
     protected String getName(String typeName, char delimiter) {
+        if ((typeName == null) || ("".equals(typeName))) return typeName;
+
         //elimiate last char from typeName if its a delimiter
         if (typeName.length() - 1 == typeName.lastIndexOf(delimiter))
             typeName = typeName.substring(0, typeName.length()-1);

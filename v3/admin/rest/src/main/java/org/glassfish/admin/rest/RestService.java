@@ -35,8 +35,12 @@
  */
 package org.glassfish.admin.rest;
 
-import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.api.Startup;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.logging.Logger;
+import java.util.Set;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -44,42 +48,47 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 
-import com.sun.jersey.api.core.ResourceConfig;
-//import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.logging.LogDomains;
 
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.container.RequestDispatcher;
+import org.glassfish.api.Startup;
+import org.glassfish.server.ServerEnvironmentImpl;
+
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 
+//import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
 import com.sun.jersey.api.container.ContainerFactory;
-import org.glassfish.api.container.RequestDispatcher;
-import com.sun.logging.LogDomains;
-import java.util.logging.Logger;
-import org.glassfish.server.ServerEnvironmentImpl;
+import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.api.core.ResourceConfig;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
+ * @author Rajeshwar Patil
  */
 @Service
 public class RestService implements Startup, PostConstruct, PreDestroy {
 
     @Inject
     public static Habitat habitat;
+
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
-    public static com.sun.enterprise.config.serverbeans.Domain theDomain;
+
     @Inject
     org.glassfish.flashlight.MonitoringRuntimeDataRegistry monitoringRegistry;
-    public static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
-    public static ConfigSupport configSupport;
-    //private final static String BASE_URI = "http://localhost:9998/";
-    public final static Logger logger = LogDomains.getLogger(RestService.class, LogDomains.ADMIN_LOGGER);
+
     @Inject
     ServerEnvironmentImpl env;
+
+    public static com.sun.enterprise.config.serverbeans.Domain theDomain;
+    public static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
+    public static ConfigSupport configSupport;
+
+    public final static Logger logger =
+            LogDomains.getLogger(RestService.class, LogDomains.ADMIN_LOGGER);
 
     public Lifecycle getLifecycle() {
         // This service stays running for the life of the app server, hence SERVER.
@@ -104,57 +113,71 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
      * */
     public void postConstruct() {
         //events.register(this);
-        System.out.println("********************* Instrumenting Rest Resources ******************************");
+        System.out.println("Instrumenting Rest Resources");
         try {
             start();
-//            String rootFolder = env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/";
-//
-//            InstallTestClient.doit(rootFolder);
+            //String rootFolder = env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/";
+            //InstallTestClient.doit(rootFolder);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        System.out.println("********************* DONE: Instrumenting Rest Resources ******************************");
     }
 
     public void preDestroy() {
     }
 
+
     private void start() throws Exception {
-    //    System.getProperties().put("com.sun.grizzly.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
+        //System.getProperties().put("com.sun.grizzly.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
 
         theDomain = domain;
         theMonitoringRegistry = monitoringRegistry;
-        ConfigSupport cs = RestService.habitat.getComponent(ConfigSupport.class);
+        ConfigSupport cs =
+                RestService.habitat.getComponent(ConfigSupport.class);
         configSupport = cs;
 
-
-
-        RequestDispatcher rd = habitat.getComponent(RequestDispatcher.class);
-        ResourceConfig rc = getResourceConfig();
-        //        Adapter adap=new MyAdapter();//ContainerFactory.createContainer(Adapter.class, getResourceConfig());
-        Adapter adap = ContainerFactory.createContainer(Adapter.class, rc);
-        ((GrizzlyAdapter) adap).setResourcesContextPath("/rest-resources");
-        Collection<String> virtualserverName = new ArrayList<String>();
-        virtualserverName.add("__asadmin");
-        rd.registerEndpoint("/rest-resources", virtualserverName, adap, null);
-        System.out.println("************** listening to REST requests at http://localhost:4848/rest-resources/domain");
-
-        // GrizzlyServerFactory.create(BASE_URI, getResourceConfig());
-
-
+        //expose configuration resources
+        exposeContext("/management");
+        
+        //expose monitoring resources
+        exposeContext("/monitoring");
     }
 
-    public static ResourceConfig getResourceConfig() {
+
+    private void exposeContext(String context) 
+            throws EndpointRegistrationException {
+        if ((context != null) || (!"".equals(context))) {
+            RequestDispatcher rd =
+                    habitat.getComponent(RequestDispatcher.class);
+            Collection<String> virtualserverName = new ArrayList<String>();
+            virtualserverName.add("__asadmin");
+
+            ResourceConfig rc = getResourceConfig(context);
+            Adapter adapter =
+                    ContainerFactory.createContainer(Adapter.class, rc);
+            ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
+
+            rd.registerEndpoint(context, virtualserverName, adapter, null);
+            System.out.println("Listening to REST requests at context: " +
+                    context + "/domain");
+        }
+    }
+
+
+    public static ResourceConfig getResourceConfig(String context) {
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
-        //uncomment if you need to run the generator:
-           r.add(GeneratorResource.class);
-        r.add(org.glassfish.admin.rest.resources.DomainResource.class);
-        r.add(DefaultConfigResource.class);
-        r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
+        if (context.equals("/management")) {
+            //uncomment if you need to run the generator:
+            r.add(GeneratorResource.class);
+            r.add(org.glassfish.admin.rest.resources.DomainResource.class);
+            //r.add(DefaultConfigResource.class);
+        }
 
+        if (context.equals("/monitoring")) {
+            r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
+        }
 
-        System.out.println("************** resources: " + r);
         return new DefaultResourceConfig(r);
     }
 }

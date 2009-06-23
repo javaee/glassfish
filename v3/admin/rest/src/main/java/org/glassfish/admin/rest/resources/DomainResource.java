@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon May 11 13:27:46 PDT 2009
+* date=Sat Jun 20 16:10:02 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -20,8 +20,8 @@ public class DomainResource extends TemplateResource<Domain> {
 public Domain getEntity() {
 return org.glassfish.admin.rest.RestService.theDomain;
 }
-@Path("commands/stop-domain ")
-@GET
+@Path("commands/stop-domain")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public org.jvnet.hk2.config.Dom execStopDomain(
 	 @QueryParam("force")  @DefaultValue("true")  String Force 
@@ -34,8 +34,8 @@ public org.jvnet.hk2.config.Dom execStopDomain(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
-@Path("commands/restart-domain ")
-@GET
+@Path("commands/restart-domain")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public org.jvnet.hk2.config.Dom execRestartDomain(
  	) {
@@ -46,8 +46,8 @@ public org.jvnet.hk2.config.Dom execRestartDomain(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
-@Path("commands/uptime ")
-@GET
+@Path("commands/uptime")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public org.jvnet.hk2.config.Dom execUptime(
  	) {
@@ -58,8 +58,8 @@ public org.jvnet.hk2.config.Dom execUptime(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
-@Path("commands/version ")
-@GET
+@Path("commands/version")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public org.jvnet.hk2.config.Dom execVersion(
 	 @QueryParam("verbose")  @DefaultValue("false")  String Verbose 
@@ -72,8 +72,8 @@ public org.jvnet.hk2.config.Dom execVersion(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
-@Path("commands/rotate-log ")
-@GET
+@Path("commands/rotate-log")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public org.jvnet.hk2.config.Dom execRotateLog(
  	) {
@@ -84,8 +84,8 @@ public org.jvnet.hk2.config.Dom execRotateLog(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
-@Path("commands/get-host-and-port ")
-@GET
+@Path("commands/get-host-and-port")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public org.jvnet.hk2.config.Dom execGetHostAndPort(
 	 @QueryParam("target")  @DefaultValue("")  String Target 

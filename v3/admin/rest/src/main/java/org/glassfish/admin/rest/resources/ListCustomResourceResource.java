@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon May 11 13:27:46 PDT 2009
+* date=Sat Jun 20 16:10:03 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -29,8 +29,8 @@ public class ListCustomResourceResource extends TemplateListOfResource<CustomRes
 		return resource;
 	}
 
-@Path("commands/create-custom-resource ")
-@GET
+@Path("commands/create-custom-resource")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public List<org.jvnet.hk2.config.Dom> execCreateCustomResource(
 	 @QueryParam("restype")  @DefaultValue("")  String Restype 
@@ -60,5 +60,9 @@ public List<org.jvnet.hk2.config.Dom> execCreateCustomResource(
 	cr.doCommand("create-custom-resource", p, ar);
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
+}
+
+public String getPostCommand() {
+	return "create-custom-resource";
 }
 }

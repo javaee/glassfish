@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon May 11 13:27:46 PDT 2009
+* date=Sat Jun 20 16:10:03 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -16,8 +16,8 @@ import org.glassfish.admin.rest.TemplateResource;
 import com.sun.enterprise.config.serverbeans.ConnectionPool;
 public class ConnectionPoolResource extends TemplateResource<ConnectionPool> {
 
-@Path("commands/ping-connection-pool ")
-@GET
+@Path("commands/ping-connection-pool")
+@POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
 public org.jvnet.hk2.config.Dom execPingConnectionPool(
 	 @QueryParam("pool_name")  @DefaultValue("")  String Pool_name 

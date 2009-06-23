@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Mon May 11 13:27:47 PDT 2009
+* date=Sat Jun 20 16:10:04 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -29,4 +29,8 @@ public class ListRegistryLocationResource extends TemplateListOfResource<Registr
 		return resource;
 	}
 
+
+public String getPostCommand() {
+	return null;
+}
 }
