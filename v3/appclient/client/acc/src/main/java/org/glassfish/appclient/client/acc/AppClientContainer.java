@@ -45,7 +45,9 @@ import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
+import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import java.io.IOException;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -68,6 +70,7 @@ import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
+import org.glassfish.persistence.jpa.JPAApplication;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -288,8 +291,8 @@ public class AppClientContainer {
         this.builder = builder;
     }
 
-    public void prepare() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
-        completePreparation();
+    public void prepare(final Instrumentation inst) throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
+        completePreparation(inst);
     }
 
     void setClient(final Launchable client) throws ClassNotFoundException {
@@ -315,7 +318,7 @@ public class AppClientContainer {
      *
      * @throws java.lang.Exception
      */
-    private void completePreparation() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
+    private void completePreparation(final Instrumentation inst) throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
         if (state != State.INSTANTIATED) {
             throw new IllegalStateException();
         }
@@ -326,7 +329,8 @@ public class AppClientContainer {
          * important - for example, to set up message destination refs correctly.
          */
         client.validateDescriptor();
-        componentId = componentEnvManager.bindToComponentNamespace(client.getDescriptor(classLoader));
+        final ApplicationClientDescriptor desc = client.getDescriptor(classLoader);
+        componentId = componentEnvManager.bindToComponentNamespace(desc);
 
         /*
          * Arrange for cleanup now instead of during launch() because in some use cases
@@ -334,6 +338,20 @@ public class AppClientContainer {
          * be skipped.
          */
         cleanup = Cleanup.arrangeForShutdownCleanup(logger);
+
+        /*
+         * If this app client contains persistence unit refs, then initialize
+         * the PU handling.
+         */
+        Collection<? extends PersistenceUnitDescriptor> referencedPUs = desc.findReferencedPUs();
+        if (referencedPUs != null) {
+            ProviderContainerContractInfoImpl pcci = null; // new ProviderContainerContractInfoImpl(
+//                    getClassLoader(), inst, location, connectorRuntime);
+            // TODO: iterate through each referenced PU and create a PersistenceUnitLoader.
+
+            // TODO: uncomment the next line - once pcci is no longer null
+//            cleanup.setEMFs(pcci.emfs());
+        }
 
         prepareURLStreamHandling();
 
