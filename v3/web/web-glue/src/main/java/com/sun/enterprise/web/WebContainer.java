@@ -358,6 +358,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private boolean isShutdown = false;
 
     private final Object mapperUpdateSync = new Object();
+    
+    private SecurityService securityService = null;
 
     /**
      * Static initialization
@@ -504,6 +506,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             HttpService httpService = aConfig.getHttpService();
             NetworkConfig networkConfig = aConfig.getNetworkConfig();
+            securityService = aConfig.getSecurityService();
 
             // Configure HTTP listeners
             List<NetworkListener> httpListeners = networkConfig.getNetworkListeners().getNetworkListener();
@@ -524,7 +527,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             setDefaultRedirectPort(defaultRedirectPort);
 
             // Configure virtual servers
-            createHosts(httpService, aConfig.getSecurityService());
+            createHosts(httpService, securityService);
         }
 
         loadSystemDefaultWebModules();
@@ -1813,7 +1816,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         virtualServer.setDefaultContextPath(defaultContextPath);
                     } catch (Exception e) {
                         throw new LifecycleException(e);
-                    }
+                    }            
                 }
             }
         }
@@ -2577,9 +2580,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (docroot != null) {
             updateDocroot(docroot, vs, vsBean);
         }
+        
         List<Property> props = vs.getProperties();
         for (Property prop : props) {
-            updateHostProperties(vsBean, prop.getName(), prop.getValue(), null, vs);
+            updateHostProperties(vsBean, prop.getName(), prop.getValue(), securityService, vs);
         }
         vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
         vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
