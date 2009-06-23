@@ -1222,7 +1222,11 @@ function checkRequired(componentId, reqMsg){
     var value = component.value;
     var result = (value != '') && (isWhitespace(value) == false); 
     if (result == false) {
-        showAlert(reqMsg + ' ' + getLabel(component));
+        if (reqMsg == '') {
+            showAlert(getLabel(component) + ' is a required field.');
+        } else {
+            showAlert(reqMsg + ' ' + getLabel(component));
+        }
         component.select();
         component.focus();
     }
