@@ -34,57 +34,50 @@
 package org.glassfish.deployment.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Application;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
-import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.Properties;
 
 /**
- * Delete lifecycle modules.
+ * List lifecycle modules.
  *
  */
-@Service(name="delete-lifecycle-module")
-@I18n("delete.lifecycle.module")
+@Service(name="list-lifecycle-modules")
+@I18n("list.lifecycle.modules")
 @Scoped(PerLookup.class)
-public class DeleteLifecycleModuleCommand implements AdminCommand {
-
-    @Param(primary=true)
-    public String name = null;
-
-    @Param(optional=true)
-    public String target = "server";
+public class ListLifecycleModulesCommand implements AdminCommand  {
 
     @Inject
-    Deployment deployment;
+    Applications applications;
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteLifecycleModuleCommand.class);
+    // the property to indicate lifecycle module
+    private final static String IS_LIFECYCLE = "isLifecycle";
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListLifecycleModulesCommand.class);
    
     public void execute(AdminCommandContext context) {
         
         ActionReport report = context.getActionReport();
-        final Logger logger = context.getLogger();
+        ActionReport.MessagePart part = report.getTopMessagePart();
 
-        if (!deployment.isRegistered(name)) {
-            report.setMessage("Lifecycle module with name [" + name + 
-                "] does not exist");
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        try {
-            deployment.unregisterAppFromDomainXML(name);
-        } catch(Exception e) {
-            report.setMessage("Failed to delete lifecycle module: " + e);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        for (Application app : applications.getApplications()) {
+            if (Boolean.valueOf(app.getDeployProperties().getProperty
+                (IS_LIFECYCLE))) {
+                ActionReport.MessagePart childPart = part.addChild();
+                childPart.setMessage(app.getName());
+            }
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

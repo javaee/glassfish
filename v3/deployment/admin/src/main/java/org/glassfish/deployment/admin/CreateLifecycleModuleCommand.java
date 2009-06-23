@@ -140,5 +140,7 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
             report.setMessage("Failed to create lifecycle module: " + e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
+
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
