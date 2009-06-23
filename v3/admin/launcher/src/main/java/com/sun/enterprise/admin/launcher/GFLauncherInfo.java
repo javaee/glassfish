@@ -78,6 +78,14 @@ public class GFLauncherInfo {
         debug = b;
     }
 
+     /**
+     * Starts the server in upgrade mode
+     * @param b
+     */
+    public void setUpgrade(boolean b) {
+        upgrade = b;
+    }
+
     public void setDomainRootDir(File f) {
         domainRootDir = f;
     }
@@ -100,6 +108,14 @@ public class GFLauncherInfo {
      */
     public boolean isDebug() {
         return debug;
+    }
+
+    /**
+     *
+     * @return true if upgrade mode is on.
+     */
+    public boolean isUpgrade() {
+        return upgrade;
     }
 
     /**
@@ -202,6 +218,7 @@ public class GFLauncherInfo {
         map.put("-debug", Boolean.toString(debug));
         map.put("-domainname", domainName);
         map.put("-instancename", instanceName);
+        map.put("-upgrade", Boolean.toString(upgrade));
 
         if(respawnInfo != null) {
             respawnInfo.put(map);
@@ -283,6 +300,10 @@ public class GFLauncherInfo {
 
         if ((b = getBoolean("verbose")) != null) {
             verbose = b;
+        }
+
+        if ((b = getBoolean("upgrade")) != null) {
+            upgrade = b;
         }
     }
 
@@ -416,6 +437,7 @@ public class GFLauncherInfo {
     private ServerType type;
     private boolean verbose = false;
     private boolean debug = false;
+    private boolean upgrade = false;
     File installDir;
     private File domainParentDir;
     private File domainRootDir;
