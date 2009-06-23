@@ -41,9 +41,19 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        setSessionAttribute(key="serverInstTabs" value="jvmOptions");
-        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        getJvmOptions(ConfigName="#{configName}", JvmOptions=>$attribute{tableList});
+        # for EE, the following session attribute will just be ignored.
+            setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
+            setSessionAttribute(key="serverInstTabs" value="jvmOptions");
+            getRequestValue(key="configName" value=>$page{configName} default="server-config");
+            setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config],type=java-config");
+            getJvmOptionsValues(objectNameStr="#{pageSession.objectNameStr}"  result=>$attribute{tableList});
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverJvmOptions.jsf");
+             //set the following for including buttons.inc
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+            setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+            setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
+             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
 #include "/shared/restart.inc"

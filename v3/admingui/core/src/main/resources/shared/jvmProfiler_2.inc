@@ -40,45 +40,51 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jvm.ProfilerPageName}"
                     helpText="$resource{i18n.jvm.ProfilerPageHelp}">
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" 
-                            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >       
-                          <!command
-                            getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{tableRowGroup});      
-                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                            
-                            convertListToArrayList(TableList="#{newList}", Name="option", NameList=>$attribute{nameList});
-                            saveServerProfilerSettings(
-                                ConfigName="#{configName}",
-                                ProfilerName="#{profilerName}"
-                                ProfilerEnabled="#{profilerEnabled}"
-                                Classpath="#{classPath}"
-                                NativeLibrary="#{nativeLibrary}"
-                            );
-                            saveProfilerJvmOptions(NameList="#{nameList}", ConfigName="#{configName}"); 
-                            prepareSuccessfulMsg();
-                  /> 
-                        </sun:button>
-                    </sun:panelGroup>
-                    </facet>   
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                        attrs="#{pageSession.valueMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        result => $attribute{objStr});
+                    redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}");
+                />
+            </sun:button>
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    saveBeanAttributes(objectNameStr="#{pageSession.profilerObjectNameStr}"  attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                    );
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    //saveJvmOptionValues(objectNameStr="#{pageSession.objectNameStr}" options="$attribute{newList}");
+                prepareSuccessfulMsg();
+                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
                     </sun:title>
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet" requiredFields="true">			 
+                    <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="profilerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ProfilerName}">
-                                <sun:textField id="ProfilerName" rendered="#{!edit}" styleClass="required" columns="$int{55}" text="#{profilerName}" required="#{true}"/> 
-                                <sun:staticText id="ProfilerName2" rendered="#{edit}" text="#{profilerName}"/>
+                                <sun:textField id="ProfilerName" rendered="#{!edit}" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['Name']}" required="#{true}"/> 
+                                <sun:staticText id="ProfilerName2" rendered="#{edit}" text="#{pageSession.valueMap['Name']}"/>
                             </sun:property>
                            <sun:property id="profilerEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.Profiler}">
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.profilerEnabled}" />   
+                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />   
                            </sun:property>
                             <sun:property id="ClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.Classpath}" helpText="$resource{i18n.jvm.ClasspathHelp}">
-                                <sun:textField id="Classpath" columns="$int{55}" text="#{requestScope.classPath}" />      
+                                <sun:textField id="ClasspathLabel" columns="$int{55}" text="#{pageSession.valueMap['Classpath']}" />      
                             </sun:property>
                             <sun:property id="NativeLibraryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.NativeLibraryPath}" helpText="$resource{i18n.jvm.NativeLibraryPathHelp}">
-                                <sun:textField id="NativeLibrary" columns="$int{55}" text="#{requestScope.nativeLibrary}"/>      
+                                <sun:textField id="NativeLibrary" columns="$int{55}" text="#{pageSession.valueMap['NativeLibraryPath']}"/>      
                             </sun:property> 
                             "<br /><br />
                         </sun:propertySheetSection>

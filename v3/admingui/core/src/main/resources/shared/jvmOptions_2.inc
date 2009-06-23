@@ -40,40 +40,23 @@
             <!-- Page Title -->
             <sun:title id="propertyContentPage" title="$resource{i18n.jvmOptions.Title}" 
                 helpText="$resource{i18n.jvmOptions.PageHelp}">
-                <!-- Buttons  -->                    
-                <!facet pageButtonsTop>
-                <sun:panelGroup id="topButtons">
-                    <sun:button id="saveButton" disabled="#{false}" text="$resource{i18n.button.Save}" > 
-                        <!command
-                            getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{tableRowGroup});      
-                            prepareSuccessfulMsg();
-                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                            
-                            convertListToArrayList(TableList="#{newList}", Name="option", NameList=>$attribute{nameList});
-                            saveJvmOptions(NameList="#{nameList}", ConfigName="#{configName}");
-                            redirect(page="#{request.contextPath}/appServer/serverJvmOptions.jsf?configName=server-config&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                        />      
-                    </sun:button>
-                </sun:panelGroup>
-                </facet> 
+    <!-- AMX Bug When Saving JVM Options
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    saveJvmOptionValues(objectNameStr="#{pageSession.objectNameStr}" options="$attribute{newList}");
+                prepareSuccessfulMsg();
+                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>-->
                 </sun:title>
-#include "/shared/jvmOptionsTable.inc" 
-                <sun:title id="title2" > 
-               <!-- Buttons  -->                    
-                <!facet pageButtonsBottom>
-                <sun:panelGroup id="bottomButtons">
-                    <sun:button id="saveButton" disabled="#{false}" text="$resource{i18n.button.Save}" > 
-                        <!command
-                            getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{tableRowGroup});      
-                            prepareSuccessfulMsg();
-                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                            
-                            convertListToArrayList(TableList="#{newList}", Name="option", NameList=>$attribute{nameList});
-                            saveJvmOptions(NameList="#{nameList}", ConfigName="#{configName}");
-                            redirect(page="#{request.contextPath}/appServer/serverJvmOptions.jsf?configName=server-config&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                         />                                
-                    </sun:button>
-                </sun:panelGroup>
-                </facet>                                
-            </sun:title>
+#include "/shared/jvmOptionsTable.inc"  
 
 	<sun:hidden id="helpKey" value="$resource{help.serverJvmOptions}" />
          </sun:form>

@@ -33,11 +33,10 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- appServer/jvmOptionsTable.jsf -->
+<!-- shared/propertyDescTable.inc -->
 
-<!-- JVM Options Table .... -->
-               
-<sun:table id="basicTable" style="padding: 10pt" title="$resource{i18n.jvmOptions.TableTitle}"  
+<!-- Table .... -->
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.jvmOptions.TableTitle}" 
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
             selectMultipleButton="$boolean{true}"
@@ -45,32 +44,32 @@
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
-    <!-- Actions (Top) -->
+
+<!-- Actions (Top) -->
     <!facet actionsTop>
     <sun:panelGroup id="topActionsGroup1">
-         <!afterCreate
+        <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-        <sun:button id="addSharedTableButton" text="$resource{i18n.jvmOptions.AddJvmOption}">   
+        <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.jvmOptions.AddJvmOption}" >   
             <!command
-            getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{tableRowGroup});      
-            addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"option"});
+                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"Name", "Value", "Description"});
             />                                 
         </sun:button>
-        <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"> 
+        <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}">
             <!command
-                getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{trg});      
+                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{trg});   
                 getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});
                 deleteTableRows(tableRowGroup="${trg}" rowKeys="${rowKeys}");
-		commitTableRowGroup(tableRowGroup="${trg}");  
+                commitTableRowGroup(tableRowGroup="${trg}");
             />                                
-
         </sun:button>
     </sun:panelGroup>
-    </facet>          
-    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data="$attribute{tableList}" sourceVar="td"> 
+    </facet>       
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}"}  sourceVar="td">
         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{jvmTableRowGroupId});
+         getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
         />
         <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col1">
             <sun:checkbox id="select" 
@@ -79,8 +78,9 @@
                 onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)" 
             />
         </sun:tableColumn>                    
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{100}" id="col1St" value="#{td.value.option}" />
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <sun:textField columns="$int{100}" id="col1St" value="#{td.value.Value}" />
         </sun:tableColumn>
+        "<br/>
     </sun:tableRowGroup>
-</sun:table>    
+</sun:table>

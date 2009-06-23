@@ -36,17 +36,27 @@
 -->
 <!-- shared/jvmProfiler_1.inc -->
 <!-- when including this page, should followed by including jvmProfiler_2.inc to make a complete page -->
-
+<!initPage
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+/>
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.jvm.ProfilerPageName}" >
 <!define name="content">
     <event>
     <!beforeCreate
         setSessionAttribute(key="serverInstTabs" value="profiler");
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        getServerProfilerAttributes(ConfigName="#{configName}", ProfilerName=>$page{profilerName}, ProfilerEnabled=>$attribute{profilerEnabled}, Classpath=>$attribute{classPath}, NativeLibrary=>$attribute{nativeLibrary}
-                    edit=>$page{edit});
-        getJvmOptionsForProfiler(ConfigName="#{configName}", JvmOptions=>$attribute{tableList});
-
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config],type=java-config");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstProfiler.jsf");
+        setPageSessionAttribute(key="childType" value="profiler");
+        getProfilerAttrs(objectName="#{pageSession.profilerObjectNameStr}" edit="#{pageSession.edit}");
+        if(#{edit}) {
+            getProxyAttrs(objectNameStr="#{pageSession.profilerObjectNameStr}" valueMap="#{pageSession.valueMap}");
+            getJvmOptionsValues(objectNameStr="#{pageSession.profilerObjectNameStr}"  result=>$attribute{tableList});     
+        }
+        if(!#{edit}) {
+            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        }
+        setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
     />
     </event>
 #include "/shared/restart.inc"
