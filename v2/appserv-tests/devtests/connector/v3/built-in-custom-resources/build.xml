@@ -72,63 +72,63 @@
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="com.sun.s1asdev.custom.resource.CustomResourceJavaBean"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.JavaBeanFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.JavaBeanFactory"/>
             <param name="custom.resource.name" value="custom/my-java-bean"/>
             <param name="extra.params" value=" --property='property=${test.javabean.value}'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.lang.Integer"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.PrimitivesAndStringFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.PrimitivesAndStringFactory"/>
             <param name="custom.resource.name" value="custom/my-int"/>
             <param name="extra.params" value=" --property='type=${test.primitive.int.type}:value=${test.primitive.int.value}'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.lang.String"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.PrimitivesAndStringFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.PrimitivesAndStringFactory"/>
             <param name="custom.resource.name" value="custom/my-string"/>
             <param name="extra.params" value=" --property='type=${test.primitive.string.type}:value=${test.primitive.string.value}'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.util.Properties"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.PropertiesFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.PropertiesFactory"/>
             <param name="custom.resource.name" value="custom/my-simple-properties"/>
             <param name="extra.params" value=" --property='${test.primitive.string.type}=${test.primitive.string.value}:${test.primitive.int.type}=${test.primitive.int.value}'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.util.Properties"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.PropertiesFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.PropertiesFactory"/>
             <param name="custom.resource.name" value="custom/my-properties-file"/>
             <param name="extra.params" value=" --property='org.glassfish.resources.custom.factory.PropertiesFactory.fileName=simple-properties.properties'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.util.Properties"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.PropertiesFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.PropertiesFactory"/>
             <param name="custom.resource.name" value="custom/my-properties-xml-file"/>
             <param name="extra.params" value=" --property='org.glassfish.resources.custom.factory.PropertiesFactory.fileName=simple-properties.xml'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.util.Properties"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.PropertiesFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.PropertiesFactory"/>
             <param name="custom.resource.name" value="custom/my-properties-file-with-values"/>
             <param name="extra.params" value=" --property='org.glassfish.resources.custom.factory.PropertiesFactory.fileName=simple-properties.properties:${test.primitive.string.type}=${test.primitive.string.value}'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.util.Properties"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.PropertiesFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.PropertiesFactory"/>
             <param name="custom.resource.name" value="custom/my-properties-xml-file-with-values"/>
             <param name="extra.params" value=" --property='org.glassfish.resources.custom.factory.PropertiesFactory.fileName=simple-properties.xml:${test.primitive.string.type}=${test.primitive.string.value}'"/>
         </antcall>
 
         <antcall target="create-custom-resource-common">
             <param name="custom.resource.type" value="java.net.URL"/>
-            <param name="custom.resource.class" value="org.glassfish.resources.custom.URLObjectFactory"/>
+            <param name="custom.resource.class" value="org.glassfish.resources.custom.factory.URLObjectFactory"/>
             <param name="custom.resource.name" value="custom/my-url"/>
             <param name="extra.params" value=" --property='host=java.sun.com:port=80:protocol=http:file=/index.html'"/>
         </antcall>
