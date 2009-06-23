@@ -47,12 +47,18 @@ import java.util.logging.Level;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class LogHelper {
-    private static final Logger logger = Logger.getAnonymousLogger();
+    private static final Logger logger =
+            Logger.getLogger("com.sun.enterprise.module");
+
     public static Logger getDefaultLogger() {
         return logger;
     }
 
+    /**
+     * @see Logger#isLoggable(java.util.logging.Level)
+     * @return
+     */
     public static boolean isLoggable(Level level) {
-        return false;
+        return logger.isLoggable(level);
     }
 }
