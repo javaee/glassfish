@@ -25,7 +25,7 @@ own identifying information: Portions Copyright [yyyy]
     <property name="zipdir" value="${rootdir}/packager_zips"/>
     <property name="jardir" value="${rootdir}/packager_jars"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
-    <property name="finaljar" value="${rootdir}/final.jar"/>
+    <property name="finaljar" value="${rootdir}/glassfish-embedded-all.jar"/>
 
     <target name="create.distribution">
 
