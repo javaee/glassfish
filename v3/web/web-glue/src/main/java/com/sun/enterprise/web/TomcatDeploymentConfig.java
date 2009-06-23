@@ -560,8 +560,7 @@ public class TomcatDeploymentConfig {
             }
         }
        
-        SessionConfig sessionConfig = 
-            wmd.getSessionConfig();
+        SessionConfig sessionConfig = wmd.getSessionConfig();
 
         // <session-config><session-timeout>
         webModule.setSessionTimeout(sessionConfig.getSessionTimeout());
@@ -607,6 +606,14 @@ public class TomcatDeploymentConfig {
                 webModule.addLocaleEncodingMappingParameter(
                     lemd.getLocale(), lemd.getEncoding());
             }
+        }
+
+        if (wmd.getAbsoluteOrderingDescriptor() != null &&
+                !wmd.getAbsoluteOrderingDescriptor().hasOthers()) {
+            webModule.setJarNameToWebFragmentNameMap(
+                wmd.getJarNameToWebFragmentNameMap());
+            webModule.setAbsoluteOrdering(
+                wmd.getAbsoluteOrderingDescriptor().getOrdering());
         }
     }
 

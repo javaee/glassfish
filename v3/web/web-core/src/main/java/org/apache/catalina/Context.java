@@ -498,12 +498,27 @@ public interface Context extends Container {
 
 
     /**
-     * Add a new Listener class name to the set of Listeners
+     * Adds the Listener with the given class name to the set of Listeners
      * configured for this application.
      *
-     * @param listener Java class name of a listener class
+     * @param listener the fully qualified class name of the Listener
      */
     void addApplicationListener(String listener);
+
+
+    /**
+     * Adds the Listener with the given class name to the set of Listeners
+     * configured for this application.
+     *
+     * @param listener the fully qualified class name of the Listener
+     * @param isRestricted true if the web application represented by
+     * this Context declares an absolute ordering of its web
+     * fragment JAR files without the use of <code>others</code>, and the
+     * given listener is declared in the Tag Library Descriptor
+     * (TLD) resource of a web fragment JAR file that is excluded from
+     * the absolute ordering
+     */
+    void addApplicationListener(String listener, boolean isRestricted);
 
 
     /**
@@ -1464,7 +1479,6 @@ public interface Context extends Container {
      */
     void setSecurePagesWithPragma(boolean securePagesWithPragma);
 
-
     /**
      * Gets the Authenticator of this Context.
      *
@@ -1472,4 +1486,11 @@ public interface Context extends Container {
      */
     Authenticator getAuthenticator();
 
+    /**
+     * @return true if this Context declares an absolute ordering of its
+     * web fragments (without the use of any <others/> element), and the
+     * web fragment JAR file with the given name is excluded from it;
+     * false otherwise
+     */
+    public boolean isFragmentMissingFromAbsoluteOrdering(String jarName);
 }
