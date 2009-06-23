@@ -1107,8 +1107,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void configureHostPortNumbers(VirtualServer vs,
         HashSet<NetworkListener> listeners){
 
-        boolean addJkListenerPort = jkConnector != null
-            && !vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS);
+        boolean addJkListenerPort = jkConnector != null &&
+            !vs.getName().equalsIgnoreCase(
+                org.glassfish.api.web.Constants.ADMIN_VS);
 
         ArrayList<Integer> portsList = new ArrayList<Integer>();
         for (NetworkListener listener : listeners){
@@ -1118,7 +1119,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     portsList.add(port);
                 }
             } else {
-                if (vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
+                if (vs.getName().equalsIgnoreCase(
+                        org.glassfish.api.web.Constants.ADMIN_VS)) {
                     String msg = rb.getString(
                         "pewebcontainer.httpListener.mustNotDisable");
                     msg = MessageFormat.format(msg, listener.getName(),
@@ -1233,7 +1235,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 * the root context of the '__asadmin' virtual-server, see
                 * https://glassfish.dev.java.net/issues/show_bug.cgi?id=5664
                 */
-                if (VirtualServer.ADMIN_VS.equals(vs.getName())) {
+                if (org.glassfish.api.web.Constants.ADMIN_VS.equals(
+                        vs.getName())) {
                     continue;
                 }
                             
@@ -1271,7 +1274,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 * the root context of the '__asadmin' virtual-server, see
                 * https://glassfish.dev.java.net/issues/show_bug.cgi?id=5664
                 */
-                if (VirtualServer.ADMIN_VS.equals(vs.getName())) {
+                if (org.glassfish.api.web.Constants.ADMIN_VS.equals(
+                        vs.getName())) {
                     continue;
                 }
                 WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
@@ -1440,7 +1444,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 * __asadmin, continue with next iteration
                 * because we don't want to load user apps on __asadmin
                 */
-                if (vs.getID().equals(VirtualServer.ADMIN_VS) && loadToAll) {
+                if (vs.getID().equals(org.glassfish.api.web.Constants.ADMIN_VS) && loadToAll) {
                     continue;
                 }
                 if (loadToAll || vsList.contains(vs.getID())
@@ -1963,7 +1967,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
              * Do not unloadload module on ADMIN_VS
              */
             if (unloadFromAll && host.getName().equalsIgnoreCase(
-                    VirtualServer.ADMIN_VS)) {
+                    org.glassfish.api.web.Constants.ADMIN_VS)) {
                 continue;
             }
             if (unloadFromAll || hostList.contains(host.getName())
@@ -2061,8 +2065,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
              * Related to Bug: 4904290
              * Do not unloadload module on ADMIN_VS
              */
-            if (suspendOnAll
-                    && host.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
+            if (suspendOnAll &&
+                    host.getName().equalsIgnoreCase(
+                        org.glassfish.api.web.Constants.ADMIN_VS)) {
                 continue;
             }
             if (suspendOnAll || hostList.contains(host.getName())
@@ -2269,7 +2274,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Container[] vsList = getEngine().findChildren();
         for (Container aVsList : vsList) {
             VirtualServer vs = (VirtualServer) aVsList;
-            if (vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
+            if (vs.getName().equalsIgnoreCase(
+                    org.glassfish.api.web.Constants.ADMIN_VS)) {
                 // Do not deploy on admin vs
                 continue;
             }
@@ -2310,7 +2316,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Container[] vsList = getEngine().findChildren();
         for (Container aVsList : vsList) {
             VirtualServer vs = (VirtualServer) aVsList;
-            if (vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
+            if (vs.getName().equalsIgnoreCase(
+                    org.glassfish.api.web.Constants.ADMIN_VS)) {
                 // Do not undeploy from admin vs, because we never
                 // deployed onto it
                 continue;
@@ -2500,9 +2507,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         for (Container virtualServer1 : virtualServers) {
             virtualServer = (VirtualServer) virtualServer1;
             if (virtualServer != null) {
-                if (virtualServer.getID().equals(VirtualServer.ADMIN_VS)) {
-                    throw new
-                        LifecycleException(
+                if (virtualServer.getID().equals(
+                        org.glassfish.api.web.Constants.ADMIN_VS)) {
+                    throw new LifecycleException(
                         "Cannot delete admin virtual-server.");
                 }
                 Container[] webModules = virtualServer.findChildren();
@@ -2531,7 +2538,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public void updateHost(com.sun.enterprise.config.serverbeans.VirtualServer vsBean) throws LifecycleException {
 
-        if (VirtualServer.ADMIN_VS.equals(vsBean.getId())) {
+        if (org.glassfish.api.web.Constants.ADMIN_VS.equals(vsBean.getId())) {
             return;
         }
         final VirtualServer vs = (VirtualServer)getEngine().findChild(vsBean.getId());
@@ -2848,7 +2855,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // that does not declare any admin-listener, in which case the
             // admin-related webapps are accessible on http-listener-1.
             if (networkListener.findProtocol().getHttp().getDefaultVirtualServer().equals(
-                    VirtualServer.ADMIN_VS) ||
+                    org.glassfish.api.web.Constants.ADMIN_VS) ||
                 "http-listener-1".equals(networkListener.getName()) &&
                 connectorMap.get("admin-listener") == null) {
                 return;

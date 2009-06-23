@@ -93,8 +93,6 @@ import org.jvnet.hk2.component.Habitat;
 
 public class VirtualServer extends StandardHost {
 
-    public static final String ADMIN_VS = "__asadmin";
-
     private static final String STATE = "state";
     private static final String SSO_MAX_IDLE ="sso-max-inactive-seconds";
     private static final String SSO_REAP_INTERVAL ="sso-reap-interval-seconds";
@@ -723,8 +721,8 @@ public class VirtualServer extends StandardHost {
             // admin-vs then return false because we don't want to load user apps
             // on admin-vs
             //
-            if (getID().equals(ADMIN_VS) && matchVSID
-                    && (vsIDs == null || vsIDs.length() == 0)) {
+            if (getID().equals(org.glassfish.api.web.Constants.ADMIN_VS) &&
+                        matchVSID && (vsIDs == null || vsIDs.length() == 0)) {
                 return false;
             }
 
@@ -1495,14 +1493,15 @@ public class VirtualServer extends StandardHost {
             stateValue = vsBean.getState();
         }
 
-        if ( !stateValue.equalsIgnoreCase(ON)
-            && getName().equalsIgnoreCase(ADMIN_VS)){
+        if (!stateValue.equalsIgnoreCase(ON) &&
+                getName().equalsIgnoreCase(
+                    org.glassfish.api.web.Constants.ADMIN_VS)){
             throw new IllegalArgumentException(
-                "virtual-server "
-                + ADMIN_VS + " state property cannot be modified");
+                "virtual-server " + org.glassfish.api.web.Constants.ADMIN_VS +
+                " state property cannot be modified");
         }
 
-        if ( stateValue.equalsIgnoreCase(DISABLED) ) {
+        if (stateValue.equalsIgnoreCase(DISABLED)) {
             // state="disabled"
             setIsDisabled(true);
         } else if (!ConfigBeansUtilities.toBoolean(stateValue)) {
