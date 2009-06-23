@@ -105,9 +105,19 @@ own identifying information: Portions Copyright [yyyy]
         <fileset dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
         <fileset dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
+    <!-- backup cfg_cache file, replace repo.url value, zip, restore -->
+    <copy file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	    tofile="${basedir}/cfg_cache.bak" />
+    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
+	    <replacefilter token="${repo.url}"
+		    value="${dev.repository.url}"/>
+    </replace>	
     <exec dir="${glassfish.image.dir}" executable="zip">
         <arg line= "-r ../../../target/${image.name}-ips.zip ${install.dir.name}"/>
     </exec>
+    <move file="${basedir}/cfg_cache.bak" 
+	  tofile="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	  overwrite="true" />
     <!-- delete dir="${image.root}"/ -->
 </target>
 
@@ -174,7 +184,7 @@ own identifying information: Portions Copyright [yyyy]
 	description="Update cfg_cache for authorities">
 
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-authority -P -O ${dev.repository.url} '${dev.authority}'"/>
+        <arg line="set-authority -P -O ${repo.url} '${dev.authority}'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -O ${contrib.repository.url} '${contrib.authority}'"/>
