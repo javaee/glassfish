@@ -68,6 +68,7 @@ public class StartDomainCommand extends AbstractCommand {
             boolean isRestart = Boolean.getBoolean(RESTART_FLAG);
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
+            info.setUpgrade(getBooleanOption("upgrade"));
 
             Object obj = getCaller();
 

@@ -15,6 +15,7 @@
 	</Option>
     <Option name="domaindir" type="string" value-required="true"/>
     <Option name="debug" type="boolean" value-required="false"/>
+    <Option name="upgrade" type="boolean" value-required="false" default="false" />
 	<Option name="terse" type="boolean" value-required="false" default="false">
 	    <shortoption>t</shortoption>
 	</Option>
@@ -74,7 +75,7 @@
 
     </Options>
     <Commands>
-	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain [--terse=false] [--echo=false] [--interactive=true] [--user admin_user] [--passwordfile file_name] [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
+	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain [--terse=false] [--echo=false] [--interactive=true] [--user admin_user] [--passwordfile file_name] [--domaindir domain_directory] [--verbose=false] [--debug=false] [--upgrade=false] [domain_name]">
 	    <ValidOption name="verbose"/>
             <ValidOption name="domaindir"/>
             <ValidOption name="debug"/>
@@ -83,6 +84,7 @@
             <ValidOption name="user"/>
 	    <ValidOption name="interactive"/>
 	    <ValidOption name="passwordfile"/>
+        <ValidOption name="upgrade"/>
 	</Command>
         <Command name="create-domain" classname="com.sun.enterprise.admin.cli.optional.CreateDomainCommand"  numberofoperands="1"
            usage-text="create-domain [--user admin] --adminport admin-port | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--profile profile_name] [--passwordfile file_name ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--keytooloptions (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
