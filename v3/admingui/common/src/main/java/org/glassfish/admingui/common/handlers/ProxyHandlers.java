@@ -137,7 +137,14 @@ public class ProxyHandlers {
              return null;
          }
      }
-     
+
+
+    /*  Get the simpleAttributes of the bean based on the objectNameString.
+     *  simpleAttributes means those NOT of Element, ie all attributes.
+     *  This requires the use of AMXConfigHelper, which thus causes the limitation that
+     *  this mbean has to be AMXConfigProxy, not runtiime.
+     *  For runtime mbeans, you need to use getRuntimeProxyAttrs.
+     */
     @Handler(id="getProxyAttrs",
     input={
         @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
@@ -158,6 +165,59 @@ public class ProxyHandlers {
     }
 
 
+    @Handler(id="getRuntimeProxyAttrs",
+    input={
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="valueMap",        type=Map.class)})
+
+        public static void getRuntimeProxyAttrs(HandlerContext handlerCtx) {
+        try{
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+            final Map<String,Object> attrs = amx.attributesMap();
+            handlerCtx.setOutputValue("valueMap", attrs);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            handlerCtx.setOutputValue("valueMap", new HashMap());
+        }
+    }
+
+
+    /*
+     * Get the value of an attribute.  If the attribute is expected to be an array, then specify the index.
+     */
+    @Handler(id="getProxyAttribute",
+    input={
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
+        @HandlerInput(name="attrName",   type=String.class, required=true),
+        @HandlerInput(name="index",   type=String.class)},
+    output={
+        @HandlerOutput(name="value",        type=String.class)})
+
+    public static void getProxyAttribute(HandlerContext handlerCtx) {
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        String attrName = (String) handlerCtx.getInputValue("attrName");
+        String result = "";
+        try{
+            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+            Object val = amx.attributesMap().get(attrName);
+            if (val instanceof Object[]){
+                String index = (String) handlerCtx.getInputValue("index");
+                if (index != null){
+                    Object value = ((Object[])val)[Integer.parseInt(index)];
+                    result = (value == null) ? "" : value.toString();
+                }
+            }else{
+                result = (val == null) ? "" : val.toString();
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        handlerCtx.setOutputValue("value", result);
+    }
+
+
     @Handler(id="getDefaultProxyAttrs",
     input={
         @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
@@ -168,16 +228,6 @@ public class ProxyHandlers {
         public static void getDefaultProxyAttrs(HandlerContext handlerCtx) {
         try{
             String parentName = (String) handlerCtx.getInputValue("parentObjectNameStr");
-//            boolean calltest=false;
-//            if (calltest){
-//                AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
-//
-//                String type = "file-cache";
-//                System.out.println("type = " + type);
-//                System.out.println("objectName = " + parentName);
-//                Map mm = amx.getDefaultValues(type, true);
-//                System.out.println(mm);
-//            }
             String childType = (String) handlerCtx.getInputValue("childType");
             AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
             Map valueMap = amx.getDefaultValues(childType, true);
@@ -328,7 +378,12 @@ public class ProxyHandlers {
         }
     }
 
-    
+
+
+    /*
+     * This handler returns a list of children by its name.
+     * Useful for creating dropdowns or listBox
+     */
     @Handler(id="getChildrenByType",
     input={
         @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
@@ -451,7 +506,6 @@ public class ProxyHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
-
     @Handler(id="setProxyProperties",
     input={
         @HandlerInput(name="objectNameStr",   type=String.class, required=true),
@@ -498,7 +552,6 @@ public class ProxyHandlers {
                     }
                     newList.add(newRow);
                 }
-                //System.out.println("============ call configToos.setProperties() \n objectName="+objectName + "\npropertyList="+newList.toString());
                 if ((systemProp != null) && (systemProp.booleanValue())){
                     configTools.setSystemProperties(objectName, newList, true);
                 }else{
