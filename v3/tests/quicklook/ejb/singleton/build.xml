@@ -56,7 +56,7 @@
     </target>
 
     <target name="redeploy">
-        <antcall target="deploy-${deploy.platform}-impl">
+        <antcall target="re-deploy-${deploy.platform}">
           <param name="redeploy" value="--force=true"/>
 	</antcall>
     </target>

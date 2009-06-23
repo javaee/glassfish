@@ -195,8 +195,6 @@
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="deploy"/>
     <arg value="--path"/>
-    <arg value="${redeploy}"/>
-    <arg value="--upload=false"/>
     <arg line="${dist.dir}/${app.file.ext}"/>   
    </exec>  
 </target>
@@ -205,7 +203,32 @@
   <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
     <arg value="deploy"/>
     <arg value="--path"/>
-    <arg value="${redeploy}"/>
+    <arg line="${dist.dir}/${app.file.ext}"/>
+  </exec>
+</target>
+
+<target name="re-deploy-v3" depends="setOSConditions">
+    <echo message="deploying ${app.file.ext}"/>
+    <antcall target="re-deploy-v3-unix"/>
+    <antcall target="re-deploy-v3-windows"/>
+</target>
+
+<target name="re-deploy-v3-windows" if="isWindows">
+   <exec executable="cmd" failonerror="true">
+    <arg value="/c"/>
+    <arg value="${glassfish.home}\bin\asadmin.bat"/>
+    <arg value="deploy"/>
+    <arg value="--force=true"/>
+    <arg value="--path"/>
+    <arg line="${dist.dir}/${app.file.ext}"/>
+   </exec> 
+</target>
+ 
+<target name="re-deploy-v3-unix" if="isUnix">
+  <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
+    <arg value="deploy"/>
+    <arg value="--force=true"/>
+    <arg value="--path"/>
     <arg line="${dist.dir}/${app.file.ext}"/>
   </exec>
 </target>
