@@ -44,7 +44,7 @@
     //The plugin infrastructure need to fix this.  
     setResourceBundle(key="i18n_ejb" bundle="org.glassfish.ejb.admingui.Strings");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_ejb.headings.ejbSettings}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_ejbLite.headings.ejbSettings}" >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -81,10 +81,10 @@
                  <sun:textField id="SessionStore" columns="$int{65}" text="#{pageSession.valueMap['SessionStore']}" />
              </sun:property>
              <sun:property id="commitOptionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.commitOptionLabel}">
-                 <sun:radioButton id="optB"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optB}" selected="#{pageSession.valueMap['commitOptGrp']}" selectedValue="B" />
+                 <sun:radioButton id="optB"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optB}" selected="#{pageSession.valueMap['CommitOption']}" selectedValue="B" />
                  <sun:helpInline id="optBHelpText" style="padding: 4pt" style="font-size: 8pt" text="$resource{i18n_ejbLite.ejbSettings.optBHelp}"/>
                  "<br />
-                 <sun:radioButton id="optC"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optC}" selected="#{pageSession.valueMap['commitOptGrp']}" selectedValue="C" />
+                 <sun:radioButton id="optC"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optC}" selected="#{pageSession.valueMap['CommitOption']}" selectedValue="C" />
                  <sun:helpInline id="optCHelpText" style="padding: 4pt" style="font-size: 8pt" text="$resource{i18n_ejbLite.ejbSettings.optCHelp}"/>
                  "<br />
              </sun:property>
