@@ -104,7 +104,7 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                            "wsdl file {0} does not exist for service-ref {1}",
                            new Object[] {wsdlFileUri, serviceRef.getName()});
                     DOLUtils.getDefaultLogger().warning(msg);
-                    //throw new RuntimeException(msg);
+
                 } 
             } catch(IOException ioe) {
                     String msg = localStrings.getLocalString(
@@ -112,7 +112,7 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                            "wsdl file {0}  for service-ref {1} cannot be opened : {2}",
                            new Object[] {wsdlFileUri, serviceRef.getName(), ioe.getMessage()});
                     DOLUtils.getDefaultLogger().warning(msg);
-                   // throw new RuntimeException(ioe);
+                   
             }
         }
         
