@@ -946,7 +946,8 @@ public class WebModule extends PwcWebModule {
      * @param propName the property name
      * @param propValue the property value
      */
-    protected void configureCatalinaProperties(String propName,String propValue){
+    protected void configureCatalinaProperties(String propName,
+                                               String propValue){
         if (propName == null || propValue == null) {
             logger.log(Level.WARNING,
                         "webcontainer.nullWebModuleProperty",
@@ -957,7 +958,7 @@ public class WebModule extends PwcWebModule {
         if (propName.startsWith("valve_")) {
             addValve(propValue);
         } else if (propName.startsWith("listener_")) {
-            addListener(propValue);
+            addCatalinaListener(propValue);
         }
     }
 
@@ -1061,7 +1062,7 @@ public class WebModule extends PwcWebModule {
      * Add a Catalina listener to a <code>ContractProvider</code>
      * @param listenerName the fully qualified class name of the listener.
      */
-    protected void addListener(String listenerName) {
+    protected void addCatalinaListener(String listenerName) {
         Object listener = loadInstance(listenerName);
 
         if ( listener == null ) return;

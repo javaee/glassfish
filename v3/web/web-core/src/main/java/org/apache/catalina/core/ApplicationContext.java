@@ -1203,21 +1203,25 @@ public class ApplicationContext
     /**
      * Adds the listener with the given class name to this ServletContext.
      */
-    /*
     public void addListener(String className) {
         context.addListener(className);
     }
-    */
 
 
     /**
      * Adds the given listener to this ServletContext.
      */
-    /*
     public <T extends EventListener> void addListener(T t) {
         context.addListener(t);
     }
-    */
+
+
+    /**
+     * Adds a listener of the given class type to this ServletContext.
+     */
+    public void addListener(Class <? extends EventListener> listenerClass) {
+        context.addListener(listenerClass);
+    }
 
 
     // START PWC 1.2

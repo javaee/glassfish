@@ -2801,7 +2801,8 @@ public class StandardContext
 
         if (isContextInitializedCalled) {
             throw new IllegalStateException(
-                sm.getString("applicationContext.sessionTrackingModes.initialized", getName()));
+                sm.getString("applicationContext.alreadyInitialized",
+                             "setSessionTrackingModes", getName()));
         }
 
         this.sessionTrackingModes = sessionTrackingModes;
@@ -2848,21 +2849,65 @@ public class StandardContext
     /**
      * Adds the listener with the given class name to this ServletContext.
      */
-    /*
     public void addListener(String className) {
-        // TBD
+        Object obj = null;
+        try {
+            obj = loadListener(getLoader().getClassLoader(), className);
+        } catch (Throwable t) {
+            throw new IllegalArgumentException(
+                "Unable to load listener of type " + className, t); 
+        }
+        if (!(obj instanceof EventListener)) {
+            throw new IllegalArgumentException("Invalid listener type");
+        }
+        addListener((EventListener)obj);
     }
-    */
 
 
     /**
      * Adds the given listener to this ServletContext.
      */
-    /*
     public <T extends EventListener> void addListener(T t) {
-        // TBD
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addListener", getName()));
+        }
+
+        boolean added = false;
+        if (t instanceof ServletContextAttributeListener ||
+                t instanceof ServletRequestAttributeListener ||
+                t instanceof ServletRequestListener ||
+                t instanceof HttpSessionAttributeListener) {
+            eventListeners.add(t);
+            added = true;
+        }
+        if (t instanceof HttpSessionListener) {
+            lifecycleListeners.add(t);
+            if (!added) {
+                added = true;
+            }
+        }
+
+        if (!added) {
+            throw new IllegalArgumentException("Invalid listener type " +
+                t.getClass().getName());
+        }
     }
-    */
+
+
+    /**
+     * Adds a listener of the given class type to this ServletContext.
+     */
+    public void addListener(Class <? extends EventListener> listenerClass) {
+        try {
+            addListener(listenerClass.newInstance());
+        } catch (Throwable t) {
+            throw new IllegalArgumentException(
+                "Unable to instantiate listener of type " +
+                listenerClass.getName(), t); 
+        }
+    }
 
 
     /**
@@ -4936,7 +4981,6 @@ public class StandardContext
             log.fine("Configuring application event listeners");
 
         // Instantiate the required listeners
-        ClassLoader loader = getLoader().getClassLoader();
         List<String> listeners = findApplicationListeners();
         Object results[] = new Object[listeners.size()];
         boolean ok = true;
@@ -4945,7 +4989,8 @@ public class StandardContext
         while (iter.hasNext()) {
             String listener = iter.next();
             try {
-                results[i++] = loadListener(loader, listener);
+                results[i++] = loadListener(getLoader().getClassLoader(),
+                                            listener);
             } catch (Throwable t) {
                 getServletContext().log
                     (sm.getString("standardContext.applicationListener",
@@ -4959,14 +5004,14 @@ public class StandardContext
         }
 
         // Sort listeners into lifecycle and event listeners
-        for(Object result : results) {
-            if(result instanceof ServletContextAttributeListener ||
+        for (Object result : results) {
+            if (result instanceof ServletContextAttributeListener ||
                     result instanceof ServletRequestAttributeListener ||
                     result instanceof ServletRequestListener ||
                     result instanceof HttpSessionAttributeListener) {
                 eventListeners.add((EventListener)result);
             }
-            if(result instanceof ServletContextListener ||
+            if (result instanceof ServletContextListener ||
                     result instanceof HttpSessionListener) {
                 lifecycleListeners.add((EventListener)result);
             }
@@ -4996,7 +5041,8 @@ public class StandardContext
             ServletContextListener listener = (ServletContextListener)
                 eventListener;
             try {
-                fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_INITIALIZED, listener);
+                fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_INITIALIZED,
+                                   listener);
                 if (restrictedApplicationListeners.contains(
                         listener.getClass().getName())) {
                     listener.contextInitialized(restrictedEvent);
@@ -5004,7 +5050,8 @@ public class StandardContext
                     listener.contextInitialized(event);
                 }
             } finally {
-                fireContainerEvent(ContainerEvent.AFTER_CONTEXT_INITIALIZED, listener);
+                fireContainerEvent(ContainerEvent.AFTER_CONTEXT_INITIALIZED,
+                                   listener);
             }
         }
 
