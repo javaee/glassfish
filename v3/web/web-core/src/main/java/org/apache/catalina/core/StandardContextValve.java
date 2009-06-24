@@ -60,6 +60,7 @@ package org.apache.catalina.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.*;
 import java.util.logging.*;
 
 import javax.servlet.*;
@@ -231,22 +232,21 @@ final class StandardContextValve
     public void postInvoke(Request request, Response response)
         throws IOException, ServletException {
 
-        Object[] listeners = 
+        List<EventListener> listeners = 
             ((Context) container).getApplicationEventListeners();
-
-        if ((listeners != null) && (listeners.length > 0)) {
+        if (!listeners.isEmpty()) {
             // create post-service event
             ServletRequestEvent event = new ServletRequestEvent
                 (((StandardContext) container).getServletContext(), 
                 request.getRequest());
-            for (int i = 0; i < listeners.length; i++) {
-                int j = (listeners.length - 1) - i;
-                if (listeners[j] == null ||
-                        !(listeners[j] instanceof ServletRequestListener)) {
+            int len = listeners.size();
+            for (int i = 0; i < len; i++) {
+                EventListener eventListener = listeners.get((len - 1) - i);
+                if (!(eventListener instanceof ServletRequestListener)) {
                     continue;
                 }
                 ServletRequestListener listener =
-                    (ServletRequestListener) listeners[j];
+                    (ServletRequestListener) eventListener;
                 // START SJSAS 6329662
                 container.fireContainerEvent(
                     ContainerEvent.BEFORE_REQUEST_DESTROYED,
@@ -402,24 +402,24 @@ final class StandardContextValve
             }
         }
         
-        Object instances[] = 
+        List<EventListener> listeners = 
             ((Context) container).getApplicationEventListeners();
 
         ServletRequestEvent event = null;
 
-        if ((instances != null) 
-                && (instances.length > 0)) {
+        if (!listeners.isEmpty()) {
             event = new ServletRequestEvent
                 (((StandardContext) container).getServletContext(), 
                  request.getRequest());
             // create pre-service event
-            for (int i = 0; i < instances.length; i++) {
-                if (instances[i] == null)
+            Iterator<EventListener> iter = listeners.iterator();
+            while (iter.hasNext()) {
+                EventListener eventListener = iter.next();
+                if (!(eventListener instanceof ServletRequestListener)) {
                     continue;
-                if (!(instances[i] instanceof ServletRequestListener))
-                    continue;
+                }
                 ServletRequestListener listener =
-                    (ServletRequestListener) instances[i];
+                    (ServletRequestListener) eventListener;
                 // START SJSAS 6329662
                 container.fireContainerEvent(
                     ContainerEvent.BEFORE_REQUEST_INITIALIZED,
@@ -430,7 +430,7 @@ final class StandardContextValve
                 } catch (Throwable t) {
                     log(sm.getString(
                         "standardContextValve.requestListener.requestInit",
-                        instances[i].getClass().getName()),
+                        listener.getClass().getName()),
                         t);
                     ServletRequest sreq = request.getRequest();
                     sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);

@@ -902,17 +902,22 @@ public class ApplicationContext
         }
 
         // Notify interested application event listeners
-        Object listeners[] = context.getApplicationEventListeners();
-        if ((listeners == null) || (listeners.length == 0))
+        List<EventListener> listeners = context.getApplicationEventListeners();
+        if (listeners.isEmpty()) {
             return;
+        }
+
         ServletContextAttributeEvent event =
-          new ServletContextAttributeEvent(context.getServletContext(),
-                                            name, value);
-        for (int i = 0; i < listeners.length; i++) {
-            if (!(listeners[i] instanceof ServletContextAttributeListener))
+            new ServletContextAttributeEvent(context.getServletContext(),
+                                             name, value);
+        Iterator<EventListener> iter = listeners.iterator();
+        while (iter.hasNext()) {
+            EventListener eventListener = iter.next();
+            if (!(eventListener instanceof ServletContextAttributeListener)) {
                 continue;
+            }
             ServletContextAttributeListener listener =
-                (ServletContextAttributeListener) listeners[i];
+                (ServletContextAttributeListener) eventListener;
             try {
                 context.fireContainerEvent(
                     ContainerEvent.BEFORE_CONTEXT_ATTRIBUTE_REMOVED,
@@ -973,24 +978,31 @@ public class ApplicationContext
         }
         
         // Notify interested application event listeners
-        Object listeners[] = context.getApplicationEventListeners();
-        if ((listeners == null) || (listeners.length == 0))
+        List<EventListener> listeners =
+            context.getApplicationEventListeners();
+        if (listeners.isEmpty()) {
             return;
+        }
+
         ServletContextAttributeEvent event = null;
-        if (replaced)
+        if (replaced) {
             event =
                 new ServletContextAttributeEvent(context.getServletContext(),
                                                  name, oldValue);
-        else
+        } else {
             event =
                 new ServletContextAttributeEvent(context.getServletContext(),
                                                  name, value);
+        }
 
-        for (int i = 0; i < listeners.length; i++) {
-            if (!(listeners[i] instanceof ServletContextAttributeListener))
+        Iterator<EventListener> iter = listeners.iterator(); 
+        while (iter.hasNext()) {
+            EventListener eventListener = iter.next();
+            if (!(eventListener instanceof ServletContextAttributeListener)) {
                 continue;
+	    }
             ServletContextAttributeListener listener =
-                (ServletContextAttributeListener) listeners[i];
+                (ServletContextAttributeListener) eventListener;
             try {
                 if (replaced) {
                     context.fireContainerEvent(
@@ -1186,6 +1198,26 @@ public class ApplicationContext
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         return context.getEffectiveSessionTrackingModes();
     }
+
+
+    /**
+     * Adds the listener with the given class name to this ServletContext.
+     */
+    /*
+    public void addListener(String className) {
+        context.addListener(className);
+    }
+    */
+
+
+    /**
+     * Adds the given listener to this ServletContext.
+     */
+    /*
+    public <T extends EventListener> void addListener(T t) {
+        context.addListener(t);
+    }
+    */
 
 
     // START PWC 1.2

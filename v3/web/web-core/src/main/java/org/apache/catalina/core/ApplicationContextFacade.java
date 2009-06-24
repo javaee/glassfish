@@ -64,14 +64,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -643,6 +636,26 @@ public final class ApplicationContextFacade
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         return context.getEffectiveSessionTrackingModes();
     }
+
+
+    /**
+     * Adds the listener with the given class name to this ServletContext.
+     */
+    /*
+    public void addListener(String className) {
+        context.addListener(className);
+    }
+    */
+
+
+    /**
+     * Adds the given listener to this ServletContext.
+     */
+    /*
+    public <T extends EventListener> void addListener(T t) {
+        context.addListener(t);
+    }
+    */
 
 
     // START PWC 1.2

@@ -66,12 +66,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -427,15 +422,18 @@ public class StandardSession
         fireSessionEvent(Session.SESSION_CREATED_EVENT, null);
 
         // Notify interested application event listeners
-        Object listeners[] = context.getApplicationLifecycleListeners();
-        if (listeners != null && (listeners.length > 0)) {
+        List<EventListener> listeners = context.getApplicationLifecycleListeners();
+        if (!listeners.isEmpty()) {
             HttpSessionEvent event =
                 new HttpSessionEvent(getSession());
-            for (int i = 0; i < listeners.length; i++) {
-                if (!(listeners[i] instanceof HttpSessionListener))
+            Iterator<EventListener> iter = listeners.iterator();
+            while (iter.hasNext()) {
+                EventListener eventListener = iter.next();
+                if (!(eventListener instanceof HttpSessionListener)) {
                     continue;
-                HttpSessionListener listener =
-                    (HttpSessionListener) listeners[i];
+                }
+                HttpSessionListener listener = (HttpSessionListener)
+                        eventListener;
                 try {
                     fireContainerEvent(context,
                                        "beforeSessionCreated",
@@ -765,17 +763,19 @@ public class StandardSession
         
             // Notify interested application event listeners
             // FIXME - Assumes we call listeners in reverse order
-            Object listeners[] = context.getApplicationLifecycleListeners();
-            if (notify && (listeners != null) && (listeners.length > 0)) {
+            List<EventListener> listeners = context.getApplicationLifecycleListeners();
+            if (notify && !listeners.isEmpty()) {
                 HttpSessionEvent event =
                     new HttpSessionEvent(getSession());
-                for (int i = 0; i < listeners.length; i++) {
+                int len = listeners.size();
+                for (int i = 0; i < len; i++) {
                     // Invoke in reverse order of declaration
-                    int j = (listeners.length - 1) - i;
-                    if (!(listeners[j] instanceof HttpSessionListener))
+                    EventListener eventListener = listeners.get((len - 1) - i);
+                    if (!(eventListener instanceof HttpSessionListener)) {
                         continue;
-                    HttpSessionListener listener =
-                        (HttpSessionListener) listeners[j];
+                    }
+                    HttpSessionListener listener = (HttpSessionListener)
+                            eventListener;
                     try {
                         fireContainerEvent(context,
                                            "beforeSessionDestroyed",
@@ -1554,14 +1554,18 @@ public class StandardSession
         //END HERCULES:add         
 
         // Notify interested application event listeners
-        Object listeners[] = context.getApplicationEventListeners();
-        if (listeners == null)
+        List<EventListener> listeners = context.getApplicationEventListeners();
+        if (listeners.isEmpty()) {
             return;
-        for (int i = 0; i < listeners.length; i++) {
-            if (!(listeners[i] instanceof HttpSessionAttributeListener))
+        }
+        Iterator<EventListener> iter = listeners.iterator();
+        while (iter.hasNext()) {
+            EventListener eventListener = iter.next();
+            if (!(eventListener instanceof HttpSessionAttributeListener)) {
                 continue;
+            }
             HttpSessionAttributeListener listener =
-                (HttpSessionAttributeListener) listeners[i];
+                (HttpSessionAttributeListener) eventListener;
             try {
                 fireContainerEvent(context,
                                    "beforeSessionAttributeRemoved",
@@ -1696,14 +1700,18 @@ public class StandardSession
         //end HERCULES:add
 
         // Notify interested application event listeners
-        Object listeners[] = context.getApplicationEventListeners();
-        if (listeners == null)
+        List<EventListener> listeners = context.getApplicationEventListeners();
+        if (listeners.isEmpty()) {
             return;
-        for (int i = 0; i < listeners.length; i++) {
-            if (!(listeners[i] instanceof HttpSessionAttributeListener))
+        }
+        Iterator<EventListener> iter = listeners.iterator();
+        while (iter.hasNext()) {
+            EventListener eventListener = iter.next();
+            if (!(eventListener instanceof HttpSessionAttributeListener)) {
                 continue;
+            }
             HttpSessionAttributeListener listener =
-                (HttpSessionAttributeListener) listeners[i];
+                (HttpSessionAttributeListener) eventListener;
             try {
                 if (unbound != null) {
                     fireContainerEvent(context,

@@ -97,45 +97,19 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of initialized application event listener objects,
-     * in the order they were specified in the web application deployment
-     * descriptor, for this application.
-     *
-     * @exception IllegalStateException if this method is called before
-     *  this application has started, or after it has been stopped
+     * @return the list of initialized application event listeners
+     * of this application, in the order in which they have been specified
+     * in the deployment descriptor
      */
-    Object[] getApplicationEventListeners();
+    List<EventListener> getApplicationEventListeners();
 
 
     /**
-     * Store the set of initialized application event listener objects,
-     * in the order they were specified in the web application deployment
-     * descriptor, for this application.
-     *
-     * @param listeners The set of instantiated listener objects.
+     * @return the list of initialized application lifecycle listeners
+     * of this application, in the order in which they have been specified
+     * in the deployment descriptor
      */
-    void setApplicationEventListeners(Object listeners[]);
-
-
-    /**
-     * Return the set of initialized application lifecycle listener objects,
-     * in the order they were specified in the web application deployment
-     * descriptor, for this application.
-     *
-     * @exception IllegalStateException if this method is called before
-     *  this application has started, or after it has been stopped
-     */
-    Object[] getApplicationLifecycleListeners();
-
-
-    /**
-     * Store the set of initialized application lifecycle listener objects,
-     * in the order they were specified in the web application deployment
-     * descriptor, for this application.
-     *
-     * @param listeners The set of instantiated listener objects.
-     */
-    void setApplicationLifecycleListeners(Object listeners[]);
+    List<EventListener> getApplicationLifecycleListeners();
 
 
     /**

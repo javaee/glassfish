@@ -1788,17 +1788,21 @@ public class Request
         }
 
         // Notify interested application event listeners
-        Object listeners[] = context.getApplicationEventListeners();
-        if ((listeners == null) || (listeners.length == 0))
+        List<EventListener> listeners = context.getApplicationEventListeners();
+        if (listeners.isEmpty()) {
             return;
+        }
         ServletRequestAttributeEvent event =
             new ServletRequestAttributeEvent(servletContext, getRequest(),
                                              name, value);
-        for (int i = 0; i < listeners.length; i++) {
-            if (!(listeners[i] instanceof ServletRequestAttributeListener))
+        Iterator<EventListener> iter = listeners.iterator(); 
+        while (iter.hasNext()) {
+            EventListener eventListener = iter.next();
+            if (!(eventListener instanceof ServletRequestAttributeListener)) {
                 continue;
+            }
             ServletRequestAttributeListener listener =
-                (ServletRequestAttributeListener) listeners[i];
+                (ServletRequestAttributeListener) eventListener;
             try {
                 listener.attributeRemoved(event);
             } catch (Throwable t) {
@@ -1853,9 +1857,10 @@ public class Request
         // END SJSAS 6231069
 
         // Notify interested application event listeners
-        Object listeners[] = context.getApplicationEventListeners();
-        if ((listeners == null) || (listeners.length == 0))
+        List<EventListener> listeners = context.getApplicationEventListeners();
+        if (listeners.isEmpty()) {
             return;
+        }
         ServletRequestAttributeEvent event = null;
         if (replaced) {
             event = new ServletRequestAttributeEvent(servletContext,
@@ -1867,11 +1872,14 @@ public class Request
                                                      value);
         }
 
-        for (int i = 0; i < listeners.length; i++) {
-            if (!(listeners[i] instanceof ServletRequestAttributeListener))
+        Iterator<EventListener> iter = listeners.iterator();
+        while (iter.hasNext()) {
+            EventListener eventListener = iter.next();
+            if (!(eventListener instanceof ServletRequestAttributeListener)) {
                 continue;
+            }
             ServletRequestAttributeListener listener =
-                (ServletRequestAttributeListener) listeners[i];
+                (ServletRequestAttributeListener) eventListener;
             try {
                 if (replaced) {
                     listener.attributeReplaced(event);
