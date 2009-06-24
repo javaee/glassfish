@@ -259,6 +259,7 @@
         <exec executable="${env.S1AS_HOME}/bin/asadmin">
             <arg value="stop-domain"/>
         </exec>
+        <sleep seconds="5"/>
     </target>
 
     <target name="stop-server-windows" if="isWindows">
@@ -268,6 +269,7 @@
             <arg value="${env.S1AS_HOME}\bin\asadmin.bat"/>
             <arg value="stop-domain"/>
         </exec>
+        <sleep seconds="5"/>
     </target>
 
     <target name="start-server" depends="setOSConditions">
@@ -288,6 +290,7 @@
             <env key="GlassFish_Platform" value="Felix"/>
             <arg value="start-domain"/>
         </exec>
+        <sleep seconds="5"/>
     </target>
 
     <target name="start-server-windows" if="isWindows">
@@ -297,6 +300,7 @@
             <arg value="${env.S1AS_HOME}\bin\asadmin.bat"/>
             <arg value="start-domain"/>
         </exec>
+        <sleep seconds="5"/>
     </target>
 
 
