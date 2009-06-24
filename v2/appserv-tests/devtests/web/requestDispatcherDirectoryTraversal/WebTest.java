@@ -3,9 +3,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /**
- * Security Vulnerability test for:
- *
- *  ("RequestDispatcher directory traversal")
+ * Unit test for Issus 8585: RequestDispatcher directory traversal vulnerability
  *
  */
 public class WebTest {
