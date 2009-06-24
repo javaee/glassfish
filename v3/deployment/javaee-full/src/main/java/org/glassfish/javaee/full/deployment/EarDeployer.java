@@ -384,6 +384,12 @@ public class EarDeployer implements Deployer, PostConstruct {
     }
     
     private ExtendedDeploymentContext subContext(final Application application, final DeploymentContext context, final String moduleUri) {
+                
+                ExtendedDeploymentContext moduleContext = ((ExtendedDeploymentContext)context).getModuleDeploymentContexts().get(moduleUri);
+                if (moduleContext != null) {
+                    return moduleContext;
+                }
+
 
                 final ReadableArchive subArchive;
                 try {
@@ -399,7 +405,7 @@ public class EarDeployer implements Deployer, PostConstruct {
 
                 ActionReport subReport = 
                     context.getActionReport().addSubActionsReport();
-                return new DeploymentContextImpl(subReport, logger, context.getSource(),
+                moduleContext = new DeploymentContextImpl(subReport, logger, context.getSource(),
                         context.getCommandParameters(OpsParams.class), env) {
 
                     @Override
@@ -499,6 +505,9 @@ public class EarDeployer implements Deployer, PostConstruct {
                         }
                     }
                 };
+
+                ((ExtendedDeploymentContext)context).getModuleDeploymentContexts().put(moduleUri, moduleContext);
+                return moduleContext;
     }
 
     private Properties getModuleProps(DeploymentContext context, 

@@ -72,6 +72,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     Map<String, Properties> modulePropsMap = new HashMap<String, Properties>();
     Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
     Map<String, ArchiveHandler> moduleArchiveHandlers = new HashMap<String, ArchiveHandler>();
+    Map<String, ExtendedDeploymentContext> moduleDeploymentContexts = new HashMap<String, ExtendedDeploymentContext>();
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(ActionReport actionReport, Logger logger, 
@@ -434,6 +435,15 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
      */
     public Map<String, ArchiveHandler> getModuleArchiveHandlers() {
         return moduleArchiveHandlers;
+    }
+
+    /**
+     * Gets the deployment context for modules
+     *
+     * @return a map containing module deployment contexts
+     */
+    public Map<String, ExtendedDeploymentContext> getModuleDeploymentContexts() {
+        return moduleDeploymentContexts;
     }
 
     /**

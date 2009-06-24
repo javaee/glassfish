@@ -104,4 +104,13 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      */
     public void setModulePropsMap(Map<String, Properties> modulePropsMap);
 
+    /**
+     * Gets the deployment context for modules
+     *
+     * @return a map containing module deployment contexts
+     */
+    public Map<String, ExtendedDeploymentContext> getModuleDeploymentContexts();
+
+
+
 }
