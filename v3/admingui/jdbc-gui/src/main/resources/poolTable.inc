@@ -35,68 +35,47 @@
 -->
 <!-- jdbc/poolTable.inc -->
 
-<sun:table id="resourcesTable" title="$resource{i18n.resourcesTable.Pools}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
-        deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
-        selectMultipleButton="$boolean{true}"
-        selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
-
+<sun:table id="poolTable" title="#{tableTitle}" 
+            deselectMultipleButton="$boolean{true}"
+            deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
+            selectMultipleButton="$boolean{true}"
+            selectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
-
-    <!facet actionsTop>
-         <sun:panelGroup id="topActionsGroup1">
-            <!afterCreate
-                getClientId(component="$this{component}" clientId=>$page{topActionGroup});
-            />
-            
-            <sun:button id="newButton" text="$resource{i18n.button.New}" >
-                <!command redirect(page="#{createLink}"); />
-            </sun:button>
-            
-            <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
-                    onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmDeletePools}') )
-                        { return submitAndDisable(this, '$resource{i18n.button.Processing}');} 
-                        else {return false;}"
-            > 
-            <!command 
-                getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});      
-                getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                deleteResource(selectedRows="${selectedRows}" resourceType="#{resourceType}" );
-                setAttribute(key="selectedRows" value="${selectedRows}");
-                navigate(page="#{listPageLink}");
-            />
-            </sun:button>
-         </sun:panelGroup>
-     </facet>
+    
+#include "/jdbc/poolTableButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
-    <!afterCreate
-        getClientId(component="$this{component}" clientId=>$page{rowGroupId});
-    />
-   
+     <!afterCreate
+         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+        />
    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
                 selectedValue="$boolean{true}" 
-                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)" 
+                onClick="setTimeout('initAllRows(); changeThreeTableButtons()', 0)" 
             />
     </sun:tableColumn>    
-    
-    <sun:tableColumn headerText="$resource{i18n.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?name=#{td.value.name}" />
+
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="link" text="#{td.value.Name}" 
+            url="#{pageSession.editLink}?name=#{td.value.Name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="#{resHeader}"  sort="resInfo" rowHeader="$boolean{true}" id="col2">
-        <staticText id="resCol" value="#{td.value.resInfo}" />
+
+    <sun:tableColumn headerText="#{resHeader}" sort="resource" rowHeader="$boolean{true}" id="col22">
+        <staticText id="resAdap" rendered="#{!jdbcpool}" value="#{td.value.ResourceAdapterName}" />
+        <staticText id="resType" rendered="#{jdbcpool}" value="#{td.value.ResType}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="#{extraInfoHeader}" sort="extraInfo" rowHeader="$boolean{true}" id="coltype">
-        <staticText id="extraCol" value="#{td.value.extraInfo}" />
-    </sun:tableColumn>
+    <sun:tableColumn headerText="#{extraInfoHeader}" sort="connection"   rowHeader="$boolean{true}" id="col3">
+        <staticText id="connDef" rendered="#{!jdbcpool}" value="#{td.value.ConnectionDefinitionName}" />
+        <staticText id="datasourceClassname" rendered="#{jdbcpool}" value="#{td.value.DatasourceClassname}" />
+    </sun:tableColumn>  
     
-    <sun:tableColumn headerText="$resource{i18n.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
-        <staticText id="typeDesc" value="#{td.value.description}" />
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
+        <staticText id="typeDesc" value="#{td.value.Description}" />
     </sun:tableColumn>
     
   </sun:tableRowGroup>

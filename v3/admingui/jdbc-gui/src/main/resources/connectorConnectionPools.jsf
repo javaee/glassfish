@@ -49,7 +49,6 @@
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njdbc.resourcesTable.colDefinition}");
-        setPageSessionAttribute(key="updateObjectNameStr" value="v3:pp=/domain/resources,type=connector-connection-pool,name=");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njdbc.msg.JS.confirmDeleteCP}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/connectorConnectionPoolNew1.jsf");
@@ -58,6 +57,7 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.resources}");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njdbc.resourcesTable.colDefinition}");
+        setPageSessionAttribute(key="jdbcpool" value="#{false}" );
   
     />
     </event>
@@ -69,7 +69,7 @@
                  helpText="$resource{i18njdbc.connectorConnectionPools.pageTitleHelp}" />
 		 "<br /> <br />
 
-#include "/jdbc/connectorsPoolTable.inc"
+#include "/jdbc/poolTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.connectorConnectionPools}" />
             </sun:form>

@@ -43,13 +43,19 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getJDBCConnectionPoolMaps(selectedRows="$attribute{selectedRows}"  result=>$attribute{listOfRows} );
-        setPageSessionAttribute(key="resHeader" value="$resource{i18n.resourcesTable.colResType}");
-        setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18n.resourcesTable.colDatasource}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew1.jsf");
-        setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew.jsf");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools1.jsf");
         setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
+        setPageSessionAttribute(key="jdbcpool" value="#{true}" );
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain,type=resources");
+        setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.Pools}");
+        setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResType}");
+        setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njdbc.resourcesTable.colDatasource}");
+
         />
     </event>
 #include "/shared/restart.inc"        
@@ -59,7 +65,7 @@
                  <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPools.pageTitle}"
                  helpText="$resource{i18njdbc.jdbcConnectionPools.pageTitleHelp}"/>
 		 "<br /><br />
-#include "poolTable.inc"
+#include "/jdbc/poolTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPools}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"        
