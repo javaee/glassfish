@@ -40,6 +40,7 @@ import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
+import java.util.Properties;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.Stability;
@@ -91,20 +92,75 @@ public interface RuntimeMgr extends AMXProxy, Utility, Singleton
     /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     
-    /**
-        Get properties of JDBC Data Source
-        @see #PROPERTY_MAP_KEY
-        @see #REASON_FAILED_KEY
-     */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public Map<String,Object>  getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName );
-    
+
     @ManagedAttribute
     public String[] getSupportedCipherSuites();
     
     @ManagedAttribute
     @Description( "Return the available JMXServiceURLs in no particular order" )
     public String[] getJMXServiceURLs();
+
+
+    /* Connector Runtime exposed APIS */
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "List of built in custom resource factory classes" )
+    public Map<String,String> getBuiltInCustomResources() throws Exception;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "List of connection definition names for the given resource-adapter" )
+    public String[] getConnectionDefinitionNames(String rarName) throws Exception;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "get the MCF config properties of the connection definition" )
+    public Properties getMCFConfigProps(String rarName,String connectionDefName) throws Exception;
+
+    /**
+        Get properties of JDBC Data Source
+        @see #PROPERTY_MAP_KEY
+        @see #REASON_FAILED_KEY
+     */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "Returns the connection definition properties and their default values of a datasource class" )
+    public Map<String,Object>  getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName )
+            throws Exception;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "List of administered object interfaces for the given resource-adapter" )
+    public String[] getAdminObjectInterfaceNames(String rarName) throws Exception ;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "List of resource adapter configuration properties of a resource-adapter" )
+    public Properties getResourceAdapterConfigProps(String rarName) throws Exception ;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "List of administered object configuration proeprties" )
+    public Properties getAdminObjectConfigProps(String rarName,String adminObjectIntf) throws Exception ;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "List of java bean properties and their default values for a connection definition" )
+    public Properties getConnectorConfigJavaBeans(String rarName, String connectionDefName,String type) ;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "get the activation spec class for the given message-listener type of a resource-adapter" )
+    public String getActivationSpecClass( String rarName,
+             String messageListenerType) throws Exception ;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "get message listener types of a resource-adapter" )
+    public String[] getMessageListenerTypes(String rarName) throws Exception ;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "get message listener config properties for the given message-listener-type of a resource-adapter" )
+    public Properties getMessageListenerConfigProps(String rarName,
+         String messageListenerType)throws Exception ;
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description( "get message listener config property types for the given message-listener-type of a resource-adapter" )
+    public Properties getMessageListenerConfigPropTypes(String rarName,
+               String messageListenerType) throws Exception ;
+
+    /* Connector Runtime exposed APIS */
 }
 
 

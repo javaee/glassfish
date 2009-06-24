@@ -39,8 +39,12 @@ import java.util.Map;
 import javax.management.ObjectName;
 
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
+
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -94,28 +98,65 @@ public final class RuntimeMgrImpl extends AMXNonConfigImplBase implements Runtim
         }
     }
 
+    /* Connector Runtime exposed APIS */
+
+    public Map<String,Object>  getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName )
+            throws Exception{
+        return getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
+    }
+
+    public Map<String,String> getBuiltInCustomResources() throws Exception {
+        return getConnectorRuntime().getBuiltInCustomResources();
+    }
+
+    public String[] getConnectionDefinitionNames(String rarName) throws Exception{
+        return getConnectorRuntime().getConnectionDefinitionNames(rarName);
+    }
+
+    public Properties getMCFConfigProps(String rarName,String connectionDefName) throws Exception {
+        return getConnectorRuntime().getMCFConfigProps(rarName, connectionDefName);
+    }
+
+    public String[] getAdminObjectInterfaceNames(String rarName) throws Exception {
+        return getConnectorRuntime().getAdminObjectInterfaceNames(rarName);
+    }
+
+    public Properties getResourceAdapterConfigProps(String rarName) throws Exception {
+        return getConnectorRuntime().getResourceAdapterConfigProps(rarName);
+    }
+
+    public Properties getAdminObjectConfigProps(String rarName,String adminObjectIntf) throws Exception {
+        return getConnectorRuntime().getAdminObjectConfigProps(rarName, adminObjectIntf);        
+    }
+
+    public Properties getConnectorConfigJavaBeans(String rarName, String connectionDefName,String type)
+            throws Exception {
+        return getConnectorRuntime().getConnectorConfigJavaBeans(rarName, connectionDefName, type);
+    }
+
+    public String getActivationSpecClass( String rarName,
+             String messageListenerType) throws Exception {
+        return getConnectorRuntime().getActivationSpecClass(rarName, messageListenerType);
+    }
+
+    public String[] getMessageListenerTypes(String rarName) throws Exception {
+        return getConnectorRuntime().getMessageListenerTypes(rarName);
+    }
+
+    public Properties getMessageListenerConfigProps(String rarName,
+         String messageListenerType)throws Exception {
+        return getConnectorRuntime().getMessageListenerConfigProps(rarName, messageListenerType);
+    }
+
+    public Properties getMessageListenerConfigPropTypes(String rarName,
+               String messageListenerType) throws Exception {
+        return getConnectorRuntime().getMessageListenerConfigPropTypes(rarName, messageListenerType);
+    }
+
+    private ConnectorRuntime getConnectorRuntime(){
+        return Globals.getDefaultHabitat().getComponent(ConnectorRuntime.class);
+    }
     
+    /* Connector Runtime exposed APIS */
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
