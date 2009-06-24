@@ -73,7 +73,7 @@ public class PersistenceUnitLoader {
      */
     private static Map<String, String> integrationPropertiesWithoutJava2DB;
 
-    PersistenceUnitLoader(PersistenceUnitDescriptor puToInstatntiate, ProviderContainerContractInfo providerContainerContractInfo) {
+    public PersistenceUnitLoader(PersistenceUnitDescriptor puToInstatntiate, ProviderContainerContractInfo providerContainerContractInfo) {
        this.providerContainerContractInfo = providerContainerContractInfo;
 
        // A hack to work around EclipseLink issue https://bugs.eclipse.org/bugs/show_bug.cgi?id=248328 for prelude
@@ -87,7 +87,7 @@ public class PersistenceUnitLoader {
     /**
      * @return The emf loaded.
      */
-    EntityManagerFactory getEMF() {
+    public EntityManagerFactory getEMF() {
         return emf;
     }
 
