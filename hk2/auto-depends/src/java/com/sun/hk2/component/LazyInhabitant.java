@@ -111,4 +111,8 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
         if(real!=null)
             real.release();
     }
+
+    public boolean isInstantiated() {
+        return (real!=null && real.isInstantiated());
+    }
 }

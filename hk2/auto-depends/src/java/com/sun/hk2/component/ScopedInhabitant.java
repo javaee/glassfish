@@ -73,6 +73,10 @@ public class ScopedInhabitant<T> extends AbstractWombInhabitantImpl<T> {
         return o;
     }
 
+    public boolean isInstantiated() {
+        return scope.current().get(this)!=null;
+    }
+
     public void release() {
         // noop
     }

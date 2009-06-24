@@ -57,6 +57,10 @@ class ConfiguredWomb<T> extends AbstractInhabitantImpl<T> implements Womb<T> {
         this.dom = dom;
     }
 
+    public boolean isInstantiated() {
+        return true;
+    }
+
     public String typeName() {
         return core.typeName();
     }

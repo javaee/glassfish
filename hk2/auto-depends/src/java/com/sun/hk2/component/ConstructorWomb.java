@@ -79,7 +79,6 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
         }
     }
 
-
     public void initialize(final T t, final Inhabitant onBehalfOf) throws ComponentException {
 
         Scoped scoped = t.getClass().getAnnotation(Scoped.class);
