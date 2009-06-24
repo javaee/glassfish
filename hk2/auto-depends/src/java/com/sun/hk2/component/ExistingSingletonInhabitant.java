@@ -80,6 +80,10 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
         return object;
     }
 
+    public boolean isInstantiated() {
+        return true;
+    }
+
     public void release() {
         // since we are working on the existing object,
         // we can't release its instance.

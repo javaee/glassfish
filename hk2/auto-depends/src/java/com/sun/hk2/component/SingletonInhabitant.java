@@ -67,4 +67,8 @@ public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
             object=null;
         }
     }
+
+    public boolean isInstantiated() {
+        return object!=null;
+    }
 }

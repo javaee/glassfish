@@ -197,6 +197,14 @@ public interface Inhabitant<T> extends Holder<T> {
      */
     void release();
 
+    /**
+     * Returns true if the underlying object has been instantiated.
+     *
+     * @return true if the instance of this imhabitant has been created, false
+     * otherwise
+     */
+    boolean isInstantiated();
+
 //
 // methods below here are more or less used for book-keeping purpose by Habitat,
 // and implementations of Inhabitat should implement them just by using
