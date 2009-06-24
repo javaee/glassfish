@@ -46,6 +46,13 @@ package com.sun.enterprise.module;
  */
 public interface ModuleLifecycleListener {
  
+
+    /**
+     * Callback after a module is resolved
+     * @param module the module instance
+     */
+    public void moduleResolved(Module module);
+    
     /**
      * Callback after a module is started. 
      * @param module the module instance
