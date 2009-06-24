@@ -110,7 +110,7 @@
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.9.15a</grizzly.version>
-        <grizzly-config.version>1.0.9</grizzly-config.version>
+        <grizzly-config.version>1.0.10</grizzly-config.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
@@ -136,31 +136,31 @@
         <jaxws-ri.version>2.1.3</jaxws-ri.version>
         <stax-api.version>1.0-2</stax-api.version>
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
-	<dataprovider.version>4.2</dataprovider.version>
-	<jsftemplating.version>1.2.9</jsftemplating.version>
-	<scales.version>1.3.1</scales.version>
-    	<glassfish-corba.version>3.0.0-b020</glassfish-corba.version>
-	<uc-pkg-client.version>1.111-30.2164</uc-pkg-client.version>
-	<uc-pkg-bootstrap.version>1.111-30.2164</uc-pkg-bootstrap.version>
+        <dataprovider.version>4.2</dataprovider.version>
+        <jsftemplating.version>1.2.9</jsftemplating.version>
+        <scales.version>1.3.1</scales.version>
+        <glassfish-corba.version>3.0.0-b020</glassfish-corba.version>
+        <uc-pkg-client.version>1.111-30.2164</uc-pkg-client.version>
+        <uc-pkg-bootstrap.version>1.111-30.2164</uc-pkg-bootstrap.version>
         <webservices.version>2.0-b12</webservices.version>
         <jaxb.version>2.2-promoted-b36</jaxb.version>
         <javax-persistence-api.version>2.0.0-M3</javax-persistence-api.version>
-	<eclipselink.version>2.0.0-M3</eclipselink.version>
+        <eclipselink.version>2.0.0-M3</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
         <schema2beans.version>RELEASE55</schema2beans.version>
         <!-- osgi version string must start with a number. Manually mapping above schema2beans.version to osgi.version here -->
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
-	<antlr.version>2.7.6</antlr.version>
-	<mq.version>4.4-010</mq.version>
-	<jaxr.version>JAXR_RA_AS90_20060317</jaxr.version>
+        <antlr.version>2.7.6</antlr.version>
+        <mq.version>4.4-010</mq.version>
+        <jaxr.version>JAXR_RA_AS90_20060317</jaxr.version>
         <webbeans.version>1.0.0.PREVIEW1</webbeans.version>
-	<jersey.version>1.1.0-ea</jersey.version>
-	<jbi.version>1.0</jbi.version>
-	<wsdl4j.version>1.6.2</wsdl4j.version>
-	<gfprobe-provider-client.version>3.0.0-b007</gfprobe-provider-client.version>
-    <gmbal.version>3.0.0-b004</gmbal.version>
+        <jersey.version>1.1.0-ea</jersey.version>
+        <jbi.version>1.0</jbi.version>
+        <wsdl4j.version>1.6.2</wsdl4j.version>
+        <gfprobe-provider-client.version>3.0.0-b007</gfprobe-provider-client.version>
+        <gmbal.version>3.0.0-b004</gmbal.version>
     </properties>
 
 
@@ -169,7 +169,7 @@
         <!-- To avoid JVM crash while using JDK 6, we are not
              building this module in anonymous profile anymore.
              See bug #6766662 for more details.
-      	<module>build</module>
+              <module>build</module>
         -->
     </modules>
     <profiles>
@@ -183,21 +183,21 @@
                 <!-- Every time you change module list, please change
                      the same under release profiles as well (below) -->
                 <module>javaee-api</module>
-              	<module>common</module>
-              	<module>deployment</module>
-              	<module>admin</module>
-              	<module>core</module>
-              	<module>transaction</module>
-              	<module>web</module>
+                <module>common</module>
+                <module>deployment</module>
+                <module>admin</module>
+                <module>core</module>
+                <module>transaction</module>
+                <module>web</module>
                 <module>ejb</module>
-              	<module>connectors</module>
-		<module>jms</module>
-              	<module>jdbc</module>
-              	<module>persistence</module>
-              	<module>extras</module>
-		<module>admingui</module>
-		<module>packager</module>
-              	<module>distributions</module>
+                <module>connectors</module>
+                <module>jms</module>
+                <module>jdbc</module>
+                <module>persistence</module>
+                <module>extras</module>
+                <module>admingui</module>
+                <module>packager</module>
+                <module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
                 <module>tests</module>
@@ -230,20 +230,20 @@
                      building this module in this profile only.
                      See bug #6766662 for more details.
                 -->
-      	        <module>build</module>
+                <module>build</module>
             </modules>
         </profile>
 
         <profile>
             <!--
-	        RE profile for release purposes.
+                RE profile for release purposes.
             -->
             <id>release-phase2</id>
 
-	    <build>
+            <build>
                 <plugins>
-		    <!-- The installer module requires the dependency of jdk tools.jar -->
-		    <!-- to compile java classes in build.xml.  -->
+                    <!-- The installer module requires the dependency of jdk tools.jar -->
+                    <!-- to compile java classes in build.xml.  -->
                     <plugin>
                         <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                         <artifactId>maven-antrun-extended-plugin</artifactId>
@@ -258,26 +258,26 @@
                             </dependency>
                         </dependencies>
                     </plugin>
-	        </plugins>
-	    </build>
+                </plugins>
+            </build>
 
             <modules>
                 <module>javaee-api</module>
-              	<module>common</module>
-              	<module>deployment</module>
-              	<module>admin</module>
-              	<module>core</module>
-              	<module>transaction</module>
-              	<module>web</module>
+                <module>common</module>
+                <module>deployment</module>
+                <module>admin</module>
+                <module>core</module>
+                <module>transaction</module>
+                <module>web</module>
                 <module>ejb</module>
-              	<module>connectors</module>
-		<module>jms</module>
-              	<module>jdbc</module>
-              	<module>persistence</module>
-              	<module>extras</module>
-		<module>admingui</module>
-		<module>packager</module>
-              	<module>distributions</module>
+                <module>connectors</module>
+                <module>jms</module>
+                <module>jdbc</module>
+                <module>persistence</module>
+                <module>extras</module>
+                <module>admingui</module>
+                <module>packager</module>
+                <module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
                 <module>tests</module>
@@ -287,9 +287,9 @@
                 <module>webservices</module>
                 <module>orb</module>
                 <module>installer</module>
-		<module>sun-glassfish</module>
-		<module>sun-glassfish/packager</module>
-		<module>sun-glassfish/distributions</module>
+                <module>sun-glassfish</module>
+                <module>sun-glassfish/packager</module>
+                <module>sun-glassfish/distributions</module>
                 <module>sun-glassfish/installer</module>
                 <module>appclient</module>
                 <module>jbi/serviceengine/sun-javaee-engine</module>
@@ -298,27 +298,27 @@
 
        <profile>
             <!--
-	        RE profile for release purposes.
+                RE profile for release purposes.
             -->
             <id>release-phase-all</id>
             <modules>
-	        <module>build</module>
+                <module>build</module>
                 <module>javaee-api</module>
-              	<module>common</module>
-              	<module>deployment</module>
-              	<module>admin</module>
-              	<module>core</module>
-              	<module>transaction</module>
-              	<module>web</module>
+                <module>common</module>
+                <module>deployment</module>
+                <module>admin</module>
+                <module>core</module>
+                <module>transaction</module>
+                <module>web</module>
                 <module>ejb</module>
-              	<module>connectors</module>
-		<module>jms</module>
-              	<module>jdbc</module>
-              	<module>persistence</module>
-              	<module>extras</module>
-		<module>admingui</module>
-		<module>packager</module>
-              	<module>distributions</module>
+                <module>connectors</module>
+                <module>jms</module>
+                <module>jdbc</module>
+                <module>persistence</module>
+                <module>extras</module>
+                <module>admingui</module>
+                <module>packager</module>
+                <module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
                 <module>tests</module>
@@ -328,12 +328,12 @@
                 <module>webservices</module>
                 <module>orb</module>
                 <module>installer</module>
-		<module>sun-glassfish</module>
-		<module>sun-glassfish/packager</module>
-		<module>sun-glassfish/distributions</module>
-		<module>sun-glassfish/installer</module>
-		<module>sun-glassfish/distributions/web-ri</module>
-		<module>sun-glassfish/distributions/glassfish-ri</module>
+                <module>sun-glassfish</module>
+                <module>sun-glassfish/packager</module>
+                <module>sun-glassfish/distributions</module>
+                <module>sun-glassfish/installer</module>
+                <module>sun-glassfish/distributions/web-ri</module>
+                <module>sun-glassfish/distributions/glassfish-ri</module>
                 <module>appclient</module>
                 <module>jbi/serviceengine/sun-javaee-engine</module>
             </modules>
@@ -404,7 +404,7 @@
         <!-- make the target/*.jar names match the name as found in  installed modules/ -->
         <finalName>${project.artifactId}</finalName>
 
-	<!--    Begin: Parent Plugin Management Section -->
+        <!--    Begin: Parent Plugin Management Section -->
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -466,7 +466,7 @@
                     </configuration>
                 </plugin>
 
-	        <plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version> 2.2 </version>
@@ -483,15 +483,15 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version> 2.4.3 </version>
                     <configuration>
-                    	<forkMode>never</forkMode>
+                      <forkMode>never</forkMode>
                     </configuration>
                 </plugin>
 
-		<!--
-		     Get the latest version of release plugin.
-		     There is a bug in 2.0-beta-7 where the releaseVersion
-		     and developmentVersion properties are noop.
-		-->
+                <!--
+                     Get the latest version of release plugin.
+                     There is a bug in 2.0-beta-7 where the releaseVersion
+                     and developmentVersion properties are noop.
+                -->
                 <plugin>
                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
@@ -510,7 +510,7 @@
 
         <plugins>
 
-	    <!-- Enforces maven 2.0.9 and jdk 1.6.0-04 and above to be used to build v3 -->
+            <!-- Enforces maven 2.0.9 and jdk 1.6.0-04 and above to be used to build v3 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -524,11 +524,11 @@
                         <rules>
                             <requireMavenVersion>
                                 <version>[2.0.9,)</version>
-				<message>You need maven 2.0.9!</message>
+                                <message>You need maven 2.0.9!</message>
                             </requireMavenVersion>
                             <requireJavaVersion>
                                 <version>[1.6.0-4,)</version>
-				<message>You need JDK 1.6.0_04 and above!</message>
+                                <message>You need JDK 1.6.0_04 and above!</message>
                             </requireJavaVersion>
                         </rules>
                         </configuration>
@@ -645,16 +645,16 @@
         </plugins>
     </build>
 
-    <!--  Begin: Dependency management 				-->
+    <!--  Begin: Dependency management -->
     <dependencyManagement>
         <dependencies>
-	    <dependency>
+            <dependency>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2</artifactId>
                 <version>${hk2.version}</version>
             </dependency>
 
-	    <dependency>
+            <dependency>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-core</artifactId>
                 <version>${hk2.version}</version>
@@ -690,7 +690,7 @@
                 <version>${project.version}</version>
             </dependency>
 
-	    <dependency>
+            <dependency>
                <groupId>com.sun.faces</groupId>
                <artifactId>jsf-api</artifactId>
                <version>${jsf-api.version}</version>
@@ -768,11 +768,11 @@
                 <version>${schema2beans.version}</version>
             </dependency>
 
-			<dependency>
-				<groupId>org.eclipse.persistence</groupId>
-				<artifactId>javax.persistence</artifactId>
-				<version>${javax-persistence-api.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>javax.persistence</artifactId>
+                <version>${javax-persistence-api.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
@@ -841,7 +841,7 @@
                 <version>${jbi.version}</version>
           </dependency>
           <dependency>
-	        <groupId>wsdl4j</groupId>
+                <groupId>wsdl4j</groupId>
                 <artifactId>wsdl4j</artifactId>
                 <version>${wsdl4j.version}</version>
           </dependency>
@@ -851,7 +851,7 @@
             <version>${gmbal.version}</version>
           </dependency>
           <dependency>
-	        <groupId>org.glassfish.provider</groupId>
+                <groupId>org.glassfish.provider</groupId>
                 <artifactId>gfprobe-provider-client</artifactId>
                 <version>${gfprobe-provider-client.version}</version>
           </dependency>
@@ -874,22 +874,22 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
                 <version>1.2.0</version>
-	</dependency>
+          </dependency>
 
-	 <dependency>
-           <groupId>com.sun.pkg</groupId>
-           <artifactId>pkg-client</artifactId>
-           <version>${uc-pkg-client.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>com.sun.pkg</groupId>
-           <artifactId>pkg-bootstrap</artifactId>
-           <version>${uc-pkg-bootstrap.version}</version>
-	</dependency>
+          <dependency>
+                <groupId>com.sun.pkg</groupId>
+                <artifactId>pkg-client</artifactId>
+                <version>${uc-pkg-client.version}</version>
+          </dependency>
+          <dependency>
+                <groupId>com.sun.pkg</groupId>
+                <artifactId>pkg-bootstrap</artifactId>
+                <version>${uc-pkg-bootstrap.version}</version>
+          </dependency>
             
         </dependencies>
     </dependencyManagement>
-    <!--  End:   		Dependency management 		-->
+    <!--  End:   Dependency management -->
 
     <dependencies>
         <dependency>

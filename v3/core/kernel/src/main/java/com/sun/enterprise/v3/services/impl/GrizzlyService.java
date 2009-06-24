@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.admin.AdminAdapter;
@@ -336,12 +337,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     public synchronized Future<Result<Thread>> createNetworkProxy(NetworkListener listener) {
 
-        // Do not create listener when mod_ajp/jk is enabled. This
-        // should never happens one the grizzly-config configuration
-        // will be used.
-//        if (ConfigBeansUtilities.toBoolean(listener.getPropertyValue("jkEnabled"))) {
-//            return null;
-//        }
+        if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
+            return null;
+        }
 
         if (!Boolean.valueOf(listener.getEnabled())) {
             logger.info("Network listener " + listener.getName() +

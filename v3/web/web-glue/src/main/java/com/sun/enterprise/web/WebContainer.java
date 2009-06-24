@@ -512,18 +512,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             securityService = aConfig.getSecurityService();
 
             // Configure HTTP listeners
-            List<NetworkListener> httpListeners = networkConfig.getNetworkListeners().getNetworkListener();
-            String jkEnabled = null;
-            for (NetworkListener listener : httpListeners) {
-/*
-            TODO:  renable perhaps with an explicit attribute on the listener
-                jkEnabled = listener.getPropertyValue("jkEnabled");
-                if (jkEnabled!=null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
+            List<NetworkListener> listeners = networkConfig.getNetworkListeners().getNetworkListener();
+            for (NetworkListener listener : listeners) {
+                if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
                     createJKConnector(listener, httpService);
                 } else {
-*/
                     createHttpListener(listener, httpService);
-//                }
+                }
             }
             createJKConnector(null, httpService);
 
@@ -775,17 +770,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     port = Integer.parseInt(portString);
                 } catch (NumberFormatException ex) {
                     // use default port 8009
-                    port = 8009;
                 }
             }
         } else {
             port = Integer.parseInt(networkListener.getPort());
         }
 
-        jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0",
-                                                                port, "ajp");
+        jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", port, "ajp");
         jkConnector.configureJKProperties();
-
         String defaultHost = "server";
         String jkConnectorName = "jk-connector";
         if (networkListener !=null) {

@@ -238,7 +238,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     void setAccessLog(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the sso-enabled property.
+     * Gets the value of the sso-enabled property.  Possible values:  true/false/inherit
      *
      * @return possible object is
      *         {@link String }
@@ -256,7 +256,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
 
 
     /**
-     * Gets the value of the enabled property.
+     * Gets the value of the enabled property.  Possible values:  true/false/inherit
      *
      * @return possible object is
      *         {@link String }
