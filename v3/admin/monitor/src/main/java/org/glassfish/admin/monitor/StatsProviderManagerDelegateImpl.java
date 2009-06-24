@@ -109,7 +109,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
             // 1 mom per statsProvider
             ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(new ObjectName(MONITORING_SERVER));
             mom.stripPackagePrefix();
-            mom.createRoot(statsProvider);
+            mom.createRoot(statsProvider, subTreePath);
             momMap.put(statsProvider, mom);
 
             //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
