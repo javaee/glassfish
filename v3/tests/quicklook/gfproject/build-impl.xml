@@ -292,6 +292,7 @@
         <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+	<jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
 
     </testng>
 </target>
@@ -306,6 +307,7 @@
         <xmlfileset dir="." includes="testng.xml"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+	<jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
 
     </testng>
 </target>

@@ -134,7 +134,7 @@
         <ant dir="ejb/remoteview" target="build-deploy"/>
         <ant dir="ejb/singleton" target="build-deploy"/>
         <ant dir="ejb/cmp" target="build-deploy"/>
-        <!--<ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>-->
+        <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
     </target>
     
     <target name="undeploy">
@@ -158,7 +158,7 @@
         <ant dir="ejb/singleton" target="undeploy"/>
         <ant dir="ejb/remoteview" target="undeploy"/>
         <ant dir="ejb/cmp" target="undeploy"/>
-        <!--<ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>-->
+        <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
         <!-- ant dir="wsit" target="undeploy"/ -->
     </target>
     
@@ -206,6 +206,7 @@
             <jvmarg value="-Djava.compiler=NONE"/>
             <jvmarg value="-Dhttp.host=${glassfish.http.host}"/>
             <jvmarg value="-Dhttp.port=${glassfish.http.port}"/>
+	    <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
             <sysproperty key="basedir" value="${basedir}"/>
             <!--<classfileset dir="classes/test" includes="**/SeleniumTest.class"/>-->         
             <xmlfileset dir="." includes="${testng.xml}"/>
