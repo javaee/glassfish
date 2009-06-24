@@ -67,6 +67,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.catalina.util.RequestUtil;
 import com.sun.grizzly.tcp.Constants;
 
 /**
@@ -406,7 +408,7 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
                     + pathWithoutContext);
         }
         String fullPath = prefix + path;
-        String retVal = SSIServletRequestUtil.normalize(fullPath);
+        String retVal = RequestUtil.normalize(fullPath);
         if (retVal == null) {
             throw new IOException("Normalization yielded null on path: "
                     + fullPath);
@@ -439,7 +441,7 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
             return new ServletContextAndPath(context,
                     getAbsolutePath(virtualPath));
         } else {
-            String normalized = SSIServletRequestUtil.normalize(virtualPath);
+            String normalized = RequestUtil.normalize(virtualPath);
             if (isVirtualWebappRelative) {
                 return new ServletContextAndPath(context, normalized);
             } else {

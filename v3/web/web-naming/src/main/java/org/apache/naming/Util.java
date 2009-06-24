@@ -51,58 +51,75 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.catalina.ssi;
 
+package org.apache.naming;
 
-import javax.servlet.http.HttpServletRequest;
-import org.apache.catalina.util.RequestUtil;
-public class SSIServletRequestUtil {
-    /**
-     * Return the relative path associated with this servlet. Taken from
-     * DefaultServlet.java. Perhaps this should be put in
-     * org.apache.catalina.util somewhere? Seems like it would be widely used.
-     * 
-     * @param request
-     *            The servlet request we are processing
-     */
-    public static String getRelativePath(HttpServletRequest request) {
-        // Are we being processed by a RequestDispatcher.include()?
-        if (request.getAttribute("javax.servlet.include.request_uri") != null) {
-            String result = (String)request
-                    .getAttribute("javax.servlet.include.path_info");
-            if (result == null)
-                result = (String)request
-                        .getAttribute("javax.servlet.include.servlet_path");
-            if ((result == null) || (result.equals(""))) result = "/";
-            return (result);
-        }
-        // No, extract the desired path directly from the request
-        String result = request.getPathInfo();
-        if (result == null) {
-            result = request.getServletPath();
-        }
-        if ((result == null) || (result.equals(""))) {
-            result = "/";
-        }
-        return RequestUtil.normalize(result);
-    }
+/**
+ * Utility method from org.apache.catalina.util.RequestUtil.java
+ * The method is put here in order to resolve module dependencies
+ * between web-naming and web-core.
+ */
 
+public final class Util {
 
     /**
-     * Return a context-relative path, beginning with a "/", that represents
-     * the canonical version of the specified path after ".." and "." elements
-     * are resolved out. If the specified path attempts to go outside the
-     * boundaries of the current context (i.e. too many ".." path elements are
-     * present), return <code>null</code> instead. This normalize should be
-     * the same as DefaultServlet.normalize, which is almost the same ( see
-     * source code below ) as RequestUtil.normalize. Do we need all this
-     * duplication?
-     * 
-     * @param path
-     *            Path to be normalized
-     * @deprecated
+     * Normalize a relative URI path that may have relative values ("/./",
+     * "/../", and so on ) it it.  <strong>WARNING</strong> - This method is
+     * useful only for normalizing application-generated paths.  It does not
+     * try to perform security checks for malicious input.
+     *
+     * @param path Relative path to be normalized
+     * @param replaceBackSlash Should '\\' be replaced with '/'
      */
-    public static String normalize(String path) {
-        return RequestUtil.normalize(path);
+    public static String normalize(String path, boolean replaceBackSlash) {
+        if (path == null)
+            return null;
+
+        // Create a place for the normalized path
+        String normalized = path;
+
+        if (replaceBackSlash && normalized.indexOf('\\') >= 0)
+            normalized = normalized.replace('\\', '/');
+
+        if (normalized.equals("/."))
+            return "/";
+
+        // Add a leading "/" if necessary
+        if (!normalized.startsWith("/"))
+            normalized = "/" + normalized;
+
+        // Resolve occurrences of "//" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("//");
+            if (index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                normalized.substring(index + 1);
+        }
+
+        // Resolve occurrences of "/./" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("/./");
+            if (index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                normalized.substring(index + 2);
+        }
+
+        // Resolve occurrences of "/../" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("/../");
+            if (index < 0)
+                break;
+            if (index == 0)
+                return (null);  // Trying to go outside our context
+            int index2 = normalized.lastIndexOf('/', index - 1);
+            normalized = normalized.substring(0, index2) +
+                normalized.substring(index + 3);
+        }
+
+        // Return the normalized path that we have completed
+        return (normalized);
+
     }
 }
