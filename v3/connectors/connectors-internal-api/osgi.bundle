@@ -1,2 +1,3 @@
 -exportcontents: com.sun.appserv.connectors.internal.api; \
+    		  org.glassfish.resources.custom.factory; \
                  com.sun.appserv.connectors.internal.spi; version=${project.osgi.version}

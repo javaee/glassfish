@@ -373,4 +373,9 @@ public interface ConnectorConstants {
     public static final String CONNECTOR_MESSAGE_BEAN_CLIENT_FACTORY="ConnectorMessageBeanClientFactory";
 
     public static final String EXPLODED_EMBEDDED_RAR_EXTENSION="_rar";
+
+    public static final String JAVA_BEAN_FACTORY_CLASS = "org.glassfish.resources.custom.factory.JavaBeanFactory";
+    public static final String PRIMITIVES_AND_STRING_FACTORY_CLASS = "org.glassfish.resources.custom.factory.PrimitivesAndStringFactory";
+    public static final String URL_OBJECTS_FACTORY = "org.glassfish.resources.custom.factory.URLObjectFactory";
+    public static final String PROPERTIES_FACTORY = "org.glassfish.resources.custom.factory.PropertiesFactory";
 }

@@ -55,7 +55,7 @@ import java.lang.reflect.Constructor;
  */
 public class ConnectorsUtil {
 
-        private static Logger _logger= LogDomains.getLogger(ConnectorsUtil.class, LogDomains.RSR_LOGGER);
+    private static Logger _logger= LogDomains.getLogger(ConnectorsUtil.class, LogDomains.RSR_LOGGER);
 
     /**
      * determine whether the RAR in question is a System RAR
@@ -661,21 +661,21 @@ public class ConnectorsUtil {
     public static Map<String,String> getBuiltInCustomResources(){
         Map<String, String> resourcesMap = new HashMap<String, String>();
 
-        resourcesMap.put("JavaBean", "org.glassfish.resources.custom.JavaBeanFactory" );
+        resourcesMap.put("JavaBean", ConnectorConstants.JAVA_BEAN_FACTORY_CLASS );
 
-        resourcesMap.put("int", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("long", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("double", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("float", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("char", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("short", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("byte", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("boolean", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
-        resourcesMap.put("String", "org.glassfish.resources.custom.PrimitivesAndStringFactory" );
+        resourcesMap.put("java.lang.Integer", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.Long", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.Double", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.Float", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.Character", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.Short", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.Byte", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.Boolean", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
+        resourcesMap.put("java.lang.String", ConnectorConstants.PRIMITIVES_AND_STRING_FACTORY_CLASS );
 
-        resourcesMap.put("java.net.URL", "org.glassfish.resources.custom.URLObjectFactory" );
+        resourcesMap.put("java.net.URL", ConnectorConstants.URL_OBJECTS_FACTORY );
 
-        resourcesMap.put("java.util.Properties", "org.glassfish.resources.custom.PropertiesFactory" );
+        resourcesMap.put("java.util.Properties", ConnectorConstants.PROPERTIES_FACTORY );
 
         return resourcesMap;
     }

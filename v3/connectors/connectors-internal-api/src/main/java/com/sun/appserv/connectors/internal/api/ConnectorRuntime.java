@@ -184,30 +184,6 @@ public interface ConnectorRuntime extends ConnectorConstants{
      */
     public boolean pingConnectionPool(String poolName) throws ResourceException;
 
-    /**
-      * Gets the properties of the Java bean connection definition class that
-      * have setter methods defined and the default values as provided by the
-      * Connection Definition java bean developer.
-      * This method is used to get properties of jdbc-data-source<br>
-      * To get Connection definition properties for Connector Connection Pool,
-      * use ConnectorRuntime.getMCFConfigProperties()<br>
-      * When the connection definition class is not found, standard JDBC
-      * properties (of JDBC 3.0 Specification) will be returned.<br>
-      *
-      * @param connectionDefinitionClassName
-      *                     The Connection Definition Java bean class for which
-      *                     overrideable properties are required.
-      * @return Map<String, Object> String represents property name
-      * and Object is the defaultValue that is a primitive type or String
-      */
-    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName);
-
-    /**
-     * Provides the list of built in custom resources by
-     * resource-type and factory-class-name pair.
-     * @return map of resource-type & factory-class-name 
-     */
-    public Map<String,String> getBuiltInCustomResources();
 
     /**
      * Provides specified ThreadPool or default ThreadPool from server
@@ -285,6 +261,31 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return ClassLoader
      */
     ClassLoader getConnectorClassLoader();
+
+    /**
+      * Gets the properties of the Java bean connection definition class that
+      * have setter methods defined and the default values as provided by the
+      * Connection Definition java bean developer.
+      * This method is used to get properties of jdbc-data-source<br>
+      * To get Connection definition properties for Connector Connection Pool,
+      * use ConnectorRuntime.getMCFConfigProperties()<br>
+      * When the connection definition class is not found, standard JDBC
+      * properties (of JDBC 3.0 Specification) will be returned.<br>
+      *
+      * @param connectionDefinitionClassName
+      *                     The Connection Definition Java bean class for which
+      *                     overrideable properties are required.
+      * @return Map<String, Object> String represents property name
+      * and Object is the defaultValue that is a primitive type or String
+      */
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName);
+
+    /**
+     * Provides the list of built in custom resources by
+     * resource-type and factory-class-name pair.
+     * @return map of resource-type & factory-class-name
+     */
+    public Map<String,String> getBuiltInCustomResources();
 
     /** Obtains all the Connection definition names of a rar
      *  @param rarName rar moduleName
@@ -372,7 +373,6 @@ public interface ConnectorRuntime extends ConnectorConstants{
     public Properties getAdminObjectConfigProps(
       String rarName,String adminObjectIntf) throws ConnectorRuntimeException ;
 
-
     /**
      *  Retrieves the XXX javabean properties with default values.
      *  The javabean to introspect/retrieve is specified by the type.
@@ -402,7 +402,6 @@ public interface ConnectorRuntime extends ConnectorConstants{
      */
     public String getActivationSpecClass( String rarName,
              String messageListenerType) throws ConnectorRuntimeException ;
-
 
     /**
      *  Parses the ra.xml, processes the annotated rar artificats if any
