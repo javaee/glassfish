@@ -39,10 +39,14 @@ import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.ConnectionManagerImpl;
 import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.logging.LogDomains;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 import javax.naming.*;
 import javax.naming.spi.ObjectFactory;
@@ -50,6 +54,9 @@ import javax.resource.spi.ManagedConnectionFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Hashtable;
+
+import org.glassfish.api.admin.*;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * An object factory to handle creation of Connection Factories
@@ -59,23 +66,8 @@ import java.util.Hashtable;
 public class ConnectorObjectFactory implements ObjectFactory {
 
     private ConnectorRuntime runtime ;
-/*
-    private String jndiName;
-    private String poolName;
-    private String moduleName;
-    private String connectionFactoryName;
-*/
 
     private static Logger _logger = LogDomains.getLogger(ConnectorObjectFactory.class, LogDomains.JNDI_LOGGER);
-
-/*
-    public ConnectorObjectFactory(String jndiName, String connectionFactoryName, String moduleName, String poolName) {
-        this.jndiName = jndiName;
-        this.moduleName = moduleName;
-        this.poolName = poolName;
-        this.connectionFactoryName = connectionFactoryName;
-    }
-*/
 
     public ConnectorObjectFactory() {
     }
@@ -169,9 +161,45 @@ public class ConnectorObjectFactory implements ObjectFactory {
     }
 
     private ConnectorRuntime getRuntime() {
-        if(runtime == null){
-            runtime = ConnectorRuntime.getRuntime();
+        try {
+            if (runtime == null) {
+                runtime = ConnectorRuntime.getRuntime();
+            }
+        } catch (Exception e) {
+            // Assuming that connector runtime is always available in SERVER and APPCLIENT mode and
+            // hence this is CLIENT mode
+            _logger.log(Level.FINEST, "unable to get Connector Runtime due to the following exception, " +
+                    "trying client mode", e);
+            runtime = getHabitat().getComponent(ConnectorRuntime.class);
         }
         return runtime;
+    }
+
+/*
+    private ConnectorRuntime getRuntimeForClientMode() {
+        //if it is not possible to provide runtime, it is neither server nor appclient environment.
+        Habitat h = getHabitat();
+        return h.getComponent(ConnectorRuntime.class);
+    }
+
+    private ConnectorRuntime getRuntimeForClientMode() {
+        Server.Builder builder = new Server.Builder("se");
+        Server server = builder.build();
+        Habitat habitat = server.getHabitat();
+        ConnectorRuntime runtime = habitat.getComponent(ConnectorRuntime.class);
+        return runtime;
+    }
+*/
+
+    private Habitat getHabitat() {
+        Habitat habitat = null;
+        ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
+        habitat = registry.createHabitat("default");
+
+        StartupContext startupContext = new StartupContext();
+        habitat.add(new ExistingSingletonInhabitant(startupContext));
+
+        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+        return habitat;
     }
 }
