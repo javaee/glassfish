@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.LayoutDefinitionManager;
+import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
 
@@ -471,6 +472,44 @@ public class UtilHandlers {
 	}
 	LayoutDefinitionManager.addGlobalHandlerDefinition(def);
     }
-    
+
+
+    /**
+     *	<p> A utility handler that resembles the for() method in Java.  Handler inside the for loop will be executed
+     *  in a loop.  start index is specified by "start",  till less than "end".
+     * eg. forLoop(start="1"  end="3" varName="foo"){}, handler inside the {} will be executed 2 times.
+     *
+     *  <p> Input value: "start" -- Type: <code>Integer</code> Start index, default to Zero is not specified
+     *  <p> Input value: "end" -- Type: <code>Integer</code> End index.
+     *  <p> Input value: "varName" -- Type: <code>String</code>  Variable to be replaced in the for loop by the index.
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id="forLoop",
+    	input={
+	    @HandlerInput(name="start", type=Integer.class),
+        @HandlerInput(name="end", type=Integer.class, required=true),
+        @HandlerInput(name="varName", type=String.class, required=true)}
+        )
+    public static boolean forLoop(HandlerContext handlerCtx) {
+
+        Integer startInt = (Integer) handlerCtx.getInputValue("start");
+        int start = (startInt == null) ? 0 : startInt.intValue();
+        int end = ((Integer) handlerCtx.getInputValue("end")).intValue();
+        String varName = ((String) handlerCtx.getInputValue("varName"));
+
+        List<com.sun.jsftemplating.layout.descriptors.handler.Handler> handlers = handlerCtx.getHandler().getChildHandlers();
+		if (handlers.size() > 0) {
+            LayoutElement elt = handlerCtx.getLayoutElement();
+            Map<String, Object> requestMap = handlerCtx.getFacesContext().getExternalContext().getRequestMap();
+            for(int ix=start;  ix<=end; ix++){
+                requestMap.put(varName, ix);
+                //ignore whats returned by the handler.
+                elt.dispatchHandlers(handlerCtx, handlers);
+		    }
+		}
+        return false;
+    }
+
+
     private static final String PATH_SEPARATOR = "${path.separator}";
 }
