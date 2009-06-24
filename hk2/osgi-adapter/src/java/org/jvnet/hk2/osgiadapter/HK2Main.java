@@ -117,7 +117,8 @@ public class HK2Main extends Main implements
         mr = createModulesRegistry();
         habitat = createHabitat(mr, startupContext);
         createServiceTracker(habitat);
-        moduleStartup = launch(mr, habitat, null, startupContext);
+        String mainModuleName = System.getProperty("hk2.startup.mainModule");
+        moduleStartup = launch(mr, habitat, mainModuleName, startupContext);
     }
 
     protected ModulesRegistry createModulesRegistry() {
