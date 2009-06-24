@@ -41,14 +41,15 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
 import org.glassfish.ejb.api.DistributedEJBTimerService;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 @Service
 public class DistributedEJBTimerServiceImpl
     implements DistributedEJBTimerService
 {
 
-    private EjbContainerUtil ejbContainerUtilImpl = 
-            EjbContainerUtilImpl.getInstance();
+    @Inject
+    private EjbContainerUtil ejbContainerUtil;
 
     /**
      *--------------------------------------------------------------
@@ -57,7 +58,7 @@ public class DistributedEJBTimerServiceImpl
      */
     public int migrateTimers( String serverId ) {
         int result = 0;
-        EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
+        EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
         if (ejbTimerService != null) {
             result = ejbTimerService.migrateTimers( serverId );
         } else {
@@ -70,7 +71,7 @@ public class DistributedEJBTimerServiceImpl
 
     public String[] listTimers( String[] serverIds ) {
         String[] result = new String[serverIds.length];
-        EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
+        EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
         if (ejbTimerService != null) {
             result = ejbTimerService.listTimers( serverIds );
         } else {
@@ -86,7 +87,7 @@ public class DistributedEJBTimerServiceImpl
     }
 
     public void setPerformDBReadBeforeTimeout( boolean defaultDBReadValue ) {
-        EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
+        EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
         if( null != ejbTimerService ) {
             ejbTimerService.setPerformDBReadBeforeTimeout( 
                                            defaultDBReadValue );
