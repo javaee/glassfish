@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="418"/>
+    <property name="TOTAL_EXPECTED" value="419"/>
 
     &commonSetup;
     &commonBuild;
@@ -392,6 +392,7 @@
         <ant dir="formLoginAccessSessionOnResumedRequest" target="all"/>
         <ant dir="formLoginTransportGuaranteeConfidential" target="all"/>
         <ant dir="jspForwardNormalizePath" target="all"/>
+        <ant dir="requestDispatcherDirectoryTraversal" target="all"/>
         <ant dir="servlet-3.0/authAnnotations" target="all"/>
         <ant dir="servlet-3.0/transportProtectedAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAuthAnnotations" target="all"/>
