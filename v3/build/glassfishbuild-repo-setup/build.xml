@@ -43,6 +43,12 @@ own identifying information: Portions Copyright [yyyy]
         <exec dir="target/source" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-server" />
 	</exec>
+	 <exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-bin-sh" />
+	</exec>
+	 <exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-bin-exe" />
+	</exec>
 	<exec dir="target/source" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-config-gf" />
 	</exec>
