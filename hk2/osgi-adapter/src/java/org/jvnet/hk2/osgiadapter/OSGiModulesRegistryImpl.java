@@ -448,6 +448,9 @@ public class OSGiModulesRegistryImpl
         BundleListener bundleListener = new BundleListener() {
             public void bundleChanged(BundleEvent event) {
                 switch (event.getType()) {
+                    case BundleEvent.RESOLVED:
+                        listener.moduleResolved(getModule(event.getBundle()));
+                        break;
                     case BundleEvent.STARTED:
                         listener.moduleStarted(getModule(event.getBundle()));
                         break;

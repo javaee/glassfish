@@ -69,8 +69,6 @@ public final class OSGiModuleImpl implements Module {
 
     private OSGiModulesRegistryImpl registry;
 
-    private ModuleState state;
-
     private boolean isTransientlyActive = false;
 
     /* TODO (Sahoo): Change hk2-apt to generate an equivalent BundleActivator
@@ -84,25 +82,6 @@ public final class OSGiModuleImpl implements Module {
         this.registry = registry;
         this.bundle = bundle;
         this.md = md;
-        switch (bundle.getState()) {
-            case Bundle.INSTALLED:
-            case Bundle.UNINSTALLED:
-                this.state = ModuleState.NEW;
-                break;
-            case Bundle.RESOLVED:
-                this.state = ModuleState.RESOLVED;
-                break;
-            case Bundle.STARTING:
-                this.state = ModuleState.PREPARING;
-                break;
-            case Bundle.ACTIVE:
-                this.state = ModuleState.READY;
-                break;
-            default:
-                throw new RuntimeException(
-                        "Does not know how to handle bundle with state [" +
-                                bundle.getState() + "]");
-        }
     }
 
     public ModuleDefinition getModuleDefinition() {
@@ -118,6 +97,31 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public ModuleState getState() {
+        // We don't cache the module state locally. Instead we always map
+        // the underlying bundle's state to HK2 state. This avoids us
+        // from having to register a listener with OSGi to be updated with
+        // bundle state transitions.
+        ModuleState state;
+        switch (bundle.getState()) {
+            case Bundle.INSTALLED:
+            case Bundle.UNINSTALLED:
+                state = ModuleState.NEW;
+                break;
+            case Bundle.RESOLVED:
+                state = ModuleState.RESOLVED;
+                break;
+            case Bundle.STARTING:
+                state = ModuleState.PREPARING;
+                break;
+            case Bundle.ACTIVE:
+                state = ModuleState.READY;
+                break;
+            default:
+                throw new RuntimeException(
+                        "Does not know how to handle bundle with state [" +
+                                bundle.getState() + "]");
+        }
+
         return state;
     }
 
@@ -128,17 +132,19 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public synchronized void start() throws ResolveError {
-        if (state == ModuleState.READY) {
-            return;
-        }
-
-        try {
-            if ((bundle.getState() & Bundle.ACTIVE) == 0) {
-                bundle.start(Bundle.START_TRANSIENT);
-                isTransientlyActive = true;
-                logger.logp(Level.INFO, "OSGiModuleImpl",
-                        "start", "Started bundle {0}", bundle);
+        int state = bundle.getState();
+        if (((Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING) & state) != 0) {
+            if (logger.isLoggable(Level.FINER)) {
+                logger.logp(Level.FINER, "OSGiModuleImpl", "start",
+                        "Ignoring start of bundle {0} as it is in {1} state",
+                        new Object[]{bundle, toString(bundle.getState())} );
             }
+        }
+        try {
+            bundle.start(Bundle.START_TRANSIENT);
+            isTransientlyActive = true;
+            logger.logp(Level.INFO, "OSGiModuleImpl",
+                    "start", "Started bundle {0}", bundle);
         } catch (BundleException e) {
             throw new ResolveError("Failed to start "+this,e);
         }
@@ -151,27 +157,51 @@ public final class OSGiModuleImpl implements Module {
                         (Class<LifecyclePolicy>) bundle.loadClass(md.getLifecyclePolicyClassName());
                 lifecyclePolicy = lifecyclePolicyClass.newInstance();
             } catch(ClassNotFoundException e) {
-                state = ModuleState.ERROR;
                 throw new ResolveError("ClassNotFound : " + e.getMessage(), e);
             } catch(java.lang.InstantiationException e) {
-                state = ModuleState.ERROR;
                 throw new ResolveError(e);
             } catch(IllegalAccessException e) {
-                state = ModuleState.ERROR;
                 throw new ResolveError(e);
             }
         }
         if (lifecyclePolicy!=null) {
             lifecyclePolicy.start(this);
         }
-        state = ModuleState.READY;
+    }
+
+    private String toString(int state)
+    {
+        String value;
+        switch (state) {
+            case Bundle.STARTING:
+                value = "STARTING";
+                break;
+            case Bundle.STOPPING:
+                value = "STOPPING";
+                break;
+            case Bundle.INSTALLED:
+                value = "INSTALLED";
+                break;
+            case Bundle.UNINSTALLED:
+                value = "UNINSTALLED";
+                break;
+            case Bundle.RESOLVED:
+                value = "RESOLVED";
+                break;
+            case Bundle.ACTIVE:
+                value = "ACTIVE";
+                break;
+            default:
+                value = "UNKNOWN STATE [" + state + "]";
+                logger.warning("No mapping exist for bundle state " + state);
+        }
+        return value;
     }
 
     public synchronized boolean stop() {
         detach();
         // Don't refresh packages, as we are not uninstalling the bundle.
 //        registry.getPackageAdmin().refreshPackages(new Bundle[]{bundle});
-        state = ModuleState.NEW;
         return true;
     }
 
@@ -192,8 +222,6 @@ public final class OSGiModuleImpl implements Module {
         } catch (BundleException e) {
             throw new RuntimeException(e);
         }
-        state = ModuleState.NEW;
-
     }
 
     public void uninstall() {
