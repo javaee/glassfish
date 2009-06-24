@@ -48,4 +48,11 @@
     <artifactId>flashlight-agent</artifactId>
     <packaging>hk2-jar</packaging>
     <name>GlassFish Flashlight Agent</name>
+            <dependencies>
+            <dependency>
+                <groupId>org.glassfish.provider</groupId>
+                <artifactId>gfprobe-provider-client</artifactId>
+            </dependency>
+
+            </dependencies>
 </project>

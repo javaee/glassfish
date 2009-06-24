@@ -1,6 +1,6 @@
 package org.glassfish.flashlight.provider;
 
-import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.impl.core.*;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -18,22 +18,22 @@ public class ProbeRegistry {
 
     private static ProbeRegistry _me = new ProbeRegistry();
 
-    private ConcurrentHashMap<Integer, Probe> probeMap =
-                new ConcurrentHashMap<Integer, Probe>();
-    private ConcurrentHashMap<String, Probe> probeDesc2ProbeMap =
-                new ConcurrentHashMap<String, Probe>();
+    private ConcurrentHashMap<Integer, FlashlightProbe> probeMap =
+                new ConcurrentHashMap<Integer, FlashlightProbe>();
+    private ConcurrentHashMap<String, FlashlightProbe> probeDesc2ProbeMap =
+                new ConcurrentHashMap<String, FlashlightProbe>();
 
     public static ProbeRegistry getInstance() {
         return _me;
     }
 
-    public void registerProbe(Probe probe) {
+    public void registerProbe(FlashlightProbe probe) {
         probeMap.put(probe.getId(), probe);
         probeDesc2ProbeMap.put(probe.getProbeStr(), probe);
         //System.out.println("[FL]Registered probe : " + probe.getProbeStr());
     }
 
-    public void unregisterProbe(Probe probe) {
+    public void unregisterProbe(FlashlightProbe probe) {
         probeMap.remove(probe.getId());
     }
 
@@ -41,16 +41,16 @@ public class ProbeRegistry {
         probeMap.remove(id);
     }
 
-    public Probe getProbe(int id) {
+    public FlashlightProbe getProbe(int id) {
         return probeMap.get(id);
     }
 
-    public Probe getProbe(String probeStr) {
+    public FlashlightProbe getProbe(String probeStr) {
         //System.out.println("[FL]Get probe : " + probeStr);
         return probeDesc2ProbeMap.get(probeStr);
     }
 
-    public static Probe getProbeById(int id) {
+    public static FlashlightProbe getProbeById(int id) {
         return _me.getProbe(id);
     }
 }

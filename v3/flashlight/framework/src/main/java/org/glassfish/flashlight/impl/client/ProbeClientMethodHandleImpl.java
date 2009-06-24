@@ -38,7 +38,7 @@ package org.glassfish.flashlight.impl.client;
 
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
-import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 
 /**
  * @author Mahesh Kannan
@@ -52,9 +52,9 @@ public class ProbeClientMethodHandleImpl
 
     private ProbeClientInvoker clientMethodInvoker;
 
-    private Probe probe;
+    private FlashlightProbe probe;
 
-    public ProbeClientMethodHandleImpl(int id, ProbeClientInvoker invoker, Probe probe) {
+    public ProbeClientMethodHandleImpl(int id, ProbeClientInvoker invoker, FlashlightProbe probe) {
         this.clientMethodId = id;
         this.clientMethodInvoker = invoker;
         this.probe = probe;

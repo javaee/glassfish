@@ -44,7 +44,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
 /**
  * Provider interface for HTTP session related probes.
  */
-@ProbeProvider(providerName="glassfish", moduleName="web")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="web", probeProviderName="session")
 public class SessionProbeProvider {
 
     @Probe(name="sessionCreatedEvent")

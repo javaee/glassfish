@@ -5,7 +5,7 @@ package org.glassfish.flashlight.impl.core;
  *         Date: Jul 20, 2008
  */
 
-import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -21,10 +21,10 @@ import java.security.ProtectionDomain;
 
 public class ProviderImplGenerator {
 
-    public String defineClass(ProbeProvider provider, Class providerClazz) {
+    public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
 
-        String generatedClassName = provider.getModuleName() + "_Flashlight_" + provider.getProviderName() + "_"
-                + "App_" + ((provider.getAppName() == null) ? "" : provider.getAppName());
+        String generatedClassName = provider.getModuleProviderName() + "_Flashlight_" + provider.getModuleName() + "_"
+                + "Probe_" + ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
         generatedClassName = providerClazz.getName() + "_" + generatedClassName;
 
         byte[] classData = generateClassData(provider, providerClazz, generatedClassName);
@@ -68,7 +68,7 @@ public class ProviderImplGenerator {
     }
 
 
-    public byte[] generateClassData(ProbeProvider provider, Class providerClazz, String generatedClassName) {
+    public byte[] generateClassData(FlashlightProbeProvider provider, Class providerClazz, String generatedClassName) {
 
         Type classType = Type.getType(providerClazz);
         //System.out.println("** classType: " + classType);
@@ -86,16 +86,16 @@ public class ProviderImplGenerator {
         cw.visit(Opcodes.V1_5, access, generatedClassName, null, "java/lang/Object", interfaces);
 
 
-        for (Probe probe : provider.getProbes()) {
-            Type probeType = Type.getType(Probe.class);
+        for (FlashlightProbe probe : provider.getProbes()) {
+            Type probeType = Type.getType(FlashlightProbe.class);
             int fieldAccess = Opcodes.ACC_PUBLIC;
             String fieldName = "_flashlight_" + probe.getProbeName();
             cw.visitField(fieldAccess, fieldName,
                     probeType.getDescriptor(), null, null);
         }
 
-        Type probeType = Type.getType(Probe.class);
-        for (Probe probe : provider.getProbes()) {
+        Type probeType = Type.getType(FlashlightProbe.class);
+        for (FlashlightProbe probe : provider.getProbes()) {
             String methodDesc = "void " + probe.getProviderJavaMethodName();
             methodDesc += "(";
             String delim = "";
@@ -141,24 +141,24 @@ public class ProviderImplGenerator {
         return classData;
     }
 
-    private void generateConstructor(ClassWriter cw, String generatedClassName, ProbeProvider provider) {
+    private void generateConstructor(ClassWriter cw, String generatedClassName, FlashlightProbeProvider provider) {
         Method m = Method.getMethod("void <init> ()");
         GeneratorAdapter gen = new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null, null, cw);
         gen.loadThis();
         gen.invokeConstructor(Type.getType(Object.class), m);
 
         Type probeRegType = Type.getType(ProbeRegistry.class);
-        Type probeType = Type.getType(Probe.class);
+        Type probeType = Type.getType(FlashlightProbe.class);
         
         gen.loadThis();
-        for (Probe probe : provider.getProbes()) {
+        for (FlashlightProbe probe : provider.getProbes()) {
 
             gen.dup();
             
             String fieldName = "_flashlight_" + probe.getProbeName();
             gen.push(probe.getId());
             gen.invokeStatic(probeRegType,
-                Method.getMethod("org.glassfish.flashlight.provider.Probe getProbeById(int)"));
+                Method.getMethod("org.glassfish.flashlight.provider.FlashlightProbe getProbeById(int)"));
 
             gen.visitFieldInsn(Opcodes.PUTFIELD,
                     generatedClassName,

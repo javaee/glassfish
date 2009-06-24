@@ -41,7 +41,7 @@ import org.glassfish.gfprobe.common.HandlerRegistry;
 */
 
 import org.glassfish.flashlight.client.*;
-import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -169,7 +169,7 @@ public class FlashlightProbeClientMediator
             if (probeAnn != null) {
                 String probeStr = probeAnn.value();
                 String[] probeDesc = probeStr.split(":");
-                Probe probe = ProbeRegistry.getInstance().getProbe(probeStr);
+                FlashlightProbe probe = ProbeRegistry.getInstance().getProbe(probeStr);
 
                 if (probe == null) {
                     throw new RuntimeException("Invalid probe desc: " + probeStr);

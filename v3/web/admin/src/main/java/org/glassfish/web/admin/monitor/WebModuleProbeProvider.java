@@ -43,7 +43,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
 /**
  * Provider interface for web module lifecycle related probe events.
  */
-@ProbeProvider(providerName="glassfish", moduleName="web")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="web", probeProviderName="web-module")
 public class WebModuleProbeProvider {
 
     /**

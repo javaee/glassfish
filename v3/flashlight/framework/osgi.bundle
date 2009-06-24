@@ -1,6 +1,5 @@
 -exportcontents: \
-                            org.glassfish.flashlight.provider; \
                             org.glassfish.flashlight.client; \
-                            org.glassfish.flashlight.provider.annotations; version=${project.osgi.version}
+                            org.glassfish.flashlight.provider; version=${project.osgi.version}
 
 Bundle-Activator: org.glassfish.flashlight.impl.core.FlashlightBundleActivator

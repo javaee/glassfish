@@ -39,14 +39,12 @@ package org.glassfish.web.admin.monitor;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.glassfish.probe.provider.annotations.Probe;
-import org.glassfish.probe.provider.annotations.ProbeParam;
-import org.glassfish.probe.provider.annotations.ProbeProvider;
+import org.glassfish.probe.provider.annotations.*;
 
 /**
  * Provider interface for HTTP request/response related probes.
  */
-@ProbeProvider(providerName="glassfish", moduleName="web")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="web", probeProviderName="http-service")
 public class RequestProbeProvider {
 
     @Probe(name="requestStartEvent")

@@ -47,8 +47,8 @@ public class ProbeProviderRegistry {
     private static ProbeProviderRegistry _me =
             new ProbeProviderRegistry();
 
-    private ConcurrentHashMap<String, ProbeProvider> providerMap =
-            new ConcurrentHashMap<String, ProbeProvider>();
+    private ConcurrentHashMap<String, FlashlightProbeProvider> providerMap =
+            new ConcurrentHashMap<String, FlashlightProbeProvider>();
 
     private ProbeProviderRegistry() {
     }
@@ -58,19 +58,20 @@ public class ProbeProviderRegistry {
     }
 
 
-    public ProbeProvider getProbeProvider(String moduleName, String providerName, String appName) {
-        String qname = moduleName + ":" + providerName + ":"
-        + ((appName == null) ? "" : appName);
+    public FlashlightProbeProvider getProbeProvider(String moduleProviderName, String moduleName, String probeProviderName) {
+        String qname = moduleProviderName + ":" + moduleName + ":"
+        + ((probeProviderName == null) ? "" : probeProviderName);
 
         return providerMap.get(qname);
     }
 
-    public ProbeProvider registerProbeProvider(ProbeProvider provider, Class clz) {
+    public FlashlightProbeProvider registerProbeProvider(FlashlightProbeProvider provider, Class clz) {
 
-        String appName = provider.getAppName();
-        String qname = provider.getModuleName() + ":" + provider.getProviderName() + ":"
-            + ((appName == null) ? "" : appName);
-        ProbeProvider oldProvider = providerMap.get(qname);
+        String qname = provider.getModuleProviderName() + ":" +
+                provider.getModuleName() + ":" + ((provider.getProbeProviderName()==null)?clz.getName():provider.getProbeProviderName());
+        //System.out.println("**** Registering Probe Provider" + qname);
+            //+ ((appName == null) ? "" : appName);
+        FlashlightProbeProvider oldProvider = providerMap.get(qname);
         if (oldProvider == null) {
             providerMap.put(qname, provider);
         } else {

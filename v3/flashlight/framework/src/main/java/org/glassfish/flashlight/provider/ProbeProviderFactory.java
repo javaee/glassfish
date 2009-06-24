@@ -44,6 +44,9 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface ProbeProviderFactory {
 
+    public <T> T getProbeProvider(Class<T> providerClazz)
+            throws InstantiationException, IllegalAccessException;
+
     public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> clazz)
             throws InstantiationException, IllegalAccessException;
 

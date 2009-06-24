@@ -38,7 +38,7 @@ package org.glassfish.flashlight.impl.client;
 
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.impl.core.ComputedParamsHandlerManager;
-import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class ReflectiveClientInvoker
     boolean useProbeArgs;
 
     public ReflectiveClientInvoker(int id, Object target, Method method,
-                                   String[] clientParamNames, Probe probe) {
+                                   String[] clientParamNames, FlashlightProbe probe) {
         this.id = id;
         this.target = target;
         this.method = method;

@@ -45,7 +45,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
  * 
  * @author shalini
  */
-@ProbeProvider(providerName="glassfish", moduleName="jdbc-connection-pool")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="connector", probeProviderName="jdbc-connection-pool")
 public class JdbcConnPoolProbeProvider {
 
     /**

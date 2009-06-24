@@ -74,6 +74,20 @@
                 </includes>
             </resource>
           </resources>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+		        <manifestEntries>
+                           <probe-provider-class-names>org.glassfish.web.admin.monitor.WebModuleProbeProvider,org.glassfish.web.admin.monitor.RequestProbeProvider,org.glassfish.web.admin.monitor.JspProbeProvider,org.glassfish.web.admin.monitor.ServletProbeProvider,org.glassfish.web.admin.monitor.SessionProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+
     </build>
     
     <dependencies>
@@ -109,6 +123,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

@@ -37,8 +37,8 @@
 package org.glassfish.flashlight.client;
 
 import org.glassfish.flashlight.impl.client.ReflectiveClientInvoker;
-import org.glassfish.flashlight.provider.Probe;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.flashlight.provider.FlashlightProbe;
+import org.glassfish.probe.provider.annotations.ProbeParam;
 import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.Annotation;
@@ -55,7 +55,7 @@ public class ProbeClientInvokerFactory {
             new AtomicInteger();
 
     public static ProbeClientInvoker createInvoker(Object target, Method method,
-                                                   Probe probe) {
+                                                   FlashlightProbe probe) {
         int invokerId = clientMethodIdCounter.incrementAndGet();
 
         String[] clientParamNames = new String[method.getParameterTypes().length];

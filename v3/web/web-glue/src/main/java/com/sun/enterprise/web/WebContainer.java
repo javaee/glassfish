@@ -115,6 +115,7 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.web.admin.monitor.HttpServiceStatsProviderBootstrap;
 import org.glassfish.web.admin.monitor.JspProbeProvider;
 import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
@@ -375,6 +376,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         createProbeProviders();
 
         habitat = _serverContext.getDefaultHabitat();
+
+        createStatsProviders();
 
         setJspFactory();
 
@@ -3102,6 +3105,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         jspProbeProvider = new JspProbeProvider();
         sessionProbeProvider = new SessionProbeProvider();
         requestProbeProvider = new RequestProbeProvider();
+    }
+
+
+    /**
+     * Creates statistics providers for Servlet, JSP, Session, and
+     * Request/Response related events.
+     *
+     * While the Servlet, JSP, and Session related probe providers are
+     * shared by all web applications (where every web application
+     * qualifies its probe events with its application name), the
+     * Request/Response related probe provider is shared by all HTTP
+     * listeners.
+     */
+    private void createStatsProviders() {
+        HttpServiceStatsProviderBootstrap httpStatsB =
+                habitat.getByType(HttpServiceStatsProviderBootstrap.class);
     }
 
 

@@ -1,7 +1,7 @@
 package org.glassfish.flashlight.client;
 
-import org.glassfish.flashlight.provider.annotations.ProbeName;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.Probe;
+import org.glassfish.probe.provider.annotations.ProbeParam;
 
 import java.lang.reflect.Method;
 
@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  */
 public interface EjbContainerProvider<K, V> {
 
-    @ProbeName("entry")
+    @Probe(name="entry")
         public void namedEntry(
             @ProbeParam("method") Method m, @ProbeParam("beanName") String beanName);
     

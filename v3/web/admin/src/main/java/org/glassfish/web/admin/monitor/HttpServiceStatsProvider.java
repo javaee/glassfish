@@ -45,8 +45,7 @@ import org.glassfish.api.statistics.impl.CountStatisticImpl;
 import org.glassfish.api.statistics.impl.TimeStatisticImpl;
 import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
-import org.glassfish.flashlight.client.ProbeListener;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
@@ -237,7 +236,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
         return this.errorOtherCount;
     }
 
-    @ProbeListener("web:request::requestStartEvent")
+    @ProbeListener("glassfish:web:httpService:requestStartEvent")
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,
@@ -257,7 +256,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
         }
     }
 
-    @ProbeListener("web:request::requestEndEvent")
+    @ProbeListener("glassfish:web:httpService:requestEndEvent")
     public void requestEndEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,

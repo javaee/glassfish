@@ -56,7 +56,7 @@ public class HttpServiceStatsProviderBootstrap implements TelemetryProvider, Pos
         if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
             //logger.setLevel(dbgLevel);
         }
-        logger.finest("[Monitor]In the HttpServiceStatsProvider bootstrap ************");
+        logger.finest("****** [Monitor]In the HttpServiceStatsProvider bootstrap ************");
 
         List<Config> lc = domain.getConfigs().getConfig();
         Config config = null;
@@ -70,6 +70,7 @@ public class HttpServiceStatsProviderBootstrap implements TelemetryProvider, Pos
         networkConfig = config.getNetworkConfig();
 
         for (VirtualServer vs : httpService.getVirtualServer()) {
+            logger.finest("**** Registering a new StatsProvider");
             StatsProviderManager.register(
                     "http-service",
                     PluginPoint.SERVER,

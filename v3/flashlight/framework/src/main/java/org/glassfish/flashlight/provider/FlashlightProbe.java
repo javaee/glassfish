@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Probe
+public class FlashlightProbe
         implements ProbeHandle {
 
     private int id;
@@ -68,7 +68,7 @@ public class Probe
 
     private String probeStr;
 
-    public Probe(int id, String moduleName, String providerName, String appName, String probeName,
+    public FlashlightProbe(int id, String moduleName, String providerName, String appName, String probeName,
                  String[] probeParamNames, Class[] paramTypes) {
         this.id = id;
         this.moduleName = moduleName;

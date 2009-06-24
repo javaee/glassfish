@@ -37,7 +37,6 @@
 package org.glassfish.flashlight.impl.provider;
 
 import org.glassfish.flashlight.provider.*;
-import org.glassfish.flashlight.provider.Probe;
 import org.glassfish.flashlight.client.EjbContainerListener;
 import org.glassfish.flashlight.client.EjbContainerProvider;
 import org.glassfish.flashlight.client.ProbeClientMediator;
@@ -45,10 +44,10 @@ import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 import org.glassfish.flashlight.impl.core.*;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
-import org.glassfish.flashlight.provider.annotations.ProbeName;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+
+import org.glassfish.probe.provider.annotations.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -57,6 +56,7 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Modifier;
 
 /**
  * @author Mahesh Kannan
@@ -70,18 +70,27 @@ public class FlashlightProbeProviderFactory
     
     private ConcurrentHashMap<String, Object> providerInfo = new ConcurrentHashMap<String, Object>();
 
+    public <T> T getProbeProvider(Class<T> providerClazz)
+            throws InstantiationException, IllegalAccessException {
+        //TODO: check for null and generate default names
+        ProbeProvider provAnn = providerClazz.getAnnotation(ProbeProvider.class);
+        return getProbeProvider(provAnn.moduleProviderName(), provAnn.moduleName(),
+                                provAnn.probeProviderName(),
+                                providerClazz);
+    }
+
     public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
 
         try {
-            ProbeProvider provider = new ProbeProvider(moduleName, providerName, appName);
+            FlashlightProbeProvider provider = new FlashlightProbeProvider(moduleName, providerName, appName);
 //            System.out.println("Module= " + moduleName + " \tProvider= " + providerName + "\tAppName= " + appName +
 //                                                        "\tProviderClazz= " + providerClazz.toString());
             for (Method m : providerClazz.getDeclaredMethods()) {
                 int sz = m.getParameterTypes().length;
-                ProbeName pnameAnn = m.getAnnotation(ProbeName.class);
+                Probe pnameAnn = m.getAnnotation(Probe.class);
                 String probeName = (pnameAnn != null) 
-                        ? pnameAnn.value() : m.getName();
+                        ? pnameAnn.name() : m.getName();
                 String[] probeParamNames = new String[sz];
                 int index = 0;
                 Annotation[][] anns2 = m.getParameterAnnotations();
@@ -95,7 +104,7 @@ public class FlashlightProbeProviderFactory
                     }
                 }
 
-                Probe probe = ProbeFactory.createProbe(
+                FlashlightProbe probe = ProbeFactory.createProbe(
                         moduleName, providerName, appName, probeName,
                         probeParamNames, m.getParameterTypes());
                 probe.setProviderJavaMethodName(m.getName());
@@ -103,26 +112,32 @@ public class FlashlightProbeProviderFactory
                 provider.addProbe(probe);
             }
 
-            String generatedClassName = provider.getModuleName() + "_Flashlight_" + provider.getProviderName() + "_"
-                    + "App_" + ((provider.getAppName() == null) ? "" : provider.getAppName());
-            generatedClassName = providerClazz.getName() + "_" + generatedClassName;
+            Class<T> tClazz = providerClazz;
 
-            Class<T> tClazz = null;
-            try {
-                tClazz = (Class<T>) (providerClazz.getClassLoader()).loadClass(generatedClassName);
-                //System.out.println ("Reusing the Generated class");
-                return (T) tClazz.newInstance();
-            } catch (ClassNotFoundException cnfEx) {
-                //Ignore
-            }
+            int mod = providerClazz.getModifiers();
+            if (Modifier.isAbstract(mod)) {
 
-            ProviderImplGenerator gen = new ProviderImplGenerator();
-            generatedClassName = gen.defineClass(provider, providerClazz);
+                String generatedClassName = provider.getModuleProviderName() +
+                        "_Flashlight_" + provider.getModuleName() + "_" + "Probe_" +
+                        ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
+                generatedClassName = providerClazz.getName() + "_" + generatedClassName;
 
-            try {
-                tClazz = (Class<T>) providerClazz.getClassLoader().loadClass(generatedClassName);
-            } catch (ClassNotFoundException cnfEx) {
-                throw new RuntimeException(cnfEx);
+                try {
+                    tClazz = (Class<T>) (providerClazz.getClassLoader()).loadClass(generatedClassName);
+                    //System.out.println ("Reusing the Generated class");
+                    return (T) tClazz.newInstance();
+                } catch (ClassNotFoundException cnfEx) {
+                    //Ignore
+                }
+
+                ProviderImplGenerator gen = new ProviderImplGenerator();
+                generatedClassName = gen.defineClass(provider, providerClazz);
+
+                try {
+                    tClazz = (Class<T>) providerClazz.getClassLoader().loadClass(generatedClassName);
+                } catch (ClassNotFoundException cnfEx) {
+                    throw new RuntimeException(cnfEx);
+                }
             }
 
 
@@ -135,6 +150,7 @@ public class FlashlightProbeProviderFactory
             ppem.notifyListenersOnRegister(moduleName, providerName, appName);
         return inst;
         } catch (Exception e) {
+            e.printStackTrace();
             return (T) Proxy.newProxyInstance(providerClazz.getClassLoader(),
                 new Class[]{providerClazz},
                 new InvocationHandler() {

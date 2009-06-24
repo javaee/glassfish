@@ -36,7 +36,7 @@
 
 package org.glassfish.flashlight.impl.core;
 
-import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -55,10 +55,12 @@ public class ProbeFactory {
 
     static ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
 
-    public static Probe createProbe(String moduleName, String providerName, String appName, String probeName,
+    public static FlashlightProbe createProbe(String moduleProviderName, String moduleName,
+                                    String probeProviderName, String probeName,
                                     String[] paramNames, Class[] paramTypes) {
         int id = counter.incrementAndGet();
-        Probe probe = new Probe(id, moduleName, providerName, appName, probeName,
+        FlashlightProbe probe = new FlashlightProbe(id, moduleProviderName,
+                moduleName, probeProviderName, probeName,
                 paramNames, paramTypes);
 
         probeRegistry.registerProbe(probe);

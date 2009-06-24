@@ -57,6 +57,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.glassfish.api.statistics.Statistic;
+import org.glassfish.api.statistics.impl.StatisticImpl;
 
 /**
  * User: Jerome Dochez
@@ -178,7 +180,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 //                    ((tn1 instanceof Statistic) || (tn1 instanceof MethodInvoker))) {
                 //Counter c = (Counter)tn1;
             if (!tn1.hasChildNodes()) {
-                map.put(tn1.getCompletePathName(), tn1.getValue());
+                insertNameValuePairs(map, tn1);
+                //map.put(tn1.getCompletePathName(), tn1.getValue());
             }
         }
         Iterator it = map.keySet().iterator();
@@ -189,5 +192,19 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             part.setMessage(obj + " = " + map.get(obj));
         }
         report.setActionExitCode(ExitCode.SUCCESS);
+    }
+
+    private void insertNameValuePairs(TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1){
+        String name = tn1.getCompletePathName();
+        Object value = tn1.getValue();
+        if (value instanceof StatisticImpl) {
+            Map<String,Object> statsMap = ((StatisticImpl)value).getStaticAsMap();
+            for (String attrName : statsMap.keySet()) {
+                Object attrValue = statsMap.get(attrName);
+                map.put(name + "-" + attrName, attrValue);
+            }
+        } else {
+            map.put(name, value);
+        }
     }
 }
