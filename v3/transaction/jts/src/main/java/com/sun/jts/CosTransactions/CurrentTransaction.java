@@ -1097,68 +1097,74 @@ public class CurrentTransaction {
             }
 
             //    _logger.log(Level.FINE,"Servant = "+coord);
-        } catch( Throwable exc ) {
-        }
 
-        // Check the Coordinator before sending the reply.
-        // We must do this before ending the thread association to allow the
-        // Coordinator to take advantage of registration on reply if available.
-        // Note that if the Coordinator returns forgetMe, the global identifier
-        // will have been destroyed at this point.
+            // Check the Coordinator before sending the reply.
+            // We must do this before ending the thread association to allow the
+            // Coordinator to take advantage of registration on reply if available.
+            // Note that if the Coordinator returns forgetMe, the global identifier
+            // will have been destroyed at this point.
 
-        CoordinatorImpl forgetParent = null;
-        int[] outInt = new int[1];
-        //StatusHolder outStatus = new StatusHolder();                                        
-        try {
-            forgetParent = coord.replyAction(outInt);
-        } catch( Throwable exc ) {
-        }
-
-        int replyAction = outInt[0];
-        if( replyAction == CoordinatorImpl.activeChildren ) {
+            CoordinatorImpl forgetParent = null;
+            int[] outInt = new int[1];
+            //StatusHolder outStatus = new StatusHolder();                                        
             try {
-                coord.rollback_only();
-            } catch( Throwable ex ) {}
-
-            INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.UnfinishedSubtransactions,
-                                                              CompletionStatus.COMPLETED_YES);
-            throw exc;
-        }
-
-        // End the current thread association.
-
-        endCurrent(false);
-
-        // If the transaction needs to be cleaned up, do so now.
-        // We ignore any exception the end_current may have raised in this case.
-        // The Control object is destroyed before the Coordinator so that it is not
-        // in the suspended set when the Coordinator is rolled back.
-
-        if( replyAction == CoordinatorImpl.forgetMe ) {
-            current.destroy();
-            coord.cleanUpEmpty(forgetParent);
-        }
-
-        // Otherwise, we have to check this reply.
-
-        else {
-            if( current.isAssociated() ||
-                current.isOutgoing() ) {
+                forgetParent = coord.replyAction(outInt);
+            } catch( Throwable exc ) {
+            }
+    
+            int replyAction = outInt[0];
+            if( replyAction == CoordinatorImpl.activeChildren ) {
                 try {
                     coord.rollback_only();
-                } catch( Throwable exc ) {}
+                } catch( Throwable ex ) {}
 
-                INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.DeferredActivities,
-                                                                  CompletionStatus.COMPLETED_YES);
+                INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.UnfinishedSubtransactions,
+                                                              CompletionStatus.COMPLETED_YES);
                 throw exc;
             }
 
-            current.destroy();
+            // End the current thread association.
+
+            endCurrent(false);
+
+            // If the transaction needs to be cleaned up, do so now.
+            // We ignore any exception the end_current may have raised in this case.
+            // The Control object is destroyed before the Coordinator so that it is not
+            // in the suspended set when the Coordinator is rolled back.
+
+            if( replyAction == CoordinatorImpl.forgetMe ) {
+                current.destroy();
+                coord.cleanUpEmpty(forgetParent);
+            }
+
+            // Otherwise, we have to check this reply.
+
+            else {
+                if( current.isAssociated() ||
+                        current.isOutgoing() ) {
+                    try {
+                        coord.rollback_only();
+                    } catch( Throwable exc ) {}
+
+                    INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.DeferredActivities,
+                                                                  CompletionStatus.COMPLETED_YES);
+                    throw exc;
+                }
+
+                current.destroy();
+            }
+
+        } catch( INVALID_TRANSACTION exc ) {
+            throw exc;
+        } catch( Unavailable exc ) {
+            // Ignore
+        } catch( SystemException exc ) {
+            // Ignore
         }
 
         // Create a context with the necessary information.
         // All we propagate back is the transaction id and implementation specific data.
-
+    
         holder.value = new PropagationContext(0,new TransIdentity(null,null,importedTID.realTID),
                                               new TransIdentity[0],emptyContext.implementation_specific_data);
 
