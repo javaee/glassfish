@@ -141,24 +141,11 @@
 
 
     <target  name="runtest">
-        <antcall target="runwsittest-impl">
-           <param name="contextroot" value="${contextroot}"/>
-           <param name="testng.test.name" value="${testng.test.name}"/>
-           <param name="testng.testclient" value="${testng.test.name}TestNG"/>
+        <antcall target="runtest-impl">
+          <param name="testng.test.name" value="${testng.test.name}"/>
+          <param name="testng.testclient" value="JaxwsFromWsdl"/>
         </antcall>
-    </target>
-
-    <target name="run">
-        <java fork="true" classname="${client}">
-            <classpath>
-                <path refid="wsit.classpath"/>
-                <pathelement location="${build.classes.home}"/>
-                <pathelement location="${basedir}/etc"/>
-            </classpath>
-            <sysproperty key="-Djava.endorsed.dirs" value="${glassfish.home}/modules/endorsed"/>
-
-        </java>
-    </target>
+    </target>  
 
     <target name="deploy">
         <antcall target="deploy-${deploy.platform}-impl"/>
@@ -171,7 +158,7 @@
     <target name="help">
         <echo message="server:       Builds and deploy the service endpoint WAR"/>
         <echo message="client:       Builds the client"/>
-        <echo message="run:          Runs the client"/>
+        <echo message="runtest:          Runs the client"/>
         <echo message="undeploy:     Undeploy war"/>
         <echo message="build-clean:  Remove build dir"/>
     </target>
