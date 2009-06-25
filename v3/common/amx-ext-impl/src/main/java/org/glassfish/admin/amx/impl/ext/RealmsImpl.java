@@ -56,7 +56,7 @@ import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.User;
 import org.glassfish.admin.amx.intf.config.Configs;
 import org.glassfish.admin.amx.intf.config.Domain;
-import org.glassfish.admin.amx.base.RealmsMgr;
+import org.glassfish.admin.amx.base.Realms;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.util.CollectionUtil;
 
@@ -64,18 +64,18 @@ import org.glassfish.admin.amx.util.CollectionUtil;
 
 
 /**
-    AMX RealmsMgr implementation.
+    AMX Realms implementation.
     Note that realms don't load until {@link #loadRealms} is called.
  */
-public final class RealmsMgrImpl extends AMXImplBase
-    // implements RealmsMgr
+public final class RealmsImpl extends AMXImplBase
+    // implements Realms
 {
     private final RealmsManager mRealmsManager;
     
 		public
-	RealmsMgrImpl( final ObjectName containerObjectName )
+	RealmsImpl( final ObjectName containerObjectName )
 	{
-        super( containerObjectName, RealmsMgr.class);
+        super( containerObjectName, Realms.class);
         
         mRealmsManager = Globals.getDefaultHabitat().getComponent(RealmsManager.class);
 	}

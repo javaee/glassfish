@@ -88,10 +88,10 @@ public interface DomainRoot extends AMXProxy
     public Tools getTools();
 
     /**
-        @return the singleton {@link QueryMgr}.
+        @return the singleton {@link Query}.
      */
     @ManagedAttribute
-    public QueryMgr		getQueryMgr();
+    public Query		getQueryMgr();
     
     /**
         @return the singleton {@link Logging}.

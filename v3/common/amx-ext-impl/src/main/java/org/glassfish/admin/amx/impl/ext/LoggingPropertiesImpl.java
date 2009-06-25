@@ -33,33 +33,87 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.base;
+package org.glassfish.admin.amx.impl.ext;
 
 import java.util.Map;
+import java.util.HashMap;
+import javax.management.ObjectName;
 
-import javax.management.MBeanOperationInfo;
-import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.admin.amx.annotation.ManagedOperation;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.base.Utility;
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.admin.amx.base.LoggingProperties;
+import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 
 /**
-    Manages logging.properties.
+    Dummied-out implementation so that GUI can proceed.
  */
-@Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(type="logging-props", leaf=true, singleton=true)
-public interface LoggingPropertiesMgr extends AMXProxy, Utility, Singleton
+public final class LoggingPropertiesImpl extends AMXImplBase
+    // implements LoggingProperties
 {
-  @ManagedAttribute
-  public Map<String,String> getLoggingProps();
+    private final Map<String,String> mProps = new HashMap<String,String>();
+    
+        public
+    LoggingPropertiesImpl( final ObjectName parent )
+    {
+        super( parent, LoggingProperties.class);
+        
+        // insert some dummy values
+        for( int i = 0; i < 10; ++i )
+        {
+            mProps.put( "test" + i, "value" + i );
+        }
+    }
+    
+    public Map<String,String> getLoggingProps()
+    {
+        return new HashMap<String,String>(mProps);
+    }
 
-    /** Overwrite the existing value, return prior one.
-        Pass null to remove
-    */
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION_INFO)
-    public String setLoggingProp( String name, String value );
+    public String setLoggingProp( final String name, final String value )
+    {
+        if (name == null || name.length() == 0)
+        {
+            throw new IllegalArgumentException("name cannot be null or empty");
+        }
+        if ( value != null && value.length() == 0)
+        {
+            throw new IllegalArgumentException("value cannot be an empty string");
+        }
+        
+        final String oldValue = mProps.get(name);
+        
+        if ( value == null )
+        {
+            mProps.remove(name);
+        }
+        else
+        {
+            mProps.put(name, value);
+        }
+        
+        return oldValue;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

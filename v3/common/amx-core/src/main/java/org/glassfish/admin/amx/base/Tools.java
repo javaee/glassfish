@@ -57,7 +57,7 @@ import org.glassfish.admin.amx.annotation.Taxonomy;
     @since GlassFish V3
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(type="tools",leaf=true, singleton=true)
+@AMXMBeanMetadata(leaf=true, singleton=true)
 public interface Tools extends AMXProxy, Utility, Singleton
 {
     /** emit information about all MBeans */

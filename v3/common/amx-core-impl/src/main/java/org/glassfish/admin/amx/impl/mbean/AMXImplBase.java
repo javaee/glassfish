@@ -650,7 +650,7 @@ public class AMXImplBase extends MBeanImplBase
     /** Supply possible types to be tried based on attribute name */
     protected String[] attributeNameToType( final String attributeName )
     {
-        return new String[] { attributeName, attributeName.toLowerCase() };
+        return new String[] { attributeName, Util.typeFromName(attributeName)  };
     }
     
     protected static final ObjectName[] EMPTY_OBJECT_NAMES = new ObjectName[0];
@@ -687,8 +687,8 @@ public class AMXImplBase extends MBeanImplBase
     /** get child ObjectName corresponding to the AttributeName  */
     protected ObjectName getObjectNameAttribute( final String attributeName )
     {
-        //cdebug( "getObjectNameAttribute: " + attributeName );
         final String[] types = attributeNameToType(attributeName);
+        //cdebug( "getObjectNameAttribute: " + attributeName + ", look for types: " + StringUtil.toString(types) );
         
         ObjectName result = null;
         for( final String type : types )

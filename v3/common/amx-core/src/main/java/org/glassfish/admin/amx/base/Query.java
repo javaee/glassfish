@@ -49,8 +49,8 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	Supports various types of queries to find s based on various Attributes.
  */
 @Taxonomy(stability=Stability.UNCOMMITTED)
-@AMXMBeanMetadata(type="query", leaf=true, singleton=true)
-public interface QueryMgr extends AMXProxy, Utility, Singleton
+@AMXMBeanMetadata(leaf=true, singleton=true)
+public interface Query extends AMXProxy, Utility, Singleton
 {
 	/**
 		Calls getTypeSet( typeValue ) and extracts the single result.
@@ -176,7 +176,7 @@ public interface QueryMgr extends AMXProxy, Utility, Singleton
 	
 	/**
 		Return all objects that match the specified properties in the JMX domain
-		governed by this QueryMgr.
+		governed by this Query.
 		
 		@param props a String containing one or more name/value properties
 	 */

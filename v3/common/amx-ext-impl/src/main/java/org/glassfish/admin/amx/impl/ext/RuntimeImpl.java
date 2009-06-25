@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.amx.impl.ext;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import java.util.Map;
 import javax.management.ObjectName;
 
@@ -51,7 +50,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import javax.management.JMException;
 import javax.management.remote.JMXServiceURL;
-import org.glassfish.admin.amx.base.RuntimeMgr;
+import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.intf.config.Domain;
@@ -63,66 +62,67 @@ import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.admin.mbeanserver.BooterNewMBean;
 
-
 /**
-    AMX RealmsMgr implementation.
-    Note that realms don't load until {@link #loadRealms} is called.
+AMX RealmsMgr implementation.
+Note that realms don't load until {@link #loadRealms} is called.
  */
-public final class RuntimeMgrImpl extends AMXImplBase
-  // implements RuntimeMgr
+public final class RuntimeImpl extends AMXImplBase
+// implements Runtime
 {
-        private final ApplicationRegistry appRegistry;
-        private final Habitat mHabitat;
-        
-		public
-	RuntimeMgrImpl( final ObjectName parent )
-	{
-        super( parent, RuntimeMgr.class);
-        
+    private final ApplicationRegistry appRegistry;
+
+    private final Habitat mHabitat;
+
+    public RuntimeImpl(final ObjectName parent)
+    {
+        super(parent, Runtime.class);
+
         mHabitat = InjectedValues.getInstance().getHabitat();
-        
+
         appRegistry = mHabitat.getComponent(ApplicationRegistry.class);
-        
+
     }
-    
-        /**
-         * 
-         * Returns the deployment configuration(s), if any, for the specified
-         * application.
-         * <p>
-         * For Java EE applications these will typically be the deployment
-         * descriptors, with the map key the relative path to the DD and the
-         * value that deployment descriptor's contents.  
-         * 
-         * @param appName name of the application of interest
-         * @return map of app config names to config values
-         */        
-        public Map<String,String>
-    getDeploymentConfigurations( final String appName)
+
+    /**
+     *
+     * Returns the deployment configuration(s), if any, for the specified
+     * application.
+     * <p>
+     * For Java EE applications these will typically be the deployment
+     * descriptors, with the map key the relative path to the DD and the
+     * value that deployment descriptor's contents.
+     *
+     * @param appName name of the application of interest
+     * @return map of app config names to config values
+     */
+    public Map<String, String> getDeploymentConfigurations(final String appName)
     {
         final ApplicationInfo appInfo = appRegistry.get(appName);
-        if (appInfo == null) {
+        if (appInfo == null)
+        {
             throw new IllegalArgumentException(appName);
         }
-        
-        final Map<String,String> result = new HashMap<String,String>();
-        try {
-            for (Sniffer sniffer : appInfo.getSniffers()) {
+
+        final Map<String, String> result = new HashMap<String, String>();
+        try
+        {
+            for (Sniffer sniffer : appInfo.getSniffers())
+            {
                 result.putAll(sniffer.getDeploymentConfigurations(appInfo.getSource()));
             }
             return result;
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
-
 
     public void stopDomain()
     {
@@ -130,41 +130,43 @@ public final class RuntimeMgrImpl extends AMXImplBase
         //executeREST( "stop-domain" );
         ModulesRegistry registry = InjectedValues.getInstance().getModulesRegistry();
         final Collection<Module> modules = registry.getModules("com.sun.enterprise.osgi-adapter");
-        if (modules.size() == 1) {
+        if (modules.size() == 1)
+        {
             final Module mgmtAgentModule = modules.iterator().next();
             mgmtAgentModule.stop();
         }
-        else {
-            ImplUtil.getLogger().warning( "Cannot find primordial com.sun.enterprise.osgi-adapter" );
+        else
+        {
+            ImplUtil.getLogger().warning("Cannot find primordial com.sun.enterprise.osgi-adapter");
         }
-        
-        ImplUtil.getLogger().warning( "Stopping server forcibly" );
+
+        ImplUtil.getLogger().warning("Stopping server forcibly");
         System.exit(0);
     }
 
     private NetworkConfig networkConfig()
     {
-        return  getDomainRootProxy().child(Domain.class).getConfigs().getConfig().get("server-config").getNetworkConfig().as(NetworkConfig.class);
+        return getDomainRootProxy().child(Domain.class).getConfigs().getConfig().get("server-config").getNetworkConfig().as(NetworkConfig.class);
     }
-    
+
     private static final String ADMIN_LISTENER_NAME = "admin-listener";
-    
+
     private NetworkListener getAdminListener()
     {
         final NetworkConfig network = networkConfig();
-        
+
         final NetworkListeners listeners = network.getNetworkListeners();
-        
-        final Map<String,NetworkListener> listenersMap = listeners.getNetworkListener();
+
+        final Map<String, NetworkListener> listenersMap = listeners.getNetworkListener();
 
         final NetworkListener listener = listenersMap.get(ADMIN_LISTENER_NAME);
-        
+
         return listener;
     }
 
     private int getRESTPort()
     {
-        return (int)(long)getAdminListener().resolveLong("Port");
+        return (int) (long) getAdminListener().resolveLong("Port");
     }
 
     private String get_asadmin()
@@ -178,90 +180,64 @@ public final class RuntimeMgrImpl extends AMXImplBase
         final Protocol protocol = networkConfig().getProtocols().getProtocol().get(ADMIN_LISTENER_NAME);
         final String scheme = protocol.resolveBoolean("SecurityEnabled") ? "https" : "http";
         final String host = "localhost";
-        
+
         return scheme + "://" + host + ":" + getRESTPort() + "/" + get_asadmin() + "/";
     }
 
     public String executeREST(final String cmd)
     {
         String result = null;
-        
+
         HttpURLConnection conn = null;
-        try {
+        try
+        {
             final String url = getRESTBaseURL() + cmd;
-            
+
             final URL invoke = new URL(url);
             //System.out.println( "Opening connection to: " + invoke );
-            conn = (HttpURLConnection)invoke.openConnection();
-            
+            conn = (HttpURLConnection) invoke.openConnection();
+
             final InputStream is = conn.getInputStream();
             result = toString(is);
             is.close();
         }
-        catch( Exception e )
+        catch (Exception e)
         {
             e.printStackTrace();
             result = ExceptionUtil.toString(e);
         }
         finally
         {
-            if ( conn != null )
+            if (conn != null)
             {
                 conn.disconnect();
             }
         }
         return result;
     }
-    
-    
-        public Map<String,Object>
-    getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName ) {
-        final Map<String,Object> result = new HashMap<String,Object>();
-        final Habitat habitat = org.glassfish.internal.api.Globals.getDefaultHabitat();
-
-        if (habitat == null) {
-            result.put( RuntimeMgr.PROPERTY_MAP_KEY, null );
-            result.put( RuntimeMgr.REASON_FAILED_KEY, "Habitat is null");
-            return result;
-        }
-
-        // get connector runtime
-        try {
-            final ConnectorRuntime connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
-            final Map<String,Object>  connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults( datasourceClassName );
-            result.put( RuntimeMgr.PROPERTY_MAP_KEY, connProps );
-        } catch (ComponentException e) {
-            result.put( RuntimeMgr.PROPERTY_MAP_KEY, null );
-            result.put( RuntimeMgr.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        }
-        
-        // got everything, now get properties
-        return result;
-    }
-
 
     public String[] getSupportedCipherSuites()
     {
-        try{
+        try
+        {
             final SSLUtils sslUtils = mHabitat.getComponent(SSLUtils.class);
-        return sslUtils.getSupportedCipherSuites();
+            return sslUtils.getSupportedCipherSuites();
         }
-        catch( final Exception ex)
+        catch (final Exception ex)
         {
             //TODO log exception
             ex.printStackTrace();
             return new String[0];
         }
     }
-    
-        public JMXServiceURL[]
-    getJMXServiceURLs()
+
+    public JMXServiceURL[] getJMXServiceURLs()
     {
         try
         {
-            return (JMXServiceURL[])getMBeanServer().getAttribute( BooterNewMBean.OBJECT_NAME, "JMXServiceURLs" );
+            return (JMXServiceURL[]) getMBeanServer().getAttribute(BooterNewMBean.OBJECT_NAME, "JMXServiceURLs");
         }
-        catch ( final JMException e )
+        catch (final JMException e)
         {
             throw new RuntimeException(e);
         }

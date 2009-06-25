@@ -35,58 +35,67 @@
  */
 package org.glassfish.admin.amx.base;
 
-import org.glassfish.admin.amx.annotation.*;
-
+import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.core.AMXProxy;
+
+import java.util.Map;
+import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Param;
+import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-
 /**
-    "Ex" = extensions: any additional MBeans, especially those that are derivative
-    and/or have other dependencies than amx-core.
+@since GlassFish V3
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true)
-public interface Ext extends AMXProxy, Singleton, Utility
+@AMXMBeanMetadata(leaf = true, singleton = true)
+public interface Runtime extends AMXProxy, Utility, Singleton
 {
-    @ManagedAttribute
-    public Realms getRealms();
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
+    public void stopDomain();
+
+    /** Map key is the name of the descriptor, value is the content of the descriptor */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public Map<String, String> getDeploymentConfigurations(
+        @Param(name="applicationName") String applicationName);
+
+    /**
+    Stop the domain (command to pass to {@link #executeREST}.
+    Note that this method might or might not throw an exception, depending on
+    how quickly the server quits. Wrap the call in a try/catch always.
+     */
+    public static final String STOP_DOMAIN = "stop-domain";
+
+    /**
+    Execute a REST command.  Do not include a leading "/".
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
+    public String executeREST( @Param(name="command") final String command);
+
+    /**
+    Return the base URL for use with {@link #executeREST}.  Example:
+    http://localhost:4848/__asadmin/
+
+    Example only, the host and port are typically different.  A trailing "/" is
+    included; simply append the command string and call {@link #executeREST}.
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public String getRESTBaseURL();
+    
     
     @ManagedAttribute
-    public Runtime getRuntime();
+    public String[] getSupportedCipherSuites();
 
     @ManagedAttribute
-    public ConnectorRuntime getConnectorRuntime();
-    
-    @ManagedAttribute
-    public LoggingProperties getLoggingProperties();
-    
-    /**
-       Contacts Update Center Server and get the updates status.
-     */
-    //@ManagedAttribute
-    //public UpdateStatus  getUpdateStatus();
-    
-    /**
-        @return the singleton SystemInfo
-     */
-    @ManagedAttribute
-    public SystemStatus		getSystemStatus();
-    
-    /** 
-        Get ConfigTools, defined in the amx-config module.
-        Use proxy.as(ConfigTools.class) to narrow it to the right type.
-     */
-    @ManagedAttribute
-    public AMXProxy getConfigTools();
+    @Description("Return the available JMXServiceURLs in no particular order")
+    public String[] getJMXServiceURLs();
+
 }
-
-
-
-
-
-
-
 
 
 

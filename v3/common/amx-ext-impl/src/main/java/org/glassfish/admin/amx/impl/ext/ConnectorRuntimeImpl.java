@@ -36,64 +36,63 @@
 package org.glassfish.admin.amx.impl.ext;
 
 import java.util.Map;
-import java.util.HashMap;
 import javax.management.ObjectName;
 
-import org.glassfish.admin.amx.base.LoggingPropertiesMgr;
+import java.util.HashMap;
+
+import org.glassfish.admin.amx.base.ConnectorRuntime;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
+import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
+
+import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 /**
-    Dummied-out implementation so that GUI can proceed.
+AMX RealmsMgr implementation.
+Note that realms don't load until {@link #loadRealms} is called.
  */
-public final class LoggingPropertiesMgrImpl extends AMXImplBase
-    // implements LoggingPropertiesMgr
+public final class ConnectorRuntimeImpl extends AMXImplBase
+// implements Runtime
 {
-    private final Map<String,String> mProps = new HashMap<String,String>();
-    
-        public
-    LoggingPropertiesMgrImpl( final ObjectName parent )
+    private final Habitat mHabitat;
+
+    public ConnectorRuntimeImpl(final ObjectName parent)
     {
-        super( parent, LoggingPropertiesMgr.class);
-        
-        // insert some dummy values
-        for( int i = 0; i < 10; ++i )
-        {
-            mProps.put( "test" + i, "value" + i );
-        }
-    }
-    
-    public Map<String,String> getLoggingProps()
-    {
-        return new HashMap<String,String>(mProps);
+        super(parent, ConnectorRuntime.class);
+
+        mHabitat = InjectedValues.getInstance().getHabitat();
     }
 
-    public String setLoggingProp( final String name, final String value )
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(final String datasourceClassName)
     {
-        if (name == null || name.length() == 0)
+        final Map<String, Object> result = new HashMap<String, Object>();
+
+        if (mHabitat == null)
         {
-            throw new IllegalArgumentException("name cannot be null or empty");
+            result.put(ConnectorRuntime.PROPERTY_MAP_KEY, null);
+            result.put(ConnectorRuntime.REASON_FAILED_KEY, "Habitat is null");
+            return result;
         }
-        if ( value != null && value.length() == 0)
+
+        // get connector runtime
+        try
         {
-            throw new IllegalArgumentException("value cannot be an empty string");
+            final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
+            final Map<String, Object> connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
+            result.put(ConnectorRuntime.PROPERTY_MAP_KEY, connProps);
         }
-        
-        final String oldValue = mProps.get(name);
-        
-        if ( value == null )
+        catch (ComponentException e)
         {
-            mProps.remove(name);
+            result.put(ConnectorRuntime.PROPERTY_MAP_KEY, null);
+            result.put(ConnectorRuntime.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
-        else
-        {
-            mProps.put(name, value);
-        }
-        
-        return oldValue;
+
+        // got everything, now get properties
+        return result;
     }
+
 }
-
-
 
 
 

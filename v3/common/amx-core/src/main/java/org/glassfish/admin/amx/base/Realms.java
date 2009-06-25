@@ -35,58 +35,61 @@
  */
 package org.glassfish.admin.amx.base;
 
-import org.glassfish.admin.amx.annotation.*;
+import java.util.Map;
 
+import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.annotation.*;
+import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
+
 /**
-    "Ex" = extensions: any additional MBeans, especially those that are derivative
-    and/or have other dependencies than amx-core.
+    @since GlassFish V3
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true)
-public interface Ext extends AMXProxy, Singleton, Utility
+@AMXMBeanMetadata(leaf=true, singleton=true)
+public interface Realms extends AMXProxy, Utility, Singleton
 {
+    /** get the names of all realms */
     @ManagedAttribute
-    public Realms getRealms();
+    public String[] getRealmNames();
+    @ManagedAttribute
+    public String[] getPredefinedAuthRealmClassNames();
     
     @ManagedAttribute
-    public Runtime getRuntime();
+    public String getDefaultRealmName();
+    @ManagedAttribute
+    public void   setDefaultRealmName(String realmName);
 
-    @ManagedAttribute
-    public ConnectorRuntime getConnectorRuntime();
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    public void addUser( String realm, String user, String password, String[] groupList );
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    public void updateUser( String realm, String user, String newUser, String password, String[] groupList );
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    public void removeUser(String realm, String user);
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public String[] getUserNames(String realm);
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public String[] getGroupNames(String realm);
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public Map<String,Object> getUserAttributes(final String realm, final String user);
+
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public String[] getGroupNames(String realm, String user);
+
+    /** @return true if the realm implementation support User Management (add,remove,update user) */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public boolean supportsUserManagement(final String realmName);
     
+    /** @return true if anonymous login is in use */
     @ManagedAttribute
-    public LoggingProperties getLoggingProperties();
-    
-    /**
-       Contacts Update Center Server and get the updates status.
-     */
-    //@ManagedAttribute
-    //public UpdateStatus  getUpdateStatus();
-    
-    /**
-        @return the singleton SystemInfo
-     */
-    @ManagedAttribute
-    public SystemStatus		getSystemStatus();
-    
-    /** 
-        Get ConfigTools, defined in the amx-config module.
-        Use proxy.as(ConfigTools.class) to narrow it to the right type.
-     */
-    @ManagedAttribute
-    public AMXProxy getConfigTools();
+    public boolean getAnonymousLogin();
 }
-
-
-
-
-
-
-
 
 
 

@@ -23,7 +23,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.base.RealmsMgr;
+import org.glassfish.admin.amx.base.Realms;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.proxy.AMXBooter;
@@ -118,8 +118,8 @@ public class V3AMX {
         return mbeanServer;
     }
 
-    public RealmsMgr getRealmsMgr(){
-        return domainRoot.getExt().getRealmsMgr();
+    public Realms getRealmsMgr(){
+        return domainRoot.getExt().getRealms();
     }
 
     public static Config getServerConfig(String configName){

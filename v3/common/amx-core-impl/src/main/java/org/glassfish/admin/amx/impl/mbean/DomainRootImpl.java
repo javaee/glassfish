@@ -88,7 +88,7 @@ public class DomainRootImpl extends AMXImplBase
     
     public ObjectName getQueryMgr()
     {
-        return child(QueryMgr.class);
+        return child(Query.class);
     }
     
     public ObjectName getUploadDownloadMgr()
@@ -181,7 +181,7 @@ public class DomainRootImpl extends AMXImplBase
         mbean	= new ToolsImpl(self);
         registerChild( mbean, childObjectName );
         
-        childObjectName	= objectNames.buildChildObjectName( QueryMgr.class);
+        childObjectName	= objectNames.buildChildObjectName( Query.class);
         mbean	= new QueryMgrImpl(self);
         registerChild( mbean, childObjectName );
         

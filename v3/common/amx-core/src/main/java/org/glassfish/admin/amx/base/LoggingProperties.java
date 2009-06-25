@@ -38,65 +38,28 @@ package org.glassfish.admin.amx.base;
 import java.util.Map;
 
 import javax.management.MBeanOperationInfo;
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.annotation.*;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Stability;
+import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.base.Utility;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-
-
 /**
-    @since GlassFish V3
+    Manages logging.properties.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(type="realms", leaf=true, singleton=true)
-public interface RealmsMgr extends AMXProxy, Utility, Singleton
+@AMXMBeanMetadata(leaf=true, singleton=true)
+public interface LoggingProperties extends AMXProxy, Utility, Singleton
 {
-    /** get the names of all realms */
-    @ManagedAttribute
-    public String[] getRealmNames();
-    @ManagedAttribute
-    public String[] getPredefinedAuthRealmClassNames();
-    
-    @ManagedAttribute
-    public String getDefaultRealmName();
-    @ManagedAttribute
-    public void   setDefaultRealmName(String realmName);
+  @ManagedAttribute
+  public Map<String,String> getLoggingProps();
 
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    public void addUser( String realm, String user, String password, String[] groupList );
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    public void updateUser( String realm, String user, String newUser, String password, String[] groupList );
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    public void removeUser(String realm, String user);
-
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[] getUserNames(String realm);
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[] getGroupNames(String realm);
-
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public Map<String,Object> getUserAttributes(final String realm, final String user);
-
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[] getGroupNames(String realm, String user);
-
-    /** @return true if the realm implementation support User Management (add,remove,update user) */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public boolean supportsUserManagement(final String realmName);
-    
-    /** @return true if anonymous login is in use */
-    @ManagedAttribute
-    public boolean getAnonymousLogin();
+    /** Overwrite the existing value, return prior one.
+        Pass null to remove
+    */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION_INFO)
+    public String setLoggingProp( String name, String value );
 }
-
-
-
-
-
-
-
-
-
-

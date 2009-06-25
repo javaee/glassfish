@@ -39,7 +39,7 @@ import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
 
-import org.glassfish.admin.amx.base.QueryMgr;
+import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImpl;
 import org.glassfish.admin.amx.util.ClassUtil;
@@ -61,12 +61,12 @@ import java.util.Set;
 /**
  */
 public class QueryMgrImpl extends AMXImplBase
-	// implements QueryMgr
+	// implements Query
 {
 		public
 	QueryMgrImpl(final ObjectName parentObjectName)
 	{
-        super( parentObjectName, QueryMgr.class );
+        super( parentObjectName, Query.class );
 	}
 
 	    private static Set<ObjectName>
