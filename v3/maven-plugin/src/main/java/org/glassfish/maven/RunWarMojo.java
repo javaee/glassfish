@@ -47,6 +47,7 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.deployment.DeployCommandParameters;
 
 import java.io.File;
 
@@ -64,17 +65,30 @@ public class RunWarMojo extends AbstractMojo
     protected int port;
 /**
  * @parameter expression="${war}"
-
  */
     protected String war;
 
+/**
+ * @parameter expression="${name}" default-value="test"
+ */
+    protected String name;
+
+/**
+ * @parameter expression="${contextRoot}" default-value="test"
+ */
+    protected String contextRoot;
+    
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         Server server = new Server.Builder("First").build();
         server.createPort(port);
+        // server.addContainer(webContainer)
         server.start();
         EmbeddedDeployer deployer = server.getDeployer();
-        deployer.deploy(new File(war), null);
+        DeployCommandParameters cmdParams = new DeployCommandParameters();
+        cmdParams.name = name;
+        cmdParams.contextroot = contextRoot;
+        deployer.deploy(new File(war), cmdParams);
     }
 
 }
