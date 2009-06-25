@@ -43,8 +43,6 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-
-
 package org.glassfish.admingui.common.util;
 
 import com.sun.jsftemplating.resource.ResourceBundleManager;
@@ -62,6 +60,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.logging.Logger;
 import java.text.MessageFormat;
 import java.net.URLEncoder;
 
@@ -77,266 +76,257 @@ import org.jvnet.hk2.component.Habitat;
  * @author anilam
  */
 public class GuiUtil {
-    
+
     /** Creates a new instance of GuiUtil */
     public GuiUtil() {
     }
-    
-    
-    //return true if the String is null or is """
-    public static boolean isEmpty(String str){
-        return  (str == null || "".equals(str) )? true : false;
+
+    public Logger getLogger() {
+        return Logger.getLogger("org.glassfish.admingui");
     }
 
-	public static String getMessage(String key, Object[] args)
-	{ 
-		if(key == null) {
-			return null;
-		}
-		String value = getMessage(key);
-		if(args != null) {
-			MessageFormat mf = new MessageFormat(value);
-			Object[] mfArgs = new Object[args.length];
-			for(int i = 0; i < args.length; i++) {
-				mfArgs[i] = getMessage(args[i].toString());
-			}
-			value = mf.format(mfArgs);
-		}
-		return value;
-	}
-        
-        
-        public static void setSessionValue(String key, Object value){
-            Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-            sessionMap.put(key, value);
+    //return true if the String is null or is """
+    public static boolean isEmpty(String str) {
+        return (str == null || "".equals(str)) ? true : false;
+    }
+
+    public static String getMessage(String key, Object[] args) {
+        if (key == null) {
+            return null;
         }
-        
-        public static Object getSessionValue(String key){
-            Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-            return sessionMap.get(key);
-        }
-        
-        public static DeploymentFacility getDeploymentFacility(){
-            DeploymentFacility df = null; //(DeploymentFacility) getSessionValue("_DEPLOYMENT_FACILITY");
-            boolean enable=false;
-            if (df == null){
-                //df= DeploymentFacilityFactory.getDeploymentFacility();
-                df = new LocalDeploymentFacility();
-                ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
-                        (String)getSessionValue("serverName"),
-                        ((Integer)getSessionValue("serverPort")).intValue(),
-                        (String)getSessionValue("userName"),         //user name
-                        "",         //password    FIXME: how to get password ?
-                        (Boolean)getSessionValue("requestIsSecured")       //security enabled
-                        );
-                df.connect(sci);   //although we pass in sci, it is ignored. refer to issue#6100
-                setSessionValue("_DEPLOYMENT_FACILITY", df);
+        String value = getMessage(key);
+        if (args != null) {
+            MessageFormat mf = new MessageFormat(value);
+            Object[] mfArgs = new Object[args.length];
+            for (int i = 0; i < args.length; i++) {
+                mfArgs[i] = getMessage(args[i].toString());
             }
-            return df;
+            value = mf.format(mfArgs);
         }
-        
-	/**
-	 * <p> This method encodes the given String with the specified type.
-	 * <p> If type is not specified then it defaults to UTF-8.
-	 *
-	 * @param value String to be encoded
-	 * @param delim Reserved Characters don't want to be encoded
-	 * @param type Encoding type. Default is UTF-8
-	 */
+        return value;
+    }
 
-	public static String encode(String value, String delim, String type) {
-		if(value == null || value.equals("")) {
-			return value;
-		}
-		if(type == null || type.equals("")) {
-			type = "UTF-8"; //default encoding type.
-		}
-		String encdString = "";
+    public static void setSessionValue(String key, Object value) {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        sessionMap.put(key, value);
+    }
 
-		if(delim != null && delim.length() > 0) {
-			StringTokenizer st = new StringTokenizer(value, delim, true);
-			while(st.hasMoreTokens()) {
-				String s = st.nextToken();
-				if(delim.indexOf(s) >= 0) {
-					encdString = encdString.concat(s);
-				}
-				else {
-					try {
-						encdString += URLEncoder.encode(s, type);
-					} catch (UnsupportedEncodingException uex) {
-						try {
-							encdString += URLEncoder.encode(s, "UTF-8");
-						}
-						catch(UnsupportedEncodingException ex) {
-							//we will never get here.
-							throw new IllegalArgumentException(ex);
-						}
-					}
-				}
-			}
-		}
-		// nothing to escape, encode the whole String
-		else { 
-				try {
-					encdString = URLEncoder.encode(value, type);
-				} catch (UnsupportedEncodingException uex) {
-					try {
-						encdString += URLEncoder.encode(value, "UTF-8");
-					}
-					catch(UnsupportedEncodingException ex) {
-						//we'll never get here.
-						throw new IllegalArgumentException(ex);
-					}
-				}
-		}
-		return encdString;
-	}
+    public static Object getSessionValue(String key) {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        return sessionMap.get(key);
+    }
+
+    public static DeploymentFacility getDeploymentFacility() {
+        DeploymentFacility df = null; //(DeploymentFacility) getSessionValue("_DEPLOYMENT_FACILITY");
+        boolean enable = false;
+        if (df == null) {
+            //df= DeploymentFacilityFactory.getDeploymentFacility();
+            df = new LocalDeploymentFacility();
+            ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
+                    (String) getSessionValue("serverName"),
+                    ((Integer) getSessionValue("serverPort")).intValue(),
+                    (String) getSessionValue("userName"), //user name
+                    "", //password    FIXME: how to get password ?
+                    (Boolean) getSessionValue("requestIsSecured") //security enabled
+                    );
+            df.connect(sci);   //although we pass in sci, it is ignored. refer to issue#6100
+            setSessionValue("_DEPLOYMENT_FACILITY", df);
+        }
+        return df;
+    }
+
+    /**
+     * <p> This method encodes the given String with the specified type.
+     * <p> If type is not specified then it defaults to UTF-8.
+     *
+     * @param value String to be encoded
+     * @param delim Reserved Characters don't want to be encoded
+     * @param type Encoding type. Default is UTF-8
+     */
+    public static String encode(String value, String delim, String type) {
+        if (value == null || value.equals("")) {
+            return value;
+        }
+        if (type == null || type.equals("")) {
+            type = "UTF-8"; //default encoding type.
+        }
+        String encdString = "";
+
+        if (delim != null && delim.length() > 0) {
+            StringTokenizer st = new StringTokenizer(value, delim, true);
+            while (st.hasMoreTokens()) {
+                String s = st.nextToken();
+                if (delim.indexOf(s) >= 0) {
+                    encdString = encdString.concat(s);
+                } else {
+                    try {
+                        encdString += URLEncoder.encode(s, type);
+                    } catch (UnsupportedEncodingException uex) {
+                        try {
+                            encdString += URLEncoder.encode(s, "UTF-8");
+                        } catch (UnsupportedEncodingException ex) {
+                            //we will never get here.
+                            throw new IllegalArgumentException(ex);
+                        }
+                    }
+                }
+            }
+        } // nothing to escape, encode the whole String
+        else {
+            try {
+                encdString = URLEncoder.encode(value, type);
+            } catch (UnsupportedEncodingException uex) {
+                try {
+                    encdString += URLEncoder.encode(value, "UTF-8");
+                } catch (UnsupportedEncodingException ex) {
+                    //we'll never get here.
+                    throw new IllegalArgumentException(ex);
+                }
+            }
+        }
+        return encdString;
+    }
     /*
      * returns the strings from org.glassfish.admingui.core.Strings 
      * if no such key exists, return the key itself.
      */
-    public static String getMessage(String key){
-        
-        try{
-        // Get the Resource Bundle
-	ResourceBundle bundle = (ResourceBundle) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(I18N_RESOURCE_BUNDLE);
-        
-        if (bundle == null){
-            Locale  locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
-            bundle = ResourceBundleManager.getInstance().getBundle(RESOURCE_NAME, locale);
-            // Store it in the Request Map
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(I18N_RESOURCE_BUNDLE, bundle);
-        }
-        String ret =  bundle.getString(key);
-        return (ret==null) ? key : ret;
-        }catch (NullPointerException ex){
+
+    public static String getMessage(String key) {
+
+        try {
+            // Get the Resource Bundle
+            ResourceBundle bundle = (ResourceBundle) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(I18N_RESOURCE_BUNDLE);
+
+            if (bundle == null) {
+                Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
+                bundle = ResourceBundleManager.getInstance().getBundle(RESOURCE_NAME, locale);
+                // Store it in the Request Map
+                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(I18N_RESOURCE_BUNDLE, bundle);
+            }
+            String ret = bundle.getString(key);
+            return (ret == null) ? key : ret;
+        } catch (NullPointerException ex) {
             return "";
-        }catch (Exception ex1){
+        } catch (Exception ex1) {
             return key;
         }
     }
-    
-    
-    public static String getMessage(String resourceName, String key){
-        Locale  locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
+
+    public static String getMessage(String resourceName, String key) {
+        Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
         ResourceBundle bundle = ResourceBundleManager.getInstance().getBundle(resourceName, locale);
-        String ret =  bundle.getString(key);
-        return (ret==null) ? key : ret;
+        String ret = bundle.getString(key);
+        return (ret == null) ? key : ret;
     }
-    
-    public static Locale getLocale(){
-        Locale  locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
+
+    public static Locale getLocale() {
+        Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
         return locale;
     }
 
     /* This method sets up the attributes of the <sun:alert> message box so that a 
      * saved sucessfully message will be displayed during refresh.
      */
-    public static void prepareSuccessful(HandlerContext handlerCtx){
+    public static void prepareSuccessful(HandlerContext handlerCtx) {
         prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.saveSuccessful"), null);
     }
-    
+
     /* This method sets up the attributes of the <sun:alert> message box. It is similar 
      * to handleException without calling renderResponse()
      */
-    public static void prepareException(HandlerContext handlerCtx, Throwable ex){
+    public static void prepareException(HandlerContext handlerCtx, Throwable ex) {
         Throwable rootException = getRootCause(ex);
-        prepareAlert(handlerCtx,"error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
+        prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
         //TODO use logger
         ex.printStackTrace();
     }
-    
-    
+
     /* This method sets up the attributes of the <sun:alert> message box so that any
      * alert message of any type will be displayed during refresh.
      * If type is not specified, it will be "information" by default.
-     */    
-    public static void prepareAlert(HandlerContext handlerCtx, String type, String summary, String detail ){
+     */
+    public static void prepareAlert(HandlerContext handlerCtx, String type, String summary, String detail) {
         Map attrMap = handlerCtx.getFacesContext().getExternalContext().getRequestMap();
-        if (isEmpty(type)){
+        if (isEmpty(type)) {
             attrMap.put("alertType", "information");
-        }else
-        if (!(type.equals("information") || type.equals("success") || 
-                type.equals("warning") || type.equals("error"))){
+        } else if (!(type.equals("information") || type.equals("success") ||
+                type.equals("warning") || type.equals("error"))) {
             throw new RuntimeException("GuiUtil:prepareMessage():  type specified is not a valid type");
-        }else{
+        } else {
             attrMap.put("alertType", type);
         }
-	if(detail != null && detail.length() > 500) {
-		detail = detail.substring(0, 500)+"...";
-	}
+        if (detail != null && detail.length() > 500) {
+            detail = detail.substring(0, 500) + "...";
+        }
         try {
-            attrMap.put("alertDetail", isEmpty(detail)? "" : URLEncoder.encode(detail, "UTF-8")); 
-            attrMap.put("alertSummary", isEmpty(summary)? "" : URLEncoder.encode(summary, "UTF-8")); 
+            attrMap.put("alertDetail", isEmpty(detail) ? "" : URLEncoder.encode(detail, "UTF-8"));
+            attrMap.put("alertSummary", isEmpty(summary) ? "" : URLEncoder.encode(summary, "UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+            //we'll never get here.
+            ex.printStackTrace();
         }
-        catch(UnsupportedEncodingException ex) {
-                //we'll never get here.
-                ex.printStackTrace();
-        }
-        
-}
-    
-    
-    public static void handleException(HandlerContext handlerCtx, Throwable ex){
+
+    }
+
+    public static void handleException(HandlerContext handlerCtx, Throwable ex) {
         prepareException(handlerCtx, ex);
         handlerCtx.getFacesContext().renderResponse();
     }
 
-	public static List<Map> getListOfMaps(Map map) {
-		List<Map> list = null;
+    public static List<Map> getListOfMaps(Map map) {
+        List<Map> list = null;
 
-		if(map != null) {
-			list = new ArrayList();
-			for(Object key:map.keySet()) {
-				HashMap row = new HashMap();
-				Object value = map.get(key);
-				row.put("name", key);
-				row.put("value", value != null ? value : "");
-				list.add(row);
-			}
-		}
-		return list;
-	}
-    
-    public static void handleError(HandlerContext handlerCtx, String detail){
-        prepareAlert(handlerCtx,"error", GuiUtil.getMessage("msg.Error"), detail);
+        if (map != null) {
+            list = new ArrayList();
+            for (Object key : map.keySet()) {
+                HashMap row = new HashMap();
+                Object value = map.get(key);
+                row.put("name", key);
+                row.put("value", value != null ? value : "");
+                list.add(row);
+            }
+        }
+        return list;
+    }
+
+    public static void handleError(HandlerContext handlerCtx, String detail) {
+        prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), detail);
         handlerCtx.getFacesContext().renderResponse();
     }
-    
-     /* This method ensure that there will not be a NULL String for the passed in object.
+
+    /* This method ensure that there will not be a NULL String for the passed in object.
      */
-    public static String notNull(String test){
+    public static String notNull(String test) {
         return (test == null) ? "" : test;
     }
-    
-    public static Throwable getRootCause( final Throwable ex ){
+
+    public static Throwable getRootCause(final Throwable ex) {
         return ExceptionUtil.getRootCause(ex);
     }
 
     public static List<String> convertListOfStrings(List l) {
-	List<String> arrList = new ArrayList<String>();
-	for(Object o:l) {
-		arrList.add(o.toString());
-	}
-	return arrList;
+        List<String> arrList = new ArrayList<String>();
+        for (Object o : l) {
+            arrList.add(o.toString());
+        }
+        return arrList;
     }
 
-/*
-FIXME: 7-31-08 -- FIX by importing woodstock api's.
+    /*
+    FIXME: 7-31-08 -- FIX by importing woodstock api's.
     public static Option[] getSunOptions(Collection<String> c) {
-	if (c == null){
-	    return new Option[0];
-	}
-	Option[] sunOptions =  new Option[c.size()];
-	int index=0;
-	for(String str:c) {
-		sunOptions[index++] = new Option(str, str);	
-	}
-	return sunOptions;
+    if (c == null){
+    return new Option[0];
     }
-    */
-
- /**
+    Option[] sunOptions =  new Option[c.size()];
+    int index=0;
+    for(String str:c) {
+    sunOptions[index++] = new Option(str, str);
+    }
+    return sunOptions;
+    }
+     */
+    /**
      * Parses a string containing substrings separated from
      * each other by the specified set of separator characters and returns
      * a list of strings.
@@ -354,54 +344,54 @@ FIXME: 7-31-08 -- FIX by importing woodstock api's.
      * @return     Returns the list containing the individual strings that
      *             the input string was split into.
      */
-    public static List parseStringList(String line, String sep)
-    {
-        if (line == null)
+    public static List parseStringList(String line, String sep) {
+        if (line == null) {
             return null;
+        }
 
         StringTokenizer st;
-        if (sep == null)
+        if (sep == null) {
             st = new StringTokenizer(line);
-        else 
+        } else {
             st = new StringTokenizer(line, sep);
+        }
 
         String token;
 
         List tokens = new Vector();
-        while (st.hasMoreTokens())
-        {
+        while (st.hasMoreTokens()) {
             token = st.nextToken().trim();
-            if (token.length() > 0)
+            if (token.length() > 0) {
                 tokens.add(token);
+            }
         }
 
         return tokens;
     }
-    
-    
-    public static String removeToken(String line, String sep, String remove)
-    {
-        if (line == null)
+
+    public static String removeToken(String line, String sep, String remove) {
+        if (line == null) {
             return null;
+        }
 
         StringTokenizer st;
-        if (sep == null)
+        if (sep == null) {
             st = new StringTokenizer(line);
-        else{
+        } else {
             sep = sep.trim();
             st = new StringTokenizer(line, sep);
         }
         String token;
-        String result="";
+        String result = "";
         boolean start = true;
-        while (st.hasMoreTokens()){
+        while (st.hasMoreTokens()) {
             token = st.nextToken().trim();
-            if (token.length() > 0 && !(token.equals(remove))){
-                if (start){
-                    result=token;
+            if (token.length() > 0 && !(token.equals(remove))) {
+                if (start) {
+                    result = token;
                     start = false;
-                }else{
-                    result=result + sep + token;
+                } else {
+                    result = result + sep + token;
                 }
             }
         }
@@ -412,51 +402,49 @@ FIXME: 7-31-08 -- FIX by importing woodstock api's.
      *  This method converts a string into stringarray, uses the delimeter as the
      *  separator character. If the delimiter is null, uses space as default.
      */
-
     public static String[] stringToArray(String str, String delimiter) {
-    	String[] retString = new String[0];
+        String[] retString = new String[0];
 
-    	if (str != null) {
-            if(delimiter == null) {
-                    delimiter = " ";
+        if (str != null) {
+            if (delimiter == null) {
+                delimiter = " ";
             }
             StringTokenizer tokens = new StringTokenizer(str, delimiter);
             retString = new String[tokens.countTokens()];
             int i = 0;
-            while(tokens.hasMoreTokens()) {
+            while (tokens.hasMoreTokens()) {
                 String token = tokens.nextToken().trim();
                 retString[i++] = token;
             }
-    	}
-    	return retString;
+        }
+        return retString;
     }
 
-	 /**
+    /**
      * This method concatenates the delimiter char to the end of each string
      * in the array, and returns a single string with the concatenated string.
      */
+    public static String arrayToString(String[] str, String delimiter) {
+        StringBuffer retStr = new StringBuffer();
 
-    public static String arrayToString(String[] str,  String delimiter){
-    	StringBuffer retStr = new StringBuffer();
+        if (str != null) {
+            for (int i = 0; i < str.length; i++) {
+                String element = str[i];
 
-    	if(str != null) {
-        	for (int i=0; i < str.length; i++) {
-        		String element = str[i];
+                if (element == null || element.length() == 0) {
+                    throw new IllegalArgumentException();
+                }
+                retStr.append(element);
 
-        		if (element == null || element.length() == 0) {
-            		throw new IllegalArgumentException();
-        		}
-        		retStr.append(element);
+                if (i < str.length - 1) {
+                    retStr.append(delimiter);
+                }
+            }
+        }
 
-        		if (i < str.length - 1) {
-            		retStr.append(delimiter);
-        		}
-        	}
-    	}
+        return retStr.toString();
+    }
 
-		return retStr.toString();
-	}
-    
     public static boolean isSelected(String name, List<Map> selectedList) {
         if (selectedList == null || name == null) {
             return false;
@@ -475,26 +463,26 @@ FIXME: 7-31-08 -- FIX by importing woodstock api's.
         }
         return test;
     }
-    
-    public static Boolean getBooleanValue(Map pMap, String name){
-        if (pMap.get(name) == null)
+
+    public static Boolean getBooleanValue(Map pMap, String name) {
+        if (pMap.get(name) == null) {
             return Boolean.FALSE;
+        }
         Object val = pMap.get(name);
-        if (val instanceof Boolean)
+        if (val instanceof Boolean) {
             return (Boolean) val;
-        return Boolean.valueOf(""+val);
+        }
+        return Boolean.valueOf("" + val);
     }
-    
-    
+
     public static Habitat getHabitat() {
-        ServletContext servletCtx = (ServletContext) 
-            FacesContext.getCurrentInstance().getExternalContext().getContext();
+        ServletContext servletCtx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         // Get the Habitat from the ServletContext
         Habitat habitat = (Habitat) servletCtx.getAttribute(
-            org.glassfish.admingui.common.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
+                org.glassfish.admingui.common.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
         return habitat;
     }
-    
+
     public static List<Map<String, Object>> convertArrayToListOfMap(Object[] values, String key) {
         List<Map<String, Object>> list = new ArrayList();
         if (values != null) {
@@ -508,8 +496,7 @@ FIXME: 7-31-08 -- FIX by importing woodstock api's.
         }
 
         return list;
-    }    
-    
+    }
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
 }
