@@ -44,7 +44,6 @@ import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 
-import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
@@ -53,6 +52,7 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 
 /**
  * Utility to evaluate the CLI input arguments and prompt
@@ -62,8 +62,7 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
  */
 public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
 
-    private static final Logger logger =
-        LogService.getLogger(LogService.UPGRADE_LOGGER);
+    private static final Logger logger = LogService.getLogger();
     
 	private Map<String, ArgumentHandler> inputMap;
 	private StringManager sm = StringManager.getManager(InteractiveInputImpl.class);

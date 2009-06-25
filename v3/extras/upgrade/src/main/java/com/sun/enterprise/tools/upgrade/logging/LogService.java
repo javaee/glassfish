@@ -35,68 +35,79 @@
  */
 package com.sun.enterprise.tools.upgrade.logging;
 
-import java.util.logging.*;
-import com.sun.enterprise.tools.upgrade.common.*;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 
 /**
- *
- * author : Servesh Singh
- *
+ * Sets up the common logger used by all packages. Currently sending
+ * output to log file. This can be turned off by calling
+ * removeDefaultLogHandler -- the GUI may want to do this for example.
  */
 public class LogService {
 
-    public static final String UPGRADE_LOGGER = "com.sun.enterprise.tools.upgrade";
-   
-    private static LogFormatter formatter;
-    private static StreamHandler loghandler;
-    //Default log level
-    private static final Level DEFAULT_LEVEL = Level.INFO;
-    private static Level logLevel = null;
+    // This is the logger that all upgrade classes use.
+    private static final Logger logger =
+        Logger.getLogger("com.sun.enterprise.tools.upgrade");
 
-    public static void initialize(){
-        LogManager.getLogManager().reset();
-        formatter = new LogFormatter();
-        loghandler = new StreamHandler(System.out, formatter);
-        logLevel = getLogLevel();
-        loghandler.setLevel(logLevel);
-        loghandler.setFormatter(formatter);
+    // Where the logs will go. For more options see:
+    // http://java.sun.com/javase/6/docs/api/java/util/logging/FileHandler.html
+    private static final String LOG_FILE_PATTERN = "upgrade.log";
+
+    // Need a handler so we can use our formatter
+    private static final Handler defaultHandler = createLogHandler();
+
+    static {
+        defaultHandler.setFormatter(new UpgradeFormatter());
+        logger.addHandler(defaultHandler);
+        logger.setUseParentHandlers(false);
     }
 
     /**
-     * private helper method to decipher the log level from the system property.
-     * Defaults to the statically defined field DEFAULT_LEVEL
+     * Get the logger used by all classes in the upgrade tool.
+     *
+     * @return The logger used by the upgrade tool.
      */
-    private static Level getLogLevel() {
-        String logLevel = System.getProperty("com.sun.aas.utool.LogLevel");
-        if (logLevel != null) {
-            try {
-                return Level.parse(logLevel);
-            } catch (IllegalArgumentException e) {
-                return DEFAULT_LEVEL;
-            }
-        }
-        return DEFAULT_LEVEL;
-    }
-
-    public static Logger getLogger(String name) {
-        Logger logger = Logger.getLogger(name);
-        logger.setLevel(logLevel);
-
-        Handler[] h = logger.getHandlers();
-        for (int i = 0; i < h.length; i++) {
-            logger.removeHandler(h[i]);
-        }
-        logger.addHandler(loghandler);
-        loghandler.setLevel(logLevel);
+    public static Logger getLogger() {
         return logger;
     }
 
-    public static void addLogMessageListener(LogMessageListener listener) {
-        formatter.addLogMessageListener(listener);
+    /**
+     * Used to turn off sending output to the default output stream.
+     */
+    public static void removeDefaultLogHandler() {
+        logger.removeHandler(defaultHandler);
     }
 
-    public static void removeLogMessageListener(LogMessageListener listener) {
-        formatter.removeLogMessageListener(listener);
+    // Called when class is initialized
+    private static Handler createLogHandler() {
+        Handler handler = null;
+        try {
+            // 2nd param will create new file rather than appending
+            handler = new FileHandler(LOG_FILE_PATTERN, false);
+        } catch (IOException ioe) {
+            // very odd, but lets tell the user and continue
+            System.err.println(String.format(
+                "Could not create log '%s' due to error '%s'",
+                LOG_FILE_PATTERN, ioe.getLocalizedMessage()));
+            System.err.println("Will send logs to standard.err instead.");
+            handler = new StreamHandler(System.err, new UpgradeFormatter());
+        }
+        return handler;
+    }
+
+    // Simply outputting the log record's message
+    private static class UpgradeFormatter extends Formatter {
+
+        @Override
+        public String format(LogRecord record) {
+            return record.getMessage() + "\n";
+        }
+
     }
 }
 

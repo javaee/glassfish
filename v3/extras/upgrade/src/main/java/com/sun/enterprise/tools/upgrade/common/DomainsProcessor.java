@@ -34,33 +34,20 @@
  * holder.
  */
 
-/*
- * DomainsProcessor.java
- *
- * Created on November 20, 2003, 10:45 AM
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.logging.*;
-
-import com.sun.enterprise.tools.upgrade.logging.*;
-import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.util.i18n.StringManager;
-
 
 /**
  *
  * @author  prakash
  * @author  hans
  */
-
-
 public class DomainsProcessor {
 	private CommonInfoModel commonInfo;
 	
-	private static Logger logger = LogService.getLogger(LogService.UPGRADE_LOGGER);
-	private static StringManager stringManager = StringManager.getManager(DomainsProcessor.class);
+	private static final StringManager stringManager =
+        StringManager.getManager(DomainsProcessor.class);
 	
 	private boolean domainStarted = false;
 	

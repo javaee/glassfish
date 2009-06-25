@@ -37,20 +37,15 @@
 package com.sun.enterprise.tools.upgrade.common;
 
 
-import java.util.logging.*;
-import java.lang.reflect.Constructor;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.HashMap;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_help;
-import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 
 /**
  * Parse the arguments for the upgrade tool
@@ -59,13 +54,15 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
  * @author Hans Hrasna
  */
 public class ArgsParser {
-    private static Logger _logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
+
+    private static final Logger _logger = LogService.getLogger();
+    private static final StringManager sm =
+        StringManager.getManager(ArgsParser.class);
+
     private CommonInfoModel commonInfo;
-    private StringManager sm;
     
     /** Creates a new instance of ArgsParser */
 	public ArgsParser() {
-        sm = StringManager.getManager(ArgsParser.class);
         commonInfo = CommonInfoModel.getInstance();
     }
 		

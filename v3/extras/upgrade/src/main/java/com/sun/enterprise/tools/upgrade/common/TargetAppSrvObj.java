@@ -48,8 +48,7 @@ import java.util.logging.Logger;
  */
 public class TargetAppSrvObj extends BaseDomainInfoObj {
 
-    private static final Logger logger =
-        LogService.getLogger(LogService.UPGRADE_LOGGER);
+    private static final Logger logger = LogService.getLogger();
 
     private static final StringManager sm =
         StringManager.getManager(TargetAppSrvObj.class);;

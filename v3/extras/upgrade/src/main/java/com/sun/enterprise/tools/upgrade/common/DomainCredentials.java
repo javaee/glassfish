@@ -34,15 +34,6 @@
  * holder.
  */
 
-/*
- * DomainCredentials.java
- *
- *  An appserver domains' login credentials.
- *
- * Created on December 11, 2007, 4:20 PM
- *
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
 import java.io.File;
@@ -50,7 +41,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.logging.LogService;
 
 /**
  *

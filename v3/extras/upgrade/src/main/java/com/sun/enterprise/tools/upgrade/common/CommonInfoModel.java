@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.logging.*;
-import com.sun.enterprise.tools.upgrade.logging.*;
+import java.util.logging.Logger;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 
 /**
@@ -45,7 +45,6 @@ import com.sun.enterprise.util.i18n.StringManager;
  * author : Gautam Borah
  *
  */
-
 public class CommonInfoModel{
 	
 	private static CommonInfoModel _commonInfoModel = null;
@@ -56,9 +55,9 @@ public class CommonInfoModel{
     private String osName; // machine OS type
 
     //Logging fields
-    private StringManager stringManager = 
+    private static final StringManager stringManager =
             StringManager.getManager(CommonInfoModel.class);
-    private static Logger logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
+    private static final Logger logger = LogService.getLogger();
     
 	//- make this a singleton.
 	public static CommonInfoModel getInstance(){
@@ -81,12 +80,11 @@ public class CommonInfoModel{
 	}
 	
 	/**
+     * todo: remove this?
+     *
      * @return a logger to use in the Module implementation classes
      */
     public static Logger getDefaultLogger() {
-        if (logger==null) {
-            logger = LogService.getLogger(LogService.UPGRADE_LOGGER);
-        }
         return logger;
     }
 

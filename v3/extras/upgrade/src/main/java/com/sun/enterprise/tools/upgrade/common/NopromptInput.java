@@ -34,24 +34,15 @@
  * holder.
  */
 
-/*
- * NopromptInput.java
- *
- * Created on November 19, 2007, 12:23 PM
- *
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.ArrayList;
-import java.util.logging.*;
-
-import com.sun.enterprise.tools.upgrade.logging.*;
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
+import com.sun.enterprise.util.i18n.StringManager;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Utility to evaluate the CLI input arguments when the
@@ -59,17 +50,13 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
  *
  * @author rebeccas
  */
-public class NopromptInput implements InteractiveInput{
-	private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
-	private StringManager sm;
-	private Logger _log;
-	
-	/** Creates a new instance of NopromptInput */
-	public NopromptInput() {
-		sm = StringManager.getManager(NopromptInput.class);
-		this._log = LogService.getLogger(LogService.UPGRADE_LOGGER);
-	}
+public class NopromptInput implements InteractiveInput {
 
+	private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
+	private static final StringManager sm =
+        StringManager.getManager(NopromptInput.class);
+	private static final Logger _log = LogService.getLogger();
+	
     public void processArguments(ArrayList<ArgumentHandler> aList){
 		for(ArgumentHandler v: aList){
 			if (v.isValidParameter()){

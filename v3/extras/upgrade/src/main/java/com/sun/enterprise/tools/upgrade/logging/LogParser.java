@@ -51,8 +51,7 @@ import java.util.regex.Pattern;
  */
 public class LogParser {
 
-    private static final Logger logger =
-        LogService.getLogger(LogService.UPGRADE_LOGGER);
+    private static final Logger logger = LogService.getLogger();
 
     // separator used in GF logs
     private static final String SEP = "|";

@@ -88,7 +88,7 @@ public class ARG_passwordfile extends ArgumentHandler {
             }
             reader.close();
         } catch (Exception e) {
-            _logger.severe(sm.getString("upgrade.common.general_exception") + " " + e.getMessage());
+            logger.severe(sm.getString("upgrade.common.general_exception") + " " + e.getMessage());
         }
 		if (commonInfo.getSource().getDomainCredentials().getAdminUserName() == null){
 			ARG_adminuser tmpA = new ARG_adminuser();

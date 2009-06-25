@@ -34,40 +34,25 @@
  * holder.
  */
 
-/*
- * Utils.java
- *
- * Created on April 19, 2004, 11:47 AM
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-/**
- *
- * @author  prakash
- */
-
-import java.io.*;
-import java.util.logging.*;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
-
-import org.w3c.dom.Document;
-
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-
-
+import org.w3c.dom.Document;
 
 public class UpgradeUtils {
 	
 	private final StringManager stringManager =
         StringManager.getManager(UpgradeUtils.class);
 	
-	private static final Logger logger =
-        LogService.getLogger(LogService.UPGRADE_LOGGER);
+	private static final Logger logger = LogService.getLogger();
 
 	private static UpgradeUtils upgradeUtils;
 	private static CommonInfoModel common;
@@ -314,6 +299,10 @@ public class UpgradeUtils {
             while (tempFile.exists()) {
                 tempFile = new File(baseName + "." + count++);
             }
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(String.format(
+                "Moving '%s' to '%s'", dir, tempFile));
         }
         dir.renameTo(tempFile);
     }

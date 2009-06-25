@@ -50,7 +50,7 @@ public class ARG_version extends ArgumentHandler {
         super();
         //- product name msgs kept in single properties file
         StringManager tmpSM = StringManager.getManager(CommonInfoModel.class);
-        _logger.info(sm.getString("enterprise.tools.upgrade.cli.arg_version.versionMessage", 
+        logger.info(sm.getString("enterprise.tools.upgrade.cli.arg_version.versionMessage",
                         CommonInfoModel.getInstance().getTarget().getVersion()));
         System.exit(0);
     }

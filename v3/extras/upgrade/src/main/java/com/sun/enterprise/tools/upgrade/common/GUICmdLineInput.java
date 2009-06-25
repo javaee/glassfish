@@ -34,20 +34,11 @@
  * holder.
  */
 
-/*
- * GUICmdLineInput.java
- *
- * Created on November 29, 2007, 12:23 PM
- *
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.util.Map;
-import java.util.logging.*;
 import java.util.ArrayList;
+import java.util.Map;
 
-import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
 
@@ -58,16 +49,10 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
  * @author rebeccas
  */
 public class GUICmdLineInput implements InteractiveInput{
-	private CommonInfoModel commonInfo;
-	private StringManager sm;
-	private Logger _log;
+
+	private static final StringManager sm =
+        StringManager.getManager(GUICmdLineInput.class);
 	
-	/** Creates a new instance of GUICmdLineInput */
-	public GUICmdLineInput() {
-		commonInfo = CommonInfoModel.getInstance();
-		sm = StringManager.getManager(GUICmdLineInput.class);
-		this._log = LogService.getLogger(LogService.UPGRADE_LOGGER);
-	}
 	public void collectMissingArguments(Map inputMap){}
 
 	public ArrayList<ArgumentHandler> parse(String [] args){
@@ -79,8 +64,8 @@ public class GUICmdLineInput implements InteractiveInput{
     public void processArguments(ArrayList<ArgumentHandler> aList){
 		//- set under laying values.  Skip invalid data.
 		//- GUI will handle.
-		for(ArgumentHandler v: aList){
-			if (v.isValidParameter()){
+		for(ArgumentHandler v: aList) {
+			if (v.isValidParameter()) {
 				v.exec();
 			}
 		}

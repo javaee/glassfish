@@ -38,11 +38,11 @@ package com.sun.enterprise.tools.upgrade.common.arguments;
 
 import java.util.Vector;
 import java.util.List;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
-import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 
 
@@ -51,7 +51,7 @@ import com.sun.enterprise.util.i18n.StringManager;
  * @author Hans Hrasna
  */
 public abstract class ArgumentHandler {
-    protected Logger _logger = LogService.getLogger(LogService.UPGRADE_LOGGER);
+    protected Logger logger = LogService.getLogger();
     protected CommonInfoModel commonInfo;
     protected Vector parameters;
     protected StringManager sm;

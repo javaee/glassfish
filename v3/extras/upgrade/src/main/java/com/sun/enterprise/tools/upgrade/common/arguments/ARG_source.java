@@ -64,8 +64,8 @@ public class ARG_source extends ArgumentHandler {
                 File rawFile = new File(p);
                 rawParameters = rawFile.getCanonicalPath();
             } catch (IOException ioe) {
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine(String.format(
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine(String.format(
                         "Will not create canonical path for source due to %s",
                         ioe.getLocalizedMessage()));
                 }

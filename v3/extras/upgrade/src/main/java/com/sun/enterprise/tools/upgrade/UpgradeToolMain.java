@@ -36,11 +36,6 @@
 
 package com.sun.enterprise.tools.upgrade;
 
-import java.io.*;
-import java.util.logging.*;
-import java.util.ArrayList;
-
-import com.sun.enterprise.tools.upgrade.cli.*;
 import com.sun.enterprise.tools.upgrade.common.*;
 import com.sun.enterprise.tools.upgrade.gui.MainFrame;
 import com.sun.enterprise.tools.upgrade.gui.util.*;
@@ -48,32 +43,33 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.tools.upgrade.common.arguments.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UpgradeToolMain {
 
     private static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
+
+    private static final Logger logger = LogService.getLogger();
+
     static{
         String domainRoot = System.getProperty(AS_DOMAIN_ROOT);
         if(domainRoot == null){
-            System.out.println("Configuration Error: AS_DEFS_DOMAINS_PATH is not set.");
+            System.err.println("Configuration Error: AS_DEFS_DOMAINS_PATH is not set.");
             System.exit(1);
         }
-
-        LogService.initialize();
- 
     }
     
-    static Logger _logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
 
     private StringManager sm = StringManager.getManager(UpgradeToolMain.class);
     private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
-    private CliLogMessageListener stdoutMsgs = null;
-
+ 
     public UpgradeToolMain() {
-        //- print tool's msgs to stnd out
-        stdoutMsgs = new CliLogMessageListener();
-        LogService.addLogMessageListener(stdoutMsgs);
-        _logger.log(Level.FINE, sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
+        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
 
         //- Have GF sets asenv.conf properties to system properties
         new ASenvPropertyReader();
@@ -87,8 +83,8 @@ public class UpgradeToolMain {
         try {
             targetDomainRoot = new File(rawTargetDomainRoot).getCanonicalPath();
         } catch (IOException ioe) {
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine(String.format(
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine(String.format(
                     "Will not create canonical path for target: %s",
                     ioe.getLocalizedMessage()));
             }
@@ -98,18 +94,14 @@ public class UpgradeToolMain {
     }
     
     public void startGUI(String [] args){
-        _logger.log(Level.FINE,sm.getString("enterprise.tools.upgrade.start_upgrade_tool_gui"));
+        logger.log(Level.FINE,sm.getString("enterprise.tools.upgrade.start_upgrade_tool_gui"));
         if(args.length > 0){
 			//- set all vaild options user provided on cmd-line
 			GUICmdLineInput guiIn = new GUICmdLineInput();
 			guiIn.processArguments(guiIn.parse(args));
         }
 
-		//- disable writing to stnd out when in GUI mode
-        LogService.removeLogMessageListener(stdoutMsgs);
-
 		MainFrame gui = new MainFrame();
-        LogService.addLogMessageListener(gui);
         gui.addDialogListener(new DialogListener(){
             public void dialogProcessed(DialogEvent evt){
                 processUIEvent(evt);
@@ -117,17 +109,14 @@ public class UpgradeToolMain {
         });
         UpdateProgressManager.getProgressManager().addUpgradeUpdateListener(gui);
         gui.setVisible(true);
-
-        //- enable writing to stndout
-        LogService.addLogMessageListener(stdoutMsgs);
     }
     
     public void startCLI(String [] args){
-        _logger.log(Level.FINE, sm.getString("enterprise.tools.upgrade.start_upgrade_tool_cli"));
+        logger.log(Level.FINE, sm.getString("enterprise.tools.upgrade.start_upgrade_tool_cli"));
         try{
 			cliParse(args);
         }catch(Exception e){
-            _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.unexpected_parsing"),e);
+            logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.unexpected_parsing"),e);
             System.exit(1);
         }
         this.upgrade();
@@ -163,7 +152,7 @@ public class UpgradeToolMain {
 			}
 			buff.append(" ");
 		}
-		_logger.fine(UpgradeConstants.ASUPGRADE + " " + buff.toString());
+		logger.fine(UpgradeConstants.ASUPGRADE + " " + buff.toString());
 	}
 	
     private void processUIEvent(DialogEvent evt){
@@ -196,10 +185,10 @@ public class UpgradeToolMain {
                         logParser = new LogParser(serverLog);
                     }
                 } catch (FileNotFoundException fe) {
-                    _logger.log(Level.WARNING, sm.getString(
+                    logger.log(Level.WARNING, sm.getString(
                             "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
                 } catch (IOException e) {
-                    _logger.log(Level.WARNING, sm.getString(
+                    logger.log(Level.WARNING, sm.getString(
                             "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
                 }
 
@@ -216,10 +205,10 @@ public class UpgradeToolMain {
                         logParser = new LogParser(serverLog);
                         logParser.setStartPoint(0);
                     } catch (FileNotFoundException fe) {
-                        _logger.log(Level.WARNING, sm.getString(
+                        logger.log(Level.WARNING, sm.getString(
                                 "enterprise.tools.upgrade.domain_log_file_not_found", fe.getMessage()));
                     } catch (IOException e) {
-                        _logger.log(Level.WARNING, sm.getString(
+                        logger.log(Level.WARNING, sm.getString(
                                 "enterprise.tools.upgrade.domain_log_read_failure", e.getMessage()));
                     }
                 }
@@ -227,33 +216,33 @@ public class UpgradeToolMain {
                 if (logParser != null){
                     StringBuilder sbuf = logParser.parseLog();
                     if (sbuf.length() > 0){
-                        _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.not_successful_mgs"));
-                         _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.logs_mgs_title"));
-                         _logger.log(Level.INFO, sbuf.toString());
+                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.not_successful_mgs"));
+                         logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.logs_mgs_title"));
+                         logger.log(Level.INFO, sbuf.toString());
 
                     } else {
-                        _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.success_mgs"));
+                        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.success_mgs"));
 
                     }
 
                 } else {
-                    _logger.log(Level.WARNING, sm.getString("enterprise.tools.upgrade.could_not_process_server_log"));
+                    logger.log(Level.WARNING, sm.getString("enterprise.tools.upgrade.could_not_process_server_log"));
 
                 }
 
             } catch (HarnessException he) {
-                _logger.log(Level.INFO, sm.getString(
+                logger.log(Level.INFO, sm.getString(
                         "enterprise.tools.upgrade.generalException", he.getMessage()));
                 UpdateProgressManager.getProgressManager().processUpgradeUpdateEvent(-1);
                 commonInfo.recover();
             }
 
             //Delete temporary files (if any) created during the process
-            _logger.log(Level.FINE, sm.getString(
+            logger.log(Level.FINE, sm.getString(
                     "enterprise.tools.upgrade.deletingTempPasswordFiles"));
             commonInfo.getSource().getDomainCredentials().deletePasswordFile();
         } catch (Exception e) {
-            _logger.log(Level.INFO, e.getMessage());
+            logger.log(Level.INFO, e.getMessage());
         }
     }
 
