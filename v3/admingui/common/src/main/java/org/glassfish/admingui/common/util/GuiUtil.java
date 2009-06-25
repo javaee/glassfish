@@ -45,6 +45,9 @@
  */
 package org.glassfish.admingui.common.util;
 
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.config.ConfigConfig;
+import com.sun.appserv.management.config.DASConfig;
 import com.sun.jsftemplating.resource.ResourceBundleManager;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
@@ -66,7 +69,10 @@ import java.net.URLEncoder;
 
 import java.io.UnsupportedEncodingException;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
+import javax.faces.context.ExternalContext;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 import org.jvnet.hk2.component.Habitat;
@@ -80,7 +86,7 @@ public class GuiUtil {
     public GuiUtil() {
     }
 
-    public Logger getLogger() {
+    public static Logger getLogger() {
         return Logger.getLogger(LOGGER_NAME);
     }
 
@@ -105,29 +111,105 @@ public class GuiUtil {
         return value;
     }
 
-    public static void setSessionValue(String key, Object value) {
+    
+    public static void initSessionAttributes(){
+
+        getLogger().info("admin console: initSessionAttributes()" );
+        ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
+        Map<String, Object> sessionMap = externalCtx.getSessionMap();
+        DomainRoot domainRoot = AMXRoot.getInstance().getDomainRoot();
+        try{
+            sessionMap.put("domainName", domainRoot.getAppserverDomainName());
+        }catch(Exception ex){
+            ex.printStackTrace();
+            sessionMap.put("domainName", "");
+        }
+
+        String user = externalCtx.getRemoteUser();
+        sessionMap.put("userName", (user == null) ? "" : user);
+
+        Object request = externalCtx.getRequest();
+        if (request instanceof javax.servlet.ServletRequest){
+            ServletRequest srequest = (ServletRequest) request;
+            String serverName = srequest.getServerName();
+            sessionMap.put("serverName", serverName);
+            sessionMap.put("serverPort", V3AMX.getAdminPort());
+            sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
+        }else{
+            //should never get here.
+            sessionMap.put("serverName", "");
+        }
+
+        sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
+        sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
+        sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));
+        sessionMap.put("reqNum", GuiUtil.getMessage("msg.JS.enterNumericValue"));
+        sessionMap.put("reqPort", GuiUtil.getMessage("msg.JS.enterPortValue"));
+        sessionMap.put("RUNTIME", AMX.RUNTIME);
+        sessionMap.put("DOMAIN_ROOT", AMX.DOMAIN_ROOT);
+        sessionMap.put("ADMIN_LISTENER", AMX.ADMIN_LISTENER);
+        sessionMap.put("_SESSION_INITIALIZED","TRUE");
+
+        ConfigConfig config = AMXRoot.getInstance().getConfig("server-config");
+        DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
+
+        /* refer to issue# 5698 and issue# 3691
+         * There is a chance that this getAdminSessionTimoutInMinutes() throws an exception in Turkish locale.
+         * In such a case, we catch and log the exception and assume it is set to 0.
+         * Otherwise GUI's main page can't come up.
+         */
+        try {
+            String timeOut = dConfig.getAdminSessionTimeoutInMinutes();
+            if ((timeOut != null) && (!timeOut.equals(""))) {
+                int time = new Integer(timeOut).intValue();
+                if (time == 0) {
+                    ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
+                } else {
+                    ((HttpServletRequest) request).getSession().setMaxInactiveInterval(time * 60);
+                }
+            }
+        } catch (Exception nfe) {
+            ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
+            nfe.printStackTrace();
+        }
+
+
+    }
+
+
+    public static void setSessionValue(String key, Object value){
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         sessionMap.put(key, value);
     }
 
-    public static Object getSessionValue(String key) {
+    public static Object getSessionValue(String key){
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        if (sessionMap.get("_SESSION_INITIALIZED") == null){
+            initSessionAttributes();
+        }
         return sessionMap.get(key);
     }
 
-    public static DeploymentFacility getDeploymentFacility() {
-        DeploymentFacility df = null; //(DeploymentFacility) getSessionValue("_DEPLOYMENT_FACILITY");
-        boolean enable = false;
-        if (df == null) {
+    public static DeploymentFacility getDeploymentFacility(){
+        DeploymentFacility df = null;
+        if (df == null){
             //df= DeploymentFacilityFactory.getDeploymentFacility();
             df = new LocalDeploymentFacility();
+            String serverName = (String)getSessionValue("serverName");
+            Integer serverPort = (Integer)getSessionValue("serverPort");
+            int port = 4848;
+            if (serverPort == null){
+                getLogger().warning("getDeploymentFacility:  cannot get admin listener port, default to 4848");
+            }else{
+                port = serverPort.intValue();
+            }
+            String userName = (String)getSessionValue("userName");
+            Boolean requestIsSecured = (Boolean)getSessionValue("requestIsSecured");
+
             ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
-                    (String) getSessionValue("serverName"),
-                    ((Integer) getSessionValue("serverPort")).intValue(),
-                    (String) getSessionValue("userName"), //user name
-                    "", //password    FIXME: how to get password ?
-                    (Boolean) getSessionValue("requestIsSecured") //security enabled
-                    );
+                    serverName, port, userName,
+                    "",     //password    FIXME: how to get password ?
+                    requestIsSecured);
             df.connect(sci);   //although we pass in sci, it is ignored. refer to issue#6100
             setSessionValue("_DEPLOYMENT_FACILITY", df);
         }

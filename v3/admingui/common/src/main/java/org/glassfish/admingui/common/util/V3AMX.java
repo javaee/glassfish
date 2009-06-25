@@ -132,7 +132,7 @@ public class V3AMX {
 	try {
 	    setAttribute(new ObjectName(objectName), attributeName);
 	}catch (javax.management.MalformedObjectNameException ex){
-            System.out.println("MalformedObjectNameException: " + objectName);
+            GuiUtil.getLogger().severe("MalformedObjectNameException: " + objectName);
             throw new RuntimeException(ex);
         }
     }
@@ -367,10 +367,10 @@ public class V3AMX {
     public static Integer getAdminPort(){
         String port = (String) getAttrsMap(AMX.ADMIN_LISTENER).get("Port");
         if (port.startsWith("$")){
-            //TODO resolve token;
+            //TODO: resolve attribute
             port = "4848";
         }
-        return Integer.getInteger(port);
+        return Integer.valueOf(port);
     }
 
 
