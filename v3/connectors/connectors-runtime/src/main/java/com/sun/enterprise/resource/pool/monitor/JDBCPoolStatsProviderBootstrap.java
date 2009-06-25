@@ -195,7 +195,7 @@ public class JDBCPoolStatsProviderBootstrap implements TelemetryProvider,
             StatsProviderManager.register(
                     "jdbc",
                     PluginPoint.SERVER,
-                    "resources/jdbc-connection-pool/" + poolName,
+                    "resources/" + poolName,
                     new JDBCPoolStatsProvider(poolName, logger));
             
             //this jdbcPoolTM should be registered with the PoolLifeCycleListenerRegistry.
