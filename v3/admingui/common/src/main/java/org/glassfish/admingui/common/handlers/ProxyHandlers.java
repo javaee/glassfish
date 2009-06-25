@@ -51,6 +51,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.HashSet;
 import java.util.Set;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
@@ -254,16 +255,41 @@ public class ProxyHandlers {
     }    
 
 
+    /*
+     * Save the attributes of the proxy.   If the proxy doesn't exist, And forceCreate is true, a new
+     * proxy will be created.
+     */
+
     @Handler(id="saveBeanAttributes",
     input={
         @HandlerInput(name="objectNameStr",   type=String.class, required=true),
         @HandlerInput(name="attrs",   type=Map.class),
         @HandlerInput(name="skipAttrs",   type=List.class),
-        @HandlerInput(name="convertToFalse",   type=List.class)} )
+        @HandlerInput(name="convertToFalse",   type=List.class),
+        @HandlerInput(name="parentObjectNameStr",   type=String.class),
+        @HandlerInput(name="forceCreate",   type=Boolean.class),
+        @HandlerInput(name="childType",   type=String.class)} )
         public static void saveBeanAttributes(HandlerContext handlerCtx) {
         try{
-            Map attrs = (Map) handlerCtx.getInputValue("attrs");
+
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            //Test if the object exists, if not, create one.
+            ObjectName objName = new ObjectName(objectNameStr);
+            Query qMgr = V3AMX.getInstance().getDomainRoot().getQueryMgr();
+            Set nameSet = qMgr.queryTypeNameObjectNameSet(objName.getKeyProperty("type"), objName.getKeyProperty("name"));
+            if (nameSet.isEmpty()){
+                Boolean forceCreate = (Boolean) handlerCtx.getInputValue("forceCreate");
+                if (forceCreate!=null && forceCreate.booleanValue()){
+                    createProxy(handlerCtx);
+                    return;
+                }else{
+                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("error.noSuchProxy"));
+                    return;
+                }
+            }
+
+            Map attrs = (Map) handlerCtx.getInputValue("attrs");
+            
             List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
             if (skipAttrs != null){
                 for(String sk : skipAttrs){
@@ -335,9 +361,6 @@ public class ProxyHandlers {
             Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
             String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
             AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
-
-
-            
 
             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalse != null){
