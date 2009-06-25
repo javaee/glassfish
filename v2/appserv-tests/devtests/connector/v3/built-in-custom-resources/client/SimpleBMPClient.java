@@ -10,11 +10,13 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class SimpleBMPClient {
 
+    private static final String testSuite = "Custom Resource Factories Test - ";
     public static void main(String[] args)
         throws Exception {
 
  	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "Custom Resource : ";
+
+	stat.addDescription(testSuite);
 
     InitialContext ic = new InitialContext();
     Object objRef = ic.lookup("java:comp/env/ejb/SimpleBMPHome");
