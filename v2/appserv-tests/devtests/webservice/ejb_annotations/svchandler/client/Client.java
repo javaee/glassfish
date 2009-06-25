@@ -12,8 +12,8 @@ public class Client {
         private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
-        @WebServiceRef
-        static HelloEJBService service;
+       // @WebServiceRef
+        //static HelloEJBService service;
 
         public static void main(String[] args) {
 	    stat.addDescription("handler-chain-annotation");
@@ -24,7 +24,7 @@ public class Client {
 
        public void doTest(String[] args) {
             try {
-                Hello port = service.getHelloEJBPort();
+                Hello port =new HelloEJBService().getHelloEJBPort();
                 for (int i=0;i<10;i++) {
                     String ret = port.sayHello("Appserver Tester !");
 		    if(ret.indexOf("WebSvcTest-Hello injectedValue") == -1) {
