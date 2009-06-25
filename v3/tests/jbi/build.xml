@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./config/common.xml">
+<!ENTITY commonProperties SYSTEM "./config/common.properties">
+<!ENTITY reporting   SYSTEM "./config/report.xml"> 
+]>
+
+<project name="jbi-serviceengine" default="all" basedir=".">
+    &commonBuild;
+    &commonProperties;
+    &reporting;
+ 
+    <target name="setup">
+	<property file="config/init-common.properties" />
+	<unjar src="${fuji-gf-container.jar}" dest="${env.S1AS_HOME}" />
+	<echo message="Getting sun-http-binding.jar, this may take a few minutes..." />
+	<get src="${sun-http-binding.jar}" dest="${env.S1AS_HOME}/fuji/sun-http-binding-1.0-M7-SNAPSHOT.jar" />
+	<copy file="${sun-javaee-engine.jar}" todir="${env.S1AS_HOME}/modules" />
+    </target>
+    
+    <target name="all">
+        <delete file="${env.APS_HOME}/jbi/test_results.html"/>
+        <delete file="${env.APS_HOME}/jbi/test_resultsValid.xml"/>
+        <delete file="${env.APS_HOME}/jbi/test_results.xml"/>
+        <record name="jbi-serviceengine.output" action="start" />
+        <ant dir="service_unit" target="all"/>
+        <record name="jbi-serviceengine.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+</project>

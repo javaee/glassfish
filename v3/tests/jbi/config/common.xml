@@ -1,0 +1,117 @@
+<target name="clean-common">
+  <echo message="common.xml: Cleaning test source files: ${build.base.dir}" 
+        level="verbose"/>
+  <delete dir="${build.base.dir}"/>
+  <delete dir="${assemble.dir}"/>	
+</target>
+
+<!-- Target to compile the java source files -->
+
+<target name="compile-common">
+  <mkdir dir="${build.classes.dir}"/>
+  <echo message="common.xml: Compiling test source files" level="verbose"/>
+  <mkdir dir="${src}"/>
+  <javac srcdir="${src}"
+    destdir="${build.classes.dir}"
+    debug="on"
+    failonerror="true"/>
+</target>
+
+<target name="compile-client">
+    <mkdir dir="${build.classes.dir}/client"/>
+    <echo message="wsimporting http://${http.host}:${http.port}/${test-wsdl-uri}"/>
+    <antcall target="wsimport">
+        <param name="wsimport.args"
+               value="-keep -d ${build.classes.dir}/client http://${http.host}:${http.port}/${test-wsdl-uri}"/>
+    </antcall>
+    <javac srcdir="." destdir="${build.classes.dir}/client"
+	    classpath="${env.APS_HOME}/jbi/lib/reporter.jar:${env.S1AS_HOME}/modules/javax.servlet.jar"
+            includes="${client-src}/**"/>
+</target>
+
+<!-- JBI Deploy and Undeploy -->
+
+    <target name="deploy-jbi-component-su">
+      <property name="base-dir" value="."/>
+      <property name="temp" value="${base-dir}/temp" />
+      <property name="su-dir" value="${base-dir}/${jbi-su-dir}"/> 
+      <mkdir dir="${temp}"/>
+      <jar basedir="${su-dir}/su" destfile="${temp}/${jbi-component-su}.jar"/>
+      <copy todir="${temp}">
+           <fileset dir="${su-dir}/assembly"/>
+      </copy>
+
+    <!--  <zip destfile="${assemble.dir}/${jbi-su-assembly}.zip" basedir="${temp}"/> -->
+      <jar destfile="${assemble.dir}/${jbi-su-assembly}.jar" basedir="${temp}">
+	<manifest>
+	    <attribute name="Bundle-Version" value="1.0" />
+	    <attribute name="Bundle-SymbolicName" value="${jbi-su-assembly}" />
+	    <attribute name="Bundle-Name" value="${jbi-su-assembly}" />
+	</manifest>
+      </jar>
+      <delete dir="${temp}"/>
+      <antcall target="autodeploy-service-assembly"/>
+    <!--  <antcall target="deploy-service-assembly"/> -->
+    </target>
+
+    <target name="autodeploy-service-assembly">
+      <copy file="${assemble.dir}/${jbi-su-assembly}.jar" todir="${deploy.dir}"/>
+      <sleep seconds="5"/>
+    </target>
+
+    <target name="deploy-service-assembly">
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target=
+"deploy-service-assembly">
+          <property name="jbi.deploy.file" value="${assemble.dir}/${jbi-su-assembly}.zip"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+      </ant>
+      <antcall target="start-service-assembly"/>
+    </target>
+
+    <target name="start-service-assembly">
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target=
+"start-service-assembly">
+          <property name="jbi.service.assembly.name" value="${jbi-su-assembly}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+      </ant>
+    </target>
+
+    <target name="undeploy-jbi-component-su">
+        <antcall target="autoundeploy-service-assembly"/>
+    </target>
+
+    <target name="autoundeploy-service-assembly">
+	<delete file="${deploy.dir}/${jbi-su-assembly}.jar"/>
+	<sleep seconds="5"/>
+    </target>
+
+    <target name="undeploy-service-assembly">
+<!--      See v2 devtests for similar functionality, not in v3 yet.
+	  <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target=
+"undeploy-service-assembly">
+          <property name="jbi.service.assembly.name" value="${jbi-su-assembly}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+      </ant>
+-->
+    </target>
+
+<!--    <target name="stop-binding">
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target="stop-component">
+          <property name="jbi.component.name" value="${jbi.component.name}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+          <property name="jbi.task.fail.on.error" value="true"/>
+      </ant>
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target="shut-down-component">
+          <property name="jbi.component.name" value="${jbi.component.name}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+          <property name="jbi.task.fail.on.error" value="true"/>
+      </ant>
+    </target>
+    <target name="start-binding">
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target="start-component">
+          <property name="jbi.component.name" value="${jbi.component.name}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+          <property name="jbi.task.fail.on.error" value="true"/>
+      </ant>
+    </target>
+-->

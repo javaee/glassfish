@@ -1,0 +1,11 @@
+<?xml version='1.0' ?>
+<jbi version="1.0" 
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	 xmlns="http://java.sun.com/xml/ns/jbi" 
+	 xmlns:javaesb="http://java.sun.com"
+	 xmlns:ns0="http://example.web.service/EndpointMapping"
+	 xsi:schemaLocation="http://java.sun.com/xml/ns/jbi jbi.xsd">
+	<services binding-component="false">		
+	<consumes endpoint-name="javaee_EndpointMappingPort" interface-name="ns0:EndpointMappingServiceInterface" service-name="ns0:EndpointMappingService"/>	
+	</services>
+</jbi>

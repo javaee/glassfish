@@ -1,0 +1,99 @@
+<target name="setJAXWSToolsForWin" if="isWindows">
+    <property name="WSGEN" value="${env.S1AS_HOME}/bin/wsgen.bat"/>
+    <property name="WSIMPORT" value="${env.S1AS_HOME}/bin/wsimport.bat"/>
+    <property name="ASAPT" value="${env.S1AS_HOME}/bin/asapt.bat"/>
+</target>
+
+<!-- TODO : need to check os type -->
+
+<target name="setJAXWSToolsForUnix">
+    <property name="WSGEN" value="${env.S1AS_HOME}/bin/wsgen"/>
+    <property name="WSIMPORT" value="${env.S1AS_HOME}/bin/wsimport"/>
+    <property name="ASAPT" value="${env.S1AS_HOME}/bin/asapt"/>
+</target>
+
+<target name="wsgen" depends="setJAXWSToolsForWin,setJAXWSToolsForUnix">
+    <exec executable="${WSGEN}" failonerror="true" >
+        <arg line="${wsgen.args}" />
+    </exec>
+</target>
+
+<target name="wsimport" depends="setJAXWSToolsForWin,setJAXWSToolsForUnix">
+    <exec executable="${WSIMPORT}" failonerror="true" >
+        <arg line="${wsimport.args}" />
+    </exec>
+</target>
+
+<target name="pkg-war">
+  <mkdir dir="${assemble.dir}"/>
+  <echo message="my build classes dir is:${build.classes.dir}" level="verbose"/>  <mkdir dir="${build.classes.dir}/tmp"/>
+  <mkdir dir="${build.classes.dir}/tmp/WEB-INF"/>
+  <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes"/>
+  <mkdir dir="${build.classes.dir}/tmp/wsit/web/WEB-INF/"/>
+  <copy file="${sun-web.xml}"
+      tofile="${build.classes.dir}/tmp/WEB-INF/sun-web.xml" failonerror="false"/>
+  <copy file="${webservices.xml}"
+        tofile="${build.classes.dir}/tmp/WEB-INF/webservices.xml"
+        failonerror="false"/>
+  <copy file="${wsdlfile.location}/${wsdlfile.name}"
+        tofile="${build.classes.dir}/tmp/WEB-INF/wsdl/${wsdlfile.name}"
+        failonerror="false"/>
+  <copy file="${schemafile.location}/${schemafile.name}"
+        tofile="${build.classes.dir}/tmp/WEB-INF/wsdl/${schemafile.name}"
+        failonerror="false"/>
+  <copy file="${catalog.location}/jax-ws-catalog.xml"
+        todir="${build.classes.dir}/tmp/WEB-INF/"
+        failonerror="false"/>
+  <copy file="${web.xml}"
+      tofile="${build.classes.dir}/tmp/WEB-INF/web.xml" failonerror="false"/>
+  <copy todir="${build.classes.dir}/tmp/WEB-INF/classes">
+      <fileset dir="${war.classes}">
+          <include name="**/*.class"/>
+          <include name="**/${handler.name}"/>
+      </fileset>
+  </copy>
+  <copy toDir="${build.classes.dir}/tmp/wsit/web/WEB-INF" failonerror="false">
+        <fileset dir="${web.wsit.descriptors}"/>
+  </copy>
+  <echo message="Creating war file ${war.file}" level="verbose"/>
+  <jar jarfile="${war.file}" update="true">
+    <fileset dir="${build.classes.dir}/tmp" casesensitive="yes">
+      <include name="**/*class*"/>
+      <include name="**/${handler.name}"/>
+    </fileset>
+    <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
+      <include name="WEB-INF/web.xml"/>
+      <include name="WEB-INF/sun-web.xml"/>
+      <include name="WEB-INF/webservices.xml"/>
+      <include name="WEB-INF/jax-ws-catalog.xml"/>
+      <include name="WEB-INF/wsdl/${wsdlfile.name}"/>
+      <include name="WEB-INF/wsdl/${schemafile.name}"/>
+    </fileset>
+    <!-- Put WSIT descriptors under WEB-INF -->
+    <fileset dir="${build.classes.dir}/tmp/wsit/web" casesensitive="true">
+      <include name="WEB-INF/**"/>
+    </fileset>
+  </jar>
+  <echo message="created war file ${war.file}" level="verbose"/>
+  <delete dir="${build.classes.dir}/tmp/WEB-INF" failonerror="false"/>
+  <echo message="my webclient war classes are:${webclient.war.classes}"
+      level="verbose"/>
+</target>
+
+<target name="pkg-ejb-jar">
+  <mkdir dir="${assemble.dir}"/>
+  <echo message="my build classes dir is:${build.classes.dir}" level="verbose"/>  <mkdir dir="${build.classes.dir}/tmp"/>
+  <mkdir dir="${build.classes.dir}/tmp/wsit/ejb/META-INF"/>
+  <copy toDir="${build.classes.dir}/tmp/wsit/ejb/META-INF" failonerror="false">
+        <fileset dir="${ejb.wsit.descriptors}"/>
+  </copy>
+  <jar destfile="${jar.file}">
+    <fileset dir="${build.classes.dir}" casesensitive="yes">
+      <include name="${jar.classes}/**"/>
+    </fileset>
+    <!-- Put WSIT descriptors under META-INF -->
+    <fileset dir="${build.classes.dir}/tmp/wsit/ejb" casesensitive="yes">
+      <include name="META-INF/**"/>
+    </fileset>
+  </jar>            
+</target>
