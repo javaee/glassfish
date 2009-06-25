@@ -995,11 +995,6 @@ public class AMXConfigImpl extends AMXImplBase
         }
     }
 
-    private static boolean isCollectionCmd(final String s)
-    {
-        return s != null &&
-               (s.equals(OP_ADD) || s.equals(OP_REMOVE) || s.equals(OP_REPLACE));
-    }
 
 
 //         public String[]
@@ -1048,11 +1043,6 @@ public class AMXConfigImpl extends AMXImplBase
             final String cmd,
             final List<String> argValues)
     {
-        if (!isCollectionCmd(cmd))
-        {
-            throw new IllegalArgumentException("" + cmd);
-        }
-
         final Object o = writeable.getter(prop, getCollectionGenericType());
         final List<String> masterList = TypeCast.checkList(TypeCast.asList(o), String.class);
 
@@ -1222,15 +1212,6 @@ public class AMXConfigImpl extends AMXImplBase
 
     }
 
-    private void apply(
-            final ConfigBean cb,
-            final Map<String, Object> changes)
-            throws TransactionFailure
-    {
-        final MakeChangesApplyer mca = new MakeChangesApplyer(mConfigBean, changes);
-        mca.apply();
-    }
-
     private Map<String, Object> mapNamesAndValues(
             final Map<String, Object> amxAttrs,
             final Map<String, Object> noMatch)
@@ -1254,31 +1235,35 @@ public class AMXConfigImpl extends AMXImplBase
 
             if (xmlName != null)
             {
-                final Object value = valueIn == null ? null : "" + valueIn;
-                if (value != valueIn)
-                {
-                    //debug( "Attribute " + amxAttrName + " auto converted from " + valueIn.getClass().getName() + " to " + value.getClass().getName() );
-                }
-
+                //cdebug( "mapNamesAndValues: " + xmlName );
+                    
+                final Object value = valueIn;
+                
                 // We accept only Strings, String[] or null
                 if (valueIn == null || (value instanceof String))
                 {
                     xmlAttrs.put(xmlName, (String) value);
                 }
-                else if (false /*isCollection(xmlName)*/)
+                else
                 {
-                    if ((valueIn instanceof String[]) || (valueIn instanceof List))
+                    final ConfigModel.Property prop = getConfigModel_Property(xmlName);
+                    if ( prop != null && prop.isCollection() )
                     {
-                        xmlAttrs.put(xmlName, ListUtil.asStringList(valueIn));
+                        //cdebug( "mapNamesAndValues: is a collection: " + xmlName );
+                        if ((valueIn instanceof String[]) || (valueIn instanceof List))
+                        {
+                            //cdebug( "mapNamesAndValues: is a collection, setting value to List<String>: " + xmlName );
+                            xmlAttrs.put(xmlName, ListUtil.asStringList(valueIn));
+                        }
+                        else
+                        {
+                            noMatch.put(amxAttrName, valueIn);
+                        }
                     }
                     else
                     {
                         noMatch.put(amxAttrName, valueIn);
                     }
-                }
-                else
-                {
-                    noMatch.put(amxAttrName, valueIn);
                 }
             // debug( "Attribute " + amxAttrName + "<=>" + xmlName + " is of class " + ((value == null) ? null : value.getClass().getName()) );
             }
