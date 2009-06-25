@@ -43,7 +43,7 @@
       <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype connector.MyAdminObject --raname generic-ra --property ResetControl=BEGINNING"/>
       <param name="operand.props" value="eis/testAdmin"/>
     </antcall>
-    <antcall target="reconfig-common"/>
+    <!--<antcall target="reconfig-common"/>-->
   </target>
 
   <target name="testDelAdmin" depends="init-common">
@@ -51,7 +51,7 @@
       <param name="admin.command" value="delete-admin-object"/>
       <param name="operand.props" value="--target ${appserver.instance.name} eis/testAdmin"/>
     </antcall>
-    <antcall target="reconfig-common"/>
+    <!--<antcall target="reconfig-common"/>-->
   </target>
 
   <target name="sendMessage" depends="init-common">

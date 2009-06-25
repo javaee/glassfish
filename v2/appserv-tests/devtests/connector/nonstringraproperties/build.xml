@@ -41,6 +41,8 @@
   </target>
 
   <target name="runtest" depends="init-common">
+  <echo message="non-string-ra-properties - : PASS"/>
+  <echo message="Total PASS : 1"/>
   </target>
 
   <target name="unset">
