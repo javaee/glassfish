@@ -226,7 +226,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
     void setDescription(String value) throws PropertyVetoException;
 
 
-    @Element("*")
+    @Element
     List<Module> getModule();
     
     /**
