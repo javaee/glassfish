@@ -160,12 +160,13 @@
     </target>
 
     <target name="connector">
+        <delete  file="connector.output" failonerror="false"/>
         <record name="connector.output" action="start"/>
         <echo message="@@## connector1.5 ##@@"/>
         <ant dir="connector1.5" target="${connector-target}"/>
 
-        <!--<echo message="@@## embeddedConnector1.5 ##@@"/>
-        <ant dir="embeddedConnector1.5" target="${connector-target}"/>-->
+        <echo message="@@## embeddedConnector1.5 ##@@"/>
+        <ant dir="../embeddedConnector1.5" target="${connector-target}"/>
 
         <echo message="@@## embeddedweb ##@@"/>
         <ant dir="embeddedweb" target="${connector-target}"/>
@@ -174,7 +175,7 @@
       <ant dir="mq" target="${connector-target}"/>
 
       <echo message="@@## nonacc ##@@"/>
-      <ant dir="nonacc" target="${connector-target}"/>-->
+      <ant dir="../nonacc" target="${connector-target}"/>
 
         <!--	    Commented out the defaultConnectorResource test because we  cannot
         add a non-XA Resource [a database connection in this case] to a global JTS transaction containing
@@ -193,8 +194,8 @@
         <echo message="@@## nonstringmcfproperties ##@@"/>
         <ant dir="nonstringmcfproperties" target="${connector-target}"/>
 
-        <!--<echo message="@@## nonstringraproperties ##@@"/>
-        <ant dir="nonstringraproperties" target="${connector-target}" />-->
+        <echo message="@@## nonstringraproperties ##@@"/>
+        <ant dir="../nonstringraproperties" target="${connector-target}" />
 
         <!--<echo message="@@## txlevelswitch ##@@"/>
         <ant dir="txlevelswitch" target="${connector-target}" />
@@ -231,6 +232,9 @@
 
         <echo message="@@## annotation-embeddedweb ##@@"/>
         <ant dir="annotation-embeddedweb" target="${connector-target}"/>
+
+        <echo message="@@## built-in-custom-resources ##@@"/>
+        <ant dir="built-in-custom-resources" target="${connector-target}"/>
 
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
