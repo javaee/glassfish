@@ -126,39 +126,6 @@ public interface ResourcesConfig
 	public void		removeJNDIResourceConfig( String jndiName );
 
 	
-	/**
-		Calls Container.getContaineeMap( XTypes.PERSISTENCE_MANAGER_FACTORY_RESOURCE_CONFIG ).
-		@return Map of items, keyed by name.
-		@see com.sun.appserv.management.base.Container#getContaineeMap
-	 */
-	public Map<String,PersistenceManagerFactoryResourceConfig>
-	    getPersistenceManagerFactoryResourceConfigMap();
-	
-	
-	/**
-		Create a new persistence manager factory resource. Optional values include:
-		<ul>
-		<li>{@link PersistenceManagerFactoryResourceConfigKeys#FACTORY_CLASS_KEY}</li>
-		<li>{@link PersistenceManagerFactoryResourceConfigKeys#JDBC_RESOURCE_JNDI_NAME_KEY}</li>
-		<li>{@link ResourceConfigKeys#ENABLED_KEY}</li>
-		</ul>
-
-		@param jndiName
-		@param optional optional Attributes (may be null )
-		@return A proxy to the PersistenceManagerFactoryResourceConfig MBean that
-		manages the newly created resource.
-		@see PersistenceManagerFactoryResourceConfigKeys
-	*/
-	public PersistenceManagerFactoryResourceConfig
-		createPersistenceManagerFactoryResourceConfig( String jndiName, Map<String,String> optional);
-
-
-	/**
-		Removes a persistence manager factory resource.
-		 
-		@param jndiName
-	*/
-	public void		removePersistenceManagerFactoryResourceConfig( String jndiName );
 
 	
 	/**

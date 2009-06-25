@@ -438,8 +438,6 @@ public class ResourcesUtil {
 
         } else if(br instanceof CustomResource) {
 
-        } else if(br instanceof PersistenceManagerFactoryResource) {
-
         } else if(br instanceof AdminObjectResource) {
             
         }

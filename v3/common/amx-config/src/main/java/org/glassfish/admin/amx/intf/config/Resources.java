@@ -53,8 +53,6 @@ public interface Resources
 
     public Map<String, JNDIResource> getJNDIResource();
 
-    public Map<String, PersistenceManagerFactoryResource> getPersistenceManagerFactoryResource();
-
     public Map<String, JDBCResource> getJDBCResource();
 
     public Map<String, JDBCConnectionPool> getJDBCConnectionPool();

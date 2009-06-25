@@ -41,7 +41,6 @@ import com.sun.enterprise.config.serverbeans.CustomResource;
 import com.sun.enterprise.config.serverbeans.ExternalJndiResource;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.MailResource;
-import com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -104,9 +103,6 @@ public class CreateResourceRef implements AdminCommand {
     @Inject
     MailResource[] mailResources;
     
-    @Inject
-    PersistenceManagerFactoryResource[] persistenceMgrFactoryResources;
-
     @Inject
     Resources resources;
     
@@ -187,11 +183,6 @@ public class CreateResourceRef implements AdminCommand {
             }
         }
         for (MailResource resource : mailResources) {
-            if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        for (PersistenceManagerFactoryResource resource : persistenceMgrFactoryResources) {
             if (resource.getJndiName().equals(refName)) {
                 return true;
             }

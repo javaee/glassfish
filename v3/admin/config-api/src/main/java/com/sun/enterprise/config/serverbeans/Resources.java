@@ -54,30 +54,30 @@ import org.glassfish.api.amx.AMXCreatorInfo;
  */
 
 /* @XmlType(name = "", propOrder = {
-    "customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrPersistenceManagerFactoryResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool"
+    "customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool"
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourcesConfig", omitAsAncestorInChildObjectName=true, singleton=true)
 
 // general solution needed; this is intermediate solution
 @AMXCreatorInfo( creatables={CustomResource.class, ExternalJndiResource.class, JdbcResource.class,
-        MailResource.class, PersistenceManagerFactoryResource.class, AdminObjectResource.class,
+        MailResource.class, AdminObjectResource.class,
         ConnectorResource.class, ResourceAdapterConfig.class, JdbcConnectionPool.class, ConnectorConnectionPool.class })
 @Configured
 public interface Resources extends ConfigBeanProxy, Injectable  {
 
     /**
-     * Gets the value of the customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrPersistenceManagerFactoryResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool property.
+     * Gets the value of the customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool property.
      * <p/>
      * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrPersistenceManagerFactoryResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool property.
+     * This is why there is not a <CODE>set</CODE> method for the customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool property.
      * <p/>
      * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getCustomResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrPersistenceManagerFactoryResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool().add(newItem);
+     *    getCustomResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool().add(newItem);
      * </pre>
      * <p/>
      * <p/>
@@ -87,7 +87,6 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
      * {@link ExternalJndiResource }
      * {@link JdbcResource }                                       �
      * {@link MailResource }
-     * {@link PersistenceManagerFactoryResource }
      * {@link AdminObjectResource }
      * {@link ConnectorResource }
      * {@link ResourceAdapterConfig }
