@@ -36,22 +36,29 @@
 
 package org.glassfish.api.statistics;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Specifies standard measurements of the lowest and highest values an attribute has held as well as its current value. 
  */
+@ManagedData
 public interface RangeStatistic extends Statistic {
     /**
      * The highest value this attribute has held since the beginning of the measurement. 
      */
+    @ManagedAttribute
     long getHighWaterMark();
 
     /**
      * The lowest value this attribute has held since the beginning of the measurement. 
      */
+    @ManagedAttribute
     long getLowWaterMark();
 
     /**
      * The current value of this attribute. 
      */
+    @ManagedAttribute
     long getCurrent();
 }

@@ -36,9 +36,12 @@
 
 package org.glassfish.api.statistics;
 
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * The BoundedRangeStatistic model aggregates the attributes of RangeStatistic and BoundaryStatistic and provides standard measurements of a range that has fixed limits. 
  */
+@ManagedData
 public interface BoundedRangeStatistic extends BoundaryStatistic, RangeStatistic {
 }
 

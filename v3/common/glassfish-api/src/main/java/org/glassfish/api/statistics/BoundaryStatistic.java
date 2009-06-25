@@ -36,17 +36,23 @@
 
 package org.glassfish.api.statistics;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Specifies standard measurements of the upper and lower limits of the value of an attribute. 
  */
+@ManagedData
 public interface BoundaryStatistic extends Statistic {
     /**
      * The upper limit of the value of this attribute. 
      */
+    @ManagedAttribute
     long getUpperBound();
 
     /**
      * The lower limit of the value of this attribute.The upper limit of the value of this attribute. 
      */
+    @ManagedAttribute
     long getLowerBound();
 }
