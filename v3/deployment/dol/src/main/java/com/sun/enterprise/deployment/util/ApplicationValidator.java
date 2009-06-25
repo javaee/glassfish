@@ -55,7 +55,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service(name="application_deploy")
 public class ApplicationValidator extends EjbBundleValidator 
-    implements ApplicationVisitor, EjbBundleVisitor, EjbVisitor {
+    implements ApplicationVisitor, EjbBundleVisitor, EjbVisitor, ManagedBeanVisitor {
     
 
     private Application application;
@@ -102,6 +102,11 @@ public class ApplicationValidator extends EjbBundleValidator
             }
         }
     }
+
+     public void accept(ManagedBeanDescriptor managedBean) {
+        this.bundleDescriptor = managedBean.getBundle();
+        this.application = bundleDescriptor.getApplication(); 
+     }
     
     
     /**

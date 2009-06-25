@@ -103,6 +103,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             appArchivist.setClassLoader(cl);
 
             appArchivist.setManifest(sourceArchive.getManifest());
+
+            setAppName(application, dc, name);
+            
             try {
                 appArchivist.openWith(application, sourceArchive);
             } catch(SAXParseException e) {
@@ -114,6 +117,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             try {
                 application = applicationFactory.openArchive(
                         name, archivist, sourceArchive, true);
+                setAppName(application, dc, name);
             } catch(SAXParseException e) {
                 throw new IOException(e);
             }
@@ -121,23 +125,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
         validateApplication(application, dc);
 
-        // if the app-name is not defined in the application.xml or it's 
-        // a standalone module, use the default name
-        if (application.getAppName() == null) {
-            if (application.getArchiveName() != null) {
-                String appName = DeploymentUtils.getDefaultEEName(
-                    application.getArchiveName());
-                application.setAppName(appName);
-            } else {
-                String defaultEE6AppName = 
-                    dc.getAppProps().getProperty("default-EE6-app-name");
-                if (defaultEE6AppName != null) {
-                    application.setAppName(defaultEE6AppName);
-                }  else {
-                    application.setAppName(name);;
-                }
-            }
-        }
 
         // for standalone module, make module name the same as app name
         if (application.isVirtual()) {
@@ -167,6 +154,28 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         return application;
 
     }
+
+    private void setAppName(Application application, DeploymentContext dc, String name) {
+        // if the app-name is not defined in the application.xml or it's
+        // a standalone module, use the default name
+        if (application.getAppName() == null) {
+            if (application.getArchiveName() != null) {
+                String appName = DeploymentUtils.getDefaultEEName(
+                    application.getArchiveName());
+                application.setAppName(appName);
+            } else {
+                String defaultEE6AppName =
+                    dc.getAppProps().getProperty("default-EE6-app-name");
+                if (defaultEE6AppName != null) {
+                    application.setAppName(defaultEE6AppName);
+                }  else {
+                    application.setAppName(name);
+                }
+            }
+        }
+
+    }
+
 
     protected void handleDeploymentPlan(File deploymentPlan,
         Archivist archivist, ReadableArchive sourceArchive) throws IOException {

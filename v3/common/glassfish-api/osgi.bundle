@@ -14,6 +14,7 @@
                         org.glassfish.api.event; \
                         org.glassfish.api.invocation; \
                         org.glassfish.api.logging; \
+                        org.glassfish.api.managedbean; \
                         org.glassfish.api.monitoring; \
                         org.glassfish.api.naming; \
                         org.glassfish.api.embedded; \

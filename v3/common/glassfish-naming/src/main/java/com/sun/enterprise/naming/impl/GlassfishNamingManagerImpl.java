@@ -447,7 +447,7 @@ public final class  GlassfishNamingManagerImpl
     }
 
     public Object lookup(String name) throws NamingException {
-        return lookup(name, null);
+        return lookup(name, (SerialContext)null);
     }
 
     /**
@@ -476,6 +476,20 @@ public final class  GlassfishNamingManagerImpl
         // Get the component id and namespace to lookup
         String componentId = getComponentId();
 
+        return lookup(componentId, name, ic);
+    }
+
+    /**
+     * Lookup object for a particular componentId and name.
+     */
+    public Object lookup(String componentId, String name) throws NamingException {
+
+        return lookup(componentId, name, initialContext);
+
+    }
+
+    private Object lookup(String componentId, String name, Context ctx) throws NamingException {
+
         HashMap namespace = (HashMap) getComponentNameSpace(componentId);
 
         Object obj = namespace.get(name);
@@ -485,11 +499,13 @@ public final class  GlassfishNamingManagerImpl
 
         if (obj instanceof NamingObjectProxy) {
             NamingObjectProxy namingProxy = (NamingObjectProxy) obj;
-            obj = namingProxy.create(ic);
+            obj = namingProxy.create(ctx);
         }
 
         return obj;
+
     }
+
 
     public NamingEnumeration list(String name) throws NamingException {
         ArrayList list = listNames(name);

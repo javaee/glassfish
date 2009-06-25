@@ -69,6 +69,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
     private Set<MessageDestinationDescriptor> messageDestinations = new HashSet<MessageDestinationDescriptor>();
     private WebServicesDescriptor webServices = new WebServicesDescriptor();
 
+    private Set<ManagedBeanDescriptor> managedBeans = new HashSet<ManagedBeanDescriptor>();
 
     // Physical entity manager factory corresponding to the unit name of 
     // each module-level persistence unit.  Only available at runtime.
@@ -157,6 +158,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         entityManagerFactories.put(unitName, emf);
     }
 
+
     /**
      * Retrieve the physical entity manager factory associated with the
      * unitName of a persistence unit within this module.   Returns null if
@@ -178,6 +180,32 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
     }
 
+    public void addManagedBean(ManagedBeanDescriptor desc) {
+        managedBeans.add(desc);
+        desc.setBundle(this);
+    }
+
+    public boolean hasManagedBeanByBeanClass(String beanClassName) {
+        ManagedBeanDescriptor descriptor = getManagedBeanByBeanClass(beanClassName);
+        return (descriptor != null);
+    }
+
+    public ManagedBeanDescriptor getManagedBeanByBeanClass(String beanClassName) {
+        ManagedBeanDescriptor match = null;
+
+        for(ManagedBeanDescriptor next : managedBeans) {
+            if( beanClassName.equals(next.getBeanClassName()) ) {
+                match = next;
+                break;
+            }
+        }
+
+        return match;
+    }
+
+    public Set<ManagedBeanDescriptor> getManagedBeans() {
+        return new HashSet<ManagedBeanDescriptor>(managedBeans);
+    }
 
     /**
      * @return a set of service-ref from this bundle or an empty set
@@ -415,6 +443,14 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         List<InjectionCapable> injectables =
                 new LinkedList<InjectionCapable>();
 
+        addJndiNameEnvironmentInjectables(jndiNameEnv, injectables);
+
+        return injectables;
+    }
+
+    private void addJndiNameEnvironmentInjectables(JndiNameEnvironment jndiNameEnv,
+                                                   List<InjectionCapable> injectables) {
+
         Collection allEnvProps = new HashSet();
 
         for (Iterator envEntryItr =
@@ -445,9 +481,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
             }
         }
 
-        return injectables;
     }
-
 
     /**
      * Define implementation of getInjectableResourceByClass here so it

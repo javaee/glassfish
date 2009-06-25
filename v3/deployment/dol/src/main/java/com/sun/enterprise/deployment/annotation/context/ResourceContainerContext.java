@@ -178,4 +178,6 @@ public interface ResourceContainerContext extends ServiceReferenceContainerConte
      * @param className
      */
     public LifecycleCallbackDescriptor getPreDestroy(String className);
+
+    public void addManagedBean(ManagedBeanDescriptor managedBeanDesc);
 }

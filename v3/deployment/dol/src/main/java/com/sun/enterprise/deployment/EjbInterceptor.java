@@ -58,6 +58,8 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
     private Set<LifecycleCallbackDescriptor> aroundTimeoutDescriptors;
     private String interceptorClassName;
 
+    private EjbBundleDescriptor ejbBundleDescriptor;
+
     // true if the AroundInvoke/AroundTimeout/Callback methods for this 
     // descriptor were defined on the bean class itself (or one of its
     // super-classes).  false if the methods are defined
@@ -70,6 +72,15 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
 
     public void setInterceptorClassName(String className) {
         interceptorClassName = className;
+    }
+
+    public EjbBundleDescriptor getEjbBundleDescriptor() {
+	    return ejbBundleDescriptor;
+    }
+
+    public void setEjbBundleDescriptor(EjbBundleDescriptor bundleDescriptor) {
+	    ejbBundleDescriptor = bundleDescriptor;
+        super.setBundleDescriptor(bundleDescriptor);
     }
 
     public Set<LifecycleCallbackDescriptor> getAroundInvokeDescriptors() {

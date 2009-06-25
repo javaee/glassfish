@@ -37,6 +37,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import javax.naming.NamingException;
 
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.logging.LogDomains;
 
 import javax.naming.*;
 import java.util.Hashtable;
@@ -51,8 +52,8 @@ public class JavaModuleNamingProxy
     @Inject
     Habitat habitat;
 
-    @Inject
-    private Logger _logger;
+    private static Logger _logger = LogDomains.getLogger(JavaModuleNamingProxy.class,
+            LogDomains.NAMING_LOGGER);
 
     private InitialContext ic;
 
@@ -94,7 +95,8 @@ public class JavaModuleNamingProxy
             // Check for any automatically defined portable EJB names under
             // java:module/ or java:app/.
 
-            // If name is not found, return null instead of throwing an exception.
+            // If name is not found, return null instead
+            // of throwing an exception.
             // The application can explicitly define environment dependencies within this
             // same namespace, so this will allow other name checking to take place.
             returnValue = getJavaModuleOrAppEJB(name);
@@ -175,7 +177,7 @@ public class JavaModuleNamingProxy
 
 
 
-    private Object getJavaModuleOrAppEJB(String name) {
+    private Object getJavaModuleOrAppEJB(String name) throws NamingException {
 
         String newName = null;
         Object returnValue = null;
@@ -256,10 +258,13 @@ public class JavaModuleNamingProxy
         }
 
         if( newName != null ) {
+
             try {
                 returnValue = ic.lookup(newName);
             } catch(NamingException ne) {
-                _logger.log(Level.FINE, newName + " corresponding to " + name + " not found", ne);    
+
+                _logger.log(Level.FINE, newName + " Unable to map " + name + " to derived name " +
+                        newName, ne);
             }
         }
 

@@ -147,7 +147,20 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
                 }
             }
        } else super.addDescriptor(newDescriptor);       
-   }   
+   }
+
+    public void setElementValue(XMLElement element, String value) {
+
+        if (EjbTagNames.MODULE_NAME.equals(element.getQName())) {
+            EjbBundleDescriptor bundleDesc = getDescriptor();
+            // ejb-jar.xml <module-name> only applies if this is an ejb-jar
+            if( bundleDesc.getModuleDescriptor().getDescriptor() instanceof EjbBundleDescriptor ) {
+                bundleDesc.getModuleDescriptor().setModuleName(value);
+            }        
+        } else {
+            super.setElementValue(element, value);
+        }
+    }
 
    /**
     * @return the descriptor instance to associate with this XMLNode
@@ -177,6 +190,7 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
         // no need to be synchronized for now
         Map table = super.getDispatchTable();
         table.put(EjbTagNames.EJB_CLIENT_JAR, "setEjbClientJarUri");
+        table.put(EjbTagNames.MODULE_NAME, "setModuleName");
         return table;
     }        
         
@@ -188,7 +202,12 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
      * @return the DOM tree top node
      */    
     public Node writeDescriptor(Node parent, EjbBundleDescriptor ejbDesc) {
-        Node jarNode = super.writeDescriptor(parent, ejbDesc);           
+        Node jarNode = super.writeDescriptor(parent, ejbDesc);
+
+        if( ejbDesc.getModuleDescriptor().getDescriptor() instanceof EjbBundleDescriptor ) {
+            appendTextChild(jarNode, EjbTagNames.MODULE_NAME, ejbDesc.getModuleDescriptor().getModuleName());
+        }
+
         Node entrepriseBeansNode = appendChild(jarNode, EjbTagNames.EJBS);
         for (Iterator ejbs = ejbDesc.getEjbs().iterator();ejbs.hasNext();) {
             EjbDescriptor ejb = (EjbDescriptor) ejbs.next();

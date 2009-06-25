@@ -101,6 +101,23 @@ public interface InjectionManager {
         throws InjectionException;
 
     /**
+     * Inject the injectable resources for the given component id
+     * into an object instance.
+     *
+     * @param invokePostConstruct if true, invoke any @PostConstruct methods
+     * on the instance's class(and super-classes) after injection.
+     *
+     * @exception InjectionException Thrown if an error occurs during injection
+     *
+     */
+    public void injectInstance(Object instance,
+                               String componentId,
+                               boolean invokePostConstruct)
+        throws InjectionException;
+
+
+
+    /**
      * Inject the injectable resources from the given component environment
      * into a Class instance.  Only class-level(static) fields/methods are 
      * supported.  E.g., this injection operation would be used for the 

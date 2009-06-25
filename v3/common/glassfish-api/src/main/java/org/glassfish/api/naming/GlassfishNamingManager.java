@@ -62,6 +62,12 @@ public interface GlassfishNamingManager {
     public Context getInitialContext();
 
     /**
+     *
+     * Lookup a naming entry for a particular componentId
+     */
+    public Object lookup(String componentId, String name) throws NamingException;
+
+    /**
      * Publish an object in the naming service.
      *
      * @param name   Object that needs to be bound.

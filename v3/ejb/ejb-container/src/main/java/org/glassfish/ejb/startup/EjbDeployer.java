@@ -26,7 +26,9 @@ package org.glassfish.ejb.startup;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.util.IASSecurityException;
@@ -36,6 +38,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.ejb.spi.CMPDeployer;
@@ -43,6 +46,7 @@ import org.glassfish.ejb.spi.CMPService;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import com.sun.ejb.codegen.StaticRmiStubGenerator;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -158,12 +162,18 @@ public class EjbDeployer
                                                    ejbSecManagerFactory);
 
         ejbApp.loadContainers(dc);
+
+
+
+
+
         return ejbApp;
     }
 
     public void unload(EjbApplication ejbApplication, DeploymentContext dc) {
 
-        // unload from ejb container
+        // Right now all of the work is done in EjbApplication. 
+
     }
 
     /**
@@ -200,10 +210,12 @@ public class EjbDeployer
                 }
             }
         }
+
+
     }
 
     /**
-     * Use this method to generate CMP artifacts if any
+     * Use this method to generate any ejb-related artifacts for the module
      */
     @Override
     protected void generateArtifacts(DeploymentContext dc)
@@ -222,6 +234,22 @@ public class EjbDeployer
                 this.ejbSecManagerFactory.createManager(desc, false);
             }
         }
+
+        /**  TODO 
+        DeployCommandParameters dcp =
+                dc.getCommandParameters(DeployCommandParameters.class);
+        boolean generateRmicStubs = dcp.generatermistubs;
+        if( generateRmicStubs ) {
+            StaticRmiStubGenerator staticStubGenerator = new StaticRmiStubGenerator();
+            try {
+                staticStubGenerator.ejbc(habitat, dc);
+            } catch(Exception e) {
+                throw new DeploymentException("Static RMI-IIOP Stub Generation exception for " +
+                        dc.getSourceDir(), e);
+            }
+        }
+        **/
+
         if (bundle == null || !bundle.containsCMPEntity()) {
             // bundle WAS null in a war file where we do not support CMPs
             return;
@@ -231,7 +259,9 @@ public class EjbDeployer
         if (cmpDeployer == null) {
             throw new DeploymentException("No CMP Deployer is available to deploy this module");
         }
-        cmpDeployer.deploy(dc);
+        cmpDeployer.deploy(dc);   
+
+
     }
 
     private long getNextEjbAppUniqueId() {
@@ -259,4 +289,7 @@ public class EjbDeployer
 
         return next << 16;
     }
+
+
+    
 }

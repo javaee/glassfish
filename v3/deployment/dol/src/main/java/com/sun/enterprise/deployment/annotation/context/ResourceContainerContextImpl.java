@@ -356,5 +356,12 @@ public class ResourceContainerContextImpl extends AnnotationContext
         ServiceReferenceContainer[] containers = new ServiceReferenceContainer[1];
         containers[0] = (ServiceReferenceContainer) descriptor;
         return containers;
-    }    
+    }
+
+    public void addManagedBean(ManagedBeanDescriptor managedBeanDesc) {
+
+        BundleDescriptor bundleDesc = (BundleDescriptor)
+                ((BundleDescriptor) descriptor).getModuleDescriptor().getDescriptor();
+        bundleDesc.addManagedBean(managedBeanDesc);             
+    }
 }

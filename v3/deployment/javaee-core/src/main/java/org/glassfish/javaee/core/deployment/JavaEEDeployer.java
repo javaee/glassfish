@@ -36,6 +36,7 @@ import org.glassfish.deployment.common.DeploymentException;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.managedbean.ManagedBeanManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +60,9 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
     @Inject
     protected Habitat habitat;
+
+    @Inject
+    private ManagedBeanManager managedBeanManager;
 
     @Inject(name="application_undeploy", optional=true)
     protected ApplicationVisitor undeploymentVisitor=null;
@@ -211,13 +215,13 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         if (app != null) {
             app.setClassLoader(context.getClassLoader());
         }
+
         return null;
     }
 
     protected void generateArtifacts(DeploymentContext dc)
         throws DeploymentException {
     }
-
 
     /**
      * Clean any files and artifacts that were created during the execution

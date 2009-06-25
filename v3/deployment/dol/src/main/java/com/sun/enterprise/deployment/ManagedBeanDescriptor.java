@@ -1,0 +1,287 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+ package com.sun.enterprise.deployment;
+
+import com.sun.enterprise.deployment.util.ManagedBeanVisitor;
+import com.sun.enterprise.deployment.util.ApplicationValidator;
+import com.sun.enterprise.deployment.types.EjbReference;
+import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
+
+import java.util.*;
+
+/**
+ * Descriptor representing a Java EE Managed Bean.
+ *
+ * @author Kenneth Saks
+ */
+
+public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
+
+    // *Optional* managed bean name.  Only non-null if the
+    // bean has been assigned a name by the developer.
+    // (E.g., via the @ManagedBean name() attribute)
+    private String name;
+
+    // fully-qualified class name of managed bean class
+    private String beanClassName;
+
+    // Module in which managed bean is defined
+    private BundleDescriptor enclosingBundle;
+
+    private Collection beanInstances = new HashSet();
+       
+	/** 
+	* Default constructor. 
+	*/
+    public ManagedBeanDescriptor() {}
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isNamed() {
+        return (name != null);
+    }
+
+    public void setBeanClassName(String className) {
+        beanClassName = className;
+    }
+
+    public String getBeanClassName() {
+        return beanClassName;
+    }
+
+    public void setBundle(BundleDescriptor bundle) {
+        enclosingBundle = bundle;
+        super.setBundleDescriptor(bundle);
+    }
+
+    public BundleDescriptor getBundle() {
+        return enclosingBundle;
+    }
+
+    public void addBeanInstance(Object o) {
+        beanInstances.add(o);
+    }
+
+    public Collection getBeanInstances() {
+        return new HashSet(beanInstances);
+    }
+
+    public void clearBeanInstances() {
+        beanInstances.clear();
+    }
+
+    public String getGlobalJndiName() {
+
+        String appName = null;
+
+        Application app = enclosingBundle.getApplication();
+        if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+            appName = enclosingBundle.getApplication().getAppName();
+        }
+
+        String modName = enclosingBundle.getModuleDescriptor().getModuleName();
+
+        StringBuffer javaGlobalPrefix = new StringBuffer("java:global/");
+
+        if (appName != null) {
+            javaGlobalPrefix.append(appName);
+            javaGlobalPrefix.append("/");
+        }
+
+        javaGlobalPrefix.append(modName);
+        javaGlobalPrefix.append("/");
+
+
+        // If the managed bean is named, use the name for the final component
+        // of the managed bean global name.  Otherwise, use a derived internal
+        // name since we'll still need a way to register and lookup the bean
+        // from within the container.
+
+        String componentName = isNamed() ? name :
+                "___internal_managed_bean_" + beanClassName;
+        javaGlobalPrefix.append(componentName);
+
+
+        return javaGlobalPrefix.toString();        
+    }
+
+
+	/**
+	* Returns a formatted String of the attributes of this object.
+	*/
+    public void print(StringBuffer toStringBuffer) {
+
+	// toStringBuffer.append("\n homeClassName ").append(homeClassName);
+
+    }
+
+    public void validate() {
+
+        visit(new ApplicationValidator());
+           
+    }
+
+    public void visit(ManagedBeanVisitor aVisitor) {
+
+        aVisitor.accept(this);
+
+        for (Iterator itr = ejbReferences.iterator(); itr.hasNext();) {
+            EjbReference aRef = (EjbReference) itr.next();
+            aVisitor.accept(aRef);
+        }
+
+        for (Iterator e = getEnvironmentProperties().iterator(); e.hasNext();) {
+            EnvironmentProperty envProp = (EnvironmentProperty) e.next();
+            aVisitor.accept(envProp);
+        }
+
+        for (Iterator it = getResourceReferenceDescriptors().iterator();
+             it.hasNext();) {
+            ResourceReferenceDescriptor next =
+                    (ResourceReferenceDescriptor) it.next();
+            aVisitor.accept(next);
+        }
+
+        for (Iterator it = getJmsDestinationReferenceDescriptors().iterator();
+             it.hasNext();) {
+            JmsDestinationReferenceDescriptor next =
+                    (JmsDestinationReferenceDescriptor) it.next();
+            aVisitor.accept(next);
+        }
+
+        for (Iterator it = getMessageDestinationReferenceDescriptors().iterator();
+             it.hasNext();) {
+            MessageDestinationReferencer next =
+                    (MessageDestinationReferencer) it.next();
+            aVisitor.accept(next);
+        }
+
+        Set serviceRefs = getServiceReferenceDescriptors();
+        for (Iterator itr = serviceRefs.iterator(); itr.hasNext();) {
+            aVisitor.accept((ServiceReferenceDescriptor) itr.next());
+        }
+    }
+
+    @Override
+    public List<InjectionCapable> getInjectableResourcesByClass(String className) {
+
+        List<InjectionCapable> injectables = new LinkedList<InjectionCapable>();
+
+        for (Iterator envEntryItr = getEnvironmentProperties().iterator();
+             envEntryItr.hasNext();) {
+            EnvironmentProperty envEntry = (EnvironmentProperty)
+                    envEntryItr.next();
+            // Only env-entries that have been assigned a value are
+            // eligible for injection.
+            if (envEntry.hasAValue()) {
+                injectables.add(envEntry);
+            }
+        }
+
+        injectables.addAll(getEjbReferenceDescriptors());
+        injectables.addAll(getServiceReferenceDescriptors());
+        injectables.addAll(getResourceReferenceDescriptors());
+        injectables.addAll(getJmsDestinationReferenceDescriptors());
+        injectables.addAll(getMessageDestinationReferenceDescriptors());
+
+        injectables.addAll(getEntityManagerFactoryReferenceDescriptors());
+        injectables.addAll(getEntityManagerReferenceDescriptors());
+
+        List<InjectionCapable> injectablesByClass =
+                new LinkedList<InjectionCapable>();
+
+        for (InjectionCapable next : injectables ) {
+            if (next.isInjectable()) {
+                for (InjectionTarget target : next.getInjectionTargets()) {
+                    if (target.getClassName().equals(className)) {
+                        injectablesByClass.add(next);
+                    }
+                }
+            }
+        }
+
+        return injectablesByClass;
+    }
+
+    @Override
+    public InjectionInfo getInjectionInfoByClass(String className) {
+
+        // TODO This is invariant data so we could cache it
+
+        LifecycleCallbackDescriptor postConstructDesc =
+                getPostConstructDescriptorByClass(className);
+        String postConstructMethodName = (postConstructDesc != null) ?
+                postConstructDesc.getLifecycleCallbackMethod() : null;
+        LifecycleCallbackDescriptor preDestroyDesc =
+                getPreDestroyDescriptorByClass(className);
+        String preDestroyMethodName = (preDestroyDesc != null) ?
+                preDestroyDesc.getLifecycleCallbackMethod() : null;
+        InjectionInfo injectionInfo = new InjectionInfo(className,
+                postConstructMethodName, preDestroyMethodName,
+                getInjectableResourcesByClass(className));
+
+        return injectionInfo;
+    }
+
+    @Override
+    public LifecycleCallbackDescriptor getPostConstructDescriptorByClass(String className) {
+        for (LifecycleCallbackDescriptor next : getPostConstructDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public LifecycleCallbackDescriptor getPreDestroyDescriptorByClass(String className) {
+        for (LifecycleCallbackDescriptor next : getPreDestroyDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                return next;
+            }
+        }
+        return null;
+    }
+
+
+}
+    

@@ -42,6 +42,7 @@ import com.sun.enterprise.container.common.spi.WebServiceReferenceManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import com.sun.enterprise.naming.spi.NamingUtils;
@@ -131,6 +132,7 @@ public class ComponentEnvManagerImpl
 
     public String bindToComponentNamespace(JndiNameEnvironment env)
         throws NamingException {
+
         String compEnvId = getComponentEnvId(env);
 
         Collection<JNDIBinding> bindings = new ArrayList<JNDIBinding>();
@@ -374,9 +376,11 @@ public class ComponentEnvManagerImpl
             } else {
                 // we lookup first in the InitialContext, if not found we look up in the habitat.
                 value = new NamingObjectFactory() {
-                    NamingObjectFactory delegate = namingUtils.createLazyNamingObjectFactory(name, next.getJndiName(), true);
+                    // It might be mapped to a managed bean, so turn off caching to ensure that a
+                    // new instance is created each time.
+                    NamingObjectFactory delegate = namingUtils.createLazyNamingObjectFactory(name, next.getJndiName(), false);
                     public boolean isCreateResultCacheable() {
-                        return true;
+                        return false;
                     }
 
                     public Object create(Context ic) throws NamingException {
@@ -479,6 +483,8 @@ public class ComponentEnvManagerImpl
 		(ApplicationClientDescriptor) env;
 	    id = "client" + ID_SEPARATOR + appEnv.getName() +
                 ID_SEPARATOR + appEnv.getMainClassName();
+        } else if( env instanceof ManagedBeanDescriptor ) {
+            id = ((ManagedBeanDescriptor) env).getGlobalJndiName();
         }
 
         if(_logger.isLoggable(Level.FINE)) {
@@ -521,10 +527,12 @@ public class ComponentEnvManagerImpl
 		(ApplicationClientDescriptor) env;
 	    appName =  "client ["+appEnv.getName() +
                 ":" + appEnv.getMainClassName()+"]";
-        }
+        } 
+
         return appName;
     }
 
+    // TODO add AppClient container support for app and module levels
 
     private Collection<JndiNameEnvironment> getJndiNameEnvironmentsForApp(JndiNameEnvironment env) {
 
@@ -547,6 +555,12 @@ public class ComponentEnvManagerImpl
             if( !moduleDesc.isStandalone() ) {
                 appDesc = webBundle.getApplication();
             }
+        } else if( env instanceof ManagedBeanDescriptor ) {
+            BundleDescriptor bundle = ((ManagedBeanDescriptor)env).getBundle();
+            ModuleDescriptor moduleDesc = bundle.getModuleDescriptor();
+            if( !moduleDesc.isStandalone() ) {
+                appDesc = bundle.getApplication();
+            }
         }
 
         if( appDesc == null ) {
@@ -559,6 +573,9 @@ public class ComponentEnvManagerImpl
     }
 
     private Collection<JndiNameEnvironment> getJndiNameEnvironmentsForModule(JndiNameEnvironment env) {
+
+        // TODO Move the knowledge about which jndi name environments are part of a bundle to the
+        // bundle descriptor
 
         Collection<JndiNameEnvironment> envsForModule = new ArrayList<JndiNameEnvironment>();
 
@@ -578,6 +595,9 @@ public class ComponentEnvManagerImpl
                 envsForModule.add(webBundle);
 
             }
+
+            envsForModule.addAll( ((BundleDescriptor) ejbBundle.
+                    getModuleDescriptor().getDescriptor()).getManagedBeans() );
             
 
         } else if( env instanceof WebBundleDescriptor ) {
@@ -597,6 +617,19 @@ public class ComponentEnvManagerImpl
                     envsForModule.add(ejb);
                 }
             }
+
+            envsForModule.addAll( webBundle.getManagedBeans() );
+
+        }  else if( env instanceof ManagedBeanDescriptor ) {
+
+            BundleDescriptor bundleDesc = ((ManagedBeanDescriptor)env).getBundle();
+            if( bundleDesc instanceof WebBundleDescriptor ) {
+                return getJndiNameEnvironmentsForModule((WebBundleDescriptor) bundleDesc);
+            } else if( bundleDesc instanceof EjbBundleDescriptor ) {
+                EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) bundleDesc;
+                return getJndiNameEnvironmentsForModule(ejbBundle.getEjbs().iterator().next());
+            }          
+
         }
 
         return envsForModule;

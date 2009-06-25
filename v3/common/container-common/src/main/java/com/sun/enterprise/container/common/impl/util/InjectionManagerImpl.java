@@ -46,6 +46,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -80,17 +81,9 @@ public class InjectionManagerImpl implements InjectionManager {
     @Inject
     private InvocationManager invocationMgr;
 
-    private InitialContext namingCtx;
+    @Inject
+    private GlassfishNamingManager glassfishNamingManager;
 
-    public InjectionManagerImpl() {
-
-        try {
-            namingCtx = new InitialContext();
-        } catch(NamingException ne) {
-            throw new RuntimeException(ne);
-        }
-
-    }
 
     public void injectInstance(Object instance)
         throws InjectionException {
@@ -102,7 +95,7 @@ public class InjectionManagerImpl implements InjectionManager {
             JndiNameEnvironment componentEnv = compEnvManager.getJndiNameEnvironment(inv.getComponentId());
 
             if( componentEnv != null ) {
-                inject(instance.getClass(), instance, componentEnv, true);
+                inject(instance.getClass(), instance, componentEnv, null, true);
             } else {
                 throw new InjectionException("No descriptor registered for " +
                                              " current invocation : " + inv);
@@ -119,7 +112,7 @@ public class InjectionManagerImpl implements InjectionManager {
         throws InjectionException 
     {
 
-        inject(instance.getClass(), instance, componentEnv, true);
+        inject(instance.getClass(), instance, componentEnv, null, true);
 
     }
 
@@ -129,8 +122,33 @@ public class InjectionManagerImpl implements InjectionManager {
         throws InjectionException 
     {
 
-        inject(instance.getClass(), instance, componentEnv, 
+        inject(instance.getClass(), instance, componentEnv, null,
                invokePostConstruct);
+
+    }
+
+    public void injectInstance(Object instance,
+                               String componentId,
+                               boolean invokePostConstruct)
+        throws InjectionException {
+
+        ComponentInvocation inv = invocationMgr.getCurrentInvocation();
+
+        if( inv != null ) {
+
+            JndiNameEnvironment componentEnv =
+                compEnvManager.getJndiNameEnvironment(componentId);
+
+            if( componentEnv != null ) {
+                inject(instance.getClass(), instance, componentEnv, componentId, true);
+            } else {
+                throw new InjectionException("No descriptor registered for " +
+                                             " componentId : " + componentId);
+            }
+
+        } else {
+            throw new InjectionException("null invocation context");
+        }
 
     }
 
@@ -146,7 +164,7 @@ public class InjectionManagerImpl implements InjectionManager {
                             boolean invokePostConstruct) 
         throws InjectionException
     {
-        inject(clazz, null, componentEnv, invokePostConstruct);
+        inject(clazz, null, componentEnv, null, invokePostConstruct);
     }
 
     public void invokeInstancePreDestroy(Object instance,
@@ -198,6 +216,7 @@ public class InjectionManagerImpl implements InjectionManager {
      */
     private void inject(final Class clazz, final Object instance, 
                         JndiNameEnvironment envDescriptor,
+                        String componentId,
                         boolean invokePostConstruct) 
         throws InjectionException 
     {
@@ -214,7 +233,7 @@ public class InjectionManagerImpl implements InjectionManager {
                 envDescriptor.getInjectionInfoByClass(nextClass.getName());
 
             if( injInfo.getInjectionResources().size() > 0 ) {
-                _inject(nextClass, instance, injInfo.getInjectionResources());
+                _inject(nextClass, instance, componentId, injInfo.getInjectionResources());
             }
 
             if( invokePostConstruct ) {
@@ -323,8 +342,13 @@ public class InjectionManagerImpl implements InjectionManager {
         }
     }
 
-
-    private void _inject(final Class clazz, final Object instance, 
+    /**
+     *
+     * Internal injection operation.  componentId is only specified if
+     * componentId-specific lookup operation should be used. 
+     */
+    private void _inject(final Class clazz, final Object instance,
+                         String componentId,
                         List<InjectionCapable> injectableResources) 
         throws InjectionException 
     {
@@ -337,7 +361,10 @@ public class InjectionManagerImpl implements InjectionManager {
                 if( !lookupName.startsWith("java:") ) {
                     lookupName = "java:comp/env/" + lookupName;
                 }
-                final Object value = namingCtx.lookup(lookupName);
+                
+                final Object value =  (componentId != null) ?
+                        glassfishNamingManager.lookup(componentId, lookupName) :
+                        glassfishNamingManager.getInitialContext().lookup(lookupName);
 
                 // there still could be 2 injection on the same class, better
                 // do a loop here

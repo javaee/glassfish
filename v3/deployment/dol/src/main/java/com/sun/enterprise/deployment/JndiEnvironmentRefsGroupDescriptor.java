@@ -64,7 +64,7 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
                 Set<LifecycleCallbackDescriptor>> callbackDescriptors
         = new HashMap<CallbackType, Set<LifecycleCallbackDescriptor>>();
 
-    protected EjbBundleDescriptor bundleDescriptor;
+    protected BundleDescriptor bundleDescriptor;
 
     protected Set environmentProperties;
     protected Set ejbReferences;
@@ -76,6 +76,14 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
         entityManagerFactoryReferences;
     protected Set<EntityManagerReferenceDescriptor> 
         entityManagerReferences;
+
+    public void setBundleDescriptor(BundleDescriptor desc) {
+        bundleDescriptor = desc;
+    }
+
+    public BundleDescriptor getBundleDescriptor() {
+        return bundleDescriptor;
+    }
 
     // callbacks
     public void addCallbackDescriptor(CallbackType type,
@@ -143,19 +151,10 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
         return getCallbackDescriptors(CallbackType.PRE_DESTROY);
     }
 
-    
-    public EjbBundleDescriptor getEjbBundleDescriptor() {
-	return this.bundleDescriptor;
-    }
-    
-    public void setEjbBundleDescriptor(EjbBundleDescriptor bundleDescriptor) {
-	this.bundleDescriptor = bundleDescriptor;
-    }
-
     // ejb ref
     public void addEjbReferenceDescriptor(EjbReference ejbReference) {
-	this.getEjbReferenceDescriptors().add(ejbReference);
-	ejbReference.setReferringBundleDescriptor(getEjbBundleDescriptor());
+	    this.getEjbReferenceDescriptors().add(ejbReference);
+	    ejbReference.setReferringBundleDescriptor(getBundleDescriptor());
     }
 
     public EjbReference getEjbReference(String name) {
@@ -185,9 +184,9 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
 
     // message destination ref
     public void addMessageDestinationReferenceDescriptor(MessageDestinationReferenceDescriptor msgDestReference) {
-        if( getEjbBundleDescriptor() != null ) {
+        if( getBundleDescriptor() != null ) {
             msgDestReference.setReferringBundleDescriptor
-                (getEjbBundleDescriptor());
+                (getBundleDescriptor());
         }
         this.getMessageDestinationReferenceDescriptors().add(msgDestReference);
     }
@@ -254,7 +253,7 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
     // service ref
     public void addServiceReferenceDescriptor(
 	        ServiceReferenceDescriptor serviceReference) {
-        serviceReference.setBundleDescriptor(getEjbBundleDescriptor());
+        serviceReference.setBundleDescriptor(getBundleDescriptor());
         this.getServiceReferenceDescriptors().add(serviceReference);
     }
 
@@ -350,9 +349,9 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
     // entity manager factory ref 
     public void addEntityManagerFactoryReferenceDescriptor(
                 EntityManagerFactoryReferenceDescriptor reference) {
-        if( getEjbBundleDescriptor() != null ) {
+        if( getBundleDescriptor() != null ) {
             reference.setReferringBundleDescriptor
-                (getEjbBundleDescriptor());
+                (getBundleDescriptor());
         }
         this.getEntityManagerFactoryReferenceDescriptors().add(reference);
     }
@@ -382,9 +381,9 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
     //  entity manager ref
     public void addEntityManagerReferenceDescriptor(
                 EntityManagerReferenceDescriptor reference) {
-        if( getEjbBundleDescriptor() != null ) {
+        if( getBundleDescriptor() != null ) {
             reference.setReferringBundleDescriptor
-                (getEjbBundleDescriptor());
+                (getBundleDescriptor());
         }
         this.getEntityManagerReferenceDescriptors().add(reference);
     }

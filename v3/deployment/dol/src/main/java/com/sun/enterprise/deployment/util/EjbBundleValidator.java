@@ -779,6 +779,16 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
     }
 
     public void accept(JmsDestinationReferenceDescriptor jmsDestRef) {
+
+        if (jmsDestRef.getJndiName() == null ||
+                jmsDestRef.getJndiName().length() == 0) {
+            Map<String, String> managedBeanMap = getManagedBeanMap();
+            String refType = jmsDestRef.getRefType();
+            if( managedBeanMap.containsKey(refType) ) {
+                jmsDestRef.setJndiName(managedBeanMap.get(refType));
+            }
+        }
+
         computeRuntimeDefault(jmsDestRef);
     }
 
@@ -836,6 +846,49 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         }
 
         return intfInfoMap;
+    }
+
+    private Map<String, String> getManagedBeanMap() {
+        BundleDescriptor thisBundle = getBundleDescriptor();
+
+        Set<BundleDescriptor> bundleDescs = new HashSet<BundleDescriptor>();
+
+        if( thisBundle != null ) {
+            Application app = thisBundle.getApplication();
+            if( app != null ) {
+                bundleDescs = app.getBundleDescriptors();
+            } else {
+                bundleDescs.add(thisBundle);
+            }
+
+        }
+
+        Map<String, String> managedBeanMap = new HashMap<String, String>();
+        Set<String> allManagedBeanClasses = new HashSet<String>();
+
+        for(BundleDescriptor bundle : bundleDescs ) {
+
+            for(ManagedBeanDescriptor managedBean : bundle.getManagedBeans() ) {
+
+                String beanClassName = managedBean.getBeanClassName();
+
+                // If more than one managed bean is found with the same class
+                // name, automatic mapping can't occur so just skip it
+                if( allManagedBeanClasses.contains(beanClassName) ) {
+                    managedBeanMap.remove(beanClassName);
+                    break;
+                } else {
+                    allManagedBeanClasses.add(beanClassName);
+                    String jndiName = managedBean.getGlobalJndiName();
+                    managedBeanMap.put(beanClassName, jndiName);
+                }
+
+            }
+
+        }
+
+        return managedBeanMap;
+
     }
     
     private void addIntfInfo(Map<String, EjbIntfInfo> intfInfoMap,
