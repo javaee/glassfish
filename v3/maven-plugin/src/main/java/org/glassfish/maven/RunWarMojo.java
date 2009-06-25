@@ -45,17 +45,36 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import org.glassfish.api.embedded.*;
+import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.EmbeddedDeployer;
+
+import java.io.File;
+
+
+/**
+ * @goal runwar
+ */
 
 public class RunWarMojo extends AbstractMojo
-{        
-    protected int port = 8080;
+{
+/**
+ * @parameter expression="${port}" default-value="8080"
+*/
+    
+    protected int port;
+/**
+ * @parameter expression="${war}"
 
-    public void execute() throws MojoExecutionException, MojoFailureException 
+ */
+    protected String war;
+
+    public void execute() throws MojoExecutionException, MojoFailureException
     {
         Server server = new Server.Builder("First").build();
         server.createPort(port);
         server.start();
+        EmbeddedDeployer deployer = server.getDeployer();
+        deployer.deploy(new File(war), null);
     }
 
 }
