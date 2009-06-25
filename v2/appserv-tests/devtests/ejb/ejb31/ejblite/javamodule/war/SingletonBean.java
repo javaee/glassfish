@@ -11,10 +11,12 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.EJBException;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 
 @Singleton
 @Startup
-public class SingletonBean {
+@LocalBean
+public class SingletonBean implements java.util.Observer {
   
 
     @EJB private  SingletonBean me;
@@ -31,6 +33,7 @@ public class SingletonBean {
     private StatelessBean slsb4;
     private StatelessBean slsb5;
 	
+    public void update(java.util.Observable a,java.lang.Object b)  {}
 
     @PostConstruct
     private void init() {

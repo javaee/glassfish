@@ -36,7 +36,7 @@
     <target name="build" depends="compile">
         <mkdir dir="${assemble.dir}"/>
         <antcall target="ejb-jar-common">
-          <param name="ejbjar.classes" value="**/Hello.class,**/HelloRemote.class,**/HelloStateless.class,**/HelloSingleton.class"/>
+          <param name="ejbjar.classes" value="**/Foo.class,**/Hello.class,**/HelloRemote.class,**/HelloStateless.class,**/HelloSingleton.class,**/FooManagedBean.class,**/BarManagedBean.class, **/ManagedSuper.class"/>
         </antcall>
         <antcall target="ear-common"/>
     </target> 

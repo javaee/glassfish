@@ -16,9 +16,11 @@ public class Client {
 
     private static String appName;
 
+    @EJB static Hello hello;
+
     public static void main(String args[]) {
 
-	appName = args[0]; 
+	appName = args.length > 0 ? args[0] : null;
 	stat.addDescription(appName);
 	Client client = new Client(args);       
         client.doTest();	
@@ -33,7 +35,9 @@ public class Client {
 
 	    //	    ProgrammaticLogin login = new com.sun.appserv.security.api.ProgrammaticLogin();
 	    
-	    Hello hello = (Hello) new InitialContext().lookup("java:global/" + appName + "/SingletonBean!com.acme.Hello");
+	    if( hello == null ) {
+		hello = (Hello) new InitialContext().lookup("java:global/" + appName + "/SingletonBean!com.acme.Hello");
+	    }
 
 	    System.out.println("Singleton says : " + hello.hello());
 

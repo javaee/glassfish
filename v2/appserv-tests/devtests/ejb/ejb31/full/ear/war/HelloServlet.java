@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
+import javax.annotation.Resource;
 import javax.naming.*;
 
 @WebServlet(urlPatterns="/HelloServlet", loadOnStartup=1)
@@ -36,6 +37,21 @@ public class HelloServlet extends HttpServlet {
     private Hello singleton5;
     private HelloRemote stateless1;
     private HelloRemote stateless2;
+
+    @Resource 
+    private Foo2ManagedBean foo;
+    
+    @Resource(name="foo2ref", mappedName="java:module/somemanagedbean")
+    private Foo2ManagedBean foo2;
+
+    @Resource(name="foo3ref", mappedName="java:app/ejb-ejb31-full-ear-ejb/somemanagedbean")
+    private Foo foo3;
+
+    private Foo2ManagedBean foo4;
+    private Foo2ManagedBean foo5;
+    private Foo foo6;
+    private Foo2ManagedBean foo7;
+    private Foo foo8;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -69,6 +85,14 @@ public class HelloServlet extends HttpServlet {
 	    while(bindings.hasMore()) {
 		System.out.println("binding : " + bindings.next().getName());
 	    }
+
+
+	    foo4 = (Foo2ManagedBean) ic.lookup("java:module/somemanagedbean");
+	    foo5 = (Foo2ManagedBean) ic.lookup("java:app/" + moduleName +
+						  "/somemanagedbean");
+	    foo6 = (Foo) ic.lookup("java:app/ejb-ejb31-full-ear-ejb/somemanagedbean");
+	    foo7 = (Foo2ManagedBean) ic.lookup("java:comp/env/foo2ref");
+	    foo8 = (Foo) ic.lookup("java:comp/env/foo3ref");
 
 
 	    singleton1 = (Hello) ic.lookup("java:module/m1");
@@ -105,6 +129,16 @@ public class HelloServlet extends HttpServlet {
 	} catch(Exception e) {
 	    e.printStackTrace();
 	}
+
+	foo.foo();
+	foo2.foo();
+	foo3.foo();
+
+	foo4.foo();
+	foo5.foo();
+	foo6.foo();
+	foo7.foo();
+      	foo8.foo();
 
 	m1.hello();
 	a1.hello();

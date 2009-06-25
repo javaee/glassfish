@@ -7,4 +7,8 @@
       <role-name>foo</role-name>
       <principal-name>bob</principal-name>  
     </security-role-mapping>
+    <security-role-mapping>
+      <role-name>bar</role-name>
+      <principal-name>mary</principal-name>  
+    </security-role-mapping>
 </sun-ejb-jar>

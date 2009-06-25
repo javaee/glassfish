@@ -29,7 +29,8 @@ public class SingletonBean {
 	}
     }
 
-//    @RolesAllowed("foo")
+    // @RolesAllowed("foo")
+    @Asynchronous
     public void protectedMethod() {
 
 	System.out.println("In SingletonBean::protected() cp = " +
@@ -37,7 +38,7 @@ public class SingletonBean {
 
     }
 
-//    @RolesAllowed("foo")
+    @RolesAllowed("bar")
     public String hello() {
 	System.out.println("In SingletonBean::hello() cp = " +
 			   sessionCtx.getCallerPrincipal());
