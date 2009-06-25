@@ -58,23 +58,20 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.util.Util;
 
-import com.sun.appserv.management.DomainRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 
 import com.sun.webui.jsf.component.Calendar;
 
-import com.sun.appserv.management.config.ConfigConfig;
-import com.sun.appserv.management.config.DASConfig;
-
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
-import javax.servlet.ServletRequest;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admingui.common.util.AMX;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.util.HtmlAdaptor;
+
 
 
 public class CommonHandlers {
@@ -113,70 +110,17 @@ public class CommonHandlers {
      */
     @Handler(id="initSessionAttributes")
     public static void initSessionAttributes(HandlerContext handlerCtx){
-        Map sessionMap = handlerCtx.getFacesContext().getExternalContext().getSessionMap();
-	DomainRoot domainRoot = AMXRoot.getInstance().getDomainRoot();
-         
+        
         //Ensure this method is called once per session
-        Object initialized = sessionMap.get("_SESSION_INITIALIZED");
-        if (initialized != null) 
-       
-        try{
-            sessionMap.put("domainName", domainRoot.getAppserverDomainName());
-        }catch(Exception ex){
-            ex.printStackTrace();
-            sessionMap.put("domainName", "");
-        }
-        
-        String user = handlerCtx.getFacesContext().getExternalContext().getRemoteUser();
-        sessionMap.put("userName", (user == null) ? "" : user);
-        
-        Object request = handlerCtx.getFacesContext().getExternalContext().getRequest();
-        if (request instanceof javax.servlet.ServletRequest){
-            ServletRequest srequest = (ServletRequest) request;
-            String serverName = srequest.getServerName();
+        Object initialized = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("_SESSION_INITIALIZED");
+        if (initialized == null){
+            GuiUtil.initSessionAttributes();
             HtmlAdaptor.registerHTMLAdaptor(AMXRoot.getInstance().getMBeanServerConnection());
-            sessionMap.put("serverName", serverName);
-            sessionMap.put("serverPort", V3AMX.getAdminPort());
-            sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
-        }else{
-            //should never get here.
-            sessionMap.put("serverName", "");
         }
-        
-        sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
-        sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
-        sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));
-        sessionMap.put("reqNum", GuiUtil.getMessage("msg.JS.enterNumericValue"));
-        sessionMap.put("reqPort", GuiUtil.getMessage("msg.JS.enterPortValue"));
-        sessionMap.put("RUNTIME", AMX.RUNTIME);
-        sessionMap.put("DOMAIN_ROOT", AMX.DOMAIN_ROOT);
-        sessionMap.put("ADMIN_LISTENER", AMX.ADMIN_LISTENER);
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig("server-config");
-        DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
-        
-        /* refer to issue# 5698 and issue# 3691
-         * There is a chance that this getAdminSessionTimoutInMinutes() throws an exception in Turkish locale.
-         * In such a case, we catch and log the exception and assume it is set to 0.
-         * Otherwise GUI's main page can't come up.
-         */
-        try {
-            String timeOut = dConfig.getAdminSessionTimeoutInMinutes();
-            if ((timeOut != null) && (!timeOut.equals(""))) {
-                int time = new Integer(timeOut).intValue();
-                if (time == 0) {
-                    ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
-                } else {
-                    ((HttpServletRequest) request).getSession().setMaxInactiveInterval(time * 60);
-                }
-            }
-        } catch (Exception nfe) {
-            ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
-            nfe.printStackTrace();
-        }
-        
+        return;
     }
-    
+
+
     /** This function is called in login.jsf to set the various product specific attributes such as the 
      *  product GIFs and product names. A similar function is called for Sailfin to set Sailfin specific
      *  product GIFs and name.
@@ -537,9 +481,6 @@ public class CommonHandlers {
         
     }
     
-    private static final String CHARTING_COOKIE_NAME = "as91-doCharting";
     private static final int INDEX=0;
-    private static final String UPDATE_CENTER_NUM_UPDATES="updateCenterNumUpdates";
-    private static final String UPDATE_CENTER_NUM_SOFTWARES="updateCenterNumSoftwares";
     
 }

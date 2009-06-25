@@ -70,6 +70,8 @@ import javax.faces.context.FacesContext;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.model.SelectItem;
+import org.glassfish.admingui.util.SunOptionUtil;
 
 
 
@@ -509,6 +511,21 @@ public class UtilHandlers {
 		}
         return false;
     }
+
+
+
+     @Handler(id = "StringArrayToSelectItemArray",
+    input = {
+        @HandlerInput(name = "stringArray", type = String[].class, required = true)},
+    output = {
+        @HandlerOutput(name = "item", type = SelectItem[].class)})
+    public static void StringArrayToSelectItemArray(HandlerContext handlerCtx) {
+
+        String[] stringAry = (String[]) handlerCtx.getInputValue("stringAry");
+        handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringAry));
+
+     }
+
 
 
     private static final String PATH_SEPARATOR = "${path.separator}";
