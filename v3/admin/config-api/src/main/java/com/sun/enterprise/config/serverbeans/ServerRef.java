@@ -59,7 +59,7 @@ import javax.validation.constraints.Pattern;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ServerRefConfig")
 @Configured
-public interface ServerRef extends ConfigBeanProxy, Injectable  {
+public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
 
     /**
      * Gets the value of the ref property.
