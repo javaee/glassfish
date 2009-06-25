@@ -76,13 +76,12 @@ import org.jvnet.hk2.component.Habitat;
  * @author anilam
  */
 public class GuiUtil {
-
     /** Creates a new instance of GuiUtil */
     public GuiUtil() {
     }
 
     public Logger getLogger() {
-        return Logger.getLogger("org.glassfish.admingui");
+        return Logger.getLogger(LOGGER_NAME);
     }
 
     //return true if the String is null or is """
@@ -499,4 +498,5 @@ public class GuiUtil {
     }
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
+    public static final String LOGGER_NAME = "org.glassfish.admingui";
 }
