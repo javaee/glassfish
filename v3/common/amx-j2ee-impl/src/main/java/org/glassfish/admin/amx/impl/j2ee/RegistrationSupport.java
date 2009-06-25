@@ -257,7 +257,7 @@ final class RegistrationSupport
             final EjbBundleDescriptor ejbBundleDescriptor )
     {
         final String xmlDesc = getStringForDDxml(getModuleLocation(ejbBundleDescriptor, "EJBModule"));
-        final String moduleName = getModuleName(ejbBundleDescriptor);
+        final String moduleName = ejbBundleDescriptor.getModuleName();
         final String applicationName = getApplicationName(ejbBundleDescriptor);
         final String appLocation = appConfig.getLocation();
         
@@ -320,7 +320,7 @@ final class RegistrationSupport
             final WebBundleDescriptor webBundleDescriptor )
     {
         final String xmlDesc = getStringForDDxml(getModuleLocation(webBundleDescriptor, "WebModule"));
-        final String moduleName = getModuleName(webBundleDescriptor);
+        final String moduleName = webBundleDescriptor.getModuleName();
         final String appLocation = appConfig.getLocation();
         
         final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, moduleName );
@@ -349,7 +349,7 @@ final class RegistrationSupport
         meta.setCorrespondingConfig(appConfig.objectName());
         final ObjectName objectName = createRARModuleMBean(parentMBean, meta, appConfig, bundleDesc);
         
-        final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, getModuleName(bundleDesc) );
+        final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, bundleDesc.getModuleName() );
         meta.setCorrespondingConfig(moduleConfig.objectName());
         
         final ObjectName rarObjectName = registerJ2EEChild(objectName, meta, ResourceAdapter.class, ResourceAdapterImpl.class, bundleDesc.getName());
@@ -383,7 +383,7 @@ final class RegistrationSupport
         }
 
         final String xmlDesc = getStringForDDxml(modLocation);
-        final String resAdName = getModuleName(bundleDesc);
+        final String resAdName = bundleDesc.getModuleName();
 
         final ObjectName objectName = registerJ2EEChild(parentMBean, meta, ResourceAdapterModule.class, ResourceAdapterModuleImpl.class, resAdName);
 
@@ -473,6 +473,7 @@ final class RegistrationSupport
         }
     }
 
+/*
     private String getModuleName(final BundleDescriptor bd)
     {
         String moduleName = null;
@@ -488,6 +489,7 @@ final class RegistrationSupport
 
         return moduleName;
     }
+*/
 
     private String getApplicationName(final BundleDescriptor bd)
     {
