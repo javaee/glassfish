@@ -56,12 +56,12 @@ import javax.ws.rs.WebApplicationException;
 
 /**
  *
- * @author rajeshwar patil
+ * @author Rajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class SingletonDomXmlProvider extends DomProviderUtil implements MessageBodyWriter<Dom> {
+public class SingletonDomXmlProvider extends ProviderUtil implements MessageBodyWriter<Dom> {
 
      @Context
      protected UriInfo uriInfo;

@@ -60,14 +60,17 @@ import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
+
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.TransactionFailure;
 
+import org.glassfish.admin.rest.resources.ResourceUtil;
+
 /**
  * @author Ludovic Champenois ludo@dev.java.net
- * Rajeshwar Patil
+ * @author Rajeshwar Patil
  */
 public class TemplateResource<E extends ConfigBeanProxy> {
 
@@ -77,17 +80,22 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     protected ResourceContext resourceContext;
     protected E entity;
 
+
     /** Creates a new instance of xxxResource */
     public TemplateResource() {
+        __resourceUtil = new ResourceUtil();
     }
+
 
     public void setEntity(E p) {
         entity = p;
     }
 
+
     public E getEntity() {
         return entity;
     }
+
 
     @GET
     @Produces({MediaType.APPLICATION_FORM_URLENCODED,
@@ -168,7 +176,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                     "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
             }
 
-            adjustParameters(data);
+            __resourceUtil.adjustParameters(data);
             if (data.get("DEFAULT") == null) {
                 addDefaultParameter(data);
             }
@@ -230,18 +238,9 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
             RestRedirect[] values = restRedirects.value();
             for (RestRedirect r : values) {
-                //System.out.println("command name=" + r.commandName());
-                //System.out.println("command type=" + r.opType());
                 if (r.opType().equals(type)) {
-                    CommandRunner cr = RestService.habitat.getComponent(CommandRunner.class);
-                    ActionReport ar = RestService.habitat.getComponent(ActionReport.class);
-                    Properties p = new Properties();
-                    CommandModel cm = cr.getModel(r.commandName(), RestService.logger);
-                    java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
-                    p.putAll(data);
-
-                    cr.doCommand(r.commandName(), p, ar);
-                    return ar;//processed
+                    return __resourceUtil.runCommand(r.commandName(),
+                        data, RestService.habitat, RestService.logger);//processed
                 }
             }
         }
@@ -249,38 +248,14 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     }
 
 
-    private void adjustParameters(HashMap<String, String> data) {
-        if (data != null) {
-            if (!(data.containsKey("DEFAULT"))) {
-                boolean isRenamed = renameParameter(data, "name", "DEFAULT");
-                if (!isRenamed) {
-                    renameParameter(data, "id", "DEFAULT");
-                }
-            }
-        }
-    }
-
-
-    private boolean renameParameter(HashMap<String, String> data,
-        String parameterToRename, String newName) {
-        if ((data.containsKey(parameterToRename))) {
-            String value = data.get(parameterToRename);
-            data.remove(parameterToRename);
-            data.put(newName, value);
-            return true;
-        }
-        return false;
-    }
-
-
-    private void addDefaultParameter(HashMap<String, String> data) {
+    private void addDefaultParameter(HashMap<String, String> data) {//S
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
         String defaultParameterValue = uriInfo.getAbsolutePath().getPath().substring(index + 1);
         data.put("DEFAULT", defaultParameterValue);
      }
 
 
-    private String getResourceName(String absoluteName, String delimiter) {
+    private String getResourceName(String absoluteName, String delimiter) { //S
         if(null == absoluteName){
             return absoluteName;
         }
@@ -292,4 +267,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             return absoluteName;
         }
     }
+
+
+    private ResourceUtil __resourceUtil;
 }

@@ -36,27 +36,69 @@
 package org.glassfish.admin.rest.provider;
 
 /**
- * The InputException is thrown on errors in input parsing code.
+ * Response information object. Information used by provider
+ * to generate the appropriate output.
  *
  * @author Rajeshwar Patil
  */
-public class InputException extends Exception {
+public class Result {
 
-    public InputException(String message) {
-        super(message);
+    public Result() {
+        __statusCode = 200;
+        __isError = false;
+        __errorMessage = null;
     }
 
 
-    public InputException(Throwable t) {
-        super(t.getMessage());
-        this.cause = t;
+    /**
+     * Returns Http status code for the response.
+     */
+    public int getStatusCode() {
+        return __statusCode;
     }
 
 
-    public Throwable getCause() {
-        return this.cause;
+    /**
+     * Returns true in case of error. Enables provider to generate
+     * error message or otherwise.
+     */
+    public boolean isError() {
+        return __isError;
     }
 
 
-    private Throwable cause;
+    /**
+     * Returns error message in case of an error.
+     */
+    public String getErrorMessage() {
+        return __errorMessage;
+    }
+
+
+    /**
+     * Sets http status code of the response.
+     */
+    public void setStatusCode(int statusCode) {
+        __statusCode = statusCode;
+    }
+
+    /**
+     * Sets status (error or success) of the response
+     */
+    public void setIsError(boolean isError) {
+        __isError = isError;
+    }
+
+
+    /**
+     * Sets error message of the response
+     */
+    public void setErrorMessage(String errorMessage) {
+        __errorMessage =  errorMessage;
+    }
+
+
+    int __statusCode;
+    boolean __isError;
+    String __errorMessage;
 }

@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author rajeshwar patil
+ * @author Rajeshwar Patil
  */
 public class XmlInputObject extends InputObject {
 

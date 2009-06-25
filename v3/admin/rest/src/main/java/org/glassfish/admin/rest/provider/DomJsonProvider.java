@@ -56,12 +56,12 @@ import javax.ws.rs.WebApplicationException;
 
 /**
  *
- * @author rajeshwar patil
+ * @author Rajeshwar Patil
  * @author Luvdovic Champenois ludo@dev.java.net
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class DomJsonProvider extends DomProviderUtil implements MessageBodyWriter<List<Dom>> {
+public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<List<Dom>> {
 
      @Context
      protected UriInfo uriInfo;

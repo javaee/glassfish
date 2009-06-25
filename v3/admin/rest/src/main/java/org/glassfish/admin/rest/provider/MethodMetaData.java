@@ -35,28 +35,65 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.util.HashMap;
+import java.util.Set;
+
 /**
- * The InputException is thrown on errors in input parsing code.
+ * Meta-data store for resource method. Holds meta-data for message
+ *  and query paramters of the method.
  *
  * @author Rajeshwar Patil
  */
-public class InputException extends Exception {
+public class MethodMetaData {
 
-    public InputException(String message) {
-        super(message);
+    public MethodMetaData() {
+        __parameterMetaData = new HashMap<String, ParameterMetaData>();
+        __queryParamMetaData = new HashMap<String, ParameterMetaData>();
     }
 
 
-    public InputException(Throwable t) {
-        super(t.getMessage());
-        this.cause = t;
+    public ParameterMetaData getParameterMetaData(String parameter) {
+        return __parameterMetaData.get(parameter);
     }
 
 
-    public Throwable getCause() {
-        return this.cause;
+    public ParameterMetaData putParameterMetaData(String parameter,
+            ParameterMetaData parameterMetaData) {
+        return __parameterMetaData.put(parameter, parameterMetaData);
     }
 
 
-    private Throwable cause;
+    public int sizeParameterMetaData() {
+        return __parameterMetaData.size();
+    }
+
+
+    public ParameterMetaData getQureyParamMetaData(String param) {
+        return __queryParamMetaData.get(param);
+    }
+
+
+    public ParameterMetaData putQureyParamMetaData(String param,
+            ParameterMetaData queryParamMetaData) {
+        return __queryParamMetaData.put(param, queryParamMetaData);
+    }
+
+
+    public int sizeQueryParamMetaData() {
+        return __queryParamMetaData.size();
+    }
+
+
+    public Set<String> parameters() {
+        return __parameterMetaData.keySet();
+    }
+
+
+    public Set<String> queryParams() {
+        return __queryParamMetaData.keySet();
+    }
+
+
+    HashMap<String, ParameterMetaData> __parameterMetaData;
+    HashMap<String, ParameterMetaData> __queryParamMetaData;
 }

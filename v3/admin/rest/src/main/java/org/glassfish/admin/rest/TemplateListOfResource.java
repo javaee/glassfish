@@ -46,6 +46,7 @@ import java.util.Properties;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+//import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -64,6 +65,10 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 
+import org.glassfish.admin.rest.provider.OptionsResult;
+import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.glassfish.admin.rest.provider.ParameterMetaData;
+import org.glassfish.admin.rest.resources.ResourceUtil;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -79,6 +84,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
     /** Creates a new instance of xxxResource */
     public TemplateListOfResource() {
+        __resourceUtil = new ResourceUtil();
     }
 
 
@@ -124,73 +130,54 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
             //Command to execute
             String commandName = getPostCommand();
-            adjustParameters(data);
+            __resourceUtil.adjustParameters(data);
             String resourceToCreate = uriInfo.getAbsolutePath() +
                 "/" + data.get("DEFAULT");
 
             if (null != commandName) {
-                CommandRunner cr = RestService.habitat.getComponent(CommandRunner.class);
-                ActionReport ar = RestService.habitat.getComponent(ActionReport.class);
-                Properties p = new Properties();
-                CommandModel cm = cr.getModel(commandName, RestService.logger);
-                java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
-                //print(params);
-                p.putAll(data);
+                ActionReport actionReport = __resourceUtil.runCommand(commandName,
+                    data, RestService.habitat, RestService.logger);
 
-                cr.doCommand(commandName, p, ar);
-
-                ActionReport.ExitCode exitCode = ar.getActionExitCode();
+                ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
                     return Response.status(201).entity("\"" + resourceToCreate +  //201 - created
                     "\"" + " created successfully.").build();
                 }
 
-                String errorMessage = getErrorMessage(data, ar);
+                String errorMessage = getErrorMessage(data, actionReport);
                 return Response.status(400).entity(errorMessage).build(); // 400 - bad request
             }
             return Response.status(403).entity("POST on \"" +   // 403 - forbidden
                 resourceToCreate + "\" is forbidden.").build();
         } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(e,
+                Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    private void print(Collection<CommandModel.ParamModel> params) {
-        for (CommandModel.ParamModel pm : params) {
-            System.out.println("Command Param: " + pm.getName());
-            System.out.println("Command Param Type: " + pm.getType());
-            System.out.println("Command Param Name: " + pm.getParam().name());
-            System.out.println("Command Param Shortname: " + pm.getParam().shortName());
+    ///@OPTIONS - FIXME - uncomment once the compilation error is fixed.
+    ///@Produces({"application/json", "text/html", "application/xml"})
+    public OptionsResult options() {
+        OptionsResult optionsResult = new OptionsResult();
+        try {
+            //GET meta data
+            optionsResult.putMethodMetaData("GET", new MethodMetaData());
+
+            //POST meta data
+            String command = getPostCommand();
+            MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+                    command, RestService.habitat, RestService.logger);
+            optionsResult.putMethodMetaData("POST", postMethodMetaData);
+        } catch (Exception e) {
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
+
+        return optionsResult;
     }
 
 
     abstract public String getPostCommand();
-
-
-    private void adjustParameters(HashMap<String, String> data) {
-        if (data != null) {
-            if (!(data.containsKey("DEFAULT"))) {
-                boolean isRenamed = renameParameter(data, "name", "DEFAULT");
-                if (!isRenamed) {
-                    renameParameter(data, "id", "DEFAULT");
-                }
-            }
-        }
-    }
-
-
-    private boolean renameParameter(HashMap<String, String> data,
-        String parameterToRename, String newName) {
-        if ((data.containsKey(parameterToRename))) {
-            String value = data.get(parameterToRename);
-            data.remove(parameterToRename);
-            data.put(newName, value);
-            return true;
-        }
-        return false;
-    }
 
 
     private String getErrorMessage(HashMap<String, String> data, ActionReport ar) {
@@ -208,4 +195,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         }
         return message;
     }
+
+
+    private ResourceUtil __resourceUtil;
 }

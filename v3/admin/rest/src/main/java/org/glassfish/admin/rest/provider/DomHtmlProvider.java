@@ -56,12 +56,12 @@ import javax.ws.rs.WebApplicationException;
 
 /**
  *
- * @author rajeshwar patil
+ * @author Rajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class DomHtmlProvider extends DomProviderUtil implements MessageBodyWriter<List<Dom>> {
+public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<List<Dom>> {
 
      @Context
      protected UriInfo uriInfo;

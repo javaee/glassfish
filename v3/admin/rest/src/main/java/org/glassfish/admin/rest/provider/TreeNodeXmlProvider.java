@@ -56,11 +56,11 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.j2ee.statistics.Statistic;
 
 /**
- * @author rajeshwar patil
+ * @author Rajeshwar Patil
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class TreeNodeXmlProvider extends DomProviderUtil implements MessageBodyWriter<List<TreeNode>> {
+public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWriter<List<TreeNode>> {
 
      @Context
      protected UriInfo uriInfo;

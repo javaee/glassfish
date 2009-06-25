@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * @author rajeshwar patil
  */
-public abstract class InputObject extends DomProviderUtil {
+public abstract class InputObject extends ProviderUtil {
 
     /**
      * Get the map of key-value pairs represented by this object.

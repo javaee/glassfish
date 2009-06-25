@@ -35,28 +35,36 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.util.HashMap;
+import java.util.Set;
+
 /**
- * The InputException is thrown on errors in input parsing code.
+ * Meta-data store for a method parameter. Used to hold meta-data for
+ * a message or query parameter of the resource method.
  *
  * @author Rajeshwar Patil
  */
-public class InputException extends Exception {
+public class ParameterMetaData {
 
-    public InputException(String message) {
-        super(message);
+    public ParameterMetaData() {
+        __metaData = new HashMap<String, String>();
     }
 
 
-    public InputException(Throwable t) {
-        super(t.getMessage());
-        this.cause = t;
+    public String getAttributeValue(String attributeName) {
+        return __metaData.get(attributeName);
     }
 
 
-    public Throwable getCause() {
-        return this.cause;
+    public String putAttribute(String attributeName, String attributeValue) {
+        return __metaData.put(attributeName, attributeValue);
     }
 
 
-    private Throwable cause;
+    public Set<String> attributes() {
+        return __metaData.keySet();
+    }
+
+
+    HashMap<String, String> __metaData;
 }

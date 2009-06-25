@@ -48,7 +48,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 /**
- * @author rajeshwar patil 
+ * @author Rajeshwar Patil
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Provider

@@ -51,10 +51,10 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  *
- * @author rajeshwar patil
+ * @author Pajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
  */
-public class DomProviderUtil {
+public class ProviderUtil {
 
 
     /**

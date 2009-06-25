@@ -59,11 +59,11 @@ import javax.ws.rs.WebApplicationException;
 import org.glassfish.flashlight.datatree.TreeNode;
 
 /**
- * @author rajeshwar patil
+ * @author Rajeshwar Patil
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class TreeNodeHtmlProvider extends DomProviderUtil implements MessageBodyWriter<List<TreeNode>> {
+public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWriter<List<TreeNode>> {
 
      @Context
      protected UriInfo uriInfo;

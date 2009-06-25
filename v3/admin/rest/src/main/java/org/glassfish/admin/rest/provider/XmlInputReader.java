@@ -39,7 +39,7 @@ import java.io.Reader;
 
 
 /**
- * @author rajeshwar patil
+ * @author Rajeshwar Patil
  */
 public class XmlInputReader extends InputReader {
 

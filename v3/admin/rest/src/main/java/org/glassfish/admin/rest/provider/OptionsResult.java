@@ -35,28 +35,53 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.util.HashMap;
+import java.util.Set;
+
 /**
- * The InputException is thrown on errors in input parsing code.
+ * Response information object. Returned on call to OPTIONS method.
+ * Information used by provider to generate the appropriate output.
  *
  * @author Rajeshwar Patil
  */
-public class InputException extends Exception {
+public class OptionsResult extends Result {
 
-    public InputException(String message) {
-        super(message);
+    /**
+     * Default Constructor
+     */
+    public OptionsResult() {
+        __metaData = new HashMap<String, MethodMetaData>();
+    }
+
+    /**
+     * Returns meta-data object for the given method
+     */
+    public MethodMetaData getMethodMetaData(String method) {
+        return __metaData.get(method);
     }
 
 
-    public InputException(Throwable t) {
-        super(t.getMessage());
-        this.cause = t;
+    /**
+     * Adds meta-data object for the given method
+     */
+    public MethodMetaData putMethodMetaData(String method, MethodMetaData methodMetaData) {
+        return __metaData.put(method, methodMetaData);
     }
 
-
-    public Throwable getCause() {
-        return this.cause;
+    /**
+     * Returns no of method meta-data available.
+     * Should be equal to the number of methods on resource.
+     */
+    public int size() {
+        return __metaData.size();
     }
 
+    /**
+     * Returns set of method names for which meta-data is available.
+     */
+    public Set<String> methods() {
+        return __metaData.keySet();
+    }
 
-    private Throwable cause;
+    HashMap<String, MethodMetaData> __metaData;
 }
