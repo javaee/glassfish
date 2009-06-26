@@ -71,6 +71,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.api.web.Constants; 
 
 /**
  * The class implements the JSR 115 - JavaTM Authorization Contract for Containers.
@@ -147,8 +148,6 @@ public class WebSecurityManager  {
     private ServerContext serverContext = null;
     // WebBundledescriptor
     private WebBundleDescriptor wbd = null;
-    //TODO:V3 Copied from VirtualServer.java to avoid dependency on web-container module
-    public static final String ADMIN_VS = "__asadmin";
     private boolean register = true;
     
     WebSecurityManager(WebBundleDescriptor wbd, ServerContext svc, WebSecurityManagerFactory fact, boolean register) throws PolicyContextException{
@@ -197,7 +196,7 @@ public class WebSecurityManager  {
         AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
         CODEBASE = removeSpaces(CONTEXT_ID) ;
         //V3:Commented if(VirtualServer.ADMIN_VS.equals(getVirtualServers(appName))){
-           if(ADMIN_VS.equals(getVirtualServers(appName))){
+           if(Constants.ADMIN_VS.equals(getVirtualServers(appName))){
             LoginConfiguration lgConf = wbd.getLoginConfiguration();
             if (lgConf != null){
                 String realmName = lgConf.getRealmName();

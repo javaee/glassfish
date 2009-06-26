@@ -432,7 +432,6 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      * configured in a factory configuration file.
      */
     static List<EntryInfo> getDefaultProviders() {
-        //TODO:V3 TP2 uncomment later List<EntryInfo> entries = new ArrayList<EntryInfo>(2);
         WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
         if (delegate != null) {
             List<EntryInfo> entries = new ArrayList<EntryInfo>(2);

@@ -532,7 +532,7 @@ public final class JDBCRealm extends DigestRealmBase {
          String nonTxJndiName = dsJndi +"__nontx";
             /*InitialContext ic = new InitialContext();
              final DataSource dataSource = 
-                //TODO:V3 Commented (DataSource)ConnectorRuntime.getRuntime().lookupNonTxResource(dsJndi,false);
+                //V3 Commented (DataSource)ConnectorRuntime.getRuntime().lookupNonTxResource(dsJndi,false);
                 //replacement code suggested by jagadish
                (DataSource)ic.lookup(nonTxJndiName);*/
             final DataSource dataSource = 

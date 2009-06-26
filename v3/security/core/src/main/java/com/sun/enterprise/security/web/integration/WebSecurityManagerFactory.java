@@ -232,7 +232,7 @@ public class WebSecurityManagerFactory extends SecurityManagerFactory {
             PolicyContext.registerHandler(PolicyContextHandlerImpl.ENTERPRISE_BEAN, pch, true);
             PolicyContext.registerHandler(PolicyContextHandlerImpl.SUBJECT, pch, true);
             PolicyContext.registerHandler(PolicyContextHandlerImpl.EJB_ARGUMENTS, pch, true);
-            /*V3:Commented PolicyContext.registerHandler(PolicyContextHandlerImpl.SOAP_MESSAGE, pch, true);*/
+            PolicyContext.registerHandler(PolicyContextHandlerImpl.SOAP_MESSAGE, pch, true);
             PolicyContext.registerHandler(PolicyContextHandlerImpl.HTTP_SERVLET_REQUEST, pch, true);
             PolicyContext.registerHandler(PolicyContextHandlerImpl.REUSE, pch, true);
         } catch (PolicyContextException ex) {

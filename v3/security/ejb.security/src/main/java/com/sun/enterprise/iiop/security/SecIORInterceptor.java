@@ -108,7 +108,7 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
 			+ " " + iorInfo );
 	}
 
-        /*TODO:V3 uncomment later
+        /*TODO:V3:Cluster uncomment later
         if (ASORBUtilities.isGMSAvailableAndClusterHeartbeatEnabled()) {
 	    // If this app server instance is part of a dynamic cluster (that is,
 	    // one that supports RMI-IIOP failover and load balancing, DO NOT

@@ -96,7 +96,7 @@ public interface SecuritySupport {
      * @exception if fail to synchronize, a known exception is
      *            com.sun.enterprise.ee.synchronization.SynchronizationException
      */
-    /** TODO:V3 ConfigContext is no longer present so find out what this needs to be */
+    /** TODO:V3:Cluster ConfigContext is no longer present so find out what this needs to be */
     //public void synchronizeKeyFile(ConfigContext config, String fileRealmName)
     public void synchronizeKeyFile(Object configContext, String fileRealmName)
         throws Exception;

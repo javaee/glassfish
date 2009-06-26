@@ -230,9 +230,7 @@ public class SecurityContext extends AbstractSecurityContext  {
         return defaultSecurityContext.subject; 
     }
      
-    // ger caller principal of unauthenticated Security Context
-    //TODO:V3 cannot implement this method as a Static Method see the other
-    //variant below
+    // get caller principal of unauthenticated Security Context
     public static Principal getDefaultCallerPrincipal(){
         synchronized(SecurityContext.class) {
 	    if (defaultSecurityContext.initiator == null) { 

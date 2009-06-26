@@ -41,7 +41,6 @@ import java.lang.reflect.Method;
 
 import javax.security.auth.Subject;
 import org.glassfish.api.invocation.ComponentInvocation;
-//TODO:V3 Commented import com.sun.ejb.*;
 
 /**
  * This interface is used by the Container to manage access to EJBs.
@@ -55,7 +54,6 @@ public interface SecurityManager {
      * @param The Invocation object containing the details of the invocation.
      * @return true if the client is allowed to invoke the EJB, false otherwise.
      */
-    /*TODO:V3 Commented, uncomment later public boolean authorize(Invocation inv);*/
     public boolean authorize(ComponentInvocation inv);
 
     /**

@@ -81,7 +81,7 @@ public class SecurityUtil{
      * @param Container c, the container from which the appropriate subject is 
      * queried from.
      */
-    /* TODO: uncomment later once V3 workspace has Invocation
+    /* This method is now in EJBSecurityUtil in ejb/ejb-container module of V3
     public static Object runMethod(Method beanClassMethod, Invocation inv, Object o, Object[] oa, Container c)
     throws Throwable {
 
@@ -139,7 +139,7 @@ public class SecurityUtil{
      * find its security manager.
      * @return Object, the result of the execution of the method.
      */
-    /* TODO: uncomment after V3 
+    /* This method is now in EJBSecurityUtil in ejb/ejb-container module of V3 
     public static Object invoke(Method beanClassMethod, Invocation inv, Object o, Object[] oa, Container c, 
 					       SecurityManager mgr) throws Throwable {
 	

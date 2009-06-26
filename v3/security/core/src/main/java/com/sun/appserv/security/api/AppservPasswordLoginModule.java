@@ -90,7 +90,6 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
     protected Logger _logger =
         LogDomains.getLogger(AppservPasswordLoginModule.class, LogDomains.SECURITY_LOGGER);
 
-    //TODO:V3 not sure if the second argument is correct.
     protected final static StringManager sm =
         StringManager.getManager(LoginCallbackHandler.class);
     private LoginModule userDefinedLoginModule = null;

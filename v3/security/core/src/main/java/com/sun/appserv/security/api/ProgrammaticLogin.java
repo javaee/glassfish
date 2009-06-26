@@ -153,11 +153,9 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
                 AccessController.doPrivileged(new PrivilegedAction() {
                     public java.lang.Object run() {
                     // if realm is null, LCD will log into the default realm
-                        //V3:Commented if (isServer) {
                         if ((SecurityServicesUtil.getInstance() != null) && SecurityServicesUtil.getInstance().isServer()) {
                             LoginContextDriver.login(user, password, realm);
                         } else {
-                            //TODO:V3 commented int type = AppContainer.USERNAME_PASSWORD;
                             int type = SecurityConstants.USERNAME_PASSWORD;
                             
                             //should not set realm here

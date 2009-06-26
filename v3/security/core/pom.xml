@@ -140,5 +140,10 @@
             <version>${project.version}</version>
             <!-- Don't set scope as provided. See issue #5992 -->
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

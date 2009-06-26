@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.jmac.config;
 
-//TODO:V3 Commented import com.sun.enterprise.webservice.ClientPipeCloser;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -356,9 +355,6 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
                if (delegate != null) {
                    delegate.removeListener(this);
                }
-               /*TODO:V3 commented due to unsatisfied dependency, uncomment later
-               ClientPipeCloser.getInstance().removeListenerWrapper(this);
-                */
             } else {
                 try {
                     this.wLock.lock();

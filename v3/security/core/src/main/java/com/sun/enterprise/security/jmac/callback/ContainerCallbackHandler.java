@@ -93,7 +93,6 @@ public final class ContainerCallbackHandler
         ((BaseContainerCallbackHandler) handler).setHandlerContext(handlerContext);
     }
     
-    //TODO:V3 code this method correctly later
     private  boolean isAppclientContainer() {
         return SecurityServicesUtil.getInstance().isACC();
     }

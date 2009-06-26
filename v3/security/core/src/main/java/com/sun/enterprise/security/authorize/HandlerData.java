@@ -41,7 +41,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.sun.enterprise.security.PermissionCacheFactory;
 import com.sun.enterprise.security.SecurityContext;
+import com.sun.enterprise.security.jmac.WebServicesDelegate;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -54,10 +56,12 @@ import org.glassfish.api.invocation.ComponentInvocation;
 public class HandlerData {
     
     private HttpServletRequest httpReq = null;
-    //TODO:V3 Commented, Make sure replacement below is correct  private Invocation inv = null;
     private ComponentInvocation inv = null;
-
-    private HandlerData(){}
+    private EJBPolicyContextDelegate ejbDelegate = null;
+    
+    private HandlerData(){
+        ejbDelegate = new EJBPolicyContextDelegate();
+    }
 
 
     public static HandlerData getInstance(){
@@ -68,10 +72,6 @@ public class HandlerData {
 	this.httpReq = httpReq;
     }
 
-    /*TODO:V3 Commented, Make sure replacement below is correct      
-    public void setInvocation(Invocation inv) {
-        this.inv = inv;
-    }*/
     public void setInvocation(ComponentInvocation inv) {
         this.inv = inv;
     }
@@ -89,32 +89,13 @@ public class HandlerData {
             return null;
         }
 
-        /*V3:Commented
-	if (PolicyContextHandlerImpl.SOAP_MESSAGE.equalsIgnoreCase(key)){
-            SOAPMessage soapMessage = null;
-	    MessageContext msgContext = inv.messageContext;
-
-            if (msgContext != null) {
-                if (msgContext instanceof SOAPMessageContext) {
-		    SOAPMessageContext smc =
-                            (SOAPMessageContext) msgContext;
-		    soapMessage = smc.getMessage();
-                }
-	    } else {
-                soapMessage = inv.getSOAPMessage();
-            }
-
-	    return soapMessage;
-	} else if (PolicyContextHandlerImpl.ENTERPRISE_BEAN.equalsIgnoreCase(key)){
-	    return inv.getJaccEjb();
-	} else if (PolicyContextHandlerImpl.EJB_ARGUMENTS.equalsIgnoreCase(key)){
-            if (inv.isWebService) {
-                return null;
-            } else {
-                return (inv.methodParams != null) ?
-                    inv.methodParams : new Object[0];
-            }
-	} */
+        if (PolicyContextHandlerImpl.SOAP_MESSAGE.equalsIgnoreCase(key)) {
+            return (ejbDelegate != null) ? ejbDelegate.getSOAPMessage(inv) : null;
+        } else if (PolicyContextHandlerImpl.ENTERPRISE_BEAN.equalsIgnoreCase(key)) {
+            return (ejbDelegate != null) ? ejbDelegate.getEnterpriseBean(inv) : null;
+        } else if (PolicyContextHandlerImpl.EJB_ARGUMENTS.equalsIgnoreCase(key)) {
+            return (ejbDelegate != null) ? ejbDelegate.getEJbArguments(inv) : null;
+        }
 	return null;
     }
 }

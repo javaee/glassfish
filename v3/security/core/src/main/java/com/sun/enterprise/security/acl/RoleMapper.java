@@ -103,7 +103,6 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     private Set<Role> topLevelRoles;
 
     // used to identify the application level mapping file
-    //TODO:V3 : not sure getModuleId() method ever returns this
     private static final String TOP_LEVEL = "sun-application.xml mapping file";
     // used to log a warning only one time
     private boolean conflictLogged = false;

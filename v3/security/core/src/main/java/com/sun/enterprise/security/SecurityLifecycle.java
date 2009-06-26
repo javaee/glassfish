@@ -156,8 +156,6 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
 
             // jacc
             //registerPolicyHandlers();
-            //V3:Commented PolicyLoader policyLoader = PolicyLoader.getInstance();
-            //TODO:V3 check if the above singleton was a better way
             // assert(policyLoader != null);
             policyLoader.loadPolicy();
             // create realms rather than creating RemoteObject RealmManager

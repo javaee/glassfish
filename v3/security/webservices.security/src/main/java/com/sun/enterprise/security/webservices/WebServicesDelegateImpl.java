@@ -53,6 +53,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessageContext;
 import javax.security.auth.message.MessageInfo;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
@@ -63,6 +64,8 @@ import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.webservices.SOAPMessageContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
@@ -205,6 +208,26 @@ public class WebServicesDelegateImpl implements WebServicesDelegate {
             }
         }
         return rvalue;
+    }
+
+    public Object getSOAPMessage(ComponentInvocation inv) {
+        /*V3 commented getting this from EJBPolicyContextDelegate instead
+         * currently getting this from EjbPolicyContextDelegate which might be OK
+        SOAPMessage soapMessage = null;
+	    MessageContext msgContext = inv.messageContext;
+
+            if (msgContext != null) {
+                if (msgContext instanceof SOAPMessageContext) {
+		    SOAPMessageContext smc =
+                            (SOAPMessageContext) msgContext;
+		    soapMessage = smc.getMessage();
+                }
+	    } else {
+                soapMessage = inv.getSOAPMessage();
+            }
+
+	    return soapMessage;*/
+        return null; 
     }
 	
 }

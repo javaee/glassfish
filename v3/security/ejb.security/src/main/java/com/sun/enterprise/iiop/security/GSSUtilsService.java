@@ -66,5 +66,11 @@ public class GSSUtilsService implements GSSUtilsContract {
     public ObjectIdentifier GSSUP_MECH_OID() {
         return GSSUtils.GSSUP_MECH_OID;
     }
+    /**
+     * TODO:V3 temporarily putting it inside this contract
+     * @return the ORB
+    public Object getORB() {
+        
+    }*/
 
 }

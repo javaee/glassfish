@@ -55,6 +55,7 @@ import javax.xml.ws.WebServiceException;
 //import com.sun.enterprise.Switch;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -66,6 +67,7 @@ import com.sun.enterprise.security.audit.AuditManager;
 //import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.authorize.EJBPolicyContextDelegate;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
@@ -85,7 +87,16 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 
+import com.sun.xml.ws.api.model.JavaMethod;
+import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.UnmarshalException;
+import javax.xml.ws.handler.MessageContext;
+import org.glassfish.api.container.Container;
+import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 
 
@@ -100,6 +111,7 @@ public class PipeHelper extends ConfigHelper {
     private SEIModel seiModel;
     private SOAPVersion soapVersion;
     private InvocationManager invManager = null;
+    private EJBPolicyContextDelegate ejbDelegate = null;
     
     public PipeHelper(String layer, Map map, CallbackHandler cbh) {
         init(layer, getAppCtxt(map), map, cbh);
@@ -116,6 +128,7 @@ public class PipeHelper extends ConfigHelper {
         this.soapVersion = (binding != null) ? binding.getSOAPVersion(): SOAPVersion.SOAP_11;
         auditManager = SecurityServicesUtil.getInstance().getAuditManager();
         invManager = SecurityServicesUtil.getInstance().getHabitat().getComponent(InvocationManager.class);
+        this.ejbDelegate = new EJBPolicyContextDelegate();
    }
 
     public ClientAuthContext getClientAuthContext(MessageInfo info, Subject s) 
@@ -142,8 +155,6 @@ public class PipeHelper extends ConfigHelper {
 
 	Subject s = null;
 
-//	if (Switch.getSwitch().getContainerType() == 
-//	    Switch.APPCLIENT_CONTAINER) {
         if (SecurityServicesUtil.getInstance().isACC()) {
 	    ClientSecurityContext sc = ClientSecurityContext.getCurrent();
 	    if (sc != null) {
@@ -197,97 +208,83 @@ public class PipeHelper extends ConfigHelper {
 	// authorization check with a generic web service message check
 	// and move the endpoint specific check down stream
         
-	/*if (isEjbEndpoint) {
-	    ComponentInvocation inv= (ComponentInvocation) invManager.getCurrentInvocation();
+	if (isEjbEndpoint) {
+            ComponentInvocation inv = (ComponentInvocation) invManager.getCurrentInvocation();
             // one need to copy message here, otherwise the message may be
             // consumed
-            inv.setMessage(request.getMessage());
-	    Exception ie = null;
+            if (ejbDelegate != null) {
+                ejbDelegate.setSOAPMessage(request.getMessage(), inv);
+            }
+            Exception ie = null;
             Method m = null;
             if (seiModel != null) {
-	        JavaMethod jm = request.getMessage().getMethod(seiModel);
-	        m = (jm != null) ? jm.getMethod() : null;
+                JavaMethod jm = request.getMessage().getMethod(seiModel);
+                m = (jm != null) ? jm.getMethod() : null;
             } else { // WebServiceProvider
-               WebServiceEndpoint endpoint = (WebServiceEndpoint)
-                   map.get(PipeConstants.SERVICE_ENDPOINT);
-               EjbDescriptor ejbDescriptor = endpoint.getEjbComponentImpl();
-               if (ejbDescriptor != null) {
-                   final String ejbImplClassName = ejbDescriptor.getEjbImplClassName();
-                   if (ejbImplClassName != null) {
-                       try {
-                           m = (Method)AppservAccessController.doPrivileged
-                               ( new PrivilegedExceptionAction() {
-                                   public Object run() throws Exception {
-                                       ClassLoader loader =
-                                           Thread.currentThread().getContextClassLoader();
-                                       Class clazz =
-                                           Class.forName(ejbImplClassName, true, loader);
-                                       return clazz.getMethod("invoke",
-                                               new Class[] { Object.class });
-                                  }
-                           });
-                       } catch(PrivilegedActionException pae) {
-                           throw new RuntimeException(pae.getException());
-                       }
-                   }
-               }
+
+                WebServiceEndpoint endpoint = (WebServiceEndpoint) map.get(PipeConstants.SERVICE_ENDPOINT);
+                EjbDescriptor ejbDescriptor = endpoint.getEjbComponentImpl();
+                if (ejbDescriptor != null) {
+                    final String ejbImplClassName = ejbDescriptor.getEjbImplClassName();
+                    if (ejbImplClassName != null) {
+                        try {
+                            m = (Method) AppservAccessController.doPrivileged(new PrivilegedExceptionAction() {
+
+                                public Object run() throws Exception {
+                                    ClassLoader loader =
+                                            Thread.currentThread().getContextClassLoader();
+                                    Class clazz =
+                                            Class.forName(ejbImplClassName, true, loader);
+                                    return clazz.getMethod("invoke",
+                                            new Class[]{Object.class                                            });
+                                }
+                            });
+                        } catch (PrivilegedActionException pae) {
+                            throw new RuntimeException(pae.getException());
+                        }
+                    }
+                }
 
             }
-	    
-	    if (m != null) {
+            if (m != null) {
+                if (ejbDelegate != null) {
+                    try {
+                        if (!ejbDelegate.authorize(inv, m)) {
+                            throw new Exception(localStrings.getLocalString("enterprise.webservice.methodNotAuth",
+                                    "Client not authorized for invocation of {0}",
+                                    new Object[]{m}));
+                        }
+                    } catch (UnmarshalException e) {
+                        String errorMsg = localStrings.getLocalString("enterprise.webservice.errorUnMarshalMethod",
+                                "Error unmarshalling method for ejb {0}",
+                                new Object[]{ejbName()});
+                        ie = new UnmarshalException(errorMsg);
+                        ie.initCause(e);
+                        throw ie;
+                    } catch (Exception e) {
+                        ie = new Exception(localStrings.getLocalString("enterprise.webservice.methodNotAuth",
+                                "Client not authorized for invocation of {0}",
+                                new Object[]{m}));
+                        ie.initCause(e);
+                        throw ie;
+                    }
 
-		Container container = (Container) inv.container;
-
-		try {
-		    inv.method = m;
-		    if ( !container.authorize(inv) ) {
-
-			ie = new Exception
-			    (localStrings.getLocalString
-			     ("enterprise.webservice.methodNotAuth",
-			      "Client not authorized for invocation of {0}", 
-			      new Object[] { inv.method }) );
-		    } else {
-			// Record the method on which the successful
-			// authorization check was performed. 
-			inv.setWebServiceMethod(inv.method);
-		    }
-		} catch(Exception e) {
-		    String errorMsg = localStrings.getLocalString
-			( "enterprise.webservice.errorUnMarshalMethod",
-			  "Error unmarshalling method for ejb {0}", 
-			  new Object[] { ejbName() });
-		    ie = new UnmarshalException(errorMsg); 
-		    ie.initCause(e);
-		} 
-		
-		if ( ie != null ) {
-		    inv.exception = ie;
-		    throw ie;
-		} 
-
-	    } else {
-		inv.setWebServiceMethod(null);
-	    }
-	}*/
-            
-	return;
+                }
+            }
+        }
     }
 	
     public void auditInvocation(Packet request, AuthStatus status) {
 
 	if (auditManager.isAuditOn()) {
-
 	    String uri = null;
-            /*TODO:V3 commented EJB code
 	    if (!isEjbEndpoint && request != null &&
                     request.supports(MessageContext.SERVLET_REQUEST)) {
                 HttpServletRequest httpServletRequest =
                     (HttpServletRequest)request.get(
                     MessageContext.SERVLET_REQUEST);
                 uri = httpServletRequest.getRequestURI().toString();
-	    } */
-	    
+	    } 
             String endpointName = null;
             if (map != null) {
                 WebServiceEndpoint endpoint = (WebServiceEndpoint)

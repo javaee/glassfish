@@ -239,7 +239,6 @@ public class PolicyLoader{
         if (jacc == null) {
             return;
         }
-        
         // Handle JACC-specified property for factory
         //TODO:V3 system property being read here
         String prop = System.getProperty(POLICY_CONF_FACTORY);

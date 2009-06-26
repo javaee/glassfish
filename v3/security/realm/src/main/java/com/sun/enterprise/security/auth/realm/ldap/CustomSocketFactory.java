@@ -71,7 +71,6 @@ public class CustomSocketFactory extends SocketFactory implements Comparator<Soc
     public static final String SSL = "SSL";
     protected static final Logger _logger =
         LogDomains.getLogger(CustomSocketFactory.class, LogDomains.SECURITY_LOGGER);
-    //TODO:V3, make sure second argument is correct
     protected static final StringManager sm =
         StringManager.getManager(CustomSocketFactory.class);
 

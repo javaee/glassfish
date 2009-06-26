@@ -149,8 +149,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             }else if (instance instanceof AuditModule){
                 auditModuleCreated((AuditModule)instance);
             }else if (instance instanceof MessageSecurityConfig){
-                np = new NotProcessed( "unimplemented: TODO:V3 Handle this. Once we complete the SOAP Profile of 196" );
-                //TODO:V3 Handle this. Once we complete the SOAP Profile of 196
+                // do nothing since we have a Message security config listener
             } else if (instance instanceof SecurityService) {
                //since everything exists the only thing that can be added
                // in terms of Attrs is the defaultPrincipal and defaultPrinPassword
@@ -174,8 +173,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             }else if (instance instanceof AuditModule){
                 auditModuleDeleted((AuditModule)instance);
             }else if (instance instanceof MessageSecurityConfig){
-                np = new NotProcessed( "unimplemented: TODO:V3 Handle this. Once we complete the SOAP Profile of 196" );
-                //TODO:V3 Handle this. Once we complete the SOAP Profile of 196
+               //do nothing since we have a message security config listener
             } else if (instance instanceof SecurityService) {
                // The only Attrs on securityService whose removal can affect the
                // security code are those which are stored explicitly
@@ -200,8 +198,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             }else if (instance instanceof AuditModule){
                 auditModuleUpdated((AuditModule)instance);
             }else if (instance instanceof MessageSecurityConfig){
-                np = new NotProcessed( "unimplemented: TODO:V3 Handle this. Once we complete the SOAP Profile of 196" );
-                //TODO:V3 Handle this. Once we complete the SOAP Profile of 196
+               //do nothing since we have a message security config listener
             } else if (instance instanceof SecurityService) {
                // The only Attrs on securityService whose change in value can affect the
                // security code are those which are stored explicitly
@@ -292,7 +289,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         }
         if ("com.sun.enterprise.security.auth.realm.file.FileRealm".equals(className)) {
             SecuritySupport secSupp = Globals.getDefaultHabitat().getByContract(SecuritySupport.class);
-            //TODO:V3 for EE/cluster we really need to FIXME
+            //TODO:V3:Cluster for EE/cluster we really need to FIXME
             secSupp.synchronizeKeyFile((Object) null, authRealm.getName());
         }
         Realm.instantiate(authRealm.getName(), className, props);

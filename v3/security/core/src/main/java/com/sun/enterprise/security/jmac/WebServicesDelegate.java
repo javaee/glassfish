@@ -42,6 +42,7 @@ import com.sun.enterprise.security.jmac.config.ConfigHelper;
 import java.util.Map;
 import javax.security.auth.message.MessageInfo;
 import com.sun.enterprise.security.jauth.AuthParam;
+import org.glassfish.api.invocation.ComponentInvocation;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -74,9 +75,16 @@ public interface  WebServicesDelegate {
      */
     public String getAuthContextID(MessageInfo messageInfo);
     
-     /**
+    /**
      * @param messageInfo TheMessageInfo
      * @return a new instance of SOAPAuthParam
      */
     public AuthParam newSOAPAuthParam(MessageInfo messageInfo);
+    
+    /**
+     * return the SOAP Message from the invocation, to be used by JACC PolicyContextHandler
+     * @param inv the invocation
+     * @return the SOAP Message
+     */
+    public Object getSOAPMessage(ComponentInvocation inv);
 }

@@ -50,7 +50,7 @@ public class PolicyContextHandlerImpl implements PolicyContextHandler {
 
     public static final String HTTP_SERVLET_REQUEST =
         "javax.servlet.http.HttpServletRequest";
-    //V3:Commented public static final String SOAP_MESSAGE = "javax.xml.soap.SOAPMessage";
+    public static final String SOAP_MESSAGE = "javax.xml.soap.SOAPMessage";
     public static final String ENTERPRISE_BEAN = "javax.ejb.EnterpriseBean";
     public static final String EJB_ARGUMENTS = "javax.ejb.arguments";
     public static final String SUBJECT = "javax.security.auth.Subject.container";
@@ -62,9 +62,8 @@ public class PolicyContextHandlerImpl implements PolicyContextHandler {
 
     private PolicyContextHandlerImpl() {
     }
-    
-        private synchronized static PolicyContextHandlerImpl
-    _getInstance() {
+
+    private synchronized static PolicyContextHandlerImpl _getInstance() {
         if (pchimpl == null) {
             pchimpl = new PolicyContextHandlerImpl();
         }
@@ -93,7 +92,7 @@ public class PolicyContextHandlerImpl implements PolicyContextHandler {
     public String[] getKeys(){
 	String[] s = {
 	    HTTP_SERVLET_REQUEST,
-	    /*V3:Commented SOAP_MESSAGE,*/
+	    SOAP_MESSAGE,
 	    ENTERPRISE_BEAN,
 	    SUBJECT,
 	    EJB_ARGUMENTS,
