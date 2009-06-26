@@ -1057,4 +1057,38 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return ConnectorsUtil.getShutdownTimeout(
                 habitat.getComponent(com.sun.enterprise.config.serverbeans.ConnectorService.class));
     }
+    
+    /**
+     * Flush Connection pool by reinitializing all the connections 
+     * established in the pool.
+     * @param poolName
+     * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
+     */
+    public void flushConnectionPool(String poolName) throws ConnectorRuntimeException {
+    }
+
+    /**
+     * Get Validation table names list for the database that the jdbc 
+     * connection pool refers to. This is used for connection validation.
+     * @param poolName
+     * @return all validation table names.
+     * @throws javax.resource.ResourceException
+     * @throws javax.naming.NamingException
+     */        
+    public Set<String> getValidationTableNames(String poolName) throws ResourceException, NamingException {
+        Set<String> emptySet = new HashSet();
+        return emptySet;
+    }
+
+    /**
+     * Get jdbc driver implementation class names list for the dbVendor and
+     * resource type supplied. 
+     * @param dbVendor
+     * @param resType
+     * @return all jdbc driver implementation class names
+     */
+    public Set<String> getJdbcDriverClassNames(String dbVendor, String resType) {
+        Set<String> emptySet = new HashSet();
+        return emptySet;
+    }
 }

@@ -470,5 +470,35 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return all work security maps of a resource-adapter
      */
     public List<WorkSecurityMap> getWorkSecurityMap(String raName);
+    
+    /**
+     * Flush Connection pool by reinitializing all the connections 
+     * established in the pool.
+     * @param poolName
+     * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
+     */
+    public void flushConnectionPool(String poolName) throws ConnectorRuntimeException;
+    
+    /**
+     * Get Validation table names list for the database that the jdbc 
+     * connection pool refers to. This is used for connection validation.
+     * @param poolName
+     * @return all validation table names.
+     * @throws javax.resource.ResourceException
+     * @throws javax.naming.NamingException
+     */
+    public Set<String> getValidationTableNames(String poolName) 
+            throws ResourceException, NamingException;
 
+     /**
+     * Fetch the DataSource/Driver implementation class names for the particular 
+     * dbVendor and resource type. Sometimes an already stored datasource
+     * classname is used in this method.
+     * @param datasourceClassName
+     * @param dbVendor
+     * @param resType
+     * @return set of implementation class names for the dbvendor.
+     */
+    public Set<String> getJdbcDriverClassNames(String dbVendor, String resType);
+    
 }
