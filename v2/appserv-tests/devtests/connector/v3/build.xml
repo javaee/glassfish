@@ -172,7 +172,7 @@
         <ant dir="embeddedweb" target="${connector-target}"/>
 
         <!--<echo message="@@## mq ##@@"/>
-      <ant dir="mq" target="${connector-target}"/>
+      <ant dir="mq" target="${connector-target}"/>-->
 
       <echo message="@@## nonacc ##@@"/>
       <ant dir="../nonacc" target="${connector-target}"/>
