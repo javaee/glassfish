@@ -78,7 +78,7 @@
 #define FINEST_LOG_LEVEL_PROP "Log-Level=FINEST"
 #define DEFAULT_LOG_LEVEL_PROP "Log-Level=INFO"
 
-#define MEDIA_PATH FILE_SEPARATOR "metadata"
+#define MEDIA_PATH FILE_SEPARATOR "install" FILE_SEPARATOR "metadata"
 #define MEDIA_LOCATION_PROP "Media-Location="
 
 
