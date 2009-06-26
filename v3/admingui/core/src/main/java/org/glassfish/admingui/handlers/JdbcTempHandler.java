@@ -161,9 +161,10 @@ public class JdbcTempHandler {
                         List<Map<String, String>> data = new ArrayList<Map<String, String>>();
                         
                         try {
-                            result = (Map) V3AMX.getInstance().getRuntimeMgr().getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
-                            props = (Map) result.get(PROPERTY_MAP_KEY);
-                            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
+                            //result = (Map) V3AMX.getInstance().getRuntimeMgr().getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
+                            //props = (Map) result.get(PROPERTY_MAP_KEY);
+                            //handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
+                            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", data);
                         } catch (Exception ex) {
                             ex.printStackTrace();
 
