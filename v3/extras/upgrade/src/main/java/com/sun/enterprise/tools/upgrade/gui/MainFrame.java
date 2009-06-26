@@ -46,6 +46,7 @@ import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminuser;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_adminpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -66,7 +67,7 @@ import javax.swing.*;
 public class MainFrame extends JFrame implements DirectoryMover,
     UpgradeUpdateListener {
 
-    private static final Logger logger = CommonInfoModel.getDefaultLogger();
+    private static final Logger logger = LogService.getLogger();
 
     // GUI panels
     private enum Panels { DETAILS_COLLECTION_PANEL, PROGRESS_PANEL }

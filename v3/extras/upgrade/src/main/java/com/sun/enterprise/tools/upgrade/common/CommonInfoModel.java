@@ -79,15 +79,6 @@ public class CommonInfoModel{
 		return tAppSrvObj;
 	}
 	
-	/**
-     * todo: remove this?
-     *
-     * @return a logger to use in the Module implementation classes
-     */
-    public static Logger getDefaultLogger() {
-        return logger;
-    }
-
 	public void setupTasks() throws Exception {
 		String domainName = sAppSrvObj.getDomainName();
 		String srcDomainDir = sAppSrvObj.getDomainDir();

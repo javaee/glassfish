@@ -34,24 +34,14 @@
  * holder.
  */
 
-/*
- * VersionExtracter.java
- *
- * Created on March 8, 2004, 2:23 PM
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
 
-/**
- *
- * @author  prakash
- */
-import java.io.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.*;
-import java.util.logging.*;
-
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -59,8 +49,9 @@ public class VersionExtracter {
 
     private String installDir;
 
-    private StringManager stringManager = StringManager.getManager(VersionExtracter.class);
-    private Logger logger = CommonInfoModel.getDefaultLogger();
+    private static final StringManager stringManager =
+        StringManager.getManager(VersionExtracter.class);
+    private static final Logger logger = LogService.getLogger();
     private CommonInfoModel common;
 
     /** Creates a new instance of VersionExtracter */

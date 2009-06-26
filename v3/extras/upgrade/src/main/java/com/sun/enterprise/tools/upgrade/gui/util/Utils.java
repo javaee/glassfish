@@ -34,25 +34,22 @@
  * holder.
  */
 
-/*
- * Utils.java
- *
- * Created on February 11, 2004, 12:12 PM
- */
-
 package com.sun.enterprise.tools.upgrade.gui.util;
 
 /**
  *
  * @author  prakash
  */
-
-import javax.help.*;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
+import java.util.logging.Logger;
+import javax.help.HelpBroker;
+import javax.help.HelpSet;
 
 public class Utils {
     
     private static HelpBroker helpBroker ;    
-    private static java.util.logging.Logger log = com.sun.enterprise.tools.upgrade.common.CommonInfoModel.getDefaultLogger();
+    private static final Logger log = LogService.getLogger();
+
     /** Creates a new instance of Utils */
     public Utils() {
     }

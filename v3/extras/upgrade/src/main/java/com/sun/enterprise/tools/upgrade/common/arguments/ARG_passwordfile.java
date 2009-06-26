@@ -92,7 +92,7 @@ public class ARG_passwordfile extends ArgumentHandler {
         }
 		if (commonInfo.getSource().getDomainCredentials().getAdminUserName() == null){
 			ARG_adminuser tmpA = new ARG_adminuser();
-			tmpA.setRawParameters(CLIConstants.defaultAdminUser);
+			tmpA.setRawParameters(CLIConstants.DEFAULT_ADMIN_USER);
 			tmpA.setCmd(CLIConstants.ADMINUSER_SHORT);
 			v.add(tmpA);
 		}

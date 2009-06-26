@@ -186,7 +186,7 @@ public class DataCollectionPanel extends JPanel {
 			masterPWTextField.addKeyListener(keyAdapter);			
 				
 			if(masterPassword != null && !(masterPassword.equals(""))
-				&& !(masterPassword.equals(CLIConstants.defaultMasterPassword)))
+				&& !(masterPassword.equals(CLIConstants.DEFAULT_MASTER_PASSWORD)))
 				masterPWTextField.setText(masterPassword);
 	}
 	

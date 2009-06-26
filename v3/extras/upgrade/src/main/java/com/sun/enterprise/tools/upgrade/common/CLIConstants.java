@@ -61,9 +61,9 @@ public class CLIConstants {
     }
     public static final String CLI_USER_INSTRUCTIONS = cliInstructions.toString();
 	
-    public static final String defaultAdminUser = "admin";
-    public static final String defaultAdminPassword = "adminadmin";
-    public static final String defaultMasterPassword = "changeit";
+    public static final String DEFAULT_ADMIN_USER = "admin";
+    public static final String DEFAULT_ADMIN_PASSWORD = "adminadmin";
+    public static final String DEFAULT_MASTER_PASSWORD = "changeit";
 	
     //- CLI options
     public static final String SOURCE = "source";

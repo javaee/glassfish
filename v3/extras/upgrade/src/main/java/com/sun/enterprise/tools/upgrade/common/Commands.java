@@ -34,29 +34,29 @@
  * holder.
  */
 
-/*
- * Commands.java
- *
- * Created on June 7, 2004, 2:41 PM
- */
-
 package com.sun.enterprise.tools.upgrade.common;
 
-import java.io.*;
-import java.util.ArrayList;
-
-//import com.sun.enterprise.cli.framework.CLIMain;
-import com.sun.enterprise.admin.cli.AsadminMain;
 import com.sun.enterprise.cli.framework.InputsAndOutputs;
-import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  *
  * @author  hans
  */
 public class Commands {
-    private static StringManager stringManager = StringManager.getManager(Commands.class);
+
+    private static final Logger logger = LogService.getLogger();
+    
+    private static final StringManager stringManager =
+        StringManager.getManager(Commands.class);
     
     /** Creates a new instance of Commands */
     public Commands() {
@@ -110,7 +110,7 @@ public class Commands {
             io.setUserOutput(pos);
             CommandOutputReader cor = new CommandOutputReader(pos);
             ((Thread)cor).start();
-            CommonInfoModel.getDefaultLogger().info(stringManager.
+            logger.info(stringManager.
                     getString("commands.executingCommandMsg") + commandOneString);
 
             // skipping for now since there's a gfv3 build error.
@@ -122,7 +122,7 @@ public class Commands {
         }
         catch(Exception e) {
             Throwable t = e.getCause();
-            CommonInfoModel.getDefaultLogger().warning(stringManager.getString(
+            logger.warning(stringManager.getString(
 				"upgrade.common.general_exception") + (t==null?e.getMessage():t.getMessage()));
         }
         return exitValue;
@@ -142,14 +142,14 @@ public class Commands {
 				pis));
             try {
                 while((s = buffReader.readLine()) != null) {
-                    CommonInfoModel.getDefaultLogger().info(s);
+                    logger.info(s);
                 }
                 buffReader.close();
             } catch (Exception ioe) {
                 try {
                     buffReader.close();
                 } catch (Exception e) {
-                    CommonInfoModel.getDefaultLogger().info(e.getMessage());
+                    logger.info(e.getMessage());
                 }
             }
         }

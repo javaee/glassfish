@@ -36,50 +36,49 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
+import com.sun.enterprise.tools.upgrade.logging.LogService;
+import com.sun.enterprise.util.i18n.StringManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import com.sun.enterprise.util.i18n.StringManager;
+import java.util.logging.Logger;
 
 /**
  *
  * @author rebeccas
  */
 public class DomainCredentials implements Credentials {
+
 	private String adminUserName = null;
     private String adminPassword = null;
     private File passwordFile = null;
-    private String masterPassword = CLIConstants.defaultMasterPassword; 
-	private StringManager stringManager = 
+    private String masterPassword = CLIConstants.DEFAULT_MASTER_PASSWORD;
+
+    private static final Logger logger = LogService.getLogger();
+
+	private static final StringManager stringManager =
             StringManager.getManager(DomainCredentials.class);
 	
-	/** Creates a new instance of DomainCredentials */
-	public DomainCredentials() {
-	}
-	public DomainCredentials(String u, String passwd, String masterPasswd) {
-		this(u, passwd);
-		masterPassword = masterPasswd;
-	}
-	public DomainCredentials(String u, String passwd) {
-		adminUserName = u;
-		adminPassword = passwd;
-	}
 	public void setAdminUserName(String s){
 		adminUserName = s;
 	}
+
 	public String getAdminUserName(){
 		return adminUserName;
 	}
+
 	public void setAdminPassword(String s){
 		adminPassword = s;
 	}
+
 	public String getAdminPassword(){
 		return adminPassword;
 	}
+
 	public void setMasterPassword(String s){
 		masterPassword = s;
 	}
+    
 	public String getMasterPassword(){
 		return masterPassword;
 	}
@@ -98,8 +97,9 @@ public class DomainCredentials implements Credentials {
                 }
 				writer.close();
 			} catch (IOException ioe) {
-				CommonInfoModel.getDefaultLogger().severe(
-					stringManager.getString("upgrade.common.general_exception") + " " + ioe.getMessage());
+				logger.severe(stringManager.getString(
+                    "upgrade.common.general_exception") + " " +
+                    ioe.getMessage());
 			}
 		}
 		return passwordFile.getAbsolutePath();
