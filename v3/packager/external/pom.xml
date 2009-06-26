@@ -55,7 +55,6 @@
     <name>Repackaged external modules</name>
 
     <modules>
-        <module>ant</module>
         <module>javadb</module>    
         <module>apache-commons</module>
         <module>jmxremote_optional</module>
