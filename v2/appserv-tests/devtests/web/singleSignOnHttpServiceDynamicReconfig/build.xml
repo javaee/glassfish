@@ -30,7 +30,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.property.sso-enabled=false"/>
+                   value="${appserver.instance.name}.http-service.sso-enabled=false"/>
         </antcall>
     </target>
 
@@ -38,12 +38,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled="/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.sso-enabled="/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.property.sso-enabled=true"/>
+                   value="${appserver.instance.name}.http-service.sso-enabled=true"/>
         </antcall>
         <antcall target="create-user-common">
             <param name="user" value="${testuser}"/>
@@ -92,12 +92,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.property.sso-enabled="/>
+                   value="${appserver.instance.name}.http-service.sso-enabled="/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=false"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.sso-enabled=false"/>
         </antcall>
         <antcall target="delete-user-common">
             <param name="user" value="${testuser}"/>

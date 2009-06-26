@@ -299,9 +299,7 @@
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
-<!-- XXX temporarily commented out, see IT 8269
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
--->
         <ant dir="webappDeployDashDashLibraries" target="all"/>
         <ant dir="webappLoaderIgnoreHiddenJarFiles" target="all"/>
         <ant dir="webappLoaderConsiderHiddenJarFiles" target="all"/>
@@ -381,9 +379,7 @@
         <ant dir="authPassthroughGetScheme" target="all"/>
         <ant dir="authPassthroughRequestIsSecure" target="all"/>
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
-<!-- XXX temporarily commented out, see IT 8263
         <ant dir="authPassthroughGetRemoteHost" target="all"/>
--->
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectFromJspWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectHostRequestHeaderWithoutPort" target="all"/>

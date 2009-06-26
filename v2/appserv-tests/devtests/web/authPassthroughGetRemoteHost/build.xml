@@ -48,7 +48,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-protocol.dns-lookup-enabled=true"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.enable-dns-lookup=true"/>
         </antcall>
     </target>
 
@@ -85,7 +85,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.http-protocol.dns-lookup-enabled="/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.enable-dns-lookup="/>
         </antcall>
     </target>
 

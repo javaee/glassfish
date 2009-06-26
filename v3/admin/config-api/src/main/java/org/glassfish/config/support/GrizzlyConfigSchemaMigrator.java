@@ -368,6 +368,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                         @Override
                         public Object run(Http http) {
                             http.setVersion(httpProtocol.getVersion());
+                            http.setEnableDnsLookup(httpProtocol.getDnsLookupEnabled());
                             http.setForcedResponseType(httpProtocol.getForcedResponseType());
                             http.setDefaultResponseType(httpProtocol.getDefaultResponseType());
                             return null;
