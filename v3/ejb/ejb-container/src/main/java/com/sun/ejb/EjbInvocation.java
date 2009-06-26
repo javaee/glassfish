@@ -54,14 +54,11 @@ import javax.xml.rpc.handler.MessageContext;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.WebServiceContext;
 import java.lang.reflect.Method;
+import java.rmi.UnmarshalException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.glassfish.ejb.security.application.EJBSecurityManager;
 
 /**
  * The EjbInvocation object contains state associated with an invocation
@@ -600,6 +597,14 @@ public class EjbInvocation
 
     /**
      * This is for EJB JAXWS only.
+     * @return the JAXWS message
+     */
+    public Object getMessage() {
+        return this.message;
+    }
+    
+    /**
+     * This is for EJB JAXWS only.
      */
     public SOAPMessage getSOAPMessage() {
         if (message != null && soapMessage == null) {
@@ -675,8 +680,46 @@ public class EjbInvocation
     public com.sun.enterprise.security.SecurityManager getEjbSecurityManager() {
         return ((BaseContainer)container).getSecurityManager();
     }
-    
-    
 
-}
+    public boolean isAWebService() {
+        return this.isWebService;
+    }
+
+    public Object[] getMethodParams() {
+        return this.methodParams;
+    }
+
+    public boolean authorizeWebService(Method m) throws Exception {
+        Exception ie = null;
+        if (isAWebService()) {
+		try {
+		    this.method = m;
+		    if (!((com.sun.ejb.Container)container).authorize(this)) {
+			ie = new Exception
+			    ("Client not authorized for invocation of method {" + method + "}");       
+		    } else {
+			// Record the method on which the successful
+			// authorization check was performed. 
+                        //TODO:V3 the method is not currently available, waiting for inputs from Bhakti
+			//inv.setWebServiceMethod(eInv.method);
+		    }
+		} catch(Exception e) {
+		    String errorMsg = "Error unmarshalling method {" + method + "} for ejb "; 
+		    ie = new UnmarshalException(errorMsg); 
+		    ie.initCause(e);
+		} 
+		if ( ie != null ) {
+		    exception = ie;
+		    throw ie;
+		} 
+
+	    } else {
+                //TODO:V3 the method is not currently available, waiting for inputs from Bhakti
+		//inv.setWebServiceMethod(null);
+	    }
+             return true;
+	}            
+       
+    }
+    
 
