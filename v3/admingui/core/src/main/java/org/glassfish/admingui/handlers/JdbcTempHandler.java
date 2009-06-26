@@ -49,7 +49,7 @@
  * @author anilam
  */
 
-package org.glassfish.admingui.jdbc.handlers;
+package org.glassfish.admingui.handlers;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
