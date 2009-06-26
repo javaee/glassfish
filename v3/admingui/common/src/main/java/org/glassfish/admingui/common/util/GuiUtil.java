@@ -578,6 +578,24 @@ public class GuiUtil {
 
         return list;
     }
+    public static List<Map<String, String>> convertMapToListOfMap(Map<String, String> values) {
+        List<Map<String, String>> list = new ArrayList();
+        if (values != null) {
+            Map<String, Object> map = null;
+            for (String key : values.keySet()) {
+                HashMap oneRow = new HashMap();
+                Object value = values.get(key);
+                String valString = (value == null) ? "" : value.toString();
+                oneRow.put("Name", key);
+                oneRow.put("Value", valString);
+                oneRow.put("Description", "");
+                list.add(oneRow);
+            }
+        }
+
+        return list;
+    }
+    
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
     public static final String LOGGER_NAME = "org.glassfish.admingui";
