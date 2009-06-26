@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-        <!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
-        <!ENTITY commonRun SYSTEM "file:./../../../../config/run.xml">
-        <!ENTITY testproperties SYSTEM "file:./build.properties">
+        <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+        <!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
+        <!ENTITY testproperties SYSTEM "./build.properties">
         ]>
 
 <project name="force-deploy-rar" default="usage" basedir=".">
@@ -21,6 +21,7 @@
     </target>
 
     <target name="compile" depends="clean">
+        <ant dir="ra" inheritAll="false" target="compile"/>
         
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
@@ -41,6 +42,7 @@
     </target>
 
     <target name="build" depends="compile">
+        <ant dir="ra" inheritAll="false" target="build"/>
 
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
@@ -56,6 +58,7 @@
         </antcall>
 
     </target>
+
     <target name="setup" depends="init-common"/>
 
 

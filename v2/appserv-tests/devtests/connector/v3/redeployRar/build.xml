@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-        <!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
-        <!ENTITY commonRun SYSTEM "file:./../../../../config/run.xml">
-        <!ENTITY testproperties SYSTEM "file:./build.properties">
+        <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+        <!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
+        <!ENTITY testproperties SYSTEM "./build.properties">
         ]>
 
 <project name="redeploy-rar" default="usage" basedir=".">
@@ -21,6 +21,10 @@
     </target>
 
     <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ra"/>
+        </antcall>
+
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
             <param name="s1astest.classpath" value="${s1astest.classpath}:./ra/publish/internal/classes/"/>

@@ -4,9 +4,9 @@
 -->
 
 <!DOCTYPE project [
-  <!ENTITY common SYSTEM "file:../../../../config/common.xml">
-  <!ENTITY testcommon SYSTEM "file:../../../../config/properties.xml">
-  <!ENTITY testproperties SYSTEM "file:./build.properties">
+  <!ENTITY common SYSTEM "../../../../config/common.xml">
+  <!ENTITY testcommon SYSTEM "../../../../config/properties.xml">
+  <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="connector1.5 TEST" default="all" basedir=".">
