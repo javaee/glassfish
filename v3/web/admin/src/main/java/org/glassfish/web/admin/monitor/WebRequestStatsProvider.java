@@ -94,7 +94,7 @@ public class WebRequestStatsProvider {
                 "Longest response time for a request; not a cumulative value, but the largest response time from among the response times",
                 requestProcessTime.getStartTime(),
                 requestProcessTime.getLastSampleTime());
-        return maxTime;
+        return maxTime.getStatistic();
     }
 
     @ManagedAttribute(id="requestcount")
@@ -102,7 +102,7 @@ public class WebRequestStatsProvider {
     public CountStatistic getRequestCount() {
         CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount", "count", "Cumulative number of requests processed so far");
         requestCount.setCount(requestProcessTime.getCount());
-        return requestCount;
+        return requestCount.getStatistic();
     }
 
     @ManagedAttribute(id="processingtime")
@@ -118,7 +118,7 @@ public class WebRequestStatsProvider {
                 "Cumulative value of the times taken to process each request, with processing time being the average of request processing times over the request count ",
                 requestProcessTime.getStartTime(),
                 requestProcessTime.getLastSampleTime());
-        return processingTime;
+        return processingTime.getStatistic();
     }
 
     @ProbeListener("web:request::requestStartEvent")

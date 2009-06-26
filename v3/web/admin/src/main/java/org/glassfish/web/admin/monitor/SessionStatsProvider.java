@@ -74,49 +74,49 @@ public class SessionStatsProvider{
     @ManagedAttribute(id="activesessionscurrent")
     @Description("Number of currently active sessions")
     public CountStatistic getActiveSessionsCurrent() {
-        return activeSessionsCurrent;
+        return activeSessionsCurrent.getStatistic();
     }
 
     @ManagedAttribute(id="sessionstotal")
     @Description("Total number of sessions created")
     public CountStatistic getSessionsTotal() {
-        return sessionsTotal;
+        return sessionsTotal.getStatistic();
     }
 
     @ManagedAttribute(id="activesessionshigh")
     @Description("Maximum number of concurrently active sessions")
     public CountStatistic getActiveSessionsHigh() {
-        return activeSessionsHigh;
+        return activeSessionsHigh.getStatistic();
     }
 
     @ManagedAttribute(id="rejectedsessionstotal")
     @Description("Total number of rejected sessions")
     public CountStatistic getRejectedSessionsTotal() {
-        return rejectedSessionsTotal;
+        return rejectedSessionsTotal.getStatistic();
     }
 
     @ManagedAttribute(id="expiredsessionstotal")
     @Description("Total number of expired sessions")
     public CountStatistic getExpiredSessionsTotal() {
-        return expiredSessionsTotal;
+        return expiredSessionsTotal.getStatistic();
     }
 
     @ManagedAttribute(id="persistedsessionstotal")
     @Description("Total number of persisted sessions")
     public CountStatistic getPersistedSessionsTotal() {
-        return persistedSessionsTotal;
+        return persistedSessionsTotal.getStatistic();
     }
 
     @ManagedAttribute(id="passivatedsessionstotal")
     @Description("Total number of passivated sessions")
     public CountStatistic getPassivatedSessionsTotal() {
-        return passivatedSessionsTotal;
+        return passivatedSessionsTotal.getStatistic();
     }
 
     @ManagedAttribute(id="activatedsessionstotal")
     @Description("Total number of activated sessions")
     public CountStatistic getActivatedSessionsTotal() {
-        return activatedSessionsTotal;
+        return activatedSessionsTotal.getStatistic();
     }
     
     @ProbeListener("web:session::sessionCreatedEvent")

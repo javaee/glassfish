@@ -155,85 +155,85 @@ public class HttpServiceStatsProvider implements PostConstruct {
     @ManagedAttribute(id="errorcount")
     @Description( "" )
     public CountStatistic getErrorCount() {
-        return errorCount;
+        return errorCount.getStatistic();
     }
     
     @ManagedAttribute(id="count200")
     @Description( "" )
     public CountStatistic getError200Count() {
-        return error200Count;
+        return error200Count.getStatistic();
     }
     
     @ManagedAttribute(id="count2xx")
     @Description( "" )
     public CountStatistic getError2xxCount() {
-        return error2xxCount;
+        return error2xxCount.getStatistic();
     }
     
     @ManagedAttribute(id="count302")
     @Description( "" )
     public CountStatistic getError302Count() {
-        return error302Count;
+        return error302Count.getStatistic();
     }
     
     @ManagedAttribute(id="count304")
     @Description( "" )
     public CountStatistic getError304Count() {
-        return error304Count;
+        return error304Count.getStatistic();
     }
 
     @ManagedAttribute(id="count3xx")
     @Description( "" )
     public CountStatistic getError3xxCount() {
-        return error3xxCount;
+        return error3xxCount.getStatistic();
     }
 
     @ManagedAttribute(id="count400")
     @Description( "" )
     public CountStatistic getError400Count() {
-        return error400Count;
+        return error400Count.getStatistic();
     }
 
     @ManagedAttribute(id="count401")
     @Description( "" )
     public CountStatistic getError401Count() {
-        return error401Count;
+        return error401Count.getStatistic();
     }
 
     @ManagedAttribute(id="count403")
     @Description( "" )
     public CountStatistic getError403Count() {
-        return error403Count;
+        return error403Count.getStatistic();
     }
 
     @ManagedAttribute(id="count404")
     @Description( "" )
     public CountStatistic getError404Count() {
-        return error404Count;
+        return error404Count.getStatistic();
     }
 
     @ManagedAttribute(id="count4xx")
     @Description( "" )
     public CountStatistic getError4xxCount() {
-        return error4xxCount;
+        return error4xxCount.getStatistic();
     }
 
     @ManagedAttribute(id="count503")
     @Description( "" )
     public CountStatistic getError503Count() {
-        return error503Count;
+        return error503Count.getStatistic();
     }
 
     @ManagedAttribute(id="count5xx")
     @Description( "" )
     public CountStatistic getError5xxCount() {
-        return this.error5xxCount;
+        return this.error5xxCount.getStatistic();
     }
 
     @ManagedAttribute(id="countother")
     @Description( "" )
     public CountStatistic getErrorOtherCount() {
-        return this.errorOtherCount;
+        return this.errorOtherCount.getStatistic();
     }
 
     @ProbeListener("glassfish:web:httpService:requestStartEvent")

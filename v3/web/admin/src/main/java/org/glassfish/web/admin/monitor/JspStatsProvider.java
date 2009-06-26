@@ -68,19 +68,19 @@ public class JspStatsProvider{
     @ManagedAttribute(id="activejspsloadedcount")
     @Description("Number of currently loaded JSPs")
     public CountStatistic getActiveJspsLoaded() {
-        return activeJspsLoadedCount;
+        return activeJspsLoadedCount.getStatistic();
     }
 
     @ManagedAttribute(id="maxjspsloadedcount")
     @Description("Maximum number of JSPs loaded which were active")
     public CountStatistic getMaxJspsLoaded() {
-        return maxJspsLoadedCount;
+        return maxJspsLoadedCount.getStatistic();
     }
 
     @ManagedAttribute(id="totaljspsloadedcount")
     @Description("Cumulative number of JSP pages that have been loaded into the web module")
     public CountStatistic getTotalJspsLoaded() {
-        return totalJspsLoadedCount;
+        return totalJspsLoadedCount.getStatistic();
     }
     
     @ProbeListener("web:jsp::jspLoadedEvent")

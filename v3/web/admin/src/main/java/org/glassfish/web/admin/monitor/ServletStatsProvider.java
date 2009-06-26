@@ -69,19 +69,19 @@ public class ServletStatsProvider {
     @ManagedAttribute(id="activeservletsloadedcount")
     @Description( "Number of currently loaded servlets" )
     public CountStatistic getActiveServletsLoaded() {
-        return activeServletsLoadedCount;
+        return activeServletsLoadedCount.getStatistic();
     }
 
     @ManagedAttribute(id="maxservletsloadedcount")
     @Description( "Maximum number of servlets loaded which were active" )
     public CountStatistic getMaxServletsLoaded() {
-        return maxServletsLoadedCount;
+        return maxServletsLoadedCount.getStatistic();
     }
 
     @ManagedAttribute(id="totalservletsloadedcount")
     @Description( "Cumulative number of servlets that have been loaded into the web module" )
     public CountStatistic getTotalServletsLoaded() {
-        return totalServletsLoadedCount;
+        return totalServletsLoadedCount.getStatistic();
     }
     
     @ProbeListener("web:servlet::servletInitializedEvent")
