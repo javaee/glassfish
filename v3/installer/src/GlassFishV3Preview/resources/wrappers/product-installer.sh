@@ -96,7 +96,7 @@ LOGDIR=/tmp
 usage() {
   ${CAT} <<EOF
 
-Usage: <GlassFish installation program> [-options]
+Usage: <GlassFish installation/uninstallation program.> [-options]
 where options include:
     -a <answerfile>
         run this program in silent mode using the answerfile provided, should be used with -s option.
@@ -123,7 +123,7 @@ EOF
 #-------------------------------------------------------------------------------
 perform() {
 
-ENGINE_OPS="-m file://${MYDIR}/metadata/"
+ENGINE_OPS="-m file://${MYDIR}/install/metadata/"
 ENGINE_OPS="${ENGINE_OPS} -a file://${MYDIR}/install.properties"
 ENGINE_OPS="${ENGINE_OPS} -i file://${MYDIR}/Product/"
 ENGINE_OPS="${ENGINE_OPS} -p Default-Product-ID=${PRODUCTNAME}"

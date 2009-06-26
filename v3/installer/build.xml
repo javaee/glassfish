@@ -155,24 +155,24 @@
 	<target name="create_final_stage_area" description="Assembling installer distribution layout">
 
 		<echo message="Staging installer metadata" />
-		<copy todir="${stage.dir}/${bundle.name}/metadata/dependency">
+		<copy todir="${stage.dir}/${bundle.name}/install/metadata/dependency">
 			<fileset dir="${basedir}/src/${bundle.name}/resources/dependency" excludes=".svn" />
 		</copy>
-		<copy todir="${stage.dir}/${bundle.name}/metadata/model">
+		<copy todir="${stage.dir}/${bundle.name}/install/metadata/model">
 			<fileset dir="${basedir}/src/${bundle.name}/resources/model" excludes=".svn" />
 		</copy>
-		<copy todir="${stage.dir}/${bundle.name}/metadata/templates">
+		<copy todir="${stage.dir}/${bundle.name}/install/metadata/templates">
 			<fileset dir="${basedir}/src/${bundle.name}/resources/templates" excludes=".svn" />
 		</copy>
-		<copy todir="${stage.dir}/${bundle.name}/metadata/view">
+		<copy todir="${stage.dir}/${bundle.name}/install/metadata/view">
 			<fileset dir="${basedir}/src/${bundle.name}/resources/view" excludes=".svn" />
 		</copy>
-		<copy todir="${stage.dir}/${bundle.name}/metadata" file="${basedir}/src/${bundle.name}/resources/pagesequence.xml">
+		<copy todir="${stage.dir}/${bundle.name}/install/metadata" file="${basedir}/src/${bundle.name}/resources/pagesequence.xml">
 		</copy>
-		<copy todir="${stage.dir}/${bundle.name}/metadata" file="${basedir}/src/${bundle.name}/resources/pagesequence.properties">
+		<copy todir="${stage.dir}/${bundle.name}/install/metadata" file="${basedir}/src/${bundle.name}/resources/pagesequence.properties">
 		</copy>
 
-		<zip destfile="${stage.dir}/${bundle.name}/Product/Packages/metadata.zip" basedir="${stage.dir}/${bundle.name}" includes="metadata/**" />
+		<zip destfile="${stage.dir}/${bundle.name}/Product/Packages/metadata.zip" basedir="${stage.dir}/${bundle.name}" includes="install/metadata/**" />
 
 		<echo message="Staging wrappers" />
 		<copy todir="${stage.dir}/${bundle.name}">
@@ -205,7 +205,6 @@
 	<!-- Create self-extract file on both windows and unix platforms, irrespective of where the build is run.
 	Currently there is no native component that might require a forking here. -->
 	<target name="create_self_extract_executable" description="Packaging installer distributions">
-		<delete dir="${stage.dir}/${bundle.name}/metadata" />
 		<delete dir="${stage.dir}/${bundle.name}/install" />
 
 		<!-- Windows -->
