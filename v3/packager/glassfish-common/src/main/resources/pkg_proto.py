@@ -49,6 +49,7 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-nucleus" : {"type" : "require" },
+			"pkg:/glassfish-corba-omgapi" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
