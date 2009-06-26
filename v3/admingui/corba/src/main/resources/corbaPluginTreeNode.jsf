@@ -32,15 +32,13 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
 -->
-                     
 
 <sun:treeNode
     id="orb"
     text="$resource{i18n.tree.orb}"
     url="/corba/orb.jsf?configName=#{configName}"
-    imageURL="resource/corba/images/orb.gif"
+    imageURL="/resource/corba/images/orb.gif"
     >
     <dynamicTreeNode id="iiopListeners"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
