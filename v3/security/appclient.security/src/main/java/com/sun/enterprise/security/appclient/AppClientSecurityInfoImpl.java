@@ -110,11 +110,11 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
             J2EESecurityManager mgr = new J2EESecurityManager();
             System.setSecurityManager(mgr);
         }
-        if (_logger.isLoggable(Level.INFO)) {
+        if (_logger.isLoggable(Level.FINE)) {
             if (secMgr != null) {
-                _logger.info("acc.secmgron");
+                _logger.fine("acc.secmgron");
             } else {
-                _logger.info("acc.secmgroff");
+                _logger.fine("acc.secmgroff");
             }
         }
 
