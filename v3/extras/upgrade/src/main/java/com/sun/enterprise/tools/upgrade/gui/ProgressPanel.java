@@ -49,7 +49,6 @@ package com.sun.enterprise.tools.upgrade.gui;
 import com.sun.enterprise.tools.upgrade.common.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.awt.*;
-import java.util.logging.Level;
 import javax.swing.*;
 
 public class ProgressPanel extends JPanel {
@@ -139,29 +138,7 @@ public class ProgressPanel extends JPanel {
         
         return panel;
     }
-    public void updateLog(LogMessageEvent evt){
-        java.util.logging.LogRecord logRecord = evt.getLogRecord();
-        if(logRecord != null){
-            if((logRecord.getLevel().equals(Level.SEVERE)) || (logRecord.getLevel().equals(Level.WARNING))){
-                //Font origFont = this.resultTextArea.getFont();
-                //Font spFont = new Font(this.resultTextArea.getFont().getName(), Font.BOLD, this.resultTextArea.getFont().getSize());
-                //this.resultTextArea.setFont(spFont);
-                this.resultTextArea.append(logRecord.getMessage());
-                this.resultTextArea.revalidate();
-                //jscrollpane.getVerticalScrollBar().setValue(jscrollpane.getVerticalScrollBar().getMaximum());
-                //jscrollpane.getVerticalScrollBar().setVisibleAmount(jscrollpane.getVerticalScrollBar().getMaximum());
-                //this.resultTextArea.setFont(origFont);
-            }else{
-                this.resultTextArea.append(logRecord.getMessage());
-            }
-            this.resultTextArea.append("\n");            
-        }else{
-            this.resultTextArea.append(evt.getMessage());
-        }
-        this.resultTextArea.revalidate();
-        jscrollpane.getVerticalScrollBar().setValue(jscrollpane.getVerticalScrollBar().getMaximum());
-        jscrollpane.getVerticalScrollBar().setVisibleAmount(jscrollpane.getVerticalScrollBar().getMaximum());
-    }
+    
     public void updateProgress(UpgradeUpdateEvent evt){
         int progressState = evt.getProgressState();
         String labelText = null;

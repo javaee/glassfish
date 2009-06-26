@@ -64,7 +64,7 @@ import javax.swing.*;
  * @author:  Prakash Aradhya
  */
 public class MainFrame extends JFrame implements DirectoryMover,
-    LogMessageListener, UpgradeUpdateListener {
+    UpgradeUpdateListener {
 
     private static final Logger logger = CommonInfoModel.getDefaultLogger();
 
@@ -226,13 +226,6 @@ public class MainFrame extends JFrame implements DirectoryMover,
         this.repaint();
     }
     
-    public void logMessageReceived(LogMessageEvent evt) {
-        // retrive message and show it in Process panel.
-        if(this.progressPanel != null){
-            this.progressPanel.updateLog(evt);
-        }
-    }
-
     public void upgradeProcessUpdate(UpgradeUpdateEvent evt) {
         if(this.progressPanel != null){
             this.progressPanel.updateProgress(evt);
