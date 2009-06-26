@@ -220,7 +220,6 @@ public class InstanceHandler {
         @HandlerOutput(name="result", type=java.util.List.class)})
 
         public static void getJvmOptionsValues(HandlerContext handlerCtx) {
-        List result = new ArrayList();
         try{
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
             AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
@@ -242,7 +241,6 @@ public class InstanceHandler {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
             ObjectName objectName = new ObjectName(objectNameStr);
             List<Map<String, String>> options = (List) handlerCtx.getInputValue("options");
-            AttributeList attrList = new AttributeList();
             for (Map<String, String> oneRow : options) {
                 String value = oneRow.get(PROPERTY_VALUE);
                 if (!GuiUtil.isEmpty(value)) {
