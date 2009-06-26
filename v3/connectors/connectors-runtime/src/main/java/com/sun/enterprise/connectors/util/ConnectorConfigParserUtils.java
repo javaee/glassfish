@@ -454,7 +454,7 @@ public class ConnectorConfigParserUtils {
     private Class loadClass(String className) 
                    throws ConnectorRuntimeException 
     {
-        ClassLoader classLoader = ConnectorClassLoader.getInstance();
+        ClassLoader classLoader = ConnectorRuntime.getRuntime().getConnectorClassLoader();
         try {
             return classLoader.loadClass(className);
         } catch(ClassNotFoundException ce) {
