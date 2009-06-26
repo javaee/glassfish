@@ -588,14 +588,13 @@ public class ProxyHandlers {
 
     @Handler(id="updateProxyProperties",
     input={
-        @HandlerInput(name="propertyList", type=List.class, required=true)},
+        @HandlerInput(name="propertyList", type=java.util.List.class, required=true)},
     output={
         @HandlerOutput(name="TableList", type=List.class)})
     public static void updateProxyProperties(HandlerContext handlerCtx) {
         try {
-            List<Map<String, String>> propertyList = (List) handlerCtx.getInputValue("propertyList");
+            List<Map<String, String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
             List newList = new ArrayList();
-            Set propertyNames = new HashSet();
             if (propertyList != null && propertyList.size() != 0) {
                 for (Map<String, String> oneRow : propertyList) {
                     Map newRow = new HashMap();
@@ -612,8 +611,9 @@ public class ProxyHandlers {
                     newRow.put(PROPERTY_VALUE, value);
                     String desc = (String) oneRow.get(PROPERTY_DESC);
                     if (!GuiUtil.isEmpty(desc)) {
-                        newRow.put(PROPERTY_DESC, desc);
+                        desc = "";
                     }
+                    newRow.put(PROPERTY_DESC, desc);
                     newList.add(newRow);
                 }
             }
