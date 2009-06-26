@@ -51,25 +51,21 @@
     <event>
     <!beforeCreate
         setSessionAttribute(key="jdbcPoolTabs" value="general");
-        getRequestValue(key="name" value=>$page{jndiName});
-        getJdbcConnectionPoolInfo(
-                jndiName = "#{jndiName}"
-                datasourceClassname=> $attribute{datasourceClassname}
-                resType => $attribute{resType}
-                description=>$attribute{description}
-                steadyPoolSize => $attribute{steadyPoolSize}
-                maxPoolSize => $attribute{maxPoolSize}
-                poolResizeQuantity => $attribute{poolResizeQuantity}
-                idleTimeoutInSeconds => $attribute{idleTimeoutInSeconds}
-                maxWaitTimeInMillis => $attribute{maxWaitTimeInMillis}
-                isConnectionValidationRequired => $attribute{isConnectionValidationRequired}
-                connectionValidationMethod => $attribute{connectionValidationMethod}
-                validationTableName => $attribute{validationTableName}
-                failAllConnections => $attribute{failAllConnections}
-                allowNonComponentCallers => $attribute{allowNonComponentCallers}
-                nonTransactionalConnections => $attribute{nonTransactionalConnections}
-                transactionIsolationLevel => $attribute{transactionIsolationLevel}
-                isIsolationLevelGuaranteed => $attribute{isIsolationLevelGuaranteed});
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources");
+        setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AllowNonComponentCallers" "NonTransactionalConnections" "IsIsolationLevelGuaranteed"});
+         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
         </event>
 #include "/shared/restart.inc"        
@@ -81,129 +77,21 @@
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" 
                     helpText="$resource{i18njdbc.jdbcConnection.editPageHelp}">
                     <!-- Buttons  -->  
-                     <sun:button id="loadDefaults" style="margin-left: 8pt"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
-                        <!command
-                            getJdbcConnectionPoolDefaultInfo(
-                                    jndiName="#{jndiName}"
-                                    resType => $attribute{resType}
-                                    description=>$attribute{description}
-                                    steadyPoolSize => $attribute{steadyPoolSize}
-                                    maxPoolSize => $attribute{maxPoolSize}
-                                    poolResizeQuantity => $attribute{poolResizeQuantity}
-                                    idleTimeoutInSeconds => $attribute{idleTimeoutInSeconds}
-                                    maxWaitTimeInMillis => $attribute{maxWaitTimeInMillis}
-                                    isConnectionValidationRequired => $attribute{isConnectionValidationRequired}
-                                    connectionValidationMethod => $attribute{connectionValidationMethod}
-                                    validationTableName => $attribute{validationTableName}
-                                    failAllConnections => $attribute{failAllConnections}
-                                    allowNonComponentCallers => $attribute{allowNonComponentCallers}
-                                    nonTransactionalConnections => $attribute{nonTransactionalConnections}
-                                    transactionIsolationLevel => $attribute{transactionIsolationLevel}
-                                    isIsolationLevelGuaranteed => $attribute{isIsolationLevelGuaranteed}
-                                );
-                        />
-                    </sun:button>
+#include "/shared/editPageLoadDefaultButton.inc"
                     <sun:button id="ping" text="$resource{i18n.button.Ping}" primary="#{false}" > 
                         <!command
-                            pingJdbcConnectionPool(jndiName="#{jndiName}");
+                            pingJdbcConnectionPool(jndiName="#{pageSession.Name}");
                         />
                     </sun:button>
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-#include "/jdbc/jdbcConnectionPoolEditButtons.inc"
-                    </sun:panelGroup>
-                    </facet>                     
+                    <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" onClick="Javascript:alert('To Do - API Not available');" > 
+                        
+                    </sun:button>                    
+#include "/shared/editPageButtons_2.inc"               
                 </sun:title>
-                    <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet" requiredFields="true">			 
-                        <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18njdbc.jdbcPool.general}" requiredFields="true">
-                            <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                                <sun:staticText id="Jndi" text="#{jndiName}"/> 
-                            </sun:property>   
+#include "/jdbc/poolPropertyNew.inc"
 
-                            <sun:property id="dsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelp}">
-                                <sun:textField id="ds" styleClass="required" columns="$int{55}" text="#{datasourceClassname}" required="#{true}"/>      
-                            </sun:property>
-                            
-                            <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jdbcPool.resTypeHelp}" >
-                                <sun:dropDown id="resType" selected="#{resType}" labels={"" "javax.sql.DataSource"  "javax.sql.XADataSource"  "javax.sql.ConnectionPoolDataSource"} />
-                            </sun:property>   
-                            <sun:property id="descProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >
-                                <sun:textField id="desc" columns="$int{55}" text="#{requestScope.description}" />      
-                            </sun:property>
-                            "<br /><br />
-                        </sun:propertySheetSection>
-
-			<!-- -------------------- Pool Settings ------------ -->
-                        <sun:propertySheetSection id="poolSettingsPropertySheet" label="$resource{i18njdbc.jdbcPool.poolSettings}">
-#include "/jdbc/poolPropertySheet1.inc"
-                            "<br /><br />
-                        </sun:propertySheetSection>
-
-			<!-- -------------------- Connection Validation ------------ -->
-
-                        <sun:propertySheetSection id="connectionPropertySheet" label="$resource{i18njdbc.jdbcPool.Validation}">
-
-                            <sun:property id="conValidationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.conValidation}" helpText="$resource{i18njdbc.jdbcPool.conValidationHelp}">
-                                <sun:checkbox label="$resource{i18n.common.Required}" selected="#{isConnectionValidationRequired}" />  
-                           </sun:property>   
-
-                            <sun:property id="methodProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.valMethod}" >
-                                 <sun:dropDown id="valMethod" selected="#{connectionValidationMethod}" 
-                                    labels={"auto-commit" "meta-data"  "table"} 
-                                    onChange="javascript: disableTableField(); return $boolean{true};"
-                                    >
-                                    <!afterCreate
-                                        getClientId(component="$this{component}" clientId=>$page{valMethod});
-                                    />
-                                </sun:dropDown>
-                            </sun:property>   
-
-                            <sun:property id="tableProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.tableName}" helpText="$resource{i18njdbc.jdbcPool.tableNameHelp}">
-                                <sun:textField id="tableTextField"  columns="$int{55}" text="#{validationTableName}" >      
-                                <!afterCreate
-                                    getClientId(component="$this{component}" clientId=>$page{tableTextField});
-                                />
-                                </sun:textField>     
-                            </sun:property>
-
-                            <sun:property id="failProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.failOnAny}" helpText="$resource{i18njdbc.jdbcPool.failOnAnyHelp}">
-                                <sun:checkbox label="$resource{i18njdbc.jdbcPool.closeAll}" selected="#{failAllConnections}" />  
-                           </sun:property>   
-
-                            <sun:property id="allowProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.allowCaller}" helpText="$resource{i18njdbc.jdbcPool.allowCallerHelp}">
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{allowNonComponentCallers}" />  
-                           </sun:property>   
-
-                            
-                          "<br /><br />
-                        </sun:propertySheetSection>
-
-			<!-- -------------------- Transaction Isolation ------------ -->
-
-                        <sun:propertySheetSection id="transactionPropertySheet" label="$resource{i18njdbc.jdbcPool.transIsolationSection}">
-                             <sun:property id="nonTransProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.nonTransConnection}" helpText="$resource{i18njdbc.jdbcPool.nonTransConnectionHelp}">
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{nonTransactionalConnections}" />  
-                           </sun:property>  
-                           
-                            <sun:property id="transProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.transIsolation}" helpText="$resource{i18njdbc.jdbcPool.transIsolationHelp}" >
-                                <sun:dropDown id="transIso" selected="#{transactionIsolationLevel}" labels={"" "read-uncommitted" "read-committed" "repeatable-read" "serializable" } />
-                            </sun:property>   
-
-                            <sun:property id="levelProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.isoLevel}" helpText="$resource{i18njdbc.jdbcPool.isoLevelHelp}">
-                                <sun:checkbox label="$resource{i18njdbc.jdbcPool.Guaranteed}" selected="#{isIsolationLevelGuaranteed}" />  
-                           </sun:property>  
-                           "<br /><br />
-                        </sun:propertySheetSection>
-                    </sun:propertySheet>
-
-                <sun:title id="title2" >
-                <!facet pageButtonsBottom >
-                    <sun:panelGroup id="bottomButtons">
-#include "/jdbc/jdbcConnectionPoolEditButtons.inc"
-                    </sun:panelGroup>
-                    </facet>                     
-                </sun:title>
+                
+#include "/shared/editPageBottomButtons.inc"
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolEdit}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"

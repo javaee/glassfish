@@ -41,13 +41,11 @@
         text="$resource{i18n.button.Previous}"
         onClick='javascript: document.getElementById("form2:validate").value="false"; ' >
         <!command
-            setAttribute(key="fromStep2" value="#{true}")
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertRowsToProperties(NewList="#{newList}" AddProps=>$attribute{addProps});
-            setSessionAttribute(key="wizardPoolProperties", value="$attribute{addProps}");
-            setAttribute(key="cancelPage" value="$pageSession{cancelPage}");
-            navigate(page="/jdbc/jdbcConnectionPoolNew1.jsf")
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    setSessionAttribute(key="wizardPoolProperties", value="$attribute{newList}");
+                    setAttribute(key="fromStep2" value="#{true}")
+                    navigate(page="#{request.contextPath}/jdbc/#{step1Page}");
         />
     </sun:button>
 
@@ -56,20 +54,25 @@
                 return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); "
         > 
        <!command
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{addProps});
-            setSessionAttribute(key="wizardPoolProperties", value="$attribute{addProps}");
-            createJdbcConnectionPool();
-            redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf")
+            updateJdbcConnectionPoolWizardStep2();
+                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                            attrs="#{valueMap}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            result => $attribute{objStr});
+                    if (#{pageSession.hasPropertyTable}){
+                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    }
+                    redirect(page="#{parentPage}?configName=#{configName}");
         />    
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
        <!command
-            setSessionAttribute(key="wizardPool" value="#{null}")
-            setSessionAttribute(key="wizardPoolExtra" value="#{null}")
-            setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-            redirect(page="$pageSession{cancelPage}")
+            setSessionAttribute(key="valueMap" value="#{null}")
+                    setSessionAttribute(key="wizardPoolExtra" value="#{null}")
+                    setSessionAttribute(key="wizardPoolProperties" value="#{null}")
+                    redirect(page="#{parentPage}?configName=#{configName}");
         />    
     </sun:button>
 </sun:panelGroup>

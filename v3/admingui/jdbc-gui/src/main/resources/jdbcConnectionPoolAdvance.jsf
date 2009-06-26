@@ -42,11 +42,18 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="name" value=>$page{jndiName});
-        getPoolAdvanceInfo(
-                jndiName = "#{jndiName}"
-                advance=>$page{advance}
-        );
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolAdvance.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources");
+        setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"WrapJdbcObjects" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "AssociateWithThread" "MatchConnections"});
+        setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         />
         </event>
 #include "/shared/restart.inc"        
@@ -57,80 +64,49 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
                     helpText="$resource{i18njdbc.jdbcConnectionPool.advancePageTitleHelp}">
-                    <!-- Buttons  -->  
-                     <sun:button id="loadDefaults" style="margin-left: 8pt"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
-                        <!command
-                            getPoolAdvanceDefaultInfo(
-                                jndiName="#{jndiName}"
-                                advance=>$page{advance});
-                        />
-                    </sun:button>
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}"    
-                            onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}')){
+#include "/shared/editPageLoadDefaultButton.inc"
+<!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}')){
                                 return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}');} 
-                                return false;" 
-                            >
-                            <!command
-                                if ("#{advance.lazyConnectionAssociation}") {
-                                    setValueExpression(expression="#{advance.lazyConnectionEnlistment}", value="#{true}");
+                                return false;"  >
+                <!command
+                if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
+                                    setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
                                 } 
-                                prepareSuccessfulMsg();
-                                savePoolAdvanceInfo(
-                                    jndiName="#{jndiName}"
-                                    advance="$pageSession{advance}");
-                            />
-                        </sun:button>
-                    </sun:panelGroup>
-                    </facet>                     
+                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                    );
+                prepareSuccessfulMsg();
+                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
+                    
                 </sun:title>
                 
-                    <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
-                        <sun:propertySheetSection id="generalPropertySheet">
-                            <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                                <sun:staticText id="Jndi" text="#{jndiName}"/> 
-                            </sun:property>   
-                          
-                            <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.statementTimeoutInSeconds}" helpText="$resource{i18njdbc.jdbcPool.statementTimeoutInSecondsHelp}">
-                                <sun:textField id="va" columns="$int{50}" text="#{advance.statementTimeoutInSeconds}" > 
-                                <!afterCreate
-                                     getClientId(component="$this{component}" clientId=>$page{timeoutId});
-                                />
-                                </sun:textField>
-                                <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
-                            </sun:property>   
-                            
-                             <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.wrapJdbcObjects}" helpText="$resource{i18njdbc.jdbcPool.wrapJdbcObjectsHelp}">
-                                <sun:checkbox  selected="#{advance.wrapJDBCObjects}" label="$resource{i18n.common.Enabled}" />  
-                           </sun:property>
-                       
-			</sun:propertySheetSection>
 #include "/jdbc/advancePool.inc"
-                    </sun:propertySheet>
                     <sun:title id="title2" >
-                <!facet pageButtonsBottom >
-                    <sun:panelGroup id="bottomButtons">
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}"    
+                    <!facet pageButtonsBottom >
+                    <sun:panelGroup id="topButtons">
+                        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                             onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}')){
                                 return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}');} 
-                                return false;" 
-                            >
-                            <!command                           
-                                if ("#{advance.lazyConnectionAssociation}") {
-                                    setValueExpression(expression="#{advance.lazyConnectionEnlistment}", value="#{true}");
+                                return false;"  >
+                        <!command
+                            if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
+                                    setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
                                 } 
-                                prepareSuccessfulMsg(); 
-                                savePoolAdvanceInfo(
-                                    jndiName="#{jndiName}"
-                                    advance="$pageSession{advance}");
-                            />
-                        </sun:button>
-                        <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-                            <!command
-                                redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
-                            />
+                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                            skipAttrs="#{pageSession.skipAttrsList}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            );
+                            prepareSuccessfulMsg();
+                            redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                        />
                         </sun:button>
                     </sun:panelGroup>
                     </facet>                     

@@ -44,8 +44,8 @@
     <event>
     <!beforeCreate
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew.jsf");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools1.jsf");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew1.jsf");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
         setPageSessionAttribute(key="jdbcpool" value="#{true}" );
         setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain,type=resources");

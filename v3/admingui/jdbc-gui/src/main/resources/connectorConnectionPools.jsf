@@ -54,7 +54,7 @@
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/connectorConnectionPoolNew1.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/connectorConnectionPoolEdit.jsf");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.resources}");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.Pools}");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njdbc.resourcesTable.colDefinition}");
         setPageSessionAttribute(key="jdbcpool" value="#{false}" );

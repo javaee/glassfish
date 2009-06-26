@@ -43,12 +43,22 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="name" value=>$page{jndiName});
         setSessionAttribute(key="jdbcPoolTabs" value="propertyTab");
-        getJdbcConnectionPoolProperty(
-                jndiName = "#{jndiName}"
-                properties => $page{props} );
-                getTableList(Properties="$pageSession{props}", TableList=>$attribute{tableList}); 
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolProperty.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources");
+        setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
+        setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
         />
     </event>
 #include "/shared/restart.inc"        
@@ -59,33 +69,10 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitle}" 
                 helpText="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitleHelp}">
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-
-                    <sun:button id="saveButton" text="$resource{i18n.button.Save}" > 
-                       <!command
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                        prepareSuccessfulMsg();
-                        saveJdbcConnectionPoolProperty(
-                            jndiName = "#{jndiName}"
-                            newProps="${newProps}"
-                        );
-                        setAttribute(key="name" value="$pageSession{jndiName}");
-                        navigate(page="/jdbc/jdbcConnectionPoolProperty.jsf");
-                        />
-
-                    </sun:button>
-                    <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-                        <!command
-                            redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
-                        />
-                    </sun:button>
-                    </sun:panelGroup>
-                    </facet>                     
-                </sun:title>
-#include "/shared/propertyTable.inc"
+#include "/shared/editPageButtons.inc"
+    </sun:title>
+    "<br><br>
+#include "/shared/propertyDescTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolProperty}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"

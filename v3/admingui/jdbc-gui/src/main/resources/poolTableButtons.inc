@@ -1,7 +1,12 @@
 <!facet actionsTop>
      <sun:panelGroup id="topActionsGroup1">
         <sun:button id="newButton" text="$resource{i18n.button.New}" >
-            <!command redirect(page="#{pageSession.createLink}") />
+            <!command 
+                setSessionAttribute(key="valueMap" value="#{null}")
+                setSessionAttribute(key="wizardPoolExtra" value="#{null}")
+                setSessionAttribute(key="wizardPoolProperties" value="#{null}")
+                redirect(page="#{pageSession.createLink}") 
+            />
         </sun:button>
 
         <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
