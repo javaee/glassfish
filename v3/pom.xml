@@ -325,6 +325,7 @@
                 <module>osgi-platforms</module>
                 <module>flashlight</module>
                 <module>embedded</module>
+                <module>embedded/packager</module>
                 <module>webservices</module>
                 <module>orb</module>
                 <module>installer</module>
