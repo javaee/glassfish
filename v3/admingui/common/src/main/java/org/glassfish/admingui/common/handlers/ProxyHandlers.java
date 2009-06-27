@@ -186,7 +186,8 @@ public class ProxyHandlers {
 
 
     /*
-     * Get the value of an attribute.  If the attribute is expected to be an array, then specify the index.
+     * Get the value of an attribute.  
+     * If the attribute is an array, specifying an index will return an element in the array, otherwise, the entire array will be returned.
      */
     @Handler(id="getProxyAttribute",
     input={
@@ -194,18 +195,20 @@ public class ProxyHandlers {
         @HandlerInput(name="attrName",   type=String.class, required=true),
         @HandlerInput(name="index",   type=String.class)},
     output={
-        @HandlerOutput(name="value",        type=String.class)})
+        @HandlerOutput(name="value",        type=Object.class)})
 
     public static void getProxyAttribute(HandlerContext handlerCtx) {
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
         String attrName = (String) handlerCtx.getInputValue("attrName");
-        String result = "";
+        Object result = "";
         try{
             AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
             Object val = amx.attributesMap().get(attrName);
             if (val instanceof Object[]){
                 String index = (String) handlerCtx.getInputValue("index");
-                if (index != null){
+                if (index == null){
+                    result = val;
+                }else{
                     Object value = ((Object[])val)[Integer.parseInt(index)];
                     result = (value == null) ? "" : value.toString();
                 }
@@ -226,7 +229,7 @@ public class ProxyHandlers {
     output={
         @HandlerOutput(name="valueMap",        type=Map.class)})
 
-        public static void getDefaultProxyAttrs(HandlerContext handlerCtx) {
+    public static void getDefaultProxyAttrs(HandlerContext handlerCtx) {
         try{
             String parentName = (String) handlerCtx.getInputValue("parentObjectNameStr");
             String childType = (String) handlerCtx.getInputValue("childType");
@@ -240,20 +243,22 @@ public class ProxyHandlers {
 
     }
     
-        public static Map getDefaultProxyAttrsMap(String parentObjectNameStr, String childType) {
+
+    @Handler(id="proxyExist",
+    input={
+        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="exist",        type=Boolean.class)})
+
+    public static void proxyExist(HandlerContext handlerCtx) {
         try{
-            String parentName = parentObjectNameStr;
-            String child = childType;
-            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
-            Map valueMap = amx.getDefaultValues(child, true);
-            return valueMap;
-        }catch (Exception ex){
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            handlerCtx.setOutputValue("exist", isProxyExist(objectNameStr));
+        }catch(Exception ex){
             ex.printStackTrace();
-            return new HashMap();
+            handlerCtx.setOutputValue("exist", Boolean.FALSE);
         }
-
-    }    
-
+    }
 
     /*
      * Save the attributes of the proxy.   If the proxy doesn't exist, And forceCreate is true, a new
@@ -273,11 +278,8 @@ public class ProxyHandlers {
         try{
 
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            //Test if the object exists, if not, create one.
-            ObjectName objName = new ObjectName(objectNameStr);
-            Query qMgr = V3AMX.getInstance().getDomainRoot().getQueryMgr();
-            Set nameSet = qMgr.queryTypeNameObjectNameSet(objName.getKeyProperty("type"), objName.getKeyProperty("name"));
-            if (nameSet.isEmpty()){
+
+            if (! isProxyExist(objectNameStr)){
                 Boolean forceCreate = (Boolean) handlerCtx.getInputValue("forceCreate");
                 if (forceCreate!=null && forceCreate.booleanValue()){
                     createProxy(handlerCtx);
@@ -623,7 +625,35 @@ public class ProxyHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-    
+
+
+    public static Map getDefaultProxyAttrsMap(String parentObjectNameStr, String childType) {
+        try{
+            String parentName = parentObjectNameStr;
+            String child = childType;
+            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
+            Map valueMap = amx.getDefaultValues(child, true);
+            return valueMap;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new HashMap();
+        }
+    }
+
+    public static boolean isProxyExist(String objectNameStr){
+        try{
+            ObjectName objName = new ObjectName(objectNameStr);
+            Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
+//            Set<ObjectName> result = query.queryTypeObjectNameSet(objName.getKeyProperty("type"));
+            Set<ObjectName> result = query.queryAllObjectNameSet();
+            return (result.contains(objName));
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+
     private static final String SNIFFER_EAR = "ear";
     //mbean Attribute Name
     private static final String PROPERTY_NAME = "Name";
