@@ -153,13 +153,18 @@ public class ProxyHandlers {
         @HandlerOutput(name="valueMap",        type=Map.class)})
 
         public static void getProxyAttrs(HandlerContext handlerCtx) {
+        AMXProxy amx = null;
         try{
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+            amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
             AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) amx);
             final Map<String,Object> attrs = helper.simpleAttributesMap();
             handlerCtx.setOutputValue("valueMap", attrs);
         }catch (Exception ex){
+            if ( !(amx instanceof AMXConfigProxy) ){
+                getRuntimeProxyAttrs(handlerCtx);
+                return;
+            }
             ex.printStackTrace();
             handlerCtx.setOutputValue("valueMap", new HashMap());
         }

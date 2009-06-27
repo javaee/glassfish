@@ -140,6 +140,7 @@ public class GuiUtil {
             sessionMap.put("serverName", "");
         }
 
+        sessionMap.put("appServerVersion", V3AMX.getInstance().getDomainRoot().getApplicationServerFullVersion());
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));

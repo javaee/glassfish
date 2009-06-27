@@ -509,6 +509,15 @@ public class V3AMX {
         }
     }
 
+    public  boolean isEE(){
+        return false;
+    }
+
+
+    public  boolean supportCluster(){
+        return false;
+    }
+
 
     final private static List skipAttr = new ArrayList();
     static{
