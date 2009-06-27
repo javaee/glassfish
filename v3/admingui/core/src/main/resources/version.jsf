@@ -40,10 +40,9 @@
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setSessionAttribute(key="serverInstTabs" value="general");
-        getAppServerFullVersion(fullVersion=>$page{fullVersion});
         />   
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$pageSession{fullVersion}" />
+        <sun:head id="propertyhead" title="#{pageSession.appServerVersion}" />
         <sun:body id="body3">
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$attribute{bodyId})
@@ -58,7 +57,7 @@
                 productImageDescription="$resource{i18n.versionImage.description}" 
                 productImageHeight="42"
                 productImageWidth="318"
-                versionString="$pageSession{fullVersion}"
+                versionString="#{pageSession.appServerVersion}"
                 copyrightString="$resource{i18n.copyright.shortMessage}"
             />
             </sun:form>

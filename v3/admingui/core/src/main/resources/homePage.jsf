@@ -41,11 +41,7 @@
         getProductInstanceURN();
    />
     <sun:html> 
-        <!beforeCreate
-            getAppServerVersion(version=>$attribute{version});
-        />
-       
-	<sun:head id="head" title="#{version} $resource{i18n.common.AdminConsole}" >
+	<sun:head id="head" title="#{sessionScope.appServerVersion} $resource{i18n.common.AdminConsole}" >
 	</sun:head>
         
 	<sun:frameSet rows="75%, *" frameborder="$boolean{true}" border="$int{1}" toolTip="#{version} $resource{i18n.common.AdminConsole}" title="$resource{i18n.common.AdminConsole}">

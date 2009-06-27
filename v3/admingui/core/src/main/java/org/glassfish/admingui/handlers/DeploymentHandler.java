@@ -384,165 +384,33 @@ public class DeploymentHandler {
             }
             handlerCtx.setOutputValue("descriptors", list);
     }   
-    
-     
-
-//    /**
-//     *	<p> This method returns the resource-adapter properties </p>
-//     *
-//     *  <p> input value: "adapterProperties" -- Type: <code>java.util.Map</code>/</p>
-//     *	@param	handlerCtx	The HandlerContext.
-//     */
-//    @Handler(id="createResourceAdapterConfig",
-//    input={
-//        @HandlerInput(name="dProps", type=Properties.class),
-//        @HandlerInput(name="AddProps",    type=Map.class)},
-//    output={
-//        @HandlerOutput(name="nextPage", type=String.class)}
-//    )
-//    public static void createResourceAdapterConfig(HandlerContext handlerCtx) {
-//        Properties dProps = (Properties)handlerCtx.getInputValue("dProps");
-//
-//        String name = dProps.getProperty("name");
-//        ResourceAdapterConfig ra = AMXRoot.getInstance().getResourcesConfig().createResourceAdapterConfig(name, null);
-//
-//        String threadPool = dProps.getProperty("threadPool");
-//        if(!GuiUtil.isEmpty(threadPool))
-//            ra.setThreadPoolIDs(threadPool);
-//
-//        String registry = dProps.getProperty("registry");
-//        if (!GuiUtil.isEmpty(registry)){
-//            ra.createPropertyConfig(registry, "true");
-//        }
-//        
-//        Map<String,String> addProps = (Map)handlerCtx.getInputValue("AddProps");
-//        if(addProps != null ){
-//             for(String key: addProps.keySet()){
-//                 String value = addProps.get(key);
-//                 if (!GuiUtil.isEmpty(value))
-//                    ra.createPropertyConfig(key,value);
-//             }  
-//         }
-//        handlerCtx.setOutputValue("nextPage", "applications/connectorModules.jsf");
-//    }
-//    
-//    
 
 
-    
-//    /**
-//     *	<p> This handler creates references for the given application/module name 
-//     *
-//     *  <p> Input value: "name" -- Type: <code>String</code>/</p>
-//     *  <p> Input value: "targets" -- Type: <code>String[]</code>/</p>
-//     *  <p> Output value: "name" -- Type: <code>String</code>/</p>
-//     *	@param	handlerCtx	The HandlerContext.
-//     */
-//    @Handler(id="createApplicationReferences",
-//        input={
-//        @HandlerInput(name="name", type=String.class, required=true),
-//        @HandlerInput(name="targets", type=String[].class, required=true )})
-//    public static void createApplicationReferences(HandlerContext handlerCtx) {
-//        String name = (String)handlerCtx.getInputValue("name");
-//        String[] selTargets = (String[])handlerCtx.getInputValue("targets");
-//        List<String> targets = Arrays.asList(selTargets);
-//        List<String> associatedTargets = TargetUtil.getDeployedTargets(name, true);
-//        try{
-//            List addTargets = new ArrayList();
-//            for(String targetName:targets) {
-//                if(!(associatedTargets.contains(targetName))) {
-//                       addTargets.add(targetName);
-//                }
-//            }
-//            DeployUtil.handleAppRefs(name, (String[])addTargets.toArray(new String[addTargets.size()]), handlerCtx, true, null);
-//            
-//            //removes the old application references
-//            List removeTargets = new ArrayList();
-//            for(String targetName:associatedTargets) {
-//                if(!(targets.contains(targetName))) {
-//                    removeTargets.add(targetName);
-//                }
-//            }
-//            DeployUtil.handleAppRefs(name, (String[])removeTargets.toArray(new String[removeTargets.size()]), handlerCtx, false, null);
-//            
-//        }catch(Exception ex){
-//            GuiUtil.handleException(handlerCtx, ex);
-//        }
-//    }
 
-    
-//    /**
-//     *	<p> This method displays the deployment descriptors for a given app. </p>
-//     *
-//     *  <p> Output value: "descriptors" -- Type: <code>String.class</code>/</p>
-//     *	@param	handlerCtx	The HandlerContext.
-//     */
-//    @Handler(id="descriptorDisplay",
-//    input={
-//        @HandlerInput(name="filePath", type=String.class),
-//        @HandlerInput(name="appName", type=String.class),
-//        @HandlerInput(name="pageName", type=String.class)},
-//    output={
-//        @HandlerOutput(name="descriptor", type=String.class),
-//        @HandlerOutput(name="appName", type=String.class),
-//        @HandlerOutput(name="pageName", type=String.class)})
-//
-//        public static void descriptorDisplay(HandlerContext handlerCtx) {
-//            String filePath = (String)handlerCtx.getInputValue("filePath");
-//            String appName = (String)handlerCtx.getInputValue("appName");
-//            String pageName = (String)handlerCtx.getInputValue("pageName");
-//            String objectName = "com.sun.appserv:type=applications,category=config";
-//            String methodName = "getDeploymentDescriptor";
-//            Object[] params = {filePath};
-//            String[] types = {"java.lang.String"};
-//
-//            //TODO-V3
-//            //String descriptor=(String)JMXUtil.invoke(objectName, methodName, params, types);
-//            String descriptor ="";
-//
-//            handlerCtx.setOutputValue("descriptor", descriptor);
-//            handlerCtx.setOutputValue("appName", appName);
-//            handlerCtx.setOutputValue("pageName", pageName);
-//        }
+    /**
+     * This handler will return the contents of the specified deployment
+     * descriptor as a String.
+     * @param handlerCtx
+     */
+    @Handler(id="getDeploymentDescriptor",
+        input={
+            @HandlerInput(name="appName", type=String.class, required=true),
+            @HandlerInput(name="descriptorName", type=String.class, required=true)
+        },
+        output={
+            @HandlerOutput(name="descriptorText", type=String.class)
+    })
+    public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
+        RuntimeMgr runtimeMgr = AMXRoot.getInstance().getRuntimeMgr();
+        String descriptorText = runtimeMgr.getDeploymentConfigurations(appName).get(descriptorName);  //get the content of the descriptor
 
-    
-//    /**
-//     *	<p> This method returns the resource-adapter properties </p>
-//     *
-//     *  <p> Output value: "adapterProperties" -- Type: <code>java.util.List</code>/</p>
-//     *	@param	handlerCtx	The HandlerContext.
-//     */
-//    @Handler(id="getAdapterProperties",
-//    input={
-//        @HandlerInput(name="dProps", type=Properties.class)},
-//    output={
-//        @HandlerOutput(name="properties", type=java.util.Map.class),
-//        @HandlerOutput(name="dProps", type=Properties.class)})
-//
-//        public static void getAdapterProperties(HandlerContext handlerCtx) {
-//
-//            Properties dProps = (Properties)handlerCtx.getInputValue("dProps");
-//            String filePath = dProps.getProperty("filePath");
-//            Map props = new HashMap();
-//            try{
-//                //TODO-V3
-//                //props = ConnectorRuntime.getRuntime().getResourceAdapterBeanProperties(filePath);
-//                clearValues(props);
-//            }catch(Exception ex){
-//                //TODO: Log exception,  for now just ignore and return empty properties list
-//            }
-//            handlerCtx.setOutputValue("properties", props);
-//            handlerCtx.setOutputValue("dProps", dProps);
-//    }    
+        if (GuiUtil.isEmpty(descriptorText)){
+            System.out.printf("Could not locate %s%n", descriptorName);
+        }
+        handlerCtx.setOutputValue("descriptorText", descriptorText);
 
-//	private static void clearValues(Map map) {
-//            //refer to bugid 6212118
-//            //The value returned by connector runtime is the type for that property, we want to 
-//            //empty it out so that user can fill in the value 
-//
-//            Set<String> keySet = map.keySet();
-//            for(String key: keySet) {
-//                    map.put(key, "");
-//            }
-//	}
+    }
+ 
 }

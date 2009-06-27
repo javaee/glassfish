@@ -56,11 +56,8 @@
         #}
    />
     <sun:html> 
-        <!beforeCreate
-            getAppServerVersion(version=>$attribute{version});
-        />
        
-	<sun:head id="head" title="#{version} $resource{i18n.common.AdminConsole}" >
+	<sun:head id="head" title="#{sessionScope.appServerVersion} $resource{i18n.common.AdminConsole}" >
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$attribute{formId})
                 includeIntegrations(type="org.glassfish.admingui:favicon" root="#{component}");

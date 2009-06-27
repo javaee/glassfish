@@ -49,8 +49,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.List;
-import org.glassfish.admingui.common.util.AMXRoot;
-import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -64,13 +62,12 @@ import javax.faces.component.UIInput;
 
 import com.sun.webui.jsf.component.Calendar;
 
-import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import org.glassfish.admingui.common.util.AMX;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.util.HtmlAdaptor;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 
 
@@ -115,7 +112,7 @@ public class CommonHandlers {
         Object initialized = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("_SESSION_INITIALIZED");
         if (initialized == null){
             GuiUtil.initSessionAttributes();
-            HtmlAdaptor.registerHTMLAdaptor(AMXRoot.getInstance().getMBeanServerConnection());
+            HtmlAdaptor.registerHTMLAdaptor(V3AMX.getInstance().getMbeanServerConnection());
         }
         return;
     }
@@ -153,35 +150,6 @@ public class CommonHandlers {
         //sessionMap.put("showLoadBalancer", true); 
         
         sessionMap.put("_INFO_SESSION_INITIALIZED","TRUE");
-    }
-    
-    
-     /**
-     *	<p> This handler returns the version of the app server  </p>
-     *
-     *  <p> Output value: "version" -- Type: <code>String</code>/</p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getAppServerVersion",
-        output={
-        @HandlerOutput(name="version", type=String.class)})
-    public static void getAppServerVersion(HandlerContext handlerCtx) {
-        String version = (String) V3AMX.getAttrsMap(AMX.DOMAIN_ROOT).get("ApplicationServerFullVersion");
-        handlerCtx.setOutputValue("version", version);
-    }
-
-    /**
-     *	<p> This handler returns the full version of the app server, including the build number  </p>
-     *
-     *  <p> Output value: "fullVersion" -- Type: <code>String</code>/</p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getAppServerFullVersion",
-        output={
-        @HandlerOutput(name="fullVersion", type=String.class)})
-    public static void getAppServerFullVersion(HandlerContext handlerCtx) {
-        String version = (String) V3AMX.getAttrsMap(AMX.DOMAIN_ROOT).get("ApplicationServerFullVersion");
-        handlerCtx.setOutputValue("fullVersion", version);
     }
     
      /**
@@ -416,7 +384,7 @@ public class CommonHandlers {
         @HandlerOutput(name="unprocessedChanges", type=List.class)}
     )
     public void checkRestart(HandlerContext handlerCtx) {
-        List<Object[]> changes = AMXRoot.getInstance().getDomainRoot().getSystemStatus().getRestartRequiredChanges();
+        List<Object[]> changes = V3AMX.getInstance().getDomainRoot().getExt().getSystemStatus().getRestartRequiredChanges();
         handlerCtx.setOutputValue("RestartRequired", changes.size() > 0); 
         handlerCtx.setOutputValue("unprocessedChanges", changes); 
     }
@@ -450,37 +418,11 @@ public class CommonHandlers {
         @HandlerOutput(name="supportCluster", type=Boolean.class),
         @HandlerOutput(name="supportHADB", type=Boolean.class)})
         public static void checkSupport(HandlerContext handlerCtx) {
-            handlerCtx.setOutputValue("supportCluster", AMXRoot.getInstance().supportCluster());  
+            handlerCtx.setOutputValue("supportCluster", false);
             handlerCtx.setOutputValue("supportHADB", false);
     }
     
-    
-    /**
-     * This handler will return the contents of the specified deployment 
-     * descriptor as a String.
-     * @param handlerCtx
-     */
-    @Handler(id="getDeploymentDescriptor",
-        input={
-            @HandlerInput(name="appName", type=String.class, required=true),
-            @HandlerInput(name="descriptorName", type=String.class, required=true)
-        },
-        output={
-            @HandlerOutput(name="descriptorText", type=String.class)
-    })
-    public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
-        RuntimeMgr runtimeMgr = AMXRoot.getInstance().getRuntimeMgr();
-        String descriptorText = runtimeMgr.getDeploymentConfigurations(appName).get(descriptorName);  //get the content of the descriptor
-        
-        if (GuiUtil.isEmpty(descriptorText)){
-            System.out.printf("Could not locate %s%n", descriptorName);
-        }
-        handlerCtx.setOutputValue("descriptorText", descriptorText);
-        
-    }
-    
+
     private static final int INDEX=0;
     
 }

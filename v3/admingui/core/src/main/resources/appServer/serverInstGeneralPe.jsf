@@ -44,9 +44,14 @@
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="appServer/serverInstGeneralPe.jsf");
-        getInstanceGeneralAttributes(instanceName="#{instanceName}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
-                iiopPorts=>$attribute{iiopPorts}, configDir=>$attribute{configDir}, 
-                version=>$attribute{version}, debugPort=>$attribute{debugPort});
+        getProxyAttrs(objectNameStr="v3:pp=,type=domain-root,name=v3" valueMap="#{pageSession.valueMap}")
+println("!!!!!#{pageSession.valueMap}")
+
+        getProxyAttrs(objectNameStr="v3:pp=/domain/configs/config[server-config],type=java-config" valueMap="#{pageSession.valueMap2}")
+
+        println("!!!!!#{pageSession.valueMap2}")
+        getDebugInfo(debugEnabled="#{pageSession.valueMap2['DebugEnabled']}"
+            debugOptions="#{pageSession.valueMap2['DebugOptions']}" debugInfo="#{pageSession.debugInfo}")
         />   
     </event>
 #include "/shared/restart.inc"
@@ -54,69 +59,82 @@
     #include "/shared/treeBreadcrumbs.inc"
 #include "serverInstTabs.inc"
           
-                <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" > 
-                        <sun:button id="stopInstance" text="$resource{i18n.button.stopInstance}" disabled="#{false}" primary="#{false}"
-                        onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
-                                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} 
-                                    else {return false;} " >
-                             <!command
-				 redirect("#{facesContext.externalContext.requestContextPath}/shutdown.jsf");
-			     />
-                        </sun:button>
-                        <!-- TODO V3 final
-                        <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  primary="#{true}"
-                            onClick="javascript:var win=window.open('../logViewer/logViewer.jsf?instanceName=#{instanceName}&loglevel=INFO&logFile=server.log&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
-                        />
-                        <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog}" primary="#{false}">
-                            <!command rotateLogFile(instanceName="#{instanceName}") />
-                        </sun:button>
-                        <sun:button id="jndiBrowsing" text="$resource{i18n.button.jndiBrowsing}"  
-                            onClick="javascript:var win=window.open('../jndiTree/jndiNavFrame.jsf?instanceName=#{instanceName}','JndiBrowsingWindow','width='+(screen.width/2)+',height='+(screen.height/2)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus();return false; var f=document.form;if (f != null) {f.submit(); return true}" 
-                        />
-                        <sun:button id="upgradeProfile" text="$resource{i18n.button.upgradeProfile}" primary="#{false}" disabled="#{disableUpgrade}">
-                            <!command  
-                                redirect(page="upgradeProfile.jsf"); 
-                            />
-                        </sun:button>
-                        <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
-                            <!command  
-                            redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}"); 
-                            />
-                        </sun:button>-->
-                </sun:title>
-               
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" >
+            <sun:button id="stopInstance" text="$resource{i18n.button.stopInstance}" disabled="#{false}" primary="#{false}"
+            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
+                      { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+                        else {return false;} " >
+                 <!command
+            redirect("#{facesContext.externalContext.requestContextPath}/shutdown.jsf");
+     />
+            </sun:button>
+            <!-- TODO V3 final
+            <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  primary="#{true}"
+                onClick="javascript:var win=window.open('../logViewer/logViewer.jsf?instanceName=#{instanceName}&loglevel=INFO&logFile=server.log&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
+            />
+            <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog}" primary="#{false}">
+                <!command rotateLogFile(instanceName="#{instanceName}") />
+            </sun:button>
+            <sun:button id="jndiBrowsing" text="$resource{i18n.button.jndiBrowsing}"
+                onClick="javascript:var win=window.open('../jndiTree/jndiNavFrame.jsf?instanceName=#{instanceName}','JndiBrowsingWindow','width='+(screen.width/2)+',height='+(screen.height/2)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus();return false; var f=document.form;if (f != null) {f.submit(); return true}"
+            />
+            <sun:button id="upgradeProfile" text="$resource{i18n.button.upgradeProfile}" primary="#{false}" disabled="#{disableUpgrade}">
+                <!command
+                    redirect(page="upgradeProfile.jsf");
+                />
+            </sun:button>
+            <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
+                <!command
+                redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
+                />
+            </sun:button>
+            -->
+    </sun:title>
+
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet" >			 
-                        <!-- Text Field section -->               
-                        <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
-                                <sun:staticText id="hostName" text="#{requestScope.hostName}" /> 
-                            </sun:property>                       
-                            <sun:property id="httpPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}">                           
-                                <sun:staticText id="httpPorts" text="#{requestScope.httpPorts}"/>     
-                            </sun:property> 
-                            <sun:property id="iiopPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.iiopPortsLabel}">                           
-                                <sun:staticText id="iiopPorts" text="#{requestScope.iiopPorts}"/>     
-                            </sun:property>
-                            <!-- TODO-V3
-                            <sun:property id="jvmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">                           
-                                <sun:hyperlink id="jvmlink" text="$resource{i18n.inst.jvmReport}" 
-                                    onClick="javascript:
-                                    var jvmWin = window.open('jvmReport.jsf?instanceName=#{instanceName}&pageTitle=$resource{i18n.jvm.jvmReportPageName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
-                                    jvmWin.focus(); return false;" />
-                            </sun:property> -->
-                            <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">                           
-                                <sun:staticText id="configDir" text="#{requestScope.configDir}"/>     
-                            </sun:property> 
-                            <sun:property id="versionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">                           
-                                <sun:staticText id="version" text="#{requestScope.version}"/>     
-                            </sun:property> 
-                            <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">                           
-                                <sun:staticText id="debugPort" text="#{requestScope.debugPort}"/>     
-                            "<br /><br />
-                            </sun:property>
-                        </sun:propertySheetSection>
+    <sun:propertySheet id="propertySheet" >
+        <!-- Text Field section -->
+        <sun:propertySheetSection id="propertSectionTextField">
+            <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
+                <sun:staticText id="hostName" text="#{sessionScope.serverName}" />
+            </sun:property>
+
+<!--
+            <sun:property id="httpPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}">
+                <sun:staticText id="httpPorts" text="#{requestScope.httpPorts}"/>
+            </sun:property>
+            <sun:property id="iiopPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.iiopPortsLabel}">
+                <sun:staticText id="iiopPorts" text="#{requestScope.iiopPorts}"/>
+            </sun:property>
+-->
+            <!-- TODO-V3
+            <sun:property id="jvmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
+                <sun:hyperlink id="jvmlink" text="$resource{i18n.inst.jvmReport}"
+                    onClick="javascript:
+                    var jvmWin = window.open('jvmReport.jsf?instanceName=#{instanceName}&pageTitle=$resource{i18n.jvm.jvmReportPageName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
+                    jvmWin.focus(); return false;" />
+            </sun:property> 
+            -->
+
+            <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
+                <sun:staticText id="configDir" text="#{pageSession.valueMap['ConfigDir']}"/>
+            </sun:property>
+
+
+            <sun:property id="versionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">
+                <sun:staticText id="version" text="#{pageSession.valueMap['ApplicationServerFullVersion']}"/>
+            </sun:property>
+
+            <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
+                <sun:staticText id="debugPort" text="#{pageSession.debugInfo}"/>
+            "<br /><br />
+            </sun:property>
+
+
+
+
+        </sun:propertySheetSection>
 
                     </sun:propertySheet>    
 	<sun:hidden id="helpKey" value="$resource{help.serverInstGeneralPe}" />
