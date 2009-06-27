@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,50 +33,70 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- iiopListenerEdit.jsf -->
+<!-- sslEdit.jsf -->
 
 <!initPage
-    setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings")
-    setResourceBundle(key="help_corba" bundle="org.glassfish.corba.admingui.Helplinks");
+    setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings");
+	setResourceBundle(key="help_corba" bundle="org.glassfish.corba.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_corba.iiopListener.editPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_corba.sslPageTitle}" >
 <!define name="content">
     <event>
-    <!beforeCreate
+      <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setSessionAttribute(key="iiopTab" value="iiopEdit");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerEdit.jsf");
+        setSessionAttribute(key="iiopTab" value="sslEdit");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/sslEdit.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service")
-        setPageSessionAttribute(key="childType" value="iiop-listener")
-        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener,name=#{pageSession.Name}");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        setPageSessionAttribute(key="parentObjectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener,name=#{pageSession.Name}")
+        setPageSessionAttribute(key="childType" value="ssl")
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/iiop-service/iiop-listener[#{pageSession.Name}],type=ssl");
+
+        proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+
+        if (#{requestScope.exist}){
+            setPageSessionAttribute(key="edit" value="#{true}" )
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
+            convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['SSL3TLSCiphers']}"
+                CommonCiphersList="#{requestScope.selectedCommon}"
+                EphemeralCiphersList="#{requestScope.selectedEphemeral}"
+                OtherCiphersList="#{requestScope.selectedOther}"
+                EccCiphersList="#{requestScope.selectedEcc}")
+
+        }
+        if (! #{requestScope.exist}){
+            setPageSessionAttribute(key="edit" value="#{false}" )
+            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        }
         //set the following for including buttons.inc
+        
         setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
-        setPageSessionAttribute(key="edit" value="#{true}" )
-        setPageSessionAttribute(key="showDefaultButton" value="#{true}" )
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
-        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" )
-    />
-    </event>
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )
+      />
+  </event>
+
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "iiopTab.inc"
 #include "/shared/alertMsg.inc"
+
         <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListener.editPageTitle}" helpText="$resource{i18n_corba.iiopListener.editPageTitleHelp}">
-#include "/shared/editPageButtons.inc"
+        <sun:title id="propertyContentPage" title="$resource{i18n_corba.sslPageTitle}" helpText="$resource{i18n_corba.sslPageTitleHelp}">
+#include "sslButtons.inc"
         </sun:title>
         "<br><br>
-#include "/corba/iiopListenerAttrs.inc"
+#include "/corba/sslAttrs.jsf"
 #include "/shared/propertyDescTable.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help_corba.iiopListenerEdit}" />
+	<sun:hidden id="helpKey" value="$resource{help_corba.iiop.sslEdit}" />
 </sun:form>
 #include "/shared/changeButtonsJS.inc"
+#include "sslValidationsJS.inc"
 </define>
 </composition>
 

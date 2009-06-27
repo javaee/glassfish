@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -32,89 +32,45 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- -->
-
-
+-->
+<!-- configuration/iiopListenerNew.jsf -->
 <!initPage
-    setAttribute(key="edit" value="#{false}" )
-    setResourceBundle(key="i18n_corba" bundle="org.glassfish.ejb.admingui.Strings");
-    setResourceBundle(key="help_corba" bundle="org.glassfish.ejb.admingui.Helplinks");
+    setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings")
+	setResourceBundle(key="help_corba" bundle="org.glassfish.corba.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_corba.iiopListeners.step1PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_corba.iiopListener.newPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerNew.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service")
+        setPageSessionAttribute(key="childType" value="iiop-listener")
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
-        setPageSessionAttribute(key="childType" value="iiop-listener");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n_corba.iiopListeners.step1PageTitle}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerNew.jsf");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n_corba.iiopListeners.NewPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n_corba.iiopListeners.NewPageHelp}");
-        setPageSessionAttribute(key="step2PageTitle" value="$resource{i18n_corba.iiopListeners.step2PageTitle}");
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getRequestValue(key="fromStep2" value="#{pageSession.fromStep2}");
-        getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
+        setPageSessionAttribute(key="edit" value="#{false}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
-    </event>
+ </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/shared/alertMsg.inc"
-
-        <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18nSecurity.jacc.NewPageTitle}" helpText="$resource{$resource{i18nSecurity.jacc.NewPageHelp}}">
+        <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListener.NewPageTitle}" helpText="$resource{i18n_corba.iiopListener.NewPageHelp}">
 #include "/shared/editPageButtons.inc"
         </sun:title>
         "<br><br>
-#include "/security/jacc/jaccProvider.inc"
+#include "/corba/iiopListenerAttrs.inc"
 #include "/shared/propertyDescTable.inc"
-
-	<sun:hidden id="helpKey" value="$resource{help_security.jaccProviderNew}" />
+	<sun:hidden id="helpKey" value="$resource{help_corba.iiopListenerNew}" />
 </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
 
-
-
-====================================================
-
-
-<!-- configuration/iiopListenerNew.jsf -->
-<!initPage
-    setAttribute(key="edit" value="#{false}" )
-    setResourceBundle(key="i18n_corba" bundle="org.glassfish.ejb.admingui.Strings");
-    setResourceBundle(key="help_corba" bundle="org.glassfish.ejb.admingui.Helplinks");
-/>
-<sun:page id="page1">
-    <!beforeCreate
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.iiopListeners.step1PageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.iiopListeners.NewPageHelp}");
-        setPageSessionAttribute(key="step2PageTitle" value="$resource{i18n.iiopListeners.step2PageTitle}");
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getRequestValue(key="fromStep2" value="{pageSession.fromStep2}");
-        getTableList(Properties="#{props}", TableList=>$attribute{tableList});        
-    />
-#include "shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}">
-            <sun:script url="../js/restart.js" />
-        </sun:head>
-#include "alertMsg.inc"
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-            <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "alertMsg.inc"
-#include "configuration/iiopListener.inc"               
-#include "propertyTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.iiopListenerNew}" />
-            </sun:form>
-            "<br/><br/>
-        </sun:body>
-#include "changeButtonsJS.inc"         
-    </sun:html>
-
-</sun:page>

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,49 +33,61 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- ejb/orb/iiopListeners.jsf -->
+<!-- configuration/iiopListeners.jsf -->
+
+
 
 <!initPage
-    setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings");
+    setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings")
     setResourceBundle(key="help_corba" bundle="org.glassfish.corba.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_corba.iiopListeners.TableTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_corba.iiopListeners.ListPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
         setPageSessionAttribute(key="childType" value="iiop-listener");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_corba.msg.JS.confirmDeleteIiopListener}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/ejb/orb/iiopListenerNew.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/ejb/orb/iiopListeners.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/ejb/orb/iiopListenerEdit.jsf?configName=#{configName}");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18n_corba.iiopListeners.ListPageTitle}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nSecurity.msg.JS.confirmDeleteIiopListener}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/corba/iiopListenerNew.jsf?configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/corba/iiopListeners.jsf?configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/corba/iiopListenerEdit.jsf?configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18n_corba.iiopListeners.TableTitle}");
     />
     </event>
 #include "/shared/restart.inc"
 
             <sun:form id="propertyForm">
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListeners.ListPageTitle}"
+         <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListeners.ListPageTitle}"
                  helpText="$resource{i18n_corba.iiopListeners.ListPageHelp}" />
 		 "<br /> <br />
-<sun:table id="configs" title="#{tableTitle}">
+<sun:table id="configs" title="#{tableTitle}"
+    deselectMultipleButton="$boolean{true}"
+    deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
+    selectMultipleButton="$boolean{true}"
+    selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
+    <!afterCreate
+        getClientId(component="$this{component}" clientId=>$page{tableId});
+    />
 
-//#include "/shared/listTableButtons.inc"
+#include "/shared/listTableButtons.inc"
 
-   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+<sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
          getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
         />
     <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
-            <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
+            <sun:checkbox id="select"
+                selected="#{td.value.selected}"
+                selectedValue="$boolean{true}"
+                onClick="setTimeout('initAllRows(); changeOneTableButton()', 0)"
+            />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.common.name.header}"  sort="Name" rowHeader="$boolean{true}" id="col1">
-        //<sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}&name=#{td.value.Name}" />
-        <staticText id="link" value="#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}&name=#{td.value.Name}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.common.Enabled}"   sort="Enabled" rowHeader="$boolean{true}" id="col2">
@@ -89,10 +101,11 @@
     </sun:tableColumn>
 
   </sun:tableRowGroup>
-
 </sun:table>
 
 	<sun:hidden id="helpKey" value="$resource{help_corba.iiopListeners}" />
             </sun:form>
+#include "/shared/changeButtonsJS.inc"
+
 </define>
 </composition>
