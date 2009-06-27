@@ -54,10 +54,19 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
+        
+                if(#{pageSession.hasRadioButtons}){
+                    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
+                        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
+                    }
+
+                }
                 if(#{pageSession.hasPropertySheet}){
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
+                        parentObjectNameStr="#{pageSession.parentObjectNameStr}"
+                        forceCreate="#{pageSession.forceCreate}"
                     );
                     if(#{pageSession.has2Objects}){
                         saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"

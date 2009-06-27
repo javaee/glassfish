@@ -521,8 +521,8 @@ public class UtilHandlers {
         @HandlerOutput(name = "item", type = SelectItem[].class)})
     public static void StringArrayToSelectItemArray(HandlerContext handlerCtx) {
 
-        String[] stringAry = (String[]) handlerCtx.getInputValue("stringAry");
-        handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringAry));
+        String[] stringArray = (String[]) handlerCtx.getInputValue("stringArray");
+        handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringArray));
 
      }
 
