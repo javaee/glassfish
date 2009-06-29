@@ -64,18 +64,18 @@ public interface ResourceDeployer {
     /**
      * Deploy the resource into the server's runtime naming context
      *
-     * @param resoure a resource object (eg. JmsResource)
+     * @param resource a resource object (eg. JmsResource)
      * @throws Exception thrown if fail
      */
-    void deployResource(Object resoure) throws Exception;
+    void deployResource(Object resource) throws Exception;
 
     /**
      * Undeploy the resource from the server's runtime naming context
      *
-     * @param resoure a resource object (eg. JmsResource)
+     * @param resource a resource object (eg. JmsResource)
      * @throws Exception thrown if fail
      */
-    void undeployResource(Object resoure) throws Exception;
+    void undeployResource(Object resource) throws Exception;
     
     /**
      * Redeploy the resource into the server's runtime naming context
@@ -88,18 +88,18 @@ public interface ResourceDeployer {
     /**
      * Enable the resource in the server's runtime naming context
      *
-     * @param resoure a resource object (eg. JmsResource)
+     * @param resource a resource object (eg. JmsResource)
      * @exception Exception thrown if fail
      */
-	void enableResource(Object resoure) throws Exception;
+	void enableResource(Object resource) throws Exception;
 
     /**
      * Disable the resource in the server's runtime naming context
      *
-     * @param resoure a resource object (eg. JmsResource)
+     * @param resource a resource object (eg. JmsResource)
      * @exception Exception thrown if fail
      */
-	void disableResource(Object resoure) throws Exception;
+	void disableResource(Object resource) throws Exception;
 
 
     /**
