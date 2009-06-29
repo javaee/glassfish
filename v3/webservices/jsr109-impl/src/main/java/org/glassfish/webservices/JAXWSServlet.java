@@ -280,7 +280,8 @@ public class JAXWSServlet extends HttpServlet {
 
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
-            String deployedDir = servEnv.getApplicationRepositoryPath().getAbsolutePath();
+            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
+                    endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
             
             File pkgedWsdl = null;
             if(deployedDir != null) {

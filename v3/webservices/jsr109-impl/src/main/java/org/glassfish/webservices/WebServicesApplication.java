@@ -66,6 +66,12 @@ public class WebServicesApplication implements ApplicationContainer {
                 while(iter.hasNext()) {
                     contextRoot = iter.next();
                     dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
+                    //TODO BM add an equivalent of  WebservicesDeployers message here
+                   // logger.info(format(rb.getString("enterprise.deployment.endpoint.registration"),
+
+                     //                         nextEndpoint.getEndpointName(), actualAddress.toString() ));
+
+                    logger.info("Registering ejb endpoint" + contextRoot);
                 }
             }
         } catch (EndpointRegistrationException e) {

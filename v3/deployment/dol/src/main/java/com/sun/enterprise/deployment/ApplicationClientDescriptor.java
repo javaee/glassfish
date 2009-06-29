@@ -327,8 +327,8 @@ public class ApplicationClientDescriptor extends BundleDescriptor
 	    }
 	}
 	throw new IllegalArgumentException(localStrings.getLocalString(
-            "enterprise.deployment.exceptionappclienthasnoservicerefbyname", 
-            "This application client [{0}] has no service reference by the name of [{1}]", 
+            "enterprise.deployment.exceptionappclienthasnoservicerefbyname",
+            "This application client [{0}] has no service reference by the name of [{1}]",
             new Object[] {getName(), name}));
     }
 
