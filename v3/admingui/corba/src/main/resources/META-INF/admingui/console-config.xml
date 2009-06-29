@@ -8,4 +8,14 @@
                 parentId="configuration" 
                 content="corbaPluginTreeNode.jsf"
         />
+
+        <!-- add the http ports to the Server General page -->
+        <integration-point
+                id="serverGeneral"
+                type="org.glassfish.admingui:serverInstGeneralPe"
+                priority="300"
+                parentId=""
+                content="iiopServerPageNode.jsf"
+        />
+
 </console-config>
