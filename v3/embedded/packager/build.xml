@@ -68,7 +68,7 @@ own identifying information: Portions Copyright [yyyy]
          <rejar destfile="${finaljar}">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
             <manifest>
-                 <attribute name="Main-Class" value="org.glassfish.embed.EmbeddedMain"/>
+                 <attribute name="Main-Class" value="com.sun.enterprise.glassfish.bootstrap.ASMain"/>
              </manifest>
         </rejar>
 
