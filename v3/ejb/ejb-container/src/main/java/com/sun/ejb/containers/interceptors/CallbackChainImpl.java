@@ -36,7 +36,6 @@
  */
 package com.sun.ejb.containers.interceptors;
 
-import com.sun.ejb.containers.BaseContainer;
 import java.util.Arrays;
 
 /**
@@ -45,13 +44,10 @@ import java.util.Arrays;
  */
 class CallbackChainImpl {
 
-    protected BaseContainer container;
     protected CallbackInterceptor[] interceptors;
     protected int size;
 
-    CallbackChainImpl(BaseContainer container,
-                      CallbackInterceptor[] interceptors) {
-        this.container = container;
+    CallbackChainImpl(CallbackInterceptor[] interceptors) {
         this.interceptors = interceptors;
         this.size = (interceptors == null) ? 0 : interceptors.length;
     }

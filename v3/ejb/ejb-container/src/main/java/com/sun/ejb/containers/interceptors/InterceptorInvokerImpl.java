@@ -1,7 +1,8 @@
 /*
+ * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,36 +34,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.ejb.containers.interceptors;
 
-package com.sun.enterprise.deployment;
+import org.glassfish.api.interceptor.JavaEEInterceptorBuilder;
+import org.glassfish.api.interceptor.InterceptorInvoker;
+import org.glassfish.api.interceptor.InterceptorInfo;
 
-import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.util.*;
-import java.util.logging.Logger;
+import java.lang.reflect.Method;
 
 /**
- * Contains information about 1 ejb interceptor.
- */ 
+ *
+ */
+public class InterceptorInvokerImpl {
 
-public class EjbInterceptor extends InterceptorDescriptor
-{
+    private Object proxy;
+    private Object[] interceptorInstances;
+    private InterceptorManager interceptorManager;
 
-    private EjbBundleDescriptor ejbBundleDescriptor;
-  
-
-    public EjbBundleDescriptor getEjbBundleDescriptor() {
-	    return ejbBundleDescriptor;
+    public Object getProxy() {
+        return proxy;
     }
 
-    public void setEjbBundleDescriptor(EjbBundleDescriptor bundleDescriptor) {
-	    ejbBundleDescriptor = bundleDescriptor;
-        super.setBundleDescriptor(bundleDescriptor);
+    public Object[] getInterceptorInstances() {
+        return interceptorInstances;
     }
 
-    public String toString() {
-        return "EjbInterceptor class = " + getInterceptorClassName();
+    public Object invokeMethod(Object targetInstance, Method m, Object[] args) throws Throwable {
+
+        return m.invoke(targetInstance, args);
+        
     }
+
+    public void invokePostConstruct() {}
+
+    public void invokePreDestroy() {}
+
+
+    public void setProxy(Object i) {
+        proxy = i;
+    }
+
+    public void setInterceptorManager(InterceptorManager manager) {
+        interceptorManager = manager;
+        interceptorInstances = manager.createInterceptorInstances();
+    }
+
 }

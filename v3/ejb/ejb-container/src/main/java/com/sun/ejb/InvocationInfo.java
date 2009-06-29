@@ -43,6 +43,8 @@ import com.sun.enterprise.security.CachedPermission;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
+import com.sun.ejb.containers.interceptors.InterceptorManager;
+
 /**
  * InvocationInfo caches various attributes of the method that
  * is currently held in the invocation object (that is currently executed)
@@ -83,7 +85,7 @@ public class InvocationInfo {
     public boolean    flushEnabled;
     public boolean    checkpointEnabled;
 
-    public EjbInvocation.InterceptorChain interceptorChain;
+    public InterceptorManager.InterceptorChain interceptorChain;
 
     // Only applies to EJB 3.0 SFSBs
     public EjbRemovalInfo     removalInfo;

@@ -47,7 +47,7 @@ public final class InvocationHandlerUtil {
 
     InvocationHandlerUtil() {}
 
-    static Object invokeJavaObjectMethod(InvocationHandler handler, 
+    public static Object invokeJavaObjectMethod(InvocationHandler handler,
                                          Method method, Object[] args) 
         throws EJBException {
 
@@ -83,7 +83,7 @@ public final class InvocationHandlerUtil {
         return returnValue;
     }
 
-    static boolean isDeclaredException(Throwable t,
+    public static boolean isDeclaredException(Throwable t,
                                        Class[] declaredExceptions) 
     {
         boolean declaredException = false;
@@ -99,7 +99,7 @@ public final class InvocationHandlerUtil {
         return declaredException;
     }
 
-    static void throwLocalException(Throwable t, 
+    public static void throwLocalException(Throwable t,
                                     Class[] declaredExceptions) 
         throws Throwable 
     {
@@ -117,7 +117,7 @@ public final class InvocationHandlerUtil {
 
     }
 
-    static void throwRemoteException(Throwable t,
+    public static void throwRemoteException(Throwable t,
                                      Class[] declaredExceptions)
         throws Throwable 
     {

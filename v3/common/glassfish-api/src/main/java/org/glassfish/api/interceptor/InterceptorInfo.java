@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,89 +33,90 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.api.interceptor;
 
-package com.sun.ejb.containers.interceptors;
+
+import java.util.*;
 
 import java.lang.reflect.Method;
-import javax.interceptor.InvocationContext;
-import javax.ejb.EJBContext;
-
-import com.sun.ejb.containers.EJBContextImpl;
-
-import java.util.Map;
-import java.util.HashMap;
-
 
 /**
- * Concrete InvocationContext implementation passed to callback methods 
- * defined in interceptor classes.
  */
-public class CallbackInvocationContext implements InvocationContext {
 
+public class InterceptorInfo {
 
-    private Map contextData;
-    private int callbackIndex = 0;
-    private CallbackChainImpl callbackChain;
-    private Object[] interceptorInstances;
+    private List postConstructInterceptors = new LinkedList();
+    private List preDestroyInterceptors = new LinkedList();
+
+    private List aroundInvokeInterceptorChain = new LinkedList();
+
+    private Set<String> interceptorClassNames = new HashSet<String>();
+
     private Object targetObjectInstance;
+    private Class targetClass;
 
-    public CallbackInvocationContext(Object targetObjectInstance,
-                                     Object[] interceptorInstances,
-                                     CallbackChainImpl chain) {
-        this.targetObjectInstance = targetObjectInstance;
-        this.interceptorInstances = interceptorInstances;
-        callbackChain = chain;
+    private boolean hasTargetClassAroundInvoke = false;
+
+    public void setTargetObjectInstance(Object instance) {
+        targetObjectInstance = instance;
     }
 
-    // InvocationContext methods
-
-    public Object getTarget() {
+    public Object getTargetObjectInstance() {
         return targetObjectInstance;
     }
 
-    public Object[] getInterceptorInstances() {
-        return interceptorInstances;
+    public void setTargetClass(Class targetClass) {
+        this.targetClass = targetClass;
     }
 
-    public Object getTimer() {
-        return null;
+    public Class getTargetClass() {
+        return this.targetClass;
     }
 
-    public Method getMethod() {
-        return null;
+    public void setPostConstructInterceptors(List interceptors) {
+        postConstructInterceptors = interceptors;
     }
 
-    
-    public Object[] getParameters() {
-        throw new IllegalStateException("not applicable to Callback methods");
+    public List getPostConstructInterceptors() {
+        return new LinkedList(postConstructInterceptors);
     }
 
-    public void setParameters(Object[] params) {
-        throw new IllegalStateException("not applicable to Callback methods");
+    public void setPreDestroyInterceptors(List interceptors) {
+        preDestroyInterceptors = interceptors;
     }
 
-
-    public Map<String, Object> getContextData() {
-        if( contextData == null ) {
-            contextData = new HashMap();
-        }
-
-        return contextData;
+    public List getPreDestroyInterceptors() {
+        return new LinkedList(preDestroyInterceptors);
     }
-    
-    public Object proceed() throws Exception {
-        try {
-            callbackIndex++;
-            return callbackChain.invokeNext(callbackIndex, this);
-        } catch (Exception ex) {
-            throw ex;
-        } catch (Throwable th) {
-            throw new Exception(th);
-        }
+
+    public void setInterceptorClassNames(Set<String> names) {
+        interceptorClassNames = new HashSet<String>(names);
+    }
+
+    public Set<String> getInterceptorClassNames() {
+        return interceptorClassNames;
+    }
+
+    // TODO revisit this to account for method-level interceptors
+    public void setAroundInvokeInterceptorChain(List chain) {
+        aroundInvokeInterceptorChain = new LinkedList(chain);
     }
 
 
+    public void setHasTargetClassAroundInvoke(boolean flag) {
+        hasTargetClassAroundInvoke = flag;
+    }
 
+    public boolean getHasTargetClassAroundInvoke() {
+        return hasTargetClassAroundInvoke;
+    }
+     
+
+    public List getAroundInvokeInterceptors(Method m) {
+
+        // TODO need to implement per-method logic.
+        return aroundInvokeInterceptorChain;
+
+    }
 
 }
-

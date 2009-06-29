@@ -36,9 +36,14 @@
 package com.sun.enterprise.deployment.annotation.context;
 
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.InterceptorDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
+
+import java.util.*;
 
 /**
  * This provides a context for a ManagedBean
@@ -46,6 +51,11 @@ import java.lang.reflect.AnnotatedElement;
  * @author Kenneth Saks
  */
 public class ManagedBeanContext extends ResourceContainerContextImpl {
+
+    private boolean inInterceptorMode = false;
+
+    private InterceptorDescriptor currentInterceptorDesc = null;
+
     public ManagedBeanContext(ManagedBeanDescriptor managedBean) {
         super(managedBean);
     }
@@ -57,6 +67,49 @@ public class ManagedBeanContext extends ResourceContainerContextImpl {
     public void setDescriptor(ManagedBeanDescriptor managedBeanDesc) {
         descriptor = managedBeanDesc;
     }
+
+
+    public void setInterceptorMode(InterceptorDescriptor desc) {
+        inInterceptorMode = true;
+        currentInterceptorDesc = desc;
+    }
+
+    public void unsetInterceptorMode() {     
+        inInterceptorMode = false;
+        currentInterceptorDesc = null;
+    }
+
+
+    @Override
+    public void addPostConstructDescriptor(
+        LifecycleCallbackDescriptor postConstructDesc) {
+
+        if( inInterceptorMode ) {
+
+            currentInterceptorDesc.addCallbackDescriptor(CallbackType.POST_CONSTRUCT,
+                    postConstructDesc);
+
+        } else {
+            super.addPostConstructDescriptor(postConstructDesc);
+        }
+
+    }
+
+    @Override
+    public void addPreDestroyDescriptor(
+        LifecycleCallbackDescriptor preDestroyDesc) {
+
+        if( inInterceptorMode ) {
+
+            currentInterceptorDesc.addCallbackDescriptor(CallbackType.PRE_DESTROY,
+                    preDestroyDesc);
+
+        } else {
+            super.addPreDestroyDescriptor(preDestroyDesc);
+        }
+
+    }
+
 
     public void endElement(ElementType type, AnnotatedElement element) {
         

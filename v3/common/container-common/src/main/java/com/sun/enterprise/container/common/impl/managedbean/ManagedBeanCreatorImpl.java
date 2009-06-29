@@ -37,7 +37,13 @@ package com.sun.enterprise.container.common.impl.managedbean;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import java.util.Set;
+
+import org.glassfish.api.interceptor.JavaEEInterceptorBuilder;
+import org.glassfish.api.interceptor.InterceptorInfo;
+import org.glassfish.api.interceptor.InterceptorInvoker;
 
 /**
  */
@@ -45,27 +51,67 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 
 public class ManagedBeanCreatorImpl {
 
+    private Habitat habitat;
     private InjectionManager injectionMgr;
 
-    public ManagedBeanCreatorImpl(InjectionManager im) {
-        injectionMgr = im;
+    public ManagedBeanCreatorImpl(Habitat h) {
+        habitat = h;
+        injectionMgr = habitat.getByContract(InjectionManager.class);
     }
 
     public Object createManagedBean(ManagedBeanDescriptor desc) throws Exception {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Class managedBeanClass = loader.loadClass(desc.getBeanClassName());
 
+        // Create managed bean instance
+        Class managedBeanClass = loader.loadClass(desc.getBeanClassName());
         Object managedBean = managedBeanClass.newInstance();
 
-        // Inject instance and call PostConstruct method(s).
-        injectionMgr.injectInstance(managedBean, desc.getGlobalJndiName(), true);
+        // In the simple case the actual managed bean instance is given to the
+        // application.   However, if there are any interceptor classes associated
+        // with the managed bean or any around invoke methods defined on the
+        // managed bean class, a proxy will be returned to the caller.
+        Object callerObject = managedBean;
 
-        // TODO Create proxy if managed bean has interceptors
+        Set<String> interceptorClasses = desc.getAllInterceptorClasses();
 
-        desc.addBeanInstance(managedBean);
 
-        return managedBean;
+        if( interceptorClasses.isEmpty() && !desc.hasAroundInvokeMethod()) {
+            // Inject instance and have injection manager call PostConstruct
+            injectionMgr.injectInstance(managedBean, desc.getGlobalJndiName(), true);
+
+            desc.addBeanInstanceInfo(managedBean);
+
+        } else {
+            JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
+                desc.getInterceptorBuilder();
+
+            InterceptorInvoker interceptorInvoker =
+                    interceptorBuilder.createInvoker(managedBean);
+
+            callerObject = interceptorInvoker.getProxy();
+
+            Object[] interceptorInstances = interceptorInvoker.getInterceptorInstances();
+
+             // Inject instances, but use injection invoker for PostConstruct
+            injectionMgr.injectInstance(managedBean, desc.getGlobalJndiName(), false);
+
+            // Inject interceptor instances
+            for(int i = 0; i < interceptorInstances.length; i++) {
+                 // Inject instance and call PostConstruct method(s).
+                injectionMgr.injectInstance(interceptorInstances[i], desc.getGlobalJndiName(), false);
+            }
+
+            interceptorInvoker.invokePostConstruct();
+
+            desc.addBeanInstanceInfo(managedBean, interceptorInvoker);
+
+        }
+
+
+        // TODO Create proxy if managed bean has interceptors    
+
+        return callerObject;
 
     }
     

@@ -37,6 +37,7 @@ package com.sun.enterprise.container.common.impl.managedbean;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Set;
 
 import org.glassfish.api.managedbean.ManagedBeanManager;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -44,14 +45,9 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 
 
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 
-import com.sun.enterprise.deployment.ManagedBeanDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.logging.LogDomains;
 
@@ -69,6 +65,11 @@ import org.glassfish.internal.data.ApplicationInfo;
 
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+
+import org.glassfish.api.interceptor.InterceptorInvoker;
+import org.glassfish.api.interceptor.InterceptorInfo;
+import org.glassfish.api.interceptor.JavaEEInterceptorBuilder;
+import org.glassfish.api.interceptor.JavaEEInterceptorBuilderFactory;
 
 /**
  */
@@ -136,6 +137,36 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                     // TODO Should move this to regular DOL processing stage
                     next.validate();
 
+                     Set<String> interceptorClasses = next.getAllInterceptorClasses();
+
+
+                    if( !interceptorClasses.isEmpty() || next.hasAroundInvokeMethod()) {
+                        // Inject instance and have injection manager call PostConstruct
+
+                        Class targetClass = bundle.getClassLoader().loadClass(next.getBeanClassName());
+                        InterceptorInfo interceptorInfo = new InterceptorInfo();
+                        interceptorInfo.setTargetClass(targetClass);
+                        interceptorInfo.setInterceptorClassNames(next.getAllInterceptorClasses());
+                        interceptorInfo.setPostConstructInterceptors
+                                (next.getCallbackInterceptors(LifecycleCallbackDescriptor.CallbackType.POST_CONSTRUCT));
+                          interceptorInfo.setPreDestroyInterceptors
+                                (next.getCallbackInterceptors(LifecycleCallbackDescriptor.CallbackType.PRE_DESTROY));
+                        if( next.hasAroundInvokeMethod() ) {
+                            interceptorInfo.setHasTargetClassAroundInvoke(true);
+                        }
+
+                        // TODO handle method-level interceptors
+                        interceptorInfo.setAroundInvokeInterceptorChain(next.getAroundInvokeInterceptors(null));
+
+                        JavaEEInterceptorBuilderFactory interceptorBuilderFactory =
+                                habitat.getByContract(JavaEEInterceptorBuilderFactory.class);
+
+                        JavaEEInterceptorBuilder builder = interceptorBuilderFactory.createBuilder(interceptorInfo);
+
+                        next.setInterceptorBuilder(builder);   
+
+                    }
+
                     compEnvManager.bindToComponentNamespace(next);
 
                     String jndiName = next.getGlobalJndiName();
@@ -144,9 +175,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
 
                     namingManager.publishObject(jndiName, namingProxy, true);
 
-                } catch(javax.naming.NamingException ne) {
+                } catch(Exception e) {
                     throw new RuntimeException("Error binding ManagedBean " + next.getBeanClassName() +
-                    " with name = " + next.getName(), ne);
+                    " with name = " + next.getName(), e);
                 }
             }
         }
@@ -169,16 +200,28 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
 
             for(ManagedBeanDescriptor next : bundle.getManagedBeans()) {
 
-                // Call PreDestroy on each managed bean instance
                 com.sun.enterprise.container.common.spi.util.InjectionManager injectionMgr =
                     habitat.getByContract(com.sun.enterprise.container.common.spi.util.InjectionManager.class);
 
                 for(Object instance : next.getBeanInstances()) {
-                    try {
-                        injectionMgr.invokeInstancePreDestroy(instance, next);
-                    } catch(Exception e) {
-                        _logger.log(Level.FINE, "Managed bean " + next.getBeanClassName() + " PreDestroy", e);
+
+                    InterceptorInvoker invoker = (InterceptorInvoker)
+                            next.getInterceptorInfoForBeanInstance(instance);
+
+                    if( invoker == null ) {
+                        try {
+                            injectionMgr.invokeInstancePreDestroy(instance, next);
+                        } catch(Exception e) {
+                            _logger.log(Level.FINE, "Managed bean " + next.getBeanClassName() + " PreDestroy", e);
+                        }
+                    } else {
+                        try {
+                            invoker.invokePreDestroy();
+                        } catch(Exception e) {
+                            _logger.log(Level.FINE, "Managed bean " + next.getBeanClassName() + " PreDestroy", e);
+                        }
                     }
+
                 }
 
                 com.sun.enterprise.container.common.spi.util.ComponentEnvManager compEnvManager =
@@ -201,6 +244,8 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                     _logger.log(Level.FINE, "Error unpubishing managed bean " +
                            next.getBeanClassName() + " with jndi name " + jndiName, ne);
                 }
+
+                next.clearBeanInstanceInfo();
 
             }
         }

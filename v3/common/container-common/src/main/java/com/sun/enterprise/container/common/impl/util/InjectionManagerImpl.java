@@ -140,7 +140,7 @@ public class InjectionManagerImpl implements InjectionManager {
                 compEnvManager.getJndiNameEnvironment(componentId);
 
             if( componentEnv != null ) {
-                inject(instance.getClass(), instance, componentEnv, componentId, true);
+                inject(instance.getClass(), instance, componentEnv, componentId, invokePostConstruct);
             } else {
                 throw new InjectionException("No descriptor registered for " +
                                              " componentId : " + componentId);

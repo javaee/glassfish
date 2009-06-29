@@ -47,10 +47,9 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.List;
+import java.util.LinkedList;
 import java.util.logging.Level;
 
 @Service
@@ -92,6 +91,43 @@ public class ManagedBeanHandler extends AbstractHandler {
 
         managedBeanDesc.setBeanClassName(managedBeanClass.getName());
 
+
+        Class[] interceptors = null;
+
+
+        // For now, just process the javax.interceptor related annotations directly instead
+        // of relying on the annotation framework.   All the existing javax.interceptor
+        // handlers are very tightly coupled to ejb so it would be more work to abstract those
+        // than to just process the annotations directly.
+
+        // TODO refactor javax.interceptor annotation handlers to support both ejb and non-ejb
+        // related interceptors
+
+        Annotation interceptorsAnn = getClassAnnotation(managedBeanClass, "javax.interceptor.Interceptors");
+        if( interceptorsAnn != null ) {
+            try {
+                Method m = interceptorsAnn.annotationType().getDeclaredMethod("value");
+                interceptors = (Class[]) m.invoke(interceptorsAnn);
+            } catch(Exception e) {
+                AnnotationProcessorException ape = new AnnotationProcessorException(e.getMessage(), element);
+                ape.initCause(e);
+                throw ape;
+            }
+        }
+
+        Method managedBeanAroundInvoke =
+            getMethodForMethodAnnotation(managedBeanClass, "javax.interceptor.AroundInvoke");
+        if( managedBeanAroundInvoke != null ) {
+            // TODO process bean class superclasses for AroundInvoke
+            LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+            desc.setLifecycleCallbackClass(managedBeanClass.getName());
+            desc.setLifecycleCallbackMethod(managedBeanAroundInvoke.getName());
+            managedBeanDesc.addAroundInvokeDescriptor(desc);
+        }
+
+
+
+
         if( aeHandler instanceof ResourceContainerContext ) {
             ((ResourceContainerContext) aeHandler).addManagedBean(managedBeanDesc);            
 
@@ -101,13 +137,77 @@ public class ManagedBeanHandler extends AbstractHandler {
                 new ManagedBeanContext(managedBeanDesc);
             ProcessingContext procContext = element.getProcessingContext();
             procContext.pushHandler(managedBeanContext);
+
             procContext.getProcessor().process(
                 procContext, new Class[] { managedBeanClass });
-            
+
+            if( interceptors != null ) {
+
+                List<InterceptorDescriptor> classInterceptorChain = new LinkedList<InterceptorDescriptor>();
+
+                for(Class i : interceptors) {
+
+                    InterceptorDescriptor nextInterceptor = new InterceptorDescriptor();
+                    nextInterceptor.setInterceptorClassName(i.getName());
+
+                    // Redirect PostConstruct / PreDestroy methods to InterceptorDescriptor
+                    // during annotation processing
+                    managedBeanContext.setInterceptorMode(nextInterceptor);
+
+                    // Process annotations on interceptor
+                    procContext.pushHandler(managedBeanContext);
+                    procContext.getProcessor().process(procContext, new Class[] {i});
+
+
+                    managedBeanContext.unsetInterceptorMode();
+
+                    // Add interceptor to class-leve chain
+                    classInterceptorChain.add(nextInterceptor);
+
+                    Method interceptorAroundInvoke =
+                        getMethodForMethodAnnotation(i, "javax.interceptor.AroundInvoke");
+                    if( interceptorAroundInvoke != null ) {
+                        // TODO process superclasses for AroundInvoke
+                        LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+                        desc.setLifecycleCallbackClass(i.getName());
+                        desc.setLifecycleCallbackMethod(interceptorAroundInvoke.getName());
+                        nextInterceptor.addAroundInvokeDescriptor(desc);
+                    }
+
+                }
+                
+                managedBeanDesc.setClassInterceptorChain(classInterceptorChain);
+
+            }
+           
         }
 
         return getDefaultProcessedResult();
     }
-    
+
+    private Annotation getClassAnnotation(Class c, String annotationClassName) {
+        for(Annotation next : c.getDeclaredAnnotations()) {
+
+            if( next.annotationType().getName().equals(annotationClassName)) {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    private Method getMethodForMethodAnnotation(Class c, String annotationClassName) {
+        for(Method m : c.getDeclaredMethods()) {
+            for(Annotation next : m.getDeclaredAnnotations()) {
+
+                if( next.annotationType().getName().equals(annotationClassName)) {
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+
+
+
 
 }

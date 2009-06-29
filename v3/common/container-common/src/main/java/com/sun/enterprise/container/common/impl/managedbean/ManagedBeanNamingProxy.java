@@ -59,8 +59,7 @@ public class ManagedBeanNamingProxy implements org.glassfish.api.naming.NamingOb
         Object managedBean = null;
         try {
 
-            ManagedBeanCreatorImpl creator = new ManagedBeanCreatorImpl(
-                    habitat.getByContract(InjectionManager.class));
+            ManagedBeanCreatorImpl creator = new ManagedBeanCreatorImpl(habitat);
 
             managedBean = creator.createManagedBean(managedBeanDesc);
             

@@ -4998,7 +4998,7 @@ public abstract class BaseContainer
         if (interceptorManager.hasInterceptors()) {
             try {
                 onEjbMethodStart();
-                result = interceptorManager.intercept(inv);
+                result = interceptorManager.intercept(inv.getInterceptorChain(), inv);
             } catch(Throwable t) {
                 inv.exception = t;
                 throw new InvocationTargetException(t);

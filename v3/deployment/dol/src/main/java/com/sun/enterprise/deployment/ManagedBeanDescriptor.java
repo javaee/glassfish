@@ -42,6 +42,8 @@ import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 
 import java.util.*;
 
+import java.lang.reflect.Method;
+
 /**
  * Descriptor representing a Java EE Managed Bean.
  *
@@ -61,7 +63,13 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
     // Module in which managed bean is defined
     private BundleDescriptor enclosingBundle;
 
+    private Object interceptorBuilder = null;
     private Collection beanInstances = new HashSet();
+    private Map<Object, Object> beanInterceptorInfo = new HashMap<Object, Object>();
+
+    private List<InterceptorDescriptor> classInterceptorChain = new LinkedList<InterceptorDescriptor>();
+
+    private Set<LifecycleCallbackDescriptor> aroundInvokeDescs = new HashSet<LifecycleCallbackDescriptor>();
        
 	/** 
 	* Default constructor. 
@@ -97,17 +105,165 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
         return enclosingBundle;
     }
 
-    public void addBeanInstance(Object o) {
+    public void setInterceptorBuilder(Object b) {
+        interceptorBuilder = b;
+    }
+
+    public Object getInterceptorBuilder() {
+        return interceptorBuilder;
+    }
+
+    public boolean hasInterceptorBuilder() {
+        return (interceptorBuilder != null);
+    }
+
+
+    public void addBeanInstanceInfo(Object o) {
+         addBeanInstanceInfo(o, null);
+     }
+
+    // InterceptorInfo can be null
+    public void addBeanInstanceInfo(Object o, Object interceptorInfo) {
         beanInstances.add(o);
+        if( interceptorInfo != null ) {
+            beanInterceptorInfo.put(o, interceptorInfo);
+        }
     }
 
     public Collection getBeanInstances() {
         return new HashSet(beanInstances);
     }
 
-    public void clearBeanInstances() {
-        beanInstances.clear();
+    public Object getInterceptorInfoForBeanInstance(Object o) {
+        return beanInterceptorInfo.get(o);
     }
+
+    public void clearBeanInstanceInfo() {
+        beanInstances.clear();
+        beanInterceptorInfo.clear();
+        interceptorBuilder = null;
+    }
+
+    public Set<String> getAllInterceptorClasses() {
+        Set<String> classes = new HashSet<String>();
+        for(InterceptorDescriptor desc : classInterceptorChain) {
+            classes.add(desc.getInterceptorClassName());
+        }
+        // TODO update return value to include any method-level interceptors
+
+        return classes;
+    }
+
+    public void setClassInterceptorChain(List<InterceptorDescriptor> chain) {
+        classInterceptorChain = new LinkedList<InterceptorDescriptor>(chain);
+    }
+
+     /**
+     * Return the ordered list of interceptor info for a particular
+     * callback event type.  This list *does* include the info
+     * on any bean class callback.  If present, this would always be the
+     * last element in the list because of the precedence defined by the spec.
+     */
+    public List<InterceptorDescriptor> getCallbackInterceptors(LifecycleCallbackDescriptor.CallbackType type) {
+
+        LinkedList<InterceptorDescriptor> callbackInterceptors =
+                new LinkedList<InterceptorDescriptor>();
+
+        for (InterceptorDescriptor next : classInterceptorChain) {
+            if (next.getCallbackDescriptors(type).size() > 0) {
+                callbackInterceptors.add(next);
+            }
+        }
+      
+        if (this.hasCallbackDescriptor(type)) {
+            InterceptorDescriptor beanClassCallbackInfo =
+                    new InterceptorDescriptor();
+            beanClassCallbackInfo.setFromBeanClass(true);
+            beanClassCallbackInfo.addCallbackDescriptors(type,
+                    this.getCallbackDescriptors(type));
+
+
+            beanClassCallbackInfo.setInterceptorClassName(getBeanClassName());
+            callbackInterceptors.add(beanClassCallbackInfo);
+        }
+
+        return callbackInterceptors;
+    }
+
+   public Set<LifecycleCallbackDescriptor> getAroundInvokeDescriptors() {
+        return aroundInvokeDescs;
+    }
+
+    public void addAroundInvokeDescriptor(LifecycleCallbackDescriptor
+            aroundInvokeDesc) {
+        String className = aroundInvokeDesc.getLifecycleCallbackClass();
+        boolean found = false;
+        for (LifecycleCallbackDescriptor next :
+                getAroundInvokeDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            getAroundInvokeDescriptors().add(aroundInvokeDesc);
+        }
+    }
+
+    public LifecycleCallbackDescriptor
+    getAroundInvokeDescriptorByClass(String className) {
+
+        for (LifecycleCallbackDescriptor next :
+                getAroundInvokeDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasAroundInvokeMethod() {
+        return (getAroundInvokeDescriptors().size() > 0);
+    }
+
+    /**
+     * Return the ordered list of interceptor info for AroundInvoke behavior
+     * of a particular business method.  This list *does* include the info
+     * on any bean class interceptor.  If present, this would always be the
+     * last element in the list because of the precedence defined by the spec.
+     */
+    public List<InterceptorDescriptor> getAroundInvokeInterceptors
+            (Method m) {
+
+        // TODO add method-level interceptor support .  For now,
+        // just return class-level chain
+        
+        LinkedList<InterceptorDescriptor> aroundInvokeInterceptors =
+                new LinkedList<InterceptorDescriptor>();
+
+        //List<EjbInterceptor> classOrMethodInterceptors =
+          //      getClassOrMethodInterceptors(businessMethod);
+
+        for(InterceptorDescriptor desc : classInterceptorChain) {
+            if( desc.hasAroundInvokeDescriptor() ) {
+                aroundInvokeInterceptors.add(desc);
+            }
+        }
+
+
+        if (hasAroundInvokeMethod()) {
+
+            EjbInterceptor interceptorInfo = new EjbInterceptor();
+            interceptorInfo.setFromBeanClass(true);
+            interceptorInfo.addAroundInvokeDescriptors(getAroundInvokeDescriptors());
+            interceptorInfo.setInterceptorClassName(beanClassName);
+
+            aroundInvokeInterceptors.add(interceptorInfo);
+        }
+
+        return aroundInvokeInterceptors;
+    }
+
 
     public String getGlobalJndiName() {
 
@@ -164,7 +320,7 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
 
         aVisitor.accept(this);
 
-        for (Iterator itr = ejbReferences.iterator(); itr.hasNext();) {
+        for (Iterator itr = getEjbReferenceDescriptors().iterator(); itr.hasNext();) {
             EjbReference aRef = (EjbReference) itr.next();
             aVisitor.accept(aRef);
         }

@@ -43,12 +43,14 @@ import com.sun.ejb.containers.BaseContainer;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.ejb.containers.EJBLocalRemoteObject;
 import com.sun.ejb.containers.EjbFutureTask;
+import com.sun.ejb.containers.EJBContextImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
 import com.sun.enterprise.transaction.spi.TransactionOperationsManager;
 
 import javax.ejb.EJBContext;
 import javax.ejb.Timer;
 import javax.interceptor.InvocationContext;
+import com.sun.ejb.containers.interceptors.InterceptorUtil;
 import javax.transaction.Transaction;
 import javax.xml.rpc.handler.MessageContext;
 import javax.xml.soap.SOAPMessage;
@@ -59,6 +61,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import com.sun.ejb.containers.interceptors.InterceptorManager;
 
 /**
  * The EjbInvocation object contains state associated with an invocation
@@ -71,61 +74,9 @@ import java.util.Set;
 public class EjbInvocation
     extends ComponentInvocation
     implements InvocationContext, TransactionOperationsManager, Cloneable,
-         org.glassfish.ejb.api.EJBInvocation
+         org.glassfish.ejb.api.EJBInvocation, InterceptorManager.AroundInvokeContext
 {
   
-    private static Map<Class, Set<Class>> compatiblePrimitiveWrapper
-        = new HashMap<Class, Set<Class>>();
-
-    static {
-        
-        Set<Class> smallerPrimitiveWrappers = null;
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Byte.class);
-        compatiblePrimitiveWrapper.put(byte.class, smallerPrimitiveWrappers);
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Boolean.class);
-        compatiblePrimitiveWrapper.put(boolean.class, smallerPrimitiveWrappers);
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Character.class);
-        compatiblePrimitiveWrapper.put(char.class, smallerPrimitiveWrappers);
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Byte.class);
-        smallerPrimitiveWrappers.add(Short.class);
-        smallerPrimitiveWrappers.add(Integer.class);
-        smallerPrimitiveWrappers.add(Float.class);
-        smallerPrimitiveWrappers.add(Double.class);
-        compatiblePrimitiveWrapper.put(double.class, smallerPrimitiveWrappers);
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Byte.class);
-        smallerPrimitiveWrappers.add(Short.class);
-        smallerPrimitiveWrappers.add(Integer.class);
-        smallerPrimitiveWrappers.add(Float.class);
-        compatiblePrimitiveWrapper.put(float.class, smallerPrimitiveWrappers);
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Byte.class);
-        smallerPrimitiveWrappers.add(Short.class);
-        smallerPrimitiveWrappers.add(Integer.class);
-        compatiblePrimitiveWrapper.put(int.class, smallerPrimitiveWrappers);
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Byte.class);
-        smallerPrimitiveWrappers.add(Short.class);
-        smallerPrimitiveWrappers.add(Integer.class);
-        smallerPrimitiveWrappers.add(Long.class);
-        compatiblePrimitiveWrapper.put(long.class, smallerPrimitiveWrappers);
-        
-        smallerPrimitiveWrappers = new HashSet<Class>();
-        smallerPrimitiveWrappers.add(Byte.class);
-        smallerPrimitiveWrappers.add(Short.class);
-        compatiblePrimitiveWrapper.put(short.class, smallerPrimitiveWrappers);
-    }
 
     public ComponentContext context;
     
@@ -480,7 +431,7 @@ public class EjbInvocation
 
     private Map      contextData;
 
-    public InterceptorChain getInterceptorChain() {
+    public InterceptorManager.InterceptorChain getInterceptorChain() {
         return (invocationInfo == null)
             ? null : invocationInfo.interceptorChain;
     }
@@ -527,44 +478,7 @@ public class EjbInvocation
      *
      */
     public void setParameters(Object[] params) {
-        Method method = getMethod();
-        if (method != null) {
-            Class[] paramTypes = method.getParameterTypes();
-            if ((params == null) && (paramTypes.length != 0)) {
-                throw new IllegalArgumentException("Wrong number of parameters for "
-                        + " method: " + method);
-            }
-            if (paramTypes.length != params.length) {
-                throw new IllegalArgumentException("Wrong number of parameters for "
-                        + " method: " + method);
-            }
-            int index = 0 ;
-            for (Class type : paramTypes) {
-                if (params[index] == null) {
-                    if (type.isPrimitive()) {
-                        throw new IllegalArgumentException("Parameter type mismatch for method "
-                                + method.getName() + ".  Attempt to set a null value for Arg["
-                            + index + "]. Expected a value of type: " + type.getName());
-                    }
-                } else if (type.isPrimitive()) {
-                    Set<Class> compatibles = compatiblePrimitiveWrapper.get(type);
-                    if (! compatibles.contains(params[index].getClass())) {
-                        throw new IllegalArgumentException("Parameter type mismatch for method "
-                                + method.getName() + ".  Arg["
-                            + index + "] type: " + params[index].getClass().getName()
-                            + " is not compatible with the expected type: " + type.getName());   
-                    }
-                } else if (! type.isAssignableFrom(params[index].getClass())) {
-                    throw new IllegalArgumentException("Parameter type mismatch for method "
-                            + method.getName() + ".  Arg["
-                        + index + "] type: " + params[index].getClass().getName()
-                        + " does not match the expected type: " + type.getName());   
-                }
-                index++;
-            }
-        } else {
-            throw new IllegalStateException("Internal Error: Got null method");
-        }
+        InterceptorUtil.checkSetParameters(params, getMethod());
         this.methodParams = params;
     }
     
@@ -667,15 +581,18 @@ public class EjbInvocation
         return sbuf.toString();
     }
 
-        
-        
+    // Implementation of AroundInvokeContext
+    public Object[] getInterceptorInstances() {
+        return  ((EJBContextImpl)context).getInterceptorInstances();
+    }
+
+    public  Object invokeBeanMethod() throws Throwable {
+        return ((BaseContainer) container).invokeBeanMethod(this);
+    }
 
     /*********************************************************/
 
-    public static interface InterceptorChain {
-	public Object invokeNext(int index, EjbInvocation invCtx)
-	    throws Throwable;
-    }
+
     
     public com.sun.enterprise.security.SecurityManager getEjbSecurityManager() {
         return ((BaseContainer)container).getSecurityManager();

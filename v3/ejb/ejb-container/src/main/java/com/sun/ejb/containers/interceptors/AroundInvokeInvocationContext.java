@@ -37,10 +37,9 @@
 package com.sun.ejb.containers.interceptors;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import javax.interceptor.InvocationContext;
-import javax.ejb.EJBContext;
 
-import com.sun.ejb.containers.EJBContextImpl;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -50,70 +49,80 @@ import java.util.HashMap;
  * Concrete InvocationContext implementation passed to callback methods 
  * defined in interceptor classes.
  */
-public class CallbackInvocationContext implements InvocationContext {
+public class AroundInvokeInvocationContext extends CallbackInvocationContext
+    implements InterceptorManager.AroundInvokeContext {
+
+    private Method method;
+    private int interceptorIndex = 0;
+    private InterceptorManager.InterceptorChain chain;
+    private Object[] parameters;
 
 
-    private Map contextData;
-    private int callbackIndex = 0;
-    private CallbackChainImpl callbackChain;
-    private Object[] interceptorInstances;
-    private Object targetObjectInstance;
-
-    public CallbackInvocationContext(Object targetObjectInstance,
+    public AroundInvokeInvocationContext(Object targetObjectInstance,
                                      Object[] interceptorInstances,
-                                     CallbackChainImpl chain) {
-        this.targetObjectInstance = targetObjectInstance;
-        this.interceptorInstances = interceptorInstances;
-        callbackChain = chain;
+                                     InterceptorManager.InterceptorChain chain,
+                                     Method m,
+                                     Object[] params
+                                     ) {
+        super(targetObjectInstance, interceptorInstances, null);
+        method = m;
+        this.chain = chain;
+        parameters = params;
     }
 
-    // InvocationContext methods
-
-    public Object getTarget() {
-        return targetObjectInstance;
-    }
-
-    public Object[] getInterceptorInstances() {
-        return interceptorInstances;
-    }
-
-    public Object getTimer() {
-        return null;
-    }
-
+    @Override
     public Method getMethod() {
-        return null;
+        return method;
     }
 
-    
-    public Object[] getParameters() {
-        throw new IllegalStateException("not applicable to Callback methods");
-    }
-
-    public void setParameters(Object[] params) {
-        throw new IllegalStateException("not applicable to Callback methods");
-    }
-
-
-    public Map<String, Object> getContextData() {
-        if( contextData == null ) {
-            contextData = new HashMap();
-        }
-
-        return contextData;
-    }
-    
-    public Object proceed() throws Exception {
+    @Override
+    public Object proceed()
+        throws Exception
+    {
         try {
-            callbackIndex++;
-            return callbackChain.invokeNext(callbackIndex, this);
+            interceptorIndex++;
+            return chain.invokeNext(interceptorIndex, this);
         } catch (Exception ex) {
             throw ex;
         } catch (Throwable th) {
             throw new Exception(th);
+        } finally {
+            interceptorIndex--;
         }
     }
 
+    @Override
+    public Object[] getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void setParameters(Object[] params) {
+        InterceptorUtil.checkSetParameters(params, getMethod());
+        parameters = params;
+
+    }
+
+
+    /**
+      * Called from Interceptor Chain to invoke the actual bean method.
+      * This method must throw any exception from the bean method *as is*,
+      * without being wrapped in an InvocationTargetException.  The exception
+      * thrown from this method will be propagated through the application's
+      * interceptor code, so it must not be changed in order for any exception
+      * handling logic in that code to function properly.
+      */
+    public  Object invokeBeanMethod() throws Throwable {
+
+        try {
+
+            return method.invoke(getTarget(), parameters);
+
+        } catch(InvocationTargetException ite) {
+            throw ite.getCause();
+        }
+        
+    }
 
 
 

@@ -72,7 +72,7 @@ public class EjbOptionalIntfGenerator
 
     private static final boolean _debug = Boolean.valueOf(System.getProperty("emit.ejb.optional.interface"));
 
-    EjbOptionalIntfGenerator(ClassLoader loader) {
+    public EjbOptionalIntfGenerator(ClassLoader loader) {
         super(loader);
         this.loader = loader;
     }
