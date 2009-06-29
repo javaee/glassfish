@@ -59,5 +59,7 @@ public interface PersistenceTagNames extends TagNames {
     public static String PROPERTY_VALUE = "value";
     public static String NAME = "name";
     public static String TRANSACTION_TYPE = "transaction-type";
+    public static String CACHING = "caching";
+    public static String VALIDATION_MODE = "validation-mode";
 
 }

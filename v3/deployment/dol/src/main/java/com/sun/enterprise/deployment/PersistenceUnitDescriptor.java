@@ -37,6 +37,8 @@
 
 package com.sun.enterprise.deployment;
 
+import javax.persistence.CachingType;
+import javax.persistence.ValidationMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,6 +74,10 @@ public class PersistenceUnitDescriptor extends Descriptor {
     private Properties properties = new Properties();
 
     private boolean excludeUnlistedClasses = false;
+
+    private CachingType cahchingType = CachingType.ALL; //TODO need to change this to UNSPECIFIED once EclipseLink integration with including UNSPECIFIED happens
+
+    private ValidationMode validationMode = ValidationMode.AUTO;
 
     public PersistenceUnitDescriptor() {
     }
@@ -185,8 +191,22 @@ public class PersistenceUnitDescriptor extends Descriptor {
         this.excludeUnlistedClasses = excludeUnlistedClasses;
     }
 
-    public ClassLoader getClassLoader() {
-        return getParent().getClassLoader();
+    public CachingType getCahchingType() {
+        return cahchingType;
+    }
+
+    public void setCahchingType(String cahchingType) {
+        // Assume schema validation will only pass a valid value else user would correctly get an exception at deployment
+        this.cahchingType = CachingType.valueOf(cahchingType);
+    }
+
+    public ValidationMode getValidationMode() {
+        return validationMode;
+    }
+
+    public void setValidationMode(String validationMode) {
+        // Assume schema validation will only pass a valid value else user would correctly get an exception at deployment
+        this.validationMode = ValidationMode.valueOf(validationMode);
     }
 
     public String getPuRoot() {
@@ -201,4 +221,5 @@ public class PersistenceUnitDescriptor extends Descriptor {
     public String getAbsolutePuRoot() {
         return getParent().getAbsolutePuRoot();
      }
+
 }

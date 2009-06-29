@@ -122,12 +122,13 @@ public class PersistenceUnitNode extends DeploymentDescriptorNode {
         table.put(PersistenceTagNames.DESCRIPTION, "setDescription");
         table.put(PersistenceTagNames.PROVIDER, "setProvider");
         table.put(PersistenceTagNames.JTA_DATA_SOURCE, "setJtaDataSource");
-        table.put(PersistenceTagNames.NON_JTA_DATA_SOURCE,
-                "setNonJtaDataSource");
+        table.put(PersistenceTagNames.NON_JTA_DATA_SOURCE, "setNonJtaDataSource");
         table.put(PersistenceTagNames.MAPPING_FILE, "addMappingFile");
         table.put(PersistenceTagNames.JAR_FILE, "addJarFile");
         table.put(PersistenceTagNames.EXCLUDE_UNLISTED_CLASSES, "setExcludeUnlistedClasses");
         table.put(PersistenceTagNames.CLASS, "addClass");
+        table.put(PersistenceTagNames.CACHING, "setCahchingType");
+        table.put(PersistenceTagNames.VALIDATION_MODE, "setValidationMode");
         this.dispatchTable = table;
     }
 

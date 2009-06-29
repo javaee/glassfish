@@ -66,18 +66,4 @@ public class PersistenceDeploymentDescriptorFile extends DeploymentDescriptorFil
         }
     }
 
-    /**
-     * The returned string is used to set up the schema location in SaxParser.
-     * @return returns a string with format similar to what is used in
-     * schemaLocation attribute in XML docs. i.e. it returns a list of pairs,
-     * where each pair consists of a namespace and url pointing to the schema
-     * doc.
-     */
-    @Override protected String getDefaultSchemaSource() {
-        // This method is overridden because the implementation in
-        // super class is not correctly implemented. See bug#6340561
-        PersistenceNode rootXMLNode =
-                PersistenceNode.class.cast(getRootXMLNode(null));
-        return rootXMLNode.getNameSpace() + " " + rootXMLNode.getSystemID();
-    }
 }

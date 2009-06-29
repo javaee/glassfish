@@ -58,7 +58,9 @@ public class PersistenceNode extends BundleNode {
     public final static String SCHEMA_NS =
             "http://java.sun.com/xml/ns/persistence"; // NOI18N
 
-    public final static String SCHEMA_ID = "persistence_1_0.xsd"; // NOI18N
+    public final static String SCHEMA_ID_1_0 = "persistence_1_0.xsd"; // NOI18N
+
+    public final static String SCHEMA_ID = "persistence_2_0.xsd"; // NOI18N
 
     private final static List<String> systemIDs = initSystemIDs();
 
@@ -68,11 +70,12 @@ public class PersistenceNode extends BundleNode {
 
     private PersistenceUnitsDescriptor persistenceUnitsDescriptor;
 
-    private static final String SPEC_VERSION = "1.0";
+    private static final String SPEC_VERSION = "2.0";
 
     private static List<String> initSystemIDs() {
         List<String> systemIDs = new ArrayList<String>();
         systemIDs.add(SCHEMA_ID);
+        systemIDs.add(SCHEMA_ID_1_0);
         return Collections.unmodifiableList(systemIDs);
     }
     

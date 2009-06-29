@@ -185,13 +185,11 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     }
 
     public CachingType getCaching() {
-        //TODO implement this in persistenceUnitDescriptor
-        return null;
+        return persistenceUnitDescriptor.getCahchingType();
     }
 
     public ValidationMode getValidationMode() {
-        //TODO implement this in persistenceUnitDescriptor
-        return null;
+        return persistenceUnitDescriptor.getValidationMode();
     }
 
     /**
@@ -202,8 +200,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     }
 
     public String PersistenceXMLSchemaVersion() {
-        //TODO implement this in persistenceUnitDescriptor
-        return null;  
+        return persistenceUnitDescriptor.getParent().getSpecVersion();
     }
 
     /**
@@ -403,7 +400,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
             if(module.isStandalone()) {
                 return puRoot;
             } else {
-                final String moduleLocation =
+                // The module is embedded in an ear (an ejb jar or war)
+                final String moduleLocation =        // Would point to the directory where module is expanded. For example myejb_jar 
                         DeploymentUtils.getRelativeEmbeddedModulePath(
                         providerContainerContractInfo.getApplicationLocation(), module.getArchiveUri());
                 return moduleLocation + '/' + puRoot; // see we always '/'
