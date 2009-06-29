@@ -13,7 +13,7 @@ public class BarManagedBean {
 
     @PostConstruct
     private void init() {
-	System.out.println("In BarManagedBean::init() " + this);
+	System.out.println("In BarManagedBean::init() ");
     }
 
    public void bar() {

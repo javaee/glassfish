@@ -8,8 +8,12 @@ import javax.transaction.UserTransaction;
 import org.omg.CORBA.ORB;
 import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
+import javax.interceptor.Interceptors;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 
 @ManagedBean("foomanagedbean")
+@Interceptors(InterceptorA.class)
 public class FooManagedBean extends ManagedSuper {
 
     @EJB StatelessBean s;
@@ -19,7 +23,7 @@ public class FooManagedBean extends ManagedSuper {
 
     @PostConstruct
     private void init() {
-	System.out.println("In FooManagedBean::init() " + this);
+	System.out.println("In FooManagedBean::init() ");
     }
 
     public void foo() {
@@ -31,6 +35,20 @@ public class FooManagedBean extends ManagedSuper {
 	return this;
     }
 
+    public int returnIntNoExceptions() { return 1; }
+
+    public Integer returnIntegerNoExceptions() { return 1; }
+
+    /**
+    public void noReturnNoExceptions() {}
+
+    public void noReturnException() throws Exception {}
+
+    public int returnExceptions() throws Exception { return 1; }
+
+    public void param(int i, String j) {}
+    */
+
     @PreDestroy
     private void destroy() {
 	System.out.println("In FooManagedBean::destroy() ");
@@ -41,6 +59,12 @@ public class FooManagedBean extends ManagedSuper {
 	return "FooManagedBean this = " + super.toString() + 
 			   " s = " + s + " , ut = " + ut + 
 	    " , bmb = " + bmb + " , em = " + em;
+    }
+
+    @AroundInvoke
+    public Object around(InvocationContext c) throws Exception {
+	System.out.println("In FooManagedBean::around() ");
+	return c.proceed();
     }
 
 }

@@ -12,7 +12,7 @@ public class ManagedSuper {
 
     @PostConstruct
     private void init() {
-	System.out.println("In ManagedSuper::init() " + this);
+	System.out.println("In ManagedSuper::init() ");
     }
 
     @PreDestroy

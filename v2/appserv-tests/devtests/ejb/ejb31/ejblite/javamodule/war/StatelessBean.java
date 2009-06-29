@@ -37,6 +37,10 @@ public class StatelessBean {
 	Object foo2This = foo2.getThis();
 	Object fmbThis = fmb.getThis();
 
+	System.out.println("fooThis = " + fooThis);
+	System.out.println("foo2This = " + foo2This);
+	System.out.println("fmbThis = " + fmbThis);
+
 	if( ( fooThis == foo2This ) || ( fooThis == fmbThis  ) ||
 	    ( foo2This == fmbThis ) ) {
 	    throw new EJBException("Managed bean instances not unique");

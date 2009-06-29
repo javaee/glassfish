@@ -14,6 +14,8 @@
     <target name="all">
         <antcall target="javamodule"/>
 
+        <antcall target="managedbean"/>
+
         <antcall target="sinitcallejb"/>
 
         <antcall target="jaxrs"/>
@@ -23,6 +25,12 @@
         <record name="javamodule.output" action="start" />
             <ant dir="javamodule" target="all"/>
         <record name="javamodule.output" action="stop" />
+    </target>
+
+    <target name="managedbean">
+        <record name="managedbean.output" action="start" />
+            <ant dir="managedbean" target="all"/>
+        <record name="managedbean.output" action="stop" />
     </target>
 
     <target name="sinitcallejb">
