@@ -126,6 +126,25 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
     void setPort(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of lazyInit property
+     *
+     * if false, this listener is started during server startup
+     *
+     * @return true or false
+     */
+    @Attribute(defaultValue="false", dataType=Boolean.class)
+    boolean getLazyInit();
+
+    /**
+     * Sets the value of lazyInit property
+     *
+     * Specify is this listener should be started as part of server startup or not
+     *
+     * @param value true if the listener is to be started lazily; false otherwise
+     */
+    void setLazyInit(boolean value);
+
+    /**
      * Gets the value of the adminUserName property.
      *
      * Specifies the admin username

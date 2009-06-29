@@ -190,7 +190,25 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link Ssl }
      */
     void setSsl(Ssl value) throws PropertyVetoException;
-    
+
+    /**
+     * Gets the value of lazyInit property
+     *
+     * if false, this listener is started during server startup
+     *
+     * @return true or false
+     */
+    @Attribute(defaultValue="false", dataType=Boolean.class)
+    boolean getLazyInit();
+
+    /**
+     * Sets the value of lazyInit property
+     *
+     * Specify is this listener should be started as part of server startup or not
+     *
+     * @param value true if the listener is to be started lazily; false otherwise
+     */
+    void setLazyInit(boolean value);
     
     /**
     	Properties as per {@link PropertyBag}
