@@ -803,6 +803,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
+     * Checks whether the executing environment is appclient container runtime
+     * @return true if execution environment is appclient container
+     *         false if it is not ACC
+     */
+    public boolean isAppClientRuntime() {
+        return processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.ACC);
+    }
+
+    /**
      * provides the current transaction
      * @return Transaction
      * @throws SystemException when unable to get the transaction

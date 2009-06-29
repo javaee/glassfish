@@ -39,6 +39,7 @@ package com.sun.enterprise.resource.pool;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 
 
 import java.util.logging.Level;
@@ -63,11 +64,10 @@ public class ResourcePoolFactoryImpl {
     public static ResourcePool newInstance(String poolName, PoolType pt)
             throws PoolingException {
 
-        // TODO V3 need to know Container type
-        // if(Switch.getSwitch().getContainerType() == Switch.APPCLIENT_CONTAINER){
+        if(!ConnectorRuntime.getRuntime().isAppClientRuntime()){
             if("TRUE".equalsIgnoreCase(switchOffACCConnectionPoolingProperty))
                 return new UnpooledResource( poolName );
-        //}
+        }
 
         ResourcePool pool = null;
         if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
