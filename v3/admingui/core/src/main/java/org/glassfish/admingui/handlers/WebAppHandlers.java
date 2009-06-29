@@ -2,7 +2,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,21 +49,12 @@
  */
 package org.glassfish.admingui.handlers;
 
-import com.sun.appserv.management.config.ApplicationConfig;
-import com.sun.appserv.management.config.EngineConfig;
-import com.sun.appserv.management.config.ModuleConfig;
-import com.sun.appserv.management.config.ObjectTypeValues;
-
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,13 +62,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.enterprise.deploy.spi.Target;
-import javax.management.ObjectName;
-import org.glassfish.admingui.common.util.AMXRoot;
-import org.glassfish.admingui.common.util.AMXUtil;
+import javax.management.Attribute;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.util.AppUtil;
 import org.glassfish.admingui.common.util.V3AMX;
+import org.glassfish.admingui.common.util.V3AMXUtil;
 import org.glassfish.deployment.client.DeploymentFacility;
 
 public class WebAppHandlers {
@@ -86,54 +76,38 @@ public class WebAppHandlers {
     public WebAppHandlers() {
     }
 
-    /**
-     *	<p> This handler returns the values for all the attributes of the Application
-     *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
-     *  <p> Output value: "description" -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id = "getApplicationInfo",
+
+    @Handler(id = "getApplicationEnabled",
         input = {
-            @HandlerInput(name = "name", type = String.class, required = true)},
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
         output = {
-            @HandlerOutput(name = "location", type = String.class),
-            @HandlerOutput(name = "libraries", type = String.class),
-            @HandlerOutput(name = "contextRoot", type = String.class),
-            @HandlerOutput(name = "vs", type = String.class),
-            @HandlerOutput(name = "description", type = String.class),
-            @HandlerOutput(name = "directoryDeployed", type = Boolean.class),
-            @HandlerOutput(name = "javaWebStart", type = Boolean.class),
-            @HandlerOutput(name = "enabledString", type = String.class),
-            @HandlerOutput(name = "enabled", type = Boolean.class)})
-    public static void getApplicationInfo(HandlerContext handlerCtx) {
+            @HandlerOutput(name = "enabled", type = String.class)})
+    public static void getApplicationEnabled(HandlerContext handlerCtx) {
 
-        String name = (String) handlerCtx.getInputValue("name");
-        AMXRoot amxRoot = AMXRoot.getInstance();
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        boolean enable = AppUtil.isApplicationEnabled(objectNameStr);
+        handlerCtx.setOutputValue("enabled", Boolean.toString(enable));
+    }
 
-        ApplicationConfig appConfig = amxRoot.getApplicationsConfig().getApplicationConfigMap().get(name);
-        if (appConfig == null) {
-            System.out.println("!!!!!! Error: Cannot find application with the name: " + name);
-            return;
-        }
-        handlerCtx.setOutputValue("contextRoot", appConfig.getContextRoot());
-        //handlerCtx.setOutputValue("availEnabled", appConfig.getAvailabilityEnabled());
-        if (!amxRoot.supportCluster()) {
-            //We need this only for PE, so hard code it "server"
-            handlerCtx.setOutputValue("vs", TargetUtil.getAssociatedVS(name, "server"));
-        }
 
-        handlerCtx.setOutputValue("directoryDeployed", appConfig.getDirectoryDeployed());
-        handlerCtx.setOutputValue("location", appConfig.getLocation());
-        handlerCtx.setOutputValue("description", appConfig.getDescription());
-        handlerCtx.setOutputValue("libraries", appConfig.getLibraries());
+    @Handler(id = "showContextRoot",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "value", type = Boolean.class)})
+    public static void showContextRoot(HandlerContext handlerCtx) {
 
-        if (amxRoot.isEE()) {
-            handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(appConfig, true));
-        } else {
-            handlerCtx.setOutputValue("enabled", TargetUtil.isApplicationEnabled(appConfig, "server"));
+            // If this is a ear file,  or context-root is not specified, do not show the context root.
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        String isEar = V3AMX.getPropValue(V3AMX.objectNameToProxy(objectNameStr), "isComposite" );
+        if (isEar == null || !isEar.equals("true")){
+            handlerCtx.setOutputValue("value", Boolean.TRUE);
+        }else{
+            handlerCtx.setOutputValue("value", Boolean.FALSE);
         }
     }
+
+
 
     /**
      *	<p> This handler save  the values for all the attributes of the Application
@@ -142,43 +116,23 @@ public class WebAppHandlers {
      */
     @Handler(id = "saveApplicationInfo",
         input = {
-            @HandlerInput(name = "name", type = String.class, required = true),
-            @HandlerInput(name = "description", type = String.class),
-            @HandlerInput(name = "contextRoot", type = String.class),
-            @HandlerInput(name = "vs", type = String.class),
-            @HandlerInput(name = "javaWebStart", type = Boolean.class),
-            @HandlerInput(name = "enabled", type = Boolean.class)
+            @HandlerInput(name = "appAttr", type = Map.class, required = true),
+            @HandlerInput(name = "appRefAttr", type = Map.class, required = true),
+            @HandlerInput(name = "appObjectName", type = String.class, required = true),
+            @HandlerInput(name = "appRefObjectName", type = String.class, required = true)
         })
     public static void saveApplicationInfo(HandlerContext handlerCtx) {
-
-        String target = "server";   //TODO: Fix for EE
-        String name = (String) handlerCtx.getInputValue("name");
-        AMXRoot amxRoot = AMXRoot.getInstance();
-
-        try {
-
-            ApplicationConfig appConfig = amxRoot.getApplicationsConfig().getApplicationConfigMap().get(name);
-            if (appConfig == null) {
-                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchApplication"));
-                return;
-            }
-            appConfig.setContextRoot((String) handlerCtx.getInputValue("contextRoot"));
-            if (amxRoot.isEE()) {
-                appConfig.setAvailabilityEnabled((String) handlerCtx.getInputValue("availEnabled"));
-            } else {
-                String vs = (String) handlerCtx.getInputValue("vs");
-                //only for PE, so hard-code to 'server'
-                TargetUtil.setVirtualServers(name, "server", vs);
-            }
-            appConfig.setDescription((String) handlerCtx.getInputValue("description"));
-            if (!amxRoot.isEE()) {
-                Boolean enabled = (Boolean) handlerCtx.getInputValue("enabled");
-                TargetUtil.setApplicationEnabled(appConfig, "server", enabled);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            GuiUtil.handleException(handlerCtx, ex);
-        }
+        Map appAttr = (Map) handlerCtx.getInputValue("appAttr");
+        Map appRefAttr = (Map) handlerCtx.getInputValue("appRefAttr");
+        String appObjectName = (String) handlerCtx.getInputValue("appObjectName");
+        String appRefObjectName = (String) handlerCtx.getInputValue("appRefObjectName");
+        V3AMX.setAttribute(appObjectName, new Attribute("ContextRoot", appAttr.get("ContextRoot")));
+        V3AMX.setAttribute(appObjectName, new Attribute("Description", appAttr.get("Description")));
+        String enStr = (String) appAttr.get("Enabled");
+        if (enStr == null )
+            enStr = "false";
+        V3AMX.setAttribute(appRefObjectName, new Attribute("Enabled", enStr));
+        V3AMX.setAttribute(appRefObjectName, new Attribute("VirtualServers", appRefAttr.get("VirtualServers")));
     }
 
 
@@ -195,25 +149,18 @@ public class WebAppHandlers {
     public static void getSubComponents(HandlerContext handlerCtx) {
         List result = new ArrayList();
         String appName = (String) handlerCtx.getInputValue("appName");
-        ApplicationConfig appConfig = AMXUtil.getApplicationConfigByName(appName);
-        Map <String, ModuleConfig> mConfigs = appConfig.getModuleConfigMap();
-        for (ModuleConfig mf : mConfigs.values()){
-            HashMap oneRow = new HashMap();
-            oneRow.put("componentName",  mf.getName());
-            Map<String, EngineConfig> eConfigs = mf.getEngineConfigMap();
-            List snifferList = new ArrayList();
-            for(EngineConfig ec : eConfigs.values()){
-                String sniffer = ec.getSniffer();
-                if (AppUtil.sniffersHide.contains(sniffer) )
-                    continue;
-                snifferList.add(sniffer);
-            }
-            Collections.sort(snifferList);
+        AMXProxy applications = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
+        Map<String, AMXProxy> modules = applications.childrenMap("application").get(appName).childrenMap("module");
+        for(AMXProxy oneModule: modules.values()){
+            Map oneRow = new HashMap();
+            List<String> snifferList = AppUtil.getSnifferListOfModule(oneModule);
+            oneRow.put("componentName", oneModule.getName());
             oneRow.put("engines", snifferList.toString());
             result.add(oneRow);
         }
         handlerCtx.setOutputValue("result", result);
     }
+
 
     /**
      *	<p> This handler returns the list of applications for populating the table.
@@ -235,58 +182,48 @@ public class WebAppHandlers {
         if (GuiUtil.isEmpty(filterValue))
             filterValue = null;
         List result = new ArrayList();
-        Map<String, ApplicationConfig> appsConfig = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap();
-        for (ApplicationConfig appConfig : appsConfig.values()) {
-            if (ObjectTypeValues.USER.equals(appConfig.getObjectType())) {
-                HashMap oneRow = new HashMap();
-                String enable = TargetUtil.getEnabledStatus(appConfig, true);
-                String enableURL= (enable.equals("true"))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
-                oneRow.put("name", appConfig.getName());
-                oneRow.put("enableURL", enableURL);
-                oneRow.put("selected", false);
-                List sniffersList = AppUtil.getAllSniffers(appConfig);
-                oneRow.put("sniffersList", sniffersList);
-                oneRow.put("sniffers", sniffersList.toString());
-                for(int ix=0; ix< sniffersList.size(); ix++)
-                    filters.add(sniffersList.get(ix));
-                if (filterValue != null){
-                    if (! sniffersList.contains(filterValue))
-                        continue;
-                }
-                getLaunchInfo(serverName, appConfig, oneRow);
-                result.add(oneRow);
+        AMXProxy applications = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
+        Map<String, AMXProxy> application = applications.childrenMap("application");
+        eachApp:  for (AMXProxy oneApp : application.values()) {
+            HashMap oneRow = new HashMap();
+            oneRow.put("name", oneApp.getName());
+            oneRow.put("selected", false);
+            boolean enable = AppUtil.isApplicationEnabled(oneApp);
+            String enableURL= (enable)? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+            oneRow.put("enableURL", enableURL);
+            List sniffersList = AppUtil.getAllSniffers(oneApp);
+            oneRow.put("sniffersList", sniffersList);
+            oneRow.put("sniffers", sniffersList.toString());
+            for(int ix=0; ix< sniffersList.size(); ix++)
+                filters.add(sniffersList.get(ix));
+            if (filterValue != null){
+                if (! sniffersList.contains(filterValue))
+                    continue;
             }
+            getLaunchInfo(serverName, oneApp, oneRow);
+            result.add(oneRow);
         }
         handlerCtx.setOutputValue("result", result);
         handlerCtx.setOutputValue("filters", new ArrayList(filters));
-
-
     }
 
     
-
-    
-    private static void getLaunchInfo(String serverName, ApplicationConfig appConfig,  Map oneRow) {
-
-        boolean enabled = TargetUtil.isApplicationEnabled(appConfig, "server");
-        String contextRoot = appConfig.getContextRoot();
-        String composite = AMXUtil.getPropertyValue(appConfig, AppUtil.PROP_IS_COMPOSITE);
-        oneRow.put("contextRoot", GuiUtil.isEmpty(contextRoot)? "" : contextRoot);
-        if (GuiUtil.isEmpty(contextRoot))
+    private static void getLaunchInfo(String serverName, AMXProxy oneApp,  Map oneRow) {
+        Map<String, Object> attrs = oneApp.attributesMap();
+        String contextRoot = (String) attrs.get("ContextRoot");
+        if (contextRoot == null){
             contextRoot = "";
-        oneRow.put("composite", "true".equals(composite) ? "true" : "false");
+        }
+        boolean enabled = AppUtil.isApplicationEnabled(oneApp);
+        oneRow.put("contextRoot", contextRoot);
         oneRow.put("hasLaunch", false);
-
         //for now, we only allow launch for enabled standalone war file with context root specified in domain.xml
-        if ( !enabled  ||
-             composite.equals("true") ||
-             contextRoot.equals("")){
+        if ( !enabled || contextRoot.equals("")){
             return;
         }
         
-        String enableStr = TargetUtil.getEnabledStatus(appConfig, true);
         String protocol = "http";
-        String port = V3AMX.getPortForApplication(appConfig.getName());
+        String port = V3AMXUtil.getPortForApplication( (String) attrs.get("Name"));
         if (port == null) {
             oneRow.put("port", "");
             oneRow.put("hasLaunch", false);
@@ -296,18 +233,9 @@ public class WebAppHandlers {
                 port = port.substring(1);
             }
             oneRow.put("port", port);
-            if (AMXRoot.getInstance().isEE()) {
-                if (enableStr.equals(GuiUtil.getMessage("deploy.allDisabled")) ||
-                        enableStr.equals(GuiUtil.getMessage("deploy.noTarget"))) {
-                    oneRow.put("hasLaunch", false);
-                } else {
-                    oneRow.put("hasLaunch", true);
-                }
-            } else {
-                oneRow.put("hasLaunch", Boolean.parseBoolean(enableStr));
-                String ctxRoot = calContextRoot(contextRoot);
-                oneRow.put("launchLink", protocol + "://" + serverName + ":" + port + ctxRoot);
-            }
+            oneRow.put("hasLaunch", true);
+            String ctxRoot = calContextRoot(contextRoot);
+            oneRow.put("launchLink", protocol + "://" + serverName + ":" + port + ctxRoot);
         }
     }
 
@@ -325,7 +253,7 @@ public class WebAppHandlers {
             df.disable(targets, appName);
             df.enable(targets, appName);
             // Mimic behavior in DeploymentHandler.changeAppStatus
-            if (AMXRoot.getInstance().isEE()) {
+            if (V3AMX.getInstance().isEE()) {
                 GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.success"), null);
             } else {
                 GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
@@ -335,92 +263,6 @@ public class WebAppHandlers {
         }
 
     }
-//    
-//    /** 
-//     * <p> Handler to set the viewKey which is used to decide if user wants summary or detail view.
-//     */
-//    @Handler(id="setAppViewKey",
-//        input={
-//            @HandlerInput(name="key", type=String.class, required=true),
-//            @HandlerInput(name="selectedValue", type=String.class)}
-//     )
-//    public static void setAppViewKey(HandlerContext handlerCtx){
-//            String key = (String) handlerCtx.getInputValue("key");
-//            String selectedValue = (String) handlerCtx.getInputValue("selectedValue");
-//            if (selectedValue.equals("summary"))
-//                handlerCtx.getFacesContext().getExternalContext().getSessionMap().put(key, true);
-//            else
-//                handlerCtx.getFacesContext().getExternalContext().getSessionMap().put(key, false);
-//    }
-//    
-    /**
-     *	This method determines the hostname of the given serverInstance
-     *	ObjectName to the best of its ability.  It will attempt to obtain the node-agent....
-     *
-     *	@param	serverInstance	The ObjectName to use to determine the hostname
-     */
-    protected String getHost(ObjectName serverInstance) {
-
-        return "";
-    /* TODO-V3
-     *
-    // Find the node agent (if there is one)
-    String nodeAgentRef = (String)JMXUtil.getAttribute(serverInstance, "node-agent-ref");
-    if ((nodeAgentRef == null) || nodeAgentRef.equals("")) {
-    return getDefaultHostName();
-    }
-
-    // Get the JMX connector for the node agent
-    ObjectName jmxConnector = (ObjectName)JMXUtil.invoke(
-    "com.sun.appserv:type=node-agent,name="+nodeAgentRef+
-    ",category=config",
-    "getJmxConnector", null, null);
-    if (jmxConnector == null) {
-    return getDefaultHostName();
-    }
-
-    // Try to get the hostname
-    // Get "client-hostname" from the properties (use this way instead
-    // of getProperty to avoid exception
-    AttributeList properties = (AttributeList)JMXUtil.invoke(
-    jmxConnector, "getProperties", null, null);
-    Attribute att;
-    String hostName = null;
-    Iterator it = properties.iterator();
-    while (it.hasNext()) {
-    att = (Attribute)it.next();
-    if (att.getName().equals("client-hostname")) {
-    hostName = (String)att.getValue();
-    break;
-    }
-    }
-
-    // Get default host name
-    if ((hostName == null) || hostName.equals("") || hostName.equals("0.0.0.0")) {
-    return getDefaultHostName();
-    }
-
-    // We found the hostname!!
-    return hostName;
-     */
-    }
-
-    /**
-     *	This method is used as a fallback when no Hostname is provided.
-     */
-    public static String getDefaultHostName() {
-        String defaultHostName = "localhost";
-        try {
-            InetAddress host = InetAddress.getLocalHost();
-            defaultHostName = host.getCanonicalHostName();
-        } catch (UnknownHostException uhe) {
-//	    sLogger.log(Level.FINEST, "mbean.get_local_host_error", uhe);
-//	    sLogger.log(Level.INFO, "mbean.use_default_host");
-        }
-        return defaultHostName;
-    }
-
-    
 
     private static String calContextRoot(String contextRoot) {
         //If context root is not specified or if the context root is "/", ensure that we don't show two // at the end.
@@ -435,6 +277,6 @@ public class WebAppHandlers {
         }
         return ctxRoot;
     }
-    static private Map<String, String> displayMap = new HashMap();
+
   
 }

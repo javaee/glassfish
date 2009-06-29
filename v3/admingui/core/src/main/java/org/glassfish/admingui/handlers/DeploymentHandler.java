@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,6 @@
 package org.glassfish.admingui.handlers;
 
 import com.sun.appserv.management.config.ApplicationConfig;
-import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +50,7 @@ import java.util.Properties;
 //TODO-V3
 //import com.sun.enterprise.connectors.ConnectorRuntime;
 
+import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DFProgressObject;
@@ -69,9 +69,9 @@ import java.util.HashMap;
 import java.util.Random;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 
 /**
  *
@@ -126,7 +126,7 @@ public class DeploymentHandler {
         String precompile = (String) handlerCtx.getInputValue("precompileJSP");
         String desc = (String) handlerCtx.getInputValue("description");
         String[] targets = (String[]) handlerCtx.getInputValue("targets");
-        if (targets == null || targets.length == 0 || !AMXRoot.getInstance().isEE()) {
+        if (targets == null || targets.length == 0 || !V3AMX.getInstance().isEE()) {
             targets = null;
         }
         if (GuiUtil.isEmpty(origPath)) {
@@ -282,7 +282,7 @@ public class DeploymentHandler {
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
             //Undeploy the app here.
-            if(AMXRoot.getInstance().isEE()){
+            if(V3AMX.getInstance().isEE()){
                 List<String> refList = TargetUtil.getDeployedTargets(appName, true);
                 if(refList.size() > 0)
                     targetNames = refList.toArray(new String[refList.size()]);
@@ -339,7 +339,7 @@ public class DeploymentHandler {
                 else
                     df.disable(df.createTargets(targetNames), appName); 
                 
-                if (AMXRoot.getInstance().isEE()){
+                if (V3AMX.getInstance().isEE()){
                     String msg = GuiUtil.getMessage((enabled)? "msg.enableSuccessful" : "msg.disableSuccessful");
                     GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
                 }else{
@@ -367,7 +367,7 @@ public class DeploymentHandler {
         public static void getDescriptors(HandlerContext handlerCtx) {
             String appName = (String)handlerCtx.getInputValue("appName");
             List list = new ArrayList();
-            RuntimeMgr runtimeMgr = AMXRoot.getInstance().getRuntimeMgr();
+            Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
             Map<String,String> descriptors = runtimeMgr.getDeploymentConfigurations(appName);
             try{
                 for(String dd : descriptors.keySet()){ 
@@ -403,7 +403,7 @@ public class DeploymentHandler {
     public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
         String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
-        RuntimeMgr runtimeMgr = AMXRoot.getInstance().getRuntimeMgr();
+        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
         String descriptorText = runtimeMgr.getDeploymentConfigurations(appName).get(descriptorName);  //get the content of the descriptor
 
         if (GuiUtil.isEmpty(descriptorText)){
