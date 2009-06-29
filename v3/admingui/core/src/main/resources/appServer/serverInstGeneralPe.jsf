@@ -45,11 +45,7 @@
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="appServer/serverInstGeneralPe.jsf");
         getProxyAttrs(objectNameStr="v3:pp=,type=domain-root,name=v3" valueMap="#{pageSession.valueMap}")
-println("!!!!!#{pageSession.valueMap}")
-
         getProxyAttrs(objectNameStr="v3:pp=/domain/configs/config[server-config],type=java-config" valueMap="#{pageSession.valueMap2}")
-
-        println("!!!!!#{pageSession.valueMap2}")
         getDebugInfo(debugEnabled="#{pageSession.valueMap2['DebugEnabled']}"
             debugOptions="#{pageSession.valueMap2['DebugOptions']}" debugInfo="#{pageSession.debugInfo}")
         />   
@@ -94,8 +90,12 @@ println("!!!!!#{pageSession.valueMap}")
 
                     <!-- PropertySheet .... -->
     <sun:propertySheet id="propertySheet" >
+        
         <!-- Text Field section -->
-        <sun:propertySheetSection id="propertSectionTextField">
+        <sun:propertySheetSection id="serverGeneralPropSheet">
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$attribute{sheetId});
+            />
             <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
                 <sun:staticText id="hostName" text="#{sessionScope.serverName}" />
             </sun:property>
@@ -130,13 +130,15 @@ println("!!!!!#{pageSession.valueMap}")
                 <sun:staticText id="debugPort" text="#{pageSession.debugInfo}"/>
             "<br /><br />
             </sun:property>
-
-
-
-
         </sun:propertySheetSection>
-
-                    </sun:propertySheet>    
+        <event>
+            <!afterCreate
+                getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
+                includeIntegrations(type="org.glassfish.admingui:serverInstGeneralPe" root="#{component}");
+            />
+        </event>
+    </sun:propertySheet>
+        
 	<sun:hidden id="helpKey" value="$resource{help.serverInstGeneralPe}" />
             </sun:form>
 </define>
