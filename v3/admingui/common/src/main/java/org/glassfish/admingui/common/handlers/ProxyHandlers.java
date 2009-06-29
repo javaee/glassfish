@@ -77,7 +77,7 @@ public class ProxyHandlers {
         String childType = (String) handlerCtx.getInputValue("childType");
         List result = new ArrayList();
 
-        AMXProxy amx = objectNameToProxy(objectNameStr);
+        AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
         if (amx != null) {
             Map<String, AMXProxy> children = amx.childrenMap(childType);
             for(AMXProxy oneChild : children.values()){
@@ -114,7 +114,7 @@ public class ProxyHandlers {
     public static void deleteChildren(HandlerContext handlerCtx){
          String type = (String) handlerCtx.getInputValue("type");
          String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-         AMXConfigProxy amx = (AMXConfigProxy) objectNameToProxy(objectNameStr);
+         AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
 
          List obj = (List) handlerCtx.getInputValue("selectedRows");
          List<Map> selectedRows = (List) obj;
@@ -127,17 +127,6 @@ public class ProxyHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-
-
-     public static AMXProxy objectNameToProxy(String objectNameStr){
-         try {
-            AMXProxy amx = V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
-            return amx;
-         }catch(Exception ex){
-             System.out.println("Cannot find object: " + objectNameStr);
-             return null;
-         }
-     }
 
 
     /*  Get the simpleAttributes of the bean based on the objectNameString.
@@ -331,7 +320,7 @@ public class ProxyHandlers {
      )
     public static void updateStatus(HandlerContext handlerCtx){
          String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-         AMXConfigProxy amx = (AMXConfigProxy) objectNameToProxy(objectNameStr);
+         AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
          String status = (String) handlerCtx.getInputValue("enabled");
          List obj = (List) handlerCtx.getInputValue("selectedRows");
          List<Map> selectedRows = (List) obj;
@@ -443,7 +432,7 @@ public class ProxyHandlers {
 
     public static void getApplicationByType(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
-        AMXProxy amx = objectNameToProxy("v3:pp=/domain,type=applications");
+        AMXProxy amx = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
         Map<String, AMXProxy> children = amx.childrenMap("application");
         List result = new ArrayList();
         for (AMXProxy oneChild : children.values()) {
@@ -453,7 +442,7 @@ public class ProxyHandlers {
                 for (String attrName : attrs.keySet()) {
                     if (attrName.equals("Name")) {
                         String appName = getA(attrs, "Name");
-                        Map<String, AMXProxy> module = objectNameToProxy("v3:pp=/domain/applications,type=application,name=" +appName ).childrenMap("module");
+                        Map<String, AMXProxy> module = V3AMX.objectNameToProxy("v3:pp=/domain/applications,type=application,name=" +appName ).childrenMap("module");
 
                         //The above 6 lines can be writen as
                         //Map <String, AMXProxy> module = oneChild.childrenMap("module");
@@ -511,7 +500,7 @@ public class ProxyHandlers {
         if (fullName==null)
             fullName = false;
 
-        AMXProxy amx = objectNameToProxy("v3:pp=/domain,type=applications");
+        AMXProxy amx = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
         Map<String, AMXProxy> applications = amx.childrenMap("application");
         List result = new ArrayList();
         eachApp:  for (AMXProxy oneApp : applications.values()) {
@@ -658,6 +647,16 @@ public class ProxyHandlers {
         }
     }
 
+    /**
+     *
+     */
+    @Handler(id = "getAmxRoot",
+    output = {
+        @HandlerOutput(name = "amxRoot", type = V3AMX.class)
+    })
+    public static void getAmxRootInstance(HandlerContext handlerCtx) {
+        handlerCtx.setOutputValue("amxRoot", V3AMX.getInstance());
+    }
 
     private static final String SNIFFER_EAR = "ear";
     //mbean Attribute Name
