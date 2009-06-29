@@ -135,7 +135,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         }
         catch (final Exception e)
         {
-            throw new RuntimeException("Can't get Name and Parent from " + objectName, e);
+            throw new RuntimeException("Can't get Name and/or Parent attributes from " + objectName, e);
         }
     }
     private static final String GET = "get";

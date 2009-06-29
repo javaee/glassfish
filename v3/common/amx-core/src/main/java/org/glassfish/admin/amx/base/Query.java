@@ -36,226 +36,96 @@
 package org.glassfish.admin.amx.base;
 
 import javax.management.ObjectName;
+import javax.management.MBeanOperationInfo;
 import java.util.Set;
 
-import javax.management.MBeanOperationInfo;
+
 import org.glassfish.admin.amx.annotation.ManagedOperation;
-import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
+import org.glassfish.admin.amx.annotation.Description;
+import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.annotation.Stability;
+
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
-	Supports various types of queries to find s based on various Attributes.
+Supports various types of queries to find MBeans in the AMX domain only; does not
+query all MBeans in all domains, only those in the AMX domain.
+<p>
+Note that the methods as declared return AMXProxy or collections thereof, but the
+actual result consists only of ObjectName; it is the proxy code that auto-converts
+to AMXProxy eg invoking with MBeanServerConnection.invoke() will return Set<ObjectName>
+but using QueryMgr (as a client-side proxy) will return Set<AMXProxy>.  If ObjectNames
+are desirable, use {@link Util#toObjectNames}.
  */
-@Taxonomy(stability=Stability.UNCOMMITTED)
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@Taxonomy(stability = Stability.COMMITTED)
+@AMXMBeanMetadata(leaf = true, singleton = true)
 public interface Query extends AMXProxy, Utility, Singleton
 {
-	/**
-		Calls getTypeSet( typeValue ) and extracts the single result.
-		Throws an exception if more than one object is found.
-		
-		@param typeValue  the value for the type property
-		@return ObjectName or null if not found
-		@throws exception if not found
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> T	querySingletonType( String typeValue );
-	
-	
-	/**
-		Return all {@link AMXProxy} whose type is equal to any specified in
-		'types'. 
-		
-		@param types Set of String (type values).
-		@return Set of AMX or empty Set if none
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryTypesSet( Set<String> types );
-	
-	/**
-		@see #queryTypesSet
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryTypesObjectNameSet( Set<String> types );
-	
-	
-	/**
-		Return all {@link AMXProxy} whose type is equal to 'typeValue.
-		
-		@param typeValue  the value for the type property
-		@return Set of AMX or empty Set if none
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryTypeSet( String typeValue );
-	
-	/**
-		@return Set of ObjectName
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryTypeObjectNameSet( String typeValue );
-	
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return all AMX MBeans having any of the specified types")
+    public Set<AMXProxy> queryTypes(@Param(name = "type") Set<String> type);
 
-	/**
-		Return all {@link AMXProxy} whose name is equal to 'nameValue'.
-		
-		@param nameValue  the value for the type property
-		@return Set of AMX or empty Set if none
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryJ2EENameSet( String nameValue );
-	
-	/**
-		@return Set of ObjectName
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryJ2EENameObjectNameSet( String nameValue );
-	
-	/**
-		Calls queryTypeSet( typeValue ), then creates an array consisting
-		of the names of each of the resulting objects.  Note that some names could
-		be identical.
-		
-		@param type  the value for the type property
-		@return array of names
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public String[]	queryTypeNames( String type );
-	
-	
-	/**
-	    @return Set<AMX> containing all items that have the matching type and name
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryTypeNameSet( String type, String name );
-	
-	/**
-	    @return Set<ObjectName> containing all items that have the matching type and name
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryTypeNameObjectNameSet( String type, String name );
-	
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return all AMX MBeans having the specified type")
+    public Set<AMXProxy> queryType( @Param(name = "type") String type);
 
-	/**
-		Return all AMX whose ObjectName matches the supplied
-		ObjectName pattern, as defined by the JMX specification.
-		<p>
-		This can be a relatively expensive operation if care is not taken to use
-		a suitably constrained pattern. For example, querying for "*:*" will return
-		every  available AMX.
-		
-		@param pattern  an ObjectName containing a pattern as defined by JMX
-		@return Set of AMX or empty Set if none
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryPatternSet( ObjectName	pattern );
-	
-	/**
-		@return Set of ObjectName
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryPatternObjectNameSet( ObjectName	pattern );
-	
-	
-	/**
-		Makes an ObjectName pattern, then calls queryPatternSet( pat )
-		
-		@param domain  the domain or "*" for all
-		@param props a comma-separated Properties string
-		@return Set of AMX or empty Set if none
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryPatternSet( String domain, String props );
-	
-	/**
-		@return Set of ObjectName
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryPatternObjectNameSet( String domain, String props );
-	
-	/**
-		Return all objects that match the specified properties in the JMX domain
-		governed by this Query.
-		
-		@param props a String containing one or more name/value properties
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryPropsSet( String props );
-	
-	/**
-		@return Set of ObjectName
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryPropsObjectNameSet( String props );
-	
-	
-	/**
-		Return all {@link AMXProxy} whose whose ObjectName matches all property
-		expressions.  Each property expression consists of a key expression, and a value
-		expression; an expression which is null is considered a "*" (match all).
-		<p>
-		Both key and value expressions may be wildcarded with the
-		"*" character, which matches 0 or more characters. 
-		<p>
-		Each property expression is matched in turn against the ObjectName. If a match
-		fails, the ObjectName is not included in the result.  If all matches succeed, then
-		the ObjectName is included.
-		<p>
-		Caution should be used in choosing the element type of the returned set. Unless
-		certain that a uniform type will be produced, Set&lt;AMX> is usually the most
-		appropriate type eg:
-		<code>Set&lt;AMX>  result  = queryWildSet(...);</code>
-		
-		@param wildKeys	one or more name expressions, null means all
-		@param wildValues	one or more value expressions, null means all
-		@return Set of AMX or empty Set if none
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>	queryWildSet(  String[]	wildKeys, String[] wildValues );
-	
-	/**
-		@return Set of ObjectName
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>	queryWildObjectNameSet(  String[]	wildKeys, String[] wildValues );
-	
-	
-	/**
-		Return all {@link AMXProxy} that implement the specified interface,
-		which may be any interface. This is the same as querying for all s
-		for their  interfaces, then returning the set for which the 
-		interface extends the specified interface.
-		
-		@param interfaceName  classname of the desired interface
-		@param candidateObjectNames	optional (may be null) Set of ObjectName to which the search is limited
-		@return Set of AMX or empty Set if none
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public <T extends AMXProxy> Set<T>
-	queryInterfaceSet( String interfaceName, Set<ObjectName> candidateObjectNames);
-					
-	/**
-		@return Set of ObjectName
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName>
-	    queryInterfaceObjectNameSet( String	interfaceName, 
-	        Set<ObjectName> candidateObjectNames);
-	
-	/**
-		@return Set of all AMX
-		@see #queryAllObjectNameSet
-	 */
-    //@ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<AMXProxy> queryAllSet( );
-	
-	/**
-		@return Set of ObjectName of all AMX
-		@see #queryAllSet
-	 */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-	public Set<ObjectName> queryAllObjectNameSet( );
+    /**
+    Return all {@link AMXProxy} having the specified name.
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return all AMX MBeans having the specified name")
+    public Set<AMXProxy> queryName(  @Param(name = "name") String name);
+
+    /**
+    Return all AMX whose type and name matches. Note that the resulting items will necessarily
+    have a different Parent (uniqueness invariant within any parent).
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return all AMX MBeans having the specified type and name")
+    public Set<AMXProxy> queryTypeName( @Param(name = "type") String type, @Param(name = "name") String name);
+
+    /**
+    Return all AMX whose ObjectName matches the supplied pattern, as defined by the JMX specification.
+
+    @param pattern  an ObjectName containing a pattern as defined by JMX
+    @return Set of AMX or empty Set if none
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return all AMX MBeans matching the specfied pattern")
+    public Set<AMXProxy> queryPattern( @Param(name = "pattern") ObjectName pattern);
+
+    /**
+    Return all AMX MBeans matching the specfied ObjectName properties
+    @param props a String containing one or more name/value ObjectName properties
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return all AMX MBeans matching the specfied ObjectName properties")
+    public Set<AMXProxy> queryProps( @Param(name = "props") String props);
+
+    /**
+    Return all AMX MBeans whose whose ObjectName matches all property
+    expressions.  Each property expression consists of a key expression, and a value
+    expression; an expression which is null is considered a "*" (match all).
+    <p>
+    Both key and value expressions may be wildcarded with the "*" character,
+    which matches 0 or more characters.
+    <p>
+    Each property expression is matched in turn against the ObjectName. If a match
+    fails, the ObjectName is not included in the result.  If all matches succeed, then
+    the ObjectName is included.
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return all AMX MBeans matching all specified ObjectName properties, wildcarded by key and/or value")
+    public Set<AMXProxy> queryWildAll( @Param(name = "wildKeys") String[] wildKeys, @Param(name = "wildValues") String[] wildValues);
+
+    /**  Return all AMX MBeans */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public Set<AMXProxy> queryAll();
+
 }
 
 

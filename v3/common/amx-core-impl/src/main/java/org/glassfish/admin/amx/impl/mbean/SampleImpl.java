@@ -35,9 +35,6 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
-import org.glassfish.admin.amx.base.Sample;
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
-
 import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
@@ -48,7 +45,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
+
+import org.glassfish.admin.amx.base.Sample;
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+
 import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.core.Util;
 
 
 /**
@@ -207,17 +211,13 @@ public final class SampleImpl extends AMXImplBase
     
     public ObjectName[] getAllAMX()
     {
-        return getAllAMXProxies();
-    }
-    
-    // will turn into proxies by declaration in the proxy
-    public ObjectName[] getAllAMXProxies()
-    {
-        final Set<ObjectName> all = getDomainRootProxy().getQueryMgr().queryAllObjectNameSet();
+        final List<ObjectName> all = Util.toObjectNames( getDomainRootProxy().getQueryMgr().queryAll() );
         
         return CollectionUtil.toArray( all, ObjectName.class );
     }
 }
+
+
 
 
 

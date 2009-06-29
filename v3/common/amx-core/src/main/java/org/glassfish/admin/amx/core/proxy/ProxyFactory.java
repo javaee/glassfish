@@ -617,12 +617,12 @@ public final class ProxyFactory implements NotificationListener
         }
         catch( IllegalArgumentException e )
         {
-            debug( "createProxy", e );
+            //debug( "createProxy", e );
             throw e;
         }
         catch( Exception e )
         {
-            debug( "createProxy", e );
+            //debug( "createProxy", e );
             throw new RuntimeException( e );
         }
 				

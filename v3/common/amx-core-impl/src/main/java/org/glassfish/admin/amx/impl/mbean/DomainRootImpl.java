@@ -49,8 +49,6 @@ import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 import com.sun.enterprise.universal.io.SmartFile;
 
@@ -60,24 +58,26 @@ import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
-import java.io.InputStream;
-import org.glassfish.admin.amx.impl.mbean.PathnamesImpl;
+import java.util.Set;
+import java.util.HashSet;
+import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
-
+import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 /**
  */
 public class DomainRootImpl extends AMXImplBase
-	// implements DomainRoot
+// implements DomainRoot
 {
-    private String	mAppserverDomainName;
-    private volatile ComplianceMonitor  mCompliance;
+    private String mAppserverDomainName;
 
-        public
-    DomainRootImpl()
+    private volatile ComplianceMonitor mCompliance;
+
+    public DomainRootImpl()
     {
-        super( null, DomainRoot.class );
-        mAppserverDomainName	= null;
+        super(null, DomainRoot.class);
+        mAppserverDomainName = null;
     }
 
     public void stopDomain()
@@ -85,218 +85,160 @@ public class DomainRootImpl extends AMXImplBase
         getDomainRootProxy().getExt().getRuntime().stopDomain();
     }
 
-    
     public ObjectName getQueryMgr()
     {
         return child(Query.class);
     }
-    
+
     public ObjectName getUploadDownloadMgr()
     {
         return child(UploadDownloadMgr.class);
     }
-    
+
     public ObjectName getPathnames()
     {
         return child(Pathnames.class);
     }
-    
+
     public ObjectName getSystemStatus()
     {
         return child(SystemStatus.class);
     }
-    
+
     public ObjectName getBulkAccess()
     {
         return child(BulkAccess.class);
     }
-    
-    
-        public ObjectName
-    preRegisterHook( final ObjectName selfObjectName )
-        throws Exception
+
+    protected ObjectName preRegisterHook(final MBeanServer server, final ObjectName selfObjectName)
+            throws Exception
     {
-        mAppserverDomainName	= BootUtil.getInstance().getAppserverDomainName();
+        mAppserverDomainName = BootUtil.getInstance().getAppserverDomainName();
+
+        // DomainRoot has not yet been registered; any MBeans that exist are non-compliant
+        // because they cannot have a Parent.
+        final Set<ObjectName> existing = JMXUtil.queryAllInDomain(server, selfObjectName.getDomain());
+        if (existing.size() != 0)
+        {
+            ImplUtil.getLogger().info("MBeans exist in AMX domain prior to DomainRoot (violates Parent requirement): " + CollectionUtil.toString(existing, ", "));
+        }
 
         return selfObjectName;
     }
 
-
-        public void
-    preRegisterDone( )
-        throws Exception
+    public void preRegisterDone()
+            throws Exception
     {
         super.preRegisterDone();
     }
-    
+
     @Override
-		protected void
-	postRegisterHook( final Boolean registrationSucceeded )
-	{
-        final boolean registeredOK = registrationSucceeded.booleanValue() ;
-	    if ( registeredOK )
-		{
-            // start it listening
-            mCompliance = ComplianceMonitor.getInstance( getDomainRootProxy() );
-		}
+    protected void postRegisterHook(final Boolean registrationSucceeded)
+    {
         super.postRegisterHook(registrationSucceeded);
         
-	    if ( registeredOK )
-		{
-            // validate ourself
-            mCompliance.validate( getObjectName() );
+        // Start compliance after everything else; it uses key MBeans like Paths
+        if ( registrationSucceeded.booleanValue() )
+        {
+            // start compliance monitoring immediately, even before children are registered
+            mCompliance = ComplianceMonitor.getInstance(getDomainRootProxy());
             mCompliance.start();
-		}
-	}
+        }
+    }
 
-        public String
-    getAppserverDomainName()
+    public String getAppserverDomainName()
     {
-        return( mAppserverDomainName );
+        return (mAppserverDomainName);
     }
 
     @Override
-        protected final void
-    registerChildren()
+    protected final void registerChildren()
     {
         super.registerChildren();
-        
-        final ObjectName    self = getObjectName();
-        final ObjectNameBuilder	objectNames	= new ObjectNameBuilder( getMBeanServer(), self );
-        
+
+        final ObjectName self = getObjectName();
+        final ObjectNameBuilder objectNames = new ObjectNameBuilder(getMBeanServer(), self);
+
         ObjectName childObjectName = null;
         Object mbean = null;
         final MBeanServer server = getMBeanServer();
-                
-        childObjectName	= objectNames.buildChildObjectName( Ext.class );
-        mbean	= new ExtImpl(self);
-        registerChild( mbean, childObjectName );
-        
+
+        /**
+            Follow this order: some later MBeans might depend on others.
+         */
+         
+        childObjectName = objectNames.buildChildObjectName(Pathnames.class);
+        mbean = new PathnamesImpl(self);
+        registerChild(mbean, childObjectName);
+
+        childObjectName = objectNames.buildChildObjectName(Query.class);
+        mbean = new QueryMgrImpl(self);
+        registerChild(mbean, childObjectName);
+
         final String serverName = "server";
-        childObjectName	= objectNames.buildChildObjectName( Logging.class );
-        mbean	= new LoggingImpl(self, serverName);
-        registerChild( mbean, childObjectName );
-                        
-        childObjectName	= objectNames.buildChildObjectName( Tools.class );
-        mbean	= new ToolsImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        childObjectName	= objectNames.buildChildObjectName( Query.class);
-        mbean	= new QueryMgrImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        childObjectName	= objectNames.buildChildObjectName( BulkAccess.class);
-        mbean	= new BulkAccessImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        childObjectName	= objectNames.buildChildObjectName( UploadDownloadMgr.class);
-        mbean	= new UploadDownloadMgrImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        childObjectName	= objectNames.buildChildObjectName( Sample.class);
-        mbean	= new SampleImpl(self);
-        registerChild( mbean, childObjectName );
-             
-        childObjectName	= objectNames.buildChildObjectName( Pathnames.class);
-        mbean	= new PathnamesImpl(self);
-        registerChild( mbean, childObjectName );
+        childObjectName = objectNames.buildChildObjectName(Logging.class);
+        mbean = new LoggingImpl(self, serverName);
+        registerChild(mbean, childObjectName);
 
-        childObjectName	= objectNames.buildChildObjectName( MonitoringRoot.class);
-        mbean	= new MonitoringRootImpl(self);
-        registerChild( mbean, childObjectName );
-    }
-    
-    /*
-    public Object loadInternal()
-    {
-        try
-        {
-            final ObjectName objectName = LoadSanityChecks.load(getMBeanServer());
-            return "Loaded: " + objectName;
-        }
-        catch( final Throwable t )
-        {
-            t.printStackTrace();
-            throw new RuntimeException("Failed to load SanityChecks: " + t, t);
-        }
-    }
-    */
+        childObjectName = objectNames.buildChildObjectName(Tools.class);
+        mbean = new ToolsImpl(self);
+        registerChild(mbean, childObjectName);
 
-            
-        public boolean
-    getAMXReady()
+        childObjectName = objectNames.buildChildObjectName(BulkAccess.class);
+        mbean = new BulkAccessImpl(self);
+        registerChild(mbean, childObjectName);
+
+        childObjectName = objectNames.buildChildObjectName(UploadDownloadMgr.class);
+        mbean = new UploadDownloadMgrImpl(self);
+        registerChild(mbean, childObjectName);
+
+        childObjectName = objectNames.buildChildObjectName(Sample.class);
+        mbean = new SampleImpl(self);
+        registerChild(mbean, childObjectName);
+
+        // after registering Ext, other MBeans can depend on the above ones egs Paths, Query
+        childObjectName = objectNames.buildChildObjectName(Ext.class);
+        mbean = new ExtImpl(self);
+        registerChild(mbean, childObjectName);
+
+        // Monitoring MBeans can rely on all the prior MBeans
+        childObjectName = objectNames.buildChildObjectName(MonitoringRoot.class);
+        mbean = new MonitoringRootImpl(self);
+        registerChild(mbean, childObjectName);
+    }
+
+
+    public boolean getAMXReady()
     {
         // just block until ready, no need to support polling
         waitAMXReady();
         return true;
     }
 
-        public void
-    waitAMXReady( )
+    public void waitAMXReady()
     {
-        FeatureAvailability.getInstance().waitForFeature( FeatureAvailability.AMX_READY_FEATURE, this.getClass().getName() );
+        FeatureAvailability.getInstance().waitForFeature(FeatureAvailability.AMX_READY_FEATURE, this.getClass().getName());
     }
-
-
-    /*
-    static private final Set<String>  OFFLINE_INCAPABLE_J2EE_TYPES =
-        SetUtil.newUnmodifiableStringSet(
-            XTypes.WEB_SERVICE_MGR
-        );
-        protected boolean
-    isOfflineCapable( final TypeInfo childInfo )
-    {
-        final String    j2eeType    = childInfo.getJ2EEType();
-        
-        return (! OFFLINE_INCAPABLE_J2EE_TYPES.contains( j2eeType )) &&
-                super.isOfflineCapable( childInfo );
-    }
-
-        protected void
-    registerSelfMgrChild( final TypeInfo	childInfo )
-        throws JMException, InstantiationException, IllegalAccessException
-    {
-        final String	childJ2EEType	= childInfo.getJ2EEType( );
-        
-        if ( getOffline() &&
-                childJ2EEType.equals( XTypes.CONFIG_DOTTED_NAMES ) )
-        {
-            final OfflineConfigDottedNamesImpl   impl   = new OfflineConfigDottedNamesImpl();
-            
-            final ObjectName	childObjectName	=
-                getObjectNames().buildChildObjectName( getObjectName(),
-                    getFullType(), childJ2EEType );
-                    
-            registerMBean( impl, childObjectName );
-        }
-        else
-        {
-            super.registerSelfMgrChild( childInfo );
-        }
-    }
-    */
 
     public String getDebugPort()
     {
-        Issues.getAMXIssues().notDone( "DomainRootImpl.getDebugPort" );
+        Issues.getAMXIssues().notDone("DomainRootImpl.getDebugPort");
         return "" + 9999;
     }
-
 
     public String getApplicationServerFullVersion()
     {
         return Version.getFullVersion();
     }
 
-
     public String getInstanceRoot()
     {
-        return SmartFile.sanitize( "" + System.getProperty("com.sun.aas.instanceRoot")) ;
+        return SmartFile.sanitize("" + System.getProperty("com.sun.aas.instanceRoot"));
     }
 
     public String getDomainDir()
     {
-        return SmartFile.sanitize( BootUtil.getInstance().getInstanceRoot().toString() );
+        return SmartFile.sanitize(BootUtil.getInstance().getInstanceRoot().toString());
     }
 
     public String getConfigDir()
@@ -306,39 +248,22 @@ public class DomainRootImpl extends AMXImplBase
 
     public String getInstallDir()
     {
-        return SmartFile.sanitize( "" + System.getProperty("com.sun.aas.installRoot")) ;
+        return SmartFile.sanitize("" + System.getProperty("com.sun.aas.installRoot"));
     }
 
-        public Object[]
-    getUptimeMillis()
+    public Object[] getUptimeMillis()
     {
         final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
-        
+
         final long elapsed = System.currentTimeMillis() - env.getStartupContext().getCreationTime();
         final Duration duration = new Duration(elapsed);
-        
-        return new Object[] { elapsed, duration.toString() };
+
+        return new Object[]
+                {
+                    elapsed, duration.toString()
+                };
     }
 
-    static String toString(final InputStream is)
-         throws IOException
-    {
-       final StringBuffer sbuf = new StringBuffer();
-       final char[] chars = new char[32 * 1024];
-
-       final InputStreamReader reader = new InputStreamReader(is);
-       do
-       {
-           final int len = reader.read(chars, 0, chars.length);
-           if (len >= 1)
-           {
-               sbuf.append(chars, 0, len);
-           }
-       }
-       while(reader.ready());
-
-       return sbuf.toString();
-    }
 }
 
 

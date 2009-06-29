@@ -98,12 +98,11 @@ public interface Sample extends AMXProxy
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
 	public byte[]	downloadBytes( final int numBytes );
 
+    /*
     // these two methods exercise proxyt code in different ways
     @ManagedAttribute
     public ObjectName[] getAllAMX();
-    
-    @ManagedAttribute
-    public AMXProxy[]   getAllAMXProxies();
+    */
 }
 
 

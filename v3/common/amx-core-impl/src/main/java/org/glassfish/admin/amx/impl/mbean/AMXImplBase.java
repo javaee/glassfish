@@ -1176,7 +1176,7 @@ public class AMXImplBase extends MBeanImplBase
 		//mConnectionSource	= new MBeanServerConnectionSource( server );
 		
 		mSelfObjectName	= preRegisterModifyName( server, nameFromSuper );
-		mSelfObjectName = preRegisterHook( mSelfObjectName );
+		mSelfObjectName = preRegisterHook( server, mSelfObjectName );
 		
 		preRegisterDone();
         
@@ -1188,7 +1188,7 @@ public class AMXImplBase extends MBeanImplBase
         and optionally to modify the ObjectName one last time.
      */
         protected ObjectName
-    preRegisterHook( final ObjectName selfObjectName)
+    preRegisterHook( MBeanServer server, final ObjectName selfObjectName)
 	    throws Exception
     {
         // subclass may do something

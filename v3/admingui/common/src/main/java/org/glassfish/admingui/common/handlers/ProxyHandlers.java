@@ -634,6 +634,7 @@ public class ProxyHandlers {
         }
     }
 
+/*
     public static boolean isProxyExist(String objectNameStr){
         try{
             ObjectName objName = new ObjectName(objectNameStr);
@@ -641,6 +642,17 @@ public class ProxyHandlers {
 //            Set<ObjectName> result = query.queryTypeObjectNameSet(objName.getKeyProperty("type"));
             Set<ObjectName> result = query.queryAllObjectNameSet();
             return (result.contains(objName));
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+*/
+
+    public static boolean isProxyExist(String objectNameStr){
+        try{
+            final ObjectName objName = new ObjectName(objectNameStr);
+            return V3AMX.getInstance().getMbeanServerConnection().isRegistered(objName);
         }catch(Exception ex){
             ex.printStackTrace();
             return false;

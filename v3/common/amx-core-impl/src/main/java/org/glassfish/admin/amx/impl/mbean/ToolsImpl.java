@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.List;
 import java.util.HashSet;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
@@ -206,7 +207,7 @@ public class ToolsImpl extends AMXImplBase // implements Tools
     }
 
     public String validate() {
-        final Set<ObjectName> all = getDomainRootProxy().getQueryMgr().queryAllObjectNameSet();
+        final List<ObjectName> all = Util.toObjectNames( getDomainRootProxy().getQueryMgr().queryAll() );
         
         return validate( CollectionUtil.toArray(all, ObjectName.class) );
     }

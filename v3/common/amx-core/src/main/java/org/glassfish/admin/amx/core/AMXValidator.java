@@ -210,11 +210,10 @@ public final class AMXValidator
     {
         return ExceptionUtil.toString(ExceptionUtil.getRootCause(t));
     }
-    
+
     /** types that are not open types, but that we deem acceptable for a remote API */
     private static Set<Class> EXTRA_ALLOWED_TYPES = SetUtil.newTypedSet(
-         (Class)JMXServiceURL.class
-    );
+            (Class) JMXServiceURL.class);
 
     private static boolean isAcceptableRemoteType(final Class<?> c)
     {
@@ -328,7 +327,6 @@ public final class AMXValidator
             problems.add(t.toString());
         }
 
-        final Pathnames paths = mDomainRoot.getPathnames();
 
         // test required attributes
         try
@@ -359,6 +357,7 @@ public final class AMXValidator
 
 
         // test path resolution
+        final Pathnames paths = mDomainRoot.getPathnames();
         try
         {
             final String path = proxy.path();
@@ -527,8 +526,9 @@ public final class AMXValidator
     }
 
     private static final Pattern TYPE_PATTERN = Pattern.compile(LEGAL_TYPE_PATTERN);
+
     private static final Pattern NAME_PATTERN = Pattern.compile(LEGAL_NAME_PATTERN);
-    
+
     private void validateObjectName(final AMXProxy proxy)
             throws ValidationFailureException
     {
@@ -655,9 +655,9 @@ public final class AMXValidator
                         while (iter.hasNext())
                         {
                             final AMXProxy next = iter.next();
-                            if (! mbeanInfo.equals(next.extra().mbeanInfo()))
+                            if (!mbeanInfo.equals(next.extra().mbeanInfo()))
                             {
-                                fail(proxy, "Children of type " + type + " must  have the same MBeanInfo" );
+                                fail(proxy, "Children of type " + type + " must  have the same MBeanInfo");
                             }
                         }
                     }
@@ -683,20 +683,22 @@ public final class AMXValidator
             mDescriptor = d;
             mFieldNames = SetUtil.newSet(d.getFieldNames());
             mProblems = problems;
-            
+
             validateRemote();
         }
-        
+
         // Descriptor fields must be remotable
         void validateRemote()
         {
-            for( final String fieldName : mFieldNames )
+            for (final String fieldName : mFieldNames)
             {
-                try {
-                    checkLegalForRemote( mDescriptor.getFieldValue(fieldName) );
+                try
+                {
+                    checkLegalForRemote(mDescriptor.getFieldValue(fieldName));
                 }
-                catch( final IllegalClassException e ) {
-                    mProblems.add( "Descriptor field " + fieldName + " uses a remote-unfriendly class: " + e.clazz().getName() );
+                catch (final IllegalClassException e)
+                {
+                    mProblems.add("Descriptor field " + fieldName + " uses a remote-unfriendly class: " + e.clazz().getName());
                 }
             }
         }
@@ -740,6 +742,7 @@ public final class AMXValidator
                 }
             }
         }
+
     }
 
     private static List<String> validateMetadata(final AMXProxy proxy)
@@ -771,25 +774,25 @@ public final class AMXValidator
         val.validateMetadataStringNonEmpty(DESC_GROUP);
 
         val.validate(DESC_SUB_TYPES, String[].class);
-        
-        for( final MBeanAttributeInfo attrInfo: mbeanInfo.getAttributes() )
+
+        for (final MBeanAttributeInfo attrInfo : mbeanInfo.getAttributes())
         {
-            new MetadataValidator( attrInfo.getDescriptor(), problems );
+            new MetadataValidator(attrInfo.getDescriptor(), problems);
         }
-        
-        for( final MBeanOperationInfo opInfo : mbeanInfo.getOperations() )
+
+        for (final MBeanOperationInfo opInfo : mbeanInfo.getOperations())
         {
-            new MetadataValidator( opInfo.getDescriptor(), problems );
+            new MetadataValidator(opInfo.getDescriptor(), problems);
         }
-        
-        for( final MBeanConstructorInfo cosntructorInfo : mbeanInfo.getConstructors() )
+
+        for (final MBeanConstructorInfo cosntructorInfo : mbeanInfo.getConstructors())
         {
-            new MetadataValidator( cosntructorInfo.getDescriptor(), problems );
+            new MetadataValidator(cosntructorInfo.getDescriptor(), problems);
         }
-        
-        for( final MBeanNotificationInfo notifInfo : mbeanInfo.getNotifications() )
+
+        for (final MBeanNotificationInfo notifInfo : mbeanInfo.getNotifications())
         {
-            new MetadataValidator( notifInfo.getDescriptor(), problems );
+            new MetadataValidator(notifInfo.getDescriptor(), problems);
         }
 
         return problems;
@@ -854,9 +857,9 @@ public final class AMXValidator
         private final int mNumFailures;
 
         public ValidationResult(
-            final int numTested,
-            final int numFailures,
-            final String details)
+                final int numTested,
+                final int numFailures,
+                final String details)
         {
             mNumTested = numTested;
             mNumFailures = numFailures;
@@ -895,33 +898,41 @@ public final class AMXValidator
         // list them in order
         for (final ObjectName objectName : targets)
         {
-            final AMXProxy amx = mProxyFactory.getProxy(objectName);
+            List<String> problems = null;
+            try
+            {
+                // certain failures prevent even the proxy from being created
+                // that's a fatal error
+                final AMXProxy amx = mProxyFactory.getProxy(objectName);
+                problems = _validate(amx);
+            }
+            catch( final Exception e )
+            {
+                final String msg = "Cannot create AMXProxy for MBean \"" + objectName + "\" -- MBean is  non-compliant, unregistering it.";
+                problems = new ArrayList<String>();
+                problems.add(msg);
+                try { mMBeanServer.unregisterMBean(objectName); } catch( final Exception ignore ) { /*ignore*/ }
+            }
 
-            final List<String> problems = _validate(amx);
             failures.result(objectName, problems);
         }
         final long elapsedMillis = System.currentTimeMillis() - startMillis;
 
         final ValidationResult result = new ValidationResult(
-            failures.getNumTested(),
-            failures.getNumFailures(),
-            failures.toString() + NL + elapsedMillis + " milliseconds.");
+                failures.getNumTested(),
+                failures.getNumFailures(),
+                failures.toString() );
         return result;
     }
 
     public ValidationResult validate(final ObjectName objectName)
     {
-        final ObjectName[] targets = new ObjectName[]
-        {
-            objectName
-        };
-
-        return validate(targets);
+        return validate( new ObjectName[] { objectName } );
     }
 
     public ValidationResult validate()
     {
-        final Set<ObjectName> all = mDomainRoot.getQueryMgr().queryAllObjectNameSet();
+        final List<ObjectName> all = Util.toObjectNames( mDomainRoot.getQueryMgr().queryAll() );
 
         return validate(CollectionUtil.toArray(all, ObjectName.class));
     }

@@ -11,11 +11,16 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
+import org.glassfish.admin.amx.intf.config.BackendPrincipal;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
-import org.glassfish.admin.amx.util.MapUtil;
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.intf.config.ConnectorConnectionPool;
+import org.glassfish.admin.amx.intf.config.Domain;
+import org.glassfish.admin.amx.intf.config.Resources;
+import org.glassfish.admin.amx.intf.config.SecurityMap;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.jvnet.hk2.config.ConfigBean;
@@ -173,8 +178,8 @@ public class ConfigToolsImpl extends AMXImplBase {
         }
     }
 
-    
-    public void test() {
+    /*
+    public void testSetProps() {
         final List<Map<String,String>> props = new ArrayList<Map<String,String>>();
         
         final ConfigTools tools = getDomainRootProxy().getExt().child(ConfigTools.class);
@@ -189,10 +194,46 @@ public class ConfigToolsImpl extends AMXImplBase {
         setProperties( target, props, false );
         setSystemProperties( target, props, false );
     }
+    */
+    
+    public void test()
+    {
+    /*
+        final Domain domain = getDomainRootProxy().getDomain().as(Domain.class);
+        final Resources resources = domain.getResources();
+        
+        final String NAME = "test";
+        try
+        {
+            resources.removeChild( Util.deduceType(ConnectorConnectionPool.class), NAME );
+        }
+        catch( final Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        final Map<String,Object> params = new HashMap<String,Object>();
+        params.put( "Name", NAME );
+        params.put( "ResourceAdapterName", NAME );
+        params.put( "ConnectionDefinitionName", NAME );
+        
+        final Map<String,Object> securityParams = new HashMap<String,Object>();
+        securityParams.put( "Name", NAME );
+        params.put( Util.deduceType(SecurityMap.class), securityParams );
+        
+        final Map<String,Object> backendParams = new HashMap<String,Object>();
+        backendParams.put( "Name", "testUser" );
+        backendParams.put( "Password", "testPassword" );
+        securityParams.put( Util.deduceType(BackendPrincipal.class), backendParams );
+        
+        resources.createChild( Util.deduceType(ConnectorConnectionPool.class), params);
+    */
+    }
     
     // dummy interface for creating a proxy
     interface PropertyBagProxy extends ConfigBeanProxy, PropertyBag
     {
+    
     }
 
         public void

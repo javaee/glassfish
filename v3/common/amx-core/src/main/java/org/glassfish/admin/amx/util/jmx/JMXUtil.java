@@ -1804,6 +1804,24 @@ public final class JMXUtil
 	{
 	    return TypeCast.asSet( conn.queryNames( pattern, exp ) );
 	}
+    
+        public static Set<ObjectName>
+	queryAllInDomain(
+	    final MBeanServerConnection conn,
+	    final String                domain)
+	    throws java.io.IOException
+	{
+	    return queryNames( conn, newObjectNamePattern( domain, "" ), null );
+	}
+    
+       public static Set<ObjectName>
+	queryAllInDomain(
+	    final MBeanServer conn,
+	    final String      domain)
+	{
+	    return queryNames( conn, newObjectNamePattern( domain, "" ), null );
+	}
+
 	
 	/**
 	    The sole purpose of this method is to move compiler warnings here, thus

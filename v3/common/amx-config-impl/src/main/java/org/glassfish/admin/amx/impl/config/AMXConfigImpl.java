@@ -383,7 +383,7 @@ public class AMXConfigImpl extends AMXImplBase
     {
         if (subs.keySet().size() != 0)
         {
-            cdebug("Ignoring sub-elements: " + CollectionUtil.toString(subs.keySet(), ", "));
+            cdebug("Sub-elements to create: " + CollectionUtil.toString(subs.keySet(), ", "));
         }
 
         ConfigBean newConfigBean = null;
@@ -538,11 +538,15 @@ public class AMXConfigImpl extends AMXImplBase
 
                 // FIXME TODO: create a child of the specified type, set all its attributes,
                 // recursively create any children the same way, etc
-
+                /*
                 for (final String attrName : attrs.keySet())
                 {
-                    /*
-                    final String attrValue = mProperties.get(propertyName);
+                    final Object attr = attrs.get(attrName);
+                    if ( attr instanceof Map )
+                    {
+                        // another child.
+                    }
+                    final String attrValue = attrs.get(attrName);
 
                     final ConfigBeanProxy propChild = item.allocateProxy(propClass);
                     final ConfigBean child = (ConfigBean)Dom.unwrap(propChild);
@@ -553,9 +557,8 @@ public class AMXConfigImpl extends AMXImplBase
 
                     //modelProp = NameMappingHelper.getConfigModel_Property( "value");
                     childW.setter( modelProp, propertyValue, String.class);
-                    }
-                     */
                 }
+                */
             }
         }
 
