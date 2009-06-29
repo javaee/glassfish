@@ -18,6 +18,14 @@
                 content="monitor/monitoringNode.jsf"
         />
 
+        <!-- add the http ports to the Server General page -->
+        <integration-point
+                id="serverGeneral"
+                type="org.glassfish.admingui:serverInstGeneralPe"
+                priority="200"
+                parentId=""
+                content="serverPageNode.jsf"
+        />
         <!--
         <integration-point
                 id="web"
