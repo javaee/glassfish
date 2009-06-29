@@ -36,10 +36,10 @@
 
 package org.glassfish.maven;
 
-import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -49,7 +49,6 @@ import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
-import java.io.File;
 
 
 /**
@@ -74,21 +73,43 @@ public class RunWarMojo extends AbstractMojo
     protected String name;
 
 /**
- * @parameter expression="${contextRoot}" default-value="test"
+ * @parameter expression="${contextroot}" default-value="test"
  */
     protected String contextRoot;
-    
+/**
+ * @parameter expression="${precompilejsp}" default-value="false"
+ */
+    protected Boolean precompilejsp;
+
+/**
+ * @parameter expression="${virtualservers}" default-value="virtualservers"
+ */
+    protected String virtualservers;
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        Server server = new Server.Builder("First").build();
-        server.createPort(port);
-        // server.addContainer(webContainer)
-        server.start();
-        EmbeddedDeployer deployer = server.getDeployer();
-        DeployCommandParameters cmdParams = new DeployCommandParameters();
-        cmdParams.name = name;
-        cmdParams.contextroot = contextRoot;
-        deployer.deploy(new File(war), cmdParams);
+        try {
+            Server server = new Server.Builder("First").build();
+            server.createPort(port);
+            // server.addContainer(webContainer)
+            server.start();
+            EmbeddedDeployer deployer = server.getDeployer();
+            DeployCommandParameters cmdParams = new DeployCommandParameters();
+            cmdParams.name = name;
+            cmdParams.contextroot = contextRoot;
+            cmdParams.precompilejsp = precompilejsp;
+            cmdParams.virtualservers = virtualservers;
+            while(true) {
+                deployer.deploy(new File(war), cmdParams);
+                System.out.println("");
+                System.out.println("Hit ENTER to redeploy " + war + "   <Ctrl-C> to exit");
+                // wait for enter
+                new BufferedReader(new InputStreamReader(System.in)).readLine();
+                deployer.undeployAll();
+            }
+        } catch(Exception e) {
+           throw new MojoExecutionException(e.getMessage(),e);
+       }
     }
 
 }
