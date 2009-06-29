@@ -37,6 +37,8 @@ import java.util.logging.Logger;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
@@ -282,6 +284,43 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 createNetworkProxy(listener);
             }
             
+            /*
+             * Ideally (and ultimately), all services that need lazy Init will add a network-listener element
+             * in the domain.xml with name = "light-weight-listener". And a LWL instance would have been created
+             * by the above loop. But for v3-FCS, IIOP and JMS listener will not
+             * be able to reach that stage - hence we create a dummy network listener object here and use that
+             * to create proxies etc. Whenever, IIOP and JMS listeners move to use network-listener elements,
+             * then this code can be removed
+             */
+            List<IiopListener> iiopListenerList = config.getIiopService().getIiopListener();
+            for(IiopListener oneListener : iiopListenerList) {
+                //if(Boolean.valueOf(oneListener.getEnabled()) && oneListener.getLazyInit()) {
+                if(oneListener.getLazyInit()) {
+                    NetworkListener dummy = new DummyNetworkListener();
+                    dummy.setPort(oneListener.getPort());
+                    dummy.setProtocol("light-weight-listener");
+                    dummy.setTransport("tcp");
+                    dummy.setName("iiop-service");
+                    createNetworkProxy(dummy);
+                }
+            }
+            /*
+             * Do the same as above for JMS listeners also but only for MQ's EMBEDDED MODE
+             */
+            if("EMBEDDED".equalsIgnoreCase(config.getJmsService().getType())) {
+                List<JmsHost> jmsHosts = config.getJmsService().getJmsHost();
+                for(JmsHost oneHost : jmsHosts) {
+                    if(oneHost.getLazyInit()) {
+                        NetworkListener dummy = new DummyNetworkListener();
+                        dummy.setPort(oneHost.getPort());
+                        dummy.setProtocol("light-weight-listener");
+                        dummy.setTransport("tcp");
+                        dummy.setName("mq-service");
+                        createNetworkProxy(dummy);
+                    }
+                }
+            }
+
             registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.SEVERE, "Unable to start v3. Closing all ports",e);
@@ -350,32 +389,33 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener);
-        final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
-        // attach all virtual servers to this port
-        for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
-            List<String> vsListeners = 
+        if(!("light-weight-listener".equals(listener.getProtocol()))) {
+            final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
+            // attach all virtual servers to this port
+            for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
+                List<String> vsListeners = 
                     StringUtils.parseStringList(vs.getNetworkListeners(), " ,");
-            if (vsListeners == null || vsListeners.isEmpty() ||
-                    vsListeners.contains(listener.getName())) {
-                if (!hosts.contains(vs.getId())){
-                    hosts.add(vs.getId());
-                }
-            }            
+                if (vsListeners == null || vsListeners.isEmpty() ||
+                        vsListeners.contains(listener.getName())) {
+                    if (!hosts.contains(vs.getId())){
+                        hosts.add(vs.getId());
+                    }
+                }            
+            }
+            addChangeListener(listener);
+            addChangeListener(listener.findThreadPool());
+            addChangeListener(listener.findTransport());
+            final Protocol protocol = listener.findProtocol();
+            addChangeListener(protocol);
+            addChangeListener(protocol.getHttp());
+            addChangeListener(protocol.getHttp().getFileCache());
+            addChangeListener(protocol.getSsl());
         }
 
         Future<Result<Thread>> future =  proxy.start();
         // add the new proxy to our list of proxies.
         proxies.add(proxy);
         futures.add(future);
-
-        addChangeListener(listener);
-        addChangeListener(listener.findThreadPool());
-        addChangeListener(listener.findTransport());
-        final Protocol protocol = listener.findProtocol();
-        addChangeListener(protocol);
-        addChangeListener(protocol.getHttp());
-        addChangeListener(protocol.getHttp().getFileCache());
-        addChangeListener(protocol.getSsl());
 
         return future;
     }
