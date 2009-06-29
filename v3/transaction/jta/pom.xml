@@ -26,6 +26,23 @@
         </developer>
     </developers>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <probe-provider-class-names>
+                                com.sun.enterprise.transaction.monitoring.TransactionServiceProbeProvider
+                            </probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
 	<!-- Dependencies on other modules/jars -->
@@ -68,6 +85,10 @@
             <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+           <groupId>org.glassfish.provider</groupId>
+           <artifactId>gfprobe-provider-client</artifactId>
+       </dependency>
 
     </dependencies>
 </project>

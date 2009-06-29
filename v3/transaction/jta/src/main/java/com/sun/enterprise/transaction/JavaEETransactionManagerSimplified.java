@@ -54,6 +54,8 @@ import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
 import com.sun.enterprise.transaction.spi.TransactionInternal;
+import com.sun.enterprise.transaction.monitoring.TransactionServiceProbeProvider;
+import com.sun.enterprise.transaction.monitoring.TransactionServiceStatsProvider;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -71,6 +73,9 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
 import org.glassfish.api.invocation.ResourceHandler;
+
+import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.probe.provider.StatsProviderManager;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -126,6 +131,7 @@ public class JavaEETransactionManagerSimplified
     private int m_transCommitted = 0;
     private int m_transRolledback = 0;
     private int m_transInFlight = 0;
+    private TransactionServiceProbeProvider monitor;
 
     private Cache resourceTable;
 
@@ -212,9 +218,14 @@ public class JavaEETransactionManagerSimplified
             if (Boolean.getBoolean(doStats)) {
                 registerStatisticMonitorTask();
             }
+            StatsProviderManager.register("transaction-service",
+                    PluginPoint.SERVER, "transaction-service",
+                    new TransactionServiceStatsProvider());
         } catch (Exception ex) {
             // ignore
         }
+
+        monitor = new TransactionServiceProbeProvider();
     }
 
     /**
@@ -367,6 +378,7 @@ public class JavaEETransactionManagerSimplified
         if (tx!=null && monitoringEnabled){
             if(activeTransactions.remove(tx)){
                 m_transInFlight--;
+                monitor.transactionDeactivatedEvent();
             }
         }
 
@@ -391,6 +403,7 @@ public class JavaEETransactionManagerSimplified
             if (tx!=null && monitoringEnabled){
                 if(activeTransactions.remove(tx)){
                     m_transInFlight--;
+                    monitor.transactionDeactivatedEvent();
                 }
             }
             
@@ -776,7 +789,7 @@ public class JavaEETransactionManagerSimplified
             try{
                 JavaEETransactionImpl tx = initJavaEETransaction(timeout);
                 activeTransactions.addElement(tx);
-                m_transInFlight++;
+                monitor.transactionActivatedEvent();
                 ComponentInvocation inv = invMgr.getCurrentInvocation();
                 if (inv != null && inv.getInstance() != null) {
                     tx.setComponentName(inv.getInstance().getClass().getName());
@@ -1021,6 +1034,7 @@ public class JavaEETransactionManagerSimplified
     */
     public synchronized void freeze(){
         getDelegate().acquireWriteLock();
+        monitor.freezeEvent(true);
     }
     /*
      * Called by Admin Framework to freeze the transactions. 
@@ -1028,6 +1042,7 @@ public class JavaEETransactionManagerSimplified
      */
     public synchronized void unfreeze(){
         getDelegate().releaseWriteLock();
+        monitor.freezeEvent(false);
     }
 
     /** XXX ???
@@ -1141,8 +1156,10 @@ public class JavaEETransactionManagerSimplified
             return;
         }
         if(committed){
+            monitor.transactionCommittedEvent();
             m_transCommitted++;
         }else{
+            monitor.transactionRolledbackEvent();
             m_transRolledback++;
         }
         m_transInFlight--;
@@ -1505,6 +1522,7 @@ public class JavaEETransactionManagerSimplified
     public void monitorTxBegin(Transaction tx) {
         if (monitoringEnabled) {
             activeTransactions.addElement(tx);
+            monitor.transactionActivatedEvent();
             m_transInFlight++;
         }
     }
