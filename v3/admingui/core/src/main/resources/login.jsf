@@ -36,8 +36,8 @@
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
-    getAmxRoot(amxRoot=>$attribute{amxRoot});
-    setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
+    getProxyAttribute( objectNameStr="v3:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonymousLogin}" )
+    convertStrToBoolean(str="#{pageSession.anonymousLogin}" out="#{pageSession.anonLogin}")
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
 />
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
