@@ -51,17 +51,10 @@
             setPageSessionAttribute(key="editLink" value="/applications/applicationEdit.jsf");
             setPageSessionAttribute(key="listPageLink" value="/applications/applications.jsf");
             setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
-
-       #include "/shared/viewSummaryDetail.inc"
         />
     </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
-<f:verbatim>
-    <script type="text/javascript">
-        admingui.nav.selectTreeNodeById('form:tree:applications');
-    </script>
-</f:verbatim>
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.title}" helpText="$resource{i18n.enterpriseApplications.titleHelp}"/>

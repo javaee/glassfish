@@ -38,23 +38,18 @@
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
         <!command
             setSessionAttribute(key="appGeneralTabs" value="general");
-            redirect(page="#{request.contextPath}/applications/#{generalPage}?appName=#{appName}");
+            redirect(page="#{request.contextPath}/applications/applicationEdit?appName=#{appName}");
         />       
     </sun:tab>
-    <sun:tab id="editDDTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
-        <!command
-            setSessionAttribute(key="appGeneralTabs" value="editDDTab");
-            redirect(page="#{request.contextPath}/applications/#{editDDPage}?appName=#{appName}");
-        />
-    </sun:tab>
-<!--
+    
     <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
             urlencode(value="#{appName}", result=>$pageSession{appName});
-            redirect(page="#{request.contextPath}/applications/#{descriptorPage}?appName=#{appName}");
+            redirect(page="#{request.contextPath}/applications/webDDEdit.jsf?appName=#{appName}");
         />
     </sun:tab>
+<!--
     <sun:tab id="targetTab" rendered="$session{supportCluster}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="targetTab");

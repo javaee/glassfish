@@ -43,25 +43,17 @@
     <sun:panelGroup id="topButtons">
         <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">  
            <!command
-                saveApplicationInfo(
-                    name="#{appName}"
-                    enabled="#{enabled}"
-                    description="#{description}"
-                    javaWebStart="#{javaWebStart}"
-                    contextRoot="#{contextRoot}"
-                    );
-		if("#{pe}&#{hasVS}") {
-                  	createVSReferences(
-				vsTargets="#{selectedVS}"
-                        	targetName="server"
-                        	name="#{appName}");
-		}
+                convertArrayToCommaString(array="#{pageSession.selectedVS}"  commaString="#{requestScope.tmp}");
+                mapPut(map="#{pageSession.valueMap2}" key="VirtualServers" value="#{requestScope.tmp}");
+                saveApplicationInfo(appAttr="#{pageSession.valueMap}" appRefAttr="#{pageSession.valueMap2}"  appObjectName="#{pageSession.objectNameStr}" appRefObjectName="#{pageSession.appRefObjectName}" )
                 prepareSuccessfulMsg();
+                redirect(page="#{request.contextPath}/applications/applicationEdit.jsf?appName=#{pageSession.appName}" )
           />
           </sun:button>
+
           <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
             <!command
-                redirect(page="#{request.contextPath}/applications/applications.jsf?name=#{name}");
+                redirect(page="#{request.contextPath}/applications/applications.jsf");
             />
         </sun:button>
     </sun:panelGroup>
@@ -72,72 +64,45 @@
 <sun:propertySheet id="propertySheet">			 
     <!-- Text Field section -->               
     <sun:propertySheetSection id="propertSectionTextField">
-        <event>
-        <!beforeCreate
-            getRequestValue(key="appName" value=>$page{appName});
-            setPageSessionAttribute(key="pe" value="#{true}")                               
-            getApplicationInfo(name="#{appName}" 
-                location=>$page{location} description=>$attribute{description} 
-                enabled=>$attribute{enabled} enabledString=>$attribute{enabledString}
-                libraries=>$page{libraries} 
-                contextRoot=>$attribute{contextRoot} javaWebStart=>$attribute{javaWebStart})
-            setPageSessionAttribute(key="showHa" value="$boolean{false}");
-            # if ( $session{supportCluster} & $pageSession{hasHa} ){
-            #   setPageSessionAttribute(key="showHa" value="$boolean{true}");
-            # }
-            if ( $session{supportCluster}){
-            	setPageSessionAttribute(key="pe" value="#{false}")                               
-            }
-        />
-        </event>
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-            <sun:staticText id="name" text="#{appName}"/>
+            <sun:staticText id="name" text="#{pageSession.appName}"/>
         </sun:property> 
 
-        
-       	<sun:property id="vsProp" rendered="#{hasVS}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}" >
-            <sun:listbox id="vs" immediate="#{true}"  labels="$pageSession{availableVS}" multiple="#{true}"  rows="$int{4}"  selected="#{selectedVS}" >
+        <sun:property id="statusProp" rendered="$session{notSupportCluster}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
+        </sun:property>
+
+        <sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
+            <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
+                labels="$pageSession{availableVS}"
+                selected="#{pageSession.selectedVS}" >
                 <!beforeCreate
-                if("#{pe}") {
-                    getAllVSList( targetName="server"  PE="#{pe}"  serverList=>$attribute{vsList});
-                    getVSOptions(vsList="$attribute{vsList}" 
-                            name="#{appName}"
-                            PE="#{pe}"
-                            targetName="server"
-                            availableVS=>$pageSession{availableVS}
-                            selectedVS=>$pageSession{selectedVS});
-                }
+                    getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service"
+                        type="virtual-server" result="#{pageSession.vsList}");
+                    getListBoxOptions(
+                        availableList="#{pageSession.vsList}",
+                        selectedCommaString="#{pageSession.valueMap2['VirtualServers']}",
+                        availableListResult="#{pageSession.availableVS}",
+                        selectedOptions="#{pageSession.selectedVS}"
+                        addEmptyFirstChoice="true");
                 />
-            </sun:listbox>
-       	</sun:property>
-        <sun:property id="ctxProp" rendered="#{hasContextRoot}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
-            <sun:textField id="ctx" columns="$int{40}" text="#{contextRoot}" />
+                </sun:listbox>
+            </sun:property>
+
+        <sun:property id="ctxProp" rendered="#{pageSession.showContextRoot}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
+            <sun:textField id="ctx" columns="$int{40}" text="#{pageSession.valueMap['ContextRoot']}" />
         </sun:property>
 
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="desc" columns="$int{40}" text="#{requestScope.description}" />
+            <sun:textField id="desc" columns="$int{40}" text="#{pageSession.valueMap['Description']}" />
         </sun:property>
-
-    
-        <sun:property id="statusProp" rendered="$session{notSupportCluster}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.enabled}" />  
-       </sun:property>
-
-       <sun:property id="statusProp2" rendered="$session{supportCluster}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
-            label="$resource{i18n.common.status}" helpText="$resource{i18n.application.EnableTargetHelp}">
-            <sun:staticText  text="#{requestScope.enabledString}" />  
-       </sun:property>
-
-       <sun:property id="jwsProp"  rendered="#{hasJavaWebStart}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.JavaWebStart}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{javaWebStart}" />  
-       </sun:property> 
-
+        
         <sun:property id="locationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.location}">
-            <sun:staticText id="location" text="#{location}"/>
+            <sun:staticText id="location" text="#{pageSession.valueMap['Location']}"/>
         </sun:property> 
 
         <sun:property id="librariesProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}">
-            <sun:staticText id="libraries" text="#{libraries}"/>
+            <sun:staticText id="libraries" text="#{pageSession.valueMap['Libraries']}"/>
             "<br /><br />
         </sun:property> 
     </sun:propertySheetSection>

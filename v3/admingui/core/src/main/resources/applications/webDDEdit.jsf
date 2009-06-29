@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -40,80 +40,31 @@
     <event>
         <!beforeCreate
             setSessionAttribute(key="appGeneralTabs" value="editDDTab");
-            setPageSessionAttribute(key="generalPage" value="applicationEdit.jsf");
-            setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
-            getRequestValue(key="appName" value=>$page{appName});
-            getDescriptors(appName="$pageSession{appName}"  descriptors=>$attribute{descriptors});
+            getRequestValue(key="appName" value="#{pageSession.appName}");
+            getDescriptors(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
         />
     </event>
 #include "/shared/restart.inc"    
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
 #include "/applications/appGeneralTabs.inc"
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
-            <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.descriptorPageTitle}" helpText="$resource{i18n.enterpriseApplications.descriptorPageTitleHelp}" >
-                <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <!--
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">  
-                            <!command
-                            getUIComponent(clientId="$pageSession{editEnvTableRowGroupId}", component=>$attribute{envTableRowGroup});
-                            getAllSingleMapRows(TableRowGroup="$attribute{envTableRowGroup}",  Rows=>$attribute{envNewList});
-                            
-                            getUIComponent(clientId="$pageSession{editParamTableRowGroupId}", component=>$attribute{paramTableRowGroup});
-                            getAllSingleMapRows(TableRowGroup="$attribute{paramTableRowGroup}",  Rows=>$attribute{paramNewList});
-                            
-                            saveWebDDInfo(appName="$pageSession{appName}", appType="web", serverName="server", reload="#[false}"
-                                    envList="${envNewList}" ctxParamList="${paramNewList}" )
-                            prepareSuccessfulMsg();
-                            />
-                        </sun:button>
-                        <sun:button id="saveButton2" text="$resource{i18n.button.SaveWithReload}" primary="#{true}">  
-                            <!command
-                            getUIComponent(clientId="$pageSession{editEnvTableRowGroupId}", component=>$attribute{envTableRowGroup});
-                            getAllSingleMapRows(TableRowGroup="$attribute{envTableRowGroup}",  Rows=>$attribute{envNewList});
-                            
-                            getUIComponent(clientId="$pageSession{editParamTableRowGroupId}", component=>$attribute{paramTableRowGroup});
-                            getAllSingleMapRows(TableRowGroup="$attribute{paramTableRowGroup}",  Rows=>$attribute{paramNewList});
-                            
-                            saveWebDDInfo(appName="$pageSession{appName}", appType="web", serverName="server", reload="#[true}"
-                                    envList="${envNewList}" ctxParamList="${paramNewList}" )
-                            prepareSuccessfulMsg();
-                            />
-                        </sun:button>
-                        -->
-                        <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
-                        <!command
-                            redirect(page="#{request.contextPath}/applications/applications.jsf");
-                        />
-                    </sun:button>
-                    </sun:panelGroup>
-                </facet> 
-            </sun:title>
-            <!-- PropertySheet .... -->
-            <sun:propertySheet id="propertySheet">			 
-            <sun:propertySheetSection id="generalPropertySheet" >
-                <sun:property id="NameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.appName}" >                           
-                    <sun:staticText id="Name" value="#{appName}" />
-                </sun:property>
-                <!--
-                <sun:property id="DdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.descriptors}" >
-                    <foreach key="dd" list="$attribute{descriptors}">
-                        "<a href="#" style="text-decoration: none" onClick="var win=window.open('#{request.contextPath}/applications/viewDD.jsf?appName=$pageSession{appName}&descriptorName=#{dd.descriptorPath}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">#{dd.descriptor}</a>
-                        " | <a href="#" style="text-decoration: none" onclick="showDD('$pageSession{appName}', '#{dd.descriptorPath}');">#{dd.descriptor}</a>
-                        "<br />
-                    </foreach>
-                </sun:property>
-                -->
-            </sun:propertySheetSection>    
-            </sun:propertySheet> 
+    <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.descriptorPageTitle}" helpText="$resource{i18n.enterpriseApplications.descriptorPageTitleHelp}" >
+        <!facet pageButtonsTop>
+            <sun:panelGroup id="topButtons">
+                <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
+                <!command
+                    redirect(page="#{request.contextPath}/applications/applications.jsf");
+                />
+            </sun:button>
+            </sun:panelGroup>
+        </facet>
+    </sun:title>
             "<br />
             "<br />
 #include "/applications/descriptorsTable.inc"
-    #include "/applications/editWebDDTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
-            </sun:form>
+        </sun:form>
             "<div id="panels"/>
             <sc:panel id="webDDPanel" header="View Web Deployment Descriptor" fixedCenter="true" visible="false" modal="true" width="800px" height="600px" closable="true">
                 "<div id="ddContent" style="height: 550px; overflow: auto;">

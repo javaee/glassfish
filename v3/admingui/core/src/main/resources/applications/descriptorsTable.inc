@@ -54,7 +54,7 @@
 				<!command
 <!--
 					descriptorDisplay(filePath="#{td.value.descriptorPath}"
-									  appName="#{name}"
+									  appName="#{appName}"
 									  pageName="#{descriptorPage}"
 									  descriptor=>$attribute{descriptor}
 									  appName=>$attribute{appName}

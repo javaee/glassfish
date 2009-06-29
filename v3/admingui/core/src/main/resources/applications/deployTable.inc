@@ -140,10 +140,11 @@
         <staticText id="typeContextRoot" value="#{td.value.contextRoot}" />
     </sun:tableColumn -->
 
+<!--
     <sun:tableColumn headerText="$resource{i18n.deployTable.colComposite}"  sort="composite"  rowHeader="$boolean{true}" id="col33">
         <staticText id="composite" value="#{td.value.composite}" />
     </sun:tableColumn>
-
+-->
     <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}"  sort="sniffers"  rowHeader="$boolean{true}" id="colsnif">
         <staticText id="sniffer" value="#{td.value.sniffers}" />
     </sun:tableColumn>

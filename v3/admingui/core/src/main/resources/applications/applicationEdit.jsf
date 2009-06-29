@@ -41,35 +41,25 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" >
 <!define name="content">
     <event>
-        <!beforeCreate
+    <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
+        getRequestValue(key="appName" value="#{pageSession.appName}");
+        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/applications,type=application,name=#{pageSession.appName}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        
+        setPageSessionAttribute(key="appRefObjectName" value="v3:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
+        getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
+
+        getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap['Enabled']}")
+        showContextRoot(objectNameStr="#{pageSession.objectNameStr}" value="#{pageSession.showContextRoot}")
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
-        setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");
-        setPageSessionAttribute(key="hasHa" value="#{false}");
-        setPageSessionAttribute(key="hasContextRoot" value="#{true}");
-        #TODO-V3 omit Libraries
-        setPageSessionAttribute(key="hasLibraries" value="#{false}");
-        setPageSessionAttribute(key="hasThreadPool" value="#{true}");
-        setPageSessionAttribute(key="hasVS" value="#{true}");
-        setPageSessionAttribute(key="hasComponentTable" value="#{true}");
-        setPageSessionAttribute(key="hasActionColumn" value="#{false}");
-        setPageSessionAttribute(key="generalPage" value="applicationEdit.jsf");
-        setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
-        setPageSessionAttribute(key="descriptorPage" value="applicationDesc.jsf");
-
-        #TODO-V3-CLUSTER
-        #setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
-        if ($session{supportCluster} ){
-            setPageSessionAttribute(key="hasVS" value="#{false}");
-        }
-        />
+    />
     </event>
 #include "/shared/restart.inc"    
         <sun:form id="propertyForm">
         
-        #include "/shared/treeBreadcrumbs.inc"
-#include "/applications/appGeneralTabs.inc"
+         //#include "/applications/appGeneralTabs.inc"
 #include "/shared/alertMsg.inc"
 #include "/applications/edit.inc"
 #include "subComponentTable.inc"

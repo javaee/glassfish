@@ -53,29 +53,21 @@
         </sun:textField>
 </sun:property>
 
-<sun:property id="vsp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}" >
-	<sun:listbox id="vs" 
-		immediate="#{true}"
-		items="#{availableVS}"
-		multiple="#{true}"
-		rows="$int{4}"
-		selected="#{selectedVS}"
-	>
-        	<!beforeCreate
-			getAllVSList(
-				targetName="server"
-				PE="true"
-				serverList=>$attribute{vsList});
-			getSunOptions(
-				labels="$attribute{vsList}"
-				values="$attribute{vsList}"
-				options=>$pageSession{availableVS});
-			getListElement(
-				list="$attribute{vsList}"
-				index="0"
-				selectedIndex=>$pageSession{selectedVS});
-		/>
-	</sun:listbox>
+<sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
+    <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
+        labels="$pageSession{availableVS}"
+        selected="#{pageSession.selectedVS}" >
+        <!beforeCreate
+            getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service"
+                type="virtual-server" result="#{pageSession.vsList}");
+            getListBoxOptions(
+                availableList="#{pageSession.vsList}",
+                selectedCommaString="",
+                availableListResult="#{pageSession.availableVS}",
+                selectedOptions="#{pageSession.selectedVS}"
+                addEmptyFirstChoice="true");
+        />
+        </sun:listbox>
 </sun:property>
 <sun:property id="enableProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.status}" visible="#{true}"  helpText="$resource{i18n.deploy.statusHelp}">
 	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{enabled}" />  

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,6 @@
     </event>
 #include "/shared/restart.inc"  
 	    	<sun:form id="form"> 
-   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <sun:title id="title" title="$resource{i18n.enterpriseApplications.deployPageTitle}" helpText="$resource{i18n.enterpriseApplications.deployPageTitleHelp}">
                  <!facet pageButtonsTop>
@@ -73,12 +72,11 @@
 #include "uploadButtons.inc"
                     </sun:panelGroup>
                 </facet>
-                
+
 #include "uploadComponent.inc"
 <sun:propertySheet id="ps" >		
 #include "uploadFieldsCommon.inc"
 "<br />
-#include "/shared/targetSectionForCreate.inc"
 </sun:propertySheet>
 
 </sun:title>
