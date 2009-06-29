@@ -525,6 +525,20 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringArray));
 
      }
+     
+     
+     @Handler(id = "convertStrToBoolean",
+    input = {
+        @HandlerInput(name = "str", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "out", type = Boolean.class)})
+    public static void convertStrToBoolean(HandlerContext handlerCtx) {
+
+        String str = (String) handlerCtx.getInputValue("str");
+        handlerCtx.setOutputValue("out", "true".equals(str));
+     }
+
+
 
 
 
