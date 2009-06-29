@@ -9,7 +9,8 @@
                 content="webPluginTreeNode.jsf"
         />
 
-        
+        <!-- Ana to add this back in when the monitoring config page is converted to use v3 AMX -->
+        <!--
         <integration-point 
                 id="monitor" 
                 type="org.glassfish.admingui:navNode" 
@@ -17,6 +18,7 @@
                 parentId="configuration" 
                 content="monitor/monitoringNode.jsf"
         />
+         -->
 
         <!-- add the http ports to the Server General page -->
         <integration-point
@@ -26,24 +28,7 @@
                 parentId=""
                 content="serverPageNode.jsf"
         />
-        <!--
-        <integration-point
-                id="web"
-                type="org.glassfish.admingui:navNode"
-                priority="100"
-                parentId="applications" 
-                content="webApp/webAppNode.jsf"
-        />
-        -->
-        <!-- Add a link under the Applications Page for showing all the web Applications. -->
-        <!--
-        <integration-point
-                id="webAppLink" 
-                type="org.glassfish.admingui:applications" 
-                priority="100"
-                content="webApp/webAppLink.jsf"/>
-                -->
-                
+        
         <!-- Add a link under the Configuration Page  -->
         <integration-point 
                 id="webConfigurationLink" 
