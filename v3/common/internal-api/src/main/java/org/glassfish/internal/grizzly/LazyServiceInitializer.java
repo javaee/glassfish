@@ -18,7 +18,7 @@
  * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * Copyright 2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  */
 package org.glassfish.internal.grizzly;
 
@@ -40,9 +40,11 @@ public interface LazyServiceInitializer {
      * Returns the string associated with 'name' attribute of corresponding
      * <network-listener> element in domain.xml. The service initializer uses
      * this return value to select the proper service provider from the list
-     * of service providers that implement this interface. For example, 
-     * ORB/IIOP service will return String "iiop-listener", JMS service will
-     * will return "jms-listener"
+     * of service providers that implement this interface.
+     * 
+     * For GFv3, however, since IIOP and MQ service will not able to move
+     * <network-listener> element, the implementations of this interface for
+     * IIOP/JMS service will return String "iiop-service"/"mq-service"
      *
      * @return The value of the 'name' attribute in the corresponding 
      *         <network-listener> element for this service
@@ -70,18 +72,7 @@ public interface LazyServiceInitializer {
      * return control back to the listener ASAP without consuming this thread
      * for processing the requst completely.
      *
-     * @param the channel where the incoming request was accepted.
+     * @param channel where the incoming request was accepted.
      */
     public void handleRequest(SelectableChannel channel);
-
-    /**
-     * Information on any exceptions that happen at the listener level (while
-     * accepting a request or while the service is initializing) will be passed
-     * to the service through this call. The service can choose to ignore this /
-     * use this information for logging purpose / take corrective action, if
-     * any, as it sees fit.
-     *
-     * @param The exception that may be of interest to the service
-     */
-     public void uncaughtException(Throwable t);
 }
