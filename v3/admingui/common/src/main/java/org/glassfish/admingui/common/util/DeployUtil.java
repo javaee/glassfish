@@ -44,14 +44,10 @@ package org.glassfish.admingui.common.util;
 import java.io.*;
 import java.util.Properties;
 
-//TODO-V3
-//import com.sun.enterprise.connectors.ConnectorRuntime;
-
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DFProgressObject;
 import org.glassfish.deployment.client.DFDeploymentProperties;
-
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URI;
@@ -82,7 +78,7 @@ public class DeployUtil {
      	}
         
         if (targets == null){
-            String defaultTarget =  (AMXRoot.getInstance().isEE()) ? "domain" : "server";
+            String defaultTarget =  (V3AMX.getInstance().isEE()) ? "domain" : "server";
             targets = new String[] {defaultTarget};
         }
         

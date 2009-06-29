@@ -24,23 +24,18 @@ import javax.management.ObjectName;
 
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Realms;
-//import org.glassfish.admin.amx.base.RuntimeMgr;
+import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.proxy.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
-import org.glassfish.admin.amx.intf.config.ApplicationRef;
 import org.glassfish.admin.amx.intf.config.Config;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
 import org.glassfish.admin.amx.intf.config.Configs;
 import org.glassfish.admin.amx.intf.config.Domain;
-import org.glassfish.admin.amx.intf.config.HttpService;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 import org.glassfish.admin.amx.intf.config.Property;
-import org.glassfish.admin.amx.intf.config.VirtualServer;
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -123,9 +118,20 @@ public class V3AMX {
         return domainRoot.getExt().getRealms();
     }
     
-    //public RuntimeMgr getRuntimeMgr(){
-    //    return domainRoot.getExt().getRuntime();
-    //}
+    public Runtime getRuntime(){
+        return domainRoot.getExt().getRuntime();
+    }
+
+
+    public  boolean isEE(){
+        return false;
+    }
+
+
+    public  boolean supportCluster(){
+        return false;
+    }
+
 
     public static Config getServerConfig(String configName){
         if ((configName == null) || configName.equals(""))
@@ -342,10 +348,13 @@ public class V3AMX {
         return newMap;
     }
     
-    public static String getPropValue( Map<String, Property> propMap, String key){
-        if (propMap.get(key) != null)
-            return propMap.get(key).getValue();
-        return "";
+    public static String getPropValue( AMXProxy amx, String key){
+        Map<String, AMXProxy> props = amx.childrenMap("property");
+        if (props.containsKey(key)){
+            return (String) props.get(key).attributesMap().get(PROPERTY_VALUE);
+        }else{
+            return null;
+        }
     }
 
     /*  converts a Property Map to a Map where the name is preceded by PropertiesAccess.PROPERTY_PREFIX.
@@ -366,120 +375,6 @@ public class V3AMX {
             }
         }
         return convertedMap;
-    }
-
-
-    public static Integer getAdminPort(){
-        String port = (String) getAttrsMap(AMX.ADMIN_LISTENER).get("Port");
-        if (port.startsWith("$")){
-            //TODO: resolve attribute
-            port = "4848";
-        }
-        return Integer.valueOf(port);
-    }
-
-
-    //TODO:  will need to resolve system property, if the key starts with $
-    public static String getHttpPortNumber(String serverName, String configName){
-        StringBuffer ports = new StringBuffer();
-        try{
-//            ObjectName serverObj = new ObjectName("v3:pp=/domain/servers,type=server,name=" + serverName);
-            //Map<String,NetworkListener> nls = V3AMX.getServerConfig(configName).child(NetworkConfig.class).child(NetworkListeners.class).childrenMap(NetworkListener.class);
-            Config config = V3AMX.getServerConfig(configName);
-            Map<String, NetworkListener> nls = config.getNetworkConfig().as(NetworkConfig.class).getNetworkListeners().getNetworkListener();
-            for (NetworkListener listener : nls.values()){
-                String port = (String) listener.attributesMap().get("Port");
-//                if (port.startsWith("$")) {
-//                    port = listener.resolveToken((port.substring(2, port.length() - 1)), instanceName);
-//                }
-                ports = ports.append("," + port);
-            }
-            if (ports.length() > 0){
-                ports.deleteCharAt(0);  //remove the first ','
-            }
-            return ports.toString();
-        }catch(Exception ex){
-            return "";
-        }
-    }
-
-
-    //Application Utils
-    /* returns the port number on which appName could be executed
-     * will try to get a port number that is not secured.  But if it can't find one, a
-     * secured port will be returned, prepanded with '-'
-     */
-    public static String getPortForApplication(String appName) {
-        try{
-            String objectNameStr ="v3:pp=/domain/servers,type=server,name=server";
-            AMXProxy  server = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
-            ApplicationRef appRef = server.childrenMap("application-ref").get(appName).as(ApplicationRef.class);
-            NetworkListener listener = null;
-            if (appRef == null) { // no application-ref found for this application, shouldn't happen for PE. TODO: think about EE
-                listener = getListener();
-            } else {
-                String vsId = appRef.getVirtualServers();
-                if (vsId == null || vsId.length() == 0) { // no vs specified
-                    listener = getListener();
-                } else {
-                    listener = getListener(vsId);
-
-                }
-            }
-            if (listener == null) {
-                return null;
-            }
-            String port = (String) listener.attributesMap().get("Port");
-            String security = (String)listener.findProtocol().attributesMap().get("SecurityEnabled");
-            return ("true".equals(security)) ? "-" + port : port;
-        }catch(Exception ex){
-            return "";
-        }
-    }
-
-    // returns a  http-listener that is linked to a non-admin VS
-    private static NetworkListener getListener() {
-        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
-        return getOneVsWithNetworkListener(new ArrayList(vsMap.keySet()));
-    }
-
-    private static NetworkListener getListener(String vsIds) {
-        return getOneVsWithNetworkListener(GuiUtil.parseStringList(vsIds, ","));
-    }
-
-    private static NetworkListener getOneVsWithNetworkListener(List<String> vsList) {
-        if (vsList == null || vsList.size() == 0) {
-            return null;
-        }
-        NetworkListener secureListener = null;
-        HttpService hConfig = V3AMX.getServerConfig("server-config").getHttpService();
-        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
-        for (String vsName : vsList) {
-            if (vsName.equals("__asadmin")) {
-                continue;
-            }
-            VirtualServer vs = vsMap.get(vsName);
-            String listener = (String) vs.attributesMap().get("NetworkListeners");
-            if (GuiUtil.isEmpty(listener)) {
-                continue;
-            } else {
-                List<String> hpList = GuiUtil.parseStringList(listener, ",");
-                for (String one : hpList) {
-                    NetworkListener oneListener = V3AMX.getServerConfig("server-config").getNetworkConfig().as(NetworkConfig.class).getNetworkListeners().getNetworkListener().get(one);
-                    if (!"true".equals(oneListener.attributesMap().get("Enabled"))) {
-                        continue;
-                    }
-                    String security = (String)oneListener.findProtocol().attributesMap().get("SecurityEnabled");
-                    if ("true".equals(security)) {
-                        secureListener = oneListener;
-                        continue;
-                    } else {
-                        return oneListener;
-                    }
-                }
-            }
-        }
-        return secureListener;
     }
 
     /* A utility method to remove Element before calling create or set attribute of a proxy */
@@ -509,14 +404,16 @@ public class V3AMX {
         }
     }
 
-    public  boolean isEE(){
-        return false;
-    }
-
-
-    public  boolean supportCluster(){
-        return false;
-    }
+    
+     public static AMXProxy objectNameToProxy(String objectNameStr){
+         try {
+            AMXProxy amx = V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+            return amx;
+         }catch(Exception ex){
+             System.out.println("Cannot find object: " + objectNameStr);
+             return null;
+         }
+     }
 
 
     final private static List skipAttr = new ArrayList();

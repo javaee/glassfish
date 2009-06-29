@@ -133,7 +133,7 @@ public class GuiUtil {
             ServletRequest srequest = (ServletRequest) request;
             String serverName = srequest.getServerName();
             sessionMap.put("serverName", serverName);
-            sessionMap.put("serverPort", V3AMX.getAdminPort());
+            sessionMap.put("serverPort", V3AMXUtil.getAdminPort());
             sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
         }else{
             //should never get here.
@@ -513,9 +513,9 @@ public class GuiUtil {
             for (int i = 0; i < str.length; i++) {
                 String element = str[i];
 
-                if (element == null || element.length() == 0) {
-                    throw new IllegalArgumentException();
-                }
+//                if (element == null || element.length() == 0) {
+//                    throw new IllegalArgumentException();
+//                }
                 retStr.append(element);
 
                 if (i < str.length - 1) {
