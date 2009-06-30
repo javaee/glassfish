@@ -47,8 +47,7 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.Util;
-import static org.glassfish.admin.amx.core.AMXConstants.*;
-
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.api.amx.AMXLoader;
 
 /**
@@ -94,7 +93,7 @@ public final class AMXBooter
 	findDomainRoot( final MBeanServerConnection conn )
 	{
         ObjectName objectName = null;
-		final ObjectName pattern = JMXUtil.newObjectName( AMX_JMX_DOMAIN + ":" + TYPE_KEY + "=" + Util.deduceType(DomainRoot.class) + ",*");
+		final ObjectName pattern = JMXUtil.newObjectName( AMXValues.amxJMXDomain() + ":" + AMXValues.TYPE_KEY + "=" + Util.deduceType(DomainRoot.class) + ",*");
 		
         try
         {

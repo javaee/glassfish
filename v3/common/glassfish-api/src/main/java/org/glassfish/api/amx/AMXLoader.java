@@ -47,7 +47,7 @@ import javax.management.ObjectName;
 @Contract
 public interface AMXLoader
 {
-    public static final String  AMX_JMX_DOMAIN  = "v3";
+    public static final String  AMX_JMX_DOMAIN  = AMXValues.amxJMXDomain();
     
     public static final String AMX3_SUPPORT_DOMAIN = AMX_JMX_DOMAIN + "-support";
     public static String LOADER_PREFIX = AMX3_SUPPORT_DOMAIN + ":type=amx-loader,name=";

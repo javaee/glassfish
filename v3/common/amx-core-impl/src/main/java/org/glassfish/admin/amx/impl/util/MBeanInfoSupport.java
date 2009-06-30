@@ -29,12 +29,11 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMX_SPI;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.api.amx.AMXMBeanMetadata;
-import static org.glassfish.admin.amx.core.AMXConstants.*;
+import static org.glassfish.api.amx.AMXValues.*;
 
 /**
  *
@@ -85,13 +84,13 @@ public final class MBeanInfoSupport {
         final AMXMBeanMetadata meta = intf.getAnnotation(AMXMBeanMetadata.class);
 
         final boolean singleton = Singleton.class.isAssignableFrom(intf) || (meta != null && meta.singleton());
-        final String  group = AMXConstants.GROUP_OTHER;
+        final String  group = GROUP_OTHER;
         final boolean isLeaf = meta != null && meta.leaf();
         final boolean supportsAdoption = ! isLeaf;
 
         if ( isLeaf )
         {
-            JMXUtil.remove( attrsList, AMXConstants.ATTR_CHILDREN);
+            JMXUtil.remove( attrsList, ATTR_CHILDREN);
         }
 
         final Descriptor d = mbeanDescriptor(

@@ -126,9 +126,7 @@ public final class RuntimeImpl extends AMXImplBase
 
     public void stopDomain()
     {
-        // FIXME:  this might not work with authenticaion; need direct API call
-        //executeREST( "stop-domain" );
-        ModulesRegistry registry = InjectedValues.getInstance().getModulesRegistry();
+        final ModulesRegistry registry = InjectedValues.getInstance().getModulesRegistry();
         final Collection<Module> modules = registry.getModules("com.sun.enterprise.osgi-adapter");
         if (modules.size() == 1)
         {

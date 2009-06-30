@@ -73,7 +73,7 @@ import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.client.AppserverConnectionSource;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.core.AMXConstants;
+import static org.glassfish.api.amx.AMXValues.*;
 
 /**
 	Factory for {@link AMXProxy} proxies.
@@ -511,7 +511,7 @@ public final class ProxyFactory implements NotificationListener
         final Descriptor d = info.getDescriptor();
         if ( d == null ) return false;
         
-        final String value =  "" + d.getFieldValue( AMXConstants.DESC_STD_IMMUTABLE_INFO);
+        final String value =  "" + d.getFieldValue( DESC_STD_IMMUTABLE_INFO);
         return Boolean.valueOf( value );
     }
     
@@ -755,7 +755,7 @@ public final class ProxyFactory implements NotificationListener
 		
 		for( final ObjectName objectName : objectNames )
 		{
-            final String key = objectName.getKeyProperty(AMXConstants.NAME_KEY);
+            final String key = objectName.getKeyProperty(NAME_KEY);
             final AMXProxy	proxy	= getProxy( objectName, intf);
             resultMap.put( key, proxy );
 		}

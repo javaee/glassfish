@@ -40,7 +40,7 @@ import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Extra;
 import org.glassfish.admin.amx.core.Util;
-import static org.glassfish.admin.amx.core.AMXConstants.*;
+import static org.glassfish.api.amx.AMXValues.*;
 
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
@@ -66,7 +66,7 @@ import java.util.List;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.Tools;
-import org.glassfish.admin.amx.core.AMXConstants;
+import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.util.TypeCast;
 
@@ -130,7 +130,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
                     });
             final Map<String, Object> m = JMXUtil.attributeListToValueMap(attrs);
 
-            mParentObjectName = (ObjectName) m.get(AMXConstants.ATTR_PARENT);
+            mParentObjectName = (ObjectName) m.get(ATTR_PARENT);
             mName = (String) m.get(ATTR_NAME);
         }
         catch (final Exception e)

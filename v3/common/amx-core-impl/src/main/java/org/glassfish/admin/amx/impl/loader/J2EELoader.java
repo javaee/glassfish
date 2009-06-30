@@ -23,7 +23,7 @@
 package org.glassfish.admin.amx.impl.loader;
 
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.MBeanRegistrationListener;
@@ -98,13 +98,13 @@ public final class J2EELoader
         public ConfigListener( final MBeanServer mbeanServer )
             throws IOException
         {
-            super( "J2EELoader.ConfigListener", mbeanServer, JMXUtil.newObjectNamePattern(AMXConstants.AMX_JMX_DOMAIN, JMXUtil.WILD_ALL) );
+            super( "J2EELoader.ConfigListener", mbeanServer, JMXUtil.newObjectNamePattern( AMXValues.amxJMXDomain(), JMXUtil.WILD_ALL) );
         }
     
             protected void
         mbeanRegistered( final ObjectName objectName )
         {
-            final String type = objectName.getKeyProperty( AMXConstants.TYPE_KEY );
+            final String type = objectName.getKeyProperty( AMXValues.TYPE_KEY );
             
             if ( SYNC_TYPES.contains( type ) )
             {
@@ -115,7 +115,7 @@ public final class J2EELoader
         
         protected void mbeanUnregistered( final ObjectName objectName )
         {
-            final String type = objectName.getKeyProperty( AMXConstants.TYPE_KEY );
+            final String type = objectName.getKeyProperty( AMXValues.TYPE_KEY );
             
             if ( SYNC_TYPES.contains( type ) )
             {

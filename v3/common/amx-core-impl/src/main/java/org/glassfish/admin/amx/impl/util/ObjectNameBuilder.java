@@ -41,13 +41,14 @@ import java.util.List;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
+import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
-import static org.glassfish.admin.amx.core.AMXConstants.*;
+import static org.glassfish.api.amx.AMXValues.*;
 
 /**
 	Class used to build ObjectNameBuilder for AMX MBeans.
@@ -196,7 +197,7 @@ public final class  ObjectNameBuilder
         */
         final AMXProxy parentProxy = ProxyFactory.getInstance(server).getProxy(parent, AMXProxy.class);
         final String parentPath = parentProxy.path();
-        final String parentPathProp = Util.makeProp( AMXConstants.PARENT_PATH_KEY, parentPath );
+        final String parentPathProp = Util.makeProp( PARENT_PATH_KEY, parentPath );
         props = Util.concatenateProps(parentPathProp, props);
 
         return JMXUtil.newObjectName(parent.getDomain(), props);
@@ -238,7 +239,7 @@ public final class  ObjectNameBuilder
 		public static ObjectName
 	getDomainRootObjectName()
 	{
-        return getDomainRootObjectName( AMXConstants.AMX_JMX_DOMAIN );
+        return getDomainRootObjectName( AMXValues.amxJMXDomain() );
 	}
 	
 		private static String

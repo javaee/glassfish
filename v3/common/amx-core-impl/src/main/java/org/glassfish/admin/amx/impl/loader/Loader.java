@@ -56,7 +56,8 @@ import javax.management.*;
 import javax.management.relation.MBeanServerNotificationFilter;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
-import org.glassfish.admin.amx.core.AMXConstants;
+import static org.glassfish.api.amx.AMXValues.*;
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.impl.mbean.DomainRootImpl;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 
@@ -140,9 +141,9 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		final SystemInfoImpl	systemInfo	= SystemInfoFactory.createInstance( server );
 
         final String type = Util.deduceType(SystemInfo.class);
-        final String pathProp = Util.makeProp( AMXConstants.PARENT_PATH_KEY, DomainRoot.PATH);
+        final String pathProp = Util.makeProp( PARENT_PATH_KEY, DomainRoot.PATH);
         final String props = Util.concatenateProps( pathProp, Util.makeTypeProp( type ) );
-		final ObjectName tempName	= JMXUtil.newObjectName( AMXConstants.AMX_JMX_DOMAIN, props);
+		final ObjectName tempName	= JMXUtil.newObjectName( AMXValues.amxJMXDomain(), props);
 		
 		final ObjectName objectName	= mServer.registerMBean( systemInfo, tempName ).getObjectName();
 		
@@ -229,7 +230,7 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 	    final Object    domainRoot  = createDomainRoot();
 	    if ( domainRoot != null )
 	    {
-    		ObjectName objectName	= ObjectNameBuilder.getDomainRootObjectName(AMXConstants.AMX_JMX_DOMAIN);
+    		ObjectName objectName	= ObjectNameBuilder.getDomainRootObjectName(AMXValues.amxJMXDomain());
     	    
     	    debug( "Registering DomainRoot, impl class = " + domainRoot.getClass().getName() );
     		try

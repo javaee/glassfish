@@ -37,7 +37,7 @@ package org.glassfish.admin.amx.base;
 
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.annotation.*;
 
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -176,7 +176,7 @@ public interface DomainRoot extends AMXProxy
         @see #getAMXReady
      */
     public static final String  AMX_READY_NOTIFICATION_TYPE =
-        AMXConstants.NOTIFICATION_PREFIX + "DomainRoot" + ".AMXReady";
+        AMXValues.NOTIFICATION_PREFIX + "DomainRoot" + ".AMXReady";
         
     /**
         Poll to see if AMX is ready for use. It is more efficient to instead listen

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.MBeanTrackerMBean;
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
@@ -90,7 +90,7 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
             //debug( "MBeanTracker: registered as " + mObjectName );
 		}
         // populate our list
-		final ObjectName	pattern	= Util.newObjectNamePattern( AMXConstants.AMX_JMX_DOMAIN, "" );
+		final ObjectName	pattern	= Util.newObjectNamePattern( AMXValues.amxJMXDomain(), "" );
 		final Set<ObjectName>	names	= JMXUtil.queryNames( mServer, pattern, null );
         //debug( "MBeanTracker: found MBeans: " + names.size() );
         for( final ObjectName o : names )
@@ -111,7 +111,7 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
     {
         ObjectName parent = null;
         try {
-            parent = (ObjectName)mServer.getAttribute(child, AMXConstants.ATTR_PARENT);
+            parent = (ObjectName)mServer.getAttribute(child, AMXValues.ATTR_PARENT);
         }
         catch( final Exception e )
         {

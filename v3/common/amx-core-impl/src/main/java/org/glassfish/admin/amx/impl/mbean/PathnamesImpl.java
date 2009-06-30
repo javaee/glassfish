@@ -52,7 +52,7 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
-import org.glassfish.admin.amx.core.AMXConstants;
+import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
@@ -94,7 +94,7 @@ public final class PathnamesImpl  extends AMXImplBase
         //cdebug( "resolvePath: " + parser.toString() + ", parentPath = " + parentPath );
         
         // fixed query based on the path, which will find all MBeans with that parent path
-        final String props = Util.makeProp( AMXConstants.PARENT_PATH_KEY, parentPath );
+        final String props = Util.makeProp( PARENT_PATH_KEY, parentPath );
         final ObjectName pattern = JMXUtil.newObjectNamePattern( getObjectName().getDomain(), props );
         final Set<ObjectName> s = getMBeanServer().queryNames( pattern, null);
         
@@ -216,7 +216,7 @@ public final class PathnamesImpl  extends AMXImplBase
         while ( cur != null )
         {
             objectNames.add(cur);
-            cur = (ObjectName)JMXUtil.getAttribute(server, cur, AMXConstants.ATTR_PARENT);
+            cur = (ObjectName)JMXUtil.getAttribute(server, cur, ATTR_PARENT);
         }
         
         final List<ObjectName> reversed = ListUtil.reverse(objectNames);

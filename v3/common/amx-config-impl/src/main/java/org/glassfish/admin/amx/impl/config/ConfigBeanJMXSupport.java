@@ -36,7 +36,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.core.AMXConstants;
+import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.Util;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
@@ -251,7 +251,7 @@ public class ConfigBeanJMXSupport {
 
     private boolean hasNameAttribute() {
         for (final MBeanAttributeInfo attrInfo : getMBeanInfo().getAttributes()) {
-            if (AMXConstants.ATTR_NAME.equals(attrInfo.getName())) {
+            if (ATTR_NAME.equals(attrInfo.getName())) {
                 return true;
             }
         }
@@ -520,19 +520,19 @@ public class ConfigBeanJMXSupport {
             amxInterfaceName = classname;
         }
 
-        d.setField(AMXConstants.DESC_STD_INTERFACE_NAME, amxInterfaceName);
-        d.setField(AMXConstants.DESC_GENERIC_INTERFACE_NAME, AMXConfigProxy.class.getName());
-        d.setField(AMXConstants.DESC_STD_IMMUTABLE_INFO, true);
-        //d.setField(AMXConstants.DESC_PATH_PART, getTypeString());
-        d.setField(AMXConstants.DESC_GROUP, "config");
+        d.setField(DESC_STD_INTERFACE_NAME, amxInterfaceName);
+        d.setField(DESC_GENERIC_INTERFACE_NAME, AMXConfigProxy.class.getName());
+        d.setField(DESC_STD_IMMUTABLE_INFO, true);
+        //d.setField(DESC_PATH_PART, getTypeString());
+        d.setField(DESC_GROUP, "config");
 
         // Adoption is not supported, only other config elements
-        d.setField(AMXConstants.DESC_SUPPORTS_ADOPTION, false);
+        d.setField(DESC_SUPPORTS_ADOPTION, false);
 
-        d.setField(AMXConstants.DESC_IS_SINGLETON, isSingleton());
+        d.setField(DESC_IS_SINGLETON, isSingleton());
         
         final String[] subTypes = CollectionUtil.toArray( childTypes().keySet(), String.class );
-        d.setField( AMXConstants.DESC_SUB_TYPES, subTypes );
+        d.setField( DESC_SUB_TYPES, subTypes );
 
         return d;
     }

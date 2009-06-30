@@ -36,7 +36,7 @@
  */
 package org.glassfish.admin.amx.impl.config;
 
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -618,7 +618,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         ObjectName  objectName = objectNameIn;
         
-        final String type = objectNameIn.getKeyProperty(AMXConstants.TYPE_KEY);
+        final String type = objectNameIn.getKeyProperty(AMXValues.TYPE_KEY);
         
         ObjectName parentObjectName = getActualParentObjectName( cb );
         

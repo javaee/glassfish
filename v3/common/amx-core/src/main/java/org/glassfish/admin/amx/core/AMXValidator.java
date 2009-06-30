@@ -65,7 +65,7 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Extra;
 import org.glassfish.admin.amx.core.Util;
-import static org.glassfish.admin.amx.core.AMXConstants.*;
+import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -560,7 +560,7 @@ public final class AMXValidator
         {
             // no name property, it's by definition a singleton
             final String name = proxy.getName();
-            if (!name.equals(AMXConstants.NO_NAME))
+            if (!name.equals(NO_NAME))
             {
                 fail(objectName, "getName() returned a non-empty name for a singleton: " + name);
             }

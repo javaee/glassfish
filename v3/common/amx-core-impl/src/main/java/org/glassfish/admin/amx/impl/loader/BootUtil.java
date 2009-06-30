@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.impl.loader;
 
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.impl.util.Issues;
 
 import javax.management.ObjectName;
@@ -63,7 +63,7 @@ public final class BootUtil
         mInstanceRoot        =  new File( System.getProperty( "com.sun.aas.instanceRoot" ) );
         mAppserverDomainName = mInstanceRoot.getName();
 
-		mAMX_JMXDomain		    = AMXConstants.AMX_JMX_DOMAIN;
+		mAMX_JMXDomain		    = AMXValues.amxJMXDomain();
 		
 		mOfflineAMX = offline;
 	}

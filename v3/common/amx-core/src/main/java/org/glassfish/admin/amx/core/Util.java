@@ -42,7 +42,7 @@ import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.ClassUtil;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-import static org.glassfish.admin.amx.core.AMXConstants.*;
+import static org.glassfish.api.amx.AMXValues.*;
 
 import javax.management.Notification;
 import javax.management.ObjectName;
@@ -636,7 +636,7 @@ public final class Util
         public static ObjectName
     getParent(final MBeanServer server, final ObjectName objectName )
     {
-        return (ObjectName)JMXUtil.getAttribute( server, objectName, AMXConstants.ATTR_PARENT );
+        return (ObjectName)JMXUtil.getAttribute( server, objectName, ATTR_PARENT );
     }
     
     /**
@@ -692,7 +692,7 @@ public final class Util
     {
         ObjectName cur = child;
         
-         while ( (cur = (ObjectName)JMXUtil.getAttribute( mbeanServer, cur, AMXConstants.ATTR_PARENT )) != null )
+         while ( (cur = (ObjectName)JMXUtil.getAttribute( mbeanServer, cur, ATTR_PARENT )) != null )
          {
             if ( getTypeProp(cur).equals(type) )
             {

@@ -64,7 +64,7 @@ import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 import org.glassfish.admin.amx.base.Utility;
 
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMX_SPI;
 import org.glassfish.admin.amx.core.Util;
@@ -1135,7 +1135,7 @@ public class AMXImplBase extends MBeanImplBase
         String name = Util.getNameProp( getObjectName() );
         
         // names must not be null, even if they are omitted from ObjectName
-        return name == null ? AMXConstants.NO_NAME : name;
+        return name == null ? AMXValues.NO_NAME : name;
 	}
 	
 		public String

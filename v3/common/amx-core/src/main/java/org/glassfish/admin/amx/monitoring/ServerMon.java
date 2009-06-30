@@ -39,7 +39,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 
 
 /**
-	Top-level interface for accessing all monitoring information for a server.
+	Top-level interface for accessing all monitoring information for a particular server.
  */
 public interface ServerMon extends AMXProxy
 {

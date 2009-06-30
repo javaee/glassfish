@@ -53,7 +53,7 @@ import javax.management.*;
 
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import static org.glassfish.admin.amx.core.AMXConstants.*;
+import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import static org.glassfish.admin.amx.impl.config.ConfigBeanJMXSupport.*;

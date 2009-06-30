@@ -15,7 +15,7 @@ import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
 import static org.glassfish.admin.amx.core.PathnameConstants.*;
-
+import static org.glassfish.api.amx.AMXValues.*;
 /**
 Parses a pathname into parts.
 <p>
@@ -360,7 +360,7 @@ public final class PathnameParser
 
     public static String parentPath(final ObjectName objectName)
     {
-        return objectName.getKeyProperty(AMXConstants.PARENT_PATH_KEY);
+        return objectName.getKeyProperty(PARENT_PATH_KEY);
     }
 
 }

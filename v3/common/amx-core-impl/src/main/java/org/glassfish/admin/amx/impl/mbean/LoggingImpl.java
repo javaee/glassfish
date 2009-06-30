@@ -36,7 +36,7 @@
  
 package org.glassfish.admin.amx.impl.mbean;
 
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.core.Util;
 
 import org.glassfish.admin.amx.logging.Logging;
@@ -94,7 +94,7 @@ public final class LoggingImpl extends AMXImplBase
         final String parentProp     = Util.makeProp( ServerRootMonitorType, serverName );
         final String props          = Util.concatenateProps( requiredProps, parentProp );
         
-        return Util.newObjectName( AMXConstants.AMX_JMX_DOMAIN, props );
+        return Util.newObjectName( AMXValues.amxJMXDomain(), props );
     }
 
     /**
