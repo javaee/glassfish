@@ -44,7 +44,6 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
-import java.io.File;
 import java.net.*;
 import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
@@ -56,11 +55,50 @@ import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.admin.payload.PayloadFilesManager;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.admin.Payload;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
 
 /**
  * A remote command handled by the asadmin CLI.
  */
 public class NCLIRemoteCommand {    
+
+    private Map<String, String>             mainAtts;
+    private Map<String, String>             params;
+    private List<String>                    operands;
+    private String                          commandName;
+    private Set<ValidOption>		    commandOpts;
+    private String                          operandType;
+    private int				    operandMin;
+    private int				    operandMax;
+    private String                          responseFormatType = "hk2-agent";
+    private OutputStream                    userOut;
+    private boolean                         doUpload = false;
+    private Map<String, String>             encodedPasswords;
+    private Payload.Outbound		    outboundPayload;
+
+    private String                          hostName;
+    private int                             hostPort;
+    private boolean                         secure;
+    private String                          user;
+    private String                          password;
+    private boolean                         verbose = false;
+    private boolean                         terse = false;
+    private boolean                         echo = false;
+    private boolean                         interactive = false;
+    private boolean                         help = false;
+
+    private static final LocalStringsImpl   strings =
+	    new LocalStringsImpl(CLIRemoteCommand.class);
+    private static final CLILogger          logger = CLILogger.getInstance();
+
+    private static final Set<ValidOption>   known;
+
+    private static final String QUERY_STRING_INTRODUCER = "?";
+    private static final String QUERY_STRING_SEPARATOR = "&";
+    private static final String ADMIN_URI_PATH = "/__asadmin/";
+
+    public static final String  RELIABLE_COMMAND = "version";
 
     /**
      * content-type used for each file-transfer part of a payload to or from
@@ -69,8 +107,59 @@ public class NCLIRemoteCommand {
     private static final String FILE_PAYLOAD_MIME_TYPE =
 	    "application/octet-stream";
 
-    private static final String LINE_SEP = System.getProperty("line.separator");
+    /*
+     * Define the meta-options known by the asadmin command.
+     */
+    static {
+	Set<ValidOption> opts = new HashSet<ValidOption>();
+	addMetaOption(opts, "host", 'H', "STRING", false,
+		CLIConstants.DEFAULT_HOSTNAME);
+	addMetaOption(opts, "port", 'p', "STRING", false,
+		"" + CLIConstants.DEFAULT_ADMIN_PORT);
+	addMetaOption(opts, "user", 'u', "STRING", false, "anonymous");
+	addMetaOption(opts, "password", 'w', "STRING", false, null);
+	addMetaOption(opts, "passwordfile", 'W', "FILE", false, null);
+	addMetaOption(opts, "secure", 's', "BOOLEAN", false, "false");
+	addMetaOption(opts, "terse", 't', "BOOLEAN", false, "false");
+	addMetaOption(opts, "echo", 'e', "BOOLEAN", false, "false");
+	addMetaOption(opts, "interactive", 'I', "BOOLEAN", false, "false");
+	addMetaOption(opts, "help", '?', "BOOLEAN", false, "false");
+	known = Collections.unmodifiableSet(opts);
+    }
 
+    /**
+     * Interface to enable factoring out common HTTP connection management code.
+     */
+    static interface HttpCommand {
+	public void doCommand(HttpURLConnection urlConnection)
+		throws CommandException, IOException;
+    }
+
+    /**
+     * Helper method to define a meta-option.
+     *
+     * @param name  long option name
+     * @param sname short option name
+     * @param type  option type (STRING, BOOLEAN, etc.)
+     * @param req   is option required?
+     * @param def   default value for option
+     */
+    private static void addMetaOption(Set<ValidOption> opts, String name,
+	    char sname, String type, boolean req, String def) {
+	ValidOption opt = new ValidOption(name, type,
+		req ? ValidOption.REQUIRED : ValidOption.OPTIONAL, def);
+	String abbr = Character.toString(sname);
+	opt.setShortName(abbr);
+	opts.add(opt);
+    }
+
+    /**
+     * Construct a new remote command object to execute the specified
+     * command and arguments.
+     *
+     * @param args  the command and arguments, e.g., from the command line
+     * @throws CommandException	if anything goes wrong
+     */
     public NCLIRemoteCommand(String... args) throws CommandException {
         initialize(args);
 	logger.printDebugMessage("Using new CLIRemoteCommand");
@@ -97,81 +186,83 @@ public class NCLIRemoteCommand {
      * processing.
      */
     public void runCommand() throws CommandException {
-        try {
-            StringBuilder uriString =
-		    new StringBuilder(ADMIN_URI_PATH + commandName);
+            StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
+		    append(commandName).append(QUERY_STRING_INTRODUCER);
+
+	try {
+	    initializeDoUpload();
+
+	    // if uploading, we need a payload
+	    if (doUpload)
+                outboundPayload = PayloadImpl.Outbound.newInstance();
 
             for (Map.Entry<String, String> param : params.entrySet()) {
                 String paramName = param.getKey();
-		// XXX - hack for now
-		if (paramName.equals("upload"))
-		    continue;
-                try {
-                    String paramValue = param.getValue();
-                    // let's check if I am passing a valid path...
-                    addOption(uriString, paramName + "=" +
-			    URLEncoder.encode(paramValue, "UTF-8"));
-                }
-                catch (UnsupportedEncodingException e) {
-                    logger.printError("Error encoding " + paramName +
-			    ", parameter value will be ignored");
-                }
-            }
+		String paramValue = param.getValue();
 
-            // add deployment path
-            addFileOption(uriString, "path", doUpload, fileParameter);
-            // add deployment plan
-            addFileOption(uriString, "deploymentplan", doUpload,
-		    deploymentPlanParameter);
+		// if we know what the command options are, we process the
+		// parameters by type here
+		ValidOption opt = getOption(paramName);
+		if (opt == null) {	// XXX - should never happen
+		    String msg = strings.get("unknownOption",
+			    commandName, paramName);
+		    throw new CommandException(msg);
+		}
+		if (opt.getType().equals("FILE"))
+		    addFileOption(uriString, paramName, paramValue);
+
+		addOption(uriString, paramName, paramValue);
+            }
 
             // add passwordfile parameters if any
             if (encodedPasswords != null) {
                 for (Map.Entry<String,String> entry : encodedPasswords.entrySet()) {
-                    addOption(uriString, entry.getKey() + "=" + entry.getValue());
+                    addOption(uriString, entry.getKey(), entry.getValue());
                 }
             }
-            
+
+	    // XXX - remove this special case
             if (commandName.equalsIgnoreCase("change-admin-password")) {
-                addOption(uriString, "username="+user);
+                addOption(uriString, "username", user);
             }
 
             // add operands
+	    // XXX - can't enforce min because primary parameter is also an option
+	    /*
+	    if (operands.size() < operandMin)
+		throw new CommandException(
+			strings.get("notEnoughOperands", commandName));
+	     */
+	    if (operands.size() > operandMax)
+		throw new CommandException(
+			strings.get("tooManyOperands", commandName));
             for (String operand : operands) {
-                addOption(uriString, "DEFAULT=" + URLEncoder.encode(operand,
-                        "UTF-8"));
+		if (operandType.equals("FILE"))
+		    addFileOption(uriString, "DEFAULT", operand);
+		else
+		    addOption(uriString, "DEFAULT", operand);
             }
 
-            HttpURLConnection urlConnection = null;
-            try {
-                HttpConnectorAddress url =
-			new HttpConnectorAddress(hostName, hostPort, secure);
-                logger.printDebugMessage("URI: " + uriString.toString());
-                logger.printDebugMessage("URL: " + url.toString());
-                logger.printDebugMessage("URL: " +
-			url.toURL(uriString.toString()).toString());
-                url.setAuthenticationInfo(new AuthenticationInfo(user, password));
+	    // remove the last character, whether it was "?" or "&"
+	    uriString.setLength(uriString.length() - 1);
+	    doHttpCommand(uriString.toString(), chooseRequestMethod(),
+		    new HttpCommand() {
+		public void doCommand(HttpURLConnection urlConnection)
+			throws CommandException, IOException {
 
-                urlConnection = (HttpURLConnection)
-			url.openConnection(uriString.toString());
-                urlConnection.setRequestProperty("User-Agent", responseFormatType);
-                urlConnection.setRequestProperty(
-			HttpConnectorAddress.AUTHORIZATION_KEY,
-			url.getBasicAuthString());
-                urlConnection.setRequestMethod(chooseRequestMethod());
-                Payload.Outbound outboundPayload = PayloadImpl.Outbound.newInstance();
                 if (doUpload) {
                     /*
                      * If we are uploading anything then set the content-type
                      * and add the uploaded part(s) to the payload.
                      */
                     urlConnection.setChunkedStreamingMode(0); // use default value
-                    prepareUpload(outboundPayload);
                     urlConnection.setRequestProperty("Content-Type",
 			    outboundPayload.getContentType());
                 }
                 urlConnection.connect();
                 if (doUpload) {
                     outboundPayload.writeTo(urlConnection.getOutputStream());
+		    outboundPayload = null; // no longer needed
                 }
                 InputStream in = urlConnection.getInputStream();
 
@@ -198,32 +289,53 @@ public class NCLIRemoteCommand {
                         processDataPart(downloadedFilesMgr, partIt.next());
                     }
                 }
- 
-            } catch (ConnectException ce) {
-                // this really means nobody was listening on the remote server
-                // note: ConnectException extends IOException and tells us more!
-                String msg = strings.get("ConnectException",
-			hostName, hostPort + "");
-                throw new CommandException(msg, ce);
-            } catch (IOException e) {
-                String msg = null;
-                if (urlConnection != null) {
-                    int rc = urlConnection.getResponseCode();
-                    if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
-                        msg = strings.get("InvalidCredentials", user);
-                    } else {
-                        msg = "Status: " + rc;
-                    }
-                } else {
-                    msg = "Unknown Error";
-                }
-                throw new CommandException(msg, e);                
-            }
-        } catch (CommandException e) {
-            throw e;
+		}
+	    });
+	} catch (IOException ioex) {
+	    // possibly an error caused while reading or writing a file?
+	    throw new CommandException("I/O Error", ioex);
+	}
+    }
+
+    /**
+     * Set up an HTTP connection, call cmd.doCommand to do all the work,
+     * and handle common exceptions.
+     *
+     * @param uriString	    the URI to connect to
+     * @param httpMethod    the HTTP method to use for the connection
+     * @param cmd	    the HttpCommand object
+     * @throws CommandException	if anything goes wrong
+     */
+    private void doHttpCommand(String uriString, String httpMethod,
+	    HttpCommand cmd) throws CommandException {
+	HttpURLConnection urlConnection = null;
+	try {
+	    HttpConnectorAddress url =
+		    new HttpConnectorAddress(hostName, hostPort, secure);
+	    logger.printDebugMessage("URI: " + uriString.toString());
+	    logger.printDebugMessage("URL: " + url.toString());
+	    logger.printDebugMessage("URL: " +
+		    url.toURL(uriString.toString()).toString());
+	    url.setAuthenticationInfo(new AuthenticationInfo(user, password));
+
+	    urlConnection = (HttpURLConnection)
+		    url.openConnection(uriString.toString());
+	    urlConnection.setRequestProperty("User-Agent", responseFormatType);
+	    urlConnection.setRequestProperty(
+		    HttpConnectorAddress.AUTHORIZATION_KEY,
+		    url.getBasicAuthString());
+	    urlConnection.setRequestMethod(httpMethod);
+	    cmd.doCommand(urlConnection);
+
+	} catch (ConnectException ce) {
+	    // this really means nobody was listening on the remote server
+	    // note: ConnectException extends IOException and tells us more!
+	    String msg = strings.get("ConnectException",
+		    hostName, hostPort + "");
+	    throw new CommandException(msg, ce);
         } catch(SocketException se) {
             try {
-                boolean serverAppearsSecure = 
+                boolean serverAppearsSecure =
                         NetUtils.isSecurePort(hostName, hostPort);
                 if (serverAppearsSecure != secure) {
                     String msg = strings.get("ServerMaybeSecure",
@@ -235,8 +347,22 @@ public class NCLIRemoteCommand {
                 logger.printExceptionStackTrace(io);
                 throw new CommandException(io);
             }
-        }
-        catch (Exception e) {
+	} catch (IOException e) {
+	    String msg = "Unknown I/O Error";
+	    if (urlConnection != null) {
+		try {
+		    int rc = urlConnection.getResponseCode();
+		    if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
+			msg = strings.get("InvalidCredentials", user);
+		    } else {
+			msg = "Status: " + rc;
+		    }
+		} catch (IOException ioex) {
+		    // ignore it
+		}
+	    }
+	    throw new CommandException(msg, e);
+	} catch (Exception e) {
             logger.printExceptionStackTrace(e);
             throw new CommandException(e);
         }
@@ -252,8 +378,7 @@ public class NCLIRemoteCommand {
     }
 
     private void processDataPart(final PayloadFilesManager downloadedFilesMgr,
-            final Payload.Part part)
-	    throws URISyntaxException, FileNotFoundException, IOException {
+            final Payload.Part part) throws IOException {
         /*
          * Remaining parts are typically files to be downloaded.
          */
@@ -271,49 +396,60 @@ public class NCLIRemoteCommand {
         }
     }
 
-    private String writeExceptionMessages(final Throwable t) {
-        return t.getLocalizedMessage() + ((t.getCause() != null) ?
-	    LINE_SEP + "  " + writeExceptionMessages(t.getCause()) : "");
-    }
-
     /**
-     * Adds a single option expression to the URI, preceding it with a ? if this
-     * is the first option added or a & if this is not the first option added.
+     * Adds a single option expression to the URI.  Appends a '?' in preparation
+     * for the next option.
+     *
      * @param uriString the URI composed so far
      * @param option the option expression to be added
      * @return the URI so far, including the newly-added option
      */
-    private StringBuilder addOption(StringBuilder uriString, String option) {
-        String nextChar = (uriString.indexOf(QUERY_STRING_INTRODUCER) == -1) ? 
-            QUERY_STRING_INTRODUCER : QUERY_STRING_SEPARATOR;
-        uriString.append(nextChar).append(option);
-        return uriString;
+    private static StringBuilder addOption(StringBuilder uriString, String name,
+	    String option) {
+	try {
+	    String encodedOption = URLEncoder.encode(option, "UTF-8");
+	    uriString.append(name).
+		append('=').
+		append(encodedOption).
+		append(QUERY_STRING_SEPARATOR);
+	} catch (UnsupportedEncodingException e) {
+	    // XXX - should never happen
+	    logger.printError("Error encoding value for: " + name +
+		    ", Value:" + option + ", parameter value will be ignored");
+	}
+	return uriString;
     }
     
     /**
      * Adds an option for a file argument, passing the name (for uploads) or the
      * path (for no-upload) operations. 
+     *
      * @param uriString the URI string so far
      * @param optionName the option which takes a path or name
-     * @param isUpload whether the file is to be uploaded
-     * @param parameter the File whose name or path should be passed
+     * @param filename the name of the file
      * @return the URI string
-     * @throws java.io.UnsupportedEncodingException
+     * @throws java.io.IOException
      */
     private StringBuilder addFileOption(
-            StringBuilder uriString, 
-            String optionName, 
-            boolean isUpload, 
-            File parameter) throws UnsupportedEncodingException {
-        if (parameter != null) {
+            StringBuilder uriString,
+            String optionName,
+            String filename) throws IOException {
+        File f = SmartFile.sanitize(new File(filename));
+	logger.printDebugMessage("FILE PARAM: " + optionName + " = " + f);
+	// attach the file to the payload
+	if (doUpload)
+	    outboundPayload.attachFile(FILE_PAYLOAD_MIME_TYPE,
+		f.toURI(),
+		optionName,
+		null,
+		f);
+        if (f != null) {
             // if we are about to upload it -- give just the name
             // o/w give the full path
-            String pathToPass = (isUpload ? parameter.getName() :
-		parameter.getPath());
-            addOption(uriString, optionName + "=" +
-		    URLEncoder.encode(pathToPass, "UTF-8"));
+            String pathToPass = (doUpload ? f.getName() : f.getPath());
+            addOption(uriString, optionName, pathToPass);
         }
-        return uriString;
+	return uriString;
     }
     
     /**
@@ -321,42 +457,11 @@ public class NCLIRemoteCommand {
      * @return the request method appropriate to the current command and options
      */
     private String chooseRequestMethod() {
+	// XXX - should be part of command metadata
         if (doUpload) {
             return "POST";
         } else {
             return "GET";
-        }
-    }
-    
-    /**
-     * Adds the path file and the deployment plan file to the HTTP request
-     * payload as ZipEntry objects.
-     * @param conn the connection used for sending the http request
-     * @throws com.sun.enterprise.cli.framework.CommandException
-     * @throws java.io.IOException
-     */
-    private void prepareUpload(final Payload.Outbound payload)
-	    throws CommandException, IOException {
-
-        /*
-         * Each file to be uploaded is added to the HTTP request payload as a
-         * separate part.
-         */
-
-        if (fileParameter != null) {
-            payload.attachFile(FILE_PAYLOAD_MIME_TYPE,
-                    fileParameter.toURI(),
-                    "path",
-                    null, // attachFile sets the properties needed
-                    fileParameter);
-        }
-
-        if (deploymentPlanParameter != null) {
-            payload.attachFile(FILE_PAYLOAD_MIME_TYPE,
-                    deploymentPlanParameter.toURI(),
-                    "deploymentPlan",
-                    null, // attachFile sets the properties needed
-                    deploymentPlanParameter);
         }
     }
     
@@ -396,53 +501,21 @@ public class NCLIRemoteCommand {
         }
     }
 
-    private void setBooleans() {
-        // need to differentiate a null value from a null key.
-        // contains --> key is in the map
-
-        // only 3 -- I'm not making another array!
-        if (params.containsKey("verbose")) {
-            String value = params.get("verbose");
-            if (ok(value))
-                verbose = Boolean.parseBoolean(params.get("verbose"));
-            else
-                verbose = true;
-        }
-        if (params.containsKey("echo")) {
-            String value = params.get("echo");
-            if (ok(value))
-                echo = Boolean.parseBoolean(params.get("echo"));
-            else
-                echo = true;
-        }
-        if (params.containsKey("terse")) {
-            String value = params.get("terse");
-            if (ok(value))
-                terse = Boolean.parseBoolean(params.get("terse"));
-            else
-                terse = true;
-        }
-    }
-
-    private boolean ok(String s) {
+    private static boolean ok(String s) {
         return s != null && s.length() > 0 && !s.equals("null");
     }
 
-    /* this is a TP2 Hack!  This class should be derived from S1ASCommand
-     * and get automatic support for this stuff
-     */
     @Override
     public String toString() {
         // always include terse and echo
         StringBuilder sb = new StringBuilder();
-        sb.append(commandName).append(' ');
         sb.append("--echo=").append(Boolean.toString(echo)).append(' ');
         sb.append("--terse=").append(Boolean.toString(terse)).append(' ');
+	// XXX - include all the meta-options?
+        sb.append(commandName).append(' ');
         Set<String> paramKeys = params.keySet();
 
         for (String key : paramKeys) {
-            if (key.equals("terse") || key.equals("echo"))
-                continue; //already done
             String value = params.get(key);
             sb.append("--").append(key);
             if (ok(value)) {
@@ -468,6 +541,7 @@ public class NCLIRemoteCommand {
      * @return true if DAS can be reached and can handle commands,
      *	    otherwise false.
      */
+    // XXX - only used below?
     public static boolean pingDAS(CommandInvoker invoker) {
         try {
             invoker.invoke();
@@ -495,6 +569,7 @@ public class NCLIRemoteCommand {
      * See if DAS can be contacted with the present authentication info.
      * @return true if DAS can be reached with this authentication info
      */
+    // XXX - not used?
     public static boolean pingDASWithAuth(CommandInvoker invoker) {
         try {
             invoker.invoke();
@@ -522,6 +597,7 @@ public class NCLIRemoteCommand {
      * @return true if DAS can be reached and can handle commands,
      *	    otherwise false.
      */
+    // XXX - only used by start-domain, stop-domain
     public static boolean pingDASQuietly(CommandInvoker invoker) {
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
@@ -539,96 +615,124 @@ public class NCLIRemoteCommand {
      * @return the options for the command
      * @throws CommandException	if the server can't be contacted
      */
-    private Set<ValidOption> getCommandMetadata(String cmdName)
-	    throws CommandException {
+    private void fetchCommandMetadata(String cmdName) throws CommandException {
 
-	HttpURLConnection urlConnection = null;
-	try {
-	    // XXX - there should be a "help" command, that returns XML output
-	    //StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH + "help");
-	    //addOption(uriString, "DEFAULT=" + URLEncoder.encode(cmdName, "UTF-8"));
-	    StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH + cmdName);
-	    addOption(uriString, "help=" + URLEncoder.encode("true", "UTF-8"));
-	    HttpConnectorAddress url =
-		    new HttpConnectorAddress(hostName, hostPort, secure);
-	    logger.printDebugMessage("URI: " + uriString.toString());
-	    logger.printDebugMessage("URL: " + url.toString());
-	    logger.printDebugMessage("URL: " +
-		    url.toURL(uriString.toString()).toString());
-	    url.setAuthenticationInfo(new AuthenticationInfo(user, password));
+	// XXX - there should be a "help" command, that returns XML output
+	//StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
+		//append("help").append(QUERY_STRING_INTRODUCER);
+	//addOption(uriString, "DEFAULT", cmdName);
+	StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
+		append(cmdName).append(QUERY_STRING_INTRODUCER);
+	addOption(uriString, "Xhelp", "true");
 
-	    urlConnection = (HttpURLConnection)
-		    url.openConnection(uriString.toString());
-	    urlConnection.setRequestProperty("User-Agent", "metadata");
-	    //urlConnection.setRequestProperty("Accept: ", "text/xml");
-	    urlConnection.setRequestProperty(
-		    HttpConnectorAddress.AUTHORIZATION_KEY,
-		    url.getBasicAuthString());
-	    urlConnection.setRequestMethod("GET");
-	    Payload.Outbound outboundPayload = PayloadImpl.Outbound.newInstance();
-	    urlConnection.connect();
-	    InputStream in = urlConnection.getInputStream();
+	// remove the last character, whether it was "?" or "&"
+	uriString.setLength(uriString.length() - 1);
 
-	    final String responseContentType = urlConnection.getContentType();
+	doHttpCommand(uriString.toString(), "GET", new HttpCommand() {
+	    public void doCommand(HttpURLConnection urlConnection)
+		    throws CommandException, IOException {
 
-	    Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
-		    responseContentType, in);
-	    
-	    boolean isReportProcessed = false;
-	    //PayloadFilesManager downloadedFilesMgr =
-		    //new PayloadFilesManager.Perm();
-	    Iterator<Payload.Part> partIt = inboundPayload.parts();
-	    while (partIt.hasNext()) {
-		/*
-		 * The report will always come first among the parts of
-		 * the payload.  Be sure to process the report right away
-		 * so any following data parts will be accessible.
-		 */
-		if (!isReportProcessed) {
-		    handleResponse(params, partIt.next().getInputStream(),
-			    urlConnection.getResponseCode(), userOut);
-		    isReportProcessed = true;
-		} else {
-		    handleResponse(params, partIt.next().getInputStream(),
-			    urlConnection.getResponseCode(), userOut);
-		    //processDataPart(downloadedFilesMgr, partIt.next());
-		}
-	    }
+		//urlConnection.setRequestProperty("Accept: ", "text/xml");
+		urlConnection.setRequestProperty("User-Agent", "metadata");
+		urlConnection.connect();
+		InputStream in = urlConnection.getInputStream();
 
-	} catch (ConnectException ce) {
-	    // this really means nobody was listening on the remote server
-	    // note: ConnectException extends IOException and tells us more!
-	    String msg = strings.get("ConnectException",
-		    hostName, hostPort + "");
-	    throw new CommandException(msg, ce);
-	} catch (IOException e) {
-	    String msg = null;
-	    if (urlConnection != null) {
-		try {
-		    int rc = urlConnection.getResponseCode();
-		    if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
-			msg = strings.get("InvalidCredentials", user);
+		String responseContentType = urlConnection.getContentType();
+		Payload.Inbound inboundPayload =
+		    PayloadImpl.Inbound.newInstance(responseContentType, in);
+
+		boolean isReportProcessed = false;
+		Iterator<Payload.Part> partIt = inboundPayload.parts();
+		while (partIt.hasNext()) {
+		    /*
+		     * There should be only one part, which should be the
+		     * metadata, but skip any other parts just in case.
+		     */
+		    if (!isReportProcessed) {
+			commandOpts =
+				parseMetadata(partIt.next().getInputStream());
+			isReportProcessed = true;
 		    } else {
-			msg = "Status: " + rc;
+			partIt.next();  // just throw it away
 		    }
-		} catch (IOException ioex) {
-		    msg = "Unknown Error";
 		}
-	    } else {
-		msg = "Unknown Error";
 	    }
-	    throw new CommandException(msg, e);                
-	}
-	// XXX - parse response
-	return null;
+	});
     }
-    
+
+    /**
+     * Parse the XML metadata for the command on the input stream.
+     *
+     * @param in the input stream
+     * @return the set of ValidOptions
+     */
+    private Set<ValidOption> parseMetadata(InputStream in) {
+	Set<ValidOption> valid = new HashSet<ValidOption>();
+	boolean sawFile = false;
+	try {
+	    DocumentBuilder d =
+		    DocumentBuilderFactory.newInstance().newDocumentBuilder();
+	    Document doc = d.parse(in);
+	    NodeList opts = doc.getElementsByTagName("option");
+	    for (int i = 0; i < opts.getLength(); i++) {
+		Node n = opts.item(i);
+		NamedNodeMap attrs = n.getAttributes();
+		ValidOption opt = new ValidOption(
+			getAttr(attrs, "name"),
+			getAttr(attrs, "type"),
+			Boolean.parseBoolean(getAttr(attrs, "optional")) ?
+			    ValidOption.OPTIONAL : ValidOption.REQUIRED,
+			getAttr(attrs, "default"));
+		opt.setShortName(getAttr(attrs, "short"));
+		valid.add(opt);
+		if (opt.getType().equals("FILE"))
+		    sawFile = true;
+	    }
+	    // should be only one operand item
+	    opts = doc.getElementsByTagName("operand");
+	    for (int i = 0; i < opts.getLength(); i++) {
+		Node n = opts.item(i);
+		NamedNodeMap attrs = n.getAttributes();
+		operandType = getAttr(attrs, "type");
+		operandMin = Integer.parseInt(getAttr(attrs, "min"));
+		String max = getAttr(attrs, "max");
+		if (max.equals("unlimited"))
+		    operandMax = Integer.MAX_VALUE;
+		else
+		    operandMax = Integer.parseInt(max);
+		if (operandType.equals("FILE"))
+		    sawFile = true;
+	    }
+
+	    /*
+	     * If one of the options or operands is a FILE,
+	     * make sure there's also a --upload option available.
+	     * XXX - should only add it if it's not present
+	     * XXX - should just define upload parameter on remote command
+	     */
+	    if (sawFile)
+		valid.add(new ValidOption("upload", "BOOLEAN",
+			ValidOption.OPTIONAL, "false"));
+	} catch (Exception ex) {
+	    // ignore all for now
+	    return null;
+	}
+	return valid;
+    }
+
+    private static String getAttr(NamedNodeMap attrs, String name) {
+	Node n = attrs.getNamedItem(name);
+	if (n != null)
+	    return n.getNodeValue();
+	else
+	    return null;
+    }
+
     private void initialize(final String[] argv) throws CommandException {
         try {
 	    if (argv.length == 0)
 		throw new CommandException("No Command");
 
-	    boolean usesDeprecatedSyntax = false;
 	    Parser rcp;
 	    // if the first argument is an option, we're using the new form
 	    if (argv[0].startsWith("-")) {
@@ -636,7 +740,6 @@ public class NCLIRemoteCommand {
 		 * Parse all the asadmin options, stopping at the first
 		 * non-option, which is the command name.
 		 */
-		usesDeprecatedSyntax = false;
 		rcp = new Parser(argv, 0, known, false);
 		params = rcp.getOptions();
 		operands = rcp.getOperands();
@@ -658,14 +761,12 @@ public class NCLIRemoteCommand {
 		operands = rcp.getOperands();
 		// warn about deprecated use of meta-options
 		if (params.size() > 0) {
-		    usesDeprecatedSyntax = true;
 		    // at least one program option specified after command name
 		    Set<String> names = params.keySet();
 		    String[] na = names.toArray(new String[names.size()]);
 		    System.out.println("Deprecated syntax: " + commandName +
 			    ", Options: " + Arrays.toString(na));
-		} else
-		    usesDeprecatedSyntax = false;
+		}
 	    }
 	    //handleUnsupportedLegacyCommand(commandName);
             initializeStandardParams();
@@ -674,28 +775,39 @@ public class NCLIRemoteCommand {
             initializeAuth();
 
 	    /*
+	     * If this is a help request, we don't need the command
+	     * metadata and we throw away all the other options and
+	     * fake everything else.
+	     */
+	    if (help) {
+		commandOpts = new HashSet<ValidOption>();
+		addMetaOption(commandOpts, "help", '?', "BOOLEAN",
+			false, "false");
+		params = new HashMap<String, String>();
+		params.put("help", "true");
+		operands = Collections.emptyList();
+		return;
+	    }
+
+	    /*
 	     * Now parse the resulting command using the command options.
 	     */
-	    Set<ValidOption> opts = null;   // XXX - for now, until metadata
 
 	    /*
 	     * Find the metadata for the command.
 	     */
 	    /*
-	    opts = cache.get(commandName, ts);
-	    if (opts == null)
+	    commandOpts = cache.get(commandName, ts);
+	    if (commandOpts == null)
 		// goes to server
-		opts = getCommandMetadata(cmdName, ts);
-	    if (opts == null)
-		throw new CommandException("Unknown command: " + commandName));
 	     */
-	    if (System.getenv("ASADMIN_METADATA") != null)
-		/* opts = */ getCommandMetadata(commandName);
+	    fetchCommandMetadata(commandName);
+	    if (commandOpts == null)
+		throw new CommandException("Unknown command: " + commandName);
 	    String[] cmdArgs = operands.toArray(new String[operands.size()]);
-	    rcp = new Parser(cmdArgs, 0, opts, false);
+	    rcp = new Parser(cmdArgs, 0, commandOpts, false);
             params = rcp.getOptions();
 	    operands = rcp.getOperands();
-            initializeDeploy();
             initializeCommandPassword();
 	} catch (CommandException cex) {
 	    throw cex;
@@ -704,8 +816,45 @@ public class NCLIRemoteCommand {
         }
     }
 
+    /**
+     * Initialize the asadmin program options based on the parsed parameters.
+     *
+     * @throws CommandException
+     */
     private void initializeStandardParams() throws CommandException {
-        setBooleans();
+        if (params.containsKey("verbose")) {
+            String value = params.get("verbose");
+            if (ok(value))
+                verbose = Boolean.parseBoolean(params.get("verbose"));
+            else
+                verbose = true;
+        }
+        if (params.containsKey("echo")) {
+            String value = params.get("echo");
+            if (ok(value))
+                echo = Boolean.parseBoolean(params.get("echo"));
+            else
+                echo = true;
+        }
+        if (params.containsKey("terse")) {
+            String value = params.get("terse");
+            if (ok(value))
+                terse = Boolean.parseBoolean(params.get("terse"));
+            else
+                terse = true;
+        }
+        if (params.containsKey("interactive")) {
+	    String value = params.get("interactive");
+	    if (ok(value))
+		interactive = Boolean.parseBoolean(params.get("interactive"));
+	    else
+		interactive = true;
+	} else
+		interactive = true;	// XXX - set based on Console
+
+        if (params.containsKey("help"))
+	    help = true;    // don't care about the value
+
         hostName = params.get("host");
         
         if (hostName == null || hostName.length() == 0)
@@ -718,16 +867,15 @@ public class NCLIRemoteCommand {
             try {
                 hostPort = Integer.parseInt(port);
 
-                if(hostPort < 1 || hostPort > 65535)
+                if (hostPort < 1 || hostPort > 65535)
                     throw new CommandException(badPortMsg);
-            }
-            catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 throw new CommandException(badPortMsg);
             }
         }
 
         if (!ok(port))
-            hostPort = CLIConstants.DEFAULT_ADMIN_PORT; //the default port
+            hostPort = CLIConstants.DEFAULT_ADMIN_PORT; // the default port
 
         String s = params.get("secure");
         if (ok(s))
@@ -747,78 +895,57 @@ public class NCLIRemoteCommand {
             logger.printDebugMessage(toString());
     }
 
-    private void initializeDeploy() throws CommandException {
-        // not a deployment command -- get outta here!
-        if (!isDeployment())
-            return;
-        // if help is a paramter, then return manpage from server side
-        // no need to validate the operand
-        if (params.get("help") != null)
-            return;
+    /**
+     * Search all the parameters that were actually specified to see
+     * if any of them are FILE type parameters.  If so, check for the
+     * "--upload" option.
+     */
+    private void initializeDoUpload() {
+	boolean sawFile = false;
+	boolean sawDirectory = false;
+	for (Map.Entry<String, String> param : params.entrySet()) {
+	    String paramName = param.getKey();
+	    ValidOption opt = getOption(paramName);
+	    if (opt != null && opt.getType().equals("FILE")) {
+		sawFile = true;
+		// if any FILE parameter is a directory, turn off doUpload
+		String filename = param.getValue();
+		File file = new File(filename);
+		if (file.isDirectory())
+		    sawDirectory = true;
+	    }
+	}
 
-        // it IS a deployment command.  That means we MUST have a valid path
-        // with the exception of redeploy command with a directory deployment
-        String filename;
-        
-        // operand takes precedence over param
-        if (operands.size() > 0) {
-            filename = operands.get(0);
-            operands.clear();
-        }
-        else {
-            filename = params.get("path");
-            params.remove("path");
-        }
-        
-        // the path could be optional for redeploy command
-        if (commandName.equals("redeploy") && filename == null) {
-            return;
-        }
-
-        if (!ok(filename))
-            throw new CommandException(strings.get("noDeployFile", commandName));
-        
-        fileParameter = SmartFile.sanitize(new File(filename));
-	logger.printDebugMessage("DEPLOY FILE PARAM: " + fileParameter);
-        
-        if (!fileParameter.exists())
-            throw new CommandException(strings.get("badDeployFile", commandName,
-		    fileParameter));
-
-        // check for deployment plan
-        String deploymentPlan = params.get("deploymentplan");
-        if (deploymentPlan != null) {
-            deploymentPlanParameter = SmartFile.sanitize(
-                new File(deploymentPlan));
-
-            if(!deploymentPlanParameter.exists()) {
-                throw new CommandException(strings.get("badDeploymentPlan", 
-                    commandName, deploymentPlanParameter));
-            }
-        }
-
-        // if we make it here -- we have a file param and the file exists!
-        // if the file is a directory, then we keep doUpload as false
-        // if it is a normal file then we set doUpload depending on the param.
-        // remember doUpload is ALREADY set to false...
-        
-        if (!isDirDeployment()) {
-            String upString = params.get("upload");
-            if(!ok(upString)) {
-                // default ==> true
-                doUpload = true;
-            }
-            else
-                doUpload = Boolean.parseBoolean(upString);
-        }
+	if (sawFile && !sawDirectory) {
+	    // found a FILE param, is doUpload set?
+	    String upString = params.get("upload");
+	    if (ok(upString))
+		doUpload = Boolean.parseBoolean(upString);
+	    else
+		doUpload = true;	// defaults to true
+	    if (upString != null)
+		params.remove("upload");    // XXX - remove it
+	}
     }
 
+    /**
+     * Get the ValidOption descriptor for the named option.
+     *
+     * @param name  the option name
+     * @return	    the ValidOption descriptor
+     */
+    private ValidOption getOption(String name) {
+	for (ValidOption opt : commandOpts)
+	    if (opt.getName().equals(name))
+		return opt;
+	return null;
+    }
 
     private void initializeAuth() throws CommandException {
         LoginInfo li = null;
         
         try {
-            store = LoginInfoStoreFactory.getDefaultStore();
+	    LoginInfoStore store = LoginInfoStoreFactory.getDefaultStore();
             li = store.read(hostName, hostPort);
         }
         catch (StoreException se) {
@@ -861,9 +988,13 @@ public class NCLIRemoteCommand {
         }                
     }
 
+    /**
+     * Initialize all the passwords required by the command.
+     *
+     * @throws CommandException
+     */
     private void initializeCommandPassword() throws CommandException {
-        if (commandName.equalsIgnoreCase("change-admin-password")
-		&& params.get("help") == null ) {
+        if (commandName.equalsIgnoreCase("change-admin-password")) {
             try {
                 password = getInteractiveOptionWithConfirmation(encodedPasswords);
                 base64encode(encodedPasswords);
@@ -874,8 +1005,7 @@ public class NCLIRemoteCommand {
         }
 
         if ((commandName.equalsIgnoreCase("create-password-alias") ||
-                commandName.equalsIgnoreCase("update-password-alias"))
-	    && params.get("help") == null) {
+                commandName.equalsIgnoreCase("update-password-alias"))) {
             try {
                 password = confirmInteractivelyAliasPassword(encodedPasswords);
                 base64encode(encodedPasswords);
@@ -883,6 +1013,33 @@ public class NCLIRemoteCommand {
                 throw new CommandException(cve);
             }
         }
+
+	/*
+	 * Go through all the valid options and check for required password
+	 * options that weren't specified in the password file.  If option
+	 * is missing and we're interactive, prompt for it.
+	 */
+	for (ValidOption opt : commandOpts) {
+	    if (!opt.getType().equals("PASSWORD"))
+		continue;
+	    if (encodedPasswords == null)   // initialize if not already done
+		encodedPasswords = new HashMap<String, String>();
+	    String pwdname = opt.getName();
+	    if (ok(encodedPasswords.get(pwdname)))
+		continue;
+	    if (opt.isValueRequired() != ValidOption.REQUIRED)
+		continue;
+	    try {
+		String pwd = getPassword(opt.getName());
+		if (pwd == null)
+		    throw new CommandException(strings.get("missingPassword",
+			commandName, pwdname));
+		pwd = new GFBase64Encoder().encode(pwd.getBytes());
+		encodedPasswords.put(pwdname, pwd);
+            } catch (CommandValidationException cve) {
+                throw new CommandException(cve);
+            }
+	}
     }
     
     private String confirmInteractivelyAliasPassword(
@@ -904,6 +1061,32 @@ public class NCLIRemoteCommand {
         return aliasPassword;        
     }
     
+    private String getPassword(String passwordName)
+	    throws CommandValidationException {
+
+	if (!interactive)
+	    return null;
+
+	// XXX - prompts aren't right
+        final String newprompt = getLocalizedString("AdminNewPasswordPrompt");
+        final String confirmationPrompt =
+            getLocalizedString("AdminNewPasswordConfirmationPrompt");
+
+        String newpassword = getInteractiveOption(newprompt);
+        if (!isPasswordValid(newpassword)) {
+            throw new CommandValidationException(getLocalizedString(
+                    "PasswordLimit", new Object[]{"Admin"}));
+        }
+
+        String newpasswordAgain =
+            getInteractiveOption(confirmationPrompt);
+        if (!newpassword.equals(newpasswordAgain)) {
+            throw new CommandValidationException(getLocalizedString(
+                "OptionsDoNotMatch", new Object[]{"Admin Password"}));
+        }
+	return newpassword;
+    }
+
     private String getInteractiveOptionWithConfirmation(
 	    Map<String, String> encodedPasswords)
 	    throws CommandValidationException {
@@ -998,85 +1181,5 @@ public class NCLIRemoteCommand {
             if (val != null)
                 entry.setValue(encoder.encode(val.getBytes()));
         }
-    }
-
-    private boolean isDeployment() {
-        return commandName.equals("deploy") || commandName.equals("redeploy") 
-            || commandName.equals("deploydir");
-    }
-
-    private boolean isDirDeployment() {
-        return isDeployment() && fileParameter != null &&
-		fileParameter.isDirectory();
-    }
-
-    private boolean                         verbose = false;
-    private boolean                         terse = false;
-    private boolean                         echo = false;
-    private Map<String, String>             mainAtts;
-    private LoginInfoStore                  store;
-    private Map<String, String>             params;
-    private List<String>                    operands;
-    private String                          commandName;
-    private String                          responseFormatType = "hk2-agent";
-    private OutputStream                    userOut;
-    private boolean                         doUpload = false;
-    private File                            fileParameter;
-    private File                            deploymentPlanParameter;
-    private Map<String, String>             encodedPasswords;
-
-    private String                          hostName;
-    private int                             hostPort;
-    private boolean                         secure;
-    private String                          user;
-    private String                          password;
-    
-    private static final LocalStringsImpl   strings =
-	    new LocalStringsImpl(CLIRemoteCommand.class);
-    private static final CLILogger          logger = CLILogger.getInstance();
-    private static final String             SUCCESS = "SUCCESS";
-    private static final String             FAILURE = "FAILURE";
-
-    private static final Set<ValidOption>   known = new HashSet<ValidOption>();
-
-    private static final String QUERY_STRING_INTRODUCER = "?";
-    private static final String QUERY_STRING_SEPARATOR = "&";
-    private static final String ADMIN_URI_PATH = "/__asadmin/";
-
-    public static final String  RELIABLE_COMMAND = "version";
-
-    /**
-     * Helper method to define a meta-option.
-     *
-     * @param name  long option name
-     * @param sname short option name
-     * @param type  option type (STRING, BOOLEAN, etc.)
-     * @param req   is option required?
-     * @param def   default value for option
-     */
-    private static void addMetaOption(String name, char sname, String type,
-	    boolean req, String def) {
-	ValidOption opt = new ValidOption(name, type,
-		req ? ValidOption.REQUIRED : ValidOption.OPTIONAL, def);
-	String abbr = Character.toString(sname);
-	opt.setShortName(abbr);
-	known.add(opt);
-    }
-
-    /*
-     * Define the meta-options known by the asadmin command.
-     */
-    static {
-	addMetaOption("host", 'H', "STRING", false,
-		CLIConstants.DEFAULT_HOSTNAME);
-	addMetaOption("port", 'p', "STRING", false,
-		"" + CLIConstants.DEFAULT_ADMIN_PORT);
-	addMetaOption("user", 'u', "STRING", false, "anonymous");
-	addMetaOption("password", 'w', "STRING", false, null);
-	addMetaOption("passwordfile", 'W', "FILE", false, null);
-	addMetaOption("secure", 's', "BOOLEAN", false, "false");
-	addMetaOption("terse", 't', "BOOLEAN", false, "false");
-	addMetaOption("echo", 'e', "BOOLEAN", false, "false");
-	addMetaOption("interactive", 'I', "BOOLEAN", false, "false");
     }
 }

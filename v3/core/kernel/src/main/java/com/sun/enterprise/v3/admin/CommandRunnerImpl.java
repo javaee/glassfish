@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.common_impl.LogHelper;
+
 import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -65,6 +66,7 @@ import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandModelImpl;
+import com.sun.enterprise.v3.common.XMLContentActionReporter;
 
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
@@ -73,6 +75,7 @@ import org.glassfish.config.support.CommandModelImpl;
  * 
  * @author dochez
  * @author tjquinn
+ * @author Bill Shannon
  */
 @Service
 public class CommandRunnerImpl implements CommandRunner {
@@ -874,13 +877,90 @@ public class CommandRunnerImpl implements CommandRunner {
         if (i18n!=null) {
             i18nKey = i18n.value();
         }
-        report.setMessage(model.getCommandName() + " - " + localStrings.getLocalString(i18nKey, ""));
-        report.getTopMessagePart().addProperty("SYNOPSIS", getUsageText(command, model));
-        for (CommandModel.ParamModel param : model.getParameters()) {
-            addParamUsage(report, localStrings, i18nKey, param);
+	// XXX - this is a hack for now.  if the request mapped to an
+	// XMLContentActionReporter, that means we want the command metadata.
+	if (report instanceof XMLContentActionReporter) {
+	    getMetadata(model, report);
+	} else {
+	    report.setMessage(model.getCommandName() + " - " + localStrings.getLocalString(i18nKey, ""));
+	    report.getTopMessagePart().addProperty("SYNOPSIS", getUsageText(command, model));
+	    for (CommandModel.ParamModel param : model.getParameters()) {
+		addParamUsage(report, localStrings, i18nKey, param);
+	    }
+	    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+	}
+    }
 
-        }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    /**
+     * Return the metadata for the command.  We translate the parameter
+     * and operand information to parts and properties of the ActionReport,
+     * which will be translated to XML elements and attributes by the
+     * XMLContentActionReporter.
+     *
+     * @param model the CommandModel describing the command
+     * @param report	the (assumed to be) XMLContentActionReporter
+     */
+    private void getMetadata(CommandModel model, ActionReport report) {
+	ActionReport.MessagePart top = report.getTopMessagePart();
+	ActionReport.MessagePart cmd = top.addChild();
+	// <command name="name">
+	cmd.setChildrenType("command");
+	cmd.addProperty("name", model.getCommandName());
+	CommandModel.ParamModel primary = null;
+	// for each parameter add
+	// <option name="name" type="type" short="s" default="default"
+	//   acceptable-values="list"/>
+	for (CommandModel.ParamModel p : model.getParameters()) {
+	    Param param = p.getParam();
+	    if (param.primary())
+		primary = p;	// *and* process it as a normal option, for now
+	    ActionReport.MessagePart ppart = cmd.addChild();
+	    ppart.setChildrenType("option");
+    //System.out.println("Param name :" + p.getName() + ", type: " + p.getType());
+	    ppart.addProperty("name", p.getName());
+	    ppart.addProperty("type", typeOf(p));
+	    ppart.addProperty("optional", Boolean.toString(param.optional()));
+	    if (ok(param.shortName()))
+		ppart.addProperty("short", param.shortName());
+	    if (ok(param.defaultValue()))
+		ppart.addProperty("default", param.defaultValue());
+	    if (ok(param.acceptableValues()))
+		ppart.addProperty("acceptable-values", param.acceptableValues());
+	}
+
+	// are operands allowed?
+	if (primary != null) {
+	    // for the operand(s), add
+	    // <operand type="type" min="0/1" max="1"/>
+	    ActionReport.MessagePart primpart = cmd.addChild();
+	    primpart.setChildrenType("operand");
+	    primpart.addProperty("type", typeOf(primary));
+	    primpart.addProperty("min",
+		    primary.getParam().optional() ? "0" : "1");
+	    primpart.addProperty("max", "1");   // XXX - based on array type?
+	}
+    }
+
+    /**
+     * Map a Java type to one of the types supported by the asadmin client.
+     * Currently supported types are BOOLEAN, FILE, PROPERTIES, PASSWORD, and
+     * STRING.  (All of which should be defined constants on some class.)
+     *
+     * @param t the Java type
+     * @return	the string representation of the asadmin type
+     */
+    private static String typeOf(CommandModel.ParamModel p) {
+	Class t = p.getType();
+	if (t == Boolean.class)
+	    return "BOOLEAN";
+	else if (t == File.class)
+	    return "FILE";
+	else if (t == Properties.class)	// XXX - allow subclass?
+	    return "PROPERTIES";
+	else if (p.getParam().password())
+	    return "PASSWORD";
+	else
+	    return "STRING";
     }
 
     public InputStream getManPage(String commandName, AdminCommand command) {
