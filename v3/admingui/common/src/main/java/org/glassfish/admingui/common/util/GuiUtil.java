@@ -63,9 +63,14 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.MessageFormat;
 import java.net.URLEncoder;
+
+import com.sun.jsftemplating.annotation.Handler;
+import com.sun.jsftemplating.annotation.HandlerInput;
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.io.UnsupportedEncodingException;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
@@ -88,6 +93,21 @@ public class GuiUtil {
 
     public static Logger getLogger() {
         return Logger.getLogger(LOGGER_NAME);
+    }
+
+    @Handler(id = "gui.log",
+        input = {
+            @HandlerInput(name = "message", type = String.class, required = true),
+            @HandlerInput(name = "level", type = String.class)
+        })
+    public static void retrievePluginPageContents(HandlerContext handlerCtx) {
+        String level = (String)handlerCtx.getInputValue("level");
+        if (level == null) {
+            level = "INFO";
+        } else {
+            level = level.toUpper();
+        }
+        getLogger().log(Level.parse(level), (String)handlerCtx.getInputValue("message"));
     }
 
     //return true if the String is null or is """
