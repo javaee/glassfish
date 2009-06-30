@@ -71,6 +71,8 @@ public final class ResourceConstants {
 
     public static final String IDLE_TIME_OUT_IN_SECONDS = "idle-timeout-in-seconds";
 
+    public static final String INIT_SQL = "init-sql";
+
     public static final String IS_CONNECTION_VALIDATION_REQUIRED = "is-connection-validation-required";
 
     public static final String CONNECTION_VALIDATION_METHOD = "connection-validation-method";
@@ -101,15 +103,29 @@ public final class ResourceConstants {
 
     public static final String STATEMENT_TIMEOUT = "statement-timeout";
 
+    public static final String DRIVER_CLASSNAME = "driver-classname";
+
     public static final String LAZY_CONNECTION_ENLISTMENT = "lazy-connection-enlistment";
 
     public static final String LAZY_CONNECTION_ASSOCIATION = "lazy-connection-association";
 
     public static final String ASSOCIATE_WITH_THREAD = "associate-with-thread";
 
+    public static final String ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT = "associate-with-thread-connections-count";
+
     public static final String MATCH_CONNECTIONS = "match-connections";
 
     public static final String MAX_CONNECTION_USAGE_COUNT = "max-connection-usage-count";
+
+    public static final String PING = "ping";
+
+    public static final String POOLING = "pooling";
+
+    public static final String SQL_TRACE_LISTENERS = "sql-trace-listeners";
+
+    public static final String STATEMENT_CACHE_SIZE = "statement-cache-size";
+
+    public static final String VALIDATION_CLASSNAME = "validation-classname";
 
     public static final String WRAP_JDBC_OBJECTS = "wrap-jdbc-objects";
     
