@@ -48,17 +48,48 @@ import java.util.Calendar;
  */
 public abstract class PreparedStatementWrapper extends StatementWrapper implements PreparedStatement {
     protected PreparedStatement preparedStatement = null;
+    private boolean busy = false;
+    private boolean cached = false;
+    private int defaultMaxFieldSize;
+    private int defaultMaxRows;
+    private int defaultQueryTimeout;
+    private int defaultFetchDirection;
+    private int defaultFetchSize;
+    private int currentMaxFieldSize;
+    private int currentMaxRows;
+    private int currentQueryTimeout;
+    private int currentFetchDirection;
+    private int currentFetchSize;
 
     /**
      * Abstract class for wrapping PreparedStatement <br>
      *
      * @param con       Connection Wrapper <br>
      * @param statement PreparedStatement that is to be wrapped.<br>
-     */
+     * @param cachingEnabled boolean that enabled/ disables caching <br>
+     * @throws SQLException Exception thrown from underlying statement<br>
+    */
     public PreparedStatementWrapper(Connection con,
-                                    PreparedStatement statement) {
+                                    PreparedStatement statement, boolean cachingEnabled) throws SQLException {
         super(con, statement);
         preparedStatement = statement;
+        cached = cachingEnabled;
+
+        if (cached) {
+
+            defaultQueryTimeout = preparedStatement.getQueryTimeout();
+            defaultMaxFieldSize = preparedStatement.getMaxFieldSize();
+            defaultFetchSize = preparedStatement.getFetchSize();
+            defaultMaxRows = preparedStatement.getMaxRows();
+            defaultFetchDirection = preparedStatement.getFetchDirection();
+
+            currentQueryTimeout = defaultQueryTimeout;
+            currentMaxFieldSize = defaultMaxFieldSize;
+            currentFetchSize = defaultFetchSize;
+            currentMaxRows = defaultMaxRows;
+            currentFetchDirection = defaultFetchDirection;
+
+        }
     }
 
     /**
@@ -701,5 +732,85 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
      */
     public ParameterMetaData getParameterMetaData() throws SQLException {
         return preparedStatement.getParameterMetaData();
+    }
+
+    public boolean isBusy() {
+        return busy;
+    }
+
+    public void setBusy(boolean busy) {
+        this.busy = busy;
+    }
+
+    public boolean getCached() {
+        return cached;
+    }
+
+    public void close() throws SQLException {
+        if (!cached)
+            preparedStatement.close();
+        else {  
+            //TODO-SC what if Exception is thrown in this block, should there be a way to indicate the
+            // con. not to use this statement any more ?
+            clearParameters();
+
+            if (defaultQueryTimeout != currentQueryTimeout) {
+                preparedStatement.setQueryTimeout(defaultQueryTimeout);
+                currentQueryTimeout = defaultQueryTimeout;
+            }
+            if (defaultMaxFieldSize != currentMaxFieldSize) {
+                preparedStatement.setMaxFieldSize(defaultMaxFieldSize);
+                currentMaxFieldSize = defaultMaxFieldSize;
+            }
+            if (defaultFetchSize != currentFetchSize) {
+                preparedStatement.setFetchSize(defaultFetchSize);
+                currentFetchSize = defaultFetchSize;
+            }
+            if (defaultMaxRows != currentMaxRows) {
+                preparedStatement.setMaxRows(defaultMaxRows);
+                currentMaxRows = defaultMaxRows;
+            }
+
+            if (defaultFetchDirection != currentFetchDirection) {
+                preparedStatement.setFetchDirection(defaultFetchDirection);
+                currentFetchDirection = defaultFetchDirection;
+            }
+
+            setBusy(false);
+        }
+    }
+
+    public void setMaxFieldSize(int max) throws SQLException {
+        preparedStatement.setMaxFieldSize(max);
+        if (cached)
+            currentMaxFieldSize = max;
+    }
+
+    public void setMaxRows(int max) throws SQLException {
+        preparedStatement.setMaxRows(max);
+        if (cached)
+            currentMaxRows = max;
+    }
+
+    public void setQueryTimeout(int seconds) throws SQLException {
+        preparedStatement.setQueryTimeout(seconds);
+        if (cached)
+            currentQueryTimeout = seconds;
+    }
+
+    public void setFetchDirection(int direction) throws SQLException {
+        preparedStatement.setFetchDirection(direction);
+        if (cached)
+            currentFetchDirection = direction;
+    }
+
+    public void setFetchSize(int rows) throws SQLException {
+        preparedStatement.setFetchSize(rows);
+        if (cached)
+            currentFetchSize = rows;
+    }
+
+    public void setCached(boolean cached){
+        this.cached =  cached;
     }
 }

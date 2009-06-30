@@ -54,8 +54,9 @@ public class CallableStatementWrapper30 extends CallableStatementWrapper {
      * @param con       ConnectionWrapper<br>
      * @param statement CallableStatement that is wrapped<br>
      */
-    public CallableStatementWrapper30(Connection con, CallableStatement statement) {
-        super(con, statement);
+    public CallableStatementWrapper30(Connection con, CallableStatement statement,
+                                      boolean enableCaching)  throws SQLException{
+        super(con, statement, enableCaching);
     }
 
     /**

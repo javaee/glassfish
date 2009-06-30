@@ -41,6 +41,7 @@ import com.sun.gjc.spi.base.PreparedStatementWrapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Wrapper for JDBC 3.0 PreparedStatement
@@ -54,8 +55,9 @@ public class PreparedStatementWrapper30 extends PreparedStatementWrapper {
      * @param statement PreparedStatement that is wrapped<br>
      */
     public PreparedStatementWrapper30(Connection con,
-                                      PreparedStatement statement) {
-        super(con, statement);
+                                      PreparedStatement statement, boolean enableCaching)
+            throws SQLException {
+        super(con, statement, enableCaching);
     }
 
     /**
@@ -128,6 +130,3 @@ public class PreparedStatementWrapper30 extends PreparedStatementWrapper {
         return new ResultSetWrapper30(this, rs);
     }
 }
-
-
-

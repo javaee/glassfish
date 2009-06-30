@@ -58,6 +58,12 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
+import com.sun.gjc.spi.base.*;
+import com.sun.gjc.spi.base.CacheObjectKey;
+import com.sun.gjc.spi.base.datastructure.Cache;
+import com.sun.gjc.spi.base.datastructure.CacheFactory;
 
 /**
  * <code>ManagedConnection</code> implementation for Generic JDBC Connector.
@@ -106,6 +112,11 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     //private boolean statemntWrapping;
     private int statementTimeout;
 
+    private Cache statementCache = null;
+    private int cacheSize;
+    private String cacheType;
+    private boolean statementCaching;
+
     protected final static Logger _logger;
 
     static {
@@ -137,7 +148,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      *                           object passed
      */
     public ManagedConnection(PooledConnection pooledConn, java.sql.Connection sqlConn,
-                             PasswordCredential passwdCred, javax.resource.spi.ManagedConnectionFactory mcf)
+                             PasswordCredential passwdCred, javax.resource.spi.ManagedConnectionFactory mcf,
+                             int statementCacheSize, String statementCacheType)
             throws ResourceException {
         if (pooledConn == null && sqlConn == null) {
 
@@ -164,6 +176,21 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         }
         logWriter = mcf.getLogWriter();
         ce = new ConnectionEvent(this, ConnectionEvent.CONNECTION_CLOSED);
+        tuneStatementCaching(statementCacheSize, statementCacheType);
+    }
+
+    private void tuneStatementCaching(int statementCacheSize, 
+            String statementCacheType) {
+        cacheSize = statementCacheSize;
+        cacheType = statementCacheType;
+        if (cacheSize > 0) {
+            try {
+                statementCache = CacheFactory.getDataStructure(cacheType, cacheSize); 
+                statementCaching = true;
+            } catch (ResourceException ex) {
+                _logger.severe(ex.getMessage());
+            }
+        }
     }
 
     /**
@@ -258,6 +285,14 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         connectionHandles.clear();
     }
 
+    private void clearStatementCache() {
+        if (statementCache != null) {
+            _logger.fine("Closing statements in statement cache");
+            statementCache.flushCache();
+            statementCache.clearCache();
+        }
+    }
+
     /**
      * Destroys the physical connection to the underlying resource manager.
      *
@@ -269,6 +304,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         if (isDestroyed) {
             return;
         }
+        clearStatementCache();
 
         try {
             if (connectionType == ISXACONNECTION || connectionType == ISPOOLEDCONNECTION) {
@@ -772,5 +808,219 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     }
     private void logFine(String logMessage){
         _logger.log(Level.FINE, logMessage);
+    }
+
+    public PreparedStatement prepareCachedStatement(
+            ConnectionWrapper conWrapper, String sql, int resultSetType, 
+            int resultSetConcurrency) throws SQLException {
+        if (statementCaching) {
+            CacheObjectKey key = new CacheObjectKey(sql, 
+                    CacheObjectKey.PREPARED_STATEMENT, resultSetType, resultSetConcurrency);
+            //TODO-SC should a null check be done for statementCache?
+            //TODO-SC refactor this method.
+            PreparedStatementWrapper ps = 
+                    (PreparedStatementWrapper) 
+                    statementCache.checkAndUpdateCache(key);
+            //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
+            if (ps != null) {
+                if (isFree(ps))
+                    ps.setBusy(true);
+                else
+                    return conWrapper.prepareCachedStatement(sql, resultSetType, 
+                            resultSetConcurrency, false);
+            } else {
+                ps = conWrapper.prepareCachedStatement(sql, resultSetType, 
+                        resultSetConcurrency, true);
+
+                ps.setBusy(true);
+                statementCache.addToCache(key, ps, false);
+
+            }
+            return ps;
+        } else
+            return conWrapper.prepareCachedStatement(sql, resultSetType, 
+                    resultSetConcurrency, false);
+    }
+
+    public PreparedStatement prepareCachedStatement(
+            ConnectionWrapper conWrapper, String sql, int resultSetType, 
+            int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+        if (statementCaching) {
+            CacheObjectKey key = new CacheObjectKey(sql, 
+                    CacheObjectKey.PREPARED_STATEMENT, resultSetType, 
+                    resultSetConcurrency, resultSetHoldability);
+            //TODO-SC should a null check be done for statementCache?
+            PreparedStatementWrapper ps = 
+                    (PreparedStatementWrapper) 
+                    statementCache.checkAndUpdateCache(key);
+            //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
+            if (ps != null) {
+                if (isFree(ps))
+                    ps.setBusy(true);
+                else
+                    return conWrapper.prepareCachedStatement(sql, resultSetType, 
+                            resultSetConcurrency, resultSetHoldability, false);
+            } else {
+                ps = conWrapper.prepareCachedStatement(sql, resultSetType, 
+                        resultSetConcurrency, resultSetHoldability, true);
+
+                statementCache.addToCache(key, ps, false);
+                ps.setBusy(true);
+            }
+            return ps;
+        } else
+            return conWrapper.prepareCachedStatement(sql, resultSetType, 
+                    resultSetConcurrency, resultSetHoldability, false);
+    }
+
+    public PreparedStatement prepareCachedStatement(
+            ConnectionWrapper conWrapper, String sql, String[] columnNames) 
+            throws SQLException {
+        if (statementCaching) {
+            CacheObjectKey key = new CacheObjectKey(sql, 
+                    CacheObjectKey.PREPARED_STATEMENT, columnNames);
+            //TODO-SC should a null check be done for statementCache?
+            PreparedStatementWrapper ps = 
+                    (PreparedStatementWrapper) 
+                    statementCache.checkAndUpdateCache(key);
+            //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
+            if (ps != null) {
+                if (isFree(ps))
+                    ps.setBusy(true);
+                else
+                    return conWrapper.prepareCachedStatement(sql, columnNames, false);
+            } else {
+                ps = conWrapper.prepareCachedStatement(sql, columnNames, true);
+
+                statementCache.addToCache(key, ps, false);
+                ps.setBusy(true);
+            }
+            return ps;
+        } else
+            return conWrapper.prepareCachedStatement(sql, columnNames, false);
+    }
+
+    public PreparedStatement prepareCachedStatement(
+            ConnectionWrapper conWrapper, String sql, int[] columnIndexes) 
+            throws SQLException {
+        if (statementCaching) {
+            CacheObjectKey key = new CacheObjectKey(sql, 
+                    CacheObjectKey.PREPARED_STATEMENT, columnIndexes);
+            //TODO-SC should a null check be done for statementCache?
+            PreparedStatementWrapper ps = 
+                    (PreparedStatementWrapper) 
+                    statementCache.checkAndUpdateCache(key);
+            //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
+            if (ps != null) {
+                if (isFree(ps))
+                    ps.setBusy(true);
+                else
+                    return conWrapper.prepareCachedStatement(sql, columnIndexes, false);
+            } else {
+                ps = conWrapper.prepareCachedStatement(sql, columnIndexes, true);
+
+                statementCache.addToCache(key, ps, false);
+                ps.setBusy(true);
+            }
+            return ps;
+        } else
+            return conWrapper.prepareCachedStatement(sql, columnIndexes, false);
+    }
+    
+    public PreparedStatement prepareCachedStatement(
+            ConnectionWrapper conWrapper, String sql, int autoGeneratedKeys) 
+            throws SQLException {
+        if (statementCaching) {
+            CacheObjectKey key = new CacheObjectKey(sql, 
+                    CacheObjectKey.PREPARED_STATEMENT, autoGeneratedKeys);
+            //TODO-SC should a null check be done for statementCache?
+            PreparedStatementWrapper ps = 
+                    (PreparedStatementWrapper) 
+                    statementCache.checkAndUpdateCache(key);
+            //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
+            if (ps != null) {
+                if (isFree(ps))
+                    ps.setBusy(true);
+                else
+                    return conWrapper.prepareCachedStatement(sql, autoGeneratedKeys, false);
+            } else {
+                ps = conWrapper.prepareCachedStatement(sql, autoGeneratedKeys, true);
+
+                statementCache.addToCache(key, ps, false);
+                ps.setBusy(true);
+            }
+            return ps;
+        } else
+            return conWrapper.prepareCachedStatement(sql, autoGeneratedKeys, false);
+    }
+
+    public CallableStatement prepareCachedCallableStatement(
+           ConnectionWrapper conWrapper, String sql, int resultSetType, 
+           int resultSetConcurrency) throws SQLException {
+        if (statementCaching) {
+            //Adding the sql as well as the Statement type "CS" to the CacheObjectKey object
+            CacheObjectKey key = new CacheObjectKey(sql, 
+                    CacheObjectKey.CALLABLE_STATEMENT, resultSetType, resultSetConcurrency);
+            CallableStatementWrapper cs = 
+                    (CallableStatementWrapper) 
+                    statementCache.checkAndUpdateCache(key);
+            //TODO-SC-DEFER can the usability (isFree()) check be done by the cache 
+            //itself and make sure that only a free stmt is returned
+            if (cs != null) {
+                if (isFree(cs))
+                    cs.setBusy(true);
+                else
+                    return conWrapper.callableCachedStatement(sql, 
+                            resultSetType, resultSetConcurrency, false);
+            
+            } else {
+                cs = conWrapper.callableCachedStatement(sql, resultSetType, 
+                        resultSetConcurrency, true);
+
+                statementCache.addToCache(key, cs, false);
+                cs.setBusy(true);
+            }
+            return cs;
+        } else
+            return conWrapper.callableCachedStatement(sql, resultSetType, 
+                    resultSetConcurrency, false);
+    }
+
+    public CallableStatement prepareCachedCallableStatement(
+           ConnectionWrapper conWrapper, String sql, int resultSetType, 
+           int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+        if (statementCaching) {
+            //Adding the sql as well as the Statement type "CS" to the CacheObjectKey object
+            CacheObjectKey key = new CacheObjectKey(sql, 
+                    CacheObjectKey.CALLABLE_STATEMENT, resultSetType, 
+                    resultSetConcurrency, resultSetHoldability);
+            CallableStatementWrapper cs = 
+                    (CallableStatementWrapper) 
+                    statementCache.checkAndUpdateCache(key);
+            //TODO-SC-DEFER can the usability (isFree()) check be done by the cache 
+            //itself and make sure that only a free stmt is returned
+            if (cs != null) {
+                if (isFree(cs))
+                    cs.setBusy(true);
+                else
+                    return conWrapper.callableCachedStatement(sql, 
+                            resultSetType, resultSetConcurrency, 
+                            resultSetHoldability, false);
+            
+            } else {
+                cs = conWrapper.callableCachedStatement(sql, resultSetType, 
+                        resultSetConcurrency, resultSetHoldability, true);
+
+                statementCache.addToCache(key, cs, false);
+                cs.setBusy(true);
+            }
+            return cs;
+        } else
+            return conWrapper.callableCachedStatement(sql, resultSetType, 
+                    resultSetConcurrency, resultSetHoldability, false);
+    }
+    
+    boolean isFree(PreparedStatementWrapper cachedps) {
+        return !cachedps.isBusy();
     }
 }

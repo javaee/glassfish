@@ -57,8 +57,9 @@ public abstract class CallableStatementWrapper extends PreparedStatementWrapper 
      * @param con       ConnectionWrapper <br>
      * @param statement Statement that is to be wrapped<br>
      */
-    public CallableStatementWrapper(Connection con, CallableStatement statement) {
-        super(con, statement);
+    public CallableStatementWrapper(Connection con, CallableStatement statement,
+                                    boolean cachingEnabled) throws SQLException{
+        super(con, statement, cachingEnabled);
         callableStatement = statement;
     }
 

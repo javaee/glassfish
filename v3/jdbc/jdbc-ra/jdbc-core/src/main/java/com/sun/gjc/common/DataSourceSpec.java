@@ -86,6 +86,8 @@ public class DataSourceSpec implements java.io.Serializable {
 
     public static final int JDBC30DATASOURCE = 32;
     public static final int ESCAPECHARACTER = 33;
+    public static final int STATEMENTCACHESIZE = 34;
+    public static final int STATEMENTCACHETYPE = 35;
 
     private ConcurrentHashMap<Integer, String> details = new ConcurrentHashMap<Integer, String>();
 

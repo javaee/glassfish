@@ -36,6 +36,7 @@
 
 package com.sun.gjc.spi;
 
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.common.DataSourceSpec;
 import com.sun.gjc.util.SecurityUtils;
@@ -81,6 +82,11 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
     protected javax.resource.spi.LazyEnlistableConnectionManager cm_;
     protected boolean isLazyCm_;
+    private int statementCacheSize = 0;
+    private String statementCacheType = null;
+
+    protected StringManager localStrings =
+            StringManager.getManager(DataSourceObjectBuilder.class);
 
     /**
      * Creates a Connection Factory instance. The <code>ConnectionManager</code> implementation
@@ -508,6 +514,27 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         setIsolation(mc);
     }
 
+    private void detectStatementCachingSupport() {
+        String cacheSize = getStatementCacheSize();
+        String cacheType = getStatementCacheType();
+        if(cacheSize != null){
+            try{
+                statementCacheSize = Integer.valueOf(cacheSize);
+                //TODO-SC FINE log-level with Pool Name (if possible)
+                _logger.log(Level.FINE, "StatementCaching Size : " + statementCacheSize);
+                if(cacheType == null || cacheType.trim().equals("")) {
+                    _logger.fine(" Default StatementCaching Type : " + localStrings.getString("jdbc.statement-cache.default.datastructure"));
+                } else {
+                    _logger.fine("StatementCaching Type : " + cacheType);
+                }
+            }catch(NumberFormatException nfe){
+                _logger.fine("Exception while setting StatementCacheSize : " + 
+                        nfe.getMessage());
+                //ignore
+            }
+        } 
+    }
+
     /**
      * Set the log writer for this <code>ManagedConnectionFactory</code> instance.
      *
@@ -800,6 +827,24 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.STATEMENTWRAPPING);
     }
 
+    public void setStatementCacheSize(String value){
+        spec.setDetail(DataSourceSpec.STATEMENTCACHESIZE, value);
+        detectStatementCachingSupport();
+    }
+
+    public String getStatementCacheSize(){
+        return spec.getDetail(DataSourceSpec.STATEMENTCACHESIZE);
+    }
+
+    public String getStatementCacheType() {
+        return spec.getDetail(DataSourceSpec.STATEMENTCACHETYPE);
+    }
+
+    public void setStatementCacheType(String statementCacheType) {
+        spec.setDetail(DataSourceSpec.STATEMENTCACHETYPE, statementCacheType);
+    }
+
+
     /**
      * Set StatementTimeout value
      *
@@ -951,7 +996,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     protected ManagedConnection constructManagedConnection(PooledConnection pc,
                                                            Connection sqlCon, PasswordCredential passCred,
                                                            ManagedConnectionFactory mcf) throws ResourceException {
-        return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf);
+        return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf, 
+                statementCacheSize, statementCacheType);
     }
 
     /**

@@ -58,8 +58,9 @@ public class PreparedStatementWrapper40 extends PreparedStatementWrapper {
      * @param statement PreparedStatement that is wrapped<br>
      */
     public PreparedStatementWrapper40(Connection con,
-                                      PreparedStatement statement) {
-        super(con, statement);
+                                      PreparedStatement statement, boolean statementCaching)
+            throws SQLException {
+        super(con, statement, statementCaching);
     }
 
     /**

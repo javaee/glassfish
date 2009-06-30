@@ -233,6 +233,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Statement Timeout",
                 "java.lang.String"));
 
+        propList.add(new EnvironmentProperty("StatementCacheSize",
+                adminPool.getStatementCacheSize() + "",
+                "Statement Cache Size",
+                "java.lang.String"));
+        
         //dump user defined poperties into the list
         Set connDefDescSet = connDesc.getOutboundResourceAdapter().
                 getConnectionDefs();
@@ -313,6 +318,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     String value = rp.getValue();
                     conConnPool.setPreferValidateOverRecreate(toBoolean(value, false));
                     logFine("PREFER-VALIDATE-OVER-RECREATE : " + value);
+                    
+                } else if ("STATEMENT-CACHE-TYPE".equals(name.toUpperCase())) {
+                    
+                    propList.add(new EnvironmentProperty("StatementCacheType",
+                            rp.getValue(), "StatementCacheType", "java.lang.String"));
                 }
                 else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
 
