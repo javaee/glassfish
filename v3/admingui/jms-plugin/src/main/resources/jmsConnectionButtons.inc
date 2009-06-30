@@ -38,8 +38,6 @@
         onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
     <!command
         if(#{pageSession.hasPropertySheet}){
-            println ("***** pageSession.valueMap right before save: #{pageSession.valueMap}");
-            println ("***********************************************************************************");
             saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
                 convertToFalse="#{pageSession.convertToFalseList}"
             );

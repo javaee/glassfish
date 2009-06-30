@@ -57,8 +57,6 @@
             setPageSessionAttribute(key="hasResType" value="#{false}");
             setPageSessionAttribute(key="viewKeyValue" value="jmsConnectionSummaryView");
 #include "/shared/viewSummaryDetail.inc"
-
-println ("***** requestScope.listOfRows = #{requestScope.listOfRows}");
         />
     </event>
 #include "/shared/restart.inc"

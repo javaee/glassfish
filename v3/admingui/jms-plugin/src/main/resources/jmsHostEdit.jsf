@@ -49,10 +49,7 @@
             getRequestValue(key="configName" value=>$page{configName});
 
             setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/jms-service,type=jms-host,name=#{pageSession.name}");
-            setPageSessionAttribute(key="childType" value="");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-
-            println ("#{pageSession.valueMap}");
         />
     </event>
 #include "/shared/restart.inc"

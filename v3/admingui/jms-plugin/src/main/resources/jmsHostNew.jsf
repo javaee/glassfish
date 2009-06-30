@@ -50,8 +50,6 @@
             setPageSessionAttribute(key="parentObjectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
             setPageSessionAttribute(key="childType" value="jms-host");
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-
-            println ("#{pageSession.valueMap}");
         />
     </event>
 #include "/shared/restart.inc"

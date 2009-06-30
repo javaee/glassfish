@@ -54,9 +54,6 @@
 
         getChildrenTable(objectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
 
-        println ("***** #{requestScope.listOfRows}");
-
-
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n.jmsHosts.TableTitle}");
         setPageSessionAttribute(key="listPageLink" value="jmsHosts.jsf");
         setPageSessionAttribute(key="createLink" value="jmsHostNew.jsf");

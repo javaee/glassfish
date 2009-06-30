@@ -48,7 +48,6 @@
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsConnectionEdit.jsf?name=#{pageSession.name}");
             setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsConnections.jsf");
 
-
             setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources" );
             setPageSessionAttribute(key="childType" value="connector-connection-pool");
             setPageSessionAttribute(key="childType2" value="connector-resource");
@@ -60,9 +59,6 @@
 
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-
-
-            println("***** valueMap = #{pageSession.valueMap}");
 
             //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
