@@ -641,6 +641,49 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     void setAssociateWithThread(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the pooling property.
+     *
+     * Property to disable pooling for the pool.
+     * 
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="true", dataType=Boolean.class)
+    String getPooling();
+
+    /**
+     * Sets the value of the pooling property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setPooling(String value) throws PropertyVetoException;
+  
+    /**
+     * Gets the value of the statementCacheSize property.
+     *
+     * When specified, statement caching is turned on to cache statements, 
+     * prepared statements, callable statements that are repeatedly executed by 
+     * applications. Default value is 0, which implies the
+     * feature is not enabled.
+     * 
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)
+    String getStatementCacheSize();
+
+    /**
+     * Sets the value of the statementCacheSize property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setStatementCacheSize(String value) throws PropertyVetoException;
+    
+    /**
      * Gets the value of the matchConnections property.
      *
      * To switch on/off connection matching for the pool. It can be set to false
