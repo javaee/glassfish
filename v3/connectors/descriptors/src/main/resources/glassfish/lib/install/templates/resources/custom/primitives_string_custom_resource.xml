@@ -46,7 +46,7 @@
     <resources>
         <custom-resource res-type="long" jndi-name="custom/my-primitive-long" 
          factory-class="org.glassfish.resources.custom.factory.PrimitivesAndStringFactory">
-          <property name="value" value="2008L" />
+          <property name="value" value="2008" />
         </custom-resource>
     </resources> 
 
