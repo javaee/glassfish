@@ -1,0 +1,28 @@
+The custom resource templates directory contains example resource templates for various commonly used objects that need to be
+shared across applications.
+These template files have examples on how they can be used by updating appropriate attributes an properties
+The purpose is to avoid having to remember the syntax and various options which are needed for the definition of these resources
+
+Pl. refer to User Commands for the syntax of adding resources using an xml script
+http://docs.sun.com/app/docs/doc/819-3662/add-resources-1?a=view
+ 
+Add resources with a XML file.
+
+SYNTAX :
+=====================================================================================================================
+add-resources [--target target] xml_file_path
+
+target          in case of EE, name of target being operated on.  
+The valid targets for this command are instance, cluster, 'domain' or 'server'. By default the target is the 'server'.
+
+xml_file_path   path to the XML file containing  the resource(s) to be registered.
+
+=====================================================================================================================
+
+Templates are available to create :
+URL
+Primitives, String
+Properties
+JavaBean
+
+Refer the corresponding template file for documentation and sample configuration.

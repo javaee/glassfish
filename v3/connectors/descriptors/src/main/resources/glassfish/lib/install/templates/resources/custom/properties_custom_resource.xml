@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE resources PUBLIC "-//Sun Microsystems Inc.//DTD Application Server 9.0 Domain//EN" "*<install directory>/lib/dtds/sun-resources_1_3.dtd*">
+
+<!--
+    Copyright 2004-2009 Sun Microsystems, Inc.  All rights reserved.
+    Use is subject to license terms.
+
+    Template file to create java.util.Properties Object provider custom resources.
+
+    By specifying :
+
+    a) the built-in "factory-class" as 
+       org.glassfish.resources.custom.factory.PropertiesFactory,
+    b) "res-type" as "java.util.Properties"
+    c) and by specifying :
+       either the required list of properties specified in
+       custom-resource's properties
+       or 
+       path to the properties file using a property named
+       org.glassfish.resources.custom.factory.PropertiesFactory.fileName
+       or
+       both list of properties as well file-name in which case value specified 
+       via property will override the values from file-name
+       [file name can be .properties or .xml that conforms to
+        http://java.sun.com/dtd/properties.dtd]
+       Refer: http://java.sun.com/j2se/1.5.0/docs/api/java/util/Properties.html
+
+    a custom-resource can be created 
+    that can be used by applications.
+
+    To learn more on custom resources,refer :
+
+    http://docs.sun.com/app/docs/doc/819-2554/ablld?l=en&a=view
+    
+    http://docs.sun.com/app/docs/doc/820-4332/create-custom-resource-1?a=view
+
+    http://docs.sun.com/app/docs/doc/820-4332/delete-custom-resource-1?a=view
+
+    http://docs.sun.com/app/docs/doc/820-4332/list-custom-resources-1?a=view 
+
+    For detailed explanation of attributes and elements of this resources xml
+    pl. refer to sun-resources_1_3.dtd
+
+
+    =========================================SAMPLE============================================
+
+
+    In the sample configurations below, 
+    custom-resource will provide a java.util.Properties upon lookup
+
+    Applications can do  :
+
+    (java.util.Properties)initialContext.lookup("custom/my-simple-properties")
+    (java.util.Properties)initialContext.lookup("custom/my-properties-from-file")
+    (java.util.Properties)initialContext.lookup("custom/my-properties-from-xml-file")
+
+
+    Following command will create a resource using this template :
+
+    GLASSFISH_INSTALL_DIR/bin/asadmin add-resources <ABSOLUTE_PATH_TO_TEMPLATE_FILE>
+
+    <resources>
+
+        <custom-resource res-type="java.util.Properties" jndi-name="custom/my-simple-properties" 
+         factory-class="org.glassfish.resources.custom.factory.PropertiesFactory">
+            <property name="Integer" value="25" />
+      	    <property name="String" value="Primitives-And-String" />
+        </custom-resource>
+
+        <custom-resource res-type="java.util.Properties" jndi-name="custom/my-properties-from-file" 
+         factory-class="org.glassfish.resources.custom.factory.PropertiesFactory">
+            <property name="org.glassfish.resources.custom.factory.PropertiesFactory.fileName" 
+             value="simple-properties.properties" />
+        </custom-resource>
+
+        <custom-resource res-type="java.util.Properties" jndi-name="custom/my-properties-from-xml-file" 
+         factory-class="org.glassfish.resources.custom.factory.PropertiesFactory">
+      	    <property name="org.glassfish.resources.custom.factory.PropertiesFactory.fileName" 
+             value="simple-properties.xml" />
+        </custom-resource>
+
+    </resources> 
+
+
+    =========================================SAMPLE============================================
+
+-->
+
+<resources>
+    <custom-resource res-type="java.util.Properties" jndi-name="<RESOURCE_NAME>" 
+     factory-class="org.glassfish.resources.custom.factory.PropertiesFactory">
+      <property name="PROPERTY_1" value="<VALUE_1>" />
+      <property name="PROPERTY_2" value="<VALUE_2>" />
+    </custom-resource>
+</resources>
