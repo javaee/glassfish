@@ -63,7 +63,9 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -132,10 +134,16 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         }
         // ensure we don't already have one of this name
         for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorConnectionPool) {
-                if (((ConnectorConnectionPool) resource).getName().equals(poolname)) {
+            if (resource instanceof BindableResource) {
+                if (((BindableResource) resource).getJndiName().equals(poolname)) {
                     String msg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
-                            "A connector connection pool named {0} already exists.", poolname);
+                            "A resource named {0} already exists.", poolname);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+                }
+            } else if (resource instanceof ResourcePool) {
+                if (((ResourcePool) resource).getName().equals(poolname)) {
+                    String msg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
+                            "A resource named {0} already exists.", poolname);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg);
                 }
             }

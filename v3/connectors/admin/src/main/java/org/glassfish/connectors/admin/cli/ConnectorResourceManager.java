@@ -55,10 +55,12 @@ import org.jvnet.hk2.config.TransactionFailure;
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.admin.config.Property;
+import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -104,10 +106,16 @@ public class ConnectorResourceManager implements ResourceManager{
         }
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorResource) {
-                if (((ConnectorResource) resource).getJndiName().equals(jndiName)) {
+            if (resource instanceof BindableResource) {
+                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
                     String msg = localStrings.getLocalString("create.connector.resource.duplicate",
-                            "A connector resource named {0} already exists.", jndiName);
+                            "A resource named {0} already exists.", jndiName);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+                }
+            } else if (resource instanceof ResourcePool) {
+                if (((ResourcePool) resource).getName().equals(jndiName)) {
+                    String msg = localStrings.getLocalString("create.connector.resource.duplicate",
+                            "A resource named {0} already exists.", jndiName);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg);
                 }
             }
