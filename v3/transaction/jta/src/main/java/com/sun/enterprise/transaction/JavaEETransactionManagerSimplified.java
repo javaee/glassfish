@@ -218,8 +218,9 @@ public class JavaEETransactionManagerSimplified
             if (Boolean.getBoolean(doStats)) {
                 registerStatisticMonitorTask();
             }
-            StatsProviderManager.register("transaction-service",
-                    PluginPoint.SERVER, "transaction-service",
+            StatsProviderManager.register(
+                    "transaction-service", // element in domain.xml <monitoring-service>/<monitoring-level>
+                    PluginPoint.SERVER, "transaction-service", // server.transaction-service node in asadmin get
                     new TransactionServiceStatsProvider());
         } catch (Exception ex) {
             // ignore
