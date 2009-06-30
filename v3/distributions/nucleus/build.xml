@@ -21,6 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
+    <property name="source.distribution.name" value="GlassFish v3 Nucleus Preview"/>
     <target name="init">
         <condition property="windows">
             <os family="windows" />
@@ -58,6 +59,22 @@ own identifying information: Portions Copyright [yyyy]
         <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
             <property name="modules.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/modules"/>
         </ant>
+
+	<!-- stage servicetag registry file and set source value -->
+
+	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.registration" property="servicetag-registry.zip"/>
+   
+
+        <unzip src="${servicetag-registry.zip}"
+           dest="target/stage/${install.dir.name}">
+          <patternset>
+		  <exclude name="META-INF/**"/>
+	  </patternset>
+        </unzip>
+
+	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
+		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+    
 
         <!-- create distribution zip -->
 

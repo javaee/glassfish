@@ -153,7 +153,7 @@
         </dependency> 
     
 
-        <!-- ejb timer package -->
+        <!-- ejb full package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-ejb</artifactId>
@@ -224,6 +224,15 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
+
+        <!-- additional servicetag registry dependency -->
+        <dependency>
+            <groupId>org.glassfish.registration</groupId>
+            <artifactId>servicetag-registry</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
+    
 
 </dependencies>
 

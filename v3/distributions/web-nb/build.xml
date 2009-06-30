@@ -21,6 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="glassfish web-nb distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
+    <property name="source.distribution.name" value="GlassFish v3 Web Profile Preview"/>
     <target name="create.distribution">
         <echo message="Creating distribution: web-nb"/>
         <unzip dest="target/stage">
@@ -33,6 +34,20 @@ own identifying information: Portions Copyright [yyyy]
         <chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
         <chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
+	<!-- stage servicetag registry file and set source value -->
+
+	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.registration" property="servicetag-registry.zip"/>
+   
+
+        <unzip src="${servicetag-registry.zip}"
+           dest="target/stage/${install.dir.name}">
+          <patternset>
+		  <exclude name="META-INF/**"/>
+	  </patternset>
+        </unzip>
+
+	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
+		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
 
         <!-- create distribution zip-->
       	<zip file="target/web-nb.zip" duplicate="preserve">

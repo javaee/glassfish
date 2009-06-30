@@ -20,6 +20,7 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="Web-NB Distribution (ips) Creation" default="create-image" basedir=".">
+<property name="source.distribution.name" value="GlassFish v3 Web Profile Preview"/>
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
     <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
@@ -97,6 +98,20 @@ own identifying information: Portions Copyright [yyyy]
         <property name="image.dir" value="${image.dir}"/>
     </ant>
 
+	<!-- stage servicetag registry file and set source value -->
+
+	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.registration" property="servicetag-registry.zip"/>
+   
+
+        <unzip src="${servicetag-registry.zip}"
+           dest="${image.dir}">
+          <patternset>
+		  <exclude name="META-INF/**"/>
+	  </patternset>
+        </unzip>
+
+	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
+		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
 
 </target>
 </project>

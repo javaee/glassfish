@@ -21,6 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="Nucleus Distribution (ips) Creation" default="create-image" basedir=".">
 <property name="image.name" value="nucleus"/>
+<property name="source.distribution.name" value="GlassFish v3 Nucleus Preview"/>
 
 <target name="init">
     <condition property="windows">
@@ -131,5 +132,21 @@ own identifying information: Portions Copyright [yyyy]
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/pkg"/>
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/pkg.bat"/>
+
+    <!-- stage servicetag registry file and set source value -->
+
+	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.registration" property="servicetag-registry.zip"/>
+   
+
+	<unzip src="${servicetag-registry.zip}"
+	    dest="${image.dir}">
+            <patternset>
+		  <exclude name="META-INF/**"/>
+	    </patternset>
+        </unzip>
+
+	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
+		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+    
 </target>
 </project>
