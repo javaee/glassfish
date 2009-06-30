@@ -218,6 +218,47 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
+      <xsd:element name="env-entry"
+                   type="javaee:env-entryType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="ejb-ref"
+                   type="javaee:ejb-refType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="ejb-local-ref"
+                   type="javaee:ejb-local-refType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:group ref="javaee:service-refGroup"/>
+      <xsd:element name="resource-ref"
+                   type="javaee:resource-refType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="resource-env-ref"
+                   type="javaee:resource-env-refType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="message-destination-ref"
+                   type="javaee:message-destination-refType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="persistence-context-ref"
+                   type="javaee:persistence-context-refType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="persistence-unit-ref"
+                   type="javaee:persistence-unit-refType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="message-destination"
+                   type="javaee:message-destinationType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="data-source"
+                   type="javaee:data-sourceType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="version"
                    type="javaee:dewey-versionType"

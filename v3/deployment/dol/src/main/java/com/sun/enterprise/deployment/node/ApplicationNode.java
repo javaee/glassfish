@@ -38,9 +38,14 @@ package com.sun.enterprise.deployment.node;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.xml.ApplicationTagNames;
+import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import com.sun.enterprise.deployment.xml.WebTagNames;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
 import org.w3c.dom.Node;
 import org.glassfish.internal.api.Globals;
 
@@ -107,6 +112,20 @@ public class ApplicationNode extends BundleNode<Application> {
         super();	
         registerElementHandler(new XMLElement(ApplicationTagNames.MODULE), ModuleNode.class, "addModule");    
         registerElementHandler(new XMLElement(ApplicationTagNames.ROLE), SecurityRoleNode.class, "addAppRole");            
+        registerElementHandler(new XMLElement(TagNames.ENVIRONMENT_PROPERTY), EnvEntryNode.class, "addEnvironmentProperty");
+        registerElementHandler(new XMLElement(EjbTagNames.EJB_REFERENCE), EjbReferenceNode.class);
+        registerElementHandler(new XMLElement(EjbTagNames.EJB_LOCAL_REFERENCE), EjbLocalReferenceNode.class);
+        registerElementHandler(new XMLElement(WebServicesTagNames.SERVICE_REF), ServiceReferenceNode.class, "addServiceReferenceDescriptor");
+        registerElementHandler(new XMLElement(EjbTagNames.RESOURCE_REFERENCE),
+                                                             ResourceRefNode.class, "addResourceReferenceDescriptor");
+        registerElementHandler(new XMLElement(TagNames.RESOURCE_ENV_REFERENCE),
+                                                            ResourceEnvRefNode.class, "addJmsDestinationReferenceDescriptor");
+        registerElementHandler(new XMLElement(TagNames.MESSAGE_DESTINATION_REFERENCE), MessageDestinationRefNode.class, "addMessageDestinationReferenceDescriptor");
+        registerElementHandler(new XMLElement(TagNames.PERSISTENCE_CONTEXT_REF), EntityManagerReferenceNode.class, "addEntityManagerReferenceDescriptor");
+        registerElementHandler(new XMLElement(TagNames.PERSISTENCE_UNIT_REF), EntityManagerFactoryReferenceNode.class, "addEntityManagerFactoryReferenceDescriptor");
+        registerElementHandler(new XMLElement(TagNames.MESSAGE_DESTINATION),
+                               MessageDestinationNode.class,
+                               "addMessageDestination");
     }            
     
     /**
@@ -150,7 +169,10 @@ public class ApplicationNode extends BundleNode<Application> {
 		        " adding descriptor " + newDescriptor);
 	        }
            descriptor.addBundleDescriptor((BundleDescriptor) newDescriptor);
-       }           
+        } else if (newDescriptor instanceof EjbReference) {
+            descriptor.addEjbReferenceDescriptor(
+                        (EjbReference) newDescriptor);
+        }
     }   
    
    /**
@@ -220,6 +242,34 @@ public class ApplicationNode extends BundleNode<Application> {
             appendTextChild(appNode, ApplicationTagNames.LIBRARY_DIRECTORY, 
                 application.getLibraryDirectoryRawValue());
         }
+
+       // env-entry*
+        writeEnvEntryDescriptors(appNode, application.getEnvironmentProperties().iterator());
+
+        // ejb-ref * and ejb-local-ref*
+        writeEjbReferenceDescriptors(appNode, application.getEjbReferenceDescriptors().iterator());
+
+        // service-ref*
+        writeServiceReferenceDescriptors(appNode, application.getServiceReferenceDescriptors().iterator());
+
+        // resource-ref*
+        writeResourceRefDescriptors(appNode, application.getResourceReferenceDescriptors().iterator());
+
+        // resource-env-ref*
+        writeResourceEnvRefDescriptors(appNode, application.getJmsDestinationReferenceDescriptors().iterator());
+
+        // message-destination-ref*
+        writeMessageDestinationRefDescriptors(appNode, application.getMessageDestinationReferenceDescriptors().iterator());
+
+        // persistence-context-ref*
+        writeEntityManagerReferenceDescriptors(appNode, application.getEntityManagerReferenceDescriptors().iterator());
+
+        // persistence-unit-ref*
+        writeEntityManagerFactoryReferenceDescriptors(appNode, application.getEntityManagerFactoryReferenceDescriptors().iterator());
+
+        // message-destination*
+        writeMessageDestinations(appNode, application.getMessageDestinations().iterator());
+
         return appNode;
     }
         

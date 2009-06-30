@@ -43,12 +43,20 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;
+import com.sun.enterprise.deployment.node.runtime.ResourceRefNode;
+import com.sun.enterprise.deployment.node.runtime.EjbRefNode;
+import com.sun.enterprise.deployment.node.runtime.ResourceEnvRefNode;
+import com.sun.enterprise.deployment.node.runtime.MessageDestinationRefNode;
+import com.sun.enterprise.deployment.node.runtime.MessageDestinationRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.ServiceRefNode;
+import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.glassfish.security.common.Group;
 import org.w3c.dom.Node;
 
@@ -83,6 +91,18 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
         super.Init();                          
         registerElementHandler(new XMLElement(RuntimeTagNames.SECURITY_ROLE_MAPPING), 
                                SecurityRoleMappingNode.class);              
+        registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_REFERENCE),
+                               ResourceRefNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.EJB_REFERENCE),
+                               EjbRefNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_ENV_REFERENCE),
+                               ResourceEnvRefNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.MESSAGE_DESTINATION_REFERENCE),
+                               MessageDestinationRefNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.MESSAGE_DESTINATION),
+             MessageDestinationRuntimeNode.class);
+        registerElementHandler(new XMLElement(WebServicesTagNames.SERVICE_REF),
+                               ServiceRefNode.class);
     }
         
    /**
@@ -203,9 +223,8 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
                     }
                 }
             }
-        }
-    }
-    
+        } 
+    } 
     
     /**
      * write the descriptor class to a DOM tree and return it
@@ -244,7 +263,14 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
         
         // realm?
         appendTextChild(appNode, RuntimeTagNames.REALM, application.getRealm());
-        
+
+        // references
+        RuntimeDescriptorNode.writeCommonComponentInfo(appNode, application);
+        RuntimeDescriptorNode.writeMessageDestinationInfo(appNode, application);
+
+        // archive-name
+        appendTextChild(appNode, RuntimeTagNames.ARCHIVE_NAME, application.getArchiveName());
+
         return appNode;
     }
 }

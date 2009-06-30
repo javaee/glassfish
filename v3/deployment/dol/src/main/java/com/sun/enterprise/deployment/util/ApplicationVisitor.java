@@ -47,7 +47,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @version 
  */
 @Contract
-public interface ApplicationVisitor {
+public interface ApplicationVisitor extends ComponentVisitor {
     
     /**
      * visit an application object
