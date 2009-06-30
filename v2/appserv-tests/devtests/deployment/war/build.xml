@@ -30,6 +30,10 @@
         <ant dir="nojarexpansion" target="private-all">
             <property name="build" value="${build}/nojarexpansion"/>
         </ant>
-
+        <!--
+        <ant dir="appmgt" target="private-all">
+            <property name="build" value="${build}/appmgt"/>
+        </ant>
+-->
     </target>
 </project>
