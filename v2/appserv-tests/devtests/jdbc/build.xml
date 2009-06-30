@@ -68,6 +68,7 @@
         <ant dir="cpds" target="all"/>
 	<ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
+	<ant dir="pooling" target="all"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -110,6 +111,7 @@
         <ant dir="cpds" target="all"/>
         <ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
+	<ant dir="pooling" target="all"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -279,6 +281,12 @@
 	<record name="stmtCaching_hit_miss.output" action="start"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<record name="stmtCaching_hit_miss.output" action="stop"/>
+    </target>
+
+    <target name="pooling">
+	<record name="pooling.output" action="start"/>
+	<ant dir="pooling" target="all"/>
+	<record name="pooling.output" action="stop"/>
     </target>
 
     <target name="usage">
