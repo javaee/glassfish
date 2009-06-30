@@ -49,6 +49,10 @@
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    saveJvmOptionValues(objectNameStr="v3:pp=/domain/configs/config[server-config]/java-config,type=profiler,name=#{pageSession.valueMap['Name']}" options="$attribute{newList}");    
+                    prepareSuccessfulMsg();
                     redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}");
                 />
             </sun:button>
@@ -61,7 +65,7 @@
                     );
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    //saveJvmOptionValues(objectNameStr="#{pageSession.objectNameStr}" options="$attribute{newList}");
+                    saveJvmOptionValues(objectNameStr="#{pageSession.profilerObjectNameStr}" options="$attribute{newList}");
                 prepareSuccessfulMsg();
                 redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
