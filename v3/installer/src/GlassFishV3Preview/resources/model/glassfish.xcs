@@ -121,9 +121,9 @@ String regOption = (String)ConfigHelper.getValue(
 
 if (regOption.equals("NON_ANONYMOUS"))  {
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
-        if ((enteredValue == null) || enteredValue.equals("")) {
+        if ((enteredValue == null) || (enteredValue.length() < 8)) {
             ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
-            throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
+            throw new EnhancedException("SHORT_ADMIN_PASSWORD",new String[]{});
         }
 }         
           ]]></onSet>
