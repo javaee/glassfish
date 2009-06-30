@@ -24,30 +24,18 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
 import com.sun.grizzly.ProtocolChain;
-import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.TCPSelectorHandler;
-import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.ThreadPool;
-import com.sun.grizzly.config.dom.Transport;
-import com.sun.grizzly.filter.ReadFilter;
 import com.sun.grizzly.http.HttpProtocolChain;
 import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.http.StatsThreadPool;
-import com.sun.grizzly.http.SelectorThreadHandler;
-import com.sun.grizzly.util.DefaultThreadPool;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.lang.management.ManagementFactory;
 
 /**
  * Implementation of a generic listener for various
@@ -154,7 +142,6 @@ public class ServiceInitializerThread extends SelectorThread {
     }
 
     public void configure(NetworkListener networkListener) {
-        final Transport transport = networkListener.findTransport();
         setPort(Integer.parseInt(networkListener.getPort()));
         try {
             setAddress(InetAddress.getByName(networkListener.getAddress()));
@@ -163,20 +150,6 @@ public class ServiceInitializerThread extends SelectorThread {
                     new Object[]{
                             networkListener.getName(),
                             networkListener.getAddress()
-                    });
-        }
-        // acceptor-threads
-        final String acceptorThreads = transport.getAcceptorThreads();
-        try {
-            final int readController = Integer.parseInt(acceptorThreads) - 1;
-            if (readController > 0) {
-                setSelectorReadThreadsCount(readController);
-            }
-        } catch (NumberFormatException nfe) {
-            logger.log(Level.WARNING, "pewebcontainer.invalid_acceptor_threads",
-                    new Object[]{
-                            acceptorThreads,
-                            transport.getName()
                     });
         }
     }

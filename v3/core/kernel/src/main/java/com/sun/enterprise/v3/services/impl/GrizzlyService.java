@@ -294,8 +294,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
              */
             List<IiopListener> iiopListenerList = config.getIiopService().getIiopListener();
             for(IiopListener oneListener : iiopListenerList) {
-                //if(Boolean.valueOf(oneListener.getEnabled()) && oneListener.getLazyInit()) {
-                if(oneListener.getLazyInit()) {
+                if(Boolean.valueOf(oneListener.getEnabled()) && oneListener.getLazyInit()) {
                     NetworkListener dummy = new DummyNetworkListener();
                     dummy.setPort(oneListener.getPort());
                     dummy.setProtocol("light-weight-listener");
