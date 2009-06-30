@@ -1,3 +1,4 @@
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,58 +34,88 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- monitoring/monitoringPage.jsf -->
-<!initPage 
+<!-- jdbc/jdbcResourceEdit.jsf -->
+<!initPage
     setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings")
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks")
 
-    setAttribute(key="displayFeedback" value="#{displayFeedback}");
-    setAttribute(key="amxConfigName" value="monitoringServiceConfig.moduleMonitoringLevelsConfig")
-    setAttribute(key="amxConfigAttributes" value={"HTTPService","webContainer", "JVM"})
-
-#include "/templates/adminConsoleInit.inc"
 />
-<!composition template="/templates/default.layout">
+<!composition template="/templates/default.layout"  guiTitle="$resource{web.monitoring.Title}" >
 <!define name="content">
-        <sun:form id="propertyForm">
-#include "/templates/adminConsoleForm.inc"
-            <sun:title id="topTitle" title="$resource{web.monitoring.Title}" helpText="$resource{web.monitoring.PageHelp}">
-                <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
-                    <!command
-                        loadDefaultAmxConfigAttributes(amxConfig="#{amxConfig}", configMap="$pageSession{configMap}");
-                    />
-                </sun:button>
-
-                <!-- Buttons  -->
-                <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
-                            <!command
-                                updateAmxConfig(moduleConfig="#{amxConfig}", configMap="$pageSession{configMap}");
-                                prepareSuccessfulMsg();
-                            />
-                        </sun:button>
-                    </sun:panelGroup>
-                </facet>
-            </sun:title>
-
-            <sun:propertySheet requiredFields="#{hasRequiredFields}">
+<event>
+    <!beforeCreate
+    getRequestValue(key="configName" value=>$page{configName} default="server-config");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/monitor/monitoringPage.jsf");
+    setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels");
+    setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config],type=monitoring-service");
+    setPageSessionAttribute(key="childType" value="module-monitoring-levels");
+    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+    setPageSessionAttribute(key="monitoringLevels" value={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"});
+    setPageSessionAttribute(key="skipAttrsList", value={"Name"});
+    //set the following for including buttons.inc
+    setPageSessionAttribute(key="edit" value="#{true}" );
+    setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+    setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+    setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+    setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+    />
+</event>
+#include "/shared/restart.inc"
+<sun:form id="propertyForm">
+#include "/shared/alertMsg.inc"
+    
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{web.monitoring.Title}" helpText="$resource{web.monitoring.PageHelp}" >
+#include "/shared/editPageButtons.inc"
+    </sun:title>
+    "<br><br>
+    
+<sun:propertySheet id="propertySheet">
                 <sun:propertySheetSection>
                 <sun:property id="httpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Http}">
-                    <sun:dropDown id="Http" selected="#{configMap['HTTPService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                    <sun:dropDown id="Http" selected="#{pageSession.valueMap['HttpService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
                 </sun:property>
                 <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Web}">
-                    <sun:dropDown id="Web" selected="#{configMap.webContainer}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                    <sun:dropDown id="Web" selected="#{pageSession.valueMap['WebContainer']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
                 </sun:property>
-                <sun:property id="jvm"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Jvm}">
-                    <sun:dropDown id="Http" selected="#{configMap['JVM']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                <sun:property id="jvmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Jvm}">
+                    <sun:dropDown id="Jvm" selected="#{pageSession.valueMap['Jvm']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                 <sun:property id="ccpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.ConnectorCP}">
+                    <sun:dropDown id="CCP" selected="#{pageSession.valueMap['ConnectorConnectionPool']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="connectorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Connector}">
+                    <sun:dropDown id="ConnectorService" selected="#{pageSession.valueMap['ConnectorService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="ejbProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.EjbContainer}">
+                    <sun:dropDown id="EjbContainer" selected="#{pageSession.valueMap['EjbContainer']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="jdbcProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.JdbcCP}">
+                    <sun:dropDown id="JdbcCP" selected="#{pageSession.valueMap['JdbcConnectionPool']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="jmsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Jms}">
+                    <sun:dropDown id="JmsService" selected="#{pageSession.valueMap['JmsService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="orbProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Orb}">
+                    <sun:dropDown id="Orb" selected="#{pageSession.valueMap['Orb']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="threadPoolProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.ThreadPool}">
+                    <sun:dropDown id="ThreadPool" selected="#{pageSession.valueMap['ThreadPool']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
+                </sun:property>
+                <sun:property id="transactionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Transaction}">
+                    <sun:dropDown id="TransactionService" selected="#{pageSession.valueMap['TransactionService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
                 </sun:property>
                 </sun:propertySheetSection >
             </sun:propertySheet>
-            "<br /><br />
-
-            <sun:hidden id="helpKey" value="$resource{help_web.monitoringService}" />
-        </sun:form>
-    </define>
+#include "/shared/propertyDescTable.inc"
+    
+    <sun:hidden id="helpKey" value="$resource{help_web.monitoringService}" />
+</sun:form>
+            "<br/>
+#include "/shared/changeButtonsJS.inc" 
+</define>
 </composition>
+
+
