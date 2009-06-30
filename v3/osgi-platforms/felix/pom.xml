@@ -88,7 +88,7 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.fileinstall</artifactId>
-                               <version>1.0.0</version>
+                               <version>1.2.0</version>
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
