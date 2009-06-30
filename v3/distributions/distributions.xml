@@ -149,6 +149,10 @@ own identifying information: Portions Copyright [yyyy]
         <arg line="set-property title 'GlassFish v3'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="set-property image-tou-url 'https://glassfish-repo.dev.java.net/terms.html'"/>
+    </exec>
+
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-property description 'GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform.'"/>
     </exec>
    
