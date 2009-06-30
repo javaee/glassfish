@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import javax.management.MBeanOperationInfo;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.annotation.Description;
@@ -111,6 +112,14 @@ public interface ConfigTools extends AMXProxy, Singleton
     
     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void test();
+    
+    @ManagedAttribute
+    @Description("return all element types that are Named")
+    public String[] getConfigNamedTypes();
+    
+    @ManagedAttribute
+    @Description("return all element types that are Resource")
+    public String[] getConfigResourceTypes();
 }
 
 
