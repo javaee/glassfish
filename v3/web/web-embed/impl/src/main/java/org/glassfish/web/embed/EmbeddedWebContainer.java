@@ -38,15 +38,9 @@
 package org.glassfish.web.embed.impl;
 
 import java.io.File;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.logging.*;
 import org.glassfish.web.embed.ConfigException;
 import org.glassfish.web.embed.LifecycleException;
@@ -60,8 +54,6 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.Connector;
-import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.net.ServerSocketFactory;
 import com.sun.grizzly.util.IntrospectionUtils;
 
 /**
@@ -96,6 +88,8 @@ public class EmbeddedWebContainer implements
     
     private Embedded embedded = null;
     
+    private String path = "";
+    
 
     // --------------------------------------------------------- Public Methods
     
@@ -125,8 +119,10 @@ public class EmbeddedWebContainer implements
             Engine engine = embedded.createEngine();
             engine.setName(defaultDomain);
             ((StandardEngine)engine).setDomain(defaultDomain);
+            engine.setDefaultHost(defaultHost);
             engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
             embedded.addEngine(engine);
+            
             WebListener webListener = 
                 createWebListener("http-listener-1", WebListener.class);
             webListener.setPort(8080);
@@ -135,12 +131,15 @@ public class EmbeddedWebContainer implements
             addWebListener(webListener);
             WebListener[] webListeners = new WebListener[1];
             webListeners[0] = webListener;
-            // XXX docRoot and hostname
-            File docRoot = new File("");
+            
+            File docRoot = new File(getPath());
             defaultVirtualServer = (VirtualServer)
                 createVirtualServer(defaultHost, docRoot, webListeners);
             defaultVirtualServer.addAlias(hostName);
             addVirtualServer(defaultVirtualServer);
+      
+            Context context = (Context) createContext(docRoot, null);
+            defaultVirtualServer.addChild(context);
                                    
             embedded.start();
             
@@ -177,6 +176,7 @@ public class EmbeddedWebContainer implements
             engine.setDefaultHost(config.getVirtualServerId());
             engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
             embedded.addEngine(engine);
+            
             WebListener webListener = 
                 createWebListener(config.getWebListenerId(), WebListener.class);
             webListener.setPort(config.getPort());
@@ -185,7 +185,7 @@ public class EmbeddedWebContainer implements
             addWebListener(webListener);
             WebListener[] webListeners = new WebListener[1];
             webListeners[0] = webListener;
-            // XXX docRoot and hostname
+            
             File docRoot = new File("");
             defaultVirtualServer = (VirtualServer)createVirtualServer(
                 config.getVirtualServerId(), docRoot, webListeners);
@@ -193,6 +193,9 @@ public class EmbeddedWebContainer implements
                 defaultVirtualServer.addAlias(alias);
             }
             addVirtualServer(defaultVirtualServer);
+            
+            Context context = (Context) createContext(docRoot, null);
+            defaultVirtualServer.addChild(context);
                                    
             embedded.start();
             
@@ -254,6 +257,10 @@ public class EmbeddedWebContainer implements
             context.setParentClassLoader(
                     Thread.currentThread().getContextClassLoader());
         }        
+                
+        ContextConfig config = new ContextConfig();
+        ((Lifecycle) context).addLifecycleListener(config);
+        
         defaultVirtualServer.addChild((Container)context);
         
         return (org.glassfish.web.embed.Context) context;
@@ -298,6 +305,9 @@ public class EmbeddedWebContainer implements
             context.setParentClassLoader(
                     Thread.currentThread().getContextClassLoader());
         }       
+        
+        ContextConfig config = new ContextConfig();
+        ((Lifecycle) context).addLifecycleListener(config);
         
         return (org.glassfish.web.embed.Context) context;
         
@@ -382,7 +392,7 @@ public class EmbeddedWebContainer implements
             }
 
         } catch (Exception e) {
-            log.severe("Couldn't create connector.");
+            log.severe("couldn't create connecotr");
         } 
         
         return webListener;
@@ -580,6 +590,27 @@ public class EmbeddedWebContainer implements
         Engine[] engines = embedded.getEngines();
         engines[0].removeChild((Container)virtualServer);
    
+    }   
+      
+    
+    /**
+     * Sets the value of the context path
+     * 
+     * @param path - the path
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
+
+  
+    /**
+     * Returning the value of the context path
+     *
+     * @return - the context path
+     */
+    public String getPath() {
+        return path;
+    }
+
 
 }
