@@ -1210,6 +1210,7 @@ public class Application extends BundleDescriptor
      */
     public Set<JndiNameEnvironment> getJndiNameEnvironments() {
         Set<JndiNameEnvironment> jndiNameEnvironments = new HashSet<JndiNameEnvironment>();
+        jndiNameEnvironments.add(this);
         jndiNameEnvironments.addAll(getWebBundleDescriptors());
         jndiNameEnvironments.addAll(getApplicationClientDescriptors());
         jndiNameEnvironments.addAll(getEjbDescriptors());
