@@ -13,14 +13,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-
-import org.glassfish.admingui.common.util.AMXRoot;
-import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Fmri;
@@ -29,7 +28,11 @@ import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.SystemInfo;
 import com.sun.pkg.client.SystemInfo.UpdateCheckFrequency;
 import com.sun.pkg.client.Version;
-import java.util.Properties;
+
+import org.glassfish.admingui.common.util.AMX;
+import org.glassfish.admingui.common.util.V3AMX;
+import org.glassfish.admingui.common.util.GuiUtil;
+
 
 
 /**
@@ -515,7 +518,7 @@ public class UpdateCenterHandlers {
     private static Image getUpdateCenterImage(){
         String ucDir = (String) GuiUtil.getSessionValue(UCDIR);
         if (ucDir == null){
-            String installDir = AMXRoot.getInstance().getDomainRoot().getInstallDir(); 
+            String installDir = (String)V3AMX.getAttribute(AMX.DOMAIN_ROOT, "InstallDir");
             //installDir will only give the glassfish installation. need to get its parent for UC info
             ucDir = (new File (installDir)).getParent();
             GuiUtil.setSessionValue(UCDIR, ucDir);
