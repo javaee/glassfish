@@ -5,7 +5,7 @@
 <property file="build.properties"/>
 <property file="${ws.root}/build.properties"/>
  
-<description>Builds, tests, and runs the JRuby Applications</description>
+<description>Builds, tests, and runs the asadmin CLI restart, JDBC connection pool tests.</description>
     <import file="${ws.root}/gfproject/build-impl.xml"/>
     <import file="${ws.root}/gfproject/v3-targets.xml"/>
     <import file="${ws.root}/gfproject/db-targets.xml"/>
