@@ -12,7 +12,7 @@ public class WebTest {
         = new SimpleReporterAdapter("appserv-tests");
 
     private static final String TEST_NAME
-        = "error-page-handling-error";
+        = "error-page-handling-for-error";
 
     private String host;
     private String port;
@@ -27,7 +27,7 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription(
-            "Unit test for error-page-handling-error");
+            "Unit test for error-page-handling-for-error");
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);
