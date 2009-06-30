@@ -125,18 +125,20 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         if (obj != null) {
             if (obj instanceof File) {
                 expected.add((File)obj);
-            } else if (obj instanceof String) {
-                expected.add(new File((String)obj));
             } else if (obj instanceof File[]) {
                 File[] arr = (File[])obj;
                 for (File f : arr) {
                     expected.add(f);
                 }
+/** TODO: these are module names to be used, not neccessarily file names
+            } else if (obj instanceof String) {
+                expected.add(new File((String)obj));
             } else if (obj instanceof String[]) {
                 String[] arr = (String[])obj;
                 for (String s : arr) {
                     expected.add(new File(s));
                 }
+**/
             }
         }
 
