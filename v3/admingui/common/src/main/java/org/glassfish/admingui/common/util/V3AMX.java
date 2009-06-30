@@ -192,7 +192,7 @@ public class V3AMX {
     
     public static Map getAttrsMap(Object objectNameStr){
         
-            ObjectName amxObjectName = null;
+        ObjectName amxObjectName = null;
         try{
             if (objectNameStr instanceof ObjectName){
                 amxObjectName = (ObjectName) objectNameStr;
@@ -206,6 +206,22 @@ public class V3AMX {
         }catch(Exception ex){
             ex.printStackTrace();
             return new HashMap();
+        }
+    }
+
+    public static Object getAttribute(Object objectNameStr, String key){
+        ObjectName amxObjectName = null;
+        try{
+            if (objectNameStr instanceof ObjectName){
+                amxObjectName = (ObjectName) objectNameStr;
+            }else{
+                amxObjectName = new ObjectName((String)objectNameStr);
+            }
+            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(amxObjectName);
+            return amx.attributesMap().get(key);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null;
         }
     }
 
