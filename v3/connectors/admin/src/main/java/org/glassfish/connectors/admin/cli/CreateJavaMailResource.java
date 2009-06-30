@@ -149,11 +149,20 @@ public class CreateJavaMailResource implements AdminCommand {
 
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof MailResource) {
-                if (((MailResource) resource).getJndiName().equals(jndiName)) {
+            if (resource instanceof BindableResource) {
+                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
                     report.setMessage(localStrings.getLocalString(
-                            "create.mail.resource.duplicate",
-                            "A Mail Resource named {0} already exists.",
+                            "create.mail.resource.duplicate.1",
+                            "Resource named {0} already exists.",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            } else if (resource instanceof ResourcePool) {
+                if (((ResourcePool) resource).getName().equals(jndiName)) {
+                    report.setMessage(localStrings.getLocalString(
+                            "create.mail.resource.duplicate.2",
+                            "Resource pool named {0} already exists.",
                             jndiName));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
@@ -211,7 +220,6 @@ public class CreateJavaMailResource implements AdminCommand {
                     " " + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
-            return;
         }
     }
 }
