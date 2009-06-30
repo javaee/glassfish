@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <context-param>
+        <description>This context-param was defined in the web app itself.</description>
+        <param-name>builtin</param-name>
+        <param-value>in-app</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>appmgttest.TestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        </welcome-file-list>
+    <env-entry>
+        <description>This env-entry was defined in the web app app itself.</description>
+        <env-entry-name>builtin</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>in-app</env-entry-value>
+    </env-entry>
+    </web-app>
