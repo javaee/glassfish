@@ -103,6 +103,7 @@ if [ -z "$my_jar" ]; then
     exit 105
 fi
 
+CHECK_FOR_DISPLAY=1
 while [ $# -gt 0 ]
 do
 arg="$1"
@@ -138,19 +139,38 @@ fi
 		echo "Invalid Argument, -r option is not applicable to this release."
 		exit 101
 	;;
+	-h)
+	CHECK_FOR_DISPLAY=0
+	;;
+	-help)
+	CHECK_FOR_DISPLAY=0
+	;;
 	-s)
+	CHECK_FOR_DISPLAY=0
 	ARGS=`echo ${ARGS} -p Display-Mode=SILENT `
 	;;
 	esac
 shift
 done
+
+#We don't have to check for this variable in Silent Mode
+if [ ${CHECK_FOR_DISPLAY} -eq 1 ]
+then
+	if [ -z "${DISPLAY}" ]
+	then
+       	 echo "This program requires DISPLAY environment variable to be set."
+       	 echo "Please re-run after assigning an appropriate value to DISPLAY".
+       	 exit 106
+	fi
+fi
+
 tmp=`mktemp -d -t install.XXXXXX`
 if [ $? -ne 0 ]; then
     echo "Unable to create temporary directory, exiting..."
     exit 1
 fi
 echo "Extracting archive, please wait..."
-tail +166l $0 > $tmp/tmp.jar
+tail +186l $0 > $tmp/tmp.jar
 cd $tmp
 $my_jar xvf tmp.jar 
 $my_jar xvf ./Product/Packages/Engine.zip 

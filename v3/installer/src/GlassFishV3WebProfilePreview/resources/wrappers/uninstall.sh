@@ -59,8 +59,15 @@ while [ $# -gt 0 ]
 do
 arg="$1"
 	case $arg in -s)
+	CHECK_FOR_DISPLAY=0
 	ARGS=`echo ${ARGS} -p Display-Mode=SILENT  `
 	;;
+  	-h)
+        CHECK_FOR_DISPLAY=0
+        ;;
+        -help)
+        CHECK_FOR_DISPLAY=0
+        ;;
  	-j)
         shift
         if [ -z "$1" ]
@@ -152,9 +159,11 @@ COULD_NOT_FIND_COMPATIBLE_INSTALLED_JDK=104
 COULD_NOT_FIND_COMPATIBLE_USERPROVIDED_JDK=105
 JDKPATHARGUMENTVALUE_MISSING=106
 LOGPATHARGUMENTVALUE_MISSING=107
+DISPLAY_NOT_SET=108
 
 
 #Parse and validate the args
+CHECK_FOR_DISPLAY=1
 parseArgs $*
 
 #Validate the JAVA_HOME
@@ -174,6 +183,16 @@ fi
 #validate the required files and directories and the environment
 checkUninstallEnv
 
+#We don't have to check for this variable in Silent Mode
+if [ ${CHECK_FOR_DISPLAY} -eq 1 ]
+then
+        if [ -z "${DISPLAY}" ]
+        then
+         echo "This program requires DISPLAY environment variable to be set."
+         echo "Please re-run after assigning an appropriate value to DISPLAY".
+	 exit ${DISPLAY_NOT_SET}
+        fi
+fi
 #Invoke uninstaller with required arguments
 fireUninstaller $*
 
