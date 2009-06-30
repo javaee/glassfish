@@ -61,9 +61,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
-import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.V3AMX;
 
 
 import com.sun.appserv.management.base.SystemStatus;
@@ -78,29 +76,29 @@ public class JdbcTempHandler {
     }
     
             
-        /**
-         *	<p> This handler pings the  Jdbc Connection Pool
-         */
-        @Handler(id="pingJdbcConnectionPool",
-            input={
-                @HandlerInput(name="jndiName", type=String.class, required=true)})
-        public static void pingJdbcConnectionPool(HandlerContext handlerCtx) {
-            
-            String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            try {
-    
-                SystemStatus ss = AMXRoot.getInstance().getDomainRoot().getSystemStatus();
-                Map<String, Object> statusMap = ss.pingJDBCConnectionPool(jndiName);
-                if ((Boolean) statusMap.get(SystemStatus.PING_SUCCEEDED_KEY)){
-                    GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
-                }else{
-                    GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(SystemStatus.REASON_FAILED_KEY).toString() );
-                }
-                    
-            }catch(Exception ex){
-		GuiUtil.handleException(handlerCtx, ex);
-            }
-        }
+//        /**
+//         *	<p> This handler pings the  Jdbc Connection Pool
+//         */
+//        @Handler(id="pingJdbcConnectionPool",
+//            input={
+//                @HandlerInput(name="jndiName", type=String.class, required=true)})
+//        public static void pingJdbcConnectionPool(HandlerContext handlerCtx) {
+//
+//            String jndiName = (String) handlerCtx.getInputValue("jndiName");
+//            try {
+//
+//                SystemStatus ss = AMXRoot.getInstance().getDomainRoot().getSystemStatus();
+//                Map<String, Object> statusMap = ss.pingJDBCConnectionPool(jndiName);
+//                if ((Boolean) statusMap.get(SystemStatus.PING_SUCCEEDED_KEY)){
+//                    GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
+//                }else{
+//                    GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(SystemStatus.REASON_FAILED_KEY).toString() );
+//                }
+//
+//            }catch(Exception ex){
+//		GuiUtil.handleException(handlerCtx, ex);
+//            }
+//        }
      
         
         /**
