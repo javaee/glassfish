@@ -39,6 +39,12 @@
 <property name="deploy.serverinstance.orbport" value="2200"/>
 
 <!--
+    Change the value to control
+    whether deployment tests upload the file or not.
+-->
+<property name="use.upload" value="false"/>
+
+<!--
   The following property supports the special Windows process-start-up implementation.
   On Windows, ant hangs when it runs an asadmin command that starts a process.  This
   workaround, using the Q/A ant Spawn task, avoids that problem.  Also, see the
@@ -138,10 +144,10 @@
         </and>
     </condition>
 
-    <property name="deploy" value="deploy"/>
+    <property name="deploy" value="deploy --upload=${use.upload}"/>
     <property name="undeploy" value="undeploy"/>
     <property name="deploydir" value="deploydir"/>
-    <property name="redeploy" value="redeploy"/>
+    <property name="redeploy" value="redeploy --upload=${use.upload}"/>
 </target>
 
 <target name="setAsadminArgsWithoutPassword">
@@ -533,7 +539,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
     <property name="url" value="http://${http.host}:${depltest.port}/${sub-url}"/>
     <antcall target="runclient">
-        <param name="arg.list" value="${url} ${state}"/>
+        <param name="arg.list" value="${url} ${state} ${extra.args}"/>
         <param name="log.id" value="${log-file}"/>
     </antcall>
     <antcall target="checkAppOnCluster">

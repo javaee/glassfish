@@ -1,110 +1,129 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 103
+PASS: 119
 FAIL: 0
 UNKNOWN: 0
 
-[PASSED] servletonly : war/servletonly Test asadmin deploy (server)
-[PASSED] servletonly : war/servletonly Test asadmin redeploy (server)
-[PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)
-[PASSED] servletonly : war/servletonly Test asadmin disable (server)
-[PASSED] servletonly : war/servletonly Test asadmin enable (server)
-[PASSED] servletonly : war/servletonly Test jsr88 deploy (server)
-[PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)
-[PASSED] servletonly : war/servletonly Test jsr88 started state (server)
-[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (server)
-[PASSED] servletonly : war/servletonly Test jsr88 redeploy start (server)
-[PASSED] jsponly : war/jsponly Test asadmin deploy (server)
-[PASSED] jsponly : war/jsponly Test asadmin redeploy (server)
-[PASSED] jsponly : war/jsponly Test jsr88 deploy (server)
-[PASSED] jsponly : war/jsponly Test jsr88 stopped state (server)
-[PASSED] jsponly : war/jsponly Test jsr88 started state (server)
-[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (server)
-[PASSED] jsponly : war/jsponly Test jsr88 redeploy start (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin disable (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin enable (server)
-[PASSED] htmlonly : war/htmlonly Test jsr88 deploy (server)
-[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (server)
-[PASSED] htmlonly : war/htmlonly Test jsr88 started state (server)
-[PASSED] htmlonly : war/htmlonly Test jsr88 redeploy (server)
-[PASSED] webinflib : war/webinflib Test asadmin deploy (server)
-[PASSED] webinflib : war/webinflib Test asadmin redeploy (server)
-[PASSED] webinflib : war/webinflib Test jsr88 deploy (server)
-[PASSED] webinflib : war/webinflib Test jsr88 stopped state (server)
-[PASSED] webinflib : war/webinflib Test jsr88 started state (server)
-[PASSED] webinflib : war/webinflib Test jsr88 redeploy (server)
-[PASSED] deploydir : war/deploydir Test asadmin deploydir
-[PASSED] deploydir : war/deploydir Test asadmin redeploydir
-[PASSED] deploydir : war/deploydir Test asadmin v3 redeploydir
-[PASSED] deploydir : war/deploydir Test asadmin v3 redeploy
-[PASSED] deploydir : war/deploydir Test asadmin deploydir with a different context root
-[PASSED] deploydir : war/deploydir Test asadmin redeploydir preserves context root
-[PASSED] deploydir : war/deploydir Test v3 asadmin redeploydir preserves context root
-[PASSED] deploydir : war/deploydir Test asadmin undeploydir
-[PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy (server)  
+[PASSED] servletonly : war/servletonly Test asadmin redeploy (server)  
+[PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)  
+[PASSED] servletonly : war/servletonly Test asadmin disable (server)  
+[PASSED] servletonly : war/servletonly Test asadmin enable (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 deploy (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 started state (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy start (server)  
+[PASSED] jsponly : war/jsponly Test asadmin deploy (server)  
+[PASSED] jsponly : war/jsponly Test asadmin redeploy (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 deploy (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 stopped state (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 started state (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy start (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin disable (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin enable (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 deploy (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 started state (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 redeploy (server)  
+[PASSED] webinflib : war/webinflib Test asadmin deploy (server)  
+[PASSED] webinflib : war/webinflib Test asadmin redeploy (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 deploy (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 stopped state (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 started state (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 redeploy (server)  
+[PASSED] deploydir : war/deploydir Test asadmin deploydir  
+[PASSED] deploydir : war/deploydir Test asadmin redeploydir  
+[PASSED] deploydir : war/deploydir Test asadmin v3 redeploydir  
+[PASSED] deploydir : war/deploydir Test asadmin v3 redeploy  
+[PASSED] deploydir : war/deploydir Test asadmin deploydir with a different context root  
+[PASSED] deploydir : war/deploydir Test asadmin redeploydir preserves context root  
+[PASSED] deploydir : war/deploydir Test v3 asadmin redeploydir preserves context root  
+[PASSED] deploydir : war/deploydir Test asadmin undeploydir  
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)  
 [PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy  
-[PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)  
 [PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy  
-[PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy   
-[PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy   
-[PASSED] statelesshello : ejb/statelessejb Test asadmin deploy (server)
-[PASSED] statelesshello : ejb/statelessejb Test asadmin redeploy (server)
-[PASSED] statelesshello : ejb/statelessejb Test jsr88 deploy (server)
-[PASSED] statelesshello : ejb/statelessejb Test jsr88 stopped state (server)
-[PASSED] statelesshello : ejb/statelessejb Test jsr88 started state (server)
-[PASSED] statelesshello : ejb/statelessejb Test jsr88 redeploy stop (server)
-[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
+[PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)  
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy  
+[PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)  
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy  
+[PASSED] appmgt : war/appmgt Check app's original config [1.1] (server)  
+[PASSED] appmgt : war/appmgt Make sure a non-existent customization is absent [1.2] (server)  
+[PASSED] appmgt : war/appmgt Make sure a customization used during the test is absent when it should be [1.3] (server)  
+[PASSED] appmgt : war/appmgt Check app's original config plus additive customization [2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for added env and param customization [3.1.1] (server)  
+[PASSED] appmgt : war/appmgt Check for env-entry in the web app's descr being (correctly) ignored [3.2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for context-param in the web app's descr being (correctly) ignored [3.2.2] (server)  
+[PASSED] appmgt : war/appmgt Check for added env and param customization [4.1.1] (server)  
+[PASSED] appmgt : war/appmgt Check for env-entry in the web app's descr being (correctly) ignored [4.2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for context-param in the web app's descr being (correctly) ignored [4.2.2] (server)  
+[PASSED] appmgt : war/appmgt Check for added env and param customization [5.1.1] (server)  
+[PASSED] appmgt : war/appmgt Check for env-entry in the web app's descr being (correctly) ignored [5.2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for context-param in the web app's descr being (correctly) ignored [5.2.2] (server)  
+[PASSED] appmgt : war/appmgt Check app's original config [6.1] (server)  
+[PASSED] appmgt : war/appmgt Make sure a non-existent customization is absent [6.2] (server)  
+[PASSED] appmgt : war/appmgt Make sure a customization used during the test is absent when it should be [6.3] (server)  
+[PASSED] appmgt : war/appmgt Check app's original config [7.1] (server)  
+[PASSED] appmgt : war/appmgt Make sure a non-existent customization is absent [7.2] (server)  
+[PASSED] appmgt : war/appmgt Make sure a customization used during the test is absent when it should be [7.3] (server)  
+[PASSED] statelesshello : ejb/statelessejb Test asadmin deploy (server)  
+[PASSED] statelesshello : ejb/statelessejb Test asadmin redeploy (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 deploy (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 stopped state (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 started state (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 redeploy stop (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)  
 [PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)  
-[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)  
 [PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)  
-[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
-[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)   
-[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)
-[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)  
+[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)  
+[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)  
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)  
 [PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)  
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)  
-[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)
-[PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)
-[PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)
-[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy (server)
-[PASSED] earwithall2 : ear/earwithall2 Test jsr88 stopped state (server)
-[PASSED] earwithall2 : ear/earwithall2 Test jsr88 started state (server)
-[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy stop (server)
-[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy start (server)
-[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (server)
-[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)
-[PASSED] libClassPath : libClasspath Test asadmin deploy (server)
-[PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
-[PASSED] simple : jsr88/war/simple deploy test
-[PASSED] simple : jsr88/war/simple redeploy test
-[PASSED] session : ejb30/session Test asadmin deploy
-[PASSED] session : ejb30/session Test asadmin redeploy
-[PASSED] session2 : ejb30/session2 Test asadmin deploy
-[PASSED] session2 : ejb30/session2 Test asadmin redeploy
-[PASSED] jsp : ejb30/war/jsp Test asadmin deploy
-[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
-[PASSED] servlet : ejb30/war/servlet Test asadmin deploy
-[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy
-[PASSED] ear : directorydeploy/ear Test asadmin deploydir
-[PASSED] ear : directorydeploy/ear Test asadmin redeploydir
-[PASSED] ear : directorydeploy/ear Test asadmin undeploydir
-[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin deploydir
-[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin redeploydir 
-[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin undeploydir
-[PASSED] ejb : directorydeploy/ejb Test asadmin deploydir
-[PASSED] ejb : directorydeploy/ejb Test asadmin redeploydir
-[PASSED] ejb : directorydeploy/ejb Test asadmin undeploydir
-[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin deploydir
-[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin redeploydir 
-[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin undeploydir 
-[PASSED] war : directorydeploy/war Test asadmin deploydir
-[PASSED] war : directorydeploy/war Test asadmin redeploydir
-[PASSED] war : directorydeploy/war Test asadmin undeploydir
-[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin deploydir
-[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin redeploydir 
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 stopped state (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 started state (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy stop (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy start (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)  
+[PASSED] libClassPath : libClasspath Test asadmin deploy (server)  
+[PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)  
+[PASSED] simple : jsr88/war/simple deploy test  
+[PASSED] simple : jsr88/war/simple redeploy test  
+[PASSED] session : ejb30/session Test asadmin deploy  
+[PASSED] session : ejb30/session Test asadmin redeploy  
+[PASSED] session2 : ejb30/session2 Test asadmin deploy  
+[PASSED] session2 : ejb30/session2 Test asadmin redeploy  
+[PASSED] jsp : ejb30/war/jsp Test asadmin deploy  
+[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy  
+[PASSED] servlet : ejb30/war/servlet Test asadmin deploy  
+[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy  
+[PASSED] ear : directorydeploy/ear Test asadmin deploydir  
+[PASSED] ear : directorydeploy/ear Test asadmin redeploydir  
+[PASSED] ear : directorydeploy/ear Test asadmin undeploydir  
+[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin deploydir  
+[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin redeploydir  
+[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin undeploydir  
+[PASSED] ejb : directorydeploy/ejb Test asadmin deploydir  
+[PASSED] ejb : directorydeploy/ejb Test asadmin redeploydir  
+[PASSED] ejb : directorydeploy/ejb Test asadmin undeploydir  
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin deploydir  
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin redeploydir  
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin undeploydir  
+[PASSED] war : directorydeploy/war Test asadmin deploydir  
+[PASSED] war : directorydeploy/war Test asadmin redeploydir  
+[PASSED] war : directorydeploy/war Test asadmin undeploydir  
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin deploydir  
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin redeploydir  
 [PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin undeploydir
