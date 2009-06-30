@@ -105,7 +105,7 @@ public class GuiUtil {
         if (level == null) {
             level = "INFO";
         } else {
-            level = level.toUpper();
+            level = level.toUpperCase();
         }
         getLogger().log(Level.parse(level), (String)handlerCtx.getInputValue("message"));
     }
