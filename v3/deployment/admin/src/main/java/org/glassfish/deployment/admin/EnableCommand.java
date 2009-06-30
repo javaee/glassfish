@@ -23,6 +23,7 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.Application;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -54,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.beans.PropertyVetoException;
+import org.glassfish.deployment.common.ApplicationConfigInfo;
 
 /**
  * Enable command
@@ -107,6 +109,7 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         DeployCommandParameters commandParams=null;
         Properties contextProps = new Properties();
         Map<String, Properties> modulePropsMap = null;
+        ApplicationConfigInfo savedAppConfig = null;
         try {
             Application app = null; 
             for (Named module : applications.getModules()) {
@@ -128,6 +131,7 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
                 commandParams.target = target;
                 contextProps = app.getDeployProperties();
                 modulePropsMap = app.getModulePropertiesMap();
+                savedAppConfig = new ApplicationConfigInfo(app);
             }
             if (commandParams==null) {
                 report.setMessage(localStrings.getLocalString("bug",
@@ -158,7 +162,10 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         try {
             final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, commandParams, report);
 
-            deploymentContext.getAppProps().putAll(contextProps);
+            Properties appProps = deploymentContext.getAppProps();
+            appProps.putAll(contextProps);
+            savedAppConfig.store(appProps);
+
             if (modulePropsMap != null) {
                 deploymentContext.setModulePropsMap(modulePropsMap);
             }

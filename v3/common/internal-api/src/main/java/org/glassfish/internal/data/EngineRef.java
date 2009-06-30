@@ -36,6 +36,7 @@
  */
 package org.glassfish.internal.data;
 
+import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -69,6 +70,8 @@ public class EngineRef {
 
     private ApplicationContainer appCtr;
 
+    private ApplicationConfig appConfig = null;
+
     public EngineRef(EngineInfo container,  ApplicationContainer appCtr) {
         this.ctrInfo = container;
         this.appCtr = appCtr;
@@ -97,6 +100,14 @@ public class EngineRef {
      */
     public ApplicationContainer getApplicationContainer() {
         return appCtr;
+    }
+
+    public void setApplicationConfig(final ApplicationConfig config) {
+        appConfig = config;
+    }
+
+    public ApplicationConfig getApplicationConfig() {
+        return appConfig;
     }
 
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker) {
@@ -171,6 +182,9 @@ public class EngineRef {
      */
     public void save(Engine engine) throws TransactionFailure, PropertyVetoException {
         engine.setSniffer(getContainerInfo().getSniffer().getModuleType());
+        if (appConfig != null) {
+            engine.setApplicationConfig(appConfig);
+        }
     }
 
 }

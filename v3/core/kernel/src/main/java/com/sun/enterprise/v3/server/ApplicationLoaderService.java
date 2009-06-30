@@ -66,6 +66,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.deployment.common.ApplicationConfigInfo;
+import org.glassfish.deployment.common.DeploymentProperties;
 
 /**
  * This service is responsible for loading all deployed applications...
@@ -279,6 +281,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     depContext.getAppProps().putAll(app.getDeployProperties());
                     depContext.setModulePropsMap(app.getModulePropertiesMap());
 
+                    new ApplicationConfigInfo(app).store(depContext.getAppProps());
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
                     if (!Boolean.valueOf(depContext.getAppProps().getProperty

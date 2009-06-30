@@ -52,6 +52,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.plugin.common.EnvEntry;
 import org.glassfish.web.plugin.common.ContextParam;
@@ -65,12 +66,15 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     private final Module moduleConfig;
     Properties props = null;
     private Set<WebModule> webModules = new HashSet<WebModule>();
+    private final org.glassfish.web.plugin.common.WebModuleConfig appConfigCustomizations;
 
-    public WebApplication(WebContainer container, WebModuleConfig config, Module moduleConfig, Properties props) {
+    public WebApplication(WebContainer container, WebModuleConfig config, 
+            Module moduleConfig, Properties props, final ApplicationConfigInfo appConfigInfo) {
         this.container = container;
         this.wmInfo = config;
         this.props = props;
         this.moduleConfig = moduleConfig;
+        this.appConfigCustomizations = extractCustomizations(appConfigInfo);
     }
 
     public boolean start(ApplicationContext appContext) throws Exception {
@@ -87,6 +91,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         // TODO : dochez : add action report here...
         List<Result<WebModule>> results = container.loadWebModule(
+
             wmInfo, "null", props);
 
         props = null;
@@ -190,6 +195,20 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     }
 
     /**
+     * Extracts the application config information for the web container
+     * from the saved config info.  The saved config info is from the
+     * in-memory configuration (domain.xml) if this app was already deployed
+     * and is being redeployed.
+     *
+     * @param appConfigInfo
+     * @return
+     */
+    private org.glassfish.web.plugin.common.WebModuleConfig extractCustomizations(
+            final ApplicationConfigInfo appConfigInfo) {
+        return appConfigInfo.get(wmInfo.getName(), "web");
+    }
+
+    /**
      * Applies application config customization (stored temporarily in the
      * start-up context's start-up parameters) to the web app's descriptor.
      * @param appContext
@@ -198,35 +217,28 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         WebBundleDescriptor descriptor = wmInfo.getDescriptor();
 
-        if (moduleConfig!=null) {
-            try {
-                Engine engine = moduleConfig.getEngine("org.glassfish.web.sniffer.WebSniffer");
-                if (engine!=null) {
-                    org.glassfish.web.plugin.common.WebModuleConfig c =
-                            (org.glassfish.web.plugin.common.WebModuleConfig) engine.getConfig();
-                    if (c != null) {
+        try {
+            if (appConfigCustomizations != null) {
 
-                        EnvEntryCustomizer envEntryCustomizer =
-                                new EnvEntryCustomizer(
-                                    descriptor.getEnvironmentEntrySet(),
-                                    c.getEnvEntry());
-                        ContextParamCustomizer contextParamCustomizer =
-                                new ContextParamCustomizer(
-                                    descriptor.getContextParametersSet(),
-                                    c.getContextParam());
+                EnvEntryCustomizer envEntryCustomizer =
+                        new EnvEntryCustomizer(
+                            descriptor.getEnvironmentEntrySet(),
+                            appConfigCustomizations.getEnvEntry());
+                ContextParamCustomizer contextParamCustomizer =
+                        new ContextParamCustomizer(
+                            descriptor.getContextParametersSet(),
+                            appConfigCustomizations.getContextParam());
 
-                        envEntryCustomizer.applyCustomizations();
-                        contextParamCustomizer.applyCustomizations();
-                    }
-                }
-            } catch (ClassCastException ex) {
-                /*
-                 * If the user specified an env-entry value that does not
-                 * work with the env-entry type it can cause a class cast
-                 * exception.  Log the warning but continue working.
-                 */
-                logger.log(Level.WARNING, "", ex);
+                envEntryCustomizer.applyCustomizations();
+                contextParamCustomizer.applyCustomizations();
             }
+        } catch (ClassCastException ex) {
+            /*
+             * If the user specified an env-entry value that does not
+             * work with the env-entry type it can cause a class cast
+             * exception.  Log the warning but continue working.
+             */
+            logger.log(Level.WARNING, "", ex);
         }
     }
 
@@ -490,6 +502,11 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                         customization.getEnvEntryValue(), 
                         customization.getDescription(), 
                         customization.getEnvEntryType());
+            /*
+             * Invoke setValue which records that the value has been set.
+             * Otherwise naming does not bind the name.
+             */
+            newItem.setValue(customization.getEnvEntryValue());
             return newItem;
         }
 

@@ -33,6 +33,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.config.Property;
@@ -271,6 +272,20 @@ public class ApplicationLifecycle implements Deployment {
                         }
                     }
 
+//                    /*
+//                     * Restore any saved application config (config customization).
+//                     */
+//                    ApplicationConfigInfo savedConfig = new ApplicationConfigInfo(context.getAppProps());
+//                    for (ModuleInfo m : appInfo.getModuleInfos()) {
+//                        for (EngineRef engineRef : m.getEngineRefs()) {
+//                            final ApplicationConfig appConfig = savedConfig.get(
+//                                    m.getName(),
+//                                    engineRef.getContainerInfo().getSniffer().getModuleType());
+//                            if (appConfig != null) {
+//                                engineRef.setApplicationConfig(appConfig);
+//                            }
+//                        }
+//                    }
                     appRegistry.add(appName, appInfo);
 
                 if (events!=null) {
@@ -604,8 +619,32 @@ public class ApplicationLifecycle implements Deployment {
         }
         // I need to create the application info here from the context, or something like this.
         // and return the application info from this method for automatic registration in the caller.
-        return new ModuleInfo(events, moduleName, addedEngines, 
+        ModuleInfo mi = new ModuleInfo(events, moduleName, addedEngines,
             context.getModuleProps());
+
+        /*
+         * Save the application config that is potentially attached to each
+         * engine in the corresponding EngineRefs that have already created.
+         * 
+         * Later, in registerAppInDomainXML, the appInfo is saved, which in
+         * turn saves the moduleInfo children and their engineRef children.
+         * Saving the engineRef assigns the application config to the Engine
+         * which corresponds directly to the <engine> element in the XML.
+         * A long way to get this done.
+         */
+
+//        Application existingApp = applications.getModule(Application.class, moduleName);
+//        if (existingApp != null) {
+            ApplicationConfigInfo savedAppConfig = new ApplicationConfigInfo(context.getAppProps());
+            for (EngineRef er : mi.getEngineRefs()) {
+               ApplicationConfig c = savedAppConfig.get(mi.getName(),
+                       er.getContainerInfo().getSniffer().getModuleType());
+               if (c != null) {
+                   er.setApplicationConfig(c);
+               }
+            }
+//        }
+        return mi;
     }
 
     protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, DeploymentContext context) {
@@ -810,14 +849,6 @@ public class ApplicationLifecycle implements Deployment {
                     appRef.setVirtualServers(sb.toString());
                 }
                 appRef.setEnabled(deployParams.enabled.toString());
-
-                List<ApplicationConfig> savedAppConfigs =
-                        (List<ApplicationConfig>) appProps.get(DeploymentProperties.APP_CONFIG);
-                if (savedAppConfigs != null) {
-                    for (ApplicationConfig ac : savedAppConfigs) {
-                        app.getApplicationConfigs().add(ac);
-                    }
-                }
 
                 servr.getApplicationRef().add(appRef);
 

@@ -55,6 +55,10 @@ import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  *
@@ -104,11 +108,31 @@ public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
     void setDescription(String value) throws PropertyVetoException;
 
 
-    @Element
-    ApplicationConfig getConfig();
+    // TODO: Make this not a list once the hk2/config bug with a single (not list) ("*") is working.
+    @Element("*")
+    List<ApplicationConfig> getApplicationConfigs();
 
-    void setConfig(ApplicationConfig config) throws PropertyVetoException;
-    
+//    void setConfig(ApplicationConfig config) throws PropertyVetoException;
+
+    // TODO: remove this once hk2/config supports non-list @Element("*").
+    @DuckTyped
+    ApplicationConfig getApplicationConfig();
+
+    // TODO: remove this once hk2/config supports non-list @Element("*").
+    @DuckTyped
+    void setApplicationConfig(ApplicationConfig config);
+
+    /**
+     * Creates a new instance of the specified type of app config.
+     * @param <T> stands for the specific type required
+     * @param configType the Class for the type required
+     * @return new instance of the specified type of ApplicationConfig
+     * @throws TransactionFailure
+     */
+    @DuckTyped
+    <T extends ApplicationConfig> T newApplicationConfig(Class<T> configType)
+            throws TransactionFailure;
+
     /**
     	Properties as per {@link PropertyBag}
      */
@@ -116,4 +140,29 @@ public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
     @PropertiesDesc(props={})
     @Element
     List<Property> getProperty();
+
+    // TODO: remove this once hk2/config supports non-list @Element("*").
+    class Duck {
+        public static ApplicationConfig getApplicationConfig(Engine instance) {
+            return (instance.getApplicationConfigs().size() == 0) ? null :
+                    instance.getApplicationConfigs().get(0);
+        }
+
+        public static void setApplicationConfig(Engine instance, ApplicationConfig config) {
+            instance.getApplicationConfigs().clear();
+            instance.getApplicationConfigs().add(config);
+        }
+
+        public static <T extends ApplicationConfig> T newApplicationConfig(
+                final Engine instance, final Class<T> configType) throws TransactionFailure {
+            return (T) ConfigSupport.apply(new SingleConfigCode<Engine>() {
+
+                public Object run(Engine e) throws PropertyVetoException, TransactionFailure {
+                    T newChild = e.createChild(configType);
+                    e.getApplicationConfigs().add(newChild);
+                    return newChild;
+                }
+            }, instance);
+        }
+    }
 }

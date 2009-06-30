@@ -30,6 +30,7 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -179,7 +180,8 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         }
         WebApplication webApp = new WebApplication(container, wmInfo, moduleConfig,
             (Boolean.parseBoolean(dc.getAppProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
-                dc.getAppProps():null));
+                dc.getAppProps():null), 
+                new ApplicationConfigInfo(dc.getAppProps()));
         return webApp;
     }
 

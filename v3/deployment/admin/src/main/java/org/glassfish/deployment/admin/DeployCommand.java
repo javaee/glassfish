@@ -47,6 +47,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -189,6 +190,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             ActionReport.MessagePart part = report.getTopMessagePart();
             part.addProperty("name", name);
 
+            ApplicationConfigInfo savedAppConfig = 
+                    new ApplicationConfigInfo(apps.getModule(Application.class, name));
             Properties undeployProps = handleRedeploy(name, report);
 
             // clean up any left over repository files
@@ -244,6 +247,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 appProps.setProperty(ServerTags.CONTEXT_ROOT, contextroot);
             }
             appProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
+
+            savedAppConfig.store(appProps);
 
             ApplicationInfo appInfo;
             if (type==null) {
