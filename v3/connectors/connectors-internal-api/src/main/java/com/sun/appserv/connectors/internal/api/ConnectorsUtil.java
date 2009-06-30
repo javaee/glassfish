@@ -44,11 +44,13 @@ import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 
+import javax.resource.ResourceException;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.reflect.Constructor;
+import java.sql.Connection;
 
 /**
  * Util class for connector related classes
@@ -395,7 +397,7 @@ public class ConnectorsUtil {
                     new AdminObjectResource[adminObjectResources.size()];
         return adminObjectResources.toArray(allAdminObjectResources);
     }
-    
+
      public static boolean isEnabled(AdminObjectResource aot, Server server) {
         if(aot == null || !Boolean.parseBoolean(aot.getEnabled()))
             return false;
@@ -539,7 +541,7 @@ public class ConnectorsUtil {
 
         return mergedProps;
     }
-    
+
     public static boolean isJMSRA(String moduleName) {
         if(ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName)){
             return true;
@@ -678,5 +680,41 @@ public class ConnectorsUtil {
         resourcesMap.put("java.util.Properties", ConnectorConstants.PROPERTIES_FACTORY );
 
         return resourcesMap;
+    }
+
+    public static String getTransactionIsolationInt(int tranIsolation) {
+
+        if(tranIsolation == Connection.TRANSACTION_READ_UNCOMMITTED){
+            return "read-uncommited";
+        } else if(tranIsolation == Connection.TRANSACTION_READ_COMMITTED){
+            return "read-committed";
+        } else if(tranIsolation == Connection.TRANSACTION_REPEATABLE_READ){
+            return "repeatable-read";
+        } else if(tranIsolation == Connection.TRANSACTION_SERIALIZABLE){
+            return "serializable";
+        } else {
+            throw new RuntimeException("Invalid transaction isolation; the transaction "
+                    + "isolation level can be empty or any of the following: "
+                    + "read-uncommitted, read-committed, repeatable-read, serializable");
+        }
+    }
+
+    public static String deriveDataSourceDefinitionName(String name) {
+        if (name != null) {
+            //replace all 'delimiter' to double delimiter
+            name = name.replace("-", "--");
+            //replace '/' to 'delimiter'
+            name = name.replace("/", "-");
+            if (name.contains("java:") || name.contains(":")) {
+                name = name.replace(":", "-");
+            } else {
+                name = "java-" + name;
+            }
+        }
+        return name;
+    }
+
+    public static Map<String,String> convertPropertiesToMap(Properties properties){
+        return new TreeMap<String, String>((Map) properties);
     }
 }

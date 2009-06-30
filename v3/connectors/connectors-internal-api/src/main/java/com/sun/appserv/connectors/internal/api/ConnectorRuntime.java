@@ -330,7 +330,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      *  @return Resource adapter javabean properties with default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-    public Properties getResourceAdapterConfigProps(String rarName)
+    public Map<String,String> getResourceAdapterConfigProps(String rarName)
                 throws ConnectorRuntimeException ;
 
     /**
@@ -350,7 +350,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      *          default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-    public Properties getMCFConfigProps(
+    public Map<String,String> getMCFConfigProps(
      String rarName,String connectionDefName) throws ConnectorRuntimeException ;
 
     /**
@@ -370,7 +370,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      *          default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-    public Properties getAdminObjectConfigProps(
+    public Map<String,String> getAdminObjectConfigProps(
       String rarName,String adminObjectIntf) throws ConnectorRuntimeException ;
 
     /**
@@ -389,7 +389,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      *          default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-    public Properties getConnectorConfigJavaBeans(String rarName,
+    public Map<String,String> getConnectorConfigJavaBeans(String rarName,
         String connectionDefName,String type) throws ConnectorRuntimeException ;
 
     /**
@@ -445,7 +445,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      *           If messagelistener type is not found in ra.xml or could not be
      *           found in annotations if any
      */
-    public Properties getMessageListenerConfigProps(String rarName,
+    public Map<String,String> getMessageListenerConfigProps(String rarName,
          String messageListenerType)throws ConnectorRuntimeException ;
 
     /** Returns the Properties object consisting of propertyname as the
@@ -461,7 +461,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      *           If messagelistener type is not found in ra.xmlor could not be found
      *           in annotations if any
      */
-    public Properties getMessageListenerConfigPropTypes(String rarName,
+    public Map<String,String> getMessageListenerConfigPropTypes(String rarName,
                String messageListenerType) throws ConnectorRuntimeException ;
 
     /**

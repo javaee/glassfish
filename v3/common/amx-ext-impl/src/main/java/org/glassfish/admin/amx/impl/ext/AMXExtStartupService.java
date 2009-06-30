@@ -36,14 +36,14 @@ import javax.management.StandardMBean;
 import org.glassfish.admin.amx.base.LoggingProperties;
 import org.glassfish.admin.amx.base.Realms;
 import org.glassfish.admin.amx.base.Runtime;
-import org.glassfish.admin.amx.base.ConnectorRuntime;
+import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.base.SystemStatus;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.impl.config.AMXExtStartupServiceMBean;
 import org.glassfish.admin.amx.impl.ext.LoggingPropertiesImpl;
 import org.glassfish.admin.amx.impl.ext.RealmsImpl;
 import org.glassfish.admin.amx.impl.ext.RuntimeImpl;
-import org.glassfish.admin.amx.impl.ext.ConnectorRuntimeImpl;
+import org.glassfish.admin.amx.impl.ext.ConnectorRuntimeAPIProviderImpl;
 import org.glassfish.admin.amx.impl.ext.SystemStatusImpl;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
@@ -130,8 +130,8 @@ public final class AMXExtStartupService
             mbean = new RuntimeImpl(parent);
             registerChild(mbean, child);
 
-            child = names.buildChildObjectName(ConnectorRuntime.class);
-            mbean = new ConnectorRuntimeImpl(parent);
+            child = names.buildChildObjectName(ConnectorRuntimeAPIProvider.class);
+            mbean = new ConnectorRuntimeAPIProviderImpl(parent, InjectedValues.getInstance().getHabitat());
             registerChild(mbean, child);
             
             //final GmbalMOM mom = new GmbalMOM( s, getDomainRootProxy().objectName() );

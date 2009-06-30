@@ -480,46 +480,50 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
-    public Properties getResourceAdapterConfigProps(String rarName)
+    public Map<String,String> getResourceAdapterConfigProps(String rarName)
                 throws ConnectorRuntimeException {
-        return
+        Properties properties =
 	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
             ? configParserAdmService.getResourceAdapterConfigProps(rarName)
 	    : new Properties();
+        return ConnectorsUtil.convertPropertiesToMap(properties);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Properties getMCFConfigProps(
+    public Map<String,String> getMCFConfigProps(
      String rarName,String connectionDefName) throws ConnectorRuntimeException {
-        return
+        Properties properties =
 	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
 	        ? configParserAdmService.getMCFConfigProps(
 		    rarName,connectionDefName)
 	        : new Properties();
+        return ConnectorsUtil.convertPropertiesToMap(properties);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Properties getAdminObjectConfigProps(
+    public Map<String,String> getAdminObjectConfigProps(
       String rarName,String adminObjectIntf) throws ConnectorRuntimeException {
-        return
+        Properties properties =
 	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
 	        ? configParserAdmService.getAdminObjectConfigProps(
 		    rarName,adminObjectIntf)
 		: new Properties();
+        return ConnectorsUtil.convertPropertiesToMap(properties);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Properties getConnectorConfigJavaBeans(String rarName,
+    public Map<String,String> getConnectorConfigJavaBeans(String rarName,
         String connectionDefName,String type) throws ConnectorRuntimeException {
 
-        return configParserAdmService.getConnectorConfigJavaBeans(
+        Properties properties = configParserAdmService.getConnectorConfigJavaBeans(
                              rarName,connectionDefName,type);
+        return ConnectorsUtil.convertPropertiesToMap(properties);
     }
 
     /**
@@ -542,23 +546,25 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
-    public Properties getMessageListenerConfigProps(String rarName,
+    public Map<String,String> getMessageListenerConfigProps(String rarName,
          String messageListenerType)throws ConnectorRuntimeException {
-        return
+        Properties properties =
 	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
             ? configParserAdmService.getMessageListenerConfigProps(
 
                         rarName,messageListenerType)
 	    : new Properties();
+        return ConnectorsUtil.convertPropertiesToMap(properties);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Properties getMessageListenerConfigPropTypes(String rarName,
+    public Map<String,String> getMessageListenerConfigPropTypes(String rarName,
                String messageListenerType) throws ConnectorRuntimeException {
-        return configParserAdmService.getMessageListenerConfigPropTypes(
+        Properties properties =  configParserAdmService.getMessageListenerConfigPropTypes(
                         rarName,messageListenerType);
+        return ConnectorsUtil.convertPropertiesToMap(properties);
     }
 
     /**

@@ -41,6 +41,7 @@ import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
+import java.util.Set;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.Stability;
@@ -54,13 +55,55 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 @AMXMBeanMetadata(leaf = true, singleton = true)
-public interface ConnectorRuntime extends AMXProxy, Utility, Singleton
+public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleton
 {
     /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
     public static final String PROPERTY_MAP_KEY = "PropertyMapKey";
 
-    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
+    /** Key into Map returned by various methods including {@link #getConnectionDefinitionNames}
+     * {@link #getAdminObjectInterfaceNames}
+     * {@link #getMessageListenerTypes}
+     * {@link #getMessageListenerTypes}
+     * **/
+    public static final String STRING_ARRAY_KEY = "StringArrayKey";
+
+    /** Key into Map returned by {@link #getActivationSpecClass} **/
+    public static final String STRING_KEY = "StringKey";
+
+    /** Key into Map returned by various methods including
+     * {@link #getBuiltInCustomResources}
+     * {@link #getMCFConfigProps}
+     * {@link #getResourceAdapterConfigProps}
+     * {@link #getAdminObjectConfigProps}
+     * {@link #getConnectorConfigJavaBeans}
+     * {@link #getMessageListenerConfigProps}
+     * {@link #getMessageListenerConfigPropTypes} **/
+    public static final String MAP_KEY = "MapKey";
+
+    /** Key into Map returned by various methods including {@link #flushConnectionPool} */
+    public static final String BOOLEAN_KEY = "BooleanKey";
+
+    /** Key into Set returned by various methods including {@link #getValidationTableNames} {@link #getJdbcDriverClassNames} */
+    public static final String SET_KEY = "SetKey";
+
+    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults}
+     * {@link #getConnectionDefinitionNames}
+     * {@link #getAdminObjectInterfaceNames}
+     * {@link #getMessageListenerTypes}
+     * {@link #getMessageListenerTypes}
+     * {@link #getBuiltInCustomResources}
+     * {@link #getValidationTableNames}
+     * {@link #getJdbcDriverClassNames}
+     * {@link #flushConnectionPool}
+     * {@link #getMCFConfigProps}
+     * {@link #getResourceAdapterConfigProps}
+     * {@link #getAdminObjectConfigProps}
+     * {@link #getConnectorConfigJavaBeans}
+     * {@link #getMessageListenerConfigProps}
+     * {@link #getMessageListenerConfigPropTypes}
+     * **/
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
+
 
     /**
     Get properties of JDBC Data Source
@@ -72,72 +115,90 @@ public interface ConnectorRuntime extends AMXProxy, Utility, Singleton
     public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(
             @Param(name = "datasourceClassName") String datasourceClassName);
 
-/* not yet implemented 
     @ManagedAttribute
     @Description("List of built in custom resource factory classes")
-    public Map<String, String> getBuiltInCustomResources();
+    public Map<String, Object> getBuiltInCustomResources();
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of connection definition names for the given resource-adapter")
-    public String[] getConnectionDefinitionNames(@Param(name = "rarName") String rarName);
+    public Map<String, Object> getConnectionDefinitionNames(@Param(name = "rarName") String rarName);
+
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get the MCF config properties of the connection definition")
-    public Map<String, String> getMCFConfigProps(
+    public Map<String, Object> getMCFConfigProps(
             @Param(name = "rarName") String rarName,
             @Param(name = "connectionDefName") String connectionDefName);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of administered object interfaces for the given resource-adapter")
-    public String[] getAdminObjectInterfaceNames(@Param(name = "rarName") String rarName);
+    public Map<String, Object> getAdminObjectInterfaceNames(@Param(name = "rarName") String rarName);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of resource adapter configuration properties of a resource-adapter")
-    public Map<String, String> getResourceAdapterConfigProps(@Param(name = "rarName") String rarName);
+    public Map<String, Object> getResourceAdapterConfigProps(@Param(name = "rarName") String rarName);
+
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of administered object configuration proeprties")
-    public Map<String, String> getAdminObjectConfigProps(
+    public Map<String, Object> getAdminObjectConfigProps(
             @Param(name = "rarName") String rarName,
             @Param(name = "adminObjectIntf") String adminObjectIntf);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of java bean properties and their default values for a connection definition")
-    public Map<String, String> getConnectorConfigJavaBeans(
+    public Map<String, Object> getConnectorConfigJavaBeans(
             @Param(name = "rarName") String rarName,
             @Param(name = "connectionDefName") String connectionDefName,
             @Param(name = "type") String type);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get the activation spec class for the given message-listener type of a resource-adapter")
-    public String getActivationSpecClass(
+    public Map<String, Object> getActivationSpecClass(
             @Param(name = "rarName") String rarName,
             @Param(name = "messageListenerType") String messageListenerType);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get message listener types of a resource-adapter")
-    public String[] getMessageListenerTypes(@Param(name = "rarName") String rarName);
+    public Map<String,Object> getMessageListenerTypes(@Param(name = "rarName") String rarName);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get message listener config properties for the given message-listener-type of a resource-adapter")
-    public Map<String, String> getMessageListenerConfigProps(@Param(name = "rarName") String rarName,
+    public Map<String, Object> getMessageListenerConfigProps(@Param(name = "rarName") String rarName,
                                                              @Param(name = "messageListenerType") String messageListenerType);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get message listener config property types for the given message-listener-type of a resource-adapter")
-    public Map<String, String> getMessageListenerConfigPropTypes(
+    public Map<String, Object> getMessageListenerConfigPropTypes(
             @Param(name = "rarName") String rarName,
             @Param(name = "messageListenerType") String messageListenerType);
-*/
+
+    /**
+     * Flush Connection pool.
+     * @param poolName
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Flush connection pool by reinitializing all connections established in the pool")
+    public Map<String, Object> flushConnectionPool(@Param(name = "poolName") String poolName);
+
+    /**
+     * Obtain connection validation table names.
+     * @param poolName
+     * @return set of validation table names.
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Get Connection validation table names for display in GUI")
+    public Map<String, Object> getValidationTableNames(@Param(name = "poolName") String poolName);
+
+    /**
+     * Obtain Jdbc driver implementation class names.
+     * @param dbVendor
+     * @param resType
+     * @return set of implementation class names.
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Get Jdbc driver implementation class names")
+    public Map<String, Object> getJdbcDriverClassNames(@Param(name = "dbVendor") String dbVendor, 
+            @Param(name="resType") String resType);
 
 }
-
-
-
-
-
-
-
-
-
-
