@@ -70,6 +70,9 @@ public class ResourcePoolFactoryImpl {
         }
 
         ResourcePool pool = null;
+        if( pt == PoolType.POOLING_DISABLED ) {
+            return new UnpooledResource( poolName );            
+        }
         if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
             pool = new AssocWithThreadResourcePool( poolName );
         } else {

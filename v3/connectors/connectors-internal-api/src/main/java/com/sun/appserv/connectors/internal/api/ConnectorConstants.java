@@ -267,7 +267,11 @@ public interface ConnectorConstants {
      */
     public static int JMS_POOL_MAXSIZE = 250;
     
-    public static enum PoolType { ASSOCIATE_WITH_THREAD_POOL, STANDARD_POOL, PARTITIONED_POOL }
+    public static enum PoolType {
+
+        ASSOCIATE_WITH_THREAD_POOL, STANDARD_POOL, PARTITIONED_POOL,
+        POOLING_DISABLED;
+    }
 
     public static int NON_ACC_CLIENT = 0;
 

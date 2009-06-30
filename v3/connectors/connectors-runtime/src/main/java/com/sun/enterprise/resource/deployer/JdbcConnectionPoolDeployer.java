@@ -286,6 +286,10 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     conConnPool.setAssociateWithThread(toBoolean(rp.getValue(), false));
                     logFine("ASSOCIATEWITHTHREAD");
 
+                } else if ("POOLING".equals(name.toUpperCase())) {
+                    conConnPool.setPooling(toBoolean(rp.getValue(), true));
+                    logFine("POOLING");
+
                 } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
                     conConnPool.setPoolDataStructureType(rp.getValue());
                     logFine("POOLDATASTRUCTURE");
@@ -518,7 +522,45 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             ccp.setLazyConnectionAssoc(lazyConnectionAssociation);
             ccp.setLazyConnectionEnlist(lazyConnectionEnlistment);
         }
-
+        
+        boolean pooling = Boolean.valueOf(adminPool.getPooling());
+        
+        if(!pooling) {
+            //Throw exception if assoc with thread is set to true.
+            if(Boolean.valueOf(adminPool.getAssociateWithThread())) {
+                _logger.log(Level.SEVERE, "conn_pool_obj_utils.pooling_disabled_assocwiththread_invalid_combination",
+                        adminPool.getName());
+                String i18nMsg = sm.getString(
+                        "cpou.pooling_disabled_assocwiththread_invalid_combination", adminPool.getName());
+                throw new RuntimeException(i18nMsg);
+            }
+            //TODO : Throw exception if flush connection pool is set
+            
+            //Below are useful in pooled environment only.
+            //Throw warning for connection validation/validate-atmost-once/
+            //match-connections/max-connection-usage-count/idele-timeout
+            if(Boolean.valueOf(adminPool.getIsConnectionValidationRequired())) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_conn_validation_invalid_combination",
+                        adminPool.getName());                
+            }
+            if(Integer.parseInt(adminPool.getValidateAtmostOncePeriodInSeconds()) > 0) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_validate_atmost_once_invalid_combination",
+                        adminPool.getName());                                
+            }
+            if(Boolean.valueOf(adminPool.getMatchConnections())) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_match_connections_invalid_combination",
+                        adminPool.getName());                                                
+            }
+            if(Integer.parseInt(adminPool.getMaxConnectionUsageCount()) > 0) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_max_conn_usage_invalid_combination",
+                        adminPool.getName());                                                                
+            }
+            if(Integer.parseInt(adminPool.getIdleTimeoutInSeconds()) > 0) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_idle_timeout_invalid_combination",
+                        adminPool.getName());                
+            }
+        }
+        ccp.setPooling(pooling);
         ccp.setMaxConnectionUsage(adminPool.getMaxConnectionUsageCount());
 
         ccp.setConCreationRetryAttempts(adminPool.getConnectionCreationRetryAttempts());

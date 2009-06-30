@@ -980,6 +980,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             pt = PoolType.ASSOCIATE_WITH_THREAD_POOL;
         } else if (connectorConnectionPool.isPartitionedPool()) {
             pt = PoolType.PARTITIONED_POOL;
+        } else if(!connectorConnectionPool.isPoolingOn()) {
+            pt = PoolType.POOLING_DISABLED;
         }
         return pt;
     }

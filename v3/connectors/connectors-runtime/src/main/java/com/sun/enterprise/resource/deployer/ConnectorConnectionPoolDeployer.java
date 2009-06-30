@@ -282,7 +282,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
 
         ccp.setMatchConnections(Boolean.valueOf(domainCcp.getMatchConnections()));
         ccp.setAssociateWithThread(Boolean.valueOf(domainCcp.getAssociateWithThread()));
-
+        ccp.setPooling(Boolean.valueOf(domainCcp.getPooling()));
 
         boolean lazyConnectionEnlistment = Boolean.valueOf(domainCcp.getLazyConnectionEnlistment());
         boolean lazyConnectionAssociation = Boolean.valueOf(domainCcp.getLazyConnectionAssociation());
@@ -303,6 +303,46 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
             ccp.setLazyConnectionAssoc(lazyConnectionAssociation);
             ccp.setLazyConnectionEnlist(lazyConnectionEnlistment);
         }
+        boolean pooling = Boolean.valueOf(domainCcp.getPooling());
+        
+        //TODO: should this be added to the beginning of this method?
+        //TODO: add properties to log strings 
+        if(!pooling) {
+            //Throw exception if assoc with thread is set to true.
+            if(Boolean.valueOf(domainCcp.getAssociateWithThread())) {
+                _logger.log(Level.SEVERE, "conn_pool_obj_utils.pooling_disabled_assocwiththread_invalid_combination",
+                        domainCcp.getName());
+                String i18nMsg = localStrings.getString(
+                        "cpou.pooling_disabled_assocwiththread_invalid_combination", domainCcp.getName());
+                throw new RuntimeException(i18nMsg);
+            }
+            //TODO : Throw exception if flush connection pool is set
+            
+            //Below are useful in pooled environment only.
+            //Throw warning for connection validation/validate-atmost-once/
+            //match-connections/max-connection-usage-count/idele-timeout
+            if(Boolean.valueOf(domainCcp.getIsConnectionValidationRequired())) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_conn_validation_invalid_combination",
+                        domainCcp.getName());                
+            }
+            if(Integer.parseInt(domainCcp.getValidateAtmostOncePeriodInSeconds()) > 0) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_validate_atmost_once_invalid_combination",
+                        domainCcp.getName());                                
+            }
+            if(Boolean.valueOf(domainCcp.getMatchConnections())) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_match_connections_invalid_combination",
+                        domainCcp.getName());                                                
+            }
+            if(Integer.parseInt(domainCcp.getMaxConnectionUsageCount()) > 0) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_max_conn_usage_invalid_combination",
+                        domainCcp.getName());                                                                
+            }
+            if(Integer.parseInt(domainCcp.getIdleTimeoutInSeconds()) > 0) {
+                _logger.log(Level.WARNING, "conn_pool_obj_utils.pooling_disabled_idle_timeout_invalid_combination",
+                        domainCcp.getName());                
+            }
+        }
+        ccp.setPooling(pooling);
 
         ccp.setMaxConnectionUsage(domainCcp.getMaxConnectionUsageCount());
         ccp.setValidateAtmostOncePeriod(

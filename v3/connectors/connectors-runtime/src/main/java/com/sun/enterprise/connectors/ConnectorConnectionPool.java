@@ -74,6 +74,7 @@ public class ConnectorConnectionPool implements Serializable {
     private boolean lazyConnectionEnlist_ = false;
     private boolean associateWithThread_ = false;
     private boolean partitionedPool = false;
+    private boolean poolingOn = true;
     private String poolDataStructureType;
     private String poolWaitQueue;
     private String dataStructureParameters;
@@ -125,6 +126,18 @@ public class ConnectorConnectionPool implements Serializable {
         this.name = name;
     }
 
+    public boolean isPoolingOn() {
+        return poolingOn;
+    }
+    
+    /**
+     * Setter method of pooling attribute
+     *
+     * @param enabled enables/disables pooling
+     */
+    public void setPooling(boolean enabled) {
+        poolingOn = enabled;
+    }
     /**
      * Clone method.
      */
