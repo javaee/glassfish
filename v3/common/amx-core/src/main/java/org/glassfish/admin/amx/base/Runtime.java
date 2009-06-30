@@ -45,8 +45,6 @@ import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
@@ -59,23 +57,19 @@ public interface Runtime extends AMXProxy, Utility, Singleton
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     public void stopDomain();
 
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
+    public void restartDomain();
+
     /** Map key is the name of the descriptor, value is the content of the descriptor */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     public Map<String, String> getDeploymentConfigurations(
-        @Param(name="applicationName") String applicationName);
-
-    /**
-    Stop the domain (command to pass to {@link #executeREST}.
-    Note that this method might or might not throw an exception, depending on
-    how quickly the server quits. Wrap the call in a try/catch always.
-     */
-    public static final String STOP_DOMAIN = "stop-domain";
+            @Param(name = "applicationName") String applicationName);
 
     /**
     Execute a REST command.  Do not include a leading "/".
      */
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)
-    public String executeREST( @Param(name="command") final String command);
+    public String executeREST(@Param(name = "command") final String command);
 
     /**
     Return the base URL for use with {@link #executeREST}.  Example:
@@ -86,8 +80,7 @@ public interface Runtime extends AMXProxy, Utility, Singleton
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     public String getRESTBaseURL();
-    
-    
+
     @ManagedAttribute
     public String[] getSupportedCipherSuites();
 

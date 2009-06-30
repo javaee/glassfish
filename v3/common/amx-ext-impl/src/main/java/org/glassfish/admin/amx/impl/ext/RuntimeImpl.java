@@ -67,6 +67,12 @@ import org.jvnet.hk2.component.Habitat;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.admin.mbeanserver.BooterNewMBean;
 
+
+import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.v3.admin.RestartDomainCommand;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import org.glassfish.api.admin.AdminCommand;
+
 /**
 AMX RealmsMgr implementation.
 Note that realms don't load until {@link #loadRealms} is called.
@@ -141,6 +147,17 @@ public final class RuntimeImpl extends AMXImplBase
         ImplUtil.getLogger().warning("Stopping server forcibly");
         System.exit(0);
     }
+    
+    
+    public void restartDomain()
+    {
+        final ModulesRegistry registry = InjectedValues.getInstance().getModulesRegistry();
+        
+        final AdminCommandContext ctx = new AdminCommandContext(ImplUtil.getLogger(),  new PlainTextActionReporter());
+        final AdminCommand cmd = new RestartDomainCommand(registry);
+        cmd.execute(ctx);
+    }
+
 
     private NetworkConfig networkConfig()
     {

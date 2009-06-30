@@ -42,33 +42,58 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
-import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.api.amx.AMXValues;
 
 /**
-The  interface presented by a dynamic proxy to an AMX MBean,
-implemented by {@link AMXProxyHandler}.
-Interfaces representing AMX MBeans may extend this interface, but in
-most cases it will not be appropriate or convenient for MBean implementors to
-'implement' the interface because it is for use by a <i>proxy to the MBean</i>, not the MBean itself.
+An AMXProxy offers generic access to any AMX-compliant MBean, including the ability to navigate
+upwards to the Parent MBean, find all children or those of a particular type or name, to get
+all metadata, atttributes, or to invoke any method.
 <p>
-A convention followed in AMXProxy is that convenience "getter" methods
-(implement by the proxy handler) do not use the "get" prefix,
+
+Various sub-interfaces offer additional functionality, such as explicit methods for getting
+children of a particular type, creating new children (eg configuration), attribute getter/setter
+methods, etc.  The most notable sub-interface is {@link  org.glassfish.admin.amx.config.AMXConfigProxy} and
+its sub-interfaces.
+<p>
+
+<b>Implementing handler&mdash;</b> an AMXProxy is implemented by {@link AMXProxyHandler}, but the handler should be considered
+private: do not use it as it is subject to change.
+<p>
+
+<b>Sub interfaces&mdash;</b> the base AMXProxy interface can and should be extended for specific MBeans, but in
+most cases it will not be appropriate or convenient for MBean <em>implementors</em> to
+'implement' the interface because it is for use by a <i>proxy to the MBean</i>, not the MBean itself.
+In particular, it makes no sense for an MBean to implement the proxy interface because the proxy
+interface demands the use of AMXProxy and sub-types, whereas the MBean must return ObjectName.
+<p>
+
+<b>Method name convention&mdash;</b> a convention followed in AMXProxy is that convenience "getter" methods
+(non-remote methods implemented directly by the proxy itself) do not use the <code>get</code> prefix,
 in order to distinguish them from the usual getter pattern for real MBean attributes.
 For example, {@link #parent} returns an AMXProxy, but {@link #getParent} returns the value of the
 {@code Parent} attribute (an ObjectName).
 The same convention is followed for {@link #childrenSet}, etc / {@link #getChildren}.
+<p>
 
+<b>Not authoritative&mdash;</b> <em>proxy interfaces should not be considered authoritative, meaning that an underlying MBean
+implementation determines what the MBean actually provides, possibly ignoring
+the proxy interface</em> (this is the case with config MBeans, which derive their metadata from the ConfigBean
+<code>@Configured</code> interface).  
+Therefore, it is possible for the proxy interface to completely misrepresent the actual MBean functionality,
+should the interface get out of sync with the actual MBean.
+Only at runtime would errors between the interface and the MBean would emerge.
 <p>
-Proxy interfaces should not be considered authoritative, meaning that an underlying MBean
-<i>implementation</i> determines what the MBean actually provides, generally without awareness of
-the proxy interface.  Therefore, it is possible for the proxy interface
-to completely misrepresent the actual MBean functionality.  For this reason, sub-interfaces
-of {@code AMXProxy} might omit specific getter/setter methods, and instead focus on the <i>containment
-relationships</i>, which form the core of usability of navigating the hierarchy, looking up
-children, etc.  Only at runtime would errors between the interface and the MBean would emerge.
+
+<b>Methods in sub-interfaces of AMXProxy&mdash;</b> To mininimize issues with tracking
+implementation changes over time (eg addition or removal of attributes),
+sub-interfaces of {@code AMXProxy} might choose to <em>omit</em> 
+getter/setter methods for attributes, and instead manifest the <i>containment relationships</i> (children),
+which form the core of usability of navigating the hierarchy.
+The methods {@link #attributeNames} and {@link #attributesMap} can be used to generically
+obtain all available attributes, and of course {@link MetaGetters#mbeanInfo} provides extensive metadata.
 <p>
- * MBean clients can accomplish all objectives using only this generic AMXProxy interface, but it
- * can be more convenient to use sub-interfaces in Java clients.
+
+<b>Sub interfaces&mdash;</b> hello.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public interface AMXProxy extends AMX_SPI
@@ -82,10 +107,10 @@ public interface AMXProxy extends AMX_SPI
      */
     public String nameProp();
 
-    /** The value of the {@link AMXConstants#PARENT_PATH_KEY} property in the ObjectName */
+    /** The value of the {@link AMXValues#PARENT_PATH_KEY} property in the ObjectName */
     public String parentPath();
 
-    /** The value of the {@link AMXConstants#TYPE_KEY} property in the ObjectName */
+    /** The value of the {@link AMXValues#TYPE_KEY} property in the ObjectName */
     public String type();
 
     /**

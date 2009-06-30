@@ -57,6 +57,17 @@ public class RestartDomainCommand implements AdminCommand {
     @Inject
     ModulesRegistry registry;
 
+    /** version which will use injection */
+    public RestartDomainCommand()
+    {
+    }
+    
+    /** version which will not use injection */
+    public RestartDomainCommand( final ModulesRegistry registryIn )
+    {
+        registry = registryIn;
+    }
+    
     /**
      * Restart of the application server :
      *

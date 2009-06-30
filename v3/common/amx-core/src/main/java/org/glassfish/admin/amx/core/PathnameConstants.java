@@ -11,9 +11,6 @@ import org.glassfish.admin.amx.base.Pathnames;
 /**
     Constants and regex related to pathnames.
     <p>
-    The root part (leading "/") is not included in the parts list returned
-    by {@link parts}.
-    <p>
     Wildcarding is basic: a '*" means "0 or more characters" (a '*' is converted to
     '.*' for regex purposes).
  * @see Pathnames
@@ -58,7 +55,7 @@ public final class PathnameConstants
 
     /**
         The characters legal to use as a name.  A name may be zero length, and it may include
-        the {@link SEPARATOR} character. However, it may not include the right square brace, because
+        the {@link #SEPARATOR} character. However, it may not include the right square brace, because
         that character terminates a subscript.
         JMX ObjectNames might have additional restrictions.
     */

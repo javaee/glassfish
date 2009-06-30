@@ -20,7 +20,7 @@ import static org.glassfish.api.amx.AMXValues.*;
 Parses a pathname into parts.
 <p>
 The root part (leading "/") is not included in the parts list returned
-by {@link parts}.
+by {@link #parts}.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public final class PathnameParser
