@@ -5,15 +5,10 @@
 
 package org.glassfish.admin.monitor.jvm;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.util.List;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.monitoring.TelemetryProvider;
-import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.probe.provider.PluginPoint;
 import org.glassfish.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.component.PostConstruct;
@@ -48,7 +43,9 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
         /* register with monitoring */
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", new JVMClassLoadingStatsProvider());
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/compilation-system", new JVMCompilationStatsProvider());
-        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/garbage-collectors", new JVMGCStatsProvider());
+        for (GarbageCollectorMXBean gc : ManagementFactory.getGarbageCollectorMXBeans()) {
+            StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/garbage-collectors/"+gc.getName(), new JVMGCStatsProvider(gc.getName()));
+        }
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/memory", new JVMMemoryStatsProvider());
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/operating-system", new JVMOSStatsProvider());
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/runtime", new JVMRuntimeStatsProvider());

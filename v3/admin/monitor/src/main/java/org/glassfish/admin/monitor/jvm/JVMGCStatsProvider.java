@@ -49,38 +49,34 @@ import org.glassfish.gmbal.ManagedObject;
 public class JVMGCStatsProvider {
     
     private List<GarbageCollectorMXBean> gcBeanList = ManagementFactory.getGarbageCollectorMXBeans();
+    private String gcName = null;
 
-    public String[] getGCNames() {
-        String[] names = {};
-        int i = 0;
-        for (GarbageCollectorMXBean gcBean : gcBeanList) {
-            names[i] = gcBean.getName();
-            i++;
-        }
-        return names;
+    public JVMGCStatsProvider(String gcName) {
+        this.gcName = gcName;
     }
 
     @ManagedAttribute(id="collectioncount-count")
     @Description( "total number of collections that have occurred" )
-    public long[] getCollectionCount() {
-        long[] counts = {};
-        int i = 0;
+    public long getCollectionCount() {
+        long counts = -1;
         for (GarbageCollectorMXBean gcBean : gcBeanList) {
-            counts[i] = gcBean.getCollectionCount();
-            i++;
+            if (gcBean.getName().equals(gcName)) {
+                counts = gcBean.getCollectionCount();
+            }
         }
         return counts;
     }
 
     @ManagedAttribute(id="collectiontime-count")
     @Description( "approximate accumulated collection elapsed time in milliseconds" )
-    public long[] getCollectionTime() {
-        long[] times = {};
-        int i = 0;
-        for (GarbageCollectorMXBean gcBean : gcBeanList) {
-            times[i] = gcBean.getCollectionTime();
-            i++;
-        }
+    public long getCollectionTime() {
+        long times = -1;
+            int i = 0;
+            for (GarbageCollectorMXBean gcBean : gcBeanList) {
+                if (gcBean.getName().equals(gcName)) {
+                    times = gcBean.getCollectionTime();
+                }
+            }
         return times;
     }
 }
