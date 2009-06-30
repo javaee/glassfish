@@ -60,7 +60,7 @@ public class ConfigException extends Exception {
      *
      * @param message the detail message
      */
-    protected ConfigException(String message) {
+    public ConfigException(String message) {
         super(message);
     }
 

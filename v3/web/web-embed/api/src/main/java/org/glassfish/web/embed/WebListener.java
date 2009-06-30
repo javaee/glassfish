@@ -48,14 +48,21 @@ import org.glassfish.web.embed.config.WebListenerConfig;
  * @author Rajiv Mordani
  */
 public interface WebListener extends Lifecycle {
-
+    
+    /**
+     * Sets the id for this <tt>WebListener</tt>.
+     *
+     * @param the id for this <tt>WebListener</tt>
+     */
+    public void setId(String id);
+    
     /**
      * Gets the id of this <tt>WebListener</tt>.
      *
      * @return the id of this <tt>WebListener</tt>
      */
     public String getId();
-
+    
     /**
      * Sets the port number for this <tt>WebListener</tt>.
      *
