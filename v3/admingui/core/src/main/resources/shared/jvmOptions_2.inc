@@ -40,7 +40,6 @@
             <!-- Page Title -->
             <sun:title id="propertyContentPage" title="$resource{i18n.jvmOptions.Title}" 
                 helpText="$resource{i18n.jvmOptions.PageHelp}">
-    <!-- AMX Bug When Saving JVM Options
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -54,7 +53,7 @@
                 />
             </sun:button>
         </sun:panelGroup>
-    </facet>-->
+    </facet>
                 </sun:title>
 #include "/shared/jvmOptionsTable.inc"  
 
