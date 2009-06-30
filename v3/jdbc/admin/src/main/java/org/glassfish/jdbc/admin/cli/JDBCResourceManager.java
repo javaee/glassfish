@@ -51,7 +51,9 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.glassfish.api.admin.config.Property;
+import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
@@ -102,10 +104,17 @@ public class JDBCResourceManager implements ResourceManager {
         }
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof JdbcResource) {
-                if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
+            if (resource instanceof BindableResource) {
+                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
                     String msg = localStrings.getLocalString("create.jdbc.resource.duplicate",
-                            "A JDBC resource named {0} already exists.", jndiName);
+                            "A resource named {0} already exists.", jndiName);
+                    ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+                    return status;
+                }
+            } else if (resource instanceof ResourcePool) {
+                if (((ResourcePool) resource).getName().equals(jndiName)) {
+                    String msg = localStrings.getLocalString("create.jdbc.resource.duplicate",
+                            "A resource named {0} already exists.", jndiName);
                     ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                     return status;
                 }

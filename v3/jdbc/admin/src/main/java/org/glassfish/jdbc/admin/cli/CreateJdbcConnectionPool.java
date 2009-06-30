@@ -70,7 +70,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="datasourceclassname")
     String datasourceclassname;
 
-    @Param(name="restype", optional=true)
+    @Param(optional=true, acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
     String restype;
 
     @Param(name="steadypoolsize", optional=true)
@@ -87,6 +87,9 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     
     @Param(name="idletimeout", optional=true)
     String idletimeout = "300";
+
+    @Param(optional=true)
+    String initsql;
         
     @Param(name="isolationlevel", optional=true)
     String isolationlevel;
@@ -97,8 +100,8 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="isconnectvalidatereq", optional=true, defaultValue="false")
     Boolean isconnectvalidatereq;
     
-    @Param(name="validationmethod", optional=true)
-    String validationmethod = "auto-commit";
+    @Param(optional=true, acceptableValues="auto-commit,meta-data,table,custom-validation")
+    String validationmethod = "table";
     
     @Param(name="validationtable", optional=true)
     String validationtable;
@@ -126,6 +129,9 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     
     @Param(name="creationretryinterval", optional=true)
     String creationretryinterval = "10";
+
+    @Param(optional=true)
+    String sqltracelisteners;
     
     @Param(name="statementtimeout", optional=true)
     String statementtimeout = "-1";
@@ -138,14 +144,32 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     
     @Param(name="associatewiththread", optional=true, defaultValue="false")
     Boolean associatewiththread;
+
+    @Param(optional=true, defaultValue="1")
+    String associatewiththreadconnectionscount;
+
+    @Param(optional=true)
+    String driverclassname;
     
     @Param(name="matchconnections", optional=true, defaultValue="false")
     Boolean matchconnections;
     
     @Param(name="maxconnectionusagecount", optional=true)
     String maxconnectionusagecount = "0";
+
+    @Param(optional=true, defaultValue="false")
+    Boolean ping;
+
+    @Param(optional=true, defaultValue="true")
+    Boolean pooling;
+
+    @Param(optional=true, defaultValue="0")
+    String statementcachesize;
+
+    @Param(optional=true)
+    String validationclassname;
     
-    @Param(name="wrapjdbcobjects", optional=true, defaultValue="false")
+    @Param(name="wrapjdbcobjects", optional=true, defaultValue="true")
     Boolean wrapjdbcobjects;
     
     @Param(name="description", optional=true)
@@ -186,6 +210,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.MAX_POOL_SIZE, maxpoolsize);
         attrList.put(ResourceConstants.MAX_WAIT_TIME_IN_MILLIS, maxwait);
         attrList.put(ResourceConstants.POOL_SIZE_QUANTITY, poolresize);
+        attrList.put(ResourceConstants.INIT_SQL, initsql);
         attrList.put(ResourceConstants.IDLE_TIME_OUT_IN_SECONDS, idletimeout);
         attrList.put(ResourceConstants.TRANS_ISOLATION_LEVEL, isolationlevel);
         attrList.put(ResourceConstants.IS_ISOLATION_LEVEL_GUARANTEED, isisolationguaranteed.toString());
@@ -200,12 +225,19 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.CONNECTION_LEAK_RECLAIM, leakreclaim.toString());
         attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_ATTEMPTS, creationretryattempts);
         attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS, creationretryinterval);
+        attrList.put(ResourceConstants.DRIVER_CLASSNAME, driverclassname);
+        attrList.put(ResourceConstants.SQL_TRACE_LISTENERS, sqltracelisteners);
         attrList.put(ResourceConstants.STATEMENT_TIMEOUT, statementtimeout);
+        attrList.put(ResourceConstants.STATEMENT_CACHE_SIZE, statementcachesize);
         attrList.put(ResourceConstants.LAZY_CONNECTION_ASSOCIATION, lazyconnectionassociation.toString());
         attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment.toString());
         attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD, associatewiththread.toString());
+        attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT, associatewiththreadconnectionscount);
         attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections.toString());
         attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
+        attrList.put(ResourceConstants.PING, ping.toString());
+        attrList.put(ResourceConstants.POOLING, pooling.toString());
+        attrList.put(ResourceConstants.VALIDATION_CLASSNAME, validationclassname);
         attrList.put(ResourceConstants.WRAP_JDBC_OBJECTS, wrapjdbcobjects.toString());
         
         ResourceStatus rs;

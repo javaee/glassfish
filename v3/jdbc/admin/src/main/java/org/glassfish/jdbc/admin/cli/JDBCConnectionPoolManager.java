@@ -57,7 +57,9 @@ import org.glassfish.resource.common.ResourceStatus;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import org.glassfish.api.admin.config.Property;
+import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -85,10 +87,11 @@ public class JDBCConnectionPoolManager implements ResourceManager{
     private String maxwait = "60000";
     private String poolresize = "2";
     private String idletimeout = "300";
+    private String initsql = null;
     private String isolationlevel = null;
     private String isisolationguaranteed = Boolean.TRUE.toString();
     private String isconnectvalidatereq = Boolean.FALSE.toString();
-    private String validationmethod = "auto-commit";
+    private String validationmethod = "table";
     private String validationtable = null;
     private String failconnection = Boolean.FALSE.toString();
     private String allownoncomponentcallers = Boolean.FALSE.toString();
@@ -98,13 +101,20 @@ public class JDBCConnectionPoolManager implements ResourceManager{
     private String connectionLeakReclaim = Boolean.FALSE.toString();
     private String connectionCreationRetryAttempts = "0";
     private String connectionCreationRetryInterval = "10";
+    private String driverclassname = null;
+    private String sqltracelisteners = null;
     private String statementTimeout = "-1";
+    private String statementcachesize = "0";
     private String lazyConnectionEnlistment = Boolean.FALSE.toString();
     private String lazyConnectionAssociation = Boolean.FALSE.toString();
     private String associateWithThread = Boolean.FALSE.toString();
+    private String associatewiththreadconnectionscount = "1";
     private String matchConnections = Boolean.FALSE.toString();
     private String maxConnectionUsageCount = "0";
-    private String wrapJDBCObjects = Boolean.FALSE.toString();
+    private String ping = Boolean.FALSE.toString();
+    private String pooling = Boolean.TRUE.toString();
+    private String validationclassname = null;
+    private String wrapJDBCObjects = Boolean.TRUE.toString();
 
     private String description = null;
     private String jdbcconnectionpoolid = null; 
@@ -127,10 +137,16 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         }
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof JdbcConnectionPool) {
-                if (((JdbcConnectionPool) resource).getName().equals(jdbcconnectionpoolid)) {
+            if (resource instanceof BindableResource) {
+                if (((BindableResource) resource).getJndiName().equals(jdbcconnectionpoolid)) {
                     String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
-                            "A JDBC connection pool named {0} already exists.", jdbcconnectionpoolid);
+                            "A resource {0} already exists.", jdbcconnectionpoolid);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+                }
+            } else if (resource instanceof ResourcePool) {
+                if (((ResourcePool) resource).getName().equals(jdbcconnectionpoolid)) {
+                    String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
+                            "A resource {0} already exists.", jdbcconnectionpoolid);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                 }
             }
@@ -190,6 +206,21 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                                     associateWithThread);
                     newResource.setAllowNonComponentCallers(
                                     allownoncomponentcallers);
+                    newResource.setStatementCacheSize(statementcachesize);
+                    //if (validationclassname != null) {
+                        //newResource.setValidationClassname(validationclassname);
+                    //}
+                    //newResource.setInitSql(initsql);
+                    //if (sqltracelisteners != null) {
+                        //newResource.setSqlTraceListeners(sqltracelisteners);
+                    //}
+                    //newResource.setAssociationsWithThreadConnectionsCount(associatewiththreadconnectionscount);
+                    //newResource.setPooling(pooling);
+                    //newResource.setPing(ping);
+                    //if (driverclassname != null) {
+                        //newResource.setDriverClassname(driverclassname);
+                    //}
+                    
                     if (description != null) {
                         newResource.setDescription(description);
                     }
@@ -254,6 +285,14 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         wrapJDBCObjects = (String) attrList.get(WRAP_JDBC_OBJECTS);
         description = (String) attrList.get(DESCRIPTION);
         jdbcconnectionpoolid = (String) attrList.get(CONNECTION_POOL_NAME);
+        statementcachesize = (String) attrList.get(STATEMENT_CACHE_SIZE);
+        validationclassname = (String) attrList.get(VALIDATION_CLASSNAME);
+        initsql = (String) attrList.get(INIT_SQL);
+        sqltracelisteners = (String) attrList.get(SQL_TRACE_LISTENERS);
+        associatewiththreadconnectionscount = (String) attrList.get(ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT);
+        pooling = (String) attrList.get(POOLING);
+        ping = (String) attrList.get(PING);
+        driverclassname = (String) attrList.get(DRIVER_CLASSNAME);
     }
     
     public ResourceStatus delete (Server[] servers, Resources resources, 
