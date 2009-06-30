@@ -317,6 +317,8 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     private static final String METHOD_ATTRIBUTE_NAMES = "attributeNames";
     /** proxy method */
     private static final String METHOD_PATHNAME = "path";
+    
+    private static final String INVOKE_OPERATION = "invokeOp";
 
     /**
     These Attributes are handled specially.  For example, J2EE_TYPE and
@@ -537,6 +539,30 @@ public final class AMXProxyHandler extends MBeanProxyHandler
             throw e;
         }
     }
+    
+    public Object invokeOp( final String operationName)
+    {
+        try
+        {
+            return getMBeanServerConnection().invoke(getObjectName(), operationName, null, null);
+        }
+        catch( final Exception e )
+        {
+            throw new RuntimeException( "Exception invoking " + operationName, e );
+        }
+    }
+    
+    public Object invokeOp( final String operationName, final Object[] args, final String[] signature )
+    {
+        try
+        {
+            return getMBeanServerConnection().invoke(getObjectName(), operationName, args, signature);
+        }
+        catch( final Exception e )
+        {
+            throw new RuntimeException( "Exception invoking " + operationName, e );
+        }
+    }
 
     protected Object _invoke(
             final Object myProxy,
@@ -553,6 +579,21 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         if (SPECIAL_METHOD_NAMES.contains(methodName))
         {
             result = handleSpecialMethod(myProxy, method, args);
+        }
+        else if ( INVOKE_OPERATION.equals(methodName) )
+        {
+            if ( args.length == 1 )
+            {
+                result = invokeOp( (String)args[0] );
+            }
+            else if ( args.length == 3 )
+            {
+                result = invokeOp( (String)args[0], (Object[])args[1], (String[])args[2] );
+            }
+            else
+            {
+                throw new IllegalArgumentException();
+            }
         }
         else
         {

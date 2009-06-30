@@ -93,7 +93,27 @@ The methods {@link #attributeNames} and {@link #attributesMap} can be used to ge
 obtain all available attributes, and of course {@link MetaGetters#mbeanInfo} provides extensive metadata.
 <p>
 
-<b>Sub interfaces&mdash;</b> hello.
+<b>Auto-mapping of ObjectName&mdash;</b> An AMXProxy automatically maps various ObjectName constructs
+to the equivalent AMXProxy(ies).<p>For example, an MBean providing an Attribute named <code>Item</code>
+should declare it as an <code>ObjectName</code>, or for a plurality <code>Items</code>, declaring an <code>ObjectName[]</code>.
+Any of the following proxy methods (declared in a sub-interface of AMXProxy) will automatically convert the resulting
+ObjectName(s) into the corresponding AMXProxy or plurality of AMXProxy:
+<pre>
+AMXProxy getItem();
+AMXProxy[] getItems();
+Set&lt;AMXProxy> getItems();
+List&lt;AMXProxy> getItems();
+Map&lt;String,AMXProxy> getItems();
+</pre>
+The same approach is used in the generic {@link #child}, {@link #childrenSet}, {@link #childrenMap} methods.
+<p>
+<b>Invoking operations generically&mdash;</b> Use the {@link #invokeOp} methods to invoke an arbitrary
+operation by name.
+
+@see Extra
+@see MetaGetters
+@see AMXValues
+@see org.glassfish.admin.amx.config.AMXConfigProxy
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public interface AMXProxy extends AMX_SPI
@@ -114,7 +134,7 @@ public interface AMXProxy extends AMX_SPI
     public String type();
 
     /**
-    A proxy can become invalid if its corresponding MBean is unregistered.
+    A proxy can become invalid if its corresponding MBean is unregistered, the connection is lost, etc.
     If currently marked as valid, a trip to the server is made to verify validity.
     @return true if this proxy is valid
      */
@@ -146,18 +166,23 @@ public interface AMXProxy extends AMX_SPI
      */
     public AMXProxy child(final String type);
 
-    /** Get a singleton child. Its type is derived from the interface using {@link Util#deduceType}. */
+    /** Get a singleton child. Its type is deduced from the interface using {@link Util#deduceType}. */
     public <T extends AMXProxy> T child(final Class<T> intf);
 
     /**
      Return a proxy implementing the specified interface.  Clients with access to
      a sub-interface of {@link AMXProxy} can specialized it with this method; the proxy
      by default will implement only the base {@link AMXProxy} interface.
+     <p>This method is needed
+     when crossing module boundaries where the desired class is not available to the AMXProxyHandler
+     through its own classloader and/or when a generic proxy has been obtained through other means.
+     When sub-interfaces of AMXProxy already return the appropriate type there is no reason or need
+     to use this method.
      */
     public <T extends AMXProxy> T as(Class<T> intf);
 
     /**
-    Get a Map keyed by Attribute name of all Attribute values.
+    Get a Map keyed by Attribute name of all Attribute values. Requires a trip to the server.
      */
     public Map<String, Object> attributesMap();
 
@@ -167,7 +192,7 @@ public interface AMXProxy extends AMX_SPI
     public Map<String, Object> attributesMap(final Set<String> attrNames);
 
     /**
-    Get all available Attributes names, no trip to server needed.
+    Get all available Attributes names, no trip to server needed. Requires a trip to the server.
      */
     public Set<String> attributeNames();
 
@@ -185,8 +210,14 @@ public interface AMXProxy extends AMX_SPI
 
     /** additional capabilities, including direct JMX access */
     public Extra extra();
-
+    
+    /** Invoke an operation by name, no arguments.  */
+    public Object invokeOp( String operationName );
+    
+    /** Invoke an operation by name, JMX style params and signature. */
+    public Object invokeOp( String operationName, final Object[] params, final String[] signature);
 }
+
 
 
 
