@@ -5,6 +5,9 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.deployment.GenericCompositeSniffer;
 import org.glassfish.deployment.common.DeploymentUtils;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Ear sniffers snifs ear files.
  *
@@ -40,5 +43,27 @@ public class EarSniffer extends GenericCompositeSniffer {
     public boolean isUserVisible() {
         return true;
     }
+
+    private static final List<String> deploymentConfigurationPaths =
+            initDeploymentConfigurationPaths();
+
+    private static List<String> initDeploymentConfigurationPaths() {
+        final List<String> result = new ArrayList<String>();
+        result.add("META-INF/application.xml");
+        result.add("META-INF/sun-application.xml");
+        return result;
+    }
+
+    /**
+     * Returns the descriptor paths that might exist at the root of the 
+     * ear.
+     *
+     * @return list of the deployment descriptor paths
+     */
+    @Override
+    protected List<String> getDeploymentConfigurationPaths() {
+        return deploymentConfigurationPaths;
+    }
+
 }
 

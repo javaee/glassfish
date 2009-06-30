@@ -36,6 +36,8 @@ import org.jvnet.hk2.component.Singleton;
 
 import java.io.IOException;
 import java.util.jar.Attributes;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service(name = "AppClient")
 @Scoped(Singleton.class)
@@ -121,4 +123,25 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
     public String[] getIncompatibleSnifferTypes() {
         return new String[] {"connector", "web", "ejb"};
     }
+
+    private static final List<String> deploymentConfigurationPaths =
+            initDeploymentConfigurationPaths();
+
+    private static List<String> initDeploymentConfigurationPaths() {
+        final List<String> result = new ArrayList<String>();
+        result.add("META-INF/application-client.xml");
+        result.add("META-INF/sun-application-client.xml");
+        return result;
+    }
+
+    /**
+     * Returns the descriptor paths that might exist in an appclient app.
+     *
+     * @return list of the deployment descriptor paths
+     */
+    @Override
+    protected List<String> getDeploymentConfigurationPaths() {
+        return deploymentConfigurationPaths;
+    }
+
 }

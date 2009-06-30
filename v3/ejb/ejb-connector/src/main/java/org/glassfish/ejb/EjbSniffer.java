@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.io.File;
 import java.util.logging.Logger;
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 import java.lang.annotation.Annotation;
 
 /**
@@ -166,4 +168,25 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
     public String[] getIncompatibleSnifferTypes() {
         return new String[] {"connector", "appclient"};
     }
+
+    private static final List<String> deploymentConfigurationPaths =
+            initDeploymentConfigurationPaths();
+
+    private static List<String> initDeploymentConfigurationPaths() {
+        final List<String> result = new ArrayList<String>();
+        result.add("META-INF/ejb-jar.xml");
+        result.add("META-INF/sun-ejb-jar.xml");
+        return result;
+    }
+
+    /**
+     * Returns the descriptor paths that might exist at an ejb app.
+     *
+     * @return list of the deployment descriptor paths
+     */
+    @Override
+    protected List<String> getDeploymentConfigurationPaths() {
+        return deploymentConfigurationPaths;
+    }
+
 }

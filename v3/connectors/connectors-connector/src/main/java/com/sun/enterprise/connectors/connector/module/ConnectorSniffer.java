@@ -51,6 +51,8 @@ import org.jvnet.hk2.component.Singleton;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.List;
+import java.util.ArrayList;
 import java.lang.annotation.Annotation;
 
 /**
@@ -141,5 +143,25 @@ public class ConnectorSniffer extends GenericSniffer implements Sniffer {
      */
     public String[] getIncompatibleSnifferTypes() {
         return new String[] {"ejb", "appclient", "web"};
+    }
+
+    private static final List<String> deploymentConfigurationPaths =
+            initDeploymentConfigurationPaths();
+
+    private static List<String> initDeploymentConfigurationPaths() {
+        final List<String> result = new ArrayList<String>();
+        result.add("META-INF/ra.xml");
+        result.add("META-INF/sun-ra.xml");
+        return result;
+    }
+
+    /**
+     * Returns the descriptor paths that might exist in a connector app.
+     *
+     * @return list of the deployment descriptor paths
+     */
+    @Override
+    protected List<String> getDeploymentConfigurationPaths() {
+        return deploymentConfigurationPaths;
     }
 }

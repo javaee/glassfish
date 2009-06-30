@@ -132,6 +132,10 @@ public class ApplicationInfo extends ModuleInfo {
      */
     public Collection<Sniffer> getSniffers() {
         List<Sniffer> sniffers = new ArrayList<Sniffer>();
+        for (EngineRef ref : engines) {
+            sniffers.add(ref.getContainerInfo().getSniffer());
+        }
+
         for (ModuleInfo module : modules) {
             sniffers.addAll(module.getSniffers());
         }
