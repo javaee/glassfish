@@ -132,6 +132,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
      */
     @Override
     public void service(Request req, Response res) throws Exception{
+        MappingData mappingData = null;
         try{
              
             // If we have only one Adapter deployed, invoke that Adapter
@@ -149,16 +150,13 @@ public class ContainerMapper extends StaticResourcesAdapter {
                 }
             }
 
-            MappingData mappingData = null;
             MessageBytes decodedURI = req.decodedURI();
             decodedURI.duplicate(req.requestURI());
             mappingData = (MappingData) req.getNote(MAPPING_DATA);
             if (mappingData == null) {
                 mappingData = new MappingData();
                 req.setNote(MAPPING_DATA, mappingData);
-            } else {
-                mappingData.recycle();
-            }
+            } 
             Adapter adapter = null;
             // Map the request without any trailling.
             ByteChunk uriBB = decodedURI.getByteChunk();
@@ -175,6 +173,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
                 if (ext.indexOf(".") > 0) {
                     ext = "*" + ext.substring(ext.lastIndexOf("."));
                 }
+                
                 initializeFileURLPattern(ext);
                 mappingData.recycle();
                 adapter = map(req, decodedURI, mappingData);
@@ -220,6 +219,10 @@ public class ContainerMapper extends StaticResourcesAdapter {
                 if (logger.isLoggable(Level.WARNING)) {
                     logger.log(Level.WARNING, "Unable to error page", ex2);
                 }
+            }
+        } finally {
+            if (mappingData != null){
+                mappingData.recycle();
             }
         }
     }
