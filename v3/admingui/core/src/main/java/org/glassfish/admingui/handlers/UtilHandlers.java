@@ -526,6 +526,26 @@ public class UtilHandlers {
 
      }
      
+     @Handler(id = "selectItemArrayToStrArray",
+    input = {
+        @HandlerInput(name = "item", type = SelectItem[].class, required = true)},
+    output = {
+        @HandlerOutput(name = "strAry", type = String[].class)})
+    public static void selectItemArrayToStrArray(HandlerContext handlerCtx) {
+
+        SelectItem[] item = (SelectItem[]) handlerCtx.getInputValue("item");
+        if (item == null || item.length == 0){
+            handlerCtx.setOutputValue("strAry", new String[0]);
+            return;
+        }
+        String[] strAry = new String[item.length];
+        for(int i=0; i<item.length; i++){
+            strAry[i] = (String)item[i].getValue();
+        }
+        handlerCtx.setOutputValue("strAry", strAry);
+     }
+
+
      
      @Handler(id = "convertStrToBoolean",
     input = {
