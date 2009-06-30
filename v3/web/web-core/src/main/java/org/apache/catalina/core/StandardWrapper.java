@@ -1523,6 +1523,10 @@ public class StandardWrapper
             supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response, e);
             throw e;
+        } catch (Error e) {
+            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
+                                   serv, request, response, e);
+            throw e;
         } catch (Throwable e) {
             supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response, e);
