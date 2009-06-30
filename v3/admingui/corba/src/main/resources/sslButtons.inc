@@ -40,8 +40,13 @@
         <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}">
                 # onClick="return checkSSLRequiredElements(); " >
             <!command
-                convertCiphersItemsToStr( test="#{selectedCommonCiphers}"  common="#{selectedCommonCiphers}" ephemeral="#{selectedEphCiphers}" other="#{selectedOtherCiphers}" ecc="#{selectedEccCiphers}" ciphers="{#requestScope.ciphers}")
-                mapPut(map="#{pageSession.valueMap}" key="SSL3TLSCiphers" value="{#requestScope.ciphers}")
+                selectItemArrayToStrArray(item="#{selectedCommonCiphers}"  strAry="#{requestScope.commonStr}")
+                selectItemArrayToStrArray(item="#{selectedEphCiphers}"  strAry="#{requestScope.ephStr}")
+                selectItemArrayToStrArray(item="#{selectedOtherCiphers}"  strAry="#{requestScope.otherStr}")
+                selectItemArrayToStrArray(item="#{selectedEccCiphers}"  strAry="#{requestScope.eccStr}")
+                convertCiphersItemsToStr(common="#{requestScope.commonStr}" ephemeral="#{requestScope.ephStr}" other="#{requestScope.otherStr}" ecc="#{requestScope.eccStr}" ciphers="{#requestScope.ciphers}")
+                mapPut(map="#{pageSession.valueMap}" key="SSL3TLSCiphers" value="#{requestScope.ciphers}")
+
                 saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                     skipAttrs="#{pageSession.skipAttrsList}"
                     convertToFalse="#{pageSession.convertToFalseList}"

@@ -57,9 +57,7 @@
         if (#{requestScope.exist}){
             setPageSessionAttribute(key="edit" value="#{true}" )
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-
-            convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['SSL3TLSCiphers']}"
+            convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
                 CommonCiphersList="#{requestScope.selectedCommon}"
                 EphemeralCiphersList="#{requestScope.selectedEphemeral}"
                 OtherCiphersList="#{requestScope.selectedOther}"
@@ -91,7 +89,6 @@
         </sun:title>
         "<br><br>
 #include "/corba/sslAttrs.jsf"
-#include "/shared/propertyDescTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_corba.iiop.sslEdit}" />
 </sun:form>

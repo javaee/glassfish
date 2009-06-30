@@ -96,8 +96,8 @@
        <sun:property id="CommonCiphersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}">
             <sun:addRemove id="commonAddRemove"
                 selectAll="$boolean{true}"
-                items="#{commonCiphers}"
-                selected="#{selectedCommonCiphers}"
+                items="#{pageSession.commonCiphers}"
+                selected="#{pageSession.selectedCommonCiphers}"
                 availableItemsLabel="$resource{i18n.ssl.availableCommonCiphersLabel}"
                 selectedItemsLabel="$resource{i18n.ssl.selectedCommonCiphersLabel}">
             </sun:addRemove>
@@ -110,8 +110,8 @@
         <sun:property id="EphemeralCiphersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" >
             <sun:addRemove id="ephemeralAddRemove"
                 selectAll="$boolean{true}"
-                items="#{ephCiphers}"
-                selected="#{selectedEphemeralCiphers}"
+                items="#{pageSession.ephCiphers}"
+                selected="#{pageSession.selectedEphemeralCiphers}"
                 availableItemsLabel="$resource{i18n.ssl.availableEphCiphersLabel}"
                 selectedItemsLabel="$resource{i18n.ssl.selectedEphCiphersLabel}">
             </sun:addRemove>
@@ -124,8 +124,8 @@
      <sun:property id="OtherCiphersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" >
         <sun:addRemove id="otherAddRemove"
             selectAll="$boolean{true}"
-            items="#{other}"
-            selected="#{selectedOtherCiphers}"
+            items="#{pageSession.other}"
+            selected="#{pageSession.selectedOtherCiphers}"
             availableItemsLabel="$resource{i18n.ssl.availableOtherCiphersLabel}"
             selectedItemsLabel="$resource{i18n.ssl.selectedOtherCiphersLabel}">
         </sun:addRemove>
@@ -137,8 +137,8 @@
      <sun:property id="EccCiphersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" >
         <sun:addRemove id="eccAddRemove"
             selectAll="$boolean{true}"
-            items="#{eccCiphers}"
-            selected="#{selectedEccCiphers}"
+            items="#{pageSession.eccCiphers}"
+            selected="#{pageSession.selectedEccCiphers}"
             availableItemsLabel="$resource{i18n.ssl.availableEccCiphersLabel}"
             selectedItemsLabel="$resource{i18n.ssl.selectedEccCiphersLabel}">
         </sun:addRemove>
