@@ -43,7 +43,6 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
 
-import org.glassfish.deployment.admin.ListComponentsCommand;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -52,6 +51,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Properties;
 
 
@@ -251,5 +251,21 @@ public class ListComponentsCommandTest {
         }
 
         public void setConfig(ApplicationConfig config) throws PropertyVetoException {}
+
+        public List<ApplicationConfig> getApplicationConfigs() {
+            return Collections.EMPTY_LIST;
+        }
+
+        public ApplicationConfig getApplicationConfig() {
+            return null;
+        }
+
+        public void setApplicationConfig(ApplicationConfig config) {
+            // no-op for this test
+        }
+
+        public <T extends ApplicationConfig> T newApplicationConfig(Class<T> configType) throws TransactionFailure {
+            return null;
+        }
     }
 }
