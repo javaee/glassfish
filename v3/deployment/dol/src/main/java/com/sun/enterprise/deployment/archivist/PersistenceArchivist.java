@@ -9,7 +9,6 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.xml.sax.SAXParseException;
-import org.jvnet.hk2.annotations.Service;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -18,15 +17,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Enumeration;
 
-@Service
-public class PersistenceArchivist extends ExtensionsArchivist {
+public abstract class PersistenceArchivist extends ExtensionsArchivist {
     protected static final String JAR_EXT = ".jar";
     protected static final char SEPERATOR_CHAR = '/';
     protected static final String LIB_DIR = "lib";
 
 
     protected final Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
-    
+
     public DeploymentDescriptorFile getStandardDDFile(RootDeploymentDescriptor descriptor) {
         return new PersistenceDeploymentDescriptorFile();
     }
@@ -39,15 +37,15 @@ public class PersistenceArchivist extends ExtensionsArchivist {
         return XModuleType.Persistence;
     }
 
-    public boolean supportsModuleType(XModuleType moduleType) {
-        return (XModuleType.CAR == moduleType || XModuleType.EJB == moduleType);
-    }
+    @Override
+    // Need to be overridden in derived class to define module type it supports
+    public abstract boolean supportsModuleType(XModuleType moduleType);
 
     @Override
     public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
             throws IOException, SAXParseException {
-
-        readPersistenceDeploymentDescriptor(main, archive, "", descriptor);
+        String puRoot = getPuRoot(archive);
+        readPersistenceDeploymentDescriptor(main, archive, puRoot, descriptor);
         return null;  // return null so that the descritor does not get added twice to extensions
     }
 
@@ -84,7 +82,7 @@ public class PersistenceArchivist extends ExtensionsArchivist {
         return persistenceUnitsDescriptor;
     }
 
-    public RootDeploymentDescriptor getDefaultDescriptor() {
+    public <T extends RootDeploymentDescriptor> T getDefaultDescriptor() {
         return null;
     }
 
@@ -129,6 +127,13 @@ public class PersistenceArchivist extends ExtensionsArchivist {
         return returnedArchive;
     }
 
+    protected String getPuRoot(ReadableArchive archive) {
+        // getPuRoot() is called from Open() of this class to define pu root. This is default implementation to keep compiler happy.
+        // It is assumed that subclasses not overriding open() (which are currently ACCPersitenceArchivist and ServerSidePersitenceArchivist)
+        // would override this method.
+        assert false;
+        return null;
+    }
 
     protected abstract class SubArchivePURootScanner {
         abstract String getPathOfSubArchiveToScan();
