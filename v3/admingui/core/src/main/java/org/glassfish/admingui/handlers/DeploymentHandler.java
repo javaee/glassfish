@@ -41,14 +41,10 @@
 
 package org.glassfish.admingui.handlers;
 
-import com.sun.appserv.management.config.ApplicationConfig;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-//TODO-V3
-//import com.sun.enterprise.connectors.ConnectorRuntime;
 
 import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.deployment.client.DFDeploymentStatus;
@@ -69,8 +65,6 @@ import java.util.HashMap;
 import java.util.Random;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.AMXUtil;
-import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
 /**
@@ -230,10 +224,13 @@ public class DeploymentHandler {
              String appName = (String) handlerCtx.getInputValue("appName");
              Boolean keepSessions = (Boolean) handlerCtx.getInputValue("keepSessions");
              DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
+
              //If we are redeploying a web app, we want to preserve context root.
-             ApplicationConfig appConfig = AMXUtil.getApplicationConfigByName(appName);
-             if (appConfig != null){
-                 deploymentProps.setContextRoot(appConfig.getContextRoot());
+             //can use Query instead of hard code object name
+             String appObjectNameStr = "v3:pp=/domain/applications,type=application,name="+appName;
+             String ctxRoot = (String) V3AMX.getAttribute(appObjectNameStr, "ContextRoot");
+             if (ctxRoot != null){
+                 deploymentProps.setContextRoot(ctxRoot);
              }
              deploymentProps.setForce(true);
              deploymentProps.setUpload(false);
@@ -282,13 +279,14 @@ public class DeploymentHandler {
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
             //Undeploy the app here.
-            if(V3AMX.getInstance().isEE()){
-                List<String> refList = TargetUtil.getDeployedTargets(appName, true);
-                if(refList.size() > 0)
-                    targetNames = refList.toArray(new String[refList.size()]);
-                else
-                    targetNames=new String[]{"domain"};
-            }
+//            if(V3AMX.getInstance().isEE()){
+//                List<String> refList = TargetUtil.getDeployedTargets(appName, true);
+//                if(refList.size() > 0)
+//                    targetNames = refList.toArray(new String[refList.size()]);
+//                else
+//                    targetNames=new String[]{"domain"};
+//            }
+
             progressObject = df.undeploy(df.createTargets(targetNames), appName, dProps);
             
             progressObject.waitFor();
