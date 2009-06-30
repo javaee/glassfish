@@ -916,7 +916,12 @@ public class StandardContext
         return eventListeners;
     }
 
-
+    
+    public void setApplicationEventListeners(List<EventListener> eventListeners) {
+        this.eventListeners = eventListeners;
+    }
+    
+    
     /**
      * @return the list of initialized application lifecycle listeners
      * of this application, in the order in which they have been specified
@@ -925,7 +930,12 @@ public class StandardContext
     public List<EventListener> getApplicationLifecycleListeners() {
         return lifecycleListeners;
     }
-
+    
+    
+    public void setApplicationLifecycleListeners(List<EventListener> lifecycleListeners) {
+        this.lifecycleListeners = lifecycleListeners;
+    }
+    
 
     /**
      * Return the application available flag for this Context.
@@ -6823,7 +6833,7 @@ public class StandardContext
      *
      * @return list of all servlets ( we know about )
      */
-    public String[] getServlets() {
+    public String[] getServletObjectNames() {
 
         String[] result = null;
 

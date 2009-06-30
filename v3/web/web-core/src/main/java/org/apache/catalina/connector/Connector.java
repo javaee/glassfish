@@ -386,7 +386,7 @@ public class Connector
      * Defaults to the Coyote HTTP/1.1 protocolHandler.
      */
     private String protocolHandlerClassName =
-        "com.sun.enterprise.v3.web.connector.grizzly.CoyoteConnectorLauncher";
+    	"com.sun.enterprise.web.connector.grizzly.CoyoteConnectorLauncher";
 
     /**
      * Coyote protocol handler.

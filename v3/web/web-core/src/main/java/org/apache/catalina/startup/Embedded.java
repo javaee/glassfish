@@ -438,6 +438,11 @@ public class Embedded  extends StandardService implements Lifecycle {
     }
 
 
+    public Engine[] getEngines() {
+        return engines;
+    }
+    
+    
     /**
      * Create, configure, and return a new TCP/IP socket connector
      * based on the specified properties.

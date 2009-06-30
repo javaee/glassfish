@@ -288,7 +288,11 @@ public interface Connector {
      */
     public void setProxyHandler(ProxyHandler proxyHandler);
     // END S1AS 6188932
-
+    
+    /**
+     * Gets the name of this Connector.
+     */
+    public String getName();
 
     // --------------------------------------------------------- Public Methods
 
