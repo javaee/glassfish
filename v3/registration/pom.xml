@@ -53,6 +53,7 @@
         <module>registration-api</module>
         <module>registration-impl</module>
         <module>glassfish-registration</module>        
+        <module>servicetag-registry</module>        
     </modules>
     
 </project>
