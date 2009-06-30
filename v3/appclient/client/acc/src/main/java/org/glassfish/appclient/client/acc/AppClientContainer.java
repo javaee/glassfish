@@ -46,6 +46,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
+import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
@@ -53,6 +54,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -61,6 +63,8 @@ import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.security.auth.callback.CallbackHandler;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -70,9 +74,12 @@ import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
+import org.glassfish.persistence.jpa.PersistenceUnitLoader;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PerLookup;
 import org.xml.sax.SAXParseException;
 
@@ -228,7 +235,10 @@ public class AppClientContainer {
     private ComponentEnvManager componentEnvManager;
 
     @Inject
-    private ConnectorRuntime runtime;
+    private ConnectorRuntime connectorRuntime;
+
+    @Inject
+    private Habitat habitat;
 
     private Builder builder;
 
@@ -336,20 +346,23 @@ public class AppClientContainer {
          * the JVM will invoke the client's main method itself and launch will
          * be skipped.
          */
-        cleanup = Cleanup.arrangeForShutdownCleanup(logger);
+        cleanup = Cleanup.arrangeForShutdownCleanup(logger, habitat);
 
         /*
          * If this app client contains persistence unit refs, then initialize
-         * the PU handling.
+         * the PU handling.  
          */
         Collection<? extends PersistenceUnitDescriptor> referencedPUs = desc.findReferencedPUs();
         if (referencedPUs != null) {
-            ProviderContainerContractInfoImpl pcci = null; // new ProviderContainerContractInfoImpl(
-//                    getClassLoader(), inst, location, connectorRuntime);
-            // TODO: iterate through each referenced PU and create a PersistenceUnitLoader.
 
-            // TODO: uncomment the next line - once pcci is no longer null
-//            cleanup.setEMFs(pcci.emfs());
+            ProviderContainerContractInfoImpl pcci = new ProviderContainerContractInfoImpl(
+                    (URLClassLoader) getClassLoader(), inst, client.getAnchorDir(), connectorRuntime);
+            for (PersistenceUnitDescriptor puDesc : referencedPUs) {
+                PersistenceUnitLoader pul = new PersistenceUnitLoader(puDesc, pcci);
+                desc.addEntityManagerFactory(puDesc.getName(), pul.getEMF());
+            }
+
+            cleanup.setEMFs(pcci.emfs());
         }
 
         prepareURLStreamHandling();
@@ -745,15 +758,18 @@ public class AppClientContainer {
         private final Logger logger;
         private Thread cleanupThread = null;
         private Collection<EntityManagerFactory> emfs = null;
+        private final Habitat habitat;
 
-        static Cleanup arrangeForShutdownCleanup(final Logger logger) {
-            final Cleanup cu = new Cleanup(logger);
+        static Cleanup arrangeForShutdownCleanup(final Logger logger,
+                final Habitat habitat) {
+            final Cleanup cu = new Cleanup(logger, habitat);
             cu.enable();
             return cu;
         }
 
-        private Cleanup(final Logger logger) {
+        private Cleanup(final Logger logger, final Habitat habitat) {
             this.logger = logger;
+            this.habitat = habitat;
         }
 
         void setAppClientInfo(AppClientInfo info) {
@@ -807,29 +823,11 @@ public class AppClientContainer {
         void cleanUp() {
             if( !cleanedUp ) {
                 try {
-                    if (emfs != null) {
-                        for (EntityManagerFactory emf : emfs) {
-                            emf.close();
-                        }
-                        emfs.clear();
-                        emfs = null;
-                    }
-
-                    if ( appClientInfo != null ) {
-                        appClientInfo.close();
-                    }
-                    if ( injectionMgr != null) {
-                        // inject the pre-destroy methods before shutting down
-                        injectionMgr.invokeClassPreDestroy(cls, appClient);
-                        injectionMgr = null;
-                    }
-                    if(appClient != null && appClient.getServiceReferenceDescriptors() != null) {
-                        // Cleanup client pipe line, if there were service references
-                        for (Object desc: appClient.getServiceReferenceDescriptors()) {
-                             ClientPipeCloser.getInstance()
-                                .cleanupClientPipe((ServiceReferenceDescriptor)desc);
-                        }
-                    }
+                    cleanupEMFs();
+                    cleanupInfo();
+                    cleanupInjection();
+                    cleanupServiceReferences();
+                    cleanupTransactions();
                 }
                 catch(Throwable t) {
                 }
@@ -837,6 +835,51 @@ public class AppClientContainer {
                     cleanedUp = true;
                 }
             } // End if -- cleanup required
+        }
+        
+        private void cleanupEMFs() {
+            if (emfs != null) {
+                for (EntityManagerFactory emf : emfs) {
+                    emf.close();
+                }
+                emfs.clear();
+                emfs = null;
+            }
+        }
+
+        private void cleanupInfo() throws IOException {
+            if ( appClientInfo != null ) {
+                appClientInfo.close();
+            }
+        }
+
+        private void cleanupInjection() throws InjectionException {
+            if ( injectionMgr != null) {
+                // inject the pre-destroy methods before shutting down
+                injectionMgr.invokeClassPreDestroy(cls, appClient);
+                injectionMgr = null;
+            }
+
+        }
+
+        private void cleanupServiceReferences() {
+            if(appClient != null && appClient.getServiceReferenceDescriptors() != null) {
+                // Cleanup client pipe line, if there were service references
+                for (Object desc: appClient.getServiceReferenceDescriptors()) {
+                     ClientPipeCloser.getInstance()
+                        .cleanupClientPipe((ServiceReferenceDescriptor)desc);
+                }
+            }
+        }
+
+        private void cleanupTransactions()
+                throws IllegalStateException, SecurityException, SystemException {
+            Inhabitant<TransactionManager> inhabitant =
+                    habitat.getInhabitantByType(TransactionManager.class);
+            if (inhabitant.isInstantiated()) {
+                TransactionManager txmgr = inhabitant.get();
+                txmgr.rollback();
+            }
         }
     }
 }

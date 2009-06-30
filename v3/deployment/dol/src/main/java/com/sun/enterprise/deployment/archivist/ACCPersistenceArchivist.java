@@ -9,10 +9,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 
-
-/**
- * Archivist that reads persistence.xml for appclient module while running on AppClient 
- */
 @Service
 public class ACCPersistenceArchivist extends PersistenceArchivist {
 
@@ -21,8 +17,6 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
 
     @Override
     public boolean supportsModuleType(XModuleType moduleType) {
-        // On server side, persitence.xml for app client is processed by ServerSidePersistenceArchivist
-        // so that it can return differnt pu root
         return (XModuleType.CAR == moduleType) && (env.getProcessType() == ProcessType.ACC) ;
     }
 
@@ -37,12 +31,23 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
         // retrieved/
         //    myAppClient.jar (generated JAR - will never contain PUs)
         //    myAppClient/
-        //        myClient-client.jar (generated JAR - will never contain PUs)
+        //        myClientClient.jar (generated JAR - will never contain PUs)
         //        myClient.jar (developer's original JAR contains PUs)
         //        lib/myLib.jar (developer's original JAR) 
         //
         // PU root is returned as "myClient.jar"
-        return Util.getURIName(archive.getURI());
+
+        /*
+         * The archive passed to getPuRoot will be the app client JAR that was
+         * generated during deployment (and then downloaded to the client
+         * system).  But the puRoot needs to be the developer's original
+         * app client JAR file, not the generated one, because that's where
+         * the META-INF/persistence.xml and the entity classes are.
+         */
+        final String generatedJARName = Util.getURIName(archive.getURI());
+        return generatedJARName.substring(0, 
+                generatedJARName.length() - "Client.jar".length()) + ".jar";
+
     }
 
 }

@@ -58,6 +58,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 
 /**
@@ -72,6 +73,8 @@ import org.glassfish.deployment.common.DownloadableArtifacts;
  * @author tjquinn
  */
 abstract class AppClientDeployerHelper {
+
+    private final static String PERSISTENCE_XML_PATH = "META-INF/persistence.xml";
 
     private final DeploymentContext dc;
     private final ApplicationClientDescriptor appClientDesc;
@@ -316,19 +319,44 @@ abstract class AppClientDeployerHelper {
          * Write the updated descriptors to the facade.
          */
         writeUpdatedDescriptors(facadeArchive, appClientDesc);
+
         /*
-         * Copy the facade main class into the facade.
+         * Because of how persistence units are discovered and added to the
+         * app client DOL object when the archivist reads the descriptor file,
+         * add any META-INF/persistence.xml file from the developer's client
+         * to the client facade.  (The generated descriptor and the
+         * persistence.xml files need to be in the same archive.)
          */
-        os = facadeArchive.putNextEntry(AppClientDeployer.APPCLIENT_FACADE_CLASS_FILE);
+        copyPersistenceUnitXML(source, facadeArchive);
+
+        copyMainClass(facadeArchive);
+
+        facadeArchive.close();
+    }
+
+    private void copyMainClass(final WritableArchive facadeArchive) throws IOException {
+        OutputStream os = facadeArchive.putNextEntry(AppClientDeployer.APPCLIENT_FACADE_CLASS_FILE);
         InputStream is = openByteCodeStream("/" + AppClientDeployer.APPCLIENT_FACADE_CLASS_FILE);
-        /*
-         * Note that the copyStream closes the output stream.
-         */
-        FileUtils.copyStream(is, os);
+
+        copyStream(is, os);
         try {
             is.close();
-            facadeArchive.close();
+            facadeArchive.closeEntry();
         } catch (IOException ignore) {
+        }
+    }
+
+    private void copyPersistenceUnitXML(final ReadableArchive sourceClient,
+            final WritableArchive facadeArchive) throws IOException {
+        InputStream persistenceXMLStream = sourceClient.getEntry(PERSISTENCE_XML_PATH);
+        if (persistenceXMLStream != null) {
+            OutputStream os = facadeArchive.putNextEntry(PERSISTENCE_XML_PATH);
+            copyStream(persistenceXMLStream, os);
+            try {
+                persistenceXMLStream.close();
+                facadeArchive.closeEntry();
+            } catch (IOException ignore) {
+            }
         }
     }
 
@@ -343,4 +371,12 @@ abstract class AppClientDeployerHelper {
 
     
     protected abstract Set<DownloadableArtifacts.FullAndPartURIs> downloads() throws IOException;
+
+    static void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[4096];
+        int len;
+        while ((len = in.read(buf)) >= 0) {
+            out.write(buf, 0, len);
+        }
+    }
 }

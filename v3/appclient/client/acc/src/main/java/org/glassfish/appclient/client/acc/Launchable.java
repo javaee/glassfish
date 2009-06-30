@@ -42,19 +42,13 @@ import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.jar.Attributes;
-import java.util.jar.Attributes.Name;
-import java.util.jar.Manifest;
-import java.util.logging.Logger;
 import javax.xml.stream.XMLStreamException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.appclient.client.acc.FacadeLaunchable;
+import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -78,12 +72,15 @@ interface Launchable {
 
     URI getURI();
 
+    String getAnchorDir();
+
     static class LaunchableUtil {
 
         private static final LocalStringManager localStrings = new LocalStringManagerImpl(Launchable.LaunchableUtil.class);
         static Launchable newLaunchable(final URI uri,
                 final String callerSuppliedMainClassName,
-                final String callerSuppliedAppName) throws IOException, BootException, URISyntaxException, XMLStreamException, SAXParseException, UserError {
+                final String callerSuppliedAppName,
+                final Habitat habitat) throws IOException, BootException, URISyntaxException, XMLStreamException, SAXParseException, UserError {
             /*
              * Make sure the requested URI exists and is readable.
              */
@@ -100,7 +97,8 @@ interface Launchable {
                 throw new UserError(msg);
             }
 
-            Launchable result = FacadeLaunchable.newFacade(ra, callerSuppliedMainClassName, callerSuppliedAppName);
+            Launchable result = FacadeLaunchable.newFacade(
+                    habitat, ra, callerSuppliedMainClassName, callerSuppliedAppName);
             if (result != null) {
                 ra.close();
             } else {
@@ -137,12 +135,24 @@ interface Launchable {
                             archive.exists(classNameToArchivePath(callerSpecifiedMainClassName));
         }
 
-        static boolean matchesName(final ReadableArchive archive, final String appClientName) throws IOException, SAXParseException {
+        static boolean matchesName(
+                final URI groupFacadeURI,
+                final ReadableArchive archive,
+                final String appClientName) throws IOException, SAXParseException {
 
             ApplicationClientDescriptor acd = null;
             AppClientArchivist archivist = new AppClientArchivist();
             acd = archivist.open(archive);
-            final String moduleID = acd.getModuleID();
+            String moduleID = acd.getModuleID();
+            /*
+             * If the moduleID was never set explicitly in the descriptor then
+             * it will fall back to  the URI of the archive...ending in .jar we
+             * presume.  In that case, change the module ID to be the path
+             * relative to the downloaded root directory.
+             */
+            if (moduleID.endsWith(".jar")) {
+                moduleID = deriveModuleID(groupFacadeURI, archive.getURI());
+            }
             final String displayName = acd.getDisplayName();
             return (   (moduleID != null && moduleID.equals(appClientName))
                     || (displayName != null && displayName.equals(appClientName)));
@@ -169,6 +179,27 @@ interface Launchable {
         private static String classNameToArchivePath(final String className) {
             return new StringBuilder(className.replace('.', '/'))
                     .append(".class").toString();
+        }
+
+        private static String deriveModuleID(final URI groupFacadeURI,
+                final URI clientArchiveURI) {
+            /*
+             * The groupFacadeURI will be something like x/y/appName.jar and
+             * the clientArchiveURI will be something like x/y/appName/a/b/clientName.jar.
+             * The derived moduleID should be the client archive's URI relative
+             * to the x/y/appName directory with no file type: in this example a/b/clientName
+             */
+            URI dirURI = stripDotJar(groupFacadeURI);
+            URI clientArchiveRelativeURI = stripDotJar(
+                    dirURI.relativize(URI.create("file:" + clientArchiveURI.getRawSchemeSpecificPart())));
+            return clientArchiveRelativeURI.getRawSchemeSpecificPart();
+        }
+
+        private static URI stripDotJar(final URI uri) {
+            String pathWithoutDotJar = uri.getRawSchemeSpecificPart();
+            pathWithoutDotJar = pathWithoutDotJar.substring(0,
+                    pathWithoutDotJar.length() - ".jar".length());
+            return URI.create("file:" + pathWithoutDotJar);
         }
     }
 
@@ -218,6 +249,9 @@ interface Launchable {
             return null;
         }
 
+        public String getAnchorDir() {
+            return null;
+        }
 
 
     }

@@ -145,12 +145,14 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
             final CallbackHandler callerSpecifiedCallbackHandler) throws Exception {
         prepareHabitatAndNaming();
         Launchable client = Launchable.LaunchableUtil.newLaunchable(mainClass);
-        AppClientContainer container = createContainer(client, callerSpecifiedCallbackHandler);
+        AppClientContainer container = createContainer(client, 
+                callerSpecifiedCallbackHandler);
         return container;
     }
     
     public AppClientContainer newContainer(final Class mainClass) throws Exception {
         return newContainer(mainClass, null);
+
     }
 
     public AppClientContainer newContainer(final URI clientURI,
@@ -161,9 +163,11 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
         Launchable client = Launchable.LaunchableUtil.newLaunchable(
                 clientURI,
                 callerSpecifiedMainClassName,
-                callerSpecifiedAppClientName);
+                callerSpecifiedAppClientName,
+                ACCModulesManager.getHabitat());
 
-        AppClientContainer container = createContainer(client, callerSpecifiedCallbackHandler);
+        AppClientContainer container = createContainer(client, 
+                callerSpecifiedCallbackHandler);
         return container;
     }
 

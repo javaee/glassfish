@@ -39,7 +39,7 @@
 
 package org.glassfish.appclient.client.acc;
 
-import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import java.beans.PropertyChangeListener;
 import java.lang.instrument.ClassFileTransformer;
@@ -52,7 +52,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import javax.naming.NamingException;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.ClassTransformer;
 import javax.sql.DataSource;
@@ -113,11 +112,11 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
     }
 
     public DataSource lookupDataSource(String dataSourceName) throws NamingException {
-        return (DataSource) connectorRuntime.lookupPMResource(dataSourceName, true);
+        return (DataSource) connectorRuntime.lookupPMResource(dataSourceName, false);
     }
 
     public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
-        return (DataSource) connectorRuntime.lookupPMResource(dataSourceName, true);
+        return (DataSource) connectorRuntime.lookupPMResource(dataSourceName, false);
     }
 
     // TODO: remove after persistence is refactored.

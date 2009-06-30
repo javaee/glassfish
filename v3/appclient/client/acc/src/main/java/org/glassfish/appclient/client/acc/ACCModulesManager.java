@@ -50,6 +50,7 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.naming.ClientNamingConfigurator;
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
@@ -83,6 +84,12 @@ public class ACCModulesManager /*implements ModuleStartup*/ {
         if (habitat == null) {
             habitat = prepareHabitat(
                     loader);
+
+            /*
+             * Set up the default habitat in Globals as soon as we know
+             * which habitat we'll use.
+             */
+            Globals.setDefaultHabitat(habitat);
 
             /*
              * Pass an explicit root file based on where the current JAR file

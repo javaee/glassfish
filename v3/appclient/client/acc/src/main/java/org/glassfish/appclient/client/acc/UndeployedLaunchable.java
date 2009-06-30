@@ -134,6 +134,10 @@ public class UndeployedLaunchable implements Launchable {
         return clientRA.getURI();
     }
 
+    public String getAnchorDir() {
+        return null;
+    }
+
     private static String classToResource(final String className) {
         return className.replace('.', '/') + ".class";
     }
