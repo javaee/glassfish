@@ -95,9 +95,9 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
         try {
             final Map<String, String> customResources = getConnectorRuntime().getBuiltInCustomResources();
-            result.put(ConnectorRuntimeAPIProvider.PROPERTY_MAP_KEY, customResources);
+            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, customResources);
         } catch (ComponentException e) {
-            result.put(ConnectorRuntimeAPIProvider.PROPERTY_MAP_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
