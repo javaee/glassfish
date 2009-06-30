@@ -78,9 +78,9 @@
                     helpText="$resource{i18njdbc.jdbcConnection.editPageHelp}">
                     <!-- Buttons  -->  
 #include "/shared/editPageLoadDefaultButton.inc"
-                    <sun:button id="ping" text="$resource{i18n.button.Ping}" primary="#{false}" > 
+                    <sun:button id="ping" disabled="#{true}" text="$resource{i18n.button.Ping}" primary="#{false}" >
                         <!command
-                            pingJdbcConnectionPool(jndiName="#{pageSession.Name}");
+                            // #pingJdbcConnectionPool(jndiName="#{pageSession.Name}");
                         />
                     </sun:button>
                     <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" onClick="Javascript:alert('To Do - API Not available');" > 
