@@ -44,6 +44,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.tools.attach.VirtualMachine;
 
@@ -54,6 +56,7 @@ import java.io.File;
  * @author Sreenivas Munnangi
  */
 @Service(name="attach-agent")
+@Scoped(PerLookup.class)
 @I18n("attach.agent")
 public class AttachAgent implements AdminCommand {
 
@@ -78,10 +81,22 @@ public class AttachAgent implements AdminCommand {
             if (dir.isDirectory()) {
                 File agentJar = new File(dir, "btrace-agent.jar");
                 if (agentJar.isFile()) {
-                    vm.loadAgent(agentJar.getPath());
+                    if (options == null) {
+                        vm.loadAgent(agentJar.getPath());
+                    } else {
+                        vm.loadAgent(agentJar.getPath(), options);
+                    }
+                    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                } else {
+                    report.setMessage(localStrings.getLocalString("attach.agent.exception",
+                        "btrace-agent.jar does not exist under {0}", dir));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 }
+            } else {
+                report.setMessage(localStrings.getLocalString("attach.agent.exception",
+                    "btrace-agent.jar directory {0} does not exist", dir));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("attach.agent.exception",
                 "Encountered exception during agent attach {0}", e.getMessage()));
