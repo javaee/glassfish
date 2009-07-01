@@ -168,7 +168,7 @@ public class PluginHandlers {
     	input={
             @HandlerInput(name="type", type=String.class, required=true),
 	    @HandlerInput(name="root", type=UIComponent.class, required=false)})
-    public static void includeFirstIP(HandlerContext handlerCtx) throws java.io.IOException {
+    public static void includeFirstIntegrationPoint(HandlerContext handlerCtx) throws java.io.IOException {
 	// Get the input
 	String type = (String) handlerCtx.getInputValue("type");
 	UIComponent root = (UIComponent) handlerCtx.getInputValue("root");
