@@ -45,8 +45,6 @@ public interface AuthRealm extends PropertiesAccess, NamedConfigElement
      */
     public static final String DEFAULT_REALM_CLASSNAME =
             "com.sun.enterprise.security.auth.realm.file.FileRealm";
-    public static final String KEY_FILE_PROPERTY_KEY = PropertiesAccess.PROPERTY_PREFIX + "file";
-    public static final String JAAS_CONTEXT_PROPERTY_KEY = PropertiesAccess.PROPERTY_PREFIX + "jaas-context";
     /**
     When using {@link #DEFAULT_REALM_CLASSNAME} implementation, append
     a file name to this prefix and specify it via {@link #KEY_FILE_PROPERTY_KEY}.

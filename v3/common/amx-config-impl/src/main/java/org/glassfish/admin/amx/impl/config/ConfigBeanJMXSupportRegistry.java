@@ -105,7 +105,8 @@ final class ConfigBeanJMXSupportRegistry
     }
     
     /** Recursively attempt to find default values for a descendant of specified type */
-    public static Class<? extends ConfigBeanProxy> getConfigBeanProxyClassFor( final ConfigBeanJMXSupport start, final String type) {
+        public static Class<? extends ConfigBeanProxy>
+    getConfigBeanProxyClassFor( final ConfigBeanJMXSupport start, final String type) {
         Class<? extends ConfigBeanProxy> result = start.childTypes().get(type);
         if ( result == null )
         {

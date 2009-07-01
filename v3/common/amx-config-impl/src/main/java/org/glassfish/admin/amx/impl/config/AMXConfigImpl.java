@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.impl.config;
 
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Collection;
@@ -56,10 +57,8 @@ import org.glassfish.admin.amx.annotation.Taxonomy;
 import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
-import static org.glassfish.admin.amx.impl.config.ConfigBeanJMXSupport.*;
 
 
-import org.glassfish.admin.amx.impl.config.AttributeResolverHelper;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.Issues;
 import org.glassfish.admin.amx.impl.util.MBeanInfoSupport;
@@ -71,6 +70,7 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
+import org.glassfish.admin.amx.util.MapUtil;
 import org.glassfish.admin.amx.util.TypeCast;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
@@ -518,7 +518,7 @@ public class AMXConfigImpl extends AMXImplBase
     /**
     Callback to create sub-elements (recursively) on a newly created child element.
      */
-    private static final class SubElementsCallback implements ConfigSupport.TransactionCallBack<WriteableView>
+    private final class SubElementsCallback implements ConfigSupport.TransactionCallBack<WriteableView>
     {
         private final Map<String, Map<String, Object>> mSubs;
 
@@ -529,36 +529,58 @@ public class AMXConfigImpl extends AMXImplBase
 
         public void performOn(final WriteableView item) throws TransactionFailure
         {
+            final ConfigBeanJMXSupport sptRoot = ConfigBeanJMXSupportRegistry.getInstance( com.sun.enterprise.config.serverbeans.Domain.class );
+        
+            final ConfigSupport configSupport = mConfigBean.getHabitat().getComponent(ConfigSupport.class);
+            
+            recursiveCreate( item, sptRoot, configSupport, mSubs );
+        }
+        
+        private void recursiveCreate(
+            final WriteableView parent,
+            final ConfigBeanJMXSupport sptRoot,
+            final ConfigSupport  configSupport,
+            final Map<String, Map<String, Object>> subs ) throws TransactionFailure
+        {
+            
             // create each sub-element, recursively
-            for (final String type : mSubs.keySet())
+            for (final String type : subs.keySet())
             {
-                final Map<String, Object> attrs = mSubs.get(type);
-
-                cdebug("Ignoring sub-element creation for: " + type);
-
-                // FIXME TODO: create a child of the specified type, set all its attributes,
-                // recursively create any children the same way, etc
-                /*
+                final Class<? extends ConfigBeanProxy> clazz = ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor(sptRoot, type);
+                
+                final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
+                final ConfigBean child = (ConfigBean)Dom.unwrap(childProxy);
+                final WriteableView childW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(childProxy)));
+                cdebug("Created sub-element of type: " + type + ", " + clazz);
+                
+                // set attributes on newly-created item
+                final Map<String, Object> attrs = subs.get(type);
+                if ( attrs == null ) throw new IllegalArgumentException( "Null attributes Map for type " + type );
+                final Map<String,Map<String,Object>> moreSubs = MapUtil.newMap();
                 for (final String attrName : attrs.keySet())
                 {
-                    final Object attr = attrs.get(attrName);
-                    if ( attr instanceof Map )
+                    final Object attrValue = attrs.get(attrName);
+                    if ( attrValue instanceof Map )
                     {
-                        // another child.
+                        // another child/sub-element of this new one
+                        cdebug("Found sub-element " + attrName + " for " + type + " with Map " + attrValue);
+                        moreSubs.put( attrName, Map.class.cast(attrValue) );
+                        continue;
                     }
-                    final String attrValue = attrs.get(attrName);
-
-                    final ConfigBeanProxy propChild = item.allocateProxy(propClass);
-                    final ConfigBean child = (ConfigBean)Dom.unwrap(propChild);
-                    final ConfigBeanProxy childW = ConfigSupport.getWriteableView(propChild);
-
-                    //ConfigModel.Property modelProp = getConfigModel_Property( "name");
-                    childW.setter( modelProp, propertyName, String.class);
-
-                    //modelProp = NameMappingHelper.getConfigModel_Property( "value");
-                    childW.setter( modelProp, propertyValue, String.class);
+                    
+                    final ConfigModel.Property modelProp = child.model.findIgnoreCase( Dom.convertName(attrName) );
+                    //final WriteableView childW = (WriteableView)configSupport.getWriteableView( childProxy );
+                    //final WriteableView childW = (WriteableView)child;
+                    if ( modelProp == null ) throw new IllegalArgumentException( "Can't find ConfigModel.Property for attr " + attrName + " on " + type );
+                    cdebug( "setting attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
+                    childW.setter( modelProp, attrValue, String.class);
+                    cdebug( "set attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
                 }
-                */
+
+                if ( moreSubs.keySet().size() != 0 )
+                {
+                    recursiveCreate( childW, sptRoot, configSupport, moreSubs );
+                }
             }
         }
 

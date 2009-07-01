@@ -110,9 +110,6 @@ public interface ConfigTools extends AMXProxy, Singleton
     public void clearSystemProperties(final ObjectName objectName);
         
     
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    public void test();
-    
     @ManagedAttribute
     @Description("return all element types that are Named")
     public String[] getConfigNamedTypes();
@@ -120,6 +117,9 @@ public interface ConfigTools extends AMXProxy, Singleton
     @ManagedAttribute
     @Description("return all element types that are Resource")
     public String[] getConfigResourceTypes();
+    
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    public Object test();
 }
 
 

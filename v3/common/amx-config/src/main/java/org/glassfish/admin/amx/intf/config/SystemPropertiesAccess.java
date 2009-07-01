@@ -48,15 +48,6 @@ interface extends Container.
  */
 public interface SystemPropertiesAccess extends AMXConfigProxy
 {
-
-    /**
-    When a key is required for a system property in a Map,
-    its name must consist of this prefix plus the actual name.  When
-    accessing a property directly, this prefix must not be used.
-     */
-    final static String SYSTEM_PROPERTY_PREFIX = "system-" + PropertiesAccess.PROPERTY_PREFIX;
-
-
     /**
     Return all SystemProperty MBeans, keyed by property name.
     @since Glassfish V3

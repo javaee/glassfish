@@ -421,7 +421,7 @@ public class V3AMX {
         }
     }
 
-    /*  converts a Property Map to a Map where the name is preceded by PropertiesAccess.PROPERTY_PREFIX.
+    /*  converts a Property Map to a Map where the name is preceded by PropertiesAccess.PROPERTY_PREFIX.   // FIXME no longer works
      *  This conversion is required when this Map is used as the optional parameter when creating a config.
      *  refer to the java doc of PropertiesAccess in AMX javadoc
      */
@@ -435,7 +435,7 @@ public class V3AMX {
         Set<String> keySet = props.keySet();
         for (String key : keySet) {
             if (!GuiUtil.isEmpty((String) props.get(key))) {
-                convertedMap.put(PropertiesAccess.PROPERTY_PREFIX + key, (String) props.get(key));
+                convertedMap.put( "property." + key, (String) props.get(key));  // FIXME no longer works
             }
         }
         return convertedMap;

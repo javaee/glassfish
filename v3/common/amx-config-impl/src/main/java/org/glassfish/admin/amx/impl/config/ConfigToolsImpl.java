@@ -9,14 +9,20 @@ import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
+import org.glassfish.admin.amx.intf.config.BackendPrincipal;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
+import org.glassfish.admin.amx.intf.config.ConnectorConnectionPool;
+import org.glassfish.admin.amx.intf.config.Domain;
+import org.glassfish.admin.amx.intf.config.Resources;
+import org.glassfish.admin.amx.intf.config.SecurityMap;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -207,9 +213,8 @@ public class ConfigToolsImpl extends AMXImplBase
     setSystemProperties( target, props, false );
     }
      */
-    public void test()
+    public Object test()
     {
-        /*
         final Domain domain = getDomainRootProxy().getDomain().as(Domain.class);
         final Resources resources = domain.getResources();
         
@@ -220,25 +225,27 @@ public class ConfigToolsImpl extends AMXImplBase
         }
         catch( final Exception e )
         {
-        e.printStackTrace();
+            //e.printStackTrace();
         }
         
         final Map<String,Object> params = new HashMap<String,Object>();
         params.put( "Name", NAME );
         params.put( "ResourceAdapterName", NAME );
         params.put( "ConnectionDefinitionName", NAME );
+        params.put( "SteadyPoolSize", 23 ); // check that it works
         
         final Map<String,Object> securityParams = new HashMap<String,Object>();
         securityParams.put( "Name", NAME );
         params.put( Util.deduceType(SecurityMap.class), securityParams );
         
         final Map<String,Object> backendParams = new HashMap<String,Object>();
-        backendParams.put( "Name", "testUser" );
+        backendParams.put( "UserName", "testUser" );
         backendParams.put( "Password", "testPassword" );
         securityParams.put( Util.deduceType(BackendPrincipal.class), backendParams );
         
-        resources.createChild( Util.deduceType(ConnectorConnectionPool.class), params);
-         */
+        final AMXConfigProxy result = resources.createChild( Util.deduceType(ConnectorConnectionPool.class), params);
+        
+        return result.objectName();
     }
 
     // dummy interface for creating a proxy
@@ -330,7 +337,7 @@ public class ConfigToolsImpl extends AMXImplBase
     }
     
     /** works only for @Configured types */
-    protected String[] getTypesImplementing( final Class<?> clazz)
+    private String[] getTypesImplementing( final Class<?> clazz)
     {
         final DomDocument domDoc = new DomDocument(InjectedValues.getInstance().getHabitat());
 
