@@ -45,7 +45,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 /**
 	Top-level interface for accessing all MonitoringRoot information.
  */
-@AMXMBeanMetadata(type="mon", singleton=true)
+@AMXMBeanMetadata(type="mon", singleton=true, globalSingleton=true)
 public interface MonitoringRoot extends AMXProxy, Singleton
 {
     @ManagedAttribute

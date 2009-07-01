@@ -54,7 +54,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @since GlassFish V3
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(leaf = true, singleton = true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleton
 {
     /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */

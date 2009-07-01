@@ -53,7 +53,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	@since AS 9.0
  */
 @Taxonomy(stability = Stability.EXPERIMENTAL)
-@AMXMBeanMetadata(singleton=true, leaf=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Logging
 	extends LogRecordEmitter, LogQuery, LogFileAccess, LogAnalyzer, AMXProxy
 {

@@ -36,14 +36,16 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.api.amx.AMXMBeanMetadata;
 
 import java.util.Map;
 
 /**
 Configuration for the &lt;configs&gt; element; it is an internal "node" which
-groups all resources under itself.
+groups all config elements under itself.
 @since Glassfish V3
  */
+@AMXMBeanMetadata(globalSingleton=true)
 public interface Configs
         extends ConfigElement, ConfigCollectionElement, Singleton
 {

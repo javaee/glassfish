@@ -62,7 +62,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	conversion of the Set to an ObjectName[].
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface BulkAccess extends AMXProxy, Singleton, Utility
 {
 	/**

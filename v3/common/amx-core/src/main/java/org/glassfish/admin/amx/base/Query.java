@@ -62,7 +62,7 @@ but using QueryMgr (as a client-side proxy) will return Set<AMXProxy>.  If Objec
 are desirable, use {@link Util#toObjectNames}.
  */
 @Taxonomy(stability = Stability.COMMITTED)
-@AMXMBeanMetadata(leaf = true, singleton = true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Query extends AMXProxy, Utility, Singleton
 {
     @ManagedOperation(impact = MBeanOperationInfo.INFO)

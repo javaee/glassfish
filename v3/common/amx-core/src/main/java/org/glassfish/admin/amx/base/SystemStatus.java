@@ -57,7 +57,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     @see SystemInfo
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(type="system-status",leaf=true, singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface SystemStatus extends AMXProxy, Utility, Singleton
 {
     /** Key into Map returned by various methods including {@link #pingJDBCConnectionPool} */

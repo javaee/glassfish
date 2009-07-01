@@ -66,7 +66,7 @@ import org.glassfish.admin.amx.logging.Logging;
     Of course, these two MBeans would normally be found in different MBeanServers.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true)
 public interface DomainRoot extends AMXProxy
 {
     public static final String PARENT_PATH = "";
@@ -236,6 +236,7 @@ public interface DomainRoot extends AMXProxy
       @since Glassfish V3
      */
     @ManagedAttribute
+    @Description("the installation directory")
     public String getInstallDir();
     
     
@@ -245,6 +246,7 @@ public interface DomainRoot extends AMXProxy
         string describing the duration.
      */
     @ManagedAttribute
+    @Description("Return the time the domain admin server has been running.  uptime[0] contains the time in milliseconds.  uptime[1] contains a human-readable string describing the duration.")
     public Object[]     getUptimeMillis();
 }
 

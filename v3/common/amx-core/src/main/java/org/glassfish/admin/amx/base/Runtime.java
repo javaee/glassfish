@@ -51,7 +51,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @since GlassFish V3
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(leaf = true, singleton = true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Runtime extends AMXProxy, Utility, Singleton
 {
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)

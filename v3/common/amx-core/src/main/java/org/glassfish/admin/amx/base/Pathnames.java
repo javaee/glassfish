@@ -54,7 +54,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     @see PathnameParser
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(type="paths", leaf=true, singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Pathnames extends AMXProxy, Utility, Singleton
 {
     /** Resolve a path to an ObjectName.  Any aliasing, etc is dealt with.  Return null if failure. */

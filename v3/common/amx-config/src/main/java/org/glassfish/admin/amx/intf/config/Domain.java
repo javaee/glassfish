@@ -36,12 +36,14 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
 Configuration for the &lt;domain&gt; element.
 <p>
 All configuration resides in a tree rooted at this .
  */
+@AMXMBeanMetadata(globalSingleton=true)
 public interface Domain
         extends PropertiesAccess, SystemPropertiesAccess, ConfigElement, Singleton
 {

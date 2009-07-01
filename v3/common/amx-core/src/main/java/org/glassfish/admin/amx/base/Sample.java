@@ -48,7 +48,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	Various Attributes of varying types are made available for testing.
  */
 @Taxonomy(stability = Stability.NOT_AN_INTERFACE)
-@AMXMBeanMetadata(type="sample", leaf=true, singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Sample extends AMXProxy
 {
 	/**

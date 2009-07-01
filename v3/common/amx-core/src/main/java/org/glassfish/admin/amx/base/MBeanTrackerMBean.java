@@ -11,7 +11,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     MBean providing server-side support for AMX eg for efficiency or other
     reasons.
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(type="updown",singleton=true, globalSingleton=true, leaf=true)
 public interface MBeanTrackerMBean
 {
     /**

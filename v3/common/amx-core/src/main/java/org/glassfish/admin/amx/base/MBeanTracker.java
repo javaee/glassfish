@@ -17,11 +17,14 @@ import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
+import org.glassfish.api.amx.AMXMBeanMetadata;
+
 /**
     Tracks the entire MBean parent/child hierarachy so that individual MBeans need not do so.
     Can supply parents and children of any MBean, used by all AMX implementations.
  */
 @Taxonomy(stability = Stability.NOT_AN_INTERFACE)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public final class MBeanTracker implements NotificationListener, MBeanRegistration, MBeanTrackerMBean
 {
     private static void debug(final Object o)

@@ -75,6 +75,11 @@ public @interface AMXMBeanMetadata {
     
     /** if true, the MBean is a singleon within its parent's scope */
     public boolean singleton() default false;
+    
+    /** if true, the MBean is a global singleton, unique in type among all AMX MBeans.
+        Being a globalSingleton implies being a singleton
+     */
+    public boolean globalSingleton() default false;
 
 }
 

@@ -46,7 +46,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     and/or have other dependencies than amx-core.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Ext extends AMXProxy, Singleton, Utility
 {
     @ManagedAttribute

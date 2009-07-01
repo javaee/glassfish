@@ -51,7 +51,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
     Manages logging.properties.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(leaf=true, singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface LoggingProperties extends AMXProxy, Utility, Singleton
 {
   @ManagedAttribute

@@ -50,7 +50,7 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 	release.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(type="system-info", leaf=true, singleton=true)
+@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface SystemInfo extends AMXProxy, Singleton, Utility
 {
 	/**
