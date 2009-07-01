@@ -83,7 +83,9 @@ public final class MBeanInfoSupport {
         // might or might not have metadata
         final AMXMBeanMetadata meta = intf.getAnnotation(AMXMBeanMetadata.class);
 
-        final boolean singleton = Singleton.class.isAssignableFrom(intf) || (meta != null && meta.singleton());
+        final boolean globalSingleton = meta != null && meta.globalSingleton();
+        final boolean singleton = Singleton.class.isAssignableFrom(intf) || globalSingleton || 
+                                (meta != null && meta.singleton());
         final String  group = GROUP_OTHER;
         final boolean isLeaf = meta != null && meta.leaf();
         final boolean supportsAdoption = ! isLeaf;
@@ -97,6 +99,7 @@ public final class MBeanInfoSupport {
             true,
             intf,
             singleton,
+            globalSingleton,
             group,
             supportsAdoption,
             null
@@ -391,6 +394,7 @@ public final class MBeanInfoSupport {
         final boolean immutable,
         final Class<?>  intf,
         final boolean singleton,
+        final boolean globalSingleton,
         final String  group,
         final boolean supportsAdoption,
         final String[] subTypes
@@ -405,6 +409,7 @@ public final class MBeanInfoSupport {
         desc.setField( DESC_STD_IMMUTABLE_INFO, immutable );
         desc.setField( DESC_STD_INTERFACE_NAME, intf.getName() );
         desc.setField( DESC_IS_SINGLETON, singleton );
+        desc.setField( DESC_IS_GLOBAL_SINGLETON, globalSingleton );
         desc.setField( DESC_GROUP, group );
         desc.setField( DESC_SUPPORTS_ADOPTION, supportsAdoption );
         

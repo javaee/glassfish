@@ -88,6 +88,7 @@ public final class AMXValues
     module eg org.glassfish.admin.amx.core eg AMXProxy or AMXConfigProxy.
      */
     public static final String DESC_GENERIC_INTERFACE_NAME = DESC_PREFIX + "genericInterfaceName";
+    
     /**
     Descriptor value: whether the MBean is a singleton, in spite of having a name property in its ObjectName.
     This is mainly for compatibility; named singletons are strongly discouraged.
@@ -95,6 +96,13 @@ public final class AMXValues
     Invariant by type: yes
      */
     public static final String DESC_IS_SINGLETON = DESC_PREFIX + "isSingleton";
+
+    /**
+    Descriptor value: whether the MBean is a global singleton eg whether in the AMX domain
+    it can be looked up by its type and is the only MBean of that type.
+    Invariant by type: yes, axiomatically
+     */
+    public static final String DESC_IS_GLOBAL_SINGLETON = DESC_PREFIX + "isGlobalSingleton";
     
     
     /**

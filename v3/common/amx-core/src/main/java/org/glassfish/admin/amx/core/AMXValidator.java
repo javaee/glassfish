@@ -754,7 +754,7 @@ public final class AMXValidator
 
         // verify that no extraneous field exist
         final Set<String> LEGAL_AMX_DESCRIPTORS = SetUtil.newStringSet(
-                DESC_GENERIC_INTERFACE_NAME, DESC_IS_SINGLETON, DESC_GROUP, DESC_SUPPORTS_ADOPTION, DESC_SUB_TYPES);
+                DESC_GENERIC_INTERFACE_NAME, DESC_IS_SINGLETON, DESC_IS_GLOBAL_SINGLETON, DESC_GROUP, DESC_SUPPORTS_ADOPTION, DESC_SUB_TYPES);
         for (final String fieldName : d.getFieldNames())
         {
             if (fieldName.startsWith(DESC_PREFIX) && !LEGAL_AMX_DESCRIPTORS.contains(fieldName))
