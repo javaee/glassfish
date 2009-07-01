@@ -73,6 +73,7 @@ import com.sun.enterprise.resource.listener.UnpooledConnectionEventListener;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.RelativePathResolver;
 import com.sun.enterprise.util.i18n.StringManager;
+import javax.resource.spi.ConnectionRequestInfo;
 import org.glassfish.api.admin.config.Property;
 
 
@@ -470,38 +471,73 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     }
 
     /**
-     * This method is used to provide backend functionality for the
-     * ping-connection-pool asadmin command. Briefly the design is as
-     * follows:<br>
-     * 1. obtainManagedConnectionFactory for the poolname<br>
-     * 2. lookup ConnectorDescriptorInfo from InitialContext using poolname<br>
-     * 3. from cdi get username and password<br>
-     * 4. create ResourcePrincipal using default username and password<br>
-     * 5. create a Subject from this (doPriveleged)<br>
-     * 6. createManagedConnection using above subject<br>
-     * 7. add a dummy ConnectionEventListener to the mc that simply handles connectionClosed
-     * 8. getConnection from the ManagedConnection with above subject<br>
-     *
-     * @param poolName               The poolname from whose MCF to obtain the unpooled mc
-     * @param prin                   The ResourcePrincipal to use for authenticating the request if not null.
-     *                               If null, the pool's default authentication mechanism is used
-     * @param returnConnectionHandle If true will return the logical connection handle
-     *                               derived from the Managed Connection, else will only return mc
-     * @return an unPooled connection
-     * @throws ResourceException for various error conditions
+     * Utility method that is used to get the default subject for the 
+     * specified mcf and resource principal.
+     * @param poolName
+     * @param mcf
+     * @param prin
+     * @return
+     * @throws javax.resource.ResourceException
      */
-    private Object getUnpooledConnection(String poolName, ResourcePrincipal prin,
-                                         boolean returnConnectionHandle)
+    protected Subject getDefaultSubject(String poolName, ManagedConnectionFactory mcf, 
+            ResourcePrincipal prin) throws ResourceException {
+        ResourcePrincipal resourcePrincipal = null;
+        if (prin == null) {
+            try {
+                resourcePrincipal = getDefaultResourcePrincipal(poolName, mcf);
+            } catch (NamingException ne) {
+                _logger.log(Level.WARNING, "jdbc.pool_not_reachable",
+                        ne.getMessage());
+                String l10nMsg = localStrings.getString(
+                        "pingpool.name_not_bound", poolName);
+                ResourceException e = new ResourceException(l10nMsg + poolName);
+                e.initCause(ne);
+                throw e;
+            }
+        } else {
+            resourcePrincipal = prin;
+        }
+
+        final Subject defaultSubject =
+                ConnectionPoolObjectsUtils.createSubject(mcf, resourcePrincipal);
+
+
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("using subject: " + defaultSubject);
+
+        }        
+        return defaultSubject;
+    }
+
+    /**
+     * Utility method to get Managed connection from the supplied mcf and 
+     * default subject.
+     * @param mcf
+     * @param defaultSubject
+     * @return
+     * @throws javax.resource.ResourceException
+     */
+    protected ManagedConnection getManagedConnection(ManagedConnectionFactory mcf, 
+            Subject defaultSubject, ConnectionRequestInfo cReqInfo) throws ResourceException {
+        
+        ManagedConnection mc = null;
+        
+        //Create the ManagedConnection
+        mc = mcf.createManagedConnection(defaultSubject, cReqInfo);
+        return mc;
+
+    }    
+
+    /**
+     * Utility method to get a managed connection factory for the jdbc connection
+     * pool name.
+     * @param poolName
+     * @return
+     * @throws javax.resource.ResourceException
+     */
+    protected ManagedConnectionFactory getManagedConnectionFactory(String poolName) 
             throws ResourceException {
-        //Get the ManagedConnectionFactory for this poolName
         ManagedConnectionFactory mcf = null;
-        boolean needToUndeployPool = false;
-        JdbcConnectionPool
-                jdbcPoolToDeploy = null;
-        com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
-                ccPoolToDeploy = null;
-
-
         try {
             mcf = obtainManagedConnectionFactory(poolName);
 
@@ -567,37 +603,42 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
             }
         }
-
-
-        ResourcePrincipal resourcePrincipal = null;
-        if (prin == null) {
-            try {
-                resourcePrincipal = getDefaultResourcePrincipal(poolName, mcf);
-            } catch (NamingException ne) {
-                _logger.log(Level.WARNING, "jdbc.pool_not_reachable",
-                        ne.getMessage());
-                String l10nMsg = localStrings.getString(
-                        "pingpool.name_not_bound", poolName);
-                ResourceException e = new ResourceException(l10nMsg + poolName);
-                e.initCause(ne);
-                throw e;
-            }
-        } else {
-            resourcePrincipal = prin;
-        }
-
-        final Subject defaultSubject =
-                ConnectionPoolObjectsUtils.createSubject(mcf, resourcePrincipal);
-
-
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("using subject: " + defaultSubject);
-
-        }
-
+        return mcf;
+    }
+    
+    /**
+     * This method is used to provide backend functionality for the
+     * ping-connection-pool asadmin command. Briefly the design is as
+     * follows:<br>
+     * 1. obtainManagedConnectionFactory for the poolname<br>
+     * 2. lookup ConnectorDescriptorInfo from InitialContext using poolname<br>
+     * 3. from cdi get username and password<br>
+     * 4. create ResourcePrincipal using default username and password<br>
+     * 5. create a Subject from this (doPriveleged)<br>
+     * 6. createManagedConnection using above subject<br>
+     * 7. add a dummy ConnectionEventListener to the mc that simply handles connectionClosed
+     * 8. getConnection from the ManagedConnection with above subject<br>
+     *
+     * @param poolName               The poolname from whose MCF to obtain the unpooled mc
+     * @param prin                   The ResourcePrincipal to use for authenticating the request if not null.
+     *                               If null, the pool's default authentication mechanism is used
+     * @param returnConnectionHandle If true will return the logical connection handle
+     *                               derived from the Managed Connection, else will only return mc
+     * @return an unPooled connection
+     * @throws ResourceException for various error conditions
+     */
+    private Object getUnpooledConnection(String poolName, ResourcePrincipal prin,
+                                         boolean returnConnectionHandle)
+            throws ResourceException {
+        ManagedConnectionFactory mcf = getManagedConnectionFactory(poolName);
         ManagedConnection mc = null;
-        //Create the ManagedConnection
-        mc = mcf.createManagedConnection(defaultSubject, null);
+        boolean needToUndeployPool = false;
+        JdbcConnectionPool
+                jdbcPoolToDeploy = null;
+        com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
+                ccPoolToDeploy = null;
+        final Subject defaultSubject = getDefaultSubject(poolName, mcf, prin);
+        mc = getManagedConnection(mcf, defaultSubject, null);
 
 /*TODO V3 not needed for non-cluster
 	//We are done with the pool for now, so undeploy if we deployed
@@ -632,7 +673,28 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                 mc;
     }
 
+    /**
+     * Utility method to get property value from ConnectorDescriptorInfo.
+     * @param prop
+     * @return
+     */
+    protected String getPropertyValue(String prop, 
+            ConnectorConnectionPool connectorConnectionPool) {
+        String result = null;
+        ConnectorDescriptorInfo cdi = connectorConnectionPool.getConnectorDescriptorInfo();
 
+        Set mcfConfigProperties = cdi.getMCFConfigProperties();
+        Iterator mcfConfPropsIter = mcfConfigProperties.iterator();
+        while (mcfConfPropsIter.hasNext()) {
+            EnvironmentProperty envProp = (EnvironmentProperty) mcfConfPropsIter.next();
+
+            if (envProp.getName().toUpperCase().equals(prop)) {
+                result = envProp.getValue();
+            } 
+        }
+        return result;
+    }
+    
     /*
     * Returns a ResourcePrincipal object populated with a pool's
     * default USERNAME and PASSWORD
@@ -641,6 +703,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     */
     private ResourcePrincipal getDefaultResourcePrincipal(String poolName,
                                                           ManagedConnectionFactory mcf) throws NamingException {
+        String userName = null;
+        String password = null;
         // All this to get the default user name and principal
         ConnectorConnectionPool connectorConnectionPool = null;
         try {
@@ -651,26 +715,15 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throw ne;
         }
 
-        ConnectorDescriptorInfo cdi = connectorConnectionPool.getConnectorDescriptorInfo();
-
-        Set mcfConfigProperties = cdi.getMCFConfigProperties();
-        Iterator mcfConfPropsIter = mcfConfigProperties.iterator();
-        String userName = null;
-        String password = null;
-        while (mcfConfPropsIter.hasNext()) {
-            EnvironmentProperty prop = (EnvironmentProperty) mcfConfPropsIter.next();
-
-            if (prop.getName().toUpperCase().equals("USERNAME") ||
-                    prop.getName().toUpperCase().equals("USER")) {
-                userName = prop.getValue();
-            } else if (prop.getName().toUpperCase().equals("PASSWORD")) {
-                password = prop.getValue();
-                try {
-                    password = RelativePathResolver.getRealPasswordFromAlias(password);
-                } catch (Exception e) {
-                    _logger.log(Level.WARNING, "unable_to_get_password_from_alias", e);
-                }
-            }
+        userName = getPropertyValue("USERNAME", connectorConnectionPool);
+        if(userName == null) {
+            userName = getPropertyValue("USER", connectorConnectionPool);
+        }
+        password = getPropertyValue("PASSWORD", connectorConnectionPool);
+        try {
+            password = RelativePathResolver.getRealPasswordFromAlias(password);
+        } catch(Exception e) {
+            _logger.log(Level.WARNING, "unable_to_get_password_from_alias", e);
         }
 
         // To avoid using "", "" as the default username password, try to get
@@ -980,8 +1033,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             pt = PoolType.ASSOCIATE_WITH_THREAD_POOL;
         } else if (connectorConnectionPool.isPartitionedPool()) {
             pt = PoolType.PARTITIONED_POOL;
-        } else if(!connectorConnectionPool.isPoolingOn()) {
-            pt = PoolType.POOLING_DISABLED;
         }
         return pt;
     }

@@ -68,6 +68,8 @@ public class ConnectorAdminServicesFactory {
             return new ConnectorSecurityAdminServiceImpl();
         } else if (type.equals(ConnectorConstants.AOR)) {
             return new ConnectorAdminObjectAdminServiceImpl();
+        } else if (type.equals(ConnectorConstants.JDBC)) { 
+            return new JdbcAdminServiceImpl();
         } else {
             return null;
         }

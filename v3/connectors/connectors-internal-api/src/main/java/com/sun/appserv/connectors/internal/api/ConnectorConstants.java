@@ -295,6 +295,7 @@ public interface ConnectorConstants {
     public static final String AOR = "AdminObjectResource";
     public static final String SEC = "Security";
     public static final String RA = "ResourceAdapter";
+    public static final String JDBC = "Jdbc";
 
 
     //TODO V3 should be taken from ResourceDeployEvent

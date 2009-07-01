@@ -126,7 +126,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ConnectorSecurityAdminServiceImpl connectorSecurityAdmService;
     private ConnectorAdminObjectAdminServiceImpl adminObjectAdminService;
     private ConnectorRegistry connectorRegistry = ConnectorRegistry.getInstance();
-
+    private JdbcAdminServiceImpl jdbcAdminService;
 
     @Inject
     private GlassfishNamingManager namingManager;
@@ -644,6 +644,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         adminObjectAdminService = (ConnectorAdminObjectAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.AOR);
         configParserAdmService = new ConnectorConfigurationParserServiceImpl();
+        jdbcAdminService = (JdbcAdminServiceImpl) 
+                ConnectorAdminServicesFactory.getService(ConnectorConstants.JDBC);
+
         getProbeProviderUtil().createProbeProviders();
         initializeEnvironment(processEnvironment);
     }
@@ -1091,8 +1094,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws javax.naming.NamingException
      */        
     public Set<String> getValidationTableNames(String poolName) throws ResourceException, NamingException {
-        Set<String> emptySet = new HashSet();
-        return emptySet;
+        return jdbcAdminService.getValidationTableNames(poolName);
     }
 
     /**
