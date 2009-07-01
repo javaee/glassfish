@@ -52,24 +52,45 @@ public class RestartDomainTests {
     private String outPutFile=null, expectedOutPut=null, testErr=null;
     String host=System.getProperty("http.host");
     String port=System.getProperty("http.port");
-
-    /*
-     *If two asserts are mentioned in one method, then last assert is taken in
-     *to account.
-     *Each method can act as one test within one test suite
-     */
-
-/*
-    @Test
-    public void restartTest() throws Exception {
-	outPutFile = "admincli-restart.output";
-	expectedOutPut = "Name of the domain started";
-	testErr = "Restart domain failed.";
-	parseTestResults(outPutFile, expectedOutPut, testErr);    
-    }
-*/
+    private boolean result=false;
+    private Runtime runtime = Runtime.getRuntime();
 
     @BeforeTest
+    @Test(groups = { "init" })
+    public void stopDomainTest() throws Exception {
+	String ASADMIN = System.getProperty("ASADMIN");
+        Process proc = runtime.exec(ASADMIN+" stop-domain");
+	try {
+            if (proc.waitFor() != 0) {
+               System.err.println("asadmin exit value = " + proc.exitValue());
+            }
+	    if (proc.exitValue() == 0) 
+		result = true;
+	    Assert.assertEquals(result, true, "Stop-domain test failed ...");
+        }
+        catch (Exception e) {
+                System.err.println(e);
+        }
+    }
+
+    @Test(dependsOnMethods = { "stopDomainTest" })
+    public void startDomainTest() throws Exception {
+	String ASADMIN = System.getProperty("ASADMIN");
+	Process proc = runtime.exec(ASADMIN+" start-domain");
+        try {
+            if (proc.waitFor() != 0) {
+               System.err.println("asadmin exit value = " + proc.exitValue());
+            }
+            if (proc.exitValue() == 0)
+                result = true;
+            Assert.assertEquals(result, true, "Start-domain test failed ...");
+        }
+        catch (InterruptedException e) {
+                System.err.println(e);
+        }
+    }
+
+/*
     @Test(groups = { "init" })
     public void createJdbcPoolTest() throws Exception {
 	outPutFile = "admincli-restart.output";
@@ -93,6 +114,7 @@ public class RestartDomainTests {
 	testErr = "Ping-jdbc failed.";
 	parseTestResults(outPutFile, expectedOutPut, testErr);    
     }
+*/
 
     public void parseTestResults(String outPutFile, String expectedOutPut, String testErr) throws Exception {
        boolean result=false;

@@ -195,7 +195,7 @@
     </taskdef>
     
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
-    <target  name="runtest" depends="initprops">    
+    <target  name="runtest" depends="initprops,setOSConditions,asenv-unix,asenv-windows">    
         <record name="runtestng.output" action="start"/>
         <echo message="=============Starting TestNG functional tests from ${testng.xml} ============"/>    
         <property name="hasTestNGXML" value="true"/>
@@ -207,6 +207,7 @@
             <jvmarg value="-Dhttp.host=${glassfish.http.host}"/>
             <jvmarg value="-Dhttp.port=${glassfish.http.port}"/>
 	    <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
+	    <jvmarg value="-DASADMIN=${ASADMIN}" />
             <sysproperty key="basedir" value="${basedir}"/>
             <!--<classfileset dir="classes/test" includes="**/SeleniumTest.class"/>-->         
             <xmlfileset dir="." includes="${testng.xml}"/>
@@ -337,6 +338,16 @@
   <condition property="isWindows">
     <os family="windows" />
   </condition>
+</target>
+
+<target name="asenv-unix" if="isUnix">
+    <property name="asenv_conf" value="${glassfish.home}/config/asenv.conf"/>
+    <property name="ASADMIN" value="${glassfish.home}/bin/asadmin"/>
+</target>
+
+<target name="asenv-windows" if="isWindows">
+    <property name="asenv_conf" value="${glassfish.home}/config/asenv.bat"/>
+    <property name="ASADMIN" value="${glassfish.home}\bin\asadmin.bat"/>
 </target>
 
 <target name="start-server-hk2" depends="setOSConditions" if="v3">

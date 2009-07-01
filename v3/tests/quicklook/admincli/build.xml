@@ -10,17 +10,17 @@
     <import file="${ws.root}/gfproject/v3-targets.xml"/>
     <import file="${ws.root}/gfproject/db-targets.xml"/>
 
-<target name="all" depends="start-derby,start-server,build,deploy,runtest,undeploy,stop-server,stop-derby"/>
+<target name="all" depends="build,runtest"/>
 
 <target name="build-deploy" depends="build,deploy" />
 
 <target name="build" depends="compile-tests">
-   <record name="admincli-restart.output" action="start"/>
+   <!-- record name="admincli-restart.output" action="start"/>
    <antcall target="create-jdbc-connection-pool"/>
    <antcall target="ping-connection-pool"/>
    <antcall target="stop-server"/>
    <antcall target="start-server"/>
-   <record name="admincli-restart.output" action="stop"/>
+   <record name="admincli-restart.output" action="stop"/ -->
 </target>
 
 <target name="deploy">

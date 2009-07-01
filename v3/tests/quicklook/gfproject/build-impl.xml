@@ -48,7 +48,6 @@
     <!--<property name="test.class.output" value="${ws.root}/classes/${testsuite.name}/test"/>-->
     <property name="test.class.output" value="${ws.root}/classes/test"/>
     <property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
-
     
     <target name="clean">
         <delete dir="${ws.root}/classes"/>
@@ -282,7 +281,7 @@
 	<antcall target="runtest-impl-xml"/>
 </target>
 
-<target name="runtest-impl-class" depends="compile-tests,checkTestNGXML" unless="testng.xml.present">
+<target name="runtest-impl-class" depends="setOSConditions,asenv-unix,asenv-windows,checkTestNGXML" unless="testng.xml.present">
     <echo message="=============Starting TestNG test at ${test.class.output}  ============"/>    
     <mkdir dir="${result.output}"/>
     <testng outputdir="${result.output}" verbose="2"
@@ -293,6 +292,7 @@
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
 	<jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
+	<jvmarg value="-DASADMIN=${ASADMIN}" />
 
     </testng>
 </target>
