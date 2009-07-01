@@ -306,7 +306,7 @@
             
             
             function validateRegisterField(form){
-                ss = getSelectedValue(form, 'accountGroup');
+                ss = getSelectedValueFromForm(form, 'accountGroup');
                 if( ss =='hasAccount'){
                     test= (checkRequired('#{userNameId}:userName', '#{reqMsg}') && checkRequired('#{pswdId}:pswdProp',  '#{reqMsg}') ) ;
                     if (!test){
