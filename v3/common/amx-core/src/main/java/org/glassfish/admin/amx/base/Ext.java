@@ -56,7 +56,7 @@ public interface Ext extends AMXProxy, Singleton, Utility
     public Runtime getRuntime();
 
     @ManagedAttribute
-    public ConnectorRuntimeAPIProvider getConnectorRuntime();
+    public ConnectorRuntimeAPIProvider getConnectorRuntimeAPIProvider();
     
     @ManagedAttribute
     public LoggingProperties getLoggingProperties();
