@@ -111,14 +111,14 @@ public class JDBCResourceManager implements ResourceManager {
                     ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                     return status;
                 }
-            } else if (resource instanceof ResourcePool) {
+            }/* else if (resource instanceof ResourcePool) {
                 if (((ResourcePool) resource).getName().equals(jndiName)) {
                     String msg = localStrings.getLocalString("create.jdbc.resource.duplicate",
                             "A resource named {0} already exists.", jndiName);
                     ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                     return status;
                 }
-            }
+            }*/
         }
 
         if (!isConnPoolExists(resources, poolName)) {

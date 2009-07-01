@@ -125,13 +125,13 @@ public class AdminObjectManager implements ResourceManager{
                             "A resource named {0} already exists.", jndiName);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg);
                 }
-            } else if (resource instanceof ResourcePool) {
+            }/* else if (resource instanceof ResourcePool) {
                 if (((ResourcePool) resource).getName().equals(jndiName)) {
                     String msg = localStrings.getLocalString("create.admin.object.duplicate",
                             "A resource named {0} already exists.", jndiName);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg);
                 }
-            }
+            }*/
         }
 
         ResourceStatus status = isValidRAName();

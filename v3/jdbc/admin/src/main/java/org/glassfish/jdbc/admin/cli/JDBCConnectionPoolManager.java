@@ -137,13 +137,13 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         }
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
+            /*if (resource instanceof BindableResource) {
                 if (((BindableResource) resource).getJndiName().equals(jdbcconnectionpoolid)) {
                     String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
                             "A resource {0} already exists.", jdbcconnectionpoolid);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                 }
-            } else if (resource instanceof ResourcePool) {
+            } else*/ if (resource instanceof JdbcConnectionPool) {
                 if (((ResourcePool) resource).getName().equals(jdbcconnectionpoolid)) {
                     String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
                             "A resource {0} already exists.", jdbcconnectionpoolid);

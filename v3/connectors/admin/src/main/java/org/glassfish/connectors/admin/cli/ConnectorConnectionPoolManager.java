@@ -134,13 +134,13 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         }
         // ensure we don't already have one of this name
         for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
+            /*if (resource instanceof BindableResource) {
                 if (((BindableResource) resource).getJndiName().equals(poolname)) {
                     String msg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
                             "A resource named {0} already exists.", poolname);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg);
                 }
-            } else if (resource instanceof ResourcePool) {
+            } else*/ if (resource instanceof ConnectorConnectionPool) {
                 if (((ResourcePool) resource).getName().equals(poolname)) {
                     String msg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
                             "A resource named {0} already exists.", poolname);
