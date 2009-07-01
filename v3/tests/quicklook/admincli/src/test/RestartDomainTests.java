@@ -36,15 +36,10 @@
  */
 package test.admin.admincli;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Configuration;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
-import org.testng.annotations.Parameters;
 import org.testng.Assert;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
 
 public class RestartDomainTests {
 
@@ -90,62 +85,4 @@ public class RestartDomainTests {
         }
     }
 
-/*
-    @Test(groups = { "init" })
-    public void createJdbcPoolTest() throws Exception {
-	outPutFile = "admincli-restart.output";
-	expectedOutPut = "create-jdbc-connection-pool executed successfully";
-	testErr = "Create-jdbc failed.";
-	parseTestResults(outPutFile, expectedOutPut, testErr);    
-    }
-
-    @Test(dependsOnGroups = { "init.*" })
-    public void pingJdbcPoolBefore() throws Exception {
-	outPutFile = "admincli-restart.output";
-        expectedOutPut = "ping-connection-pool executed successfully";
-        testErr = "Ping-jdbc failed.";
-        parseTestResults(outPutFile, expectedOutPut, testErr);
-    }
-
-    @Test(dependsOnMethods = { "pingJdbcPoolBefore" })
-    public void pingJdbcPoolAfter() throws Exception {
-	outPutFile = "admincli-ping-jdbc.output";
-	expectedOutPut = "ping-connection-pool executed successfully";
-	testErr = "Ping-jdbc failed.";
-	parseTestResults(outPutFile, expectedOutPut, testErr);    
-    }
-*/
-
-    public void parseTestResults(String outPutFile, String expectedOutPut, String testErr) throws Exception {
-       boolean result=false;
-       File dir1 = new File (".");
-       String fileName = dir1.getCanonicalPath()+"/"+outPutFile;
-       this.expectedOutPut = expectedOutPut;
-       this.testErr = testErr;
-       //System.out.println("Parsing output file: "+fileName );
-       try {
-           in = new BufferedReader(new FileReader(fileName));
-       } catch (FileNotFoundException e) {
-           System.out.println("Could not open file " + fileName + " for reading ");
-       }
-
-       if(in != null) {
-           String line;
-           String testLine = null;
-           try {
-              while (( line = in.readLine() )  != null ) {
-                //System.out.println("The line read is: " + line);
-                if(line.indexOf(expectedOutPut)!=-1){
-                  result=true;
-                  testLine = line;
-                  //System.out.println(testLine); 
-		} 
-	      }
-              Assert.assertEquals(result, true, testErr);
-           }catch(Exception e){
-              e.printStackTrace();
-              throw new Exception(e);
-         }
-       }
-    }
 }
