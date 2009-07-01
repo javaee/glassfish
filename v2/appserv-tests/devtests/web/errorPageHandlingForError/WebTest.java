@@ -36,14 +36,15 @@ public class WebTest {
     public void doTest() {     
         try { 
             invoke("TestServlet",
-                    "HTTP/1.1 500 Internal Server Error",
+                    "HTTP/1.1 500 ",
                     "Error page for NoClassDefFoundError");
             stat.addStatus(TEST_NAME +"_servlet", stat.PASS);
+
             invoke("noClassDefFoundError.jsp",
-                    "HTTP/1.1 500 java.lang.NoClassDefFoundError",
+                    "HTTP/1.1 500 ",
                     "Error page for NoClassDefFoundError");
             invoke("illegalStateException.jsp",
-                    "HTTP/1.1 500 Internal Server Error",
+                    "HTTP/1.1 500 ",
                     "Error page for Exception");
             stat.addStatus(TEST_NAME + "_jsp", stat.PASS);
         } catch (Exception ex) {
@@ -79,7 +80,7 @@ public class WebTest {
             String line = null;
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
-                if (expectedStatus.equals(line)) {
+                if (line.startsWith(expectedStatus)) {
                     statusMatched = true;
                 }
                 if (expectedResponseBody.equals(line)) {
