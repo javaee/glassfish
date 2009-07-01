@@ -58,7 +58,7 @@
 	     <archive>
 	      <manifestEntries>
 		  <Glassfish-require-services>org.glassfish.api.admingui.ConsoleProvider</Glassfish-require-services>
-		  <HK2-Import-Bundles>org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.common.amx-api, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, org.glassfish.javax.servlet.jsp, com.sun.jsftemplating, org.glassfish.admingui.dataprovider, com.sun.pkg.client  </HK2-Import-Bundles>
+		  <HK2-Import-Bundles>org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, org.glassfish.javax.servlet.jsp, com.sun.jsftemplating, org.glassfish.admingui.dataprovider, com.sun.pkg.client  </HK2-Import-Bundles>
 	      </manifestEntries>
 	     </archive>
             </configuration>
@@ -116,7 +116,7 @@
 	      <archive>
 		  <manifestEntries>
 		      <Glassfish-require-services>org.glassfish.api.admingui.ConsoleProvider</Glassfish-require-services>
-		      <HK2-Import-Bundles>org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.common.amx-api, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, org.glassfish.javax.servlet.jsp, com.sun.jsftemplating, org.glassfish.admingui.dataprovider,com.sun.pkg.client</HK2-Import-Bundles>
+		      <HK2-Import-Bundles>org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, org.glassfish.javax.servlet.jsp, com.sun.jsftemplating, org.glassfish.admingui.dataprovider,com.sun.pkg.client</HK2-Import-Bundles>
 		  </manifestEntries>
 	      </archive>
               <webResources>
