@@ -46,7 +46,7 @@ import java.util.Properties;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-//import javax.ws.rs.OPTIONS;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -155,9 +155,9 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         }
     }
 
-
-    ///@OPTIONS - FIXME - uncomment once the compilation error is fixed.
-    ///@Produces({"application/json", "text/html", "application/xml"})
+ 
+    @OPTIONS 
+    @Produces({"application/json", "text/html", "application/xml"})
     public OptionsResult options() {
         OptionsResult optionsResult = new OptionsResult();
         try {
@@ -185,14 +185,14 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         //error info
         message = ar.getMessage();
 
-        if (data.isEmpty()) {
+        /*if (data.isEmpty()) {
             try {
                 //usage info
                 message = ar.getTopMessagePart().getChildren().get(0).getMessage();
             } catch (Exception e) {
                 message = ar.getMessage();
             }
-        }
+        }*/
         return message;
     }
 

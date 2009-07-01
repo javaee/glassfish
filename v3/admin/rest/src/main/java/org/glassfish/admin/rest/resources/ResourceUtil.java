@@ -42,12 +42,16 @@ import java.util.logging.Logger;
 import java.util.Properties;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.Param;
 
 
@@ -74,6 +78,35 @@ public class ResourceUtil {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the name of the command associated with
+     * this resource,if any, for the given operation.
+     * @param type the given resource operation
+     * @return String the associated command name for the given operation.
+     */
+    public String getCommand(RestRedirect.OpType type, ConfigBean configBean) {
+
+        Class<? extends ConfigBeanProxy> cbp = null;
+        try {
+            cbp = (Class<? extends ConfigBeanProxy>)
+                configBean.model.classLoaderHolder.get().loadClass(
+                    configBean.model.targetTypeName);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        RestRedirects restRedirects = cbp.getAnnotation(RestRedirects.class);
+        if (restRedirects != null) {
+            RestRedirect[] values = restRedirects.value();
+            for (RestRedirect r : values) {
+                if (r.opType().equals(type)) {
+                    return r.commandName();
+                }
+            }
+        }
+        return null;
     }
 
 

@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Sat Jun 20 16:10:03 PDT 2009
+* date=Tue Jun 30 14:26:59 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -29,110 +29,6 @@ public class ListJdbcConnectionPoolResource extends TemplateListOfResource<JdbcC
 		return resource;
 	}
 
-@Path("commands/create-jdbc-connection-pool")
-@POST
-@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public List<org.jvnet.hk2.config.Dom> execCreateJdbcConnectionPool(
-	 @QueryParam("datasourceclassname")  @DefaultValue("")  String Datasourceclassname 
- ,
-	 @QueryParam("restype")  @DefaultValue("")  String Restype 
- ,
-	 @QueryParam("steadypoolsize")  @DefaultValue("")  String Steadypoolsize 
- ,
-	 @QueryParam("maxpoolsize")  @DefaultValue("")  String Maxpoolsize 
- ,
-	 @QueryParam("maxwait")  @DefaultValue("")  String Maxwait 
- ,
-	 @QueryParam("poolresize")  @DefaultValue("")  String Poolresize 
- ,
-	 @QueryParam("idletimeout")  @DefaultValue("")  String Idletimeout 
- ,
-	 @QueryParam("isolationlevel")  @DefaultValue("")  String Isolationlevel 
- ,
-	 @QueryParam("isisolationguaranteed")  @DefaultValue("true")  String Isisolationguaranteed 
- ,
-	 @QueryParam("isconnectvalidatereq")  @DefaultValue("false")  String Isconnectvalidatereq 
- ,
-	 @QueryParam("validationmethod")  @DefaultValue("")  String Validationmethod 
- ,
-	 @QueryParam("validationtable")  @DefaultValue("")  String Validationtable 
- ,
-	 @QueryParam("failconnection")  @DefaultValue("false")  String Failconnection 
- ,
-	 @QueryParam("allownoncomponentcallers")  @DefaultValue("false")  String Allownoncomponentcallers 
- ,
-	 @QueryParam("nontransactionalconnections")  @DefaultValue("false")  String Nontransactionalconnections 
- ,
-	 @QueryParam("validateatmostonceperiod")  @DefaultValue("")  String Validateatmostonceperiod 
- ,
-	 @QueryParam("leaktimeout")  @DefaultValue("")  String Leaktimeout 
- ,
-	 @QueryParam("leakreclaim")  @DefaultValue("false")  String Leakreclaim 
- ,
-	 @QueryParam("creationretryattempts")  @DefaultValue("")  String Creationretryattempts 
- ,
-	 @QueryParam("creationretryinterval")  @DefaultValue("")  String Creationretryinterval 
- ,
-	 @QueryParam("statementtimeout")  @DefaultValue("")  String Statementtimeout 
- ,
-	 @QueryParam("lazyconnectionenlistment")  @DefaultValue("false")  String Lazyconnectionenlistment 
- ,
-	 @QueryParam("lazyconnectionassociation")  @DefaultValue("false")  String Lazyconnectionassociation 
- ,
-	 @QueryParam("associatewiththread")  @DefaultValue("false")  String Associatewiththread 
- ,
-	 @QueryParam("matchconnections")  @DefaultValue("false")  String Matchconnections 
- ,
-	 @QueryParam("maxconnectionusagecount")  @DefaultValue("")  String Maxconnectionusagecount 
- ,
-	 @QueryParam("wrapjdbcobjects")  @DefaultValue("false")  String Wrapjdbcobjects 
- ,
-	 @QueryParam("description")  @DefaultValue("")  String Description 
- ,
-	 @QueryParam("property")  @DefaultValue("")  String Property 
- ,
-	 @QueryParam("target")  @DefaultValue("")  String Target 
- ,
-	 @QueryParam("jdbc_connection_pool_id")  @DefaultValue("")  String Jdbc_connection_pool_id 
- 	) {
-	java.util.Properties p = new java.util.Properties();
-	p.put("datasourceclassname", Datasourceclassname);
-	p.put("restype", Restype);
-	p.put("steadypoolsize", Steadypoolsize);
-	p.put("maxpoolsize", Maxpoolsize);
-	p.put("maxwait", Maxwait);
-	p.put("poolresize", Poolresize);
-	p.put("idletimeout", Idletimeout);
-	p.put("isolationlevel", Isolationlevel);
-	p.put("isisolationguaranteed", Isisolationguaranteed);
-	p.put("isconnectvalidatereq", Isconnectvalidatereq);
-	p.put("validationmethod", Validationmethod);
-	p.put("validationtable", Validationtable);
-	p.put("failconnection", Failconnection);
-	p.put("allownoncomponentcallers", Allownoncomponentcallers);
-	p.put("nontransactionalconnections", Nontransactionalconnections);
-	p.put("validateatmostonceperiod", Validateatmostonceperiod);
-	p.put("leaktimeout", Leaktimeout);
-	p.put("leakreclaim", Leakreclaim);
-	p.put("creationretryattempts", Creationretryattempts);
-	p.put("creationretryinterval", Creationretryinterval);
-	p.put("statementtimeout", Statementtimeout);
-	p.put("lazyconnectionenlistment", Lazyconnectionenlistment);
-	p.put("lazyconnectionassociation", Lazyconnectionassociation);
-	p.put("associatewiththread", Associatewiththread);
-	p.put("matchconnections", Matchconnections);
-	p.put("maxconnectionusagecount", Maxconnectionusagecount);
-	p.put("wrapjdbcobjects", Wrapjdbcobjects);
-	p.put("description", Description);
-	p.put("property", Property);
-	p.put("target", Target);
-	p.put("jdbc_connection_pool_id", Jdbc_connection_pool_id);
-	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
-	org.glassfish.api.admin.CommandRunner cr = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.admin.CommandRunner.class);
-	cr.doCommand("create-jdbc-connection-pool", p, ar);
-	System.out.println("exec command =" + ar.getActionExitCode());
-	return get(1);
-}
 
 public String getPostCommand() {
 	return "create-jdbc-connection-pool";

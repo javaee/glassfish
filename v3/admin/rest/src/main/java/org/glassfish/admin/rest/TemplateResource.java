@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.Map;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
@@ -66,7 +67,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.TransactionFailure;
 
+import org.glassfish.admin.rest.provider.OptionsResult;
+import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.resources.ResourceUtil;
+
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -109,7 +113,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         }
 
         return Dom.unwrap(getEntity());
-   }
+    }
 
 
     public ConfigBean getConfigBean() {
@@ -117,38 +121,11 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     }
 
 
-    @POST //create
-    @Produces(MediaType.TEXT_HTML)
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public Dom updateDataItem(HashMap<String, String> data) {
-        data.remove("submit");
-        for (String name : data.keySet()) {
-            System.out.println("updateDataItem name=" + name);
-            System.out.println("value=" + data.get(name));
-        }
-
-        ActionReport actionReport = processRedirectsAnnotation(RestRedirect.OpType.POST, data);
-        if (actionReport != null){
-        return Dom.unwrap(getEntity());
-        }
-        //data.get("submit");
-        Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
-        mapOfChanges.put(getConfigBean(), data);
-
-        try {
-            RestService.configSupport.apply(mapOfChanges); //throws TransactionFailure
-        } catch (TransactionFailure ex) {
-            throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-
-        return Dom.unwrap(getEntity());
-    }
-
-
     @PUT  //update
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public Response updateEntity(HashMap<String, String> data) {
         try {
+            data.remove("submit");
             if (data.containsKey("error")) {
              return Response.status(415).entity(
                  "Unable to parse the input entity. Please check the syntax.").build();//unsupported media
@@ -197,13 +174,13 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                 }
 
                 String errorMessage = actionReport.getMessage();
-                try {
+                /*try {
                     String usageMessage = 
                         actionReport.getTopMessagePart().getChildren().get(0).getMessage();
                     errorMessage = errorMessage + "\n" + usageMessage;
                 } catch (Exception e) {
                     //ignore
-                }
+                }*/
                 return Response.status(400).entity(errorMessage).build(); // 400 - bad request
             }
             return Response.status(403).entity("DELETE on \"" +   // 403 - forbidden
@@ -211,6 +188,34 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @OPTIONS
+    @Produces({"application/json", "text/html", "application/xml"})
+    public OptionsResult options() {
+        OptionsResult optionsResult = new OptionsResult();
+        try {
+            //GET meta data
+            optionsResult.putMethodMetaData("GET", new MethodMetaData());
+
+            //PUT meta data
+            //FIXME -- Get hold of meta-data for config bean attributes and
+            //set it in MethodMetaData object. For now, just provide PUT method
+            //without any message/entity information.
+            optionsResult.putMethodMetaData("PUT", new MethodMetaData());
+
+            //DELETE meta data
+            String command = __resourceUtil.getCommand(
+                RestRedirect.OpType.DELETE, getConfigBean());
+            MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+                    command, RestService.habitat, RestService.logger);
+            optionsResult.putMethodMetaData("DELETE", postMethodMetaData);
+        } catch (Exception e) {
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+
+        return optionsResult;
     }
 
 
@@ -224,38 +229,28 @@ public class TemplateResource<E extends ConfigBeanProxy> {
      *
      * */
 
-    private ActionReport processRedirectsAnnotation(RestRedirect.OpType type , HashMap<String, String> data) {
 
-        Class<? extends ConfigBeanProxy> cbp = null;
-        try {
-            cbp = (Class<? extends ConfigBeanProxy>) getConfigBean().model.classLoaderHolder.get().loadClass(getConfigBean().model.targetTypeName);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        RestRedirects restRedirects = cbp.getAnnotation(RestRedirects.class);
-        if (restRedirects != null) {
-            System.out.println("Annotation restRedirects are not null:===" + restRedirects);
+    private ActionReport processRedirectsAnnotation(RestRedirect.OpType type,
+            HashMap<String, String> data) {
 
-            RestRedirect[] values = restRedirects.value();
-            for (RestRedirect r : values) {
-                if (r.opType().equals(type)) {
-                    return __resourceUtil.runCommand(r.commandName(),
-                        data, RestService.habitat, RestService.logger);//processed
-                }
-            }
+        String commandName = __resourceUtil.getCommand(type, getConfigBean());
+        if (commandName != null) {
+            return __resourceUtil.runCommand(commandName,
+                data, RestService.habitat, RestService.logger);//processed
         }
+
         return null;//not processed
     }
 
 
-    private void addDefaultParameter(HashMap<String, String> data) {//S
+    private void addDefaultParameter(HashMap<String, String> data) {
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
         String defaultParameterValue = uriInfo.getAbsolutePath().getPath().substring(index + 1);
         data.put("DEFAULT", defaultParameterValue);
      }
 
 
-    private String getResourceName(String absoluteName, String delimiter) { //S
+    private String getResourceName(String absoluteName, String delimiter) {
         if(null == absoluteName){
             return absoluteName;
         }
