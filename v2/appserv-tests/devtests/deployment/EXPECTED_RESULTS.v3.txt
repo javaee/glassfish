@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 119
+PASS: 122
 FAIL: 0
 UNKNOWN: 0
 
