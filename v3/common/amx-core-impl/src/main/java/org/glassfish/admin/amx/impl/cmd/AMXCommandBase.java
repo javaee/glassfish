@@ -33,12 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
 package org.glassfish.admin.amx.impl.cmd;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.admin.amx.impl.loader.AMXStartupServiceNew;
-import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
@@ -52,89 +49,108 @@ import org.glassfish.admin.amx.core.proxy.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
 /**
-    Base class for AMX commands.
+Base class for AMX commands.
  */
-abstract class AMXCommandBase implements AdminCommand {
+abstract class AMXCommandBase implements AdminCommand
+{
     private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AMXCommandBase.class);
-    
+
     @Inject
     private MBeanServer mMBeanServer;
-    protected final MBeanServer getMBeanServer() { return mMBeanServer; }
-    
+
+    protected final MBeanServer getMBeanServer()
+    {
+        return mMBeanServer;
+    }
+
     // use 'volatile'; don't assume stateless subclasses
     private volatile AdminCommandContext mAdminCommandContext;
-    
-    public AMXCommandBase() {
+
+    public AMXCommandBase()
+    {
         //debug( "AMXCommandBase.AMXCommandBase: " + this.getClass().getName() );
     }
-    
-    protected static void debug( final String s ) { System.out.println(s); }
-    
-    protected ActionReport getActionReport() { return mAdminCommandContext.getActionReport(); }
-    
-        protected final String
-    getLocalString( final String key, final String def )
+
+    protected static void debug(final String s)
     {
-        return localStrings.getLocalString( key, def );
+        System.out.println(s);
     }
-    
-    protected final String getLocalString( final String key ) { return getLocalString( key, key ); }
+
+    protected ActionReport getActionReport()
+    {
+        return mAdminCommandContext.getActionReport();
+    }
+
+    protected final String getLocalString(final String key, final String def)
+    {
+        return localStrings.getLocalString(key, def);
+    }
+
+    protected final String getLocalString(final String key)
+    {
+        return getLocalString(key, key);
+    }
 
     protected abstract String getCmdName();
-    protected final String getCmdDescription() { return getLocalString( getCmdName() + ".description" ); }
-        
-        protected void
-    preExecute(final AdminCommandContext context) {
+
+    protected final String getCmdDescription()
+    {
+        return getLocalString(getCmdName() + ".description");
+    }
+
+    protected void preExecute(final AdminCommandContext context)
+    {
         //debug( "AMXCommandBase.preExecute: " + this.getClass().getName() + ", MBeanServer = " + getMBeanServer() );
         // presume success
         getActionReport().setActionExitCode(ExitCode.SUCCESS);
-        
-        AMXBooter.bootAMX( mMBeanServer );
+
+        AMXBooter.bootAMX(mMBeanServer);
     }
-    
-    protected DomainRoot
-    getDomainRoot()
+
+    protected DomainRoot getDomainRoot()
     {
         return ProxyFactory.getInstance(getMBeanServer()).getDomainRootProxy();
     }
-    
+
     protected abstract void _execute(final AdminCommandContext context);
-    
-        protected void
-    postExecute(final AdminCommandContext context, final boolean success )
+
+    protected void postExecute(final AdminCommandContext context, final boolean success)
     {
         final String cmdName = getCmdName();
         final ActionReport report = getActionReport();
-        
+
         final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            
-        if ( success )
+
+        if (success)
         {
-            part.setMessage( "AMXCommand \"" + cmdName +
-                "\" executed successfully at: " + new java.util.Date() );
+            part.setMessage("AMXCommand \"" + cmdName +
+                            "\" executed successfully at: " + new java.util.Date());
         }
         else
         {
-            part.setMessage( "AMXCommand " + cmdName + " FAILED: ");
+            part.setMessage("AMXCommand " + cmdName + " FAILED: ");
         }
     }
 
-    
     /**
-        Synchronized because this command initializes only once.
+    Synchronized because this command initializes only once.
      */
-    public final void execute(final AdminCommandContext context) {
+    public final void execute(final AdminCommandContext context)
+    {
         mAdminCommandContext = context;
         boolean success = false;
-        try {
-            preExecute( context );
-            _execute( context );
+        try
+        {
+            preExecute(context);
+            _execute(context);
             success = true;
         }
-        finally {
-            postExecute( context, success );
+        finally
+        {
+            postExecute(context, success);
         }
     }
+
 }
 
 

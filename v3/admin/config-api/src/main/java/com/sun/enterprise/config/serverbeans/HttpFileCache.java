@@ -46,7 +46,6 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.glassfish.api.amx.AMXConfigInfo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -56,7 +55,7 @@ import javax.validation.constraints.Min;
  */
 
 /* @XmlType(name = "") */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPFileCacheConfig", singleton=true)
+
 @Configured
 @Deprecated
 public interface HttpFileCache extends ConfigBeanProxy, Injectable  {

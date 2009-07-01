@@ -60,7 +60,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerAvailabilityConfig")
+
 @Configured
 public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
     org.glassfish.api.admin.config.PropertyBag {

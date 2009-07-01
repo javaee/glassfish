@@ -73,42 +73,46 @@ public interface DomainRoot extends AMXProxy
     public static final String PATH = PARENT_PATH + PathnameConstants.SEPARATOR;
     
     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    @Description("Stop the domain immediately" )
     public void stopDomain();
     
     /**
         Return the {@link Ext} MBean, parent of top-level utility and specialty MBeans.
      */
     @ManagedAttribute
+    @Description("Get the primary extension point for AMX MBeans other than monitoring" )
     public Ext getExt();
     
     /**
         Return the {@link Tools} MBean.
      */
     @ManagedAttribute
+    @Description("Get the Tools MBean" )
     public Tools getTools();
 
     /**
         @return the singleton {@link Query}.
      */
     @ManagedAttribute
+    @Description("Get the Query MBean" )
     public Query		getQueryMgr();
     
     /**
         @return the singleton {@link Logging}.
      */
     @ManagedAttribute
+    @Description("Get the Logging MBean" )
     public Logging		getLogging();
 
     /**
         @return the singleton {@link BulkAccess}.
      */
     @ManagedAttribute
+    @Description("Get the BulkAccess MBean" )
     public BulkAccess		getBulkAccess();
 
-    /**
-       @return the singleton {@link UploadDownloadMgr}.
-     */
     @ManagedAttribute
+    @Description("Get the UploadDownloadMgr MBean (experimental, not supported)" )
     public UploadDownloadMgr		getUploadDownloadMgr();
 
     /**

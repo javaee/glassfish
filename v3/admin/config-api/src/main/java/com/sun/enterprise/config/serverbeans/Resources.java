@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXCreatorInfo;
 
 /**
@@ -56,7 +55,7 @@ import org.glassfish.api.amx.AMXCreatorInfo;
 /* @XmlType(name = "", propOrder = {
     "customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourcesConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+
 
 // general solution needed; this is intermediate solution
 @AMXCreatorInfo( creatables={CustomResource.class, ExternalJndiResource.class, JdbcResource.class,

@@ -55,7 +55,6 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.quality.ToDo;
@@ -77,7 +76,7 @@ import javax.validation.constraints.NotNull;
     "engine",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfig")
+
 @Configured
 @RestRedirects(
         {

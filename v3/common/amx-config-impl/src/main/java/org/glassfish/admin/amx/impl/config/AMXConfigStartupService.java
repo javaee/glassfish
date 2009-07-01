@@ -43,7 +43,7 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.util.FeatureAvailability;
-import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
+import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 import org.jvnet.hk2.config.Transactions;
 
 /**
@@ -66,7 +66,7 @@ public final class AMXConfigStartupService
     private MBeanServer mMBeanServer;
     
     @Inject
-    private volatile PendingConfigBeansNew mPendingConfigBeans;
+    private volatile PendingConfigBeans mPendingConfigBeans;
     
     @Inject
     private Transactions mTransactions;

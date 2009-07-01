@@ -51,53 +51,59 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
-    Listens for unprocessed config changes
+Listens for unprocessed config changes
  */
 @Service
 @Async
-public final class UnprocessedConfigListener implements Startup, PostConstruct, TransactionListener {
-    private static void debug( final String s ) { System.out.println( "### " + s); }
+public final class UnprocessedConfigListener implements Startup, PostConstruct, TransactionListener
+{
+    private static void debug(final String s)
+    {
+        System.out.println("### " + s);
+    }
 
     @Inject
-    private Transactions  mTransactions;
-    
+    private Transactions mTransactions;
+
     private final List<UnprocessedChangeEvents> mUnprocessedChangeEvents = new ArrayList();
-    
+
     public UnprocessedConfigListener()
     {
         //debug( "UnprocessedConfigListener.UnprocessedConfigListener" );
     }
-    
+
     public void postConstruct()
     {
         mTransactions.addTransactionsListener(this);
     }
 
-    public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
-    
-        public void
-    transactionCommited( final List<PropertyChangeEvent> changes)
+    public Startup.Lifecycle getLifecycle()
+    {
+        return Startup.Lifecycle.SERVER;
+    }
+
+    public void transactionCommited(final List<PropertyChangeEvent> changes)
     {
         //debug( "UnprocessedConfigListener: transactionCommited: " + changes.size() );
         // ignore, we only are interested in those that were not processed
     }
 
-        public synchronized void 
-    unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
+    public synchronized void unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes)
+    {
         //debug( "UnprocessedConfigListener.unprocessedTransactedEvents: " + changes.size() );
-        for( int i = 0; i < changes.size(); ++i )
+        for (int i = 0; i < changes.size(); ++i)
         {
             //debug( changes.get(i).toString() );
         }
         mUnprocessedChangeEvents.addAll(changes);
         //debug( "UnprocessedConfigListener.unprocessedTransactedEvents: total lists: " + mUnprocessedChangeEvents.size() );
     }
-    
-    public synchronized List<UnprocessedChangeEvents>
-    getUnprocessedChangeEvents()
+
+    public synchronized List<UnprocessedChangeEvents> getUnprocessedChangeEvents()
     {
-        return Collections.unmodifiableList( mUnprocessedChangeEvents );
+        return Collections.unmodifiableList(mUnprocessedChangeEvents);
     }
+
 }
 
 

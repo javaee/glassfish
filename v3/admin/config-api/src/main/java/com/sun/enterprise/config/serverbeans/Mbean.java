@@ -65,7 +65,7 @@ import javax.validation.constraints.NotNull;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.CustomMBeanConfig")
+
 @Configured
 public interface Mbean extends ConfigBeanProxy, Injectable, Named, org.glassfish.api.admin.config.PropertyBag {
 

@@ -43,7 +43,6 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -56,7 +55,7 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DomainConfig", singleton=true, omitAsAncestorInChildObjectName=true)
+
 @Configured
 /**
  * Top level Domain Element that includes applications, resources, configs,

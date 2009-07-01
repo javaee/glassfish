@@ -44,7 +44,6 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.*;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
@@ -60,7 +59,7 @@ import javax.validation.constraints.NotNull;
     "webServiceEndpoint",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebModuleConfig")
+
 @Configured
 public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glassfish.api.admin.config.PropertyBag {
 

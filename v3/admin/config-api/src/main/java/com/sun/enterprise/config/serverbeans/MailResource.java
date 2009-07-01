@@ -48,7 +48,6 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -61,7 +60,7 @@ import javax.validation.constraints.NotNull;
     "description",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MailResourceConfig")
+
 @Configured
 /**
  * The mail-resource element describes a javax.mail.Session resource 

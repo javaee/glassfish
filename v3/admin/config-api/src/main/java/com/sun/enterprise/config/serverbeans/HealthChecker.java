@@ -54,7 +54,7 @@ import javax.validation.constraints.Min;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HealthCheckerConfig")
+
 @Configured
 public interface HealthChecker extends ConfigBeanProxy, Injectable  {
 

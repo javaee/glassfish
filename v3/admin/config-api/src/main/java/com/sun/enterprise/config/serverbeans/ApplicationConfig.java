@@ -56,6 +56,5 @@ import org.jvnet.hk2.config.Configured;
  * @author tjquinn
  */
 @Configured
-// NO AMXConfigInfo; this is a base (abstract) base type
 public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
 }

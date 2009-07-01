@@ -54,7 +54,7 @@ import javax.validation.constraints.Pattern;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.RegistryLocationConfig")
+
 @Configured
 public interface RegistryLocation extends ConfigBeanProxy, Injectable  {
 

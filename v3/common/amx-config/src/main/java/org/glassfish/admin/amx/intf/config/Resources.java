@@ -50,6 +50,7 @@ groups all resources under itself.
 public interface Resources
         extends ConfigElement, ConfigCollectionElement, Singleton
 {
+    /*
     public Map<String, CustomResource> getCustomResource();
 
 
@@ -68,6 +69,7 @@ public interface Resources
     public Map<String, ResourceAdapter> getResourceAdapter();
 
     public Map<String, MailResource> getMailResource();
+    */
 }
 
 

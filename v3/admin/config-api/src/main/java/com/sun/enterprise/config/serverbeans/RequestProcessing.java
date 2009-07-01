@@ -38,7 +38,6 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -51,7 +50,7 @@ import java.beans.PropertyVetoException;
  * Provides attributes to configure the request processing subsystem in the
  * HTTP service
  */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.RequestProcessingConfig", singleton=true)
+
 @Configured
 @Deprecated
 public interface RequestProcessing extends ConfigBeanProxy, Injectable  {

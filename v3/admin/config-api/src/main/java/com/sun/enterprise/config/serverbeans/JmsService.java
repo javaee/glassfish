@@ -51,7 +51,6 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-import org.glassfish.api.amx.AMXConfigInfo;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -65,7 +64,7 @@ import javax.validation.constraints.NotNull;
     "jmsHost",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMSServiceConfig", singleton=true)
+
 @Configured
 public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
 

@@ -33,262 +33,151 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
 package amxtest;
 
-import org.testng.annotations.Test;
-
 import javax.management.ObjectName;
-import javax.management.MBeanServerConnection;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 
-import com.sun.appserv.management.DomainRoot;
-
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.Extra;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.SystemStatus;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.CollectionUtil;
-import com.sun.appserv.management.util.misc.TimingDelta;
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import org.testng.annotations.Configuration;
+import org.testng.annotations.ExpectedExceptions;
+import org.testng.annotations.Test;
+import org.testng.annotations.*;
+import org.testng.Assert;
 
 
-import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 
 import java.util.Set;
 import java.util.Map;
 import java.util.List;
 
+import  org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.base.SystemStatus;
+import org.glassfish.admin.amx.core.Extra;
+import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.util.CollectionUtil;
+import org.glassfish.admin.amx.util.TimingDelta;
+import org.glassfish.admin.amx.util.SetUtil;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.intf.config.JDBCConnectionPool;
+
 /** 
-	Basic AMX tests that verify connectivity and ability to
-	traverse the AMX hierarchy and fetch all attributes.
+Basic AMXProxy tests that verify connectivity and ability to
+traverse the AMXProxy hierarchy and fetch all attributes.
  */
-//@Test(groups={"amx"}, description="AMX tests", sequential=false, threadPoolSize=5)
-@Test(groups={"amx"}, description="AMX tests")
-public final class BasicAMXTests extends AMXTestBase {
-	public BasicAMXTests()
-	{
-	}
-	
+//@Test(groups={"amx"}, description="AMXProxy tests", sequential=false, threadPoolSize=5)
+@Test(groups =
+{
+    "amx"
+}, description = "AMXProxy tests")
+public final class BasicAMXTests extends AMXTestBase
+{
+    public BasicAMXTests()
+    {
+    }
+
     //@Test(timeOut=15000)
     public void bootAMX() throws Exception
     {
-    	final DomainRoot domainRoot = getDomainRoot();
-    	
-    	// one basic call to prove it's there...
-    	domainRoot.getAppserverDomainName();
+        final DomainRoot domainRoot = getDomainRootProxy();
+
+        // one basic call to prove it's there...
+        domainRoot.getAppserverDomainName();
     }
-    
-    @Test(dependsOnMethods="bootAMX")
+
+    @Test(dependsOnMethods = "bootAMX")
     public void iterateAllSanityCheck()
     {
-    	final TimingDelta timing = new TimingDelta();
-    	final TimingDelta overall = new TimingDelta();
-    	
-    	final Set<AMX> all = getAllAMX();
-    	assert all.size() > 20;
+        final TimingDelta timing = new TimingDelta();
+        final TimingDelta overall = new TimingDelta();
+
+        final Set<AMXProxy> all = getAllAMX();
+
+        assert all.size() > 20;
     	//debug( "BasicAMXTests: millis to get queryAllSet(): " + timing.elapsedMillis() );
-    	
-    	for( final AMX amx : all )
-    	{
-    		// if it's a Container, verify that containees can be fetched
-    		if ( amx instanceof Container )
-    		{
-    			final Container c = (Container)amx;
-    			final Set<String> j2eeTypes = c.getContaineeJ2EETypes();
-    			final Map<String,Map<String,AMX>> containeeMap = c.getMultiContaineeMap(j2eeTypes);
-    		}
-    		//debug( "BasicAMXTests: millis to get getMultiContaineeMap(): " + timing.elapsedMillis() );
-    		
-    		// verify that all the attributes can be accessed
-    		final Extra extra = Util.getExtra(amx);
-    		final ObjectName objectName = extra.getObjectName();
-    		final String[] attrNames = extra.getAttributeNames();
-    		final Map<String,Object> attrsMap = extra.getAllAttributes();
-    		
-    		final Set<String> missing = GSetUtil.newStringSet(attrNames);
-    		missing.removeAll(attrsMap.keySet());
-    		if ( missing.size() != 0 )
-    		{
-    			final String missingStr = CollectionUtil.toString(missing, ", ");
-    			System.err.println( "WARNING: could not retrieve attributes: {" + missingStr +
-    				"} for MBean " + JMXUtil.toString(objectName));
-    		}
-    		else
-    		{
-    			//System.out.println( attrsMap.keySet().size() + " attrs fetched ok: " + JMXUtil.toString(Util.getExtra(amx).getObjectName()) );
-    		}
-    		//debug( "BasicAMXTests: millis to get verify attributes: " + timing.elapsedMillis() );
-    	}
-    	//debug( "BasicAMXTests.iterateAllSanityCheck() millis: " + overall.elapsedMillis() );
+
+        for (final AMXProxy amx : all)
+        {
+            final Set<AMXProxy> children = amx.childrenSet();
+            if ( children.size() != 0 )
+            {
+            }
+        }
     }
-    
-    /*
-	if ( getEffortLevel() == EffortLevel.EXTENSIVE )
-	{
-		...
-	}
-    */
-    
-    @Test(dependsOnMethods="bootAMX")
-    public void iterateParentChild()
+
+    private void _checkDefaultValues(final AMXConfigProxy amxConfig)
     {
-    	final Set<AMX> all = getAllAMX();
-    	for( final AMX amx : all )
-    	{
-    		_checkParentChild(amx);
-    	}
+        final String objectName = amxConfig.objectName().toString();
+
+        // test the Map keyed by XML attribute name
+        final Map<String, String> defaultValuesXML = amxConfig.getDefaultValues(false);
+        for (final String attrName : defaultValuesXML.keySet())
+        {
+            // no default value should ever be null
+
+            assert defaultValuesXML.get(attrName) != null :
+            "null value for attribute " + attrName + " in " + objectName;
+        }
+
+        // test the Map keyed by AMXProxy attribute name
+        final Map<String, String> defaultValuesAMX = amxConfig.getDefaultValues(true);
+
+        assert defaultValuesXML.size() == defaultValuesAMX.size();
+        for (final String attrName : defaultValuesAMX.keySet())
+        {
+            // no default value should ever be null
+
+            assert defaultValuesAMX.get(attrName) != null :
+            "null value for attribute " + attrName + " in " + objectName;
+        }
     }
-    private void _checkParentChild( final AMX amx )
+
+    private void _checkAttributeResolver(final AMXConfigProxy amxConfig)
     {
-    	if ( ! (amx instanceof DomainRoot) )
-    	{
-    		final Container c = amx.getContainer();
-    		final Set<AMX> s = c.getContaineeSet(amx.getJ2EEType());
-    		assert s.contains(amx);
-    		
-    		final Map<String,AMX> m = c.getContaineeMap(amx.getJ2EEType());
-    		assert m.containsKey(amx.getName());
-    	}
+        final Set<String> attrNames = amxConfig.attributeNames();
+        for (final String attrName : attrNames)
+        {
+            final String resolvedValue = amxConfig.resolveAttribute(attrName);
+            if (resolvedValue != null)
+            {
+                // crude check
+                assert resolvedValue.indexOf("${") < 0 :
+                "Attribute " + attrName + " did not resolve: " + resolvedValue;
+            }
+        }
+
+        final AttributeList attrsList = amxConfig.resolveAttributes( SetUtil.toStringArray(attrNames) );
+        for (final Object o : attrsList)
+        {
+            final Attribute a = (Attribute) o;
+            final String resolvedValue = "" + a.getValue();
+            if (resolvedValue != null)
+            {
+                // crude check
+                assert resolvedValue.indexOf("${") < 0 :
+                "Attribute " + a.getName() + " did not resolve: " + resolvedValue;
+            }
+        }
     }
-    
-    
-    
-    @Test(dependsOnMethods="bootAMX")
-    public void iterateContainer()
-    {
-    	final Set<Container> all = getAll(Container.class);
-    	for( final Container amx : all )
-    	{
-    		_checkContainer( amx );
-    	}
-    }
-    private void _checkContainer( final Container c )
-    {
-    	final Set<String> j2eeTypes = c.getContaineeJ2EETypes();
-    	
-    	// check equivalency of null and complete set of j2eeTypes
-    	final Map<String,Map<String,AMX>> m1 = c.getMultiContaineeMap(j2eeTypes);
-    	final Map<String,Map<String,AMX>> m2 = c.getMultiContaineeMap(null);
-    	assert m1.keySet().equals(m2.keySet());
-    	
-    	// just verify it can be calle
-    	final Set<AMX> s1 = c.getContaineeSet(j2eeTypes);
-    	
-    	// verified that every containee can be fetched by type and name
-    	for( final String j2eeType : j2eeTypes )
-    	{
-    		final Set<AMX> byType = c.getContaineeSet(j2eeType);
-    		for( final AMX amx : byType )
-    		{
-    			final AMX a = c.getContainee(j2eeType,amx.getName());
-    			assert a == amx;
-    		}
-    	}
-    }
-    
-    
-    
-    @Test(dependsOnMethods="bootAMX")
-    public void iterateDefaultValues()
-    {
-    	final Set<AMXConfig> all = getAll(AMXConfig.class);
-    	for( final AMXConfig amx : all )
-    	{
-    		_checkDefaultValues( amx );
-    	}
-    }
-    
-    private void _checkDefaultValues( final AMXConfig amxConfig )
-    {
-    	final String objectName = JMXUtil.toString(Util.getExtra(amxConfig).getObjectName());
-    	
-    	// test the Map keyed by XML attribute name
-    	final Map<String,String> defaultValuesXML = amxConfig.getDefaultValues(false);
-    	for( final String attrName : defaultValuesXML.keySet() )
-    	{
-    		// no default value should ever be null
-    		assert defaultValuesXML.get(attrName) != null :
-    			"null value for attribute " + attrName + " in " + objectName;
-    			
-    		final String value = amxConfig.getDefaultValue(attrName);
-    		assert value != null :
-    			"null value for XML attribute fetched singly: " + attrName + " in " + objectName;
-    	}
-    	
-    	// test the Map keyed by AMX attribute name
-    	final Map<String,String> defaultValuesAMX = amxConfig.getDefaultValues(true);
-    	assert defaultValuesXML.size() == defaultValuesAMX.size();
-    	for( final String attrName : defaultValuesAMX.keySet() )
-    	{
-    		// no default value should ever be null
-    		assert defaultValuesAMX.get(attrName) != null :
-    			"null value for attribute " + attrName + " in " + objectName;
-    			
-    		final String value = amxConfig.getDefaultValue(attrName);
-    		assert value != null :
-    			"null value for AMX attribute fetched singly: " + attrName + " in " + objectName;
-    	}
-    }
-    
-    
-    @Test(dependsOnMethods="bootAMX")
-    public void iterateAttributeResolver()
-    {
-    	final Set<AMXConfig> all = getAll(AMXConfig.class);
-    	for( final AMXConfig amx : all )
-    	{
-    		_checkAttributeResolver( amx );
-    	}
-    }
-    private void _checkAttributeResolver( final AMXConfig amxConfig )
-    {
-    	final String[] attrNames = Util.getExtra(amxConfig).getAttributeNames();
-    	for( final String attrName : attrNames )
-    	{
-    		final String resolvedValue = amxConfig.resolveAttribute(attrName);
-    		if ( resolvedValue != null )
-    		{
-    			// crude check
-    			assert resolvedValue.indexOf("${") < 0 : 
-    				"Attribute " + attrName + " did not resolve: " + resolvedValue;
-    		}
-    	}
-    	
-    	final AttributeList attrsList = amxConfig.resolveAttributes(attrNames);
-    	for( final Object o : attrsList )
-    	{
-    		final Attribute a = (Attribute)o;
-    		final String resolvedValue = "" + a.getValue();
-    		if ( resolvedValue != null )
-    		{
-    			// crude check
-				assert resolvedValue.indexOf("${") < 0 : 
-					"Attribute " + a.getName() + " did not resolve: " + resolvedValue;
-    		}
-    	}
-    }
-    
-    @Test(dependsOnMethods="bootAMX")
+
+    @Test(dependsOnMethods = "bootAMX")
     public void testSystemStatus()
     {
-    	final SystemStatus ss = getDomainRoot().getSystemStatus();
-    	
-    	final List<Object[]> changes = ss.getRestartRequiredChanges();
-    	
-    	final Set<JDBCConnectionPoolConfig> pools = getQueryMgr().queryJ2EETypeSet(JDBCConnectionPoolConfig.J2EE_TYPE);
-    	
-    	for( final JDBCConnectionPoolConfig pool : pools )
-    	{
-    		final Map<String,Object> result = ss.pingJDBCConnectionPool( pool.getName() );
-    	}
+        final SystemStatus ss = getDomainRootProxy().getExt().getSystemStatus();
+
+        final List<Object[]> changes = ss.getRestartRequiredChanges();
+
+        final Set<AMXProxy> pools = getQueryMgr().queryType( Util.deduceType(JDBCConnectionPool.class) );
+
+        for (final AMXProxy pool : pools)
+        {
+            final Map<String, Object> result = ss.pingJDBCConnectionPool(pool.getName());
+            assert result != null;
+        }
     }
+
 }
 
 

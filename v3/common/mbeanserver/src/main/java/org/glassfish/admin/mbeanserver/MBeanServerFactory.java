@@ -33,21 +33,67 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.monitor;
+package org.glassfish.admin.mbeanserver;
 
-import com.sun.appserv.management.base.AMX;
+import org.jvnet.hk2.annotations.FactoryFor;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Factory;
+import org.jvnet.hk2.component.ComponentException;
+
+import javax.management.MBeanServer;
+
+import org.glassfish.api.Startup;
+import org.glassfish.api.Async;
 
 /**
-	Interface which all Monitoring MBeans should extend whether they provide Stats or not.
+    Factory for the MBeanServer.  Not particularly useful now, since it just loads
+    the default MBeanServer.  But this could change in the future.
+    @see PendingConfigBeans
  */
-public interface Monitoring extends AMX
-{
+@Service
+@Async
+@FactoryFor(MBeanServer.class)
+public final class MBeanServerFactory implements Factory, Startup {
+    private static void debug( final String s ) { System.out.println(s); }
+    
+    private final MBeanServer     mMBeanServer;
+    
+    public MBeanServerFactory()
+    {
+        // initialize eagerly; ~20ms
+        mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+    }
+    
+    public void postConstruct()
+    {
+    }
+    
     /**
-        Most monitoring MBeans live under (are contained by) a ServerRootMonitor.
-        A few aren't and null will be returned from this method.
+     * The system calls this method to obtain a reference
+     * to the component.
+     *
+     * @return null is a valid return value. This is useful
+     *         when a factory primarily does a look-up and it fails
+     *         to find the specified component, yet you don't want that
+     *         by itself to be an error. If the injection wants
+     *         a non-null value (i.e., <tt>@Inject(optional=false)</tt>).
+     * @throws org.jvnet.hk2.component.ComponentException
+     *          If the factory failed to get/create an instance
+     *          and would like to propagate the error to the caller.
      */
-	ServerRootMonitor	getServerRootMonitor();
+    public Object getObject() throws ComponentException {
+        return mMBeanServer;
+    }
+    
+    public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
+
+
+
+
+
+
+
 
 
 

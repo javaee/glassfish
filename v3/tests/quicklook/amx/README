@@ -2,7 +2,7 @@ Author: Lloyd.Chambers@sun.com
 Last modified:  11 September 2008
 
 AMX unit tests.  They run fine through 'mvn test', which sets up the dependencies for compiling
-and running with the requisite jars (eg amx-api-10.0-SNAPSHOT.jar).
+and running with the requisite jars.
 
 Standalone 'ant build' does not work; the appropriate ant targets need to be set up.
 

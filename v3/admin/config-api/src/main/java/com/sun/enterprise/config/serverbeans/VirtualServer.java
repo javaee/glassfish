@@ -45,7 +45,6 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -68,7 +67,7 @@ import javax.validation.constraints.NotNull;
  * web modules (standalone web modules or web modules inside the ear file)
  *
  */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.VirtualServerConfig")
+
 @Configured
 public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag {
 

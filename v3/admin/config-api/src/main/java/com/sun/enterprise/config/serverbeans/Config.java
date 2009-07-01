@@ -50,7 +50,6 @@ import org.glassfish.api.admin.config.Container;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.config.support.datatypes.Port;
 import org.glassfish.quality.ToDo;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -94,7 +93,7 @@ import javax.validation.constraints.Pattern;
     "systemProperty",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConfigConfig" )
+
 @Configured
 public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag {
 

@@ -55,7 +55,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.RequestPolicyConfig", singleton=true)
+
 @Configured
 public interface RequestPolicy extends ConfigBeanProxy, Injectable  {
     

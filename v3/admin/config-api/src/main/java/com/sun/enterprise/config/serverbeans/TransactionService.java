@@ -47,7 +47,6 @@ import java.util.List;
 
 import java.beans.PropertyVetoException;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.admin.config.PropertyDesc;
@@ -61,7 +60,7 @@ import org.glassfish.api.admin.config.Property;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.TransactionServiceConfig", singleton=true)
+
 @Configured
 public interface TransactionService extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 

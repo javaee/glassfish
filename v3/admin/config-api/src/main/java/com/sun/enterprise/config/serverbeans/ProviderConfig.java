@@ -68,7 +68,7 @@ import javax.validation.constraints.NotNull;
     "responsePolicy",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ProviderConfig")
+
 @Configured
 public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 

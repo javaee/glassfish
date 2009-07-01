@@ -42,7 +42,6 @@ import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -55,7 +54,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AppClientModuleConfig")
+
 @Configured
 public interface AppclientModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
     

@@ -47,7 +47,6 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -64,7 +63,7 @@ import org.jvnet.hk2.config.Element;
     "ssl",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMXConnectorConfig")
+
 @Configured
 public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
 

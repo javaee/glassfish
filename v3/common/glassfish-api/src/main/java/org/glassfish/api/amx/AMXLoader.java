@@ -52,9 +52,6 @@ public interface AMXLoader
     public static final String AMX3_SUPPORT_DOMAIN = AMX_JMX_DOMAIN + "-support";
     public static String LOADER_PREFIX = AMX3_SUPPORT_DOMAIN + ":type=amx-loader,name=";
     
-    /** ObjectName prefix for the loader MBean itself */
-    public static String LOADER_OLD_PREFIX = "amx-support:type=amx-loader,name=";
-    
     /**
         Loader a hierarchy of AMX MBeans, returning the ObjectName of the root
         of the hierarchy.

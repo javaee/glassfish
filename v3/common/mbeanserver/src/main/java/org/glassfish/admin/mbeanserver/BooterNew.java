@@ -33,132 +33,138 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
-/**
-    Registers the AMX Booter MBean.
+import org.glassfish.api.amx.AMXValues;
 
-    Public API is the name of the booter MBean: "amx-support:name=amx-booter" along with the
-    methods found in AMXStartupServiceNewMBean, in particular bootAMX(),
+/**
+Registers the AMX Booter MBean.
+
+Public API is the name of the booter MBean: "amx-support:name=amx-booter" along with the
+methods found in AMXStartupServiceMBean, in particular bootAMX(),
  */
 final class BooterNew implements BooterNewMBean
 {
     private final MBeanServer mMBeanServer;
-    private final ObjectName  mObjectName;
-    private final Habitat     mHabitat;
-    private ObjectName        mDomainRootObjectName;
-    
-    //@Inject
-   // private org.glassfish.admin.amx.config.AMXConfigRegistrar mConfigRegistrar;
-   
-    private static void debug( final String s ) { System.out.println(s); }
-    
+
+    private final ObjectName mObjectName;
+
+    private final Habitat mHabitat;
+
+    private ObjectName mDomainRootObjectName;
+
+    private static void debug(final String s)
+    {
+        System.out.println(s);
+    }
+
     private BooterNew(
-        final Habitat habitat,
-        final MBeanServer mbeanServer)
+            final Habitat habitat,
+            final MBeanServer mbeanServer)
     {
         mHabitat = habitat;
         mMBeanServer = mbeanServer;
         mObjectName = BooterNewMBean.OBJECT_NAME;
         mDomainRootObjectName = null;
-        
-        if ( mMBeanServer.isRegistered(mObjectName) )
+
+        if (mMBeanServer.isRegistered(mObjectName))
         {
             throw new IllegalStateException();
         }
     }
-    
+
     /**
-        Create an instance of the booter.
+    Create an instance of the booter.
      */
-        public static synchronized BooterNew
-    create( final Habitat habitat, final MBeanServer server )
+    public static synchronized BooterNew create(final Habitat habitat, final MBeanServer server)
     {
-        final BooterNew  booter = new BooterNew( habitat, server);
+        final BooterNew booter = new BooterNew(habitat, server);
         final ObjectName objectName = booter.OBJECT_NAME;
-        
+
         try
         {
-            if ( ! server.registerMBean( booter, objectName ).getObjectName().equals(objectName) )
+            if (!server.registerMBean(booter, objectName).getObjectName().equals(objectName))
             {
                 throw new IllegalStateException();
             }
         }
-        catch( JMException e )
+        catch (JMException e)
         {
             throw new IllegalStateException(e);
         }
         return booter;
     }
-    
+
     /**
-        We need to dynamically load the AMX module.  HOW?  we can't depend on the amx-impl module.
-        
-        For now though, assume that a well-known MBean is available through other means via
-        the amx-impl module.
+    We need to dynamically load the AMX module.  HOW?  we can't depend on the amx-impl module.
+
+    For now though, assume that a well-known MBean is available through other means via
+    the amx-impl module.
      */
     public synchronized ObjectName bootAMX()
     {
-        if ( mDomainRootObjectName == null )
+        if (mDomainRootObjectName == null)
         {
-            //debug( "BooterNew.bootAMX: getting AMXStartupServiceNewMBean via contract" );
-            AMXStartupServiceNewMBean loader = null;
-            try {
-                loader = mHabitat.getByContract(AMXStartupServiceNewMBean.class);
+            //debug( "Booter.bootAMX: getting AMXStartupServiceMBean via contract" );
+            AMXStartupServiceMBean loader = null;
+            try
+            {
+                loader = mHabitat.getByContract(AMXStartupServiceMBean.class);
             }
-            catch( Throwable t ) {
+            catch (Throwable t)
+            {
                 t.printStackTrace();
                 throw new RuntimeException(t);
             }
-            //debug( "Got loader for AMXStartupServiceNewMBean: " + loader );
-            //debug( "BooterNew.bootAMX: assuming that amx-impl loads through other means" );
-        
-            final ObjectName startupON = AMXStartupServiceNewMBean.OBJECT_NAME;
-            if ( ! mMBeanServer.isRegistered(startupON) )
+            //debug( "Got loader for AMXStartupServiceMBean: " + loader );
+            //debug( "Booter.bootAMX: assuming that amx-impl loads through other means" );
+
+            final ObjectName startupON = AMXStartupServiceMBean.OBJECT_NAME;
+            if (!mMBeanServer.isRegistered(startupON))
             {
-                debug( "BooterNew.bootAMX(): AMX MBean not yet available: " + startupON );
-                throw new IllegalStateException( "AMX MBean not yet available: " + startupON );
+                debug("Booter.bootAMX(): AMX MBean not yet available: " + startupON);
+                throw new IllegalStateException("AMX MBean not yet available: " + startupON);
             }
-            
+
             try
             {
-                //debug( "BooterNew.bootAMX: invoking startAMX() on " + startupON);
-                mDomainRootObjectName = (ObjectName)mMBeanServer.invoke( startupON, "loadAMXMBeans", null, null);
-                //debug( "BooterNew.bootAMX: domainRoot = " + mDomainRootObjectName);
+                //debug( "Booter.bootAMX: invoking startAMX() on " + startupON);
+                mDomainRootObjectName = (ObjectName) mMBeanServer.invoke(startupON, "loadAMXMBeans", null, null);
+                //debug( "Booter.bootAMX: domainRoot = " + mDomainRootObjectName);
             }
-            catch( final JMException e )
+            catch (final JMException e)
             {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
-        
+
         return mDomainRootObjectName;
     }
-    
+
     /**
-        Return the JMXServiceURLs for all connectors we've loaded.
+    Return the JMXServiceURLs for all connectors we've loaded.
      */
-        public JMXServiceURL[]
-    getJMXServiceURLs()
+    public JMXServiceURL[] getJMXServiceURLs()
     {
-        final ObjectName queryPattern = Util.newObjectName("jmxremote:type=jmx-connector,*");
-        final Set<ObjectName>  objectNames = mMBeanServer.queryNames(queryPattern, null);
-        
+        final ObjectName queryPattern = AMXValues.newObjectName("jmxremote:type=jmx-connector,*");
+        final Set<ObjectName> objectNames = mMBeanServer.queryNames(queryPattern, null);
+
         final List<JMXServiceURL> urls = new ArrayList<JMXServiceURL>();
-        for( final ObjectName objectName : objectNames )
+        for (final ObjectName objectName : objectNames)
         {
             try
             {
-                urls.add( (JMXServiceURL)mMBeanServer.getAttribute( objectName, "Address" ) );
+                urls.add((JMXServiceURL) mMBeanServer.getAttribute(objectName, "Address"));
             }
-            catch( JMException e )
+            catch (JMException e)
             {
                 e.printStackTrace();
                 // ignore
             }
         }
-        
-        return urls.toArray( new JMXServiceURL[urls.size()] );
+
+        return urls.toArray(new JMXServiceURL[urls.size()]);
     }
+
 }
 
 

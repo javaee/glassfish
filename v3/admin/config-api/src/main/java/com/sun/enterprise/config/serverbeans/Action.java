@@ -52,7 +52,6 @@ import javax.validation.constraints.NotNull;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ActionConfig")
 @Configured
 /**
  * Defines the action MBean associated with the event.

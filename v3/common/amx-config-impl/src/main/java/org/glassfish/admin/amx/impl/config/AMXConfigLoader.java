@@ -65,7 +65,7 @@ import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
 import org.glassfish.admin.amx.util.MapUtil;
-import org.glassfish.admin.mbeanserver.PendingConfigBeansNew;
+import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
 import org.glassfish.api.amx.AMXLoader;
 
@@ -85,14 +85,14 @@ public final class AMXConfigLoader extends MBeanImplBase
     private final Transactions  mTransactions;
     private final Logger mLogger = ImplUtil.getLogger();
 
-    private final PendingConfigBeansNew    mPendingConfigBeans;
+    private final PendingConfigBeans    mPendingConfigBeans;
     
     private final ConfigBeanRegistry mRegistry = ConfigBeanRegistry.getInstance();
     
         public
     AMXConfigLoader(
         final MBeanServer mbeanServer,
-        final PendingConfigBeansNew pending,
+        final PendingConfigBeans pending,
         final Transactions transactions)
     {
         if ( transactions == null ) throw new IllegalStateException();
@@ -453,11 +453,11 @@ public final class AMXConfigLoader extends MBeanImplBase
         
     private final class AMXConfigLoaderThread extends Thread
     {
-        private final PendingConfigBeansNew mPending;
+        private final PendingConfigBeans mPending;
         volatile boolean    mQuit = false;
         private CountDownLatch mInitalQueueLatch = new CountDownLatch(1);
         
-        AMXConfigLoaderThread( final PendingConfigBeansNew pending )
+        AMXConfigLoaderThread( final PendingConfigBeans pending )
         {
             super( "AMXConfigLoader.AMXConfigLoaderThread" );
             mPending = pending;

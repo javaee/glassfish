@@ -51,8 +51,6 @@ import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.quality.ToDo;
-import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Units;
 import org.jvnet.hk2.config.ConfigBean;
@@ -60,6 +58,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
+import org.glassfish.api.amx.AMXCreatorInfo;
 
 /**
  * Helps generate required JMX artifacts (MBeanInfo, etc) from a ConfigBean interface, as well
@@ -68,20 +67,6 @@ import org.jvnet.hk2.config.Element;
  */
 @Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 public class ConfigBeanJMXSupport {    
-    /** bugs: these @Configured do not set @Attribute(key=true)
-    Map classnmame to id field 
-    private static final Map<String, String> CONFIGURED_BUGS = Collections.unmodifiableMap(MapUtil.newMap(
-            "", ""
-        ));
-
-    private boolean hasConfiguredBug() {
-        return configuredBugKey() != null;
-    }
-
-    private String configuredBugKey() {
-        final String key = CONFIGURED_BUGS.get(mIntf.getName());
-        return key;
-    }*/
     private final Class<? extends ConfigBeanProxy> mIntf;
     private final List<AttributeMethodInfo> mAttrInfos = new ArrayList<AttributeMethodInfo>();
     private final List<ElementMethodInfo> mElemenInfos = new ArrayList<ElementMethodInfo>();
@@ -505,25 +490,26 @@ public class ConfigBeanJMXSupport {
 
         return d;
     }
+    
+    /** kludge to provide interface name */
+    private static final Map<String,String> INTERFACE_MAPPINGS = MapUtil.newMap(
+        com.sun.enterprise.config.serverbeans.Domain.class.getPackage().getName(), org.glassfish.admin.amx.intf.config.Domain.class.getPackage().getName()
+        );
 
     private DescriptorSupport descriptor() {
         final DescriptorSupport d = new DescriptorSupport();
 
-        String amxInterfaceName = AMXConfigProxy.class.getName();
-        final AMXConfigInfo configInfo = mIntf.getAnnotation(AMXConfigInfo.class);
-        if (configInfo != null && configInfo.amxInterfaceName().length() > 0) {
-            String classname = configInfo.amxInterfaceName();
-            final String PREFIX = "com.sun.appserv.management.config";
-            if (classname.startsWith(PREFIX)) {
-                classname = "org.glassfish.admin.amx.intf.config" + classname.substring(PREFIX.length());
-            }
-            amxInterfaceName = classname;
+        String amxInterfaceName = AMXConfigProxy.class.getName(); // generic default
+        
+        final String intfPackage = mIntf.getPackage().getName();
+        if ( INTERFACE_MAPPINGS.get(intfPackage) != null )
+        {
+            amxInterfaceName = INTERFACE_MAPPINGS.get(intfPackage) + "." + mIntf.getName();
         }
 
         d.setField(DESC_STD_INTERFACE_NAME, amxInterfaceName);
         d.setField(DESC_GENERIC_INTERFACE_NAME, AMXConfigProxy.class.getName());
         d.setField(DESC_STD_IMMUTABLE_INFO, true);
-        //d.setField(DESC_PATH_PART, getTypeString());
         d.setField(DESC_GROUP, "config");
 
         // Adoption is not supported, only other config elements

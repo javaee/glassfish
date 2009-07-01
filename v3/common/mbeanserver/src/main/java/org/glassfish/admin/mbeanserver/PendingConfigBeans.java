@@ -34,7 +34,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.mbeanserver;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -59,106 +58,118 @@ import java.util.List;
 import java.util.ArrayList;
 import java.beans.PropertyChangeEvent;
 
-
 /**
-    Called when ConfigBeans come into the habitat (see GlassfishConfigBean); a job queue
-    is maintained for processing by the AMXConfigLoader, which is lazily loaded.
+Called when ConfigBeans come into the habitat (see GlassfishConfigBean); a job queue
+is maintained for processing by the AMXConfigLoader, which is lazily loaded.
  * @author llc
  */
-@Service(name="PendingConfigBeans")
+@Service(name = "PendingConfigBeans")
 public class PendingConfigBeans implements CageBuilder, PostConstruct, TransactionListener
 {
     @Inject
     Transactions transactions;
-    
-    protected static void debug( final String s ) { System.out.println(s); }
-    
+
+    protected static void debug(final String s)
+    {
+        System.out.println(s);
+    }
+
     private final LinkedBlockingQueue<PendingConfigBeanJob> mJobs = new LinkedBlockingQueue<PendingConfigBeanJob>();
-    
-    public int size() { return mJobs.size(); }
-    
+
+    public int size()
+    {
+        return mJobs.size();
+    }
+
     /**
     /**
-        Singleton: there should be only one instance and hence a private constructor.
-        But the framework using this wants to instantiate things with a public constructor.
+    Singleton: there should be only one instance and hence a private constructor.
+    But the framework using this wants to instantiate things with a public constructor.
      */
     public PendingConfigBeans()
     {
-        //debug( "PendingConfigBeans.PendingConfigBeans()" );
     }
-    
+
     public void postConstruct()
     {
-        //debug( "PendingConfigBeans.postConstruct" );
         transactions.addTransactionsListener(this);
     }
-    
+
     /**
-        @return a ConfigBean, or null if it's not a ConfigBean
+    @return a ConfigBean, or null if it's not a ConfigBean
      */
-    final ConfigBean asConfigBean( final Object o )
+    final ConfigBean asConfigBean(final Object o)
     {
         return (o instanceof ConfigBean) ? ConfigBean.class.cast(o) : null;
     }
-    
-    public void onEntered( final Inhabitant<?> inhabitant)
+
+    public void onEntered(final Inhabitant<?> inhabitant)
     {
-        // debug( "PendingConfigBeans.onEntered(): " + inhabitant);
-            
+        //debug( "PendingConfigBeansNew.onEntered(): " + inhabitant);
+
         final ConfigBean cb = asConfigBean(inhabitant);
-        if ( cb != null )
+        if (cb != null)
         {
-            //final ConfigBean parent = asConfigBean(cb.parent());
-            //debug( "PendingConfigBeans.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
-            add( cb );
+            final ConfigBean parent = asConfigBean(cb.parent());
+            // debug( "PendingConfigBeansNew.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
+            add(cb);
         }
     }
-    
-    public PendingConfigBeanJob take() throws InterruptedException { return mJobs.take(); }
-    public PendingConfigBeanJob peek() throws InterruptedException { return mJobs.peek(); }
-    
-        private PendingConfigBeanJob
-    addJob( final PendingConfigBeanJob job )
+
+    public PendingConfigBeanJob take() throws InterruptedException
     {
-        if ( job == null ) throw new IllegalArgumentException();
-        
-        mJobs.add( job );
+        return mJobs.take();
+    }
+
+    public PendingConfigBeanJob peek() throws InterruptedException
+    {
+        return mJobs.peek();
+    }
+
+    private PendingConfigBeanJob addJob(final PendingConfigBeanJob job)
+    {
+        if (job == null)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        mJobs.add(job);
         return job;
     }
-    
-    public PendingConfigBeanJob  add( final ConfigBean cb ) {  return add(cb, null); }
-    
-    public PendingConfigBeanJob  add( final ConfigBean cb, final boolean useLatch )
-    { 
-        return add(cb, useLatch ? new CountDownLatch(1) : null );
-    }
-    
-        public PendingConfigBeanJob
-    add( final ConfigBean cb, final CountDownLatch latch)
+
+    public PendingConfigBeanJob add(final ConfigBean cb)
     {
-       //debug( "ADD: " + cb.getProxyType().getName() );
-       return addJob( new PendingConfigBeanJob( cb, latch ) );
+        return add(cb, null);
     }
-    
-        
+
+    public PendingConfigBeanJob add(final ConfigBean cb, final boolean useLatch)
+    {
+        return add(cb, useLatch ? new CountDownLatch(1) : null);
+    }
+
+    public PendingConfigBeanJob add(final ConfigBean cb, final CountDownLatch latch)
+    {
+        //debug( "ADD: " + cb.getProxyType().getName() );
+        return addJob(new PendingConfigBeanJob(cb, latch));
+    }
+
     /**
-        Removing a ConfigBean must ensure that all its children are also removed.  This will normally
-        happen if AMX is loaded as a side effect of unregistering MBeans, but if AMX has not loaded
-        we must ensure it directly.
-        This is all caused by an HK2 asymmetry that does not issue REMOVE events for children of removed
-        elements.
-        <p>
-        TODO: remove all children of the ConfigBean.
+    Removing a ConfigBean must ensure that all its children are also removed.  This will normally
+    happen if AMX is loaded as a side effect of unregistering MBeans, but if AMX has not loaded
+    we must ensure it directly.
+    This is all caused by an HK2 asymmetry that does not issue REMOVE events for children of removed
+    elements.
+    <p>
+    TODO: remove all children of the ConfigBean.
      */
-        public boolean
-    remove( final ConfigBean cb )
+    public boolean remove(final ConfigBean cb)
     {
         //debug( "REMOVE: " + cb.getProxyType().getName() );
-        boolean  found = false;
-        
-        for( final PendingConfigBeanJob job : mJobs )
+        boolean found = false;
+
+        for (final PendingConfigBeanJob job : mJobs)
         {
-            if ( job.getConfigBean() == cb )
+            if (job.getConfigBean() == cb)
             {
                 found = true;
                 job.releaseLatch();
@@ -166,88 +177,85 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
                 break;
             }
         }
-        
-        if ( found ) 
+
+        if (found)
         {
             removeAllDescendants(cb);
         }
         return found;
     }
-    
+
     /**
-        Remove all jobs that have this ConfigBean as an ancestor.
+    Remove all jobs that have this ConfigBean as an ancestor.
      */
-    private void removeAllDescendants( final ConfigBean cb )
+    private void removeAllDescendants(final ConfigBean cb)
     {
         final List<PendingConfigBeanJob> jobs = new ArrayList<PendingConfigBeanJob>(mJobs);
-        
-        for( final PendingConfigBeanJob job : jobs )
+
+        for (final PendingConfigBeanJob job : jobs)
         {
-            if ( isDescendent(job.getConfigBean(), cb) )
+            if (isDescendent(job.getConfigBean(), cb))
             {
                 //debug( "removed descendent: " + job.getConfigBean().getProxyType().getName() );
                 mJobs.remove(job);
             }
         }
     }
-    
+
     /** return true if the candidate is a descendent of the parent */
-    private boolean isDescendent(final ConfigBean candidate,  final ConfigBean parent )
+    private boolean isDescendent(final ConfigBean candidate, final ConfigBean parent)
     {
         boolean isParent = false;
         Dom temp = candidate.parent();
-        while ( temp != null )
+        while (temp != null)
         {
-            if ( temp == parent )
+            if (temp == parent)
             {
                 isParent = true;
                 break;
             }
             temp = temp.parent();
         }
-        
+
         return isParent;
     }
 
-    
-    
     /**
-        amx-impl has its own TransactionListener which takes over once AMX is loaded.
-        Note that it is synchronized with transactionCommited() [sic] to avoid a race condition.
+    amx-impl has its own TransactionListener which takes over once AMX is loaded.
+    Note that it is synchronized with transactionCommited() [sic] to avoid a race condition.
      */
-    public synchronized void swapTransactionListener( final TransactionListener newListener )
+    public synchronized void swapTransactionListener(final TransactionListener newListener)
     {
         //debug( "PendingConfigBeans.swapTransactionListener()" );
         transactions.addTransactionsListener(newListener);
         transactions.removeTransactionsListener(this);
     }
-    
+
     /**
-        This is a workaround for the fact that the onEntered() is not being called in all cases,
-        namely during deployment before AMX has loaded.  See disableTransactionListener() above.
+    This is a workaround for the fact that the onEntered() is not being called in all cases,
+    namely during deployment before AMX has loaded.  See disableTransactionListener() above.
      */
-        public synchronized void
-    transactionCommited( final List<PropertyChangeEvent> events)
+    public synchronized void transactionCommited(final List<PropertyChangeEvent> events)
     {
         // could there be an add/remove/add/remove of the same thing?  Maintain the order just in case
-        for ( final PropertyChangeEvent event : events) 
+        for (final PropertyChangeEvent event : events)
         {
             final Object oldValue = event.getOldValue();
             final Object newValue = event.getNewValue();
-            final Object source   = event.getSource();
+            final Object source = event.getSource();
             final String propertyName = event.getPropertyName();
-            
-            if ( oldValue == null && newValue instanceof ConfigBeanProxy )
+
+            if (oldValue == null && newValue instanceof ConfigBeanProxy)
             {
                 // ADD: a new ConfigBean was added
-                final ConfigBean cb = asConfigBean( ConfigBean.unwrap( (ConfigBeanProxy)newValue) );
+                final ConfigBean cb = asConfigBean(ConfigBean.unwrap((ConfigBeanProxy) newValue));
                 add(cb);
             }
-            else if ( newValue == null && (oldValue instanceof ConfigBeanProxy) )
+            else if (newValue == null && (oldValue instanceof ConfigBeanProxy))
             {
                 // REMOVE
-                final ConfigBean cb = asConfigBean( ConfigBean.unwrap( (ConfigBeanProxy)oldValue) );
-                remove( cb );
+                final ConfigBean cb = asConfigBean(ConfigBean.unwrap((ConfigBeanProxy) oldValue));
+                remove(cb);
             }
             else
             {
@@ -257,13 +265,12 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
             }
         }
     }
-    
-    
-        public void 
-    unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes)
+
+    public void unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes)
     {
         // ignore
     }
+
 }
 
 

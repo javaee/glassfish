@@ -60,7 +60,7 @@ import javax.validation.constraints.Pattern;
 /* @XmlType(name = "", propOrder = {
     "healthChecker"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClusterRefConfig")
+
 @Configured
 public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
     

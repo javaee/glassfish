@@ -53,7 +53,6 @@ import org.glassfish.config.support.datatypes.NonNegativeInteger;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -75,7 +74,7 @@ import javax.validation.constraints.NotNull;
     "description",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCConnectionPoolConfig")
+
 @Configured
 public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
     PropertyBag {

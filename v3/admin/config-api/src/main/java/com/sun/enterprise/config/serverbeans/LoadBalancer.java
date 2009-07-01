@@ -59,7 +59,7 @@ import javax.validation.constraints.NotNull;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LoadBalancerConfig")
+
 @Configured
 public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 

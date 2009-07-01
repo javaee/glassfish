@@ -303,19 +303,16 @@ origin-for-darwin-universal-sun-contrib]]>
     <resolveArtifact artifactId="server-mgmt" groupId="org.glassfish.admin" property="server-mgmt.jar"/>
     <resolveArtifact artifactId="admin-util" groupId="org.glassfish.admin" property="admin-util.jar"/>
     <resolveArtifact artifactId="security" groupId="org.glassfish.security" property="security.jar"/>
-    <resolveArtifact artifactId="amx-api" groupId="org.glassfish.common" property="amx-api.jar"/>
 
     <echo message="cli-optional jar: ${cli-optional.jar}"/>
     <echo message="server-mgmt jar: ${server-mgmt.jar}"/>
     <echo message="admin-util jar: ${admin-util.jar}"/>
     <echo message="security jar: ${security.jar}"/>
-    <echo message="amx-api jar: ${amx-api.jar}"/>
 
     <copy file="${cli-optional.jar}" tofile="${modules.dir}/cli-optional.jar"/>
     <copy file="${server-mgmt.jar}" tofile="${modules.dir}/server-mgmt.jar"/>
     <copy file="${admin-util.jar}" tofile="${modules.dir}/admin-util.jar"/>
     <copy file="${security.jar}" tofile="${modules.dir}/security.jar"/>
-    <copy file="${amx-api.jar}" tofile="${modules.dir}/amx-api.jar"/>
 </target>
 
 <!-- delete artifacts required to create default domain; these are not bundled as part of nucleus -->
@@ -327,7 +324,6 @@ origin-for-darwin-universal-sun-contrib]]>
             <include name="admin-util.jar"/>
             <include name="security.jar"/>
             <include name="backup.jar"/>
-            <include name="amx-api.jar"/>
         </fileset>
     </delete>
 </target>

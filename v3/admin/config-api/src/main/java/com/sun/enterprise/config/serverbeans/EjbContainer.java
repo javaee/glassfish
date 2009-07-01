@@ -48,7 +48,6 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
@@ -65,7 +64,7 @@ import javax.validation.constraints.Min;
     "ejbTimerService",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBContainerConfig", singleton=true)
+
 @Configured
 public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 

@@ -51,13 +51,12 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
 
-import org.glassfish.api.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
     "moduleMonitoringLevels",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MonitoringServiceConfig", singleton=true)
+
 @Configured
 public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 

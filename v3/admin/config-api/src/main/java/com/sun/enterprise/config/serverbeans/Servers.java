@@ -46,7 +46,6 @@ import org.jvnet.hk2.config.Element;
 import java.util.List;
 
 
-import org.glassfish.api.amx.AMXConfigInfo;
 /**
  *
  */
@@ -54,7 +53,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 /* @XmlType(name = "", propOrder = {
     "server"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ServersConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+
 @Configured
 public interface Servers extends ConfigBeanProxy, Injectable  {
 

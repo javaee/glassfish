@@ -60,7 +60,7 @@ import javax.validation.constraints.NotNull;
     "principalOrUserGroup",
     "backendPrincipal"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SecurityMapConfig")
+
 @Configured
 public interface SecurityMap extends ConfigBeanProxy, Injectable  {
 

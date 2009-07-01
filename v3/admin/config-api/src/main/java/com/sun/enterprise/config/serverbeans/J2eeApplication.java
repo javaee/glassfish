@@ -48,7 +48,6 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.*;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
@@ -64,7 +63,7 @@ import javax.validation.constraints.NotNull;
     "webServiceEndpoint",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.J2EEApplicationConfig")
+
 @Configured
 public interface J2eeApplication extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 

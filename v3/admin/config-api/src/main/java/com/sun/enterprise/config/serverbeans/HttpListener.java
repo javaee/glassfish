@@ -43,7 +43,6 @@ import org.glassfish.api.admin.config.PropertyBag;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.Port;
 import org.glassfish.config.support.datatypes.PositiveInteger;
@@ -59,7 +58,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
 
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPListenerConfig")
+
 @Configured
 @Deprecated
 public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {

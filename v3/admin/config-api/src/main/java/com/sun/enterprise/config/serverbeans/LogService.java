@@ -48,7 +48,6 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
@@ -69,7 +68,7 @@ import javax.validation.constraints.Max;
     "moduleLogLevels",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LogServiceConfig", singleton=true)
+
 @Configured
 public interface LogService extends ConfigBeanProxy, Injectable  {
 

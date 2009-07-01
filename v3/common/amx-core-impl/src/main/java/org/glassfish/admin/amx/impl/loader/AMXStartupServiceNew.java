@@ -49,9 +49,8 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import org.glassfish.admin.amx.impl.util.Issues;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 import org.glassfish.admin.mbeanserver.BooterNewMBean;
-import org.glassfish.admin.mbeanserver.AMXStartupServiceNewMBean;
+import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
 import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.component.Habitat;
 
@@ -63,13 +62,13 @@ import org.jvnet.hk2.component.Habitat;
     <p>
     Later, the {@link #startAMX} method can be invoked on the MBean to cause AMX
     to load all the AMX MBeans.
-    @see org.glassfish.admin.mbeanserver.AMXStartupServiceNewMBean
+    @see org.glassfish.admin.mbeanserver.AMXStartupServiceMBean
  */
 @Service
 public final class AMXStartupServiceNew
     implements  org.jvnet.hk2.component.PostConstruct,
                 org.jvnet.hk2.component.PreDestroy,
-                AMXStartupServiceNewMBean
+                AMXStartupServiceMBean
 {
     private static void debug( final String s ) { System.out.println(s); }
     
@@ -79,12 +78,9 @@ public final class AMXStartupServiceNew
     @Inject
     InjectedValues  mInjectedValues;
     
-    @Inject//(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
-    private MBeanServer mMBeanServer;
-    
     @Inject
-    private volatile PendingConfigBeans mPendingConfigBeans;
-    
+    private MBeanServer mMBeanServer;
+        
     private volatile ObjectName      mAMXLoaderObjectName;
     
     private volatile MBeanTracker     mSupport;
@@ -109,12 +105,11 @@ public final class AMXStartupServiceNew
         SingletonEnforcer.register( this.getClass(), this );
         
         if ( mMBeanServer == null ) throw new Error( "AMXStartup: null MBeanServer" );
-        if ( mPendingConfigBeans == null ) throw new Error( "AMXStartup: null mPendingConfigBeans" );
         
         try
         {
             // StandardMBean is required because interface and class are in different packages
-           final StandardMBean mbean = new StandardMBean(this, AMXStartupServiceNewMBean.class);
+           final StandardMBean mbean = new StandardMBean(this, AMXStartupServiceMBean.class);
            mMBeanServer.registerMBean( mbean, OBJECT_NAME);
            
            mSupport = new MBeanTracker();
@@ -150,15 +145,15 @@ public final class AMXStartupServiceNew
     /**
         Return a proxy to the AMXStartupServiceNew.
      */
-        public static AMXStartupServiceNewMBean
+        public static AMXStartupServiceMBean
     getAMXStartupServiceMBeanProxy( final MBeanServer mbs )
     {
-        AMXStartupServiceNewMBean ss = null;
+        AMXStartupServiceMBean ss = null;
         
         if ( mbs.isRegistered( OBJECT_NAME ) )
         {
-            ss = AMXStartupServiceNewMBean.class.cast(
-                MBeanServerInvocationHandler.newProxyInstance( mbs, OBJECT_NAME, AMXStartupServiceNewMBean.class, false));
+            ss = AMXStartupServiceMBean.class.cast(
+                MBeanServerInvocationHandler.newProxyInstance( mbs, OBJECT_NAME, AMXStartupServiceMBean.class, false));
         }
         return ss;
     }

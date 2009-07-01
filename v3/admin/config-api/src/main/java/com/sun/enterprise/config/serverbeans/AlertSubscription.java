@@ -57,7 +57,7 @@ import javax.validation.constraints.NotNull;
     "listenerConfig",
     "filterConfig"
 }) */
-//@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AlertSubscriptionConfig")
+
 @Configured
 /**
  * Alert subscription details a specific subscription. Subscription comprises

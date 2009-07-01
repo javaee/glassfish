@@ -205,6 +205,19 @@ public final class AMXValues
         return key + "=" + value;
     }
 
+    public static ObjectName newObjectName(final String s)
+    {
+        try
+        {
+            return new ObjectName( s );
+        }
+        catch( final Exception e )
+        {
+            throw new RuntimeException("bad ObjectName", e);
+        }
+    }
+
+
     /** Make a new AMX ObjectName with unchecked exception */
     public static ObjectName newObjectName(
             final String pp,
@@ -217,14 +230,7 @@ public final class AMXValues
             props = props + "," + prop(NAME_KEY, name);
         }
 
-        try
-        {
-            return new ObjectName(amxJMXDomain() + ":" + props);
-        }
-        catch (final Exception e)
-        {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return newObjectName( amxJMXDomain(), props);
     }
 
     /** Make a new ObjectName with unchecked exception */
@@ -232,13 +238,6 @@ public final class AMXValues
             final String domain,
             final String props)
     {
-        try
-        {
-            return new ObjectName(domain + ":" + props);
-        }
-        catch (final Exception e)
-        {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return newObjectName(domain + ":" + props);
     }
 }

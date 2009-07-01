@@ -24,14 +24,16 @@ package org.glassfish.admin.mbeanserver;
 
 import javax.management.ObjectName;
 import org.glassfish.api.amx.AMXLoader;
+import org.glassfish.api.amx.AMXValues;
 
 /**
-    MBean responsible for booting the AMX system.
+MBean responsible for booting the AMX system.
  */
-public interface BooterNewMBean  extends Booter
+public interface BooterNewMBean extends Booter
 {
-    /** ObjectName for BooterMBean */
-    public static final ObjectName OBJECT_NAME = Util.newObjectName( AMXLoader.AMX3_SUPPORT_DOMAIN + ":name=booter-new" );
+    /** ObjectName for BooterNewMBean */
+    public static final ObjectName OBJECT_NAME = AMXValues.newObjectName(AMXLoader.AMX3_SUPPORT_DOMAIN, "name=booter-new");
+
 }
 
 

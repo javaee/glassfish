@@ -61,7 +61,7 @@ import javax.validation.constraints.NotNull;
     "registryLocation",
     "transformationRule"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebServiceEndpointConfig")
+
 @Configured
 public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
 

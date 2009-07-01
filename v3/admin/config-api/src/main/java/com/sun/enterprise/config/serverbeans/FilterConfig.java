@@ -61,7 +61,7 @@ import javax.validation.constraints.NotNull;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-//@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.FilterConfig")
+
 @Configured
 public interface FilterConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 

@@ -59,7 +59,7 @@ import javax.validation.constraints.NotNull;
     "action",
     "description"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ManagementRuleConfig")
+
 @Configured
 public interface ManagementRule extends ConfigBeanProxy, Injectable  {
 

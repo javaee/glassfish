@@ -58,7 +58,7 @@ import org.glassfish.quality.ToDo;
     "alertSubscription",
     "property"
 }) */
-//@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AlertServiceConfig", singleton=true)
+
 @Configured
 
 public interface AlertService extends ConfigBeanProxy, Injectable, PropertyBag {

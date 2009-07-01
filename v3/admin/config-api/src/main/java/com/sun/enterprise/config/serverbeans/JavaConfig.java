@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -65,7 +64,7 @@ import org.glassfish.quality.ToDo;
     "profiler",
     "jvmOptionsOrProperty"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JavaConfig", singleton=true)
+
 @Configured
 public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 

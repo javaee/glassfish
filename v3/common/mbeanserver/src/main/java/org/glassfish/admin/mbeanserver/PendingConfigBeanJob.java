@@ -42,44 +42,56 @@ import java.util.concurrent.CountDownLatch;
 public final class PendingConfigBeanJob
 {
     private final ConfigBean mConfigBean;
+
     private final CountDownLatch mLatch;
-    
-    public PendingConfigBeanJob( final ConfigBean cb, final CountDownLatch latch )
+
+    public PendingConfigBeanJob(final ConfigBean cb, final CountDownLatch latch)
     {
-        if ( cb == null ) throw new IllegalArgumentException();
-        
+        if (cb == null)
+        {
+            throw new IllegalArgumentException();
+        }
+
         mConfigBean = cb;
-        mLatch      = latch;
+        mLatch = latch;
     }
-    
-    public PendingConfigBeanJob( final ConfigBean cb, final boolean latch )
+
+    public PendingConfigBeanJob(final ConfigBean cb, final boolean latch)
     {
-        this( cb, latch ? new CountDownLatch(1) : null );
+        this(cb, latch ? new CountDownLatch(1) : null);
     }
-    
-    public PendingConfigBeanJob( final ConfigBean cb )
+
+    public PendingConfigBeanJob(final ConfigBean cb)
     {
-        this(cb,null);
+        this(cb, null);
     }
-    
-    public ConfigBean     getConfigBean() { return mConfigBean; }
-    public CountDownLatch getCountDownLatch() { return mLatch; }
-    
+
+    public ConfigBean getConfigBean()
+    {
+        return mConfigBean;
+    }
+
+    public CountDownLatch getCountDownLatch()
+    {
+        return mLatch;
+    }
+
     public void releaseLatch()
     {
-        if ( mLatch != null )
+        if (mLatch != null)
         {
             mLatch.countDown();
         }
     }
-    
+
     public void await() throws InterruptedException
     {
-        if ( mLatch != null )
+        if (mLatch != null)
         {
             mLatch.await();
         }
     }
+
 }
 
 

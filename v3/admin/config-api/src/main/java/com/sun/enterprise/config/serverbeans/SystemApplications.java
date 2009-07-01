@@ -51,7 +51,7 @@ import java.util.List;
  *
  */
 
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SystemApplicationsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+
 @Configured
 public interface SystemApplications extends Applications  {
 

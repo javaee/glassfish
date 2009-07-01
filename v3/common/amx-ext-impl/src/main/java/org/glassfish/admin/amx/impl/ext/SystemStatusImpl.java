@@ -92,12 +92,13 @@ public final class SystemStatusImpl extends AMXImplBase
         }
             
         // check pool name
-        final Resources rc = getDomainRootProxy().child(Domain.class).getResources();
+        final Resources resources = getDomainRootProxy().child(Domain.class).getResources();
         
-        final JDBCConnectionPool  cfg = rc.getJDBCConnectionPool().get(poolName);
+        final Map<String,JDBCConnectionPool> pools = resources.childrenMap( JDBCConnectionPool.class );
+        final JDBCConnectionPool cfg = pools.get(poolName);
         if (cfg == null)
         {
-            result.put( REASON_FAILED_KEY, "The pool name " + poolName + " does not exist");
+            result.put( REASON_FAILED_KEY, "The JDBCConnectionPool \"" + poolName + "\" does not exist");
             return result;
         }
 

@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.InstanceNotFoundException;
 
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
@@ -92,27 +93,20 @@ public final class AMXBooter
         public static ObjectName
 	findDomainRoot( final MBeanServerConnection conn )
 	{
-        ObjectName objectName = null;
-		final ObjectName pattern = JMXUtil.newObjectName( AMXValues.amxJMXDomain() + ":" + AMXValues.TYPE_KEY + "=" + Util.deduceType(DomainRoot.class) + ",*");
-		
+        final ObjectName objectName = AMXValues.domainRoot();
         try
         {
-            final Set<ObjectName>	objectNames	= JMXUtil.queryNames( conn, pattern, null );
-            if ( objectNames.size() > 1 )
+            if ( ! conn.isRegistered( objectName ) )
             {
-                throw new IllegalStateException( "Found more than one DomainRoot using " + pattern);
-            }
-            else if ( objectNames.size() ==  1 )
-            {
-                objectName	= SetUtil.getSingleton( objectNames );
+                return null;
             }
         }
-        catch ( final IOException e )
+        catch( final Exception e )
         {
             throw new RuntimeException(e);
         }
-		
-		return( objectName );
+        
+        return objectName;
 	}	
 }
 

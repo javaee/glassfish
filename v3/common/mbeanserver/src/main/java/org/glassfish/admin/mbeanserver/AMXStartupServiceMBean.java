@@ -26,23 +26,25 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
 import org.glassfish.api.amx.AMXLoader;
+import org.glassfish.api.amx.AMXValues;
+
 import org.jvnet.hk2.annotations.Contract;
 
 /**
-    MBean responsible for starting AMX (interface).  Implemented by the amx-impl
-    module whicih is lazily loaded.
-    
-    @see org.glassfish.admin.amx.loader.AMXStartupService
+MBean responsible for starting AMX (interface).
+
+@see org.glassfish.admin.amx.loader.AMXStartupService
  */
 @Contract
 public interface AMXStartupServiceMBean extends AMXLoader
 {
     public ObjectName getDomainRoot();
-    
+
     public JMXServiceURL[] getJMXServiceURLs();
-    
+
     /** ObjectName of the MBean which actually laods AMX MBeans; that MBean references this constant */
-    public static final ObjectName OBJECT_NAME = Util.newObjectName( LOADER_OLD_PREFIX + "startup" );
+    public static final ObjectName OBJECT_NAME = AMXValues.newObjectName(LOADER_PREFIX + "startup");
+
 }
 
 

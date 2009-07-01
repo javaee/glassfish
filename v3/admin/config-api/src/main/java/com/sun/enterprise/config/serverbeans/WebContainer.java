@@ -50,11 +50,10 @@ import org.glassfish.config.support.datatypes.PositiveInteger;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerConfig", singleton=true)
+
 @Configured
 public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 

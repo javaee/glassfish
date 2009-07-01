@@ -48,14 +48,13 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
     "orb",
     "sslClientConfig",
     "iiopListener"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.IIOPServiceConfig", singleton=true)
+
 @Configured
 public interface IiopService extends ConfigBeanProxy, Injectable  {
 

@@ -45,7 +45,6 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -54,7 +53,7 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Attribute;
 
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPServiceConfig", singleton=true)
+
 @Configured
 public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
 

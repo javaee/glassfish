@@ -58,7 +58,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StorePropertiesConfig", singleton=true)
+
 @Configured
 public interface StoreProperties extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 

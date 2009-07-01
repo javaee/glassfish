@@ -44,7 +44,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -52,7 +51,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
 
 /* @XmlType(name = "") */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AccessLogConfig", singleton=true)
+
 @Configured
 
 public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {

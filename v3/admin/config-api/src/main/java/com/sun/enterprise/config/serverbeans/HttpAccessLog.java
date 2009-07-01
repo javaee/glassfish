@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPAccessLogConfig")
+
 @Configured
 public interface HttpAccessLog extends ConfigBeanProxy, Injectable  {
 

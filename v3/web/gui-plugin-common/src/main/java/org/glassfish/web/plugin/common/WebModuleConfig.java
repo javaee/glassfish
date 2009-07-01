@@ -58,7 +58,6 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * @author tjquinn
  */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebModuleConfigConfig", singleton=true )
 @Configured
 public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Injectable {
 

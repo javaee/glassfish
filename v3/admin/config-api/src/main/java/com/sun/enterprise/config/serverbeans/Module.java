@@ -40,7 +40,6 @@ import java.util.List;
 
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
@@ -51,7 +50,7 @@ import org.jvnet.hk2.config.Element;
  *
  * @author Jerome Dochez
  */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleConfig")
+
 @Configured
 public interface Module extends Named, ConfigBeanProxy, PropertyBag {
 

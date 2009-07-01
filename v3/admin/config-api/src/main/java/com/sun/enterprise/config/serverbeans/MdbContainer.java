@@ -52,7 +52,6 @@ import org.glassfish.config.support.datatypes.NonNegativeInteger;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -64,7 +63,7 @@ import javax.validation.constraints.Min;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MDBContainerConfig", singleton=true)
+
 @Configured
 public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 

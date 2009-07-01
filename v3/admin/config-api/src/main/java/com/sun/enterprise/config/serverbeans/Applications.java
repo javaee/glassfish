@@ -57,7 +57,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+
 
 // general solution needed; this is intermediate solution
 @AMXCreatorInfo( creatables={Application.class})

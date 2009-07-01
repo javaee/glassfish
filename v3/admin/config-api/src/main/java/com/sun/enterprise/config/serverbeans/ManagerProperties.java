@@ -60,7 +60,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ManagerPropertiesConfig", singleton=true)
+
 @Configured
 public interface ManagerProperties extends ConfigBeanProxy, Injectable, PropertyBag {
 

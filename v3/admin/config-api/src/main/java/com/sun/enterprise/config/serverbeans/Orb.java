@@ -63,7 +63,7 @@ import javax.validation.constraints.Min;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ORBConfig", singleton=true)
+
 @Configured
 public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
 

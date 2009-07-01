@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
 package amxtest;
 
 import java.util.Properties;
@@ -43,6 +42,12 @@ import java.util.HashSet;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
+import org.testng.annotations.Configuration;
+import org.testng.annotations.ExpectedExceptions;
+import org.testng.annotations.Test;
+import org.testng.annotations.*;
+import org.testng.Assert;
+
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -52,164 +57,180 @@ import javax.management.remote.JMXServiceURL;
 
 import java.net.MalformedURLException;
 import java.io.IOException;
-
-import com.sun.appserv.management.client.AMXBooter;
-import com.sun.appserv.management.client.ProxyFactory;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.util.misc.TimingDelta;
-
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.base.Query;
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.proxy.AMXBooter;
+import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.admin.amx.util.TimingDelta;
 
 /** The base class for AMX tests
  */
-public class AMXTestBase {
+public class AMXTestBase
+{
     String mAdminUser;
+
     String mAdminPassword;
+
     String mHost;
-    int	   mPort;
+
+    int mPort;
+
     boolean mDebug;
-    
+
     private volatile MBeanServerConnection mMBeanServerConnection;
+
     private volatile DomainRoot mDomainRoot;
-    private volatile QueryMgr   mQueryMgr;
-    private volatile Set<AMX> 	mAllAMX;
-    
-    protected static void debug( final String s )
+
+    private volatile Query mQueryMgr;
+
+    private volatile Set<AMXProxy> mAllAMX;
+
+    protected static void debug(final String s)
     {
-    	System.out.println( "" + s);
+        System.out.println("" + s);
     }
-    
+
     AMXTestBase()
     {
+        debug("################################ AMXTestBase");
     }
-    
+
     // might need these later: "admin.user", "admin.password"
-    @BeforeClass(description="get setup and connect to the MBeanServer")
-    @Parameters({"amx.debug", "amx.rmiport"})
+    @BeforeClass(description = "get setup and connect to the MBeanServer")
+    @Parameters(
+    {
+        "amx.debug", "amx.rmiport"
+    })
     void setUpEnvironment(
-    	final boolean debug,
-    	final int     port)
+            final boolean debug,
+            final int port)
     {
         // defined in top-level build.xml
-        mHost = System.getProperty( "http.host" );
-        
+        mHost = System.getProperty("http.host");
+
         mDebug = debug;
         mPort = port;
-        
-        try {
+
+        try
+        {
             setup();
-        } catch (Exception ex) {
-            debug( "AMXTestBase: Exception in setting up env. = " + ex);
-	    ex.printStackTrace();
+        }
+        catch (Exception ex)
+        {
+            debug("AMXTestBase: Exception in setting up env. = " + ex);
+            ex.printStackTrace();
         }
     }
-    
+
     /**
-    	Subclasses may override if desired.  AMX will have been started
-    	and initialized already.
+    Subclasses may override if desired.  AMX will have been started
+    and initialized already.
      */
     protected void setup()
     {
-    	final TimingDelta timing = new TimingDelta();
-    	final TimingDelta overall = new TimingDelta();
-    	
-    	try
-    	{
-			mMBeanServerConnection = _getMBeanServerConnection();
-    		//debug( "AMXTestBase.setup(): millis to connect: " + timing.elapsedMillis() );
-			mDomainRoot = _getDomainRoot(mMBeanServerConnection);
-    		//debug( "AMXTestBase.setup(): millis to boot AMX: " + timing.elapsedMillis() );
-			mQueryMgr   = getDomainRoot().getQueryMgr();
-    		//debug( "AMXTestBase.setup(): millis to get QueryMgr: " + timing.elapsedMillis() );
-    		
-    		mAllAMX = getQueryMgr().queryAllSet();
-    	}
-    	catch( Exception e )
-    	{
-    		throw new RuntimeException(e);
-    	}
-    	//debug( "AMXTestBase.setup(): total setup millis: " + overall.elapsedMillis() );
+        debug("################################ AMXTestBase.setup");
+
+        final TimingDelta timing = new TimingDelta();
+        final TimingDelta overall = new TimingDelta();
+
+        try
+        {
+            mMBeanServerConnection = _getMBeanServerConnection();
+            //debug( "AMXTestBase.setup(): millis to connect: " + timing.elapsedMillis() );
+            mDomainRoot = _getDomainRoot(mMBeanServerConnection);
+            //debug( "AMXTestBase.setup(): millis to boot AMX: " + timing.elapsedMillis() );
+            mQueryMgr = getDomainRootProxy().getQueryMgr();
+            //debug( "AMXTestBase.setup(): millis to get QueryMgr: " + timing.elapsedMillis() );
+
+            mAllAMX = getQueryMgr().queryAll();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+        //debug( "AMXTestBase.setup(): total setup millis: " + overall.elapsedMillis() );
     }
-        
-    protected QueryMgr getQueryMgr()
+
+    protected Query getQueryMgr()
     {
-    	return mQueryMgr;
+        return mQueryMgr;
     }
-    
+
     /** get all AMX MBeans that were found when the test started
-    	Caller should use the QueryMgr if a fresh set is needed */
-    protected Set<AMX> getAllAMX()
+    Caller should use the QueryMgr if a fresh set is needed */
+    protected Set<AMXProxy> getAllAMX()
     {
-    	return mAllAMX;
+        return mAllAMX;
     }
-    
-    protected <T> Set<T> getAll(final Class<T> intf )
+
+    protected <T> Set<T> getAll(final Class<T> intf)
     {
-    	return getAll( getAllAMX(), intf );
+        return getAll(getAllAMX(), intf);
     }
-    
-    protected <T> Set<T> getAll( final Set<AMX> all, final Class<T> intf )
+
+    protected <T> Set<T> getAll(final Set<AMXProxy> all, final Class<T> intf)
     {
-    	final Set<T> result = new HashSet<T>();
-    	for( final AMX amx : all )
-    	{
-    		if ( intf.isAssignableFrom( amx.getClass() ) )
-    		{
-    			result.add( intf.cast(amx) );
-    		}
-    	}
-    	return result;
+        final Set<T> result = new HashSet<T>();
+        for (final AMXProxy amx : all)
+        {
+            if (intf.isAssignableFrom(amx.getClass()))
+            {
+                result.add(intf.cast(amx));
+            }
+        }
+        return result;
     }
-    
-    protected DomainRoot getDomainRoot()
+
+    protected DomainRoot getDomainRootProxy()
     {
-    	return mDomainRoot;
+        return mDomainRoot;
     }
-    
-    protected DomainRoot _getDomainRoot( final MBeanServerConnection conn)
-    	throws MalformedURLException, IOException, java.net.MalformedURLException
+
+    protected DomainRoot _getDomainRoot(final MBeanServerConnection conn)
+            throws MalformedURLException, IOException, java.net.MalformedURLException
     {
-		final ObjectName domainRootObjectName = AMXBooter.bootAMX(conn);
-		final DomainRoot domainRoot = ProxyFactory.getInstance(conn).getDomainRoot();
-		return domainRoot;
+        final ObjectName domainRootObjectName = AMXBooter.bootAMX(conn);
+        final DomainRoot domainRoot = ProxyFactory.getInstance(conn).getDomainRootProxy();
+        return domainRoot;
     }
-    
+
     private MBeanServerConnection _getMBeanServerConnection()
-    	throws MalformedURLException, IOException
+            throws MalformedURLException, IOException
     {
-    	// service:jmx:rmi:///jndi/rmi://192.168.1.8:8686/jmxrmi
-    	// service:jmx:jmxmp://localhost:8888
-    	// CHANGE to RMI once it's working
-    	//
-    	// final String urlStr = "service:jmx:jmxmp://" + mHost + ":" + mPort;
+        // service:jmx:rmi:///jndi/rmi://192.168.1.8:8686/jmxrmi
+        // service:jmx:jmxmp://localhost:8888
+        // CHANGE to RMI once it's working
+        //
+        // final String urlStr = "service:jmx:jmxmp://" + mHost + ":" + mPort;
         final String urlStr = "service:jmx:rmi:///jndi/rmi://" + mHost + ":" + mPort + "/jmxrmi";
-    	
-    	final JMXServiceURL url = new JMXServiceURL(urlStr);
-    	
+
+        final JMXServiceURL url = new JMXServiceURL(urlStr);
+
         final JMXConnector jmxConn = JMXConnectorFactory.connect(url);
         //debug( "BaseAMXTest: connecting to: " + url );
-    	final MBeanServerConnection conn = jmxConn.getMBeanServerConnection();
-    	conn.getDomains();	// sanity check
-    	return conn;
+        final MBeanServerConnection conn = jmxConn.getMBeanServerConnection();
+        conn.getDomains();	// sanity check
+        return conn;
     }
-    
+
     protected static final String NL = System.getProperty("line.separator");
-    
+
     protected static String getEnvString()
     {
         final Properties props = System.getProperties();
-    	final StringBuilder buf = new StringBuilder();
-    	buf.append( "SYSTEM PROPERTIES:" + NL );
-        for( final Object key : props.keySet() )
+        final StringBuilder buf = new StringBuilder();
+        buf.append("SYSTEM PROPERTIES:" + NL);
+        for (final Object key : props.keySet())
         {
             buf.append(key);
             buf.append(" = ");
-            buf.append( "" + props.get(key) + NL );
+            buf.append("" + props.get(key) + NL);
         }
         final String result = buf.toString();
         return result;
     }
+
 }
 
 

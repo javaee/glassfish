@@ -55,7 +55,7 @@ import javax.validation.constraints.NotNull;
 /* @XmlType(name = "", propOrder = {
     "description"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SystemPropertyConfig")
+
 @Configured
 public interface SystemProperty extends ConfigBeanProxy, Injectable  {
 

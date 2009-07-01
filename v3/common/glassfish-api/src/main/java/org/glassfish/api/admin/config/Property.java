@@ -51,7 +51,6 @@ import java.beans.PropertyVetoException;
     "description"
 }) */
 @Configured
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.PropertyConfig")
 public interface Property extends ConfigBeanProxy, Injectable  {
 
     /**

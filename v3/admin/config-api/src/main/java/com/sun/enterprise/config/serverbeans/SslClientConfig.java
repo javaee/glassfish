@@ -39,7 +39,6 @@
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.grizzly.config.dom.Ssl;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
@@ -56,7 +55,7 @@ import java.beans.PropertyVetoException;
 /* @XmlType(name = "", propOrder = {
     "ssl"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SSLConfig", singleton=true)
+
 @Configured
 public interface SslClientConfig extends ConfigBeanProxy, Injectable  {
 

@@ -46,12 +46,11 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.glassfish.api.amx.AMXConfigInfo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectionPoolConfig", singleton=true)
+
 @Configured
 @Deprecated
 public interface ConnectionPool extends ConfigBeanProxy, Injectable  {

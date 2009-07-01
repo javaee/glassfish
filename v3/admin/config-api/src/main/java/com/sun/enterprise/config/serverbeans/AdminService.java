@@ -42,7 +42,6 @@ import java.util.List;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -55,7 +54,7 @@ import org.jvnet.hk2.config.Element;
     "dasConfig",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminServiceConfig", singleton=true)
+
 @Configured
 /**
  * Admin Service exists in every instance. It is the configuration for either

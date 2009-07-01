@@ -48,7 +48,6 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import com.sun.grizzly.config.dom.Ssl;
@@ -66,7 +65,7 @@ import javax.validation.constraints.Pattern;
     "ssl",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.IIOPListenerConfig")
+
 @Configured
 public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
 

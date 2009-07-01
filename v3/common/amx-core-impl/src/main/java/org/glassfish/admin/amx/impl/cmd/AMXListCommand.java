@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
 package org.glassfish.admin.amx.impl.cmd;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
@@ -53,10 +52,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
-    List all the AMX MBeans currently registered in the MBeanServer
+List all the AMX MBeans currently registered in the MBeanServer
  */
-
-@Service(name="amx-list", metadata="mode=debug")   // must match the value of amx_list.command in LocalStrings.properties
+@Service(name = "amx-list", metadata = "mode=debug")   // must match the value of amx_list.command in LocalStrings.properties
 @I18n("amx_list.command")
 @Scoped(PerLookup.class)
 public class AMXListCommand extends AMXCommandBase implements AdminCommand
@@ -64,36 +62,40 @@ public class AMXListCommand extends AMXCommandBase implements AdminCommand
     public AMXListCommand()
     {
     }
-    
-    protected final String getCmdName() { return getLocalString("amx_list.command"); }
-    
+
+    protected final String getCmdName()
+    {
+        return getLocalString("amx_list.command");
+    }
+
     /**
      */
     public void _execute(AdminCommandContext context)
     {
-        final ObjectName allPattern = JMXUtil.newObjectName( "*:*" );
+        final ObjectName allPattern = JMXUtil.newObjectName("*:*");
         final Set<ObjectName> mbeans = JMXUtil.queryNames(getMBeanServer(), allPattern, null);
-        final List<String> mbeanList = CollectionUtil.toStringList( mbeans );
+        final List<String> mbeanList = CollectionUtil.toStringList(mbeans);
         Collections.sort(mbeanList);
-        
+
         final ActionReport report = getActionReport();
-        report.setMessage( "Appserver MBeanServer contents" );
-        
+        report.setMessage("Appserver MBeanServer contents");
+
         ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-        part.setMessage( "MBeanServer domains: " + StringUtil.toString( getMBeanServer().getDomains() ) );
-        
+        part.setMessage("MBeanServer domains: " + StringUtil.toString(getMBeanServer().getDomains()));
+
         part = report.getTopMessagePart().addChild();
-        part.setMessage( "MBeanServer mbeans: " + getMBeanServer().getMBeanCount() );
-    
+        part.setMessage("MBeanServer mbeans: " + getMBeanServer().getMBeanCount());
+
         final ActionReport.MessagePart listHeader = report.getTopMessagePart().addChild();
-        listHeader.setMessage( mbeans.size() + " MBeans matching " +
-            JMXUtil.toString(allPattern) + " registered in the appserver MBeanServer");
-        for( final String on : mbeanList )
+        listHeader.setMessage(mbeans.size() + " MBeans matching " +
+                              JMXUtil.toString(allPattern) + " registered in the appserver MBeanServer");
+        for (final String on : mbeanList)
         {
             part = listHeader.addChild();
-            part.setMessage( on );
+            part.setMessage(on);
         }
     }
+
 }
 
 

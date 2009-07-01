@@ -61,7 +61,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleMonitoringLevelsConfig", singleton=true)
+
 @Configured
 public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, PropertyBag {
 

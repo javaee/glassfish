@@ -45,7 +45,6 @@ import org.jvnet.hk2.component.Injectable;
 
 import java.util.List;
 
-import org.glassfish.api.amx.AMXConfigInfo;
 /**
  *
  */
@@ -53,7 +52,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 /* @XmlType(name = "", propOrder = {
     "loadBalancer"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LoadBalancersConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+
 // general solution needed; this is intermediate solution
 @Configured
 public interface LoadBalancers extends ConfigBeanProxy, Injectable  {

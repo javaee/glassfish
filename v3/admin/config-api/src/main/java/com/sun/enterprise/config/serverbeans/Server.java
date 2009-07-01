@@ -43,7 +43,6 @@ import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -76,7 +75,7 @@ import javax.validation.constraints.Min;
     "systemProperty",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StandaloneServerConfig")
+
 @Configured
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 

@@ -53,7 +53,7 @@ import javax.validation.constraints.NotNull;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.BackendPrincipalConfig")
+
 @Configured
 public interface BackendPrincipal extends ConfigBeanProxy, Injectable  {
 

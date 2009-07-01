@@ -62,8 +62,6 @@
     	<module>amx-ext-impl</module>
     	<module>mejb</module>
     	
-        <module>amx-api</module>
-        <module>amx-impl</module>
         <module>glassfish-ee-api</module>
     	<module>internal-api</module>
         <module>annotation-framework</module>
