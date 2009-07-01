@@ -290,7 +290,7 @@ public class FacadeLaunchable implements Launchable {
                     ||
                     (callerSpecifiedAppClientName != null &&
                         ! Launchable.LaunchableUtil.matchesName(
-                            groupFacadeURI, clientRA, callerSpecifiedAppClientName))) {
+                            groupFacadeURI, clientFacadeRA, callerSpecifiedAppClientName))) {
                     final String msg = localStrings.getLocalString(FacadeLaunchable.class, "appclient.singleNestedClientNoMatch", "Using the only client in {0} even though it does not match the specified main class name or client name", new Object[]{groupFacadeURI});
                     logger.warning(msg);
                 }
@@ -298,7 +298,7 @@ public class FacadeLaunchable implements Launchable {
                 facade = new FacadeLaunchable(habitat, clientFacadeRA, 
                         facadeMainAttrs, clientRA, callerSpecifiedMainClassName,
                         anchorDir);
-            } else if (Launchable.LaunchableUtil.matchesName(groupFacadeURI, clientRA, callerSpecifiedAppClientName)) {
+            } else if (Launchable.LaunchableUtil.matchesName(groupFacadeURI, clientFacadeRA, callerSpecifiedAppClientName)) {
                 /*
                  * Get the main class name from the matching client JAR's manifest.
                  */

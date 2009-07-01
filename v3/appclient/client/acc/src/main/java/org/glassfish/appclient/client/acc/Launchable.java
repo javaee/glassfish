@@ -137,12 +137,19 @@ interface Launchable {
 
         static boolean matchesName(
                 final URI groupFacadeURI,
-                final ReadableArchive archive,
+                final ReadableArchive clientFacadeArchive,
                 final String appClientName) throws IOException, SAXParseException {
 
+            /*
+             * The ReadableArchive argument should be the facade archive and
+             * not the developer's original one, because when we try to open it
+             * the archivist needs to have the augmented descriptor (which is
+             * in the client facade) not the minimal or non-existent
+             * descriptor (which could be in the developer's original client).
+             */
             ApplicationClientDescriptor acd = null;
             AppClientArchivist archivist = new AppClientArchivist();
-            acd = archivist.open(archive);
+            acd = archivist.open(clientFacadeArchive);
             String moduleID = acd.getModuleID();
             /*
              * If the moduleID was never set explicitly in the descriptor then
@@ -151,29 +158,11 @@ interface Launchable {
              * relative to the downloaded root directory.
              */
             if (moduleID.endsWith(".jar")) {
-                moduleID = deriveModuleID(groupFacadeURI, archive.getURI());
+                moduleID = deriveModuleID(groupFacadeURI, clientFacadeArchive.getURI());
             }
             final String displayName = acd.getDisplayName();
             return (   (moduleID != null && moduleID.equals(appClientName))
                     || (displayName != null && displayName.equals(appClientName)));
-
-//            XMLInputFactory f = XMLInputFactory.newInstance();
-//
-//            InputStream descriptorStream = archive.getEntry("META-INF/application-client.xml");
-//            if (descriptorStream == null) {
-//                return false;
-//            }
-//            XMLStreamReader reader = f.createXMLStreamReader(descriptorStream);
-//            String displayName = null;
-//            while (displayName == null && reader.hasNext()) {
-//                if ((reader.next() == XMLEvent.START_ELEMENT) &&
-//                    (reader.getName().getLocalPart().equals("display-name"))) {
-//                        displayName = reader.getElementText();
-//                        break;
-//                }
-//            }
-//            reader.close();
-//            return (appClientName != null && appClientName.equals(displayName));
         }
 
         private static String classNameToArchivePath(final String className) {
