@@ -16,9 +16,9 @@ import com.sun.ejte.ccl.reporter.*;
  * domains/domain1/config/default-web.xml file in its body.
  *
  * The code below does not check the entire response body. Instead, it only
- * checks for the presence of the <web-app> element, which is contained in
- * default-web.xml, and uses its presence as an indication that the response
- * contains the expected body.
+ * checks for the presence of a line that starts with "<web-app xmlns=",
+ * which is contained in default-web.xml, and uses its presence as an
+ * indication that the response contains the expected body.
  */
 public class WebTest {
 
@@ -74,7 +74,7 @@ public class WebTest {
             if ("HTTP/1.1 404 MY404".equals(line)) {
                 statusHeaderFound = true;
             }
-            if ("<web-app>".equals(line)) {
+            if (line.startsWith("<web-app xmlns=")) {
                 bodyLineFound = true;
             }
         }
