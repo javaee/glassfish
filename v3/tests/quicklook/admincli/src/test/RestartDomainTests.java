@@ -35,27 +35,23 @@
  * holder.
  */
 package test.admin.admincli;
+
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-import java.io.*;
-
 public class RestartDomainTests {
 
-    private BufferedReader in = null;
-    private String outPutFile=null, expectedOutPut=null, testErr=null;
-    String host=System.getProperty("http.host");
-    String port=System.getProperty("http.port");
     private boolean result=false;
+    private Process proc;
     private Runtime runtime = Runtime.getRuntime();
 
     @BeforeTest
     @Test(groups = { "init" })
     public void stopDomainTest() throws Exception {
-	String ASADMIN = System.getProperty("ASADMIN");
-        Process proc = runtime.exec(ASADMIN+" stop-domain");
-	try {
+        String ASADMIN = System.getProperty("ASADMIN");
+        proc = runtime.exec(ASADMIN+" stop-domain");
+        try {
             if (proc.waitFor() != 0) {
                System.err.println("asadmin exit value = " + proc.exitValue());
             }
@@ -70,8 +66,8 @@ public class RestartDomainTests {
 
     @Test(dependsOnMethods = { "stopDomainTest" })
     public void startDomainTest() throws Exception {
-	String ASADMIN = System.getProperty("ASADMIN");
-	Process proc = runtime.exec(ASADMIN+" start-domain");
+        String ASADMIN = System.getProperty("ASADMIN");
+        proc = runtime.exec(ASADMIN+" start-domain");
         try {
             if (proc.waitFor() != 0) {
                System.err.println("asadmin exit value = " + proc.exitValue());
@@ -84,5 +80,4 @@ public class RestartDomainTests {
                 System.err.println(e);
         }
     }
-
 }
