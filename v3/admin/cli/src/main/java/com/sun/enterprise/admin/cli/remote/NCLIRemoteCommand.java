@@ -63,6 +63,23 @@ import org.w3c.dom.*;
  */
 public class NCLIRemoteCommand {    
 
+    public static final String  RELIABLE_COMMAND = "version";
+
+    private static final LocalStringsImpl   strings =
+	    new LocalStringsImpl(CLIRemoteCommand.class);
+    private static final CLILogger          logger = CLILogger.getInstance();
+
+    private static final Set<ValidOption>   known;
+    private static final Set<String>        unsupported;
+
+    private static final String QUERY_STRING_INTRODUCER = "?";
+    private static final String QUERY_STRING_SEPARATOR = "&";
+    private static final String ADMIN_URI_PATH = "/__asadmin/";
+    private static final String COMMAND_NAME_REGEXP =
+				    "^[a-zA-Z][-a-zA-Z0-9_]*$";
+    private static final String UNSUPPORTED_CMD_FILE_NAME =
+				    "unsupported-legacy-command-names";
+
     private Map<String, String>             mainAtts;
     private Map<String, String>             params;
     private List<String>                    operands;
@@ -87,18 +104,6 @@ public class NCLIRemoteCommand {
     private boolean                         echo = false;
     private boolean                         interactive = false;
     private boolean                         help = false;
-
-    private static final LocalStringsImpl   strings =
-	    new LocalStringsImpl(CLIRemoteCommand.class);
-    private static final CLILogger          logger = CLILogger.getInstance();
-
-    private static final Set<ValidOption>   known;
-
-    private static final String QUERY_STRING_INTRODUCER = "?";
-    private static final String QUERY_STRING_SEPARATOR = "&";
-    private static final String ADMIN_URI_PATH = "/__asadmin/";
-
-    public static final String  RELIABLE_COMMAND = "version";
 
     /**
      * content-type used for each file-transfer part of a payload to or from
@@ -125,12 +130,15 @@ public class NCLIRemoteCommand {
 	addMetaOption(opts, "interactive", 'I', "BOOLEAN", false, "false");
 	addMetaOption(opts, "help", '?', "BOOLEAN", false, "false");
 	known = Collections.unmodifiableSet(opts);
+	Set<String> unsup = new HashSet<String>();
+        file2Set(UNSUPPORTED_CMD_FILE_NAME, unsup);
+	unsupported = Collections.unmodifiableSet(unsup);
     }
 
     /**
      * Interface to enable factoring out common HTTP connection management code.
      */
-    static interface HttpCommand {
+    interface HttpCommand {
 	public void doCommand(HttpURLConnection urlConnection)
 		throws CommandException, IOException;
     }
@@ -151,6 +159,13 @@ public class NCLIRemoteCommand {
 	String abbr = Character.toString(sname);
 	opt.setShortName(abbr);
 	opts.add(opt);
+    }
+
+    /**
+     * Construct a new remote command object.  The command and arguments
+     * are supplied later using the parse method.
+     */
+    public NCLIRemoteCommand() {
     }
 
     /**
@@ -179,6 +194,13 @@ public class NCLIRemoteCommand {
         this.userOut = userOut;
     }
 
+    /**
+     * Parse the command and arguments, saving the results.
+     */
+    public void parse(String... args) throws CommandException {
+	initialize(args);
+    }
+
 
     /**
      * Runs the command using the specified arguments and sending the result
@@ -186,8 +208,9 @@ public class NCLIRemoteCommand {
      * processing.
      */
     public void runCommand() throws CommandException {
-            StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
-		    append(commandName).append(QUERY_STRING_INTRODUCER);
+
+	if (commandName == null)
+	    throw new CommandException("No Command");
 
 	try {
 	    initializeDoUpload();
@@ -196,6 +219,8 @@ public class NCLIRemoteCommand {
 	    if (doUpload)
                 outboundPayload = PayloadImpl.Outbound.newInstance();
 
+            StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
+		    append(commandName).append(QUERY_STRING_INTRODUCER);
             for (Map.Entry<String, String> param : params.entrySet()) {
                 String paramName = param.getKey();
 		String paramValue = param.getValue();
@@ -734,6 +759,7 @@ public class NCLIRemoteCommand {
 		throw new CommandException("No Command");
 
 	    Parser rcp;
+	    int cmdArgsStart;
 	    // if the first argument is an option, we're using the new form
 	    if (argv[0].startsWith("-")) {
 		/*
@@ -746,6 +772,7 @@ public class NCLIRemoteCommand {
 		if (operands.size() == 0)
 		    throw new CommandException("No Command");
 		commandName = operands.get(0);
+		cmdArgsStart = 1;
 	    } else {        // first arg is not an option, using old form
 		/*
 		 * asadmin options and command options are intermixed.
@@ -759,6 +786,7 @@ public class NCLIRemoteCommand {
 		rcp = new Parser(argv, 1, known, true);
 		params = rcp.getOptions();
 		operands = rcp.getOperands();
+		cmdArgsStart = 0;
 		// warn about deprecated use of meta-options
 		if (params.size() > 0) {
 		    // at least one program option specified after command name
@@ -768,7 +796,16 @@ public class NCLIRemoteCommand {
 			    ", Options: " + Arrays.toString(na));
 		}
 	    }
-	    //handleUnsupportedLegacyCommand(commandName);
+
+	    /*
+	     * Make sure the command name is legitimate and
+	     * won't allow any URL spoofing attacks.
+	     */
+	    if (!commandName.matches(COMMAND_NAME_REGEXP))
+		throw new CommandException("Illegal command name: " + commandName);
+
+	    checkUnsupportedLegacyCommand(commandName);
+
             initializeStandardParams();
             initializeLogger();
             logger.printDebugMessage("CLIRemoteCommandParser: " + rcp);
@@ -805,9 +842,11 @@ public class NCLIRemoteCommand {
 	    if (commandOpts == null)
 		throw new CommandException("Unknown command: " + commandName);
 	    String[] cmdArgs = operands.toArray(new String[operands.size()]);
-	    rcp = new Parser(cmdArgs, 0, commandOpts, false);
+	    rcp = new Parser(cmdArgs, cmdArgsStart, commandOpts, false);
             params = rcp.getOptions();
 	    operands = rcp.getOperands();
+	    logger.printDebugMessage("params: " + params);
+	    logger.printDebugMessage("operands: " + operands);
             initializeCommandPassword();
 	} catch (CommandException cex) {
 	    throw cex;
@@ -1180,6 +1219,56 @@ public class NCLIRemoteCommand {
             
             if (val != null)
                 entry.setValue(encoder.encode(val.getBytes()));
+        }
+    }
+
+    /**
+     * If this is an unsupported command, throw an exception.
+     */
+    private static void checkUnsupportedLegacyCommand(String cmd)
+            throws CommandException {
+        for (String c : unsupported) {
+            if (c.equals(cmd)) {
+                throw new CommandException(
+                    "Previously supported command: " + cmd +
+		    " is not supported for this release.");
+            }
+        }
+        // it is a supported command; do nothing
+    }
+
+    /**
+     * Read the named resource file and add the first token on each line
+     * to the set.  Skip comment lines.
+     */
+    private static void file2Set(String file, Set<String> set) {
+        BufferedReader reader = null;
+        try {
+            InputStream is = CLIRemoteCommand.class.getClassLoader().
+				getResourceAsStream(file);
+	    if (is == null)
+		return;	    // in case the resource doesn't exist
+            reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("#"))
+                    continue; // # indicates comment
+                StringTokenizer tok = new StringTokenizer(line, " ");
+                // handles with or without space, rudimendary as of now
+                String cmd = tok.nextToken();
+                set.add(cmd);
+            }
+        } catch (IOException e) {
+	    e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ee) {
+                    // ignore
+                }
+
+            }
         }
     }
 }

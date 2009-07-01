@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.remote.*;
@@ -87,34 +88,41 @@ public class AsadminMain {
                 exitCode = main.remote(args);
             }
         }
-        if(exitCode == SUCCESS) {
+
+	switch (exitCode) {
+	case SUCCESS:
+	    // XXX - following output should be removed when quicklook is fixed
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandSuccessful", command));
-        }
-        if(exitCode == ERROR) {
+	    break;
+
+	case ERROR:
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
-        }
-        if(exitCode == INVALID_COMMAND_ERROR) {
+	    break;
+
+	case INVALID_COMMAND_ERROR:
             try {
                 CLIMain.displayClosestMatch(command, main.getRemoteCommands(),
-                                            strings.get("ClosestMatchedLocalAndRemoteCommands"));
+		    strings.get("ClosestMatchedLocalAndRemoteCommands"));
             } catch (InvalidCommandException e) {
                 // not a big deal if we cannot help
             }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
-        }
-        if (exitCode == CONNECTION_ERROR) {
+	    break;
+
+	case CONNECTION_ERROR:
             try {
                 CLIMain.displayClosestMatch(command, null,
-                                            strings.get("ClosestMatchedLocalCommands"));
+		    strings.get("ClosestMatchedLocalCommands"));
             } catch (InvalidCommandException e) {
-                CLILogger.getInstance().printMessage(strings.get("InvalidRemoteCommand",
-                                                                 command));
+                CLILogger.getInstance().printMessage(
+			strings.get("InvalidRemoteCommand", command));
             }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
+	    break;
         }
         writeCommandToDebugLog(args, exitCode);
         System.exit(exitCode);
@@ -148,19 +156,24 @@ public class AsadminMain {
             return ERROR;
         }
     }
+
     public int remote(String[] args) {
+	NCLIRemoteCommand rc = null;
         try {
 	    if (System.getenv("ASADMIN_NEW") != null) {
-		NCLIRemoteCommand rc = new NCLIRemoteCommand(args);
+		rc = new NCLIRemoteCommand();
+		rc.parse(args);
 		command = rc.getCommandName();
 		rc.runCommand();
 	    } else {
-		CLIRemoteCommand rc = new CLIRemoteCommand(args);
-		rc.runCommand();
+		CLIRemoteCommand orc = new CLIRemoteCommand(args);
+		orc.runCommand();
 	    }
             return SUCCESS;
         }
         catch (Throwable ex) {
+	    if (rc != null)
+		command = rc.getCommandName();
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printMessage(ex.getMessage());
             if (ex.getCause() instanceof java.net.ConnectException) {
@@ -177,15 +190,19 @@ public class AsadminMain {
      * We avoid using real System properties.  Instead we use our own Map
      * @return a read-only Map of our system-wide properties                                                           
      */
+    // XXX - not used?
     public static Map<String, String> getSystemProps() {
         return Collections.unmodifiableMap(systemProps);
     }
+
     /*pkg-priv*/ static String[] getArgs() {
         return copyOfArgs;
     }
+
     /*pkg-priv*/ static String getClassPath() {
         return classPath;
     }
+
     /*pkg-priv*/ static String getClassName() {
         return className;
     }
@@ -194,7 +211,7 @@ public class AsadminMain {
         try {
             ListCommandsCommand lcc = new ListCommandsCommand();
             String[] remoteCommands = lcc.getRemoteCommands();
-            Map<String, String> remoteCommandsMap = new Hashtable<String, String>();
+            Map<String, String> remoteCommandsMap = new HashMap<String, String>();
             for (String rc : remoteCommands) {
                 remoteCommandsMap.put(rc, "remote command");
             }
