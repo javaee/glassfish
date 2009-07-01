@@ -42,95 +42,38 @@
 <!define name="content">
     <event>
         <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        getSecuritySettings(ConfigName="#{configName}", Audit=>$attribute{audit}, Principal=>$attribute{principal}, Password=>$attribute{password}, RoleMapping=>$attribute{roleMapping}, Mapped=>$attribute{mapped}, Realm=>$attribute{realm}, Module=>$attribute{module}, Jacc=>$attribute{jacc}, Properties=>$page{props});
-        getTableList(Properties="#{props}", TableList=>$attribute{tableList});
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/security.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="childType" value="security-service");
+        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        println("#{pageSession.valueMap}")
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
         />   
-    </event>   
-    #include "/shared/restart.inc"
+    </event>
+#include "/shared/restart.inc"
             <sun:form id="propertyForm">
-   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
-                <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18nSecurity.security.Security}" 
-                helpText="$resource{i18nSecurity.security.SecurityPageHelp}">
-                    <sun:button id="loadDefaults" rendered="#{false}" style="margin-left: 8pt"  primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >    
-                        <!command
-                            getSecurityDefaultAttributes(
-                                ConfigName="#{configName}", 
-                                Audit=>$attribute{audit}, 
-                                Principal=>$attribute{principal}, 
-                                Password=>$attribute{password}, 
-                                RoleMapping=>$attribute{roleMapping}, 
-                                Mapped=>$attribute{mapped}, 
-                                Realms=>$attribute{realm}, 
-                                Modules=>$attribute{module},
-                                Jaccs=>$attribute{jacc}); 
-                                />
-                    </sun:button>
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-#include "/security/securityButtons.inc"
-                    </facet>  
-                    </sun:title>
-                    <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
-                        <!-- Text Field section -->               
-                        <sun:propertySheetSection id="propertSectionTextField">
-                            <event>
-                              <!beforeCreate
-                                getSecurityManagerStatus(ConfigName="#{configName}", securityManagerEnabled=>$attribute{securityManagerStatus});
-                                getRealms(ConfigName="#{configName}", Realms=>$attribute{realms}); 
-                                <!-- getJaccs(ConfigName="#{configName}", Jacc=>$attribute{jaccs}); -->
-                                getAuditModules(ConfigName="#{configName}", AuditModules=>$attribute{aModules});
-                              />   
-                            </event>
-                            <sun:property id="securityManagerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.SecurityManager}">                           
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.securityManagerStatus}" > 
-                               </sun:checkbox>
-                            </sun:property>                       
-                            <sun:property id="auditLoggingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.AuditLogging}" helpText="$resource{i18nSecurity.security.AuditLoggingHelp}">                           
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.audit}" /> 
-                            </sun:property>                        
-                          <sun:property id="defaultRealmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultRealm}" helpText="$resource{i18nSecurity.security.DefaultRealmHelp}">
-                                <sun:dropDown id="DefaultRealm" labels="$attribute{realms}" selected="#{requestScope.realm}">
-                                </sun:dropDown>
-                            </sun:property>
-                            <sun:property id="defaultPrincipalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultPrincipal}" helpText="$resource{i18nSecurity.security.DefaultPrincipalHelp}">
-                                <sun:textField id="DefaultPrincipal" columns="$int{55}" text="#{requestScope.principal}"/> 
-                            </sun:property>    
-                            <sun:property id="defaultPrincipalPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultPrincipalPassword}" helpText="$resource{i18nSecurity.security.DefaultPrincipalPasswordHelp}">
-                                <sun:passwordField id="DefaultPrincipalPassword" columns="$int{55}" text="#{requestScope.password}"/>
-                            </sun:property>
-                            <!--
-                          <sun:property id="jaccProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.Jacc}" helpText="$resource{i18nSecurity.security.JaccHelp}">
-                                <sun:dropDown id="Jacc" items="$attribute{jaccs}" selected="#{requestScope.jacc}">
-                                </sun:dropDown>
-                            </sun:property> 
-                            -->
-                         <sun:property id="auditModulesProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.AuditModules}" helpText="$resource{i18nSecurity.security.AuditModulesHelp}">
-                                <sun:listbox id="AuditModules" labels="$attribute{aModules}" selected="#{requestScope.module}" rows="$int{4}">
-                                </sun:listbox>
-                            </sun:property>   
-                           <sun:property id="roleMappingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.RoleMapping}" helpText="$resource{i18nSecurity.security.RoleMappingHelp}">                           
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.roleMapping}" /> 
-                            </sun:property>                        
-                            <sun:property id="mappedPrincipalClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.MappedPrincipalClass}" helpText="$resource{i18nSecurity.security.MappedPrincipalClassHelp}">
-                                <sun:textField id="MappedPrincipalClass" columns="$int{55}" text="#{requestScope.mapped}"/> 
-                            </sun:property>    
-                                        
-                            "<br /><br />
-                        </sun:propertySheetSection>
 
-                    </sun:propertySheet>    
-#include "/shared/propertyTable.inc"
-                <sun:title id="propertyContentPage2">     
-                    <!facet pageButtonsBottom>
-#include "/security/securityButtons.inc"
-                    </facet>  
-                </sun:title>
+        <!-- Page Title -->
+        <sun:title id="propertyContentPage" title="$resource{i18nSecurity.security.Security}" helpText="$resource{i18nSecurity.security.SecurityPageHelp}">
+#include "/shared/editPageButtons.inc"
+        </sun:title>
+        "<br><br>
+#include "/security/securityAttrs.inc"
+#include "/shared/propertyDescTable.inc"
+
 	<sun:hidden id="helpKey" value="$resource{help_security.security}" />
-            </sun:form>
-#include "/shared/changeButtonsJS.inc"         
+</sun:form>
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
+
+

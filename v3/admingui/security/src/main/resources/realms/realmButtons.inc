@@ -41,20 +41,15 @@
         <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
             prepareSuccessfulMsg();
             saveRealm(
-                configName="#{configName}",
-                realmName="#{name}",
-                nodeAgentName="#{nodeAgentName}",
+                objectNameStr="#{objectNameStr}"
                 classnameOption="#{myOption}",
                 attrMap="#{attrMap}",
-                newProps="${newProps}"
+                propList="${newList}"
+                edit="#{true}"
             );
-            #setAttribute(key="name" value="$pageSession{name}");
-            #setAttribute(key="configName" value="$pageSession{configName}");
-            #setAttribute(key="nodeAgentName" value="$pageSession{nodeAgentName}");
-            #navigate(page="#{nextPage}");
+            redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
         />    
     </sun:button>
 
@@ -63,19 +58,19 @@
         <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-            createRealm(
-                configName="#{configName}",
+            saveRealm(
+                parentObjectName="#{parentObjectName}",
                 classnameOption="#{classnameOption}",
                 attrMap="#{attrMap}",
-                newProps="${newProps}"
+                propList="${newList}"
+                edit="#{false}"
             );            
-            redirect(page="#{request.contextPath}/security/realms/realms.jsf?configName=#{configName}")
+            redirect(page="#{parentPage}?configName=#{configName}")
         />
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            redirect(page="#{request.contextPath}/security/realms/realms.jsf?configName=#{configName}");
+            redirect(page="#{parentPage}?configName=#{configName}")
         />
   </sun:button>
 

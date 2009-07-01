@@ -68,8 +68,12 @@
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showUserButton" value="#{false}" )
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
+
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/realms/realmNew.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/security/realms/realms.jsf");
+        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+
         getRealmAttrForCreate(attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props}  );
-        getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
     />
     </event>

@@ -39,11 +39,11 @@
     <sun:propertySheet id="propertySheet" requiredFields="true">			 
         <sun:propertySheetSection id="propertySectionTextField">
             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.realmName}" >
-                <sun:staticText id="NameStatic" text="#{name}"/> 
+                <sun:staticText id="NameStatic" text="#{pageSession.Name}"/>
             </sun:property> 
 
             <sun:property id="NameTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                <sun:textField id="NameText" styleClass="required"  text="#{attrMap.name}" columns="$int{55}" required="#{true}" /> 
+                <sun:textField id="NameText" styleClass="required"  text="#{attrMap.Name}" columns="$int{55}" required="#{true}" />
             </sun:property> 
 
             <sun:property id="cp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.Classname}" helpText="$resource{i18nSecurity.realm.ClassnameHelp}<br /><br />">                           
@@ -79,13 +79,13 @@
             getClientId(component="$this{component}" clientId=>$page{fileSectionId});
         />
         <sun:property id="jaax" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.jaax}" helpText="$resource{i18nSecurity.realm.jaaxHelp}" >
-            <sun:textField id="jaax" columns="$int{40}" text="#{attrMap.fileJaax}" required="#{true}" />      
+            <sun:textField id="jaax" columns="$int{60}" text="#{attrMap.fileJaax}" required="#{true}" />
         </sun:property>
         <sun:property id="keyFile" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.keyFile}" helpText="$resource{i18nSecurity.realm.keyFileHelp}" >
-            <sun:textField id="keyFile" columns="$int{40}" text="#{attrMap.file}" required="#{true}" />      
+            <sun:textField id="keyFile" columns="$int{60}" text="#{attrMap.file}" required="#{true}" />
         </sun:property>
         <sun:property id="asgroup" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.asgroup}" helpText="$resource{i18nSecurity.realm.asgroupHelp}" >
-            <sun:textField id="asgroups" columns="$int{40}" text="#{attrMap.fileAsGroups}"  />      
+            <sun:textField id="asgroups" columns="$int{60}" text="#{attrMap.fileAsGroups}"  />
         </sun:property> 
     </sun:propertySheetSection>
 
@@ -94,7 +94,7 @@
             getClientId(component="$this{component}" clientId=>$page{certSectionId});
         />  
         <sun:property id="asgroup" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.asgroup}" helpText="$resource{i18nSecurity.realm.asgroupHelp}" >
-            <sun:textField id="asgroup" columns="$int{40}" text="#{attrMap.certAsGroups}"  />      
+            <sun:textField id="asgroup" columns="$int{60}" text="#{attrMap.certAsGroups}"  />
         </sun:property> 
     </sun:propertySheetSection>
 
@@ -103,16 +103,16 @@
             getClientId(component="$this{component}" clientId=>$page{ldapSectionId});
         />
          <sun:property id="jaax" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.jaax}" helpText="$resource{i18nSecurity.realm.jaaxHelp}" >
-            <sun:textField id="jaax" columns="$int{40}" text="#{attrMap.ldapJaax}" required="#{true}" />      
+            <sun:textField id="jaax" columns="$int{60}" text="#{attrMap.ldapJaax}" required="#{true}" />
         </sun:property>
         <sun:property id="directory" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.directory}" helpText="$resource{i18nSecurity.realm.directoryHelp}" >
-            <sun:textField id="directory" columns="$int{40}" text="#{attrMap.directory}" required="#{true}" />      
+            <sun:textField id="directory" columns="$int{60}" text="#{attrMap.directory}" required="#{true}" />
         </sun:property>
         <sun:property id="baseDn" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.baseDn}" helpText="$resource{i18nSecurity.realm.baseDnHelp}" >
-            <sun:textField id="baseDn" columns="$int{40}" text="#{attrMap.baseDn}" required="#{true}" />      
+            <sun:textField id="baseDn" columns="$int{60}" text="#{attrMap.baseDn}" required="#{true}" />
         </sun:property> 
         <sun:property id="asgroup" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.asgroup}" helpText="$resource{i18nSecurity.realm.asgroupHelp}" >
-            <sun:textField id="asgroup" columns="$int{40}" text="#{attrMap.ldapAsGroups}"  />      
+            <sun:textField id="asgroup" columns="$int{60}" text="#{attrMap.ldapAsGroups}"  />
         </sun:property> 
     </sun:propertySheetSection>
 
@@ -121,10 +121,10 @@
             getClientId(component="$this{component}" clientId=>$page{solarisSectionId});
         />  
         <sun:property id="jaax" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.jaax}" helpText="$resource{i18nSecurity.realm.jaaxHelp}" >
-            <sun:textField id="jaax" columns="$int{40}" text="#{attrMap.solarisJaax}" required="#{true}" />      
+            <sun:textField id="jaax" columns="$int{60}" text="#{attrMap.solarisJaax}" required="#{true}" />
         </sun:property> 
         <sun:property id="asgroup" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.asgroup}" helpText="$resource{i18nSecurity.realm.asgroupHelp}" >
-            <sun:textField id="asgroup" columns="$int{40}" text="#{attrMap.solarisAsGroups}"  />      
+            <sun:textField id="asgroup" columns="$int{60}" text="#{attrMap.solarisAsGroups}"  />
         </sun:property> 
     </sun:propertySheetSection>
 
@@ -133,42 +133,42 @@
             getClientId(component="$this{component}" clientId=>$page{jdbcSectionId});
         />  
         <sun:property id="jaax" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.jaax}" helpText="$resource{i18nSecurity.realm.jaaxHelp}" >
-            <sun:textField id="jaax" columns="$int{40}" text="#{attrMap.jdbcJaax}" required="#{true}" />      
+            <sun:textField id="jaax" columns="$int{60}" text="#{attrMap.jdbcJaax}" required="#{true}" />
         </sun:property> 
         <sun:property id="jndi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.jndi}" helpText="$resource{i18nSecurity.realm.jndiHelp}" >
-            <sun:textField id="jndi" columns="$int{40}" text="#{attrMap.datasourceJndi}" required="#{true}" />      
+            <sun:textField id="jndi" columns="$int{60}" text="#{attrMap.datasourceJndi}" required="#{true}" />
         </sun:property>
         <sun:property id="userTable" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.userTable}" helpText="$resource{i18nSecurity.realm.userTableHelp}" >
-            <sun:textField id="userTable" columns="$int{40}" text="#{attrMap.userTable}" required="#{true}" />      
+            <sun:textField id="userTable" columns="$int{60}" text="#{attrMap.userTable}" required="#{true}" />
         </sun:property>
         <sun:property id="userName" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.userName}" helpText="$resource{i18nSecurity.realm.userNameHelp}" >
-            <sun:textField id="userName" columns="$int{40}" text="#{attrMap.userNameColumn}" required="#{true}" />      
+            <sun:textField id="userName" columns="$int{60}" text="#{attrMap.userNameColumn}" required="#{true}" />
         </sun:property>
         <sun:property id="pswd" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.pswd}" helpText="$resource{i18nSecurity.realm.pswdHelp}" >
-            <sun:textField id="pswd" columns="$int{40}" text="#{attrMap.passwordColumn}" required="#{true}" />      
+            <sun:textField id="pswd" columns="$int{60}" text="#{attrMap.passwordColumn}" required="#{true}" />
         </sun:property>
         <sun:property id="groupTable" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.groupTable}" helpText="$resource{i18nSecurity.realm.groupTableHelp}" >
-            <sun:textField id="groupTable" columns="$int{40}" text="#{attrMap.groupTable}" required="#{true}" />      
+            <sun:textField id="groupTable" columns="$int{60}" text="#{attrMap.groupTable}" required="#{true}" />
         </sun:property>
         <sun:property id="groupName" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.groupName}" helpText="$resource{i18nSecurity.realm.groupNameHelp}" >
-            <sun:textField id="groupName" columns="$int{40}" text="#{attrMap.groupNameColumn}" required="#{true}" />      
+            <sun:textField id="groupName" columns="$int{60}" text="#{attrMap.groupNameColumn}" required="#{true}" />
         </sun:property>
         <sun:property id="asgroup" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.asgroup}" helpText="$resource{i18nSecurity.realm.asgroupHelp}" >
-            <sun:textField id="asgroup" columns="$int{40}" text="#{attrMap.jdbcAsGroups}"  />      
+            <sun:textField id="asgroup" columns="$int{60}" text="#{attrMap.jdbcAsGroups}"  />
         </sun:property> 
         <sun:property id="dbUser" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.dbUser}" helpText="$resource{i18nSecurity.realm.dbUserHelp}" >
-            <sun:textField id="dbUser" columns="$int{40}" text="#{attrMap.dbUser}"  />      
+            <sun:textField id="dbUser" columns="$int{60}" text="#{attrMap.dbUser}"  />
         </sun:property> 
         <sun:property id="dbPswd" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.dbPswd}" helpText="$resource{i18nSecurity.realm.dbPswdHelp}" >
-            <sun:textField id="dbPswd" columns="$int{40}" text="#{attrMap.dbPassword}"  />      
+            <sun:textField id="dbPswd" columns="$int{60}" text="#{attrMap.dbPassword}"  />
         </sun:property> 
         <sun:property id="digest" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.digest}" helpText="$resource{i18nSecurity.realm.digestHelp}" >
-            <sun:textField id="digest" columns="$int{40}" text="#{attrMap.digestAlgorithm}"  />      
+            <sun:textField id="digest" columns="$int{60}" text="#{attrMap.digestAlgorithm}"  />
         </sun:property> 
         <sun:property id="encoding" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.encoding}" helpText="$resource{i18nSecurity.realm.encodingHelp}" >
-            <sun:textField id="encoding" columns="$int{40}" text="#{attrMap.encoding}"  />      
+            <sun:textField id="encoding" columns="$int{60}" text="#{attrMap.encoding}"  />
         </sun:property> 
         <sun:property id="charset" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.charset}" helpText="$resource{i18nSecurity.realm.charsetHelp}" >
-            <sun:textField id="charset" columns="$int{40}" text="#{attrMap.charset}"  />      
+            <sun:textField id="charset" columns="$int{60}" text="#{attrMap.charset}"  />
         </sun:property> 
     </sun:propertySheetSection>

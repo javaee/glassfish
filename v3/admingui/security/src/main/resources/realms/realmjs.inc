@@ -38,7 +38,7 @@
     <script type="text/javascript">
 
  function initClassname(option) {
-    var selectedOption = getSelectedValue("classnameOption");
+    var selectedOption = getSelectedValueFromForm(document.forms['form1'], 'classnameOption');
     enableClassnameFields(option);   
     if (option == 'input'){ 
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{rbPropId}:optB', true);  
@@ -47,7 +47,7 @@
     }  
   }
 
- function enableClassnameFields(opt){	
+ function enableClassnameFields(opt){
     if(opt == 'input') {
 	enableComponent('#{classnameTextId}', 'text');  
 	getTextElement('#{classnameTextId}').focus();  
@@ -65,7 +65,7 @@
  }
 
  function checkClassname(){ 
-    var opt = getSelectedValue("classnameOption");
+    var opt = getSelectedValueFromForm(document.forms['form1'], 'classnameOption');
     if (opt == 'predefine'){ 
         type = getSelectElement('#{classnameDropdownId}').value; 
         rtype = type.match('FileRealm');  
@@ -105,7 +105,7 @@
     }
 }
 
-function showDisplay(testtype) { 
+function showDisplay(testtype) {
     document.getElementById('#{fileSectionId}').style.display = 'none'; 
     document.getElementById('#{ldapSectionId}').style.display = 'none'; 
     document.getElementById('#{jdbcSectionId}').style.display = 'none'; 

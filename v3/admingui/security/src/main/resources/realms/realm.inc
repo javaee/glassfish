@@ -77,7 +77,7 @@
             </sun:title>
 
 #include "/security/realms/realmAttrs.inc" 
-#include "/shared/propertyTable.inc"
+#include "/shared/propertyDescTable.inc"
 
         <sun:title id="title2">
             <!facet pageButtonsBottom>
