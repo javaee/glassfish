@@ -1649,7 +1649,7 @@ function getSelectedValue(field) {
     return selectedValue;
 }
 
-function getSelectedValue(theForm, field) {
+function getSelectedValueFromForm(theForm, field) {
     var selectedValue = null;
     var testField = null;
     var name = null;

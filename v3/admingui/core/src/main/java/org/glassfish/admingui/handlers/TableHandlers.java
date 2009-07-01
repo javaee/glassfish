@@ -51,7 +51,6 @@
 
 package org.glassfish.admingui.handlers;
 
-import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -196,43 +195,6 @@ public class TableHandlers {
         }
         handlerCtx.setOutputValue("TableList", data);
     }  
-    
-    
-     /**
-     *	<p> This handler takes in a Map, which is th PropertyConfigMap, the Property element of any config bean.
-     *  and turn each property name-value pair to one hashMap, representing one row of table data, 
-     *  and returns the list of Map. 
-     *
-     *  <p> Input value: "Properties" -- Type: <code>java.util.Map</code>/</p>
-     *  <p> Output value: "TableList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getTableList",
-    input={
-        @HandlerInput(name="Properties", type=Map.class, required=true)},
-    output={
-        @HandlerOutput(name="TableList", type=List.class)})
-        public static void getTableList(HandlerContext handlerCtx) {
-        List data = new ArrayList();
-        Map<String, Object> props = (Map<String, Object> )handlerCtx.getInputValue("Properties");
-        if ( !(props == null || props.isEmpty()) ){
-            Object test  = props.get ((props.keySet().toArray())[0]);
-            //If this is a PropertyConfigMap, the value will not be NULL; must be a Property list
-            if ( (test == null ) || (! (test instanceof PropertyConfig))){
-                 getTableListFromProperties(handlerCtx);
-                 return;
-            }
-            for(Object oneValue : props.values()){
-                PropertyConfig propConfig = (PropertyConfig) oneValue;
-                HashMap oneRow = new HashMap();
-                oneRow.put("name",  propConfig.getName());
-                oneRow.put ("value",  (propConfig.getValue()==null) ? "" : propConfig.getValue());
-                oneRow.put("selected", false);
-                data.add(oneRow);
-            }
-        }
-        handlerCtx.setOutputValue("TableList", data);
-    }
     
 /**
      *	<p> This handler takes TableRowGroup as input and returns a List of Map objects. 
