@@ -194,7 +194,6 @@
     <arg value="/c"/>
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="deploy"/>
-    <arg value="--path"/>
     <arg line="${dist.dir}/${app.file.ext}"/>   
    </exec>  
 </target>
@@ -202,7 +201,6 @@
 <target name="deploy-v3-impl-unix" if="isUnix">
   <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
     <arg value="deploy"/>
-    <arg value="--path"/>
     <arg line="${dist.dir}/${app.file.ext}"/>
   </exec>
 </target>
@@ -219,7 +217,6 @@
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="deploy"/>
     <arg value="--force=true"/>
-    <arg value="--path"/>
     <arg line="${dist.dir}/${app.file.ext}"/>
    </exec> 
 </target>
@@ -228,7 +225,6 @@
   <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
     <arg value="deploy"/>
     <arg value="--force=true"/>
-    <arg value="--path"/>
     <arg line="${dist.dir}/${app.file.ext}"/>
   </exec>
 </target>

@@ -47,7 +47,6 @@
         <antcall target="start-derby"/>        
         <antcall target="start-server-felix"/>
 	<antcall target="build-deploy"/>
-        <ant dir="admincli" target="build-deploy"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
@@ -65,7 +64,6 @@
         <antcall target="start-server-felix"/>
 	<antcall target="enable-security-manager"/>
 	<antcall target="build-deploy"/>
-        <ant dir="admincli" target="build-deploy"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
@@ -83,7 +81,6 @@
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
-        <ant dir="admincli" target="build-deploy"/>
         <antcall target="build-deploy-gd"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng_gd.xml"/> </antcall>
@@ -115,6 +112,7 @@
         <echo message="ANT PROJECT ${ant.project.name}"/>
         <ant dir="amx" target="build"/>
         <ant dir="admin" target="build"/>
+        <ant dir="admincli" target="build"/>
         <ant dir="adminconsole" target="build"/>
         <ant dir="web/helloworld" target="build-deploy"/>
         <ant dir="web/jsfastrologer" target="build-deploy"/>
@@ -139,8 +137,6 @@
     
     <target name="undeploy">
         <record name="undeploy.output" action="start"/>
-        <ant dir="admincli" target="undeploy"/>
-        <ant dir="classloader/hellojsf" target="undeploy"/>
         <ant dir="web/helloworld" target="undeploy"/>
         <ant dir="web/jsfastrologer" target="undeploy"/>
         <ant dir="web/jsfinjection" target="undeploy"/>
