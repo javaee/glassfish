@@ -12,7 +12,31 @@
                         com.sun.enterprise.security.jmac.config; \
                         com.sun.enterprise.security.web.integration; \
                         com.sun.enterprise.security.provider; \
+                        com.iplanet.ias.security.auth.realm; \
+                        com.sun.appserv.security; \
+                        com.sun.enterprise.security.auth.realm; \
+                        com.sun.enterprise.security.auth.realm.certificate; \
+                        com.sun.enterprise.security.auth.realm.file; \
+                        com.sun.enterprise.security.auth.realm.jdbc; \
+                        com.sun.enterprise.security.auth.realm.ldap; \
+                        com.sun.enterprise.security.auth.realm.solaris; \
+                        com.sun.enterprise.security.util; \
+                        com.sun.enterprise.common.iiop.security; \
+                        com.sun.enterprise.security.auth.digest.api; \
+                        com.sun.enterprise.security.auth.digest.impl; \
+                        com.sun.enterprise.security.auth.login.common; \
+                        com.sun.enterprise.security.common; \
+                        com.sun.logging.enterprise.system.core.security; \
+                        com.sun.enterprise.security.ssl; \
+                        com.sun.enterprise.server.pluggable; \
                         com.sun.enterprise.security.jacc.provider; version=${project.osgi.version}
-Import-Package: \
-                        com.sun.logging.enterprise.system.core.security, \
-                        *
+Bundle-NativeCode: \
+        lib/libsolsparcauth.so ; \
+        osname=SunOS ; \
+        osname=Solaris ; \
+        processor=sparc , \
+        lib/libsolx86auth.so ; \
+        osname=SunOS ; \
+        osname=Solaris ; \
+        processor=x86 , \
+        *

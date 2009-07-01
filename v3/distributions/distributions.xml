@@ -302,23 +302,20 @@ origin-for-darwin-universal-sun-contrib]]>
     <resolveArtifact artifactId="cli-optional" groupId="org.glassfish.admin" property="cli-optional.jar"/>
     <resolveArtifact artifactId="server-mgmt" groupId="org.glassfish.admin" property="server-mgmt.jar"/>
     <resolveArtifact artifactId="admin-util" groupId="org.glassfish.admin" property="admin-util.jar"/>
-    <resolveArtifact artifactId="realms" groupId="org.glassfish.security" property="realms.jar"/>
+    <resolveArtifact artifactId="security" groupId="org.glassfish.security" property="security.jar"/>
     <resolveArtifact artifactId="amx-api" groupId="org.glassfish.common" property="amx-api.jar"/>
-    <resolveArtifact artifactId="securitycommon" groupId="org.glassfish.security" property="securitycommon.jar"/>
 
     <echo message="cli-optional jar: ${cli-optional.jar}"/>
     <echo message="server-mgmt jar: ${server-mgmt.jar}"/>
     <echo message="admin-util jar: ${admin-util.jar}"/>
-    <echo message="realms jar: ${realms.jar}"/>
+    <echo message="security jar: ${security.jar}"/>
     <echo message="amx-api jar: ${amx-api.jar}"/>
-    <echo message="securitycommon jar: ${securitycommon.jar}"/>
 
     <copy file="${cli-optional.jar}" tofile="${modules.dir}/cli-optional.jar"/>
     <copy file="${server-mgmt.jar}" tofile="${modules.dir}/server-mgmt.jar"/>
     <copy file="${admin-util.jar}" tofile="${modules.dir}/admin-util.jar"/>
-    <copy file="${realms.jar}" tofile="${modules.dir}/realms.jar"/>
+    <copy file="${security.jar}" tofile="${modules.dir}/security.jar"/>
     <copy file="${amx-api.jar}" tofile="${modules.dir}/amx-api.jar"/>
-    <copy file="${securitycommon.jar}" tofile="${modules.dir}/securitycommon.jar"/>
 </target>
 
 <!-- delete artifacts required to create default domain; these are not bundled as part of nucleus -->
@@ -328,10 +325,9 @@ origin-for-darwin-universal-sun-contrib]]>
             <include name="cli-optional.jar"/>
             <include name="server-mgmt.jar"/>
             <include name="admin-util.jar"/>
-            <include name="realms.jar"/>
+            <include name="security.jar"/>
             <include name="backup.jar"/>
             <include name="amx-api.jar"/>
-            <include name="securitycommon.jar"/>
         </fileset>
     </delete>
 </target>

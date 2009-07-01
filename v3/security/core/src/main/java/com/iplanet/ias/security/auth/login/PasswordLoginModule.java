@@ -36,7 +36,7 @@
 
 package com.iplanet.ias.security.auth.login;
 
-import com.sun.appserv.security.api.AppservPasswordLoginModule;
+import com.sun.appserv.security.AppservPasswordLoginModule;
 import com.sun.enterprise.security.auth.AuthenticationStatus;
 import com.sun.enterprise.security.auth.AuthenticationStatusImpl;
 import com.sun.enterprise.security.auth.realm.Realm;

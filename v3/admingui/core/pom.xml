@@ -131,7 +131,7 @@
 
         <dependency>
             <groupId>org.glassfish.security</groupId>
-            <artifactId>securitycommon</artifactId>
+            <artifactId>security</artifactId>
             <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>

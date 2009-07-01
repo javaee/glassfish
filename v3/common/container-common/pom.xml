@@ -134,7 +134,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.security</groupId>
-            <artifactId>realms</artifactId>
+            <artifactId>security</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

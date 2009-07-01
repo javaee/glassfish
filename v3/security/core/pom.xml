@@ -67,6 +67,24 @@
                     <include>**/*.properties</include>
                 </includes>
             </resource>
+             <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+             <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.1</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.so</include>
+                </includes>
+            </resource>
         </resources>
     </build>
     <dependencies>
@@ -75,23 +93,9 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>realms</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>securitycommon</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
@@ -143,6 +147,16 @@
         <dependency>
             <groupId>org.glassfish.ejb</groupId>
             <artifactId>ejb-internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>ldapbp-repackaged</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

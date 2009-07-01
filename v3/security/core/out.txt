@@ -1,0 +1,145 @@
+[INFO] Scanning for projects...
+WAGON_VERSION: 1.0-beta-2
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Security Core Classes
+[INFO]    task-segment: [install]
+[INFO] ------------------------------------------------------------------------
+[INFO] [enforcer:enforce {execution: enforce-versions}]
+[INFO] [osgiversion:compute-osgi-version {execution: compute-osgi-version}]
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [hk2:hk2-compile]
+[INFO] Compiling 171 source files to c:\kumar\workspaces\latestv3\v3\security\core\target\classes
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:60: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+import sun.security.provider.PolicyParser;
+                            ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:61: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+import sun.security.provider.PolicyParser.GrantEntry;
+                            ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:61: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+import sun.security.provider.PolicyParser.GrantEntry;
+                            ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:62: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+import sun.security.provider.PolicyParser.PermissionEntry;
+                            ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:62: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+import sun.security.provider.PolicyParser.PermissionEntry;
+                            ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:63: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+import sun.security.provider.PolicyParser.PrincipalEntry;
+                            ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:63: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+import sun.security.provider.PolicyParser.PrincipalEntry;
+                            ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyConfigurationImpl.java:1292: warning: sun.security.provider.PolicyParser is Sun proprietary API and may be removed in a future release
+	(boolean granted, PolicyParser parser, boolean woc) throws java.io.IOException {
+	                  ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\BasePolicyWrapper.java:50: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+import sun.security.util.PropertyExpander;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyParser.java:49: warning: sun.security.util.Debug is Sun proprietary API and may be removed in a future release
+import sun.security.util.Debug;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyParser.java:50: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+import sun.security.util.PropertyExpander;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyParser.java:51: warning: sun.security.util.ResourcesMgr is Sun proprietary API and may be removed in a future release
+import sun.security.util.ResourcesMgr;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyParser.java:112: warning: sun.security.util.Debug is Sun proprietary API and may be removed in a future release
+    private static final Debug debug = Debug.getInstance("parser",
+                         ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyParser.java:123: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+	throws PropertyExpander.ExpandException
+	       ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyParser.java:129: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+	throws PropertyExpander.ExpandException
+	       ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyParser.java:617: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+	throws ParsingException, IOException, PropertyExpander.ExpandException
+	                                      ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\auth\login\LoginContextDriver.java:47: warning: sun.security.x509.X500Name is Sun proprietary API and may be removed in a future release
+import sun.security.x509.X500Name;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\jmac\callback\BaseContainerCallbackHandler.java:101: warning: sun.security.util.DerValue is Sun proprietary API and may be removed in a future release
+import sun.security.util.DerValue;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\common\iiop\security\GSSUtilsContract.java:41: warning: sun.security.util.ObjectIdentifier is Sun proprietary API and may be removed in a future release
+import sun.security.util.ObjectIdentifier;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\common\iiop\security\GSSUtilsContract.java:52: warning: sun.security.util.ObjectIdentifier is Sun proprietary API and may be removed in a future release
+    public byte[] importName(ObjectIdentifier oid, byte[] externalName)
+                             ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\common\iiop\security\GSSUtilsContract.java:54: warning: sun.security.util.ObjectIdentifier is Sun proprietary API and may be removed in a future release
+    public byte[] createExportedName(ObjectIdentifier oid, byte[] extName)
+                                     ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\common\iiop\security\GSSUtilsContract.java:56: warning: sun.security.util.ObjectIdentifier is Sun proprietary API and may be removed in a future release
+    public ObjectIdentifier GSSUP_MECH_OID();
+           ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:78: warning: sun.security.provider.SystemIdentity is Sun proprietary API and may be removed in a future release
+ import sun.security.provider.SystemIdentity;
+                             ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:79: warning: sun.security.provider.SystemSigner is Sun proprietary API and may be removed in a future release
+ import sun.security.provider.SystemSigner;
+                             ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:80: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+ import sun.security.util.PropertyExpander;
+                         ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:81: warning: sun.security.util.Debug is Sun proprietary API and may be removed in a future release
+ import sun.security.util.Debug;
+                         ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:82: warning: sun.security.util.ResourcesMgr is Sun proprietary API and may be removed in a future release
+ import sun.security.util.ResourcesMgr;
+                         ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:83: warning: sun.security.util.SecurityConstants is Sun proprietary API and may be removed in a future release
+ import sun.security.util.SecurityConstants;
+                         ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:84: warning: sun.net.www.ParseUtil is Sun proprietary API and may be removed in a future release
+ import sun.net.www.ParseUtil;
+                   ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java:293: warning: sun.security.util.Debug is Sun proprietary API and may be removed in a future release
+     private static final Debug debug = Debug.getInstance("policy");
+                          ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyUtil.java:44: warning: sun.net.www.ParseUtil is Sun proprietary API and may be removed in a future release
+import sun.net.www.ParseUtil;
+                  ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyUtil.java:45: warning: sun.security.util.Debug is Sun proprietary API and may be removed in a future release
+import sun.security.util.Debug;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyUtil.java:46: warning: sun.security.util.Password is Sun proprietary API and may be removed in a future release
+import sun.security.util.Password;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyUtil.java:90: warning: sun.security.util.Debug is Sun proprietary API and may be removed in a future release
+		Debug debug)
+		^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\auth\realm\certificate\CertificateRealm.java:61: warning: sun.security.x509.X500Name is Sun proprietary API and may be removed in a future release
+import sun.security.x509.X500Name;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\auth\realm\certificate\CertificateRealm.java:279: warning: sun.security.x509.X500Name is Sun proprietary API and may be removed in a future release
+    public void authenticate(Subject subject, X500Name x500name)
+                                              ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\jmac\config\ConfigDomainParser.java:62: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+import sun.security.util.PropertyExpander;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\jmac\config\ConfigDomainParser.java:63: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+import sun.security.util.PropertyExpander.ExpandException;
+                        ^
+c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\jmac\config\ConfigDomainParser.java:63: warning: sun.security.util.PropertyExpander is Sun proprietary API and may be removed in a future release
+import sun.security.util.PropertyExpander.ExpandException;
+                        ^
+Note: c:\kumar\workspaces\latestv3\v3\security\core\src\main\java\com\sun\enterprise\security\provider\PolicyFile.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+39 warnings
+[INFO] ------------------------------------------------------------------------
+[ERROR] BUILD ERROR
+[INFO] ------------------------------------------------------------------------
+[INFO] Fatal error compiling
+
+Embedded error: APT failed: 1
+[INFO] ------------------------------------------------------------------------
+[INFO] For more information, run Maven with the -e switch
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 18 seconds
+[INFO] Finished at: Mon Jun 29 17:04:47 IST 2009
+[INFO] Final Memory: 23M/63M
+[INFO] ------------------------------------------------------------------------

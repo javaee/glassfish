@@ -50,9 +50,7 @@
     <packaging>pom</packaging>
     <name>GlassFish Security Infrastructure and Technology Integration Modules</name>  
     <modules>
-        <module>realm</module>
         <module>webintegration</module>
-        <module>common</module>
         <module>core</module>
         <module>security-all</module>
         <module>inmemory.jacc.provider</module>

@@ -80,11 +80,6 @@
             <version>${project.version}</version>
         </dependency>      
         <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>securitycommon</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>

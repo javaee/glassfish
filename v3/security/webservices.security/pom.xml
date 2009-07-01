@@ -134,11 +134,6 @@
         </dependency> -->
         <dependency>
             <groupId>org.glassfish.security</groupId>
-            <artifactId>securitycommon</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
             <artifactId>security</artifactId>
             <version>${project.version}</version>
         </dependency>

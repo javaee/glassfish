@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.security.auth.login;
 
-import com.sun.appserv.security.api.AppservPasswordLoginModule;
+import com.sun.appserv.security.AppservPasswordLoginModule;
 import com.sun.enterprise.security.auth.realm.Realm;
 import javax.security.auth.login.LoginException;
 
