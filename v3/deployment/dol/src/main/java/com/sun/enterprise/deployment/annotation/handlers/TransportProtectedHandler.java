@@ -35,16 +35,13 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.UserDataConstraintImpl;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
-import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
-import com.sun.enterprise.deployment.util.TypeUtil;
-import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
@@ -52,9 +49,6 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.security.TransportProtected;
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-import java.util.Set;
 
 /**
  * This handler is responsible for handling the
@@ -63,7 +57,7 @@ import java.util.Set;
  * @author Shing Wai Chan
  */
 @Service
-public class TransportProtectedHandler extends AbstractCommonAttributeHandler {
+public class TransportProtectedHandler extends AbstractAuthAnnotationHandler {
     
     public TransportProtectedHandler() {
     }
@@ -71,68 +65,17 @@ public class TransportProtectedHandler extends AbstractCommonAttributeHandler {
     /**
      * @return the annoation type this annotation handler is handling
      */
+    @Override
     public Class<? extends Annotation> getAnnotationType() {
         return TransportProtected.class;
     }    
 
-    /**
-     * Process Annotation with given EjbContexts.
-     * @param ainfo
-     * @param ejbContexts
-     * @return HandlerProcessingResult
-     */
-    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbContext[] ejbContexts) throws AnnotationProcessorException {
-
-        // EJB does not support this annotation at this point
-        if (ejbContexts.length > 0) {
-            return getInvalidAnnotatedElementHandlerResult(ejbContexts[0], ainfo);
-        } else {
-            return getDefaultFailedResult();
-        }
-    }   
-
-    /**
-     * Process Annotation with given WebCompContexts.
-     * @param ainfo
-     * @param webCompContexts
-     * @return HandlerProcessingResult
-     */
-    protected HandlerProcessingResult processAnnotation(
-            AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
-            throws AnnotationProcessorException {
-
-        return processSecurityConstraintAnnotation(ainfo, webCompContexts);
-
-    }
-
-    /**
-     * Process Annotation with given WebBundleContext.
-     * @param ainfo
-     * @param webBundleContext
-     * @return HandlerProcessingResult
-     */
-    protected HandlerProcessingResult processAnnotation(
-            AnnotationInfo ainfo, WebBundleContext webBundleContext)
-            throws AnnotationProcessorException {
-
-        // this is not a web component
-        return getInvalidAnnotatedElementHandlerResult(webBundleContext, ainfo);
-    }
-
-    /**
-     * @return an array of annotation types this annotation handler would
-     * require to be processed (if present) before it processes it's own
-     * annotation type.
-     */
     @Override
-    public Class<? extends Annotation>[] getTypeDependencies() {
-        return new Class[] { javax.servlet.annotation.WebServlet.class };
-    }
+    protected void processEjbMethodSecurity(Annotation authAnnotation,
+            MethodDescriptor md, EjbDescriptor ejbDesc) {
 
-    @Override
-    protected boolean supportTypeInheritance() {
-        return true;
+        // EJB does not support this annotation in this moment
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -146,5 +89,33 @@ public class TransportProtectedHandler extends AbstractCommonAttributeHandler {
                 UserDataConstraint.CONFIDENTIAL_TRANSPORT :
                 UserDataConstraint.NONE_TRANSPORT));
         securityConstraint.setUserDataConstraint(udc);
+    }
+
+    /**
+     * Process Annotation with given EjbContexts.
+     * @param ainfo
+     * @param ejbContexts
+     * @return HandlerProcessingResult
+     */
+    @Override
+    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
+            EjbContext[] ejbContexts) throws AnnotationProcessorException {
+
+        // EJB does not support this annotation at this point
+        if (ejbContexts.length > 0) {
+            return getInvalidAnnotatedElementHandlerResult(ejbContexts[0], ainfo);
+        } else {
+            return getDefaultFailedResult();
+        }
+    }   
+
+    /**
+     * @return an array of annotation types this annotation handler would
+     * require to be processed (if present) before it processes it's own
+     * annotation type.
+     */
+    @Override
+    public Class<? extends Annotation>[] getTypeDependencies() {
+        return new Class[] { javax.servlet.annotation.WebServlet.class };
     }
 }

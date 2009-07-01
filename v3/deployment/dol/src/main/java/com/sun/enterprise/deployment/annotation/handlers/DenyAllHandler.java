@@ -39,26 +39,12 @@ import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
-import com.sun.enterprise.deployment.web.WebResourceCollection;
-import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
-import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
-import com.sun.enterprise.deployment.util.TypeUtil;
-import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.AnnotationProcessorException;
-import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.Set;
+import javax.annotation.security.DenyAll;
 
 /**
  * This handler is responsible for handling the javax.annotation.security.DenyAll.
@@ -66,7 +52,7 @@ import java.util.Set;
  * @author Shing Wai Chan
  */
 @Service
-public class DenyAllHandler extends AbstractCommonAttributeHandler {
+public class DenyAllHandler extends AbstractAuthAnnotationHandler {
     
     public DenyAllHandler() {
     }
@@ -74,69 +60,25 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
     /**
      * @return the annoation type this annotation handler is handling
      */
+    @Override
     public Class<? extends Annotation> getAnnotationType() {
         return DenyAll.class;
     }    
 
-    /**
-     * Process Annotation with given EjbContexts.
-     * @param ainfo
-     * @param ejbContexts
-     * @return HandlerProcessingResult
-     */
-    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbContext[] ejbContexts) throws AnnotationProcessorException {
+    @Override
+    protected void processEjbMethodSecurity(Annotation authAnnotation,
+            MethodDescriptor md, EjbDescriptor ejbDesc) {
 
-        if (!validateAccessControlAnnotations(ainfo)) {
-            return getDefaultFailedResult();
-        }
-
-        Method annMethod = (Method) ainfo.getAnnotatedElement();
-
-        for (EjbContext ejbContext : ejbContexts) {
-            EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-                
-            for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
-                MethodDescriptor md = (MethodDescriptor)next;
-                // override by xml
-                if (!hasMethodPermissionsFromDD(md, ejbDesc)) {
-                    Method m = md.getMethod(ejbDesc);
-                    if (TypeUtil.sameMethodSignature(m, annMethod)) {
-                        ejbDesc.addPermissionedMethod(
-                            MethodPermission.getExcludedMethodPermission(), md);
-                    }
-                }
-            }
-        }
-
-        return getDefaultProcessedResult();
-    }   
-
-    /**
-     * Process Annotation with given WebCompContexts.
-     * @param ainfo
-     * @param webCompContexts
-     * @return HandlerProcessingResult
-     */
-    protected HandlerProcessingResult processAnnotation(
-            AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
-            throws AnnotationProcessorException {
-
-        return processSecurityConstraintAnnotation(ainfo, webCompContexts);
+        ejbDesc.addPermissionedMethod(
+                MethodPermission.getExcludedMethodPermission(), md);
     }
 
-    /**
-     * Process Annotation with given WebBundleContext.
-     * @param ainfo
-     * @param webBundleContext
-     * @return HandlerProcessingResult
-     */
-    protected HandlerProcessingResult processAnnotation(
-            AnnotationInfo ainfo, WebBundleContext webBundleContext)
-            throws AnnotationProcessorException {
+    @Override
+    protected void processSecurityConstraint(Annotation authAnnotation,
+            SecurityConstraint securityConstraint, WebComponentDescriptor webCompDesc) { 
 
-        // this is not a web component
-        return getInvalidAnnotatedElementHandlerResult(webBundleContext, ainfo);
+        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
+        securityConstraint.setAuthorizationConstraint(ac);
     }
 
     /**
@@ -147,18 +89,5 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
     @Override
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAndWebAnnotationTypes();
-    }
-
-    @Override
-    protected boolean supportTypeInheritance() {
-        return true;
-    }
-
-    @Override
-    protected void processSecurityConstraint(Annotation authAnnotation,
-            SecurityConstraint securityConstraint, WebComponentDescriptor webCompDesc) { 
-
-        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
-        securityConstraint.setAuthorizationConstraint(ac);
     }
 }
