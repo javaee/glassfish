@@ -175,8 +175,10 @@ public final class ComplianceMonitor implements NotificationListener
             //debug( "ValidatorThread.doRun(): started" );                
             while (true)
             {
+                final ObjectName next = mMBeans.take(); // BLOCK until ready
                 final List<ObjectName> toValidate = new ArrayList<ObjectName>();
-                mMBeans.drainTo(toValidate);
+                toValidate.add(next);
+                mMBeans.drainTo(toValidate);    // efficiently get any additional ones
                 if (mMBeans.contains(QUIT))
                 {
                     break;  // poison, quit;
@@ -187,7 +189,7 @@ public final class ComplianceMonitor implements NotificationListener
                 final AMXValidator validator = new AMXValidator(mServer);
                 try
                 {
-                    //debug( "VALIDATING: " + objectName );
+                    //debug( "VALIDATING MBeans: " + toValidate.size() );
                     final ObjectName[] objectNames = new ObjectName[ toValidate.size() ];
                     toValidate.toArray( objectNames );
                     final AMXValidator.ValidationResult result = validator.validate(objectNames);
@@ -195,7 +197,6 @@ public final class ComplianceMonitor implements NotificationListener
                     {
                         ImplUtil.getLogger().info(result.toString());
                     }
-                    //debug( "VALIDATED: " + objectName );
                 }
                 catch (Throwable t)
                 {
