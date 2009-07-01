@@ -57,7 +57,7 @@ public class CacheFactory {
     protected final static Logger _logger = 
             LogDomains.getLogger(ManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
 
-    protected static StringManager localStrings =
+    protected final static StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
 
     public static Cache getDataStructure(String className, 
