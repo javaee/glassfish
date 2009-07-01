@@ -55,8 +55,6 @@
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             setPageSessionAttribute(key="convertToFalseList" value={"ReconnectEnabled"});
             getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service" type="jms-host" result="#{pageSession.jmsHostList}");
-
-            //getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         />   
     </event>   
 <!-- TO DO: NEED TO ADD CHECK FOR PE OR EE IN ORDER TO POPULATE JMS HOST DROPDOWN  -->   
