@@ -45,6 +45,7 @@ import javax.resource.spi.work.WorkException;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.TransactionAdminBean;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -279,4 +280,11 @@ public interface JavaEETransactionManagerDelegate {
      * tx but the client container did not support tx interop.
      */
     public boolean isNullTransaction();
+
+    /**
+     * Return TransactionAdminBean with delegate specific implementation details 
+     * of an active Transaction.
+     */
+    public TransactionAdminBean getTransactionAdminBean(Transaction t) 
+            throws javax.transaction.SystemException;
 }

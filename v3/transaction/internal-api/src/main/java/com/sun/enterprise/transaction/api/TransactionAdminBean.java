@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.transaction;
+package com.sun.enterprise.transaction.api;
 
 import java.rmi.RemoteException;
 import java.io.Serializable;

@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.transaction;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.concurrent.Semaphore;
@@ -48,6 +49,7 @@ import javax.resource.spi.work.WorkException;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.TransactionAdminBean;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
@@ -247,4 +249,22 @@ public class JavaEETransactionManagerSimplifiedDelegate
         return false;
     }
 
+    public TransactionAdminBean getTransactionAdminBean(Transaction tran) 
+            throws javax.transaction.SystemException {
+        TransactionAdminBean tBean = null;
+        if(tran instanceof JavaEETransaction){
+            JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
+            String id = tran1.getTransactionId();
+            long startTime = tran1.getStartTime();
+            String componentName = tran1.getComponentName();
+            ArrayList<String> resourceNames = tran1.getResourceNames();
+            long elapsedTime = System.currentTimeMillis()-startTime;
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(tran.getStatus());
+
+            tBean = new TransactionAdminBean(tran, id, status, elapsedTime,
+                     componentName, resourceNames);
+        }
+
+        return tBean;
+    }
 }

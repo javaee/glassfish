@@ -37,6 +37,7 @@ package com.sun.enterprise.transaction.jts;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -60,6 +61,7 @@ import com.sun.enterprise.config.serverbeans.TransactionService;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.TransactionAdminBean;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
@@ -495,6 +497,20 @@ public class JavaEETransactionManagerJTSDelegate
         }
     }
 
+    public TransactionAdminBean getTransactionAdminBean(Transaction t) 
+            throws javax.transaction.SystemException {
+        TransactionAdminBean tBean = null;
+        if(t instanceof com.sun.jts.jta.TransactionImpl) {
+            String id = ((com.sun.jts.jta.TransactionImpl)t).getTransactionId();
+            long startTime = ((com.sun.jts.jta.TransactionImpl)t).getStartTime();
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+
+            tBean = new TransactionAdminBean(t, id, status, elapsedTime,
+                                             "unknown", null);
+        }
+        return tBean;
+    }
 
     public Lock getReadLock() {
         return lock;

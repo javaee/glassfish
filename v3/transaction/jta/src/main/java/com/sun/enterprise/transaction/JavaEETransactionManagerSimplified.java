@@ -50,6 +50,7 @@ import com.sun.appserv.util.cache.BaseCache;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.TransactionAdminBean;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
@@ -1090,25 +1091,12 @@ public class JavaEETransactionManagerSimplified
         for(int i=0;i<active.size();i++){
             try{
                 Transaction tran = (Transaction)active.elementAt(i);
-                String id="unknown";
-                long startTime = 0;
-                long elapsedTime = 0;
-                String status = "unknown";
-                String componentName = "unknown";
-                ArrayList<String> resourceNames = null;
-                if(tran instanceof JavaEETransaction){
-                    JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
-                    id=tran1.getTransactionId();
-                    startTime = tran1.getStartTime();
-                    componentName = tran1.getComponentName();
-                    resourceNames = tran1.getResourceNames();
+                TransactionAdminBean tBean = getDelegate().getTransactionAdminBean(tran);
+                if (tBean == null) {
+                    // Shouldn't happen
+                    tBean = new TransactionAdminBean(tran, "unknown", null,
+                            System.currentTimeMillis(), "unknown", null);
                 }
-                // XXX else use com.sun.jts.jta.TransactionImpl XXX
-
-                elapsedTime = System.currentTimeMillis()-startTime;
-                status = (String)statusMap.get(new Integer(tran.getStatus()));
-                TransactionAdminBean tBean = new TransactionAdminBean(tran,id,status,elapsedTime,
-                                             componentName, resourceNames);
                 tranBeans.add(tBean);
             }catch(Exception ex){
                 //LOG !!!
