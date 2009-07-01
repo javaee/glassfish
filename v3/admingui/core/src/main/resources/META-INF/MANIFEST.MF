@@ -4,4 +4,4 @@ Created-By: Apache Maven
 Built-By: anilam
 Build-Jdk: 1.5.0_13
 Glassfish-require-services: org.glassfish.api.admingui.ConsoleProvider
-HK2-Import-Bundles: org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.common.amx-api, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, javax.servlet.jsp, org.glassfish.jsftemplating, org.glassfish.admingui.dataprovider, com.sun.pkg.client
+HK2-Import-Bundles: org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, javax.servlet.jsp, org.glassfish.jsftemplating, org.glassfish.admingui.dataprovider, com.sun.pkg.client
