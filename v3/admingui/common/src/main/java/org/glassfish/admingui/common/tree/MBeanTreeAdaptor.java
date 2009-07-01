@@ -36,7 +36,6 @@
 
 package org.glassfish.admingui.common.tree;
 
-import com.sun.appserv.management.base.AMX;
 import com.sun.jsftemplating.component.ComponentUtil;
 import com.sun.jsftemplating.component.factory.tree.TreeAdaptor;
 import com.sun.jsftemplating.component.factory.tree.TreeAdaptorBase;
@@ -337,8 +336,8 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	    } else if (nodeObject instanceof String) {
 		setProperty(props, "text", (String) nodeObject);
 
-	    } else if (nodeObject instanceof AMX) {
-		setProperty(props, "text", ((AMX) nodeObject).getName());
+	    } else if (nodeObject instanceof AMXProxy) {
+		setProperty(props, "text", ((AMXProxy) nodeObject).getName());
 
 	    } 
             else {

@@ -344,30 +344,78 @@ public class V3AMX {
         }
     }
 
+
+    public static List getChildrenMapForTableList(AMXProxy amx, String childType, List skipList){
+        boolean hasSkip = true;
+        if (skipList == null ){
+            hasSkip = false;
+        }
+        List result = new ArrayList();
+        if (amx != null) {
+            Map<String, AMXProxy> children = amx.childrenMap(childType);
+            for(AMXProxy oneChild : children.values()){
+                try{
+                    AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) oneChild);
+                    final Map<String,Object> attrs = helper.simpleAttributesMap();
+                    HashMap oneRow = new HashMap();
+                    if ( hasSkip && skipList.contains(oneChild.getName())){
+                        continue;
+                    }
+                    oneRow.put("selected", false);
+                    for(String attrName : attrs.keySet()){
+                        oneRow.put(attrName, getA(attrs, attrName));
+                    }
+                    result.add(oneRow);
+                }catch(Exception ex){
+                    GuiUtil.getLogger().info("getChildrenMapForTableList():  ");
+                    GuiUtil.getLogger().info("Proxy = " + amx.objectName().toString() + "; childType="+childType + ", skipList="+skipList);
+                    ex.printStackTrace();
+                }
+            }
+        }
+        return result;
+    }
+
     /**
      * returns the Properties of a config, skipping those specified in the list thats passed in.
      * This is mostly for edit where we want to treat particular properties differently, and don't
      * show that in the Properties table.
-     * Normally, this is followed by updateProperites() with the ignore list the same as the skipList
-     * specified here when user does a Save.
      */
-    public static Map<String, Property> getNonSkipPropertiesMap(PropertiesAccess config, List skipList) {
-        Map<String, Property> props = config.getProperty();
-        Map<String, Property> newMap = new HashMap<String, Property>();
-
-        for (String propsName : props.keySet()) {
-            if (skipList.contains(propsName)) {
+    public static List getNonSkipPropertiesMap(AMXConfigProxy amx, List skipList) {
+        boolean noSkip = false;
+        if (skipList == null || skipList.size()==0){
+            noSkip = true;
+        }
+        Map<String, AMXProxy> children = amx.childrenMap("property");
+        List result = new ArrayList();
+        for(AMXProxy oneChild : children.values()){
+            HashMap oneRow = new HashMap();
+            oneRow.put("selected", false);
+            String name = oneChild.getName();
+            if ( noSkip || skipList.contains(name)){
                 continue;
             }
-            newMap.put(propsName, props.get(propsName));
+            oneRow.put(PROPERTY_NAME, name);
+            oneRow.put(PROPERTY_VALUE, oneChild.attributesMap().get(PROPERTY_VALUE));
+            final Object desc = oneChild.attributesMap().get(PROPERTY_DESC);
+            oneRow.put(PROPERTY_DESC, (desc == null) ? "" : desc);
         }
-        return newMap;
+        return result;
     }
+
     
     public static String getPropValue( AMXProxy amx, String key){
         Map<String, AMXProxy> props = amx.childrenMap("property");
         if (props.containsKey(key)){
             return (String) props.get(key).attributesMap().get(PROPERTY_VALUE);
+        }else{
+            return null;
+        }
+    }
+
+    public static String getPropValue(Map<String, Property> propMap, String key){
+        if (propMap.containsKey(key)){
+            return (String) propMap.get(key).attributesMap().get(PROPERTY_VALUE);
         }else{
             return null;
         }
@@ -431,6 +479,10 @@ public class V3AMX {
          }
      }
 
+     private static String getA(Map<String, Object> attrs,  String key){
+        Object val = attrs.get(key);
+        return (val == null) ? "" : val.toString();
+    }
 
     final private static List skipAttr = new ArrayList();
     static{

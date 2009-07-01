@@ -75,29 +75,11 @@ public class ProxyHandlers {
     public static void getChildrenTable(HandlerContext handlerCtx){
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
         String childType = (String) handlerCtx.getInputValue("childType");
-        List result = new ArrayList();
-
         AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
-        if (amx != null) {
-            Map<String, AMXProxy> children = amx.childrenMap(childType);
-            for(AMXProxy oneChild : children.values()){
-                try{
-                    AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) oneChild);
-                    final Map<String,Object> attrs = helper.simpleAttributesMap();
-                    HashMap oneRow = new HashMap();
-                     oneRow.put("selected", false);
-                    for(String attrName : attrs.keySet()){
-                        oneRow.put(attrName, getA(attrs, attrName));
-                        //String enableURL= (enabled.equals("true"))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
-                    }
-                result.add(oneRow);
-                }catch(Exception ex){
-                    GuiUtil.handleException(handlerCtx, ex);
-                }
-            }
-        }
+        List result = V3AMX.getChildrenMapForTableList(amx, childType, null);
         handlerCtx.setOutputValue("result", result);
     }
+
 
     private static String getA(Map<String, Object> attrs,  String key){
         Object val = attrs.get(key);
@@ -329,7 +311,6 @@ public class ProxyHandlers {
         try{
             for(Map oneRow : selectedRows){
                 String Name = (String)oneRow.get("Name");
-                System.out.println("object name is "+objectNameStr+Name);
                 V3AMX.setAttribute(objectNameStr+Name, new Attribute("Enabled", status));
             }
         }catch(Exception ex){

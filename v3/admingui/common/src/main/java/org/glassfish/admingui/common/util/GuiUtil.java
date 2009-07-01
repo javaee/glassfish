@@ -45,11 +45,7 @@
  */
 package org.glassfish.admingui.common.util;
 
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.config.ConfigConfig;
-import com.sun.appserv.management.config.DASConfig;
 import com.sun.jsftemplating.resource.ResourceBundleManager;
-import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import javax.faces.context.FacesContext;
 // FIXME: 7-31-08 -- FIX by importing woodstock api's:
@@ -73,14 +69,16 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.io.UnsupportedEncodingException;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
 import javax.faces.context.ExternalContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
+
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.admin.amx.util.ExceptionUtil;
+
 
 /**
  *
@@ -137,9 +135,8 @@ public class GuiUtil {
         getLogger().info("admin console: initSessionAttributes()" );
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
-        DomainRoot domainRoot = AMXRoot.getInstance().getDomainRoot();
         try{
-            sessionMap.put("domainName", domainRoot.getAppserverDomainName());
+            sessionMap.put("domainName", V3AMX.getAttribute(AMX.DOMAIN_ROOT, "AppserverDomainName"));
         }catch(Exception ex){
             ex.printStackTrace();
             sessionMap.put("domainName", "");
@@ -171,16 +168,13 @@ public class GuiUtil {
         sessionMap.put("ADMIN_LISTENER", AMX.ADMIN_LISTENER);
         sessionMap.put("_SESSION_INITIALIZED","TRUE");
 
-        ConfigConfig config = AMXRoot.getInstance().getConfig("server-config");
-        DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
-
         /* refer to issue# 5698 and issue# 3691
          * There is a chance that this getAdminSessionTimoutInMinutes() throws an exception in Turkish locale.
          * In such a case, we catch and log the exception and assume it is set to 0.
          * Otherwise GUI's main page can't come up.
          */
         try {
-            String timeOut = dConfig.getAdminSessionTimeoutInMinutes();
+            String timeOut = (String)V3AMX.getAttribute("v3:pp=/domain/configs/config[server-config]/admin-service,type=das-config", "AdminSessionTimeoutInMinutes");
             if ((timeOut != null) && (!timeOut.equals(""))) {
                 int time = new Integer(timeOut).intValue();
                 if (time == 0) {
