@@ -74,52 +74,52 @@ public class SessionStatsProvider{
     @ManagedAttribute(id="activesessionscurrent")
     @Description("Number of currently active sessions")
     public CountStatistic getActiveSessionsCurrent() {
-        return activeSessionsCurrent.getStatistic();
+        return activeSessionsCurrent;
     }
 
     @ManagedAttribute(id="sessionstotal")
     @Description("Total number of sessions created")
     public CountStatistic getSessionsTotal() {
-        return sessionsTotal.getStatistic();
+        return sessionsTotal;
     }
 
     @ManagedAttribute(id="activesessionshigh")
     @Description("Maximum number of concurrently active sessions")
     public CountStatistic getActiveSessionsHigh() {
-        return activeSessionsHigh.getStatistic();
+        return activeSessionsHigh;
     }
 
     @ManagedAttribute(id="rejectedsessionstotal")
     @Description("Total number of rejected sessions")
     public CountStatistic getRejectedSessionsTotal() {
-        return rejectedSessionsTotal.getStatistic();
+        return rejectedSessionsTotal;
     }
 
     @ManagedAttribute(id="expiredsessionstotal")
     @Description("Total number of expired sessions")
     public CountStatistic getExpiredSessionsTotal() {
-        return expiredSessionsTotal.getStatistic();
+        return expiredSessionsTotal;
     }
 
     @ManagedAttribute(id="persistedsessionstotal")
     @Description("Total number of persisted sessions")
     public CountStatistic getPersistedSessionsTotal() {
-        return persistedSessionsTotal.getStatistic();
+        return persistedSessionsTotal;
     }
 
     @ManagedAttribute(id="passivatedsessionstotal")
     @Description("Total number of passivated sessions")
     public CountStatistic getPassivatedSessionsTotal() {
-        return passivatedSessionsTotal.getStatistic();
+        return passivatedSessionsTotal;
     }
 
     @ManagedAttribute(id="activatedsessionstotal")
     @Description("Total number of activated sessions")
     public CountStatistic getActivatedSessionsTotal() {
-        return activatedSessionsTotal.getStatistic();
+        return activatedSessionsTotal;
     }
     
-    @ProbeListener("web:session::sessionCreatedEvent")
+    @ProbeListener("glassfish:web:session:sessionCreatedEvent")
     public void sessionCreatedEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -135,7 +135,7 @@ public class SessionStatsProvider{
         //logger.log(Level.FINE, "[Logger] session created event");
     }
 
-    @ProbeListener("web:session::sessionDestroyedEvent")
+    @ProbeListener("glassfish:web:session:sessionDestroyedEvent")
     public void sessionDestroyedEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -150,7 +150,7 @@ public class SessionStatsProvider{
         activeSessionsCurrent.decrement();        
     }
 
-    @ProbeListener("web:session::sessionRejectedEvent")
+    @ProbeListener("glassfish:web:session:sessionRejectedEvent")
     public void sessionRejectedEvent(
         @ProbeParam("maxThresholdSize") int maxSessions,
         @ProbeParam("appName") String appName,
@@ -167,7 +167,7 @@ public class SessionStatsProvider{
         rejectedSessionsTotal.increment();
     }
 
-    @ProbeListener("web:session::sessionExpiredEvent")
+    @ProbeListener("glassfish:web:session:sessionExpiredEvent")
     public void sessionExpiredEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -182,7 +182,7 @@ public class SessionStatsProvider{
         expiredSessionsTotal.increment();
     }
 
-    @ProbeListener("web:session::sessionPersistedStartEvent")
+    @ProbeListener("glassfish:web:session:sessionPersistedStartEvent")
     public void sessionPersistedStartEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -196,7 +196,7 @@ public class SessionStatsProvider{
         }
     }
 
-    @ProbeListener("web:session::sessionPersistedEndEvent")
+    @ProbeListener("glassfish:web:session:sessionPersistedEndEvent")
     public void sessionPersistedEndEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -211,7 +211,7 @@ public class SessionStatsProvider{
         persistedSessionsTotal.increment();
     }
 
-    @ProbeListener("web:session::sessionActivatedStartEvent")
+    @ProbeListener("glassfish:web:session:sessionActivatedStartEvent")
     public void sessionActivatedStartEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -225,7 +225,7 @@ public class SessionStatsProvider{
         }
     }
 
-    @ProbeListener("web:session::sessionActivatedEndEvent")
+    @ProbeListener("glassfish:web:session:sessionActivatedEndEvent")
     public void sessionActivatedEndEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -241,7 +241,7 @@ public class SessionStatsProvider{
         activatedSessionsTotal.increment();
     }
 
-    @ProbeListener("web:session::sessionPassivatedStartEvent")
+    @ProbeListener("glassfish:web:session:sessionPassivatedStartEvent")
     public void sessionPassivatedStartEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
@@ -255,7 +255,7 @@ public class SessionStatsProvider{
         }
     }
 
-    @ProbeListener("web:session::sessionPassivatedEndEvent")
+    @ProbeListener("glassfish:web:session:sessionPassivatedEndEvent")
     public void sessionPassivatedEndEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,

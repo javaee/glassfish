@@ -121,6 +121,7 @@ import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
+import org.glassfish.web.admin.monitor.WebStatsProviderBootstrap;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -512,13 +513,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             securityService = aConfig.getSecurityService();
 
             // Configure HTTP listeners
-            List<NetworkListener> listeners = networkConfig.getNetworkListeners().getNetworkListener();
-            for (NetworkListener listener : listeners) {
-                if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
+            List<NetworkListener> httpListeners = networkConfig.getNetworkListeners().getNetworkListener();
+            String jkEnabled = null;
+            for (NetworkListener listener : httpListeners) {
+/*
+            TODO:  renable perhaps with an explicit attribute on the listener
+                jkEnabled = listener.getPropertyValue("jkEnabled");
+                if (jkEnabled!=null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
                     createJKConnector(listener, httpService);
                 } else {
+*/
                     createHttpListener(listener, httpService);
-                }
+//                }
             }
             createJKConnector(null, httpService);
 
@@ -770,14 +776,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     port = Integer.parseInt(portString);
                 } catch (NumberFormatException ex) {
                     // use default port 8009
+                    port = 8009;
                 }
             }
         } else {
             port = Integer.parseInt(networkListener.getPort());
         }
 
-        jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", port, "ajp");
+        jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0",
+                                                                port, "ajp");
         jkConnector.configureJKProperties();
+
         String defaultHost = "server";
         String jkConnectorName = "jk-connector";
         if (networkListener !=null) {
@@ -3103,16 +3112,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /**
      * Creates statistics providers for Servlet, JSP, Session, and
      * Request/Response related events.
-     *
-     * While the Servlet, JSP, and Session related probe providers are
-     * shared by all web applications (where every web application
-     * qualifies its probe events with its application name), the
-     * Request/Response related probe provider is shared by all HTTP
-     * listeners.
      */
     private void createStatsProviders() {
-        HttpServiceStatsProviderBootstrap httpStatsB =
+        HttpServiceStatsProviderBootstrap httpStatsBootstrap =
                 habitat.getByType(HttpServiceStatsProviderBootstrap.class);
+        WebStatsProviderBootstrap webStatsBootstrap =
+                habitat.getByType(WebStatsProviderBootstrap.class);
     }
 
 

@@ -7,6 +7,8 @@ package org.glassfish.admin.monitor;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.management.DynamicMBean;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -24,31 +26,44 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
-import org.glassfish.api.amx.AMXValues;
 
 /**
  *
  * @author Jennifer
  */
+@Service
+@Scoped(Singleton.class)
 public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDelegate, PostConstruct {
 
-    private final MonitoringRuntimeDataRegistry mrdr;
-    private final Domain domain;
+    @Inject
+    protected ProbeClientMediator pcm;
+
+    private MonitoringRuntimeDataRegistry mrdr;
+    private Domain domain;
 
     private TreeNode serverNode;
     //private ManagedObjectManager mom;
     private HashMap momMap = new HashMap();
     //MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-    //private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
-    private static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
+    private static final String MONITORING_ROOT = "v3:pp=/,type=mon";
+    private static final String MONITORING_SERVER = "v3:pp=/mon,type=server-mon,name=das";
+    private StatsProviderRegistry statsProviderRegistry;
+    //private Map<Object, List<Object>> statsProviderRegistry = new HashMap();
 
     StatsProviderManagerDelegateImpl(MonitoringRuntimeDataRegistry mrdr, Domain domain) {
         this.mrdr = mrdr;
         this.domain = domain;
         //serverNode is special, construct that first if doesn't exist
         serverNode = constructServerPP();
-
+        statsProviderRegistry = new StatsProviderRegistry(mrdr);
     }
 
     public void postConstruct() {
@@ -84,6 +99,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
 
         /* construct monitoring tree at PluginPoint using subTreePath */
         TreeNode parentNode = createSubTree(ppNode, subTreePath);
+        List<String> childNodeNames = new ArrayList();
 
         /* retrieve ManagedAttribute attribute id (v2 compatible) and method names */
         for (Method m : statsProvider.getClass().getDeclaredMethods()) {
@@ -100,7 +116,18 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
 
                 TreeNode attrNode = TreeNodeFactory.createMethodInvoker(id, statsProvider, id, m);
                 parentNode.addChild(attrNode);
+                childNodeNames.add(attrNode.getName());
             }
+        }
+        //register the statsProvider with Flashlight
+        Collection<ProbeClientMethodHandle> handles = null;
+        try {
+            //System.out.println("****** Registering the StatsProvider (" + statsProvider.getClass().getName() + ") with flashlight");
+            handles = pcm.registerListener(statsProvider);
+            // save the handles against config so you can enable/disable the handles
+            // save the handles also against statsProvider so you can unregister when statsProvider is unregistered
+        } catch (Exception e) {
+            //e.printStackTrace;
         }
 
         /* gmbal registration */
@@ -108,7 +135,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         
         try {
             // 1 mom per statsProvider
-            ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated( MONITORING_SERVER );
+            ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(new ObjectName(MONITORING_SERVER));
             mom.stripPackagePrefix();
             mom.createRoot(statsProvider, subTreePath);
             momMap.put(statsProvider, mom);
@@ -119,12 +146,23 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
             e.printStackTrace();
         }
 
-        /* config */
+        /* config - TODO */
         //add configElement to monitoring level element if not already there - find out from Nandini
+
+        //Make an entry to my own registry so I can manage the unregister, enable and disable
+        statsProviderRegistry.registerStatsProvider(configElement, parentNode.getCompletePathName(), childNodeNames, handles, statsProvider);
     }
 
-    public void unregister(Object statsProvider) {
-        ((ManagedObjectManager)momMap.get(statsProvider)).unregister(statsProvider);
+    public void unRegister(Object statsProvider) {
+        try {
+            //Unregister from Gmbal
+            ((ManagedObjectManager) momMap.get(statsProvider)).unregister(statsProvider);
+            //Unregister from the MonitoringDataTreeRegistry
+            statsProviderRegistry.unregisterStatsProvider(statsProvider);
+        } catch (Exception ex) {
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
     public void unregisterAll() {
@@ -164,9 +202,9 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
     }
 
     private TreeNode constructServerPP() {
-        TreeNode serverNode = mrdr.get("server");
-        if (serverNode != null) {
-            return serverNode;
+        TreeNode srvrNode = mrdr.get("server");
+        if (srvrNode != null) {
+            return srvrNode;
         }
         // server
         Server srvr = null;
@@ -177,9 +215,9 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
                 break;
             }
         }
-        serverNode = TreeNodeFactory.createTreeNode("server", null, "server");
-        mrdr.add("server", serverNode);
-        return serverNode;
+        srvrNode = TreeNodeFactory.createTreeNode("server", null, "server");
+        mrdr.add("server", srvrNode);
+        return srvrNode;
     }
 
 }

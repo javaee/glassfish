@@ -69,22 +69,22 @@ public class ServletStatsProvider {
     @ManagedAttribute(id="activeservletsloadedcount")
     @Description( "Number of currently loaded servlets" )
     public CountStatistic getActiveServletsLoaded() {
-        return activeServletsLoadedCount.getStatistic();
+        return activeServletsLoadedCount;
     }
 
     @ManagedAttribute(id="maxservletsloadedcount")
     @Description( "Maximum number of servlets loaded which were active" )
     public CountStatistic getMaxServletsLoaded() {
-        return maxServletsLoadedCount.getStatistic();
+        return maxServletsLoadedCount;
     }
 
     @ManagedAttribute(id="totalservletsloadedcount")
     @Description( "Cumulative number of servlets that have been loaded into the web module" )
     public CountStatistic getTotalServletsLoaded() {
-        return totalServletsLoadedCount.getStatistic();
+        return totalServletsLoadedCount;
     }
     
-    @ProbeListener("web:servlet::servletInitializedEvent")
+    @ProbeListener("glassfish:web:servlet:servletInitializedEvent")
     public void servletInitializedEvent(
                     @ProbeParam("servlet") Servlet servlet,
                     @ProbeParam("appName") String appName,
@@ -104,7 +104,7 @@ public class ServletStatsProvider {
             
     }
 
-    @ProbeListener("web:servlet::servletDestroyedEvent")
+    @ProbeListener("glassfish:web:servlet:servletDestroyedEvent")
     public void servletDestroyedEvent(
                     @ProbeParam("servlet") Servlet servlet,
                     @ProbeParam("appName") String appName,

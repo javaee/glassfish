@@ -51,6 +51,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.Dom;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Proxy;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -197,8 +198,15 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     private void insertNameValuePairs(TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1){
         String name = tn1.getCompletePathName();
         Object value = tn1.getValue();
-        if (value instanceof StatisticImpl) {
-            Map<String,Object> statsMap = ((StatisticImpl)value).getStaticAsMap();
+        if (value instanceof Statistic) {
+            Map<String,Object> statsMap;
+            // Most likely we will get the proxy of the StatisticImpl,
+            // reconvert that so you can access getStatisticAsMap method
+            if (Proxy.isProxyClass(value.getClass())) {
+                    statsMap = ((StatisticImpl)Proxy.getInvocationHandler(value)).getStaticAsMap();
+            } else {
+                statsMap = ((StatisticImpl)value).getStaticAsMap();
+            }
             for (String attrName : statsMap.keySet()) {
                 Object attrValue = statsMap.get(attrName);
                 map.put(name + "-" + attrName, attrValue);
