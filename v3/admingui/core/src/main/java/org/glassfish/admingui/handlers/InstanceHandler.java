@@ -171,10 +171,19 @@ public class InstanceHandler {
     }
     
     /**
+     *	<p> This handler restart DAS immediately.</p>
+     */
+    @Handler(id = "restartDomain")
+    public static void restartDomain(HandlerContext handlerCtx) {
+        V3AMX.getInstance().getRuntime().restartDomain();
+    }
+
+
+    /**
      *	<p> This handler stops DAS immediately.</p>
      */
-    @Handler(id = "stopDAS")
-    public static void stopDAS(HandlerContext handlerCtx) {
+    @Handler(id = "stopDomain")
+    public static void stopDomain(HandlerContext handlerCtx) {
         V3AMX.getInstance().getDomainRoot().stopDomain();
     }
     

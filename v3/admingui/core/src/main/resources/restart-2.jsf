@@ -32,7 +32,10 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
+
+
 -->
+<!-- restart-2.jsf -->
 
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
@@ -41,7 +44,7 @@
 <sun:page id="page1">
 
 <sun:html id="html1">
-<sun:head title="$resource{i18n.shutdown.pageTitle}" parseOnLoad="false">
+<sun:head title="$resource{i18n.restart.pageTitle}" parseOnLoad="false">
     <sun:link url="/resource/css/css_ns6up.css" />
     #<sun:script url="/resource/libs/scriptaculous/version1.6.4/prototype.js" />
     #<sun:script url="/resource/com_sun_faces_ajax.js" />
@@ -49,11 +52,11 @@
 </sun:head>
 
 
-<sun:body id="body3" focus="loginform.j_username" onLoad="var button=document.getElementById('form:stopInstance'); DynaFaces.fireAjaxTransaction(button, {execute:button.id, inputs:button.id, render: 'none'});">
+<sun:body id="body3" focus="loginform.j_username" onLoad="var button=document.getElementById('form:restartInstance'); DynaFaces.fireAjaxTransaction(button, {execute:button.id, inputs:button.id, render: 'none'});">
     <sun:form id="form">
-    <sun:button id="stopInstance" visible="false">
+    <sun:button id="restartInstance" visible="false">
         <!command
-            stopDomain();
+            restartDomain();
         />
     </sun:button>
 <f:verbatim>
@@ -85,29 +88,18 @@
                 <tr>
                     <td><div class="logLbl"><span class="LblLev2Txt">
 </f:verbatim>
-                       <sun:staticText text="$resource{i18n.shutdown.RestartHeading}  $resource{i18n.shutdown.RestartInstructions1} "  />
+                       <sun:staticText text="$resource{i18n.restart.RestartHeading}  "  />
 <f:verbatim>
                     </span></div></td>
                 </tr>
                 <tr>
                     <td><div class="logLblLst"><span class="LblLev2Txt">
-        <ul>
-        <li>
-</f:verbatim>
-        <sun:staticText id="text2" text="$resource{i18n.shutdown.RestartStep1}" />
-"        </li><li>
-        <sun:staticText id="text3" text="$resource{i18n.shutdown.RestartStep2}" />
-"        </li><li>
-        <sun:staticText id="text4" text="$resource{i18n.shutdown.RestartStep3}" />
-<f:verbatim>
-        </li>
-        </ul>
                 </span></div></td>
                 </tr>
                 <tr>
                     <td><div class="logLbl"><span class="LblLev2Txt">
 </f:verbatim>
-                    <sun:staticText text="$resource{i18n.shutdown.RestartContinue}" />
+                    <sun:staticText text="$resource{i18n.restart.RestartContinue}" />
 <f:verbatim>
                     </span></div></td>
                 </tr>

@@ -78,11 +78,11 @@
                     "$resource{i18n.restart.showRestartReasonList}
                     "<br /><br /><br />
                     <sun:button id="stopInstance" style="margin-left: 8pt"
-                        onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmStop}')) {return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} else {return false;}"
-                        text="$resource{i18n.button.stopInstance}"
-                        toolTip="$resource{i18n.stop.tooltip}">
+                        onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) {return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} else {return false;}"
+                        text="$resource{i18n.button.Restart}"
+                        toolTip="$resource{i18n.restart.tooltip}">
                         <!command
-                            redirect("#{facesContext.externalContext.requestContextPath}/shutdown.jsf");
+                            redirect("#{facesContext.externalContext.requestContextPath}/restart-2.jsf");
                         />
                     </sun:button>
                 </sun:title>

@@ -57,14 +57,24 @@
           
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" >
-            <sun:button id="stopInstance" text="$resource{i18n.button.stopInstance}" disabled="#{false}" primary="#{false}"
+            <sun:button id="stopInstance" text="$resource{i18n.button.Stop}" disabled="#{false}" primary="#{false}"
             onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
                       { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                         else {return false;} " >
                  <!command
-            redirect("#{facesContext.externalContext.requestContextPath}/shutdown.jsf");
-     />
+                    redirect("#{facesContext.externalContext.requestContextPath}/shutdown.jsf");
+             />
             </sun:button>
+
+            <sun:button id="restartInstance" text="$resource{i18n.button.Restart}" disabled="#{false}" primary="#{false}"
+            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}') )
+                      { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+                        else {return false;} " >
+                 <!command
+                    redirect("#{facesContext.externalContext.requestContextPath}/restart-2.jsf");
+             />
+            </sun:button>
+
             <!-- TODO V3 final
             <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  primary="#{true}"
                 onClick="javascript:var win=window.open('../logViewer/logViewer.jsf?instanceName=#{instanceName}&loglevel=INFO&logFile=server.log&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
