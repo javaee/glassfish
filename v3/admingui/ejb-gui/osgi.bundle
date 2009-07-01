@@ -1,1 +1,0 @@
--exportcontents: org.glassfish.ejb.admingui; version=${project.osgi.version}
