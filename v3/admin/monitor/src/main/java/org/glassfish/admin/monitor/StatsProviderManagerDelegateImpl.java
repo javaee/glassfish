@@ -35,6 +35,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
+import org.glassfish.api.amx.AMXValues;
+
 /**
  *
  * @author Jennifer
@@ -46,15 +48,15 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
     @Inject
     protected ProbeClientMediator pcm;
 
-    private MonitoringRuntimeDataRegistry mrdr;
-    private Domain domain;
+    private final MonitoringRuntimeDataRegistry mrdr;
+    private final Domain domain;
 
-    private TreeNode serverNode;
+    private final TreeNode serverNode;
     //private ManagedObjectManager mom;
-    private HashMap momMap = new HashMap();
+    private final HashMap momMap = new HashMap();
     //MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-    private static final String MONITORING_ROOT = "v3:pp=/,type=mon";
-    private static final String MONITORING_SERVER = "v3:pp=/mon,type=server-mon,name=das";
+    private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
+    private static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
     private StatsProviderRegistry statsProviderRegistry;
     //private Map<Object, List<Object>> statsProviderRegistry = new HashMap();
 
@@ -135,7 +137,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         
         try {
             // 1 mom per statsProvider
-            ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(new ObjectName(MONITORING_SERVER));
+            ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
             mom.stripPackagePrefix();
             mom.createRoot(statsProvider, subTreePath);
             momMap.put(statsProvider, mom);
