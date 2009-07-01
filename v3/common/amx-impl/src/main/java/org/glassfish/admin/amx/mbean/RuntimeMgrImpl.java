@@ -46,7 +46,10 @@ import java.util.HashMap;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 /**
     AMX RealmsMgr implementation.
@@ -86,9 +89,25 @@ public final class RuntimeMgrImpl extends AMXNonConfigImplBase implements Runtim
         
         final Map<String,String> result = new HashMap<String,String>();
         try {
-            for (Sniffer sniffer : appInfo.getSniffers()) {
-                result.putAll(sniffer.getDeploymentConfigurations(appInfo.getSource()));
+            // composite archive case, i.e. ear
+            if (appInfo.getEngineRefs().size() > 0) {
+                for (EngineRef ref : appInfo.getEngineRefs()) {
+                    Sniffer appSniffer = ref.getContainerInfo().getSniffer();
+                    result.putAll(appSniffer.getDeploymentConfigurations(appInfo.getSource()));
+                }
+
+                for (ModuleInfo moduleInfo : appInfo.getModuleInfos()) {
+                    for (Sniffer moduleSniffer :  moduleInfo.getSniffers()) {
+                        ReadableArchive moduleArchive = appInfo.getSource().getSubArchive(moduleInfo.getName());
+                        result.putAll(moduleSniffer.getDeploymentConfigurations(moduleArchive));
+                    }
+                }
+            } else {
+                for (Sniffer sniffer : appInfo.getSniffers()) {
+                    result.putAll(sniffer.getDeploymentConfigurations(appInfo.getSource()));
+                }
             }
+
             return result;
         } catch (IOException e) {
             e.printStackTrace();
