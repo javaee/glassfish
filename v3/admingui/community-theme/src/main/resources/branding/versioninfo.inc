@@ -36,7 +36,7 @@
 
 
 <!initPage
-    setResourceBundle(key="theme" bundle="org.glassfish.admingui.customtheme.Strings");
+    setResourceBundle(key="theme" bundle="org.glassfish.admingui.community-theme.Strings");
 />
 <sun:versionPage id="version"
     productImageURL="/resource/images/VersionProductName.png"
