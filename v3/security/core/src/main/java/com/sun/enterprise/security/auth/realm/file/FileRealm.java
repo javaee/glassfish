@@ -41,7 +41,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.io.*;
 import java.security.*;
-import javax.security.auth.login.*;
 import com.sun.enterprise.security.auth.realm.User;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
@@ -49,6 +48,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import org.glassfish.api.embedded.Server;
 import org.jvnet.hk2.annotations.Service;
 
 
@@ -787,6 +787,13 @@ final public class FileRealm extends IASRealm
         reduceGroups(oldGroupList);
     }
     
+     private boolean isEmbeddedServer() {
+        List<String> servers = Server.Builder.getServerNames();
+        if (!servers.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
     
     /**
      * Load keyfile from config and populate internal cache.
@@ -803,8 +810,11 @@ final public class FileRealm extends IASRealm
         BufferedReader input = null;
         
         try {
-            input = new BufferedReader(new FileReader(file));
-
+            if (isEmbeddedServer()) {
+               input = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(file)));
+            } else {
+                input = new BufferedReader(new FileReader(file));
+            }
             while (input.ready()) {
                 
                 String line = input.readLine();

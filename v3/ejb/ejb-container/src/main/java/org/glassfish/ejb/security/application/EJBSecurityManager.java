@@ -66,14 +66,11 @@ import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
 import com.sun.enterprise.security.PermissionCacheFactory;
-import com.sun.enterprise.security.SecurityUtil;
 import java.util.logging.*;
 
 import com.sun.logging.LogDomains;
 import com.sun.ejb.EjbInvocation;
-import com.sun.ejb.Container;
 
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import java.security.*;
 
@@ -82,6 +79,8 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
 
 import com.sun.enterprise.security.factory.SecurityManagerFactory;
+import java.util.List;
+import org.glassfish.api.embedded.Server;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 import org.glassfish.internal.api.Globals;
 
@@ -646,6 +645,13 @@ public final class EJBSecurityManager
         return prdm;
     }
 
+    private boolean isEmbeddedServer() {
+        List<String> servers = Server.Builder.getServerNames();
+        if (!servers.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * This method is called by the EJB container to decide whether or not
@@ -657,6 +663,10 @@ public final class EJBSecurityManager
      *         to invoke the EJB.
      */
     public boolean authorize(ComponentInvocation compInv) {
+        //TODO:v3 temporary hack to get others unblocked
+        if (isEmbeddedServer()) {
+            return true;
+        }
         EjbInvocation inv = (EjbInvocation) compInv;    //FIXME: Param type should be EjbInvocation
         if (inv.getAuth() != null) {
             return inv.getAuth().booleanValue();

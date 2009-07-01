@@ -85,6 +85,18 @@
                     <include>**/*.so</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/admin-keyfile</include>
+                </includes>
+            </resource>
+             <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/keyfile</include>
+                </includes>
+            </resource>
         </resources>
     </build>
     <dependencies>
