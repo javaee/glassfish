@@ -63,9 +63,6 @@ import java.util.List;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
-
-import com.sun.appserv.management.base.SystemStatus;
-
 import com.sun.webui.jsf.component.Field;
 
 
