@@ -94,8 +94,8 @@ public class HK2Main extends Main implements
         ctx.addBundleListener(this);
 
         // get the startup context from the System properties
-        String lineformat = System.getProperty("hk2.startup.context.args");
-        String contextRoot = System.getProperty("hk2.startup.context.root", "user.dir");
+        String lineformat = System.getProperty(StartupContext.ARGS_PROP);
+        String contextRoot = System.getProperty(StartupContext.ROOT_PROP, System.getProperty("user.dir"));
         File contextRootDir = new File(contextRoot);
         StartupContext startupContext;
         if (lineformat != null) {
@@ -117,7 +117,7 @@ public class HK2Main extends Main implements
         mr = createModulesRegistry();
         habitat = createHabitat(mr, startupContext);
         createServiceTracker(habitat);
-        String mainModuleName = System.getProperty("hk2.startup.mainModule");
+        String mainModuleName = startupContext.getStartupModuleName();
         moduleStartup = launch(mr, habitat, mainModuleName, startupContext);
     }
 

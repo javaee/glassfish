@@ -53,6 +53,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This class contains important information about the startup process
@@ -74,6 +77,13 @@ public class StartupContext {
     final Properties args;
     final long timeZero;
     public final static String TIME_ZERO_NAME = "__time_zero";  //NO I18N
+    public static final String ARGS_PROP       = "hk2.startup.context.args";
+    public static final String ORIGINAL_CP     = "-startup-classpath";
+    public static final String ORIGINAL_CN     = "-startup-classname";
+    public static final String ORIGINAL_ARGS   = "-startup-args";
+    public static final String ARG_SEP         = ",,,";
+    public static final String ROOT_PROP = "hk2.startup.context.root";
+    public final static String STARTUP_MODULE_NAME = "hk2.startup.context.mainModule";
 
     public StartupContext() {
         this.root = new File(System.getProperty("user.dir"));
@@ -113,6 +123,21 @@ public class StartupContext {
         return args;
     }
 
+    public String[] getOriginalArguments() {
+        // See how ASMain packages the arguments
+        String s = args.getProperty(ORIGINAL_ARGS);
+        if (s == null) return new String[0];
+        StringTokenizer args = new StringTokenizer(s, ARG_SEP, false);
+        List<String> result = new ArrayList<String>();
+        while (args.hasMoreTokens()) {
+            result.add(args.nextToken());
+        }
+        return result.toArray(new String[0]);
+    }
+
+    public String getStartupModuleName() {
+        return String.class.cast(args.get(STARTUP_MODULE_NAME));
+    }
     /**
      * Returns the time at which this StartupContext instance was created.
      * This is roughly the time at which the hk2 program started.
