@@ -48,7 +48,6 @@ import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.*;
 import java.util.*;
-import java.util.jar.Manifest;
 import java.util.logging.*;
 import java.net.URL;
 import java.net.URI;
@@ -75,6 +74,7 @@ public class OSGiModulesRegistryImpl
             new HashMap<ModuleChangeListener, BundleListener>();
     private Map<ModuleLifecycleListener, BundleListener> moduleLifecycleListeners =
             new HashMap<ModuleLifecycleListener, BundleListener>();
+    protected final String INHABITITANTS_CACHE_DIR = "com.sun.hk2.cacheDir";
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
@@ -165,7 +165,10 @@ public class OSGiModulesRegistryImpl
      * @throws Exception if the file cannot be read correctly
      */
     private void loadCachedData() throws Exception {
-        String cacheLocation = System.getProperty("com.sun.hk2.cacheDir");
+        String cacheLocation = System.getProperty(INHABITITANTS_CACHE_DIR);
+        if (cacheLocation == null) {
+            return;
+        }
         File io = new File(cacheLocation, "inhabitants");
         if (!io.exists()) return;
         ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io)));
@@ -177,8 +180,11 @@ public class OSGiModulesRegistryImpl
      * Saves the inhabitants metadata to the cache in a file called inhabitants
      * @throws IOException if the file cannot be saved successfully
      */
-    public void saveCache() throws IOException {
-        String cacheLocation = System.getProperty("com.sun.hk2.cacheDir");
+    private void saveCache() throws IOException {
+        String cacheLocation = System.getProperty(INHABITITANTS_CACHE_DIR);
+        if (cacheLocation == null) {
+            return;
+        }
         File io = new File(cacheLocation, "inhabitants");
         if (io.exists()) io.delete();
         io.createNewFile();
