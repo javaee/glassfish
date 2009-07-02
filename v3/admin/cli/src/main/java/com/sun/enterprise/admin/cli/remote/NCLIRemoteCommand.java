@@ -57,6 +57,7 @@ import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.admin.Payload;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 /**
  * A remote command handled by the asadmin CLI.
@@ -729,7 +730,13 @@ public class NCLIRemoteCommand {
 	    if (sawFile)
 		valid.add(new ValidOption("upload", "BOOLEAN",
 			ValidOption.OPTIONAL, "false"));
-	} catch (Exception ex) {
+	} catch (ParserConfigurationException pex) {
+	    // ignore all for now
+	    return null;
+	} catch (SAXException sex) {
+	    // ignore all for now
+	    return null;
+	} catch (IOException ex) {
 	    // ignore all for now
 	    return null;
 	}
