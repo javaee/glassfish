@@ -47,7 +47,7 @@
     <artifactId>rest-service</artifactId>
     <packaging>hk2-jar</packaging>
     <name>GlassFish Rest Interface</name>
-    <description>Rest Interface for GlassFish Management</description>
+    <description>Rest Interface for GlassFish Management and Monitoring</description>
 
     <developers>
         <developer>
@@ -85,14 +85,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -100,51 +95,36 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>container-common</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
+            <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-core</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1</version>
         </dependency>
-       <dependency>
-           <groupId>com.sun.jersey</groupId>
-           <artifactId>jersey-bundle</artifactId>
-           <version>${jersey.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>javax.ws.rs</groupId>
-           <artifactId>jsr311-api</artifactId>
-           <version>1.1</version>
-       </dependency>
-       <dependency>
-           <groupId>com.sun.jersey</groupId>
-           <artifactId>jersey-core</artifactId>
-           <version>${jersey.version}</version>
-       </dependency>
-	<dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>org.glassfish.common</groupId>
-			<artifactId>stats77</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-   </dependencies>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>stats77</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
     <build>
         <resources>
             <resource>

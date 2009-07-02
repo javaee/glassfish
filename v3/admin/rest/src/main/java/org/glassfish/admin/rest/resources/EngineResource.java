@@ -19,7 +19,7 @@ public class EngineResource extends TemplateResource<Engine> {
 	@Path("config/")
 	public ApplicationConfigResource getApplicationConfigResource() {
 		ApplicationConfigResource resource = resourceContext.getResource(ApplicationConfigResource.class);
-		resource.setEntity(getEntity().getConfig() );
+		//resource.setEntity(getEntity().getConfig() ); //FIXME 
 		return resource;
 	}
 	@Path("property/")
