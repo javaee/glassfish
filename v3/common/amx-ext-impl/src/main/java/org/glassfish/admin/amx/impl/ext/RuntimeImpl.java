@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.impl.ext;
 
 import java.util.Map;
+import java.util.List;
 import javax.management.ObjectName;
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
@@ -61,7 +63,10 @@ import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.admin.amx.impl.util.InjectedValues;
@@ -95,18 +100,18 @@ public final class RuntimeImpl extends AMXImplBase
     }
 
     /**
-     *
-     * Returns the deployment configuration(s), if any, for the specified
+     * Return a list of deployment descriptor maps for the specified
      * application.
-     * <p>
-     * For Java EE applications these will typically be the deployment
-     * descriptors, with the map key the relative path to the DD and the
-     * value that deployment descriptor's contents.
+     * In each map:
+     * a. The module name is stored by the MODULE_NAME_KEY.
+     * b. The path of the deployment descriptor is stored by the DD_PATH_KEY.
+     * c. The content of the deployment descriptor is stored by the
+     *    DD_CONTENT_KEY.
+     * @param the application name
+     * @return the list of deployment descriptor maps
      *
-     * @param appName name of the application of interest
-     * @return map of app config names to config values
      */
-    public Map<String, String> getDeploymentConfigurations(final String appName)
+    public List<Map<String, String>> getDeploymentConfigurations(final String appName)
     {
         final ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo == null)
@@ -114,19 +119,46 @@ public final class RuntimeImpl extends AMXImplBase
             throw new IllegalArgumentException(appName);
         }
 
-        final Map<String, String> result = new HashMap<String, String>();
+        final List<Map<String, String>> resultList = new ArrayList<Map<String, String>>();
         try
         {
-            for (Sniffer sniffer : appInfo.getSniffers())
-            {
-                result.putAll(sniffer.getDeploymentConfigurations(appInfo.getSource()));
+            if (appInfo.getEngineRefs().size() > 0) {
+                // composite archive case, i.e. ear
+                for (EngineRef ref : appInfo.getEngineRefs()) {
+                    Sniffer appSniffer = ref.getContainerInfo().getSniffer();
+                    addToResultDDList("", appSniffer.getDeploymentConfigurations(appInfo.getSource()), resultList);
+                }
+
+                for (ModuleInfo moduleInfo : appInfo.getModuleInfos()) {
+                    for (Sniffer moduleSniffer :  moduleInfo.getSniffers()) {
+                        ReadableArchive moduleArchive = appInfo.getSource().getSubArchive(moduleInfo.getName());
+                        addToResultDDList(moduleInfo.getName(), moduleSniffer.getDeploymentConfigurations(moduleArchive), resultList);
+                    }
+                }
+            } else {
+                // standalone module
+                for (Sniffer sniffer : appInfo.getSniffers()) {
+                    addToResultDDList(appName, sniffer.getDeploymentConfigurations(appInfo.getSource()), resultList);
+                }
             }
-            return result;
         }
         catch (IOException e)
         {
             e.printStackTrace();
             throw new RuntimeException(e);
+        }
+
+        return resultList;
+    }
+
+    private void addToResultDDList(String moduleName, Map<String, String> snifferConfigs, List<Map<String, String>> resultList) {
+        for (String pathKey : snifferConfigs.keySet()) {
+            HashMap<String, String> resultMap = 
+                new HashMap<String, String>();
+            resultMap.put(Runtime.MODULE_NAME_KEY, moduleName);
+            resultMap.put(Runtime.DD_PATH_KEY, pathKey);
+            resultMap.put(Runtime.DD_CONTENT_KEY, snifferConfigs.get(pathKey));
+            resultList.add(resultMap);
         }
     }
 

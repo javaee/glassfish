@@ -40,6 +40,7 @@ import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
+import java.util.List;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.Stability;
@@ -54,15 +55,44 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 @AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Runtime extends AMXProxy, Utility, Singleton
 {
+    /** 
+     * The key to store the module name in the deployment descriptor map.
+     * @see getDeploymentConfigurations
+     */
+    public static final String MODULE_NAME_KEY = "module-name";
+    /** 
+     * The key to store the deployment descriptor path in the deployment 
+     * descriptor map.
+     * @see getDeploymentConfigurations
+     */
+    public static final String DD_PATH_KEY =  "dd-path";
+    /** 
+     * The key to store the deployment descriptor content in the deployment 
+     * descriptor map.
+     * @see getDeploymentConfigurations
+     */
+    public static final String DD_CONTENT_KEY = "dd-content";
+
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     public void stopDomain();
 
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     public void restartDomain();
 
-    /** Map key is the name of the descriptor, value is the content of the descriptor */
+    /** 
+     * Return a list of deployment descriptor maps for the specified 
+     * application.
+     * In each map: 
+     * a. The module name is stored by the MODULE_NAME_KEY. 
+     * b. The path of the deployment descriptor is stored by the DD_PATH_KEY.
+     * c. The content of the deployment descriptor is stored by the 
+     *    DD_CONTENT_KEY.
+     * @param the application name
+     * @return the list of deployment descriptor maps
+     *
+     */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
-    public Map<String, String> getDeploymentConfigurations(
+    public List<Map<String, String>> getDeploymentConfigurations(
             @Param(name = "applicationName") String applicationName);
 
     /**
@@ -87,7 +117,6 @@ public interface Runtime extends AMXProxy, Utility, Singleton
     @ManagedAttribute
     @Description("Return the available JMXServiceURLs in no particular order")
     public String[] getJMXServiceURLs();
-
 }
 
 
