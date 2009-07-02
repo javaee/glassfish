@@ -1106,15 +1106,6 @@ public final class PEAccessLogValve
         }
 
     }
-    
-
-    /**    
-     * @return true if this access log valve has been started, false
-     * otherwise.
-     */
-    boolean isStarted() {
-        return started;
-    }
      
 
     /**
