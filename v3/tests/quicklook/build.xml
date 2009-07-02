@@ -251,8 +251,10 @@
         <mkdir dir="${test.report}"/>
         <path id="run.testng.classpath">
             <fileset dir="${glassfish.home}/modules">
-               <include name="**/amx*.jar"/>
-               <include name="**/gf-client.jar"/>
+               <include name="**/hk2*.jar"/>
+               <include name="**/glassfish-api.jar"/>
+               <include name="**/amx-core.jar"/>
+               <include name="**/amx-config.jar"/>
             </fileset>
 	    <pathelement path="${plugin_classpath}"/>
 	    <pathelement location="${Java_SE}"/>

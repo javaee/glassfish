@@ -62,7 +62,10 @@
     
     <path id="run.testng.classpath">
         <fileset dir="${glassfish.home}/modules">
-            <include name="**/amx*.jar"/>
+            <include name="**/hk2*.jar"/>
+            <include name="**/glassfish-api.jar"/>
+            <include name="**/amx-core.jar"/>
+            <include name="**/amx-config.jar"/>
             <include name="**/gf-client.jar"/>
         </fileset>
         <pathelement location="${class.output}"/>
