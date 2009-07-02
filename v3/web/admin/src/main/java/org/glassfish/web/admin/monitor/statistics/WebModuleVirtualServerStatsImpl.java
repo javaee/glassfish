@@ -45,8 +45,8 @@ import org.glassfish.j2ee.statistics.Statistic;
 import org.glassfish.j2ee.statistics.CountStatistic; 
 import org.glassfish.j2ee.statistics.TimeStatistic;
 import org.glassfish.j2ee.statistics.Stats;
-import com.sun.appserv.management.j2ee.statistics.StringStatistic;
-import com.sun.appserv.management.monitor.statistics.WebModuleVirtualServerStats;
+import org.glassfish.admin.amx.j2ee.statistics.StringStatistic;
+//import com.sun.appserv.management.monitor.statistics.WebModuleVirtualServerStats;
 import org.glassfish.admin.monitor.cli.MonitorContract;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
@@ -77,7 +77,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 @Service
 @Scoped(PerLookup.class)
 public class WebModuleVirtualServerStatsImpl 
-    implements WebModuleVirtualServerStats, MonitorContract {
+    implements /*WebModuleVirtualServerStats,*/ MonitorContract {
 
     // app name otherwise web
     @Param (optional=true)

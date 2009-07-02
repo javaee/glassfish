@@ -45,7 +45,7 @@ import org.glassfish.j2ee.statistics.Statistic;
 import org.glassfish.j2ee.statistics.CountStatistic; 
 import org.glassfish.j2ee.statistics.TimeStatistic;
 import org.glassfish.j2ee.statistics.Stats;
-import com.sun.appserv.management.monitor.statistics.HTTPListenerStats;
+import com.sun.enterprise.admin.monitor.stats.HTTPListenerStats;
 import org.glassfish.admin.monitor.cli.MonitorContract;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;

@@ -49,7 +49,7 @@ import org.glassfish.j2ee.statistics.TimeStatistic;
 
 import org.glassfish.admin.monitor.cli.MonitorContract;
 
-import com.sun.appserv.management.monitor.statistics.AltServletStats;
+//import com.sun.appserv.management.monitor.statistics.AltServletStats;
 
 /** 
 	Defines additional Application Server specific statistics 
@@ -60,7 +60,7 @@ import com.sun.appserv.management.monitor.statistics.AltServletStats;
 
 @Service
 @Scoped(PerLookup.class)
-public class AltServletStatsImpl implements AltServletStats, MonitorContract {
+public class AltServletStatsImpl implements /*AltServletStats,*/ MonitorContract {
 
     private final String name = "servlet";
 
