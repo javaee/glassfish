@@ -35,7 +35,7 @@
 */
 package com.sun.enterprise.security.jmac.provider.config;
 
-import com.sun.appserv.management.config.MessageSecurityConfig;
+import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.SecurityConfigListener;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
@@ -70,9 +70,6 @@ public class MessageSecurityConfigEventListenerImpl implements ConfigListener {
     
     @Inject
     private SecurityService service;
-    
-    @Inject
-    private MessageSecurityConfig[] messageSecConfigs; 
     
     @Inject
     private Habitat habitat;
