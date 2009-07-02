@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module id="foo">
+    <ModulePrefs title="Log Gadget" /> 
+    <UserPref name="NotUsed" default_value="abc" />
+    <Content type="html">
+	<![CDATA[ 
+	    <form>
+		<input id="msg" type="text" />
+		<input type="button" value=" Send Message to Log " onClick="sendLogMessage(document.getElementById('msg').value);" />
+	    </form>
+	    <script type="text/javascript">
+		function sendLogMessage(theMsg) {
+		    // Invoke the println handler
+		    admingui.gadget.invoke("println", {value: 'test string'});
+
+	    /*
+		    admingui.gadget.invoke(
+			'getChildrenTable',
+			{
+			    objectNameStr: 'v3:pp=/domain/configs/config[server-config],type=iiop-service',
+			    childType: 'iiop-listener',
+			    result: '#{requestScope.listOfRows}'
+			});
+
+		    admingui.gadget.invoke("dumpSessionAttributes",
+			{
+			    value: "#{requestScope.doesnotmatter}"
+			});
+		    admingui.gadget.invoke("roundTo2DecimalPoint",
+			{
+			    input: "33.638377",
+			    output: "#{requestScope.foo}"
+			});
+
+		    // The response "object" contains variables for each output
+		    // value.  The variable names are the same as the output
+		    // name (i.e. "output" for roundTo2DecimalPoint()).
+		    var response = admingui.gadget.getResponse();
+		    alert(response.value);
+	    */
+		}
+	    </script>
+	]]>
+    </Content> 
+</Module>

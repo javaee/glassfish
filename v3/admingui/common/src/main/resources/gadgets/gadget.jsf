@@ -17,7 +17,7 @@
 <div class="menu">
 Title: #{pageSession.gadget.gadgetModulePrefs.title}
 <div class="controls">
-<!-- X -->
+    <!-- FIXME: The close & properties buttons need to be defined here. -->
 </div>
 </div>
 

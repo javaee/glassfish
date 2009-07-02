@@ -14,11 +14,15 @@
 </style>
 
 <div class="left">
-    <iframe style="border:1px;width:100%;height:100px;" id="gadgetName" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/hello.xml">
+    <iframe style="border:1px;width:100%;height:300px;" id="gadgetName" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/hello.xml">
+    </iframe>
+    <iframe style="border:1px;width:100%;height:300px;" id="gadgetName" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/goodbye.xml">
     </iframe>
 </div>
 <div class="right">
-    <iframe style="border:0px;width:100%;height:100px;" id="gadgetName2" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/goodbye.xml">
+    <iframe style="border:0px;width:100%;height:300px;" id="gadgetName2" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/google.xml">
+    </iframe>
+    <iframe style="border:0px;width:100%;height:300px;" id="gadgetName3" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/log.xml">
     </iframe>
     <!--
     TBD?:

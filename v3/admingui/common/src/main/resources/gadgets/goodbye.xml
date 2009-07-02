@@ -3,7 +3,12 @@
     <ModulePrefs title="Good Bye Example" /> 
     <Content type="html">
 	<![CDATA[ 
-	    Good bye!
+	    Good bye
+	    <script type="text/javascript">
+		var prefs = new gadgets.Prefs("myPrefs");
+		var name = prefs.getString('name');
+		document.write(', ' + name + '!');
+	    </script>
 	]]>
     </Content> 
 </Module>
