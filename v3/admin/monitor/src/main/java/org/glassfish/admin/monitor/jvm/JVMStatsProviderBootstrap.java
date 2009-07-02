@@ -26,7 +26,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
     //Logger logger;
 
     public void postConstruct(){
-        System.out.println (" In JVMStatsProviderBootstrap.PostConstruct ********");
+        //System.out.println (" In JVMStatsProviderBootstrap.PostConstruct ********");
 
         // to set log level, uncomment the following 
         // remember to comment it before checkin

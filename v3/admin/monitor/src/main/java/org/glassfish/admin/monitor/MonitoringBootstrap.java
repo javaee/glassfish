@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Collections;
 import java.util.StringTokenizer;
+import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 /**
  *
@@ -49,6 +50,8 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
     ModulesRegistry registry;
     @Inject
     protected ProbeProviderFactory probeProviderFactory;
+    @Inject
+    protected ProbeClientMediator pcm;
 
     Map<String,Module> map = Collections.synchronizedMap(new WeakHashMap<String,Module>());
 
@@ -59,7 +62,7 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
 
     public void postConstruct() {
         //Set the StatsProviderManagerDelegate
-        StatsProviderManagerDelegate spmd = new StatsProviderManagerDelegateImpl(mrdr, domain);
+        StatsProviderManagerDelegate spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
         //System.out.println("StatsProviderManagerDelegate is assigned ********************");
 
@@ -149,8 +152,8 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
         mprint("processProbeProviderClass for " + cls);
         try {
             //System.out.println(" ************* Class = " + cls.getCanonicalName());
-            if (!((cls.getCanonicalName().equals("org.glassfish.scripting.jruby.monitor.JRubyProbeProvider")) ||
-                  (cls.getCanonicalName().equals("org.glassfish.scripting.jruby.monitor.JRubyRuntimePoolProvider"))))
+            //if (!((cls.getCanonicalName().equals("org.glassfish.scripting.jruby.monitor.JRubyProbeProvider")) ||
+            //      (cls.getCanonicalName().equals("org.glassfish.scripting.jruby.monitor.JRubyRuntimePoolProvider"))))
                 probeProviderFactory.getProbeProvider(cls);
             //
             // to implement

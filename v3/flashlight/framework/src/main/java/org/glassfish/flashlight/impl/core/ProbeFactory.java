@@ -51,20 +51,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Scoped(Singleton.class)
 public class ProbeFactory {
 
-    private static AtomicInteger counter = new AtomicInteger();
+	private static AtomicInteger counter = new AtomicInteger();
 
-    static ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
+	static ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
 
-    public static FlashlightProbe createProbe(String moduleProviderName, String moduleName,
-                                    String probeProviderName, String probeName,
-                                    String[] paramNames, Class[] paramTypes) {
-        int id = counter.incrementAndGet();
-        FlashlightProbe probe = new FlashlightProbe(id, moduleProviderName,
-                moduleName, probeProviderName, probeName,
-                paramNames, paramTypes);
+	public static FlashlightProbe createProbe(Class providerClazz,
+			String moduleProviderName, String moduleName,
+			String probeProviderName, String probeName, String[] paramNames,
+			Class[] paramTypes) {
+		int id = counter.incrementAndGet();
+		FlashlightProbe probe = new FlashlightProbe(id, providerClazz,
+				moduleProviderName, moduleName, probeProviderName, probeName,
+				paramNames, paramTypes);
 
-        probeRegistry.registerProbe(probe);
-        return probe;
-    }
+		probeRegistry.registerProbe(probe);
+		return probe;
+	}
 
 }

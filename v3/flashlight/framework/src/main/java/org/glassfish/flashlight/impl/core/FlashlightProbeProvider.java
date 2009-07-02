@@ -51,14 +51,17 @@ public class FlashlightProbeProvider {
 
     private String probeProviderName;
 
+    private Class providerClazz;
+    
     private ConcurrentHashMap<String, FlashlightProbe> probes =
             new ConcurrentHashMap<String, FlashlightProbe>();
 
     public FlashlightProbeProvider(String moduleProviderName, String moduleName,
-                                    String probeProviderName) {
+                                    String probeProviderName, Class providerClazz) {
         this.moduleProviderName = moduleProviderName;
         this.moduleName = moduleName;
         this.probeProviderName = probeProviderName;
+        this.providerClazz = providerClazz;
     }
 
     public String getModuleProviderName() {
@@ -74,7 +77,7 @@ public class FlashlightProbeProvider {
     }
 
     public void addProbe(FlashlightProbe probe) {
-        probes.put(probe.getProbeName(), probe);
+        probes.put(probe.getProbeDesc(), probe);
     }
 
     public Collection<FlashlightProbe> getProbes() {

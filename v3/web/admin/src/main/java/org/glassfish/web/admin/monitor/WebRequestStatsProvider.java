@@ -121,7 +121,7 @@ public class WebRequestStatsProvider {
         return processingTime;
     }
 
-    @ProbeListener("glassfish:web:web-module:requestStartEvent")
+    @ProbeListener("glassfish:web:http-service:requestStartEvent")
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,
@@ -156,7 +156,7 @@ public class WebRequestStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:web:web-module:requestEndEvent")
+    @ProbeListener("glassfish:web:http-service:requestEndEvent")
     public void requestEndEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,

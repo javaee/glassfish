@@ -291,7 +291,7 @@ public class WebStatsProviderBootstrap implements TelemetryProvider, PostConstru
                     //unregister the StatsProviders for the App
                     List statsProviders = statsProviderToAppMap.get(appName);
                     for (Object statsProvider : statsProviders) {
-                        //StatsProviderManager.unRegister(statsProvider);
+                        StatsProviderManager.unregister(statsProvider);
                     }
                 }
                 logger.finest("[Monitor] (Un)Deploy event received - name = " + propName + " : Value = " + appName);

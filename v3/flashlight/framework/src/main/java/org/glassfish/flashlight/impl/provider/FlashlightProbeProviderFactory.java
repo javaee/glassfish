@@ -37,8 +37,6 @@
 package org.glassfish.flashlight.impl.provider;
 
 import org.glassfish.flashlight.provider.*;
-import org.glassfish.flashlight.client.EjbContainerListener;
-import org.glassfish.flashlight.client.EjbContainerProvider;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
@@ -79,13 +77,16 @@ public class FlashlightProbeProviderFactory
                                 providerClazz);
     }
 
-    public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> providerClazz)
+    public <T> T getProbeProvider(String moduleProviderName, String moduleName,
+    		String probeProviderName,
+    		Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
 
         try {
-            FlashlightProbeProvider provider = new FlashlightProbeProvider(moduleName, providerName, appName);
-//            System.out.println("Module= " + moduleName + " \tProvider= " + providerName + "\tAppName= " + appName +
-//                                                        "\tProviderClazz= " + providerClazz.toString());
+            FlashlightProbeProvider provider = new FlashlightProbeProvider(
+            		moduleProviderName, moduleName, probeProviderName, providerClazz);
+            //System.out.println("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
+            //		+ "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
             for (Method m : providerClazz.getDeclaredMethods()) {
                 int sz = m.getParameterTypes().length;
                 Probe pnameAnn = m.getAnnotation(Probe.class);
@@ -105,7 +106,7 @@ public class FlashlightProbeProviderFactory
                 }
 
                 FlashlightProbe probe = ProbeFactory.createProbe(
-                        moduleName, providerName, appName, probeName,
+                        providerClazz, moduleProviderName, moduleName, probeProviderName, probeName,
                         probeParamNames, m.getParameterTypes());
                 probe.setProviderJavaMethodName(m.getName());
                 //System.out.println("\tProbe: " + probe);
@@ -147,7 +148,11 @@ public class FlashlightProbeProviderFactory
             //System.out.println("Created provider successfully....: " + inst.getClass().getName());
             // Notify listeners that a new provider is registered
             //System.out.println("Notify listeners that a new provider is registered");
-            ppem.notifyListenersOnRegister(moduleName, providerName, appName);
+            
+            //Defensive check so that we can unit test this outside of HK2
+            if (ppem != null) {
+            	//TODO: FIXME: ppem.notifyListenersOnRegister(moduleName, providerName, appName);
+            }
         return inst;
         } catch (Exception e) {
             e.printStackTrace();
@@ -159,54 +164,6 @@ public class FlashlightProbeProviderFactory
                     }
                 });
         }        
-    }
-
-    public static void main(String[] args)
-            throws Exception {
-        FlashlightProbeProviderFactory factory = new FlashlightProbeProviderFactory();
-        EjbContainerProvider<String, Date> provider =
-                (EjbContainerProvider<String, Date>) factory.getProbeProvider("ejb", "container", "", EjbContainerProvider.class);
-
-        ComputedParamsHandlerManager cphm =
-                ComputedParamsHandlerManager.getInstance();
-        cphm.addComputedParamHandler(
-                new ComputedParamHandler() {
-                    public boolean canHandle(String name) {
-                        return "$appName".equals(name);
-                    }
-
-                    public Object compute(String name) {
-                        return "TestFlashlight";
-                    }
-                }
-        );
-        for (Method m : provider.getClass().getDeclaredMethods()) {
-            provider.namedEntry(m, "fooBean");
-        }
-
-        EjbContainerListener listener = new EjbContainerListener();
-        ProbeClientMediator pcm = FlashlightProbeClientMediator.getInstance();
-        Collection<ProbeClientMethodHandle> handles = pcm.registerListener(listener);
-
-        //System.out.println("Handles.size(): " + handles.size());
-
-        for (Method m : provider.getClass().getDeclaredMethods()) {
-            provider.namedEntry(m, "fooBean");
-        }
-
-
-        ProbeClientMethodHandle[] hs = handles.toArray(new ProbeClientMethodHandle[0]);
-        hs[0].disable();
-
-        for (Method m : provider.getClass().getDeclaredMethods()) {
-            provider.namedEntry(m, "fooBean");
-        }
-
-        hs[0].enable();
-
-        for (Method m : provider.getClass().getDeclaredMethods()) {
-            provider.namedEntry(m, "fooBean");
-        }
     }
 
 }

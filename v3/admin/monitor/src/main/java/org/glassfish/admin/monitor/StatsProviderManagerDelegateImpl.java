@@ -45,7 +45,6 @@ import org.glassfish.api.amx.AMXValues;
 @Scoped(Singleton.class)
 public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDelegate, PostConstruct {
 
-    @Inject
     protected ProbeClientMediator pcm;
 
     private final MonitoringRuntimeDataRegistry mrdr;
@@ -60,7 +59,9 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
     private StatsProviderRegistry statsProviderRegistry;
     //private Map<Object, List<Object>> statsProviderRegistry = new HashMap();
 
-    StatsProviderManagerDelegateImpl(MonitoringRuntimeDataRegistry mrdr, Domain domain) {
+    StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, 
+                    MonitoringRuntimeDataRegistry mrdr, Domain domain) {
+        this.pcm = pcm;
         this.mrdr = mrdr;
         this.domain = domain;
         //serverNode is special, construct that first if doesn't exist

@@ -1,4 +1,4 @@
-package org.glassfish.flashlight.impl.core;
+package org.glassfish.flashlight.impl.client;
 
 /**
  * @author Mahesh Kannan
@@ -8,6 +8,7 @@ package org.glassfish.flashlight.impl.core;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -21,16 +22,18 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
+import java.util.Collection;
 
-public class ProviderImplGenerator {
+public class BtraceClientGenerator {
 
+	/*
     public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
 
         String generatedClassName = provider.getModuleProviderName() + "_Flashlight_" + provider.getModuleName() + "_"
                 + "Probe_" + ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
         generatedClassName = providerClazz.getName() + "_" + generatedClassName;
 
-        byte[] classData = generateClassData(provider, providerClazz, generatedClassName);
+        byte[] classData = generateBtraceClientClassData(provider, providerClazz, generatedClassName);
 
         ProtectionDomain pd = providerClazz.getProtectionDomain();
 
@@ -69,38 +72,38 @@ public class ProviderImplGenerator {
         }
 
     }
+    */
+
+    public static byte[] generateBtraceClientClassData(int clientID,
+    		Collection<FlashlightProbe> probesRequiringTransformation,
+    		Class clientClazz) {
 
 
-    public byte[] generateClassData(FlashlightProbeProvider provider, Class providerClazz, String generatedClassName) {
-
-
-        Type classType = Type.getType(providerClazz);
+        Type classType = Type.getType(clientClazz);
         //System.out.println("** classType: " + classType);
         //System.out.println("** classDesc: " + Type.getDescriptor(providerClazz));
 
         //System.out.println("Generating for: " + generatedClassName);
 
-        generatedClassName = generatedClassName.replace('.', '/');
+        String generatedClassName = clientClazz.getName();
+        generatedClassName = "BTrace_" + clientID + "_"
+        	+ generatedClassName.replace('.', '/');
 
         int cwFlags = ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS;
         ClassWriter cw = new ClassWriter(cwFlags);
 
         int access = Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL;
-        String[] interfaces = new String[]{providerClazz.getName().replace('.', '/')};
-        cw.visit(Opcodes.V1_5, access, generatedClassName, null, "java/lang/Object", interfaces);
-
-
-        for (FlashlightProbe probe : provider.getProbes()) {
-            Type probeType = Type.getType(FlashlightProbe.class);
-            int fieldAccess = Opcodes.ACC_PUBLIC;
-            String fieldName = "_flashlight_" + probe.getProbeName();
-            cw.visitField(fieldAccess, fieldName,
-                    probeType.getDescriptor(), null, null);
-        }
+        cw.visit(Opcodes.V1_5, access, generatedClassName, null, 
+        		"java/lang/Object", null);
+        AnnotationVisitor av = cw.visitAnnotation("Lcom/sun/btrace/annotations/BTrace;", true);
 
         Type probeType = Type.getType(FlashlightProbe.class);
-        for (FlashlightProbe probe : provider.getProbes()) {
-            String methodDesc = "void " + probe.getProviderJavaMethodName();
+        int methodCounter = 0;
+        for (FlashlightProbe probe : probesRequiringTransformation) {
+        	//System.out.println("Generating method[" + methodCounter + "] => " + probe);
+            String methodDesc = "void __"
+            	+ probe.getProviderJavaMethodName() + "__"
+            	+ clientID + "_" + methodCounter + "_";
             methodDesc += "(";
             String delim = "";
             for (Class paramType : probe.getParamTypes()) {
@@ -109,48 +112,38 @@ public class ProviderImplGenerator {
             }
             methodDesc += ")";
             Method m = Method.getMethod(methodDesc);
-            GeneratorAdapter gen = new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null, null, cw);
+            GeneratorAdapter gen = new GeneratorAdapter(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, m, null, null, cw);
+            av = gen.visitAnnotation("Lcom/sun/btrace/annotations/OnMethod;", true);
+            av.visit("clazz", "" + probe.getProviderClazz().getName());
+            av.visit("method", probe.getProviderJavaMethodName());
+            av.visitEnd();
 
-            String fieldName = "_flashlight_" + probe.getProbeName();
-            gen.loadThis();
-            gen.visitFieldInsn(Opcodes.GETFIELD,
-                    generatedClassName,
-                    fieldName, probeType.getDescriptor());
-            int index = gen.newLocal(probeType);
-            gen.storeLocal(index);
-            gen.loadLocal(index);
-            gen.invokeVirtual(probeType, Method.getMethod("boolean isEnabled()"));
-            gen.push(true);
-            Label enabledLabel = new Label();
-            Label notEnabledLabel = new Label();
-
-            gen.ifCmp(Type.getType(boolean.class), GeneratorAdapter.EQ, enabledLabel);
-            gen.goTo(notEnabledLabel);
-            gen.visitLabel(enabledLabel);
-            gen.loadLocal(index);
+            gen.push(probe.getId());
             gen.loadArgArray();
-            gen.invokeVirtual(probeType, Method.getMethod("void fireProbe(Object[])"));
-            gen.visitLabel(notEnabledLabel);
+            
+            gen.invokeStatic(Type.getType(
+            		ProbeRegistry.class), Method.getMethod("void invokeProbe(int, Object[])"));
             gen.returnValue();
+            
             gen.endMethod();
+            
+            methodCounter++;
         }
 
 
-        generateConstructor(cw, generatedClassName, provider);
+        BtraceClientGenerator.generateConstructor(cw);
 
         cw.visitEnd();
 
         byte[] classData = cw.toByteArray();
-
-        int index = generatedClassName.lastIndexOf('.');
-        String clsName = generatedClassName.substring(index+1);
         /*
-        System.out.println("**** Generated ClassDATA " + clsName);
+        System.out.println("**** Generated BTRACE Client " + generatedClassName);
         try {
+        	int index = generatedClassName.lastIndexOf('/');
             String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
                                 File.separator + "lib" + File.separator;
 
-            String fileName = rootPath + clsName + ".class";
+            String fileName = rootPath + generatedClassName.substring(index+1) + ".class";
             System.out.println("***ClassFile: " + fileName);
             File file = new File(fileName);
 
@@ -165,40 +158,14 @@ public class ProviderImplGenerator {
         return classData;
     }
 
-    private void generateConstructor(ClassWriter cw, String generatedClassName, FlashlightProbeProvider provider) {
+    private static void generateConstructor(ClassWriter cw) {
         Method m = Method.getMethod("void <init> ()");
         GeneratorAdapter gen = new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null, null, cw);
         gen.loadThis();
         gen.invokeConstructor(Type.getType(Object.class), m);
 
-        Type probeRegType = Type.getType(ProbeRegistry.class);
-        Type probeType = Type.getType(FlashlightProbe.class);
-        
-        gen.loadThis();
-        for (FlashlightProbe probe : provider.getProbes()) {
-
-            gen.dup();
-            
-            String fieldName = "_flashlight_" + probe.getProbeName();
-            gen.push(probe.getId());
-            gen.invokeStatic(probeRegType,
-                Method.getMethod("org.glassfish.flashlight.provider.FlashlightProbe getProbeById(int)"));
-
-            gen.visitFieldInsn(Opcodes.PUTFIELD,
-                    generatedClassName,
-                    fieldName, probeType.getDescriptor());
-        }
-
-        gen.pop();
         //return the value from constructor
         gen.returnValue();
         gen.endMethod();
-    }
-
-    private void generateSystemOutPrintln(GeneratorAdapter mg, String msg) {
-        mg.getStatic(Type.getType(System.class), "out", Type.getType(PrintStream.class));
-        mg.push(msg);
-        mg.invokeVirtual(Type.getType(PrintStream.class), Method.getMethod("void println (String)"));
-        mg.returnValue();
     }
 }

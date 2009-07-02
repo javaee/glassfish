@@ -43,6 +43,7 @@ import org.glassfish.gfprobe.common.HandlerRegistry;
 import org.glassfish.flashlight.client.*;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
+import org.glassfish.probe.provider.annotations.ProbeListener;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -156,20 +157,27 @@ public class FlashlightProbeClientMediator
         */
 
         int clientID = clientIdGenerator.incrementAndGet();
+        /*
+        System.out.println("*********************************************");
+        System.out.println("*** clientID: " + clientID + " ***");
+        System.out.println("*********************************************");
+         */
         clients.put(clientID, listener);
 
         Class clientClz = listener.getClass();
 
         Collection<ProbeClientMethodHandle> pcms =
                 new ArrayList<ProbeClientMethodHandle>();
-
+        Collection<FlashlightProbe> probesRequiringClassTransformation =
+        		new ArrayList<FlashlightProbe>();
+        
         for (java.lang.reflect.Method clientMethod : clientClz.getDeclaredMethods()) {
             ProbeListener probeAnn = clientMethod.getAnnotation(ProbeListener.class);
 
             if (probeAnn != null) {
                 String probeStr = probeAnn.value();
-                String[] probeDesc = probeStr.split(":");
-                FlashlightProbe probe = ProbeRegistry.getInstance().getProbe(probeStr);
+                //System.out.println("**FlashlightProcbeCM: " + probeStr);
+                FlashlightProbe probe = ProbeRegistry.createInstance().getProbe(probeStr);
 
                 if (probe == null) {
                     throw new RuntimeException("Invalid probe desc: " + probeStr);
@@ -180,9 +188,19 @@ public class FlashlightProbeClientMediator
                         invoker.getId(), invoker, probe);
                 pcms.add(hi);
 
-                probe.addInvoker(invoker);
+                boolean targetClassNeedsTransformation = probe.addInvoker(invoker);
+                if (targetClassNeedsTransformation) {
+                	probesRequiringClassTransformation.add(probe);
+                } else {
+                	//System.out.println("Some other client method has already taken care of: " + probe);
+                }
+            } else {
+            	//System.out.println("**Non listener method: " + clientMethod);
             }
         }
+        
+        BtraceClientGenerator.generateBtraceClientClassData(clientID,
+        		probesRequiringClassTransformation, clientClz);
 
         return pcms;
     }

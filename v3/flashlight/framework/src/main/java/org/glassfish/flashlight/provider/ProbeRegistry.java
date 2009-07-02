@@ -1,5 +1,6 @@
 package org.glassfish.flashlight.provider;
 
+import java.util.Collection;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.impl.core.*;
 import org.jvnet.hk2.annotations.Scoped;
@@ -18,18 +19,26 @@ public class ProbeRegistry {
 
     private static ProbeRegistry _me = new ProbeRegistry();
 
-    private ConcurrentHashMap<Integer, FlashlightProbe> probeMap =
+    private static ConcurrentHashMap<Integer, FlashlightProbe> probeMap =
                 new ConcurrentHashMap<Integer, FlashlightProbe>();
-    private ConcurrentHashMap<String, FlashlightProbe> probeDesc2ProbeMap =
+    private static ConcurrentHashMap<String, FlashlightProbe> probeDesc2ProbeMap =
                 new ConcurrentHashMap<String, FlashlightProbe>();
 
     public static ProbeRegistry getInstance() {
         return _me;
     }
+    
+    public static ProbeRegistry createInstance() {
+    	if (_me == null) {
+    		_me = new ProbeRegistry();
+    	}
+    	
+    	return _me;
+    }
 
     public void registerProbe(FlashlightProbe probe) {
         probeMap.put(probe.getId(), probe);
-        probeDesc2ProbeMap.put(probe.getProbeStr(), probe);
+        probeDesc2ProbeMap.put(probe.getProbeDesc(), probe);
         //System.out.println("[FL]Registered probe : " + probe.getProbeStr());
     }
 
@@ -52,5 +61,16 @@ public class ProbeRegistry {
 
     public static FlashlightProbe getProbeById(int id) {
         return _me.getProbe(id);
+    }
+    
+    public Collection<FlashlightProbe> getAllProbes() {
+       return probeMap.values();
+    }
+
+   public static void invokeProbe(int id, Object[] args) {
+    	FlashlightProbe probe = probeMap.get(id);
+    	if (probe != null) {
+    		probe.fireProbe(args);
+    	}
     }
 }

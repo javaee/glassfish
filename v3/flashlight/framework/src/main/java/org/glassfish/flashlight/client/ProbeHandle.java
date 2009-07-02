@@ -42,9 +42,9 @@ public interface ProbeHandle {
     
     public String getModuleName();
 
-    public String getProviderName();
+    public String getModuleProviderName();
 
-    public String getAppName();
+    public String getProbeProviderName();
 
     public String getProbeName();
 

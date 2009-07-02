@@ -47,14 +47,16 @@ public class FlashlightProbe
         implements ProbeHandle {
 
     private int id;
+    
+    private Class providerClazz;
+
+    private String moduleProviderName;
 
     private String moduleName;
 
     private String probeName;
 
-    private String appName;
-
-    private String providerName;
+    private String probeProviderName;
 
     private String[] probeParamNames;
 
@@ -66,30 +68,37 @@ public class FlashlightProbe
 
     private AtomicBoolean enabled = new AtomicBoolean(false);
 
-    private String probeStr;
+    private String probeDesc;
 
-    public FlashlightProbe(int id, String moduleName, String providerName, String appName, String probeName,
+    public FlashlightProbe(int id, Class providerClazz, String moduleProviderName,
+    		String moduleName, String probeProviderName, String probeName,
                  String[] probeParamNames, Class[] paramTypes) {
         this.id = id;
+        this.providerClazz = providerClazz;
+        this.moduleProviderName = moduleProviderName;
         this.moduleName = moduleName;
-        this.providerName = providerName;
-        this.appName = (appName == null) ? "" : appName;
+        this.probeProviderName = probeProviderName;
         this.probeName = probeName;
         this.probeParamNames = probeParamNames;
         this.paramTypes = paramTypes;
         //System.out.println("[FL]AppName = " + appName + " " + this.appName);
-        this.probeStr = moduleName + ":" + providerName + ":" +
-                this.appName + ":" + probeName;
+        this.probeDesc = moduleProviderName + ":" + moduleName + ":" +
+                probeProviderName + ":" + probeName;
     }
 
-    public synchronized void addInvoker(ProbeClientInvoker invoker) {
+    public synchronized boolean addInvoker(ProbeClientInvoker invoker) {
+    	boolean isFirst = invokerList.size() == 0;
         invokerList.add(invoker);
         enabled.set(true);
+        
+        return isFirst;
     }
 
-    public synchronized void removeInvoker(ProbeClientInvoker invoker) {
+    public synchronized boolean removeInvoker(ProbeClientInvoker invoker) {
         invokerList.remove(invoker);
         enabled.set(invokerList.size() > 0);
+        
+        return enabled.get();
     }
 
     public void fireProbe(Object[] params) {
@@ -108,20 +117,20 @@ public class FlashlightProbe
         return id;
     }
 
-    public String getProviderName() {
-        return providerName;
+    public String getModuleProviderName() {
+		return moduleProviderName;
+	}
+
+    public String getModuleName() {
+        return moduleProviderName;
     }
 
-    public String getAppName() {
-        return appName;
+	public String getProbeProviderName() {
+        return probeProviderName;
     }
 
     public String getProbeName() {
         return probeName;
-    }
-
-    public String getModuleName() {
-        return moduleName;
     }
 
     public String[] getProbeParamNames() {
@@ -140,12 +149,17 @@ public class FlashlightProbe
         this.providerJavaMethodName = providerJavaMethodName;
     }
 
-    public String getProbeStr() {
-        return probeStr;
+    public String getProbeDesc() {
+        return probeDesc;
     }
 
-    public String toString() {
-        StringBuilder sbldr = new StringBuilder(moduleName + ":" + providerName + ":" + appName + ":" + probeName);
+    public Class getProviderClazz() {
+		return providerClazz;
+	}
+
+	public String toString() {
+        StringBuilder sbldr = new StringBuilder(moduleProviderName + ":" + moduleName
+        		+ ":" + probeProviderName + ":" + probeName);
         sbldr.append(" ").append(providerJavaMethodName).append("(");
         String delim = "";
         for (Class c : paramTypes) {

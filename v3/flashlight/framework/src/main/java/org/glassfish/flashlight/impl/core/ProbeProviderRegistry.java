@@ -70,7 +70,6 @@ public class ProbeProviderRegistry {
         String qname = provider.getModuleProviderName() + ":" +
                 provider.getModuleName() + ":" + ((provider.getProbeProviderName()==null)?clz.getName():provider.getProbeProviderName());
         //System.out.println("**** Registering Probe Provider" + qname);
-            //+ ((appName == null) ? "" : appName);
         FlashlightProbeProvider oldProvider = providerMap.get(qname);
         if (oldProvider == null) {
             providerMap.put(qname, provider);
