@@ -45,7 +45,7 @@ import java.util.logging.*;
 import org.glassfish.web.embed.ConfigException;
 import org.glassfish.web.embed.LifecycleException;
 import org.glassfish.web.embed.config.*;
-import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Service;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
@@ -54,7 +54,6 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.Connector;
-import com.sun.grizzly.util.IntrospectionUtils;
 
 /**
  * Class representing an embedded web container, which supports the
@@ -64,7 +63,7 @@ import com.sun.grizzly.util.IntrospectionUtils;
  *  
  * @author Amy Roh
  */
-@Contract
+@Service
 public class EmbeddedWebContainer implements 
         org.glassfish.web.embed.EmbeddedWebContainer {
 
@@ -110,23 +109,25 @@ public class EmbeddedWebContainer implements
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void start() throws LifecycleException {
-        
-        String defaultDomain = "com.sun.appserv";
-        String defaultHost = "server";
-        String hostName = "localhost";
    
+        int port = 8080;
+        String webListenerId = "http-listener-1";
+        String virtualServerId = "server";
+        String hostName = "localhost";
+        String defaultDomain = "com.sun.appserv";
+    
         try { 
             Engine engine = embedded.createEngine();
             engine.setName(defaultDomain);
             ((StandardEngine)engine).setDomain(defaultDomain);
-            engine.setDefaultHost(defaultHost);
+            engine.setDefaultHost(virtualServerId);
             engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
             embedded.addEngine(engine);
             
             WebListener webListener = 
-                createWebListener("http-listener-1", WebListener.class);
-            webListener.setPort(8080);
-            webListener.setDefaultHost(defaultHost);
+                createWebListener(webListenerId, WebListener.class);
+            webListener.setPort(port);
+            webListener.setDefaultHost(virtualServerId);
             webListener.setDomain(defaultDomain);
             addWebListener(webListener);
             WebListener[] webListeners = new WebListener[1];
@@ -134,7 +135,7 @@ public class EmbeddedWebContainer implements
             
             File docRoot = new File(getPath());
             defaultVirtualServer = (VirtualServer)
-                createVirtualServer(defaultHost, docRoot, webListeners);
+                createVirtualServer(virtualServerId, docRoot, webListeners);
             defaultVirtualServer.addAlias(hostName);
             addVirtualServer(defaultVirtualServer);
       
@@ -186,7 +187,7 @@ public class EmbeddedWebContainer implements
             WebListener[] webListeners = new WebListener[1];
             webListeners[0] = webListener;
             
-            File docRoot = new File("");
+            File docRoot = new File(getPath());
             defaultVirtualServer = (VirtualServer)createVirtualServer(
                 config.getVirtualServerId(), docRoot, webListeners);
             for (String alias : config.getHostNames()) {
@@ -350,49 +351,15 @@ public class EmbeddedWebContainer implements
             throws InstantiationException, IllegalAccessException {
         
         T webListener = null;
-        String address = null;
-        int port = 8080;
-        String protocol = "http";
 
 	if (log.isLoggable(Level.FINE)) {
-            log.fine("Creating connector for address='" +
-		     ((address == null) ? "ALL" : address) +
-		     "' port='" + port + "' protocol='" + protocol + "'");
+            log.fine("Creating connector "+id);
 	}
 
         try {
-
             webListener = c.newInstance();
-            webListener.setId(id);
-            if (address != null) {
-                IntrospectionUtils.setProperty(webListener, "address", 
-                                               "" + address);
-            }
-            IntrospectionUtils.setProperty(webListener, "port", "" + port);
-
-            if (protocol.equals("ajp")) {
-                IntrospectionUtils.setProperty
-                    (webListener, "protocolHandlerClassName",
-                     "org.apache.jk.server.JkCoyoteHandler");
-            /*
-            } else if (protocol.equals("https")) {
-                webListener.setScheme("https");
-                webListener.setSecure(true);
-                try {
-                    Class serverSocketFactoryClass = Class.forName
-                       ("org.apache.catalina.connector.CoyoteServerSocketFactory");
-                    ServerSocketFactory factory = 
-                        (ServerSocketFactory) 
-                        serverSocketFactoryClass.newInstance();
-                    webListener.setFactory(factory);
-                } catch (Exception e) {
-                    log.severe("Couldn't load SSL server socket factory.");
-                }
-             */ 
-            }
-
         } catch (Exception e) {
-            log.severe("couldn't create connecotr");
+            log.severe("Couldn't create connector");
         } 
         
         return webListener;

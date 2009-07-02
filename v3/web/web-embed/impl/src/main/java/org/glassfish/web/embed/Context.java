@@ -46,6 +46,8 @@ import javax.servlet.http.*;
 import org.apache.catalina.Valve;
 import org.glassfish.web.embed.LifecycleException;
 import org.glassfish.web.embed.config.SecurityConfig;
+import org.apache.catalina.Wrapper;
+import org.apache.catalina.core.Constants;
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.Enumerator;
@@ -61,8 +63,6 @@ public class Context extends StandardContext implements org.glassfish.web.embed.
 
 
     // ----------------------------------------------------- Instance Variables
-
-    private boolean directoryListing;
     
     private SecurityConfig config;
     
@@ -74,6 +74,7 @@ public class Context extends StandardContext implements org.glassfish.web.embed.
      * @param t the <tt>Valve</tt> to be added
      *
     public <T extends Valve> void addValve(T t) {
+        super.addValve(t);
     }*/
 
     /**
@@ -197,7 +198,11 @@ public class Context extends StandardContext implements org.glassfish.web.embed.
      * enabled on this <tt>Context</tt>, false otherwise
      */
     public void setDirectoryListing(boolean directoryListing) {
-        this.directoryListing = directoryListing;       
+        Wrapper wrapper = (Wrapper) findChild(Constants.DEFAULT_SERVLET_NAME);
+        if (wrapper !=null) {
+            wrapper.addInitParameter("listings", Boolean.toString(directoryListing));
+        }
+        
     }
 
     /**
@@ -207,8 +212,12 @@ public class Context extends StandardContext implements org.glassfish.web.embed.
      * @return true if directory listings are enabled on this 
      * <tt>Context</tt>, false otherwise
      */
-    public boolean isDirectoryListing() {
-        return directoryListing;        
+    public boolean isDirectoryListing() {               
+        Wrapper wrapper = (Wrapper) findChild(Constants.DEFAULT_SERVLET_NAME);
+        if (wrapper !=null) {
+            return Boolean.parseBoolean(wrapper.findInitParameter("listings"));
+        }
+        return false;
     }
 
     /**
@@ -220,6 +229,7 @@ public class Context extends StandardContext implements org.glassfish.web.embed.
      */
     public void setSecurityConfig(SecurityConfig config) {
         this.config = config;
+        // TODO 
     }
 
     /**

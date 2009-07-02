@@ -310,6 +310,15 @@ public abstract class ValveBase
             getNext().event(request, response, event);
         }
     }
+    
+        
+    /**    
+     * @return true if this access log valve has been started, false
+     * otherwise.
+     */
+    public boolean isStarted() {
+        return started;
+    }
 
 
     // START CR 6411114

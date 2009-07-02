@@ -40,14 +40,21 @@ package org.glassfish.web.embed.impl;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.logging.*;
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Pipeline;
 import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.valves.RemoteAddrValve;
+import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.web.embed.ConfigException;
 import org.glassfish.web.embed.LifecycleException;
 import org.glassfish.web.embed.config.VirtualServerConfig;
+import org.glassfish.web.valve.GlassFishValve;
+import org.apache.catalina.authenticator.SingleSignOn;
 
 /**
  * Representation of a virtual server.
@@ -62,8 +69,60 @@ import org.glassfish.web.embed.config.VirtualServerConfig;
  */
 public class VirtualServer extends StandardHost implements 
         org.glassfish.web.embed.VirtualServer {
+
     
+    private static Logger log = 
+            Logger.getLogger(VirtualServer.class.getName());
+        
+    // ------------------------------------------------------------ Constructor
+
+    /**
+     * Default constructor that simply gets a handle to the web container
+     * subsystem's logger.
+     */
+    public VirtualServer() {
+        super();
+        accessLogValve = new AccessLogValve();
+        accessLogValve.setContainer(this);
+    }
+    
+    // ----------------------------------------------------- Instance Variables
+         
+    /*
+     * The accesslog valve of this VirtualServer.
+     *
+     * This valve is activated, that is, added to this virtual server's
+     * pipeline, only when access logging has been enabled. When acess logging
+     * has been disabled, this valve is removed from this virtual server's
+     * pipeline.
+     */
+    private AccessLogValve accessLogValve; 
+       
+    /*
+     * Indicates whether symbolic links from this virtual server's docroot
+     * are followed. This setting is inherited by all web modules deployed on
+     * this virtual server, unless overridden by a web modules allowLinking
+     * property in sun-web.xml.
+     */
+    private boolean allowLinking = false;
+       
+    /*
+     * VirtualServer instance configuration.
+     */     
     private VirtualServerConfig config;
+    
+     /*
+     * default context.xml location
+     */
+    private String defaultContextXmlLocation;
+
+    /*
+     * default-web.xml location
+     */
+    private String defaultWebXmlLocation;
+    
+   
+    // --------------------------------------------------------- Public Methods
     
     /**
      * Gets the id of this <tt>VirtualServer</tt>.
@@ -91,7 +150,7 @@ public class VirtualServer extends StandardHost implements
      * this <tt>VirtualServer</tt> receives requests.
      */
     public Collection<org.glassfish.web.embed.WebListener> getWebListeners() {
-        // XXX
+        // TODO
         return null;
         
     }
@@ -170,24 +229,7 @@ public class VirtualServer extends StandardHost implements
                 (org.glassfish.web.embed.Context[]) findChildren();
         return Arrays.asList(contexts);
     }
-
-    /**
-     * Reconfigures this <tt>VirtualServer</tt> with the given
-     * configuration.
-     *
-     * <p>In order for the given configuration to take effect, this
-     * <tt>VirtualServer</tt> may be stopped and restarted.
-     *
-     * @param config the configuration to be applied
-     * 
-     * @throws ConfigException if the configuration requires a restart,
-     * and this <tt>VirtualServer</tt> fails to be restarted
-     */
-    public void setConfig(VirtualServerConfig config)
-        throws ConfigException {
-        this.config = config;
-    }
-
+    
     /**
      * Gets the current configuration of this <tt>VirtualServer</tt>.
      *
@@ -224,4 +266,303 @@ public class VirtualServer extends StandardHost implements
             throw new LifecycleException(e);
         }        
     }
+    
+    /**
+     * Reconfigures this <tt>VirtualServer</tt> with the given
+     * configuration.
+     *
+     * <p>In order for the given configuration to take effect, this
+     * <tt>VirtualServer</tt> may be stopped and restarted.
+     *
+     * @param config the configuration to be applied
+     * 
+     * @throws ConfigException if the configuration requires a restart,
+     * and this <tt>VirtualServer</tt> fails to be restarted
+     */
+    public void setConfig(VirtualServerConfig config)
+        throws ConfigException {
+        
+        this.config = config;
+        configureSingleSignOn(config.isSsoEnabled());
+        if (config.isAccessLoggingEnabled()) {
+            enableAccessLogging();
+        } else {
+            disableAccessLogging();
+        }
+        setDefaultWebXmlLocation(config.getDefaultWebXml());
+        setDefaultContextXmlLocation(config.getContextXmlDefault());
+        setAllowLinking(config.isAllowLinking());
+        configureRemoteAddressFilterValve(config.getAllowRemoteAddress(), config.getDenyRemoteAddress());
+        configureRemoteHostFilterValve(config.getAllowRemoteHost(), config.getAllowRemoteHost());
+        configureAliases(config.getHostNames());
+        
+    }     
+        
+    /**
+     * Configure virtual-server alias attribute.
+     */
+    protected void configureAliases(String... hosts) {
+
+        for (String host : hosts) {
+            if ( !host.equalsIgnoreCase("localhost") &&
+                    !host.equalsIgnoreCase("localhost.localdomain")){
+                addAlias(host);
+            }
+        }
+    }
+    
+    /**
+     * Configures the Remote Address Filter valve of this VirtualServer.
+     *
+     * This valve enforces request accpetance/denial based on the string
+     * representation of the remote client's IP address.
+     */
+    protected void configureRemoteAddressFilterValve(String allow, String deny) {
+
+        RemoteAddrValve remoteAddrValve = null;
+
+        if (allow != null || deny != null)  {
+            remoteAddrValve = new RemoteAddrValve();
+        }
+
+        if (allow != null) {
+            remoteAddrValve.setAllow(allow);
+        }
+
+        if (deny != null) {
+            remoteAddrValve.setDeny(deny);
+        }
+
+        if (remoteAddrValve != null) {
+            // Remove existing RemoteAddrValve (if any), in case of a reconfig
+            GlassFishValve[] valves = getValves();
+            for (int i=0; valves!=null && i<valves.length; i++) {
+                if (valves[i] instanceof RemoteAddrValve) {
+                    removeValve(valves[i]);
+                    break;
+                }
+            }
+            addValve((GlassFishValve) remoteAddrValve);
+        }
+    }
+        
+    /**
+     * Configures the Remote Host Filter valve of this VirtualServer.
+     *
+     * This valve enforces request acceptance/denial based on the name of the
+     * remote host from where the request originated.
+     */
+    protected void configureRemoteHostFilterValve(String allow, String deny) {
+
+        RemoteHostValve remoteHostValve = null;
+
+        if (allow != null || deny != null)  {
+            remoteHostValve = new RemoteHostValve();
+        }
+        if (allow != null) {
+            remoteHostValve.setAllow(allow);
+        }
+        if (deny != null) {
+            remoteHostValve.setDeny(deny);
+        }
+        if (remoteHostValve != null) {
+            // Remove existing RemoteHostValve (if any), in case of a reconfig
+            GlassFishValve[] valves = getValves();
+            for (int i=0; valves!=null && i<valves.length; i++) {
+                if (valves[i] instanceof RemoteHostValve) {
+                    removeValve(valves[i]);
+                    break;
+                }
+            }
+            addValve((GlassFishValve) remoteHostValve);
+        }
+    }   
+        
+    /**
+     * Gets the value of the allowLinking property of this virtual server.
+     *
+     * @return true if symbolic links from this virtual server's docroot (as
+     * well as symbolic links from archives of web modules deployed on this
+     * virtual server) are followed, false otherwise
+     */
+    public boolean getAllowLinking() {
+        return allowLinking;
+    }
+
+    /**
+     * Sets the allowLinking property of this virtual server, which determines
+     * whether symblic links from this virtual server's docroot are followed.
+     *
+     * This property is inherited by all web modules deployed on this virtual
+     * server, unless overridden by the allowLinking property in a web module's
+     * sun-web.xml.
+     *
+     * @param allowLinking Value of allowLinking property
+     */
+    public void setAllowLinking(boolean allowLinking) {
+        this.allowLinking = allowLinking;
+    }
+    
+    /**
+     * Configures the SSO valve of this VirtualServer.
+     */
+    public void configureSingleSignOn(boolean ssoEnabled) {
+
+        if (!ssoEnabled) {
+            /*
+             * Disable SSO
+             */
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("sso is disabled");
+            }
+
+            // Remove existing SSO valve (if any)
+            GlassFishValve[] valves = getValves();
+            for (int i=0; valves!=null && i<valves.length; i++) {
+                if (valves[i] instanceof SingleSignOn) {
+                    removeValve(valves[i]);
+                    break;
+                }
+            }
+
+        } else {
+            /*
+             * Enable SSO
+             */
+            try {
+                SingleSignOn sso = new SingleSignOn();
+
+                /*
+                // set max idle time if given
+                Property idle = vsBean.getProperty(SSO_MAX_IDLE);
+                if (idle != null && idle.getValue() != null) {
+                    _logger.fine("SSO entry max idle time set to: " +
+                                 idle.getValue());
+                    int i = Integer.parseInt(idle.getValue());
+                    sso.setMaxInactive(i);
+                }
+
+                // set expirer thread sleep time if given
+                Property expireTime = vsBean.getProperty(SSO_REAP_INTERVAL);
+                if (expireTime !=null && expireTime.getValue() != null) {
+                    _logger.fine("SSO expire thread interval set to : " +
+                                 expireTime.getValue());
+                    int i = Integer.parseInt(expireTime.getValue());
+                    sso.setReapInterval(i);
+                }*/
+
+                // Remove existing SSO valve (if any), in case of a reconfig
+                GlassFishValve[] valves = getValves();
+                for (int i=0; valves!=null && i<valves.length; i++) {
+                    if (valves[i] instanceof SingleSignOn) {
+                        removeValve(valves[i]);
+                        break;
+                    }
+                }
+
+                addValve((GlassFishValve) sso);
+
+                //configureSingleSignOnCookieSecure();
+
+            } catch (Exception e) {
+                log.severe(e.getMessage());
+            }
+        }
+    }
+        
+    /**
+     * @return true if the accesslog valve of this virtual server has been
+     * activated, that is, added to this virtual server's pipeline; false
+     * otherwise
+     */
+    private boolean isAccessLogValveActivated() {
+
+        Pipeline p = getPipeline();
+        if (p != null) {
+            GlassFishValve[] valves = p.getValves();
+            if (valves != null) {
+                for (int i=0; i<valves.length; i++) {
+                    if (valves[i] instanceof AccessLogValve) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    /**
+     * Enables access logging for this virtual server, by adding its
+     * accesslog valve to its pipeline, or starting its accesslog valve
+     * if it is already present in the pipeline.
+     */
+    public void enableAccessLogging() {
+        if (!isAccessLogValveActivated()) {
+            addValve((GlassFishValve) accessLogValve);
+        } else {
+            try {
+                if (accessLogValve.isStarted()) {
+                    accessLogValve.stop();
+                }
+                accessLogValve.start();
+            } catch (org.apache.catalina.LifecycleException le) {
+                log.severe(le.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Disables access logging for this virtual server, by removing its
+     * accesslog valve from its pipeline.
+     */
+    public void disableAccessLogging() {
+        removeValve(accessLogValve);
+    }
+
+        /**
+     * Gets the default-context.xml location of web modules deployed on this
+     * virtual server.
+     *
+     * @return default-context.xml location of web modules deployed on this
+     * virtual server
+     */
+    public String getDefaultContextXmlLocation() {
+        return defaultContextXmlLocation;
+    }
+
+    /**
+     * Sets the default-context.xml location for web modules deployed on this
+     * virtual server.
+     *
+     * @param defaultContextXmlLocation default-context.xml location for web modules
+     * deployed on this virtual server
+     */
+    public void setDefaultContextXmlLocation(String defaultContextXmlLocation) {
+        this.defaultContextXmlLocation = defaultContextXmlLocation;
+    }
+
+    /**
+     * Gets the default-web.xml location of web modules deployed on this
+     * virtual server.
+     *
+     * @return default-web.xml location of web modules deployed on this
+     * virtual server
+     */
+    public String getDefaultWebXmlLocation() {
+        return defaultWebXmlLocation;
+    }
+
+    /**
+     * Sets the default-web.xml location for web modules deployed on this
+     * virtual server.
+     *
+     * @param defaultWebXmlLocation default-web.xml location for web modules
+     * deployed on this virtual server
+     */
+    public void setDefaultWebXmlLocation(String defaultWebXmlLocation) {
+        this.defaultWebXmlLocation = defaultWebXmlLocation;
+    }
+
 }

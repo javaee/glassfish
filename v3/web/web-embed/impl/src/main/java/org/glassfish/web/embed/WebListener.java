@@ -87,6 +87,7 @@ public class WebListener extends Connector
      */
     public void setConfig(WebListenerConfig config) throws ConfigException {
         this.config = config;
+        setAllowTrace(config.isTraceEnabled());
     }
 
     /**
