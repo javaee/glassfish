@@ -25,6 +25,7 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Realms;
 import org.glassfish.admin.amx.base.Runtime;
+import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.proxy.AMXBooter;
@@ -121,6 +122,10 @@ public class V3AMX {
     public Runtime getRuntime(){
         return domainRoot.getExt().getRuntime();
     }
+    
+    public ConnectorRuntimeAPIProvider getConnectorRuntime(){
+        return domainRoot.getExt().getConnectorRuntimeAPIProvider();
+    }    
 
 
     public  boolean isEE(){
