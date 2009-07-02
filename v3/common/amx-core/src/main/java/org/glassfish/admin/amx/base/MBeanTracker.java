@@ -55,6 +55,11 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
             
             final String type = notif.getType();
             final ObjectName objectName = notif.getMBeanName();
+            
+            // what happens if an MBean is removed before we can add it
+            // eg the MBeanServer uses more than one thread to deliver notifications
+            // to use? Even if we synchronize this method, the remove could still arrive
+            // first and there's nothing we could do about it.
             if ( type.equals( MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
             {
                 addChild(objectName);
