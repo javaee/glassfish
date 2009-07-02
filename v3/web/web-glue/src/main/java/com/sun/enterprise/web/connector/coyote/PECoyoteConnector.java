@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.web.connector.coyote;
 
-import com.sun.appserv.security.provider.ProxyHandler;
+import com.sun.appserv.ProxyHandler;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.web.WebContainer;

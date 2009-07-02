@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.appserv.security.provider;
+package com.sun.appserv;
 
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateException;

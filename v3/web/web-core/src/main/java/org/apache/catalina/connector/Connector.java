@@ -91,7 +91,7 @@ import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 // START S1AS 6188932
-import com.sun.appserv.security.provider.ProxyHandler;
+import com.sun.appserv.ProxyHandler;
 // END S1AS 6188932
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -125,7 +125,7 @@ import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.fileupload.Multipart;
 
 // START S1AS 6170450
-import com.sun.appserv.security.provider.ProxyHandler;
+import com.sun.appserv.ProxyHandler;
 // END S1AS 6170450
 import com.sun.enterprise.security.integration.RealmInitializer;
 import org.apache.catalina.authenticator.AuthenticatorBase;

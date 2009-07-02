@@ -41,7 +41,7 @@ import java.security.cert.X509Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import javax.servlet.http.HttpServletRequest;
-import com.sun.appserv.security.provider.ProxyHandler;
+import com.sun.appserv.ProxyHandler;
 
 /**
  * Default ProxyHandler implementation.

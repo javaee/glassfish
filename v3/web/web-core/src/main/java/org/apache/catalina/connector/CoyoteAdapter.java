@@ -77,7 +77,7 @@ import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UEncoder;
-import com.sun.appserv.security.provider.ProxyHandler;
+import com.sun.appserv.ProxyHandler;
 import com.sun.grizzly.util.http.mapper.MappingData;
 import java.util.logging.Level;
 import java.util.logging.Logger;

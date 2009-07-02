@@ -95,7 +95,7 @@ import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.grizzly.util.net.URL;
 
 // START S1AS 6170450
-import com.sun.appserv.security.provider.ProxyHandler;
+import com.sun.appserv.ProxyHandler;
 // END S1AS 6170450
 
 /**
