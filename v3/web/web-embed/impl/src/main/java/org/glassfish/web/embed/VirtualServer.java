@@ -151,18 +151,8 @@ public class VirtualServer extends StandardHost implements
      */
     public Collection<org.glassfish.web.embed.WebListener> getWebListeners() {
         // TODO
-        return null;
-        
+        return null;        
     }
-
-    /**
-     * Adds the given <tt>Valve</tt> to this <tt>VirtualServer</tt>
-     * 
-     * @param t the <tt>Valve</tt> to be added
-     *
-    public <T extends Valve> void addValve(T t) {
-        super.addValve(t);
-    }*/
 
     /**
      * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>

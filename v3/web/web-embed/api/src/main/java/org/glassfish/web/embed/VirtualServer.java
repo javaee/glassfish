@@ -82,9 +82,9 @@ public interface VirtualServer extends Lifecycle {
     /**
      * Adds the given <tt>Valve</tt> to this <tt>VirtualServer</tt>
      * 
-     * @param t the <tt>Valve</tt> to be added
+     * @param valve the <tt>Valve</tt> to be added
      */
-    public <T extends Valve> void addValve(T t);
+    public void addValve(Valve valve);
 
     /**
      * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>
