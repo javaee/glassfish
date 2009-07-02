@@ -91,9 +91,9 @@ public class AsadminMain {
 
 	switch (exitCode) {
 	case SUCCESS:
-	    // XXX - following output should be removed when quicklook is fixed
-            CLILogger.getInstance().printDetailMessage(
-                strings.get("CommandSuccessful", command));
+	    // no need to tell people the obvious...
+            //CLILogger.getInstance().printDetailMessage(
+                //strings.get("CommandSuccessful", command));
 	    break;
 
 	case ERROR:
