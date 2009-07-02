@@ -106,7 +106,7 @@
                             </sun:property>   
 
                             <sun:property id="resAdapterProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njdbc.adminObjectResource.resourceAdapterHelp}">
-                                <sun:dropDown id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"  labels={ "jmsra"  } values={ "jmsra" } styleClass="required" required="#{true}" >
+                                <sun:dropDown id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"   labels="$pageSession{modules}" styleClass="required" required="#{true}" >
                                 <!command
                                     getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
                                     getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{poolName});
@@ -115,12 +115,16 @@
                                     setAttribute(key="fromStep1" value="#{true}")
                                     navigate(page="/jdbc/connectorConnectionPoolNew1.jsf");
                                 />
-                                     </sun:dropDown>
+                                <!beforeCreate
+                                    getApplicationByType(type="connector" result="#{requestScope.modList}")
+                                    addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
+                                />
+                                </sun:dropDown>
                             </sun:property>
                             
                                
                             <sun:property id="connectionDefProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.connectorConnectionPool.connectionDefinitionName}" helpText="$resource{i18njdbc.connectorConnectionPool.connectionDefinitionNameHelp}">
-                                <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{wizardPoolExtra.ConnectionDefinitionName}"  labels={ "javax.jms.ConnectionFactory", "javax.jms.QueueConnectionFactory", "javax.jms.TopicConnectionFactory" }  values={ "javax.jms.ConnectionFactory", "javax.jms.QueueConnectionFactory", "javax.jms.TopicConnectionFactory" }/>
+                                <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{wizardPoolExtra.ConnectionDefinitionName}"  labels="$attribute{connectionDefinitions}" />
                             </sun:property>
                         </sun:propertySheetSection>
                     </sun:propertySheet> 
