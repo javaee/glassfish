@@ -365,21 +365,21 @@ public class DeploymentHandler {
         public static void getDescriptors(HandlerContext handlerCtx) {
             String appName = (String)handlerCtx.getInputValue("appName");
             List list = new ArrayList();
-            Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
-            Map<String,String> descriptors = runtimeMgr.getDeploymentConfigurations(appName);
-            try{
-                for(String dd : descriptors.keySet()){ 
-                    HashMap map = new HashMap();
-                    map.put("name", appName);
-                    map.put("moduleName", "");
-                    int index = dd.lastIndexOf(File.separator)+1;
-                    map.put("descriptor", dd.substring(index));
-                    map.put("descriptorPath", dd);
-                    list.add(map);
-                }
-            }catch(Exception ex){
-                GuiUtil.handleException(handlerCtx, ex);
-            }
+//            Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
+//            Map<String,String> descriptors = runtimeMgr.getDeploymentConfigurations(appName);
+//            try{
+//                for(String dd : descriptors.keySet()){
+//                    HashMap map = new HashMap();
+//                    map.put("name", appName);
+//                    map.put("moduleName", "");
+//                    int index = dd.lastIndexOf(File.separator)+1;
+//                    map.put("descriptor", dd.substring(index));
+//                    map.put("descriptorPath", dd);
+//                    list.add(map);
+//                }
+//            }catch(Exception ex){
+//                GuiUtil.handleException(handlerCtx, ex);
+//            }
             handlerCtx.setOutputValue("descriptors", list);
     }   
 
