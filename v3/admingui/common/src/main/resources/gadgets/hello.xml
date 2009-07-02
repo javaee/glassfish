@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module id="foo">
+    <ModulePrefs title="It really does read this." /> 
+    <UserPref name="test" default_value="abc" />
+    <Content type="html">
+	<![CDATA[ 
+	    Hello, world!
+	    <script type="text/javascript">
+		var prefs = new gadgets.Prefs("myPrefs");
+		prefs.set("foo", "3.3");
+		var val = prefs.getString("foo");
+		alert("Val = " + val);
+	    </script>
+	]]>
+    </Content> 
+</Module>
