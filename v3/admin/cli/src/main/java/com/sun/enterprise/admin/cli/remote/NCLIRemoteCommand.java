@@ -252,15 +252,6 @@ public class NCLIRemoteCommand {
             }
 
             // add operands
-	    // XXX - can't enforce min because primary parameter is also an option
-	    /*
-	    if (operands.size() < operandMin)
-		throw new CommandException(
-			strings.get("notEnoughOperands", commandName));
-	     */
-	    if (operands.size() > operandMax)
-		throw new CommandException(
-			strings.get("tooManyOperands", commandName));
             for (String operand : operands) {
 		if (operandType.equals("FILE"))
 		    addFileOption(uriString, "DEFAULT", operand);
@@ -847,6 +838,31 @@ public class NCLIRemoteCommand {
 	    operands = rcp.getOperands();
 	    logger.printDebugMessage("params: " + params);
 	    logger.printDebugMessage("operands: " + operands);
+
+	    /*
+	     * Check for missing params and operands.
+	     */
+	    if (operands.size() < operandMin)
+		throw new CommandException(
+			strings.get("notEnoughOperands", commandName));
+	    if (operands.size() > operandMax)
+		throw new CommandException(
+			strings.get("tooManyOperands", commandName));
+	    boolean missingOption = false;
+	    for (ValidOption opt : commandOpts) {
+		if (opt.isValueRequired() != ValidOption.REQUIRED)
+		    continue;
+		if (opt.getType().equals("PASSWORD"))
+		    continue;	// passwords are handled later
+		if (params.get(opt.getName()) == null) {
+		    missingOption = true;
+		    System.out.println(
+			    strings.get("missingOption", "--" + opt.getName()));
+		}
+	    }
+	    if (missingOption)
+		throw new CommandException(
+			strings.get("missingOptions", commandName));
             initializeCommandPassword();
 	} catch (CommandException cex) {
 	    throw cex;

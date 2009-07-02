@@ -912,8 +912,10 @@ public class CommandRunnerImpl implements CommandRunner {
 	//   acceptable-values="list"/>
 	for (CommandModel.ParamModel p : model.getParameters()) {
 	    Param param = p.getParam();
-	    if (param.primary())
-		primary = p;	// *and* process it as a normal option, for now
+	    if (param.primary()) {
+		primary = p;
+		continue;
+	    }
 	    ActionReport.MessagePart ppart = cmd.addChild();
 	    ppart.setChildrenType("option");
     //System.out.println("Param name :" + p.getName() + ", type: " + p.getType());
