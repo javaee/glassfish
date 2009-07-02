@@ -99,8 +99,8 @@ public class InstanceHandler {
             }
         }
 
-        boolean debugEnabled = ((Boolean) handlerCtx.getInputValue("debugEnabled")).booleanValue();
-        String msg = ("true".equals(debugEnabled)) ?
+        Boolean debugEnabled = (Boolean) handlerCtx.getInputValue("debugEnabled");
+        String msg = ("true".equals(""+debugEnabled)) ?
             GuiUtil.getMessage("inst.debugEnabled") + debugPort :
             GuiUtil.getMessage("inst.notEnabled");
         handlerCtx.setOutputValue("debugInfo", msg);
