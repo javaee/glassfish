@@ -194,10 +194,6 @@
             <version>${project.version}</version>
             <type>zip</type>
             <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish.common</groupId>
-                    <artifactId>amx-impl</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
     
