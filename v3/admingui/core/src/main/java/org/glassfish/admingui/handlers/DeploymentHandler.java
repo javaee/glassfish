@@ -363,7 +363,7 @@ public class DeploymentHandler {
     output={
         @HandlerOutput(name="descriptors", type=List.class)})
         public static void getDescriptors(HandlerContext handlerCtx) {
-            String appName = (String)handlerCtx.getInputValue("appName");
+//            String appName = (String)handlerCtx.getInputValue("appName");
             List list = new ArrayList();
 //            Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
 //            Map<String,String> descriptors = runtimeMgr.getDeploymentConfigurations(appName);
@@ -399,15 +399,16 @@ public class DeploymentHandler {
             @HandlerOutput(name="descriptorText", type=String.class)
     })
     public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
-        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
-        String descriptorText = runtimeMgr.getDeploymentConfigurations(appName).get(descriptorName);  //get the content of the descriptor
-
-        if (GuiUtil.isEmpty(descriptorText)){
-            System.out.printf("Could not locate %s%n", descriptorName);
-        }
-        handlerCtx.setOutputValue("descriptorText", descriptorText);
+//        String appName = (String) handlerCtx.getInputValue("appName");
+//        String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
+//        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
+//        String descriptorText = runtimeMgr.getDeploymentConfigurations(appName).get(descriptorName);  //get the content of the descriptor
+//
+//        if (GuiUtil.isEmpty(descriptorText)){
+//            System.out.printf("Could not locate %s%n", descriptorName);
+//        }
+//        handlerCtx.setOutputValue("descriptorText", descriptorText);
+        handlerCtx.setOutputValue("descriptorText", "");
 
     }
  
