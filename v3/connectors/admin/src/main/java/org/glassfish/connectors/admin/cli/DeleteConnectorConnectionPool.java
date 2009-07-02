@@ -54,6 +54,7 @@ import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
@@ -69,6 +70,9 @@ import java.util.logging.Logger;
 public class DeleteConnectorConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteConnectorConnectionPool.class);    
+
+    @Param(optional=true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Param(optional=true, defaultValue="false")
     Boolean cascade;
