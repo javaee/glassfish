@@ -91,5 +91,17 @@
             <artifactId>console-plugin-service</artifactId>
             <version>${project.version}</version>
         </dependency>
+	   <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>amx-core</artifactId>
+            <version>${project.version}</version>
+	    <scope>provided</scope>
+        </dependency>
+	  <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-common</artifactId>
+            <version>${project.version}</version>
+	    <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
