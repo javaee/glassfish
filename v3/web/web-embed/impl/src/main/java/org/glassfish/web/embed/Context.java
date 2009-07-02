@@ -67,15 +67,6 @@ public class Context extends StandardContext implements org.glassfish.web.embed.
     private SecurityConfig config;
     
     // --------------------------------------------------------- Public Methods
-    
-    /**
-     * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.
-     *
-     * @param t the <tt>Valve</tt> to be added
-     *
-    public <T extends Valve> void addValve(T t) {
-        super.addValve(t);
-    }*/
 
     /**
      * Registers the given listener with this <tt>Context</tt>.

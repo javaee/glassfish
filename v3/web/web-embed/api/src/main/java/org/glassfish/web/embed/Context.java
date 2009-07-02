@@ -57,7 +57,7 @@ public interface Context extends ServletContext, Lifecycle {
      *
      * @param t the <tt>Valve</tt> to be added
      */
-    public <T extends Valve> void addValve(T t);
+    public void addValve(Valve valve);
 
     /**
      * Registers the given listener with this <tt>Context</tt>.
