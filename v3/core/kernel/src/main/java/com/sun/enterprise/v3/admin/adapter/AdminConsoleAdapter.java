@@ -32,20 +32,20 @@
  */
 package com.sun.enterprise.v3.admin.adapter;
 
-import com.sun.pkg.client.Image;
-import com.sun.pkg.client.Version;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import com.sun.logging.LogDomains;
+import com.sun.pkg.client.Image;
+import com.sun.pkg.client.Version;
 import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyVetoException;
-import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -55,19 +55,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
+import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.internal.api.AdminAuthenticator;
-import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -114,6 +114,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Inject
     AdminService adminService; //need to take care of injecting the right AdminService
 
+
     private String contextRoot;
     private File ipsRoot;    // GF IPS Root
     private File warFile;    // GF Admin Console War File Location
@@ -148,7 +149,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     @Inject(name = "server-config")
     Config serverConfig;
-    
+
     AdminEndpointDecider epd;
 
     private String statusHtml;
@@ -169,7 +170,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String ADMIN_CONSOLE_IPS_PKGNAME = "glassfish-gui";
 
     static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
-    
+
     /**
      * Constructor.
      */
@@ -224,17 +225,17 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 // FIXME: What if they clicked Cancel?
 	    }
 	    synchronized(this) {
-		if (downloadedVersion == null){
+		if (downloadedVersion == null) {
 		    setDownloadedVersion();
 		}
 		if (isInstalling()) {
 		    sendStatusPage(res);
 		} else {
-                    if (isErrorOccurred()){
+                    if (isErrorOccurred()) {
                         restore();
                         sendStatusPage(res);
                         return;
-                    }else if (isApplicationLoaded()) {
+                    } else if (isApplicationLoaded()) {
 			// Double check here that it is not yet loaded (not
 			// likely, but possible)
 			handleLoadedState();
@@ -242,11 +243,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 			// Ask for permission
                         handleAuth(req, res);
 			sendConsentPage(req, res);
-		    }else {
-                        if (redeployNeeded()){
+		    } else {
+                        if (redeployNeeded()) {
                             setStateMsg(AdapterState.APPLICATION_PREPARE_UPGRADE);
                             sendStatusPage(res);
-                            if ( !prepareRedeploy()){
+                            if (!prepareRedeploy()) {
                                 setErrorOccurred(true);
                                 sendStatusPage(res);
                                 return;
@@ -275,39 +276,39 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      * returns true if there is any error occurs during the upgrade process.
      */
-    private boolean isErrorOccurred(){
+    private boolean isErrorOccurred() {
         return errorOccurred;
     }
-    
+
     /**
-     * set error condition 
+     * Set error condition.
      */
-    private void setErrorOccurred(boolean error){
+    private void setErrorOccurred(boolean error) {
         errorOccurred=error;
     }
-    
-    
+
     /**
      *
      */
-    //We will try to backup the old bits, if the old directory doesn't exist, 
+    //We will try to backup the old bits, if the old directory doesn't exist,
     //issue warning, and continue. see issue# 6477
-    private boolean prepareRedeploy(){
-        try{
-            if (! stopAndCleanup()){
+    private boolean prepareRedeploy() {
+        try {
+            if (!stopAndCleanup()) {
                 setStateMsg(AdapterState.APPLICATION_CLEANUP_FALED);
                 return false;
             }
             File parentFile = warFile.getParentFile();
             File currentDeployedDir = new File( parentFile,ADMIN_APP_NAME);
-            if (! currentDeployedDir.exists()){
+            if (!currentDeployedDir.exists()) {
                 logger.log(Level.WARNING, currentDeployedDir + " does not exist. Will not do backup for this.");
                 return true;
             }
             File backupDir = new File(parentFile, ADMIN_APP_NAME+".backup");
-            if (currentDeployedDir.renameTo(backupDir))
+            if (currentDeployedDir.renameTo(backupDir)) {
                 return true;
-        }catch(Exception ex){
+	    }
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "Exception in prepareRedeploy() " + ex.getMessage());
             //ex.printStackTrace();
         }
@@ -315,17 +316,16 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         setStateMsg(AdapterState.APPLICATION_BACKUP_FALED);
         return true;
     }
-    
-    private void restore(){
+
+    private void restore() {
         setStateMsg(AdapterState.APPLICATION_RESTORE);
         File parentFile = warFile.getParentFile();
-        File currentDeployedDir = new File( parentFile,ADMIN_APP_NAME);
-        File backupDir = new File(parentFile, ADMIN_APP_NAME+".backup");
+        File currentDeployedDir = new File(parentFile, ADMIN_APP_NAME);
+        File backupDir = new File(parentFile, ADMIN_APP_NAME + ".backup");
         backupDir.renameTo(currentDeployedDir);
         setStateMsg(AdapterState.APPLICATION_UPGRADE_FALED);
     }
-    
-    
+
     private boolean isApplicationLoaded() {
         return (stateMsg == AdapterState.APPLICATION_LOADED);
     }
@@ -421,12 +421,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void init() {
+	// Save the IPS root and admin console war locations
 	setIPSRoot(adminService.getProperty(ServerTags.IPS_ROOT).getValue());
 	setWarFileLocation(adminService.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
+
         Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
-        if (prop != null){
+        if (prop != null) {
             currentDeployedVersion = prop.getValue();
-        }else {
+        } else {
             currentDeployedVersion = "";
         }
 	initState();
@@ -580,10 +582,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         // This is a first-timer
         return InteractionResult.FIRST_TIMER;
     }
-    
+
     private GrizzlyOutputBuffer getOutputBuffer(GrizzlyResponse res) {
         GrizzlyOutputBuffer ob = res.getOutputBuffer();
-        res.setStatus(200);
+        res.setStatus(202);
         res.setContentType("text/html");
         ob.setEncoding("UTF-8");
         return ob;
@@ -717,71 +719,69 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      * 
      */
-    public String getDownloadedVersion(){
+    public String getDownloadedVersion() {
         return downloadedVersion;
     }
-    
-    public void setDownloadedVersion(){
-	if (downloadedVersion == null){
+
+    public void setDownloadedVersion() {
+	if (downloadedVersion == null) {
 	    downloadedVersion = "";
 	}
         try{
             Image image = new Image(ipsRoot);
-            if (image != null){
+            if (image != null) {
                 List<Image.FmriState> fList = image.getInventory(new String[]{ADMIN_CONSOLE_IPS_PKGNAME}, false);
-                if (fList.size() > 0){
+                if (fList.size() > 0) {
                     downloadedVersion = fList.get(0).fmri.getVersion().toString();
                 }
-            }else{
+            } else {
                 log.log(Level.WARNING, "!!!! No information relating to update center.");
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             log.log(Level.WARNING, "!!!!! Cannot create Update Center Image for " + ipsRoot );
             //ex.printStackTrace();
         }
     }
-    
-    public String getCurrentDeployedVersion(){
+
+    public String getCurrentDeployedVersion() {
         return currentDeployedVersion;
     }
-    
-    public AdminService getAdminService(){
+
+    public AdminService getAdminService() {
         return adminService;
     }
-    
-    public String getIPSPackageName(){
+
+    public String getIPSPackageName() {
         return ADMIN_CONSOLE_IPS_PKGNAME;
-        
     }
-    
-    
-    private boolean redeployNeeded(){
+
+    private boolean redeployNeeded() {
         //for first access after installation, deployedVersion will be "",  we don't want to do redeployment.
         //it will just go through install and loading.
-        if (currentDeployedVersion == null || currentDeployedVersion.equals("")){
+        if (currentDeployedVersion == null || currentDeployedVersion.equals("")) {
             return false;
         }
         //if we don't know the downloaded version, we don't want to do redeployment either.
         //this maybe the case during development where web.zip doesn't include UC info.
-        if (downloadedVersion.equals ("")){
+        if (downloadedVersion.equals ("")) {
             return false;
         }
-        
+
         Version deployed = new Version(currentDeployedVersion);
         Version downloaded = new Version(downloadedVersion);
         int compare = deployed.compareTo(downloaded);
         //-1 if this version is less than downloaded, 0 if they are equal, 1 if this version is greater than downloaded
-        if (compare == -1){
+        if (compare == -1) {
             return true;
-        }else
+        } else {
             return false;
+	}
     }
 
-    
-    public void updateDeployedVersion(){
+    public void updateDeployedVersion() {
         try{
             final Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
-            if (prop == null){
+            if (prop == null) {
                 ConfigSupport.apply(new SingleConfigCode<AdminService>() {
                     public Object run(AdminService adminService) throws PropertyVetoException, TransactionFailure {
                         Property newProp = adminService.createChild(Property.class);
@@ -791,8 +791,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                         return newProp;
                     }
                 }, adminService);
-            }else{
-                if (! downloadedVersion.equals(prop.getValue())){
+            } else {
+                if (! downloadedVersion.equals(prop.getValue())) {
                     ConfigSupport.apply(new SingleConfigCode<Property>() {
                         public Object run(Property prop) throws PropertyVetoException, TransactionFailure {
                             prop.setValue(downloadedVersion);
@@ -801,12 +801,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                     }, prop);
                 }
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             log.log(Level.FINE, "!!!! Error, cannot update deployed version in domain.xml");
             //ex.printStackTrace();
         }
     }
-    
+
     /**
      *
      */
@@ -851,7 +851,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             Deployment deployment = habitat.getComponent(Deployment.class);
             ActionReport report = new PlainTextActionReporter();
             ExtendedDeploymentContext context = deployment.getContext(logger, archive, parameters, report);
-            
+
             ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
             if (info!=null) {
                 deployment.undeploy(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME, context);
@@ -863,10 +863,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 logger.log(Level.SEVERE, "Cannot undeploy current admin gui ", report.getFailureCause());
                 return false;
             }
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             logger.log(Level.SEVERE, "Exception while stopping and cleaning previous instance of admin GUI", ioe);
             return false;
         }
         return true;
-    }    
+    }
 }
