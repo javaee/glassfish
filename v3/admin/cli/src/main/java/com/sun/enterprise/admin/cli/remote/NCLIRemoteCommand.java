@@ -92,6 +92,7 @@ public class NCLIRemoteCommand {
     private String                          responseFormatType = "hk2-agent";
     private OutputStream                    userOut;
     private boolean                         doUpload = false;
+    private boolean                         addedUploadOption = false;
     private Map<String, String>             encodedPasswords;
     private Payload.Outbound		    outboundPayload;
 
@@ -727,9 +728,11 @@ public class NCLIRemoteCommand {
 	     * XXX - should only add it if it's not present
 	     * XXX - should just define upload parameter on remote command
 	     */
-	    if (sawFile)
+	    if (sawFile) {
 		valid.add(new ValidOption("upload", "BOOLEAN",
-			ValidOption.OPTIONAL, "false"));
+			ValidOption.OPTIONAL, "true"));
+		addedUploadOption = true;
+	    }
 	} catch (ParserConfigurationException pex) {
 	    // ignore all for now
 	    return null;
@@ -978,6 +981,17 @@ public class NCLIRemoteCommand {
 	    }
 	}
 
+	// now check the operands for files
+	if (operandType.equals("FILE")) {
+	    for (String filename : operands) {
+		sawFile = true;
+		// if any FILE parameter is a directory, turn off doUpload
+		File file = new File(filename);
+		if (file.isDirectory())
+		    sawDirectory = true;
+	    }
+	}
+
 	if (sawFile && !sawDirectory) {
 	    // found a FILE param, is doUpload set?
 	    String upString = params.get("upload");
@@ -985,9 +999,10 @@ public class NCLIRemoteCommand {
 		doUpload = Boolean.parseBoolean(upString);
 	    else
 		doUpload = true;	// defaults to true
-	    if (upString != null)
-		params.remove("upload");    // XXX - remove it
 	}
+
+	if (addedUploadOption)
+		params.remove("upload");    // XXX - remove it
     }
 
     /**
