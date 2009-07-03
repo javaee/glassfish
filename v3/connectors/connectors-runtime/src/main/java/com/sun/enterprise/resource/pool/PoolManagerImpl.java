@@ -606,4 +606,19 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             pool.reconfigPoolProperties( ccp );
         }        
     }
+
+    /**
+     * Flush Connection pool by reinitializing the connections 
+     * established in the pool.
+     * @param poolName
+     * @throws com.sun.appserv.connectors.internal.api.PoolingException
+     */
+    public void flushConnectionPool(String poolName) throws PoolingException {
+        ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
+        
+        if(pool != null) {
+            pool.flushConnectionPool();
+        }
+    }
+    
 }

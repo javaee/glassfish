@@ -1077,12 +1077,13 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
     
     /**
-     * Flush Connection pool by reinitializing all the connections 
+     * Flush Connection pool by reinitializing the connections 
      * established in the pool.
      * @param poolName
      * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
      */
     public void flushConnectionPool(String poolName) throws ConnectorRuntimeException {
+        ccPoolAdmService.flushConnectionPool(poolName);
     }
 
     /**

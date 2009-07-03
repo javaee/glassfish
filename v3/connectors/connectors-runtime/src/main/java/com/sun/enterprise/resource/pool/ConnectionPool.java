@@ -1154,6 +1154,25 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     }
 
     /**
+     * Reinitialize connections established in the connection pool and 
+     * bring the pool to steady pool size. 
+     * 
+     * @throws com.sun.appserv.connectors.internal.api.PoolingException
+     */
+    public synchronized void flushConnectionPool() throws PoolingException {
+
+        logFine("Flush Connection Pool entered");        
+        if (poolInitialized) {
+            killExtraResources(ds.getResourcesSize());
+        }
+        if(poolInitialized) {
+            increaseSteadyPoolSize(steadyPoolSize);
+        }
+
+        logFine("Flush Connection Pool done");        
+    }
+    
+    /**
      * Reconfigure the Pool's properties. The reconfigConnectorConnectionPool
      * method in the ConnectorRuntime will use this method (through PoolManager)
      * if it needs to just change pool properties and not recreate the pool

@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -1403,5 +1404,20 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                 connectorDescriptor.getConfigProperties());
         ccp.setSecurityMaps(SecurityMapUtils.getConnectorSecurityMaps(securityMaps));
         createConnectorConnectionPool(ccp, cdi);
+    }
+    
+    /**
+     * Flush Connection pool by reinitializing the connections 
+     * established in the pool.
+     * @param poolName
+     * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
+     */
+    public void flushConnectionPool(String poolName) throws ConnectorRuntimeException {
+        PoolManager poolMgr = _runtime.getPoolManager();
+        try {
+            poolMgr.flushConnectionPool( poolName );
+        } catch (PoolingException ex) {            
+            throw new ConnectorRuntimeException(ex.getMessage());
+        }
     }
 }

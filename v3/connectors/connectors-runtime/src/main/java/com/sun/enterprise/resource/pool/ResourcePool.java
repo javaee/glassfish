@@ -152,6 +152,13 @@ public interface ResourcePool {
      * remove pool life cycle listener
      */
     public void removePoolLifeCycleListener();
+
+    /**
+     * Flush Connection pool by reinitializing the connections 
+     * established in the pool.
+     */
+    public void flushConnectionPool() throws PoolingException;
+
 }
 
 

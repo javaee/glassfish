@@ -472,7 +472,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
     public List<WorkSecurityMap> getWorkSecurityMap(String raName);
     
     /**
-     * Flush Connection pool by reinitializing all the connections 
+     * Flush Connection pool by reinitializing the connections 
      * established in the pool.
      * @param poolName
      * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException

@@ -71,6 +71,14 @@ public interface PoolManager extends TransactedPoolManager {
     static public final String PASSWORD_CREDENTIAL = "javax.resource.spi.security.PasswordCredential";
     static public final String GENERIC_CREDENTIAL = "javax.resource.spi.security.GenericCredential";
 
+    /**
+     * Flush Connection pool by reinitializing the connections 
+     * established in the pool.
+     * @param poolName
+     * @throws com.sun.appserv.connectors.internal.api.PoolingException
+     */
+    public void flushConnectionPool(String poolName) throws PoolingException;
+
     ResourceHandle getResourceFromPool(ResourceSpec spec,
                                        ResourceAllocator alloc,
                                        ClientSecurityInfo info,
