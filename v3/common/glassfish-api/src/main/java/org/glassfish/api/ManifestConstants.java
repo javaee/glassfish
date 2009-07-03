@@ -48,4 +48,9 @@ public class ManifestConstants {
      * list of contracts.
      */
     public final static String GLASSFISH_REQUIRE_SERVICES = "GlassFish-require-services";
+
+    /**
+     *	Adds a directory as an additional OSGi repository.
+     */
+    public final static String GLASSFISH_REQUIRE_REPOSITORY = "GlassFish-require-repository";
 }
