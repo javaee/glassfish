@@ -55,10 +55,12 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 
-
+import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 
 
 public class ConnectorsHandlers {
@@ -128,11 +130,17 @@ public class ConnectorsHandlers {
         if (definition.equals(previousDefinition) && resAdapter.equals(previousResAdapter)) {
         //User didn't change defintion and adapter, keep the properties table content the same.
         } else {
-            // To Do fo V3
-            //if (!GuiUtil.isEmpty(definition) && !GuiUtil.isEmpty(resAdapter)) {
-            //    Properties props = getConnectorConnectionPoolProps("getMCFConfigProps", resAdapter, "connection-definition-name", definition);
-            //    handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", props);
-            //}
+            List propsList = new ArrayList();
+            if (!GuiUtil.isEmpty(definition) && !GuiUtil.isEmpty(resAdapter)) {
+                Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getMCFConfigProps(resAdapter, definition);
+                Map<String, String> props = (Map) result.get(MAP_KEY);
+                if(props != null){
+                    handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
+                } else {
+                    handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", propsList);
+                }
+                
+            }
             extra.put("previousDefinition", definition);
             extra.put("previousResAdapter", resAdapter);
         }
@@ -160,13 +168,20 @@ public class ConnectorsHandlers {
         ArrayList defs = new ArrayList();
         if (resAdapter == null || resAdapter.equals("")) {
             return defs;
+        } else {
+            Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionNames(resAdapter);
+            String[] names = (String[]) result.get(STRING_ARRAY_KEY);
+            if (names != null) {                
+                return Arrays.asList(names);
+            } else {
+                return defs;
+            }
         }
-        /* TODO-V3
-        
-        }
-         */
-        return defs;
     }
+    
+    public static final String STRING_ARRAY_KEY = "StringArrayKey";
+    public static final String MAP_KEY = "MapKey";
+
 
 }
  
