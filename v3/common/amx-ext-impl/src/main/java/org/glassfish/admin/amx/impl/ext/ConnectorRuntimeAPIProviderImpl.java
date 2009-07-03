@@ -49,6 +49,7 @@ import org.jvnet.hk2.component.Habitat;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import javax.resource.ResourceException;
 
 /**
  * ConnectorRuntime exposed APIs via AMX
@@ -348,4 +349,36 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         }
         return result;
     }
+
+    /**
+     * Ping JDBC Connection Pool and return status
+     * @param poolName
+     * @return
+     */
+    public Map<String,Object> pingJDBCConnectionPool( final String poolName ) {
+        final Map<String,Object> result = new HashMap<String,Object>();
+        
+        if (mHabitat == null)
+        {
+            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, "Habitat is null");
+            return result;
+        }        
+        try {
+            final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
+            final boolean pingStatus = connRuntime.pingConnectionPool(poolName);
+            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, pingStatus);
+        } catch(ResourceException ex) {
+            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(ex));            
+        } catch (ComponentException e) {
+            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        } catch (Exception e) {
+            result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        return result;
+    }
+    
 }
