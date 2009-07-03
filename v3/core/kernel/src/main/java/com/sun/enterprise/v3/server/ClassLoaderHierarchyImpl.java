@@ -42,6 +42,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.config.TranslationException;
+import org.jvnet.hk2.config.VariableResolver;
 import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -54,13 +56,17 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.jar.Manifest;
+import java.io.File;
 import java.io.IOException;
 
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.common_impl.Tokenizer;
+
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -84,7 +90,7 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
     @Inject
     Habitat habitat;
 
-
+    SystemVariableResolver resolver = new SystemVariableResolver();
 
     public ClassLoader getAPIClassLoader() {
         return apiCLS.getAPIClassLoader();
@@ -148,12 +154,29 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
                     }
                 }
             }
-        }
 
-        // Applications can also request to be wired to implementors of certain services.
-        // That means that any module implementing the requested service will be accessible
-        // by the parent class loader of the application.
-        if (m!=null) {
+	    // Applications can add an additional osgi repos...
+            String additionalRepo = m.getMainAttributes().getValue(org.glassfish.api.ManifestConstants.GLASSFISH_REQUIRE_REPOSITORY);
+	    if (additionalRepo != null) {
+                for (String token : new Tokenizer(additionalRepo, ",")) {
+		    // Each entry should be name=path
+		    int equals = token.indexOf('=');
+		    if (equals == -1) {
+			// Missing '='...
+			throw new IllegalArgumentException("\""
+			    + org.glassfish.api.ManifestConstants.GLASSFISH_REQUIRE_REPOSITORY
+			    + ": " + additionalRepo + "\" is missing an '='.  "
+			    + "It must be in the format: name=path[,name=path]...");
+		    }
+		    String name = token.substring(0, equals);
+		    String path = token.substring(++equals);
+		    addRepository(name, resolver.translate(path));
+		}
+	    }
+
+	    // Applications can also request to be wired to implementors of certain services.
+	    // That means that any module implementing the requested service will be accessible
+	    // by the parent class loader of the application.
             String requestedWiring = m.getMainAttributes().getValue(org.glassfish.api.ManifestConstants.GLASSFISH_REQUIRE_SERVICES);
             if (requestedWiring!=null) {
                 for (String token : new Tokenizer(requestedWiring, ",")) {
@@ -172,7 +195,59 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
         }  else {
             return modulesRegistry.getModulesClassLoader(parent, defs);
         }
-
     }
 
+    /**
+     *	<p> This method installs the admin console OSGi bundle respository so
+     *	    our plugins can be found.</p>
+     */
+    private void addRepository(String name, String path) {
+	File pathFile = new File(path);
+	Repository repo = new DirectoryBasedRepository(
+		name, pathFile);
+	modulesRegistry.addRepository(repo);
+	try {
+	    repo.initialize(); 
+	} catch (IOException ex) {
+	    logger.log(Level.SEVERE,
+		"Problem initializing additional repository!", ex);
+	}
+    }
+
+    /**
+     *	<p> This class helps resolve ${} variables in Strings.</p>
+     */
+    private static class SystemVariableResolver extends VariableResolver {
+	SystemVariableResolver() {
+	    super();
+	}
+
+	protected String getVariableValue(final String varName) throws TranslationException {
+	    String result = null;
+
+	    // first look for a system property
+	    final Object value = System.getProperty(varName);
+	    if (value != null) {
+		result = "" + value;
+	    } else {
+		result = "${" + varName + "}";
+	    }
+	    return result;
+	}
+
+	/**
+	    Return true if the string is a template string of the for ${...}
+	 */
+	public static boolean needsResolving(final String value) {
+	    return (value != null) && (value.indexOf("${") != -1);
+	}
+
+	/**
+	 *  Resolve the given String.
+	 */
+	public String resolve(final String value) throws TranslationException {
+	    final String result = translate(value);
+	    return result;
+	}
+    }
 }
