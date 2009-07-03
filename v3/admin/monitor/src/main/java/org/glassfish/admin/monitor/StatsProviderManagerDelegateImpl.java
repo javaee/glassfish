@@ -4,17 +4,16 @@
  */
 package org.glassfish.admin.monitor;
 
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.DynamicMBean;
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.util.StringTokenizer;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.beans.PropertyChangeEvent;
+import javax.management.ObjectName;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.gmbal.ManagedObjectManager;
@@ -26,14 +25,13 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import org.glassfish.api.amx.AMXValues;
 
@@ -43,24 +41,25 @@ import org.glassfish.api.amx.AMXValues;
  */
 @Service
 @Scoped(Singleton.class)
-public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDelegate, PostConstruct {
+public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDelegate,
+                                                PostConstruct, ConfigListener {
 
+    @Inject
     protected ProbeClientMediator pcm;
+
+    @Inject(optional=true)
+    ModuleMonitoringLevels config = null;
 
     private final MonitoringRuntimeDataRegistry mrdr;
     private final Domain domain;
 
     private final TreeNode serverNode;
-    //private ManagedObjectManager mom;
-    private final HashMap momMap = new HashMap();
-    //MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
     private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
     private static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
     private StatsProviderRegistry statsProviderRegistry;
-    //private Map<Object, List<Object>> statsProviderRegistry = new HashMap();
 
-    StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, 
-                    MonitoringRuntimeDataRegistry mrdr, Domain domain) {
+    StatsProviderManagerDelegateImpl(ProbeClientMediator pcm,
+                        MonitoringRuntimeDataRegistry mrdr, Domain domain) {
         this.pcm = pcm;
         this.mrdr = mrdr;
         this.domain = domain;
@@ -70,26 +69,6 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
     }
 
     public void postConstruct() {
-        
-        /* gmbal create root */
-        try { 
-            
-            //TODO fix hard-coding of object name. Maybe use query.
-            //Can we createFederated at MONITORING_ROOT, then create mom root using MONITORING_SERVER?
-            //Set<ObjectName> set = mbeanServer.queryNames(new ObjectName(MONITORING_SERVER), null);
-
-            // Don't think 1 mom per server will work as easily because there can only be 1 obj registered at mom root
-            //mom = ManagedObjectManagerFactory.createFederated(new ObjectName(MONITORING_SERVER));
-            //mom.stripPackagePrefix();
-            //mom.createRoot();
-
-            // There can only be 1 ManagedObject registered at mom root
-            //??mom.registerAtRoot(PluginPoint.SERVER);
-            //constructServerPP();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void register(String configElement, PluginPoint pp,
@@ -127,40 +106,41 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         try {
             //System.out.println("****** Registering the StatsProvider (" + statsProvider.getClass().getName() + ") with flashlight");
             handles = pcm.registerListener(statsProvider);
+            //System.out.println("********* handles = " + handles);
             // save the handles against config so you can enable/disable the handles
             // save the handles also against statsProvider so you can unregister when statsProvider is unregistered
         } catch (Exception e) {
-            //e.printStackTrace;
+            //e.printStackTrace();
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "flashlight registration failed", e);
         }
 
         /* gmbal registration */
         // For now create mom root using the statsProvider
-        
+        ManagedObjectManager mom = null;
+        String mbeanName = subTreePath;
         try {
             // 1 mom per statsProvider
-            ManagedObjectManager mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
-            mom.stripPackagePrefix();
-            mom.createRoot(statsProvider, subTreePath);
-            momMap.put(statsProvider, mom);
-
+            mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
+            if (mom != null) {
+                mom.stripPackagePrefix();
+                mom.createRoot(statsProvider, mbeanName);
+            }
             //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
             //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "gmbal registration failed", e);
         }
 
         /* config - TODO */
         //add configElement to monitoring level element if not already there - find out from Nandini
 
         //Make an entry to my own registry so I can manage the unregister, enable and disable
-        statsProviderRegistry.registerStatsProvider(configElement, parentNode.getCompletePathName(), childNodeNames, handles, statsProvider);
+        statsProviderRegistry.registerStatsProvider(configElement, parentNode.getCompletePathName(), childNodeNames, handles, statsProvider, mbeanName, mom);
     }
 
     public void unRegister(Object statsProvider) {
         try {
-            //Unregister from Gmbal
-            ((ManagedObjectManager) momMap.get(statsProvider)).unregister(statsProvider);
-            //Unregister from the MonitoringDataTreeRegistry
+            //Unregister from the MonitoringDataTreeRegistry and gmbal
             statsProviderRegistry.unregisterStatsProvider(statsProvider);
         } catch (Exception ex) {
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -221,6 +201,27 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         srvrNode = TreeNodeFactory.createTreeNode("server", null, "server");
         mrdr.add("server", srvrNode);
         return srvrNode;
+    }
+
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
+       for (PropertyChangeEvent event : propertyChangeEvents) {
+           if (event.getSource() instanceof ModuleMonitoringLevels) {
+                String propName = event.getPropertyName();
+                boolean enabled = getEnabledValue(event.getNewValue().toString());
+                if (enabled)
+                    statsProviderRegistry.enableStatsProvider(propName);
+                else
+                    statsProviderRegistry.disableStatsProvider(propName);
+}
+       }
+        return null;
+    }
+
+    private boolean getEnabledValue(String enabledStr) {
+        if ("OFF".equals(enabledStr)) {
+            return false;
+        }
+        return true;
     }
 
 }

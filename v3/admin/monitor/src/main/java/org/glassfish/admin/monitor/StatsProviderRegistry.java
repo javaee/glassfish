@@ -1,5 +1,6 @@
 package org.glassfish.admin.monitor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.gmbal.ManagedObjectManager;
 
 public class StatsProviderRegistry {
     List<StatsProviderRegistryElement> regElements = new ArrayList();
@@ -24,12 +26,14 @@ public class StatsProviderRegistry {
     public void registerStatsProvider(String configStr,
                         String parentTreeNodePath, List<String> childTreeNodeNames,
                         Collection<ProbeClientMethodHandle> handles,
-                        Object statsProvider) {
+                        Object statsProvider,
+                        String mbeanName,
+                        ManagedObjectManager mom) {
 
         StatsProviderRegistryElement spre =
                     new StatsProviderRegistryElement(
                             configStr, parentTreeNodePath, childTreeNodeNames,
-                            handles, statsProvider);
+                            handles, statsProvider, mbeanName, mom);
         // add a mapping from config to StatsProviderRegistryElement, so you can easily
         // retrieve all stats element for enable/disable functionality
         if (configToRegistryElementMap.containsKey(configStr)) {
@@ -73,6 +77,19 @@ public class StatsProviderRegistry {
         for (ProbeClientMethodHandle handle : handles) {
             // handle.remove????? Mahesh?
             //TODO IMPLEMENTATION
+        }
+
+        //unregister the statsProvider from Gmbal
+        ManagedObjectManager mom = spre.getManagedObjectManager();
+        if (mom != null) {
+            //if (mom.getObjectName(statsProvider) != null) {
+                mom.unregister(statsProvider);
+                try {
+                    mom.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            //}
         }
 
         // Remove the entry of statsProviderRegistryElement from configToRegistryElementMap
@@ -125,7 +142,20 @@ public class StatsProviderRegistry {
 
             //Reregister the statsProvider in Gmbal
             Object statsProvider = spre.getStatsProvider();
-            //TODO
+            ManagedObjectManager mom = spre.getManagedObjectManager();
+            String mbeanName = spre.getMBeanName();
+            if (mom != null ) {
+                //Cannot create a root if mom already has one
+                //getObjectName cannot be called before a successful createRoot call
+                //if (mom.getObjectName(statsProvider) == null) {
+                    mom.stripPackagePrefix();
+                    if (mbeanName != null && !mbeanName.isEmpty()) {
+                        mom.createRoot(statsProvider, mbeanName);
+                    } else {
+                        mom.createRoot(statsProvider);
+                    }
+                //}
+            }
         }
     }
 
@@ -161,8 +191,17 @@ public class StatsProviderRegistry {
 
             //unregister the statsProvider from Gmbal
             Object statsProvider = spre.getStatsProvider();
-            //TODO
-            
+            ManagedObjectManager mom = spre.getManagedObjectManager();
+            if (mom != null) {
+                //if (mom.getObjectName(statsProvider) != null) {
+                    mom.unregister(statsProvider);
+                    try {
+                        mom.close();
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                //}
+            }
         }
     }
 
@@ -172,16 +211,22 @@ public class StatsProviderRegistry {
         List<String> childTreeNodeNames;
         Collection<ProbeClientMethodHandle> handles;
         Object statsProvider;
+        String mbeanName;
+        ManagedObjectManager mom;
 
         public StatsProviderRegistryElement(String configStr,
                         String parentTreeNodePath, List<String> childTreeNodeNames,
                         Collection<ProbeClientMethodHandle> handles,
-                        Object statsProvider) {
+                        Object statsProvider,
+                        String mbeanName,
+                        ManagedObjectManager mom) {
            this.configStr = configStr;
            this.handles = handles;
            this.parentTreeNodePath = parentTreeNodePath;
            this.childTreeNodeNames = childTreeNodeNames;
            this.statsProvider = statsProvider;
+           this.mbeanName = mbeanName;
+           this.mom = mom;
         }
 
         public String getConfigStr() {
@@ -206,6 +251,14 @@ public class StatsProviderRegistry {
 
         private void setStatsProvider(Object statsProvider) {
             this.statsProvider = statsProvider;
+        }
+
+        public String getMBeanName() {
+            return mbeanName;
+        }
+
+        public ManagedObjectManager getManagedObjectManager() {
+            return mom;
         }
     }
 }

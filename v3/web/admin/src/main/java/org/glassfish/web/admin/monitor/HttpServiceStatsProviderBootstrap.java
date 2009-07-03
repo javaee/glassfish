@@ -74,7 +74,7 @@ public class HttpServiceStatsProviderBootstrap implements TelemetryProvider, Pos
             StatsProviderManager.register(
                     "http-service",
                     PluginPoint.SERVER,
-                    "http-service/" + vs.getId(),
+                    "http-service/" + vs.getId() + "/request",
                     new HttpServiceStatsProvider(vs.getId()));
         }
 
