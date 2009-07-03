@@ -93,8 +93,11 @@ public class Parser {
         for (int si = start; si < argv.length; si++) {
             String arg = argv[si];
             if (arg.equals("--")) {             // end of options
-                // command line ran out of options;
-                // return the arguments after "--" verbatim *and stop*
+		// if we're ignoring unknown options, we include this
+		// delimiter as an operand, it will be eliminated later
+		// when we process all remaining options
+		if (!ignoreUnknown)
+		    si++;
                 while (si < argv.length)
                     operands.add(argv[si++]);
                 break;
