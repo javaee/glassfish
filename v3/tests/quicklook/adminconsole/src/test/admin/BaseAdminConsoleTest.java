@@ -189,7 +189,8 @@ public class BaseAdminConsoleTest {
         get.setFollowRedirects(true);
 
         int statusCode = client.executeMethod(get);
-        if (statusCode != HttpStatus.SC_OK) {
+        //Also accepts SC_ACCPTED ie 202 for the case when the console is still loading.
+        if ((statusCode != HttpStatus.SC_OK) && (statusCode != HttpStatus.SC_ACCEPTED)  ) {
             Assert.fail("BaseAdminConsoleTest.getUrlAndTestForString() failed.  HTTP Status Code:  " + statusCode);
         }
         String response = getString(get.getResponseBodyAsStream());
