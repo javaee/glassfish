@@ -56,6 +56,7 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +65,7 @@ import java.util.TreeSet;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 
 /**
@@ -212,6 +214,38 @@ public class PluginHandlers {
 	}
     }
 
+
+    /**
+     *	Finds the integration point of the specified type.  Returns the contents of this IP type as a list.
+     *  The content can be a comma separated String.
+     * This is useful for the case such as dropdown or list box to allow additional options in the component.
+     */
+    @Handler(id="getContentOfIntegrationPoints",
+    	input={
+            @HandlerInput(name="type", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="result",  type=List.class)})
+    public static void getContentOfIntegrationPoints(HandlerContext handlerCtx) throws java.io.IOException {
+        // Get the input
+        String type = (String) handlerCtx.getInputValue("type");
+
+        // Get the IntegrationPoints
+        FacesContext ctx = handlerCtx.getFacesContext();
+        Set<IntegrationPoint> points = getSortedIntegrationPoints(getIntegrationPoints(ctx, type));
+        List result = new ArrayList();
+        if (points != null) {
+            for(IntegrationPoint it : points){
+                String content = it.getContent();
+                if (GuiUtil.isEmpty(content)){
+                    GuiUtil.getLogger().warning("No Content specified for Integration Point: " + type + " id : " + it.getId());
+                    continue;
+                }
+                List asList = GuiUtil.parseStringList(content, ",");
+                result.add(asList);
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+	}
 
     /**
      *	<p> This method sorts the given {@link IntegrationPoint}'s by parentId
