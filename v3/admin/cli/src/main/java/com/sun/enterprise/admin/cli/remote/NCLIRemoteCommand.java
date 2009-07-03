@@ -982,7 +982,7 @@ public class NCLIRemoteCommand {
 	}
 
 	// now check the operands for files
-	if (operandType.equals("FILE")) {
+	if (operandType != null && operandType.equals("FILE")) {
 	    for (String filename : operands) {
 		sawFile = true;
 		// if any FILE parameter is a directory, turn off doUpload
