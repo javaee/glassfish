@@ -19,7 +19,10 @@ admingui.gadget = {
 	var params = 'h=' + handler + '&a=';
 	for (var param in args) {
 	    // Create a String to represent all the parameters
-	    params += param + ':' + escape(args[param]) + ',';
+	    // Double escape, this will prevent the server-side from fully
+	    // urldecoding it.  Allowing me to first parse the commas, then
+	    // decode the content.
+	    params += param + ':' + escape(escape(args[param])) + ',';
 	}
 	DynaFaces.fireAjaxTransaction(
 	    button,

@@ -44,9 +44,11 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
 import com.sun.jsftemplating.layout.descriptors.handler.OutputTypeManager;
 import com.sun.jsftemplating.util.FileUtil;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -134,6 +136,23 @@ public class GadgetHandlers {
      *	<p> This handler will invoke another handler.  This allows a generic
      *	    handler to invoke another one and return the response(s), if
      *	    any.</p>
+     *
+     *	<p> The following are the inputs are supported:</p>
+     *	    <ul><li><b>handler</b> - (required) This input specifies the
+     *		    handler which should be invoked.</li>
+     *		<li><b>args</b> - (required) This specifies all of the
+     *		    arguments to be passed to the handler (both input and
+     *		    output arguments).  The value of this should be a String
+     *		    formatted as a comma separated list of name-value paires
+     *		    (which are themselves separated by colons (:).  The value
+     *		    of the name-value pairs should be URL encoded (so that
+     *		    commas are escaped).</li>
+     *		<li><b>depth</b> - (optional) This property specifies the max
+     *		    depth of nesting for any output values from the handler.
+     *		    Output values are encoded in JSON.  This prevents infinite
+     *		    looping in the case where an Object refers to itself (or in
+     *		    the case wehre there is unnecessarily deep data
+     *		    structures).</li></ul>
      */
     @Handler(id="gf.invokeHandler",
 	input = {
@@ -177,6 +196,14 @@ public class GadgetHandlers {
 	    }
 	    name = nvp.substring(0, colon).trim();
 	    value = nvp.substring(colon+1).trim();
+
+	    // URL decode 'value'...
+	    try {
+		value = URLDecoder.decode(value, "UTF-8");
+	    } catch (UnsupportedEncodingException ex) {
+		throw new IllegalArgumentException(
+		    "Unable to decode value, this is not normal!", ex);
+	    }
 
 	    // See if it is an input...
 	    if (handlerDef.getInputDef(name) != null) {
