@@ -46,7 +46,6 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.OutboundResourceAdapter;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.tools.verifier.tests.*;
 import com.sun.enterprise.tools.verifier.tests.connector.ConnectorTest;
 import java.util.Set;
 import java.util.Iterator;
@@ -102,7 +101,7 @@ public abstract class ManagedConnectionFactoryTest extends ConnectorTest {
           if (className == null) 
           return null;
 
-          Context context = getVerifierContext();
+          VerifierTestContext context = getVerifierContext();
           ClassLoader jcl = context.getRarClassLoader();
           return jcl.loadClass(className);   */ 
     }

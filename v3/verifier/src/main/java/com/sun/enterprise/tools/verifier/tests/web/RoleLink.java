@@ -64,13 +64,12 @@ public class RoleLink extends WebTest implements WebCheck {
 	Result result = getInitializedResult();
 	ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
 
-	if (descriptor.getWebComponentDescriptors().hasMoreElements()) {
+	if (!descriptor.getWebComponentDescriptors().isEmpty()) {
 	    boolean oneFailed = false;
             int na = 0;
             int noWd = 0;
-	    for (Enumeration e = descriptor.getWebComponentDescriptors(); e.hasMoreElements();) {
+	    for (WebComponentDescriptor next : descriptor.getWebComponentDescriptors()) {
                 noWd++;
-		WebComponentDescriptor next = (WebComponentDescriptor) e.nextElement();
 		boolean foundIt = false;
 		// get the security role-link's in this .war
 		if (next.getSecurityRoleReferences().hasMoreElements()) {

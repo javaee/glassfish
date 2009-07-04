@@ -93,7 +93,7 @@ public class FieldNameElementPublic extends EjbTest implements EjbCheck {
 		if (!((EjbCMPEntityDescriptor)descriptor).getPersistenceDescriptor().getCMPFields().isEmpty()) {
 		    // check class to get all fields that actually exist
 		    try {
-			Context context = getVerifierContext();
+			VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 
 			for (Iterator itr = 

@@ -45,4 +45,5 @@ public class VerifierConstants {
     public static final int WARN = 1;
     public static final int ALL  = 2;
 
+    public static final String CFG_RESOURCE_PREFIX = "com/sun/enterprise/tools/verifier/config/";
 }

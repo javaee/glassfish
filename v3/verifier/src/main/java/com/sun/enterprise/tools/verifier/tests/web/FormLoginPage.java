@@ -35,12 +35,11 @@
  */
 package com.sun.enterprise.tools.verifier.tests.web;
 
-import com.sun.enterprise.tools.verifier.tests.web.WebTest;
 import java.io.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /** 
  * The Web form-login-page value defines the location in the web application 
@@ -91,7 +90,7 @@ public class FormLoginPage extends WebTest implements WebCheck {
 //                        foundIt = (ze != null);
 //                    }
 //                    else{
-                        File flp = new File(arch.getArchiveUri()+File.separator+formLoginPage);
+                        File flp = new File(new File(arch.getURI()), formLoginPage);
                         if(flp.exists())
                             foundIt=true;
                         flp = null;

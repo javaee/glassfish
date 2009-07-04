@@ -44,8 +44,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import com.sun.enterprise.logging.LogDomains;
-import tools.com.sun.enterprise.util.XMLValidationHandler;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.tools.verifier.util.XMLValidationHandler;
 
 public class NameToken {
 

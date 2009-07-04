@@ -37,11 +37,10 @@ package com.sun.enterprise.tools.verifier.tests.ejb.entity.ejbfindermethod;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.lang.reflect.*;
-import java.util.*;
+
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbCMPEntityDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbUtils;
 import com.sun.enterprise.tools.verifier.*;
@@ -111,7 +110,7 @@ public class EjbFinderMethodException extends EjbTest implements EjbCheck {
 		int foundAtLeastOne = 0;
 		try {
 		    // retrieve the EJB Class Methods
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		    ClassLoader jcl = context.getClassLoader();
 		    Class EJBClass = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
                     // start do while loop here....

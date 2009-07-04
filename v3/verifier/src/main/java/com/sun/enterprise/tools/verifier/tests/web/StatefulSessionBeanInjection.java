@@ -43,6 +43,8 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.types.EjbReference;
+
 import java.util.Set;
 
 /**
@@ -63,10 +65,10 @@ public class StatefulSessionBeanInjection extends WebTest implements WebCheck  {
                 getVerifierContext().getComponentNameConstructor());
         result.setStatus(Result.PASSED); //default status is PASSED
         
-        Set<EjbReferenceDescriptor> s = descriptor.getEjbReferenceDescriptors();
+        Set<EjbReference> s = descriptor.getEjbReferenceDescriptors();
         if (s == null) return result;
         
-        for(EjbReferenceDescriptor ejbRefDesc : s) {
+        for(EjbReference ejbRefDesc : s) {
             EjbDescriptor ejbDescriptor = ejbRefDesc.getEjbDescriptor();
             if (ejbDescriptor instanceof EjbSessionDescriptor) { // instaceof returns false if ejbDescriptor=null.
                 String stateType = ((EjbSessionDescriptor)ejbDescriptor).getSessionType();

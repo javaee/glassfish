@@ -47,8 +47,8 @@ import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 
 import java.io.File;
-import java.util.logging.Level;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.jasper.JspC;
 import org.apache.jasper.JasperException;

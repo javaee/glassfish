@@ -35,15 +35,13 @@
  */
 package com.sun.enterprise.tools.verifier.tests.app;
 
-import com.sun.enterprise.tools.verifier.tests.app.ApplicationTest;
-
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.tools.verifier.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
+
 import java.io.*;
 import java.util.jar.*;
-
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 
 /** An enterprise archive (.ear) file must contain the XML-based deployment descriptor.
  * The deployment descriptor must be named META-INF/application.xml in the JAR file.

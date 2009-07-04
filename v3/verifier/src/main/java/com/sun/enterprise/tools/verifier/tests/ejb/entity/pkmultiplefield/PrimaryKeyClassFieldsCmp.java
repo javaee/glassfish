@@ -39,7 +39,7 @@ import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
 import java.lang.reflect.*;
-import javax.ejb.EntityBean;
+
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import java.util.*;
@@ -100,7 +100,7 @@ public class PrimaryKeyClassFieldsCmp extends EjbTest implements EjbCheck {
 		        } 
                     } else {
 			try {
-			    Context context = getVerifierContext();
+			    VerifierTestContext context = getVerifierContext();
 			    ClassLoader jcl = context.getClassLoader();
 			    Class c = Class.forName(((EjbEntityDescriptor)descriptor).getPrimaryKeyClassName(), false, getVerifierContext().getClassLoader());
       

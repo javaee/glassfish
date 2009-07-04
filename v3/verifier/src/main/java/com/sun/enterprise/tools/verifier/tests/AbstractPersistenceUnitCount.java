@@ -65,10 +65,10 @@ public abstract class AbstractPersistenceUnitCount extends VerifierTest
                 getVerifierContext().getComponentNameConstructor());
         result.setStatus(Result.PASSED); //default status is PASSED
         
-        if(rootDescriptor.getPersistenceUnitsDescriptors().size() == 0)
+        if(rootDescriptor.getExtensionsDescriptors(PersistenceUnitsDescriptor.class).size() == 0)
             result.setStatus(Result.NOT_APPLICABLE);
         
-        for(PersistenceUnitsDescriptor pus : rootDescriptor.getPersistenceUnitsDescriptors()) {
+        for(PersistenceUnitsDescriptor pus : rootDescriptor.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
             if (pus.getPersistenceUnitDescriptors().size() == 0) {
                 result.failed(
                         smh.getLocalString(

@@ -37,12 +37,18 @@
 
 package com.sun.enterprise.tools.verifier.persistence;
 
-import com.sun.enterprise.server.PersistenceUnitInfoImpl;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 
-import com.sun.enterprise.loader.InstrumentableClassLoader;
 import javax.sql.DataSource;
-import java.util.Properties;
+import javax.persistence.spi.ClassTransformer;
+import javax.persistence.EntityManagerFactory;
+import javax.naming.NamingException;
+
+import org.glassfish.persistence.jpa.PersistenceUnitInfoImpl;
+import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.glassfish.api.deployment.DeploymentContext;
 
 /**
  * This class implements {@link javax.persistence.spi.PersistenceUnitInfo}
@@ -52,27 +58,61 @@ import java.util.Properties;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class AVKPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl {
+public class AVKPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl
+{
     public AVKPersistenceUnitInfoImpl(
             PersistenceUnitDescriptor persistenceUnitDescriptor,
-            String applicationLocation,
-            InstrumentableClassLoader classLoader) {
-        super(persistenceUnitDescriptor, applicationLocation, classLoader);
+            final String applicationLocation,
+            final InstrumentableClassLoader classLoader) {
+        super(persistenceUnitDescriptor, new ProviderContainerContractInfo() {
+            public ClassLoader getClassLoader()
+            {
+                return (ClassLoader)classLoader;
+            }
+
+            public ClassLoader getTempClassloader()
+            {
+                return null;
+            }
+
+            public void addTransformer(ClassTransformer transformer)
+            {
+                // NOOP
+            }
+
+            public String getApplicationLocation()
+            {
+                return applicationLocation;
+            }
+
+            public DataSource lookupDataSource(String dataSourceName) throws NamingException
+            {
+                return null;
+            }
+
+            public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException
+            {
+                return null;
+            }
+
+            public DeploymentContext getDeploymentContext()
+            {
+                return null;
+            }
+
+            public boolean isDeploy()
+            {
+                return false;
+            }
+
+            public void registerEMF(String unitName, String persistenceRootUri,
+                                    RootDeploymentDescriptor containingBundle,
+                                    EntityManagerFactory emf)
+            {
+                // NOOP
+            }
+        }
+        );
     }
 
-    /**
-     * For verification purpose, we don't need any data-source.
-     * @return
-     */
-    @Override protected DataSource _getJtaDataSource() {
-        return null;
-    }
-
-    /**
-     * For verification purpose, we don't need any data-source.
-     * @return
-     */
-    @Override protected DataSource _getNonJtaDataSource() {
-        return null;
-    }
 }

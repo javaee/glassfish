@@ -39,9 +39,6 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
 import java.lang.ClassLoader;
-import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.tools.verifier.tests.*;
 
 /** 
  * AppClient callback handler test.
@@ -76,7 +73,7 @@ ComponentNameConstructor compName = getVerifierContext().getComponentNameConstru
 	else if (callbackHandler.length() > 0) 
 	{
 	    try {
-	        Context context = getVerifierContext();
+	        VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
             Class c = Class.forName(callbackHandler, false, getVerifierContext().getClassLoader());
 	        Object obj = c.newInstance();

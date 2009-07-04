@@ -36,9 +36,8 @@
 package com.sun.enterprise.tools.verifier.tests.web;
 
 import com.sun.enterprise.tools.verifier.Result;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.TagLibDescriptor;
-import com.sun.enterprise.tools.verifier.web.*;
 import com.sun.enterprise.tools.verifier.web.TagDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -54,7 +53,7 @@ public class TagClassExtendsValidInterface extends WebTest implements WebCheck {
     public Result check(WebBundleDescriptor descriptor) {
 
         ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
-        Context context = getVerifierContext();
+        VerifierTestContext context = getVerifierContext();
         Result result = loadWarFile(descriptor);
         TagLibDescriptor tlds[] = context.getTagLibDescriptors();
         boolean failed=false;

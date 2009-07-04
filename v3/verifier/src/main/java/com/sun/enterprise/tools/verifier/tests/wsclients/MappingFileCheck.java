@@ -36,9 +36,10 @@
 package com.sun.enterprise.tools.verifier.tests.wsclients;
 
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
+
 import java.io.*;
 
 /* 

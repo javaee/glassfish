@@ -105,6 +105,21 @@ public class APIRepository {
     }
 
     /**
+     * Initialize the singleton instance.
+     *
+     * @param is InputStream for an XML file which contains the details of APIs.
+     */
+    public synchronized static void Initialize(InputStream is)
+            throws Exception {
+        logger.logp(Level.FINE, myClsName, "Initialize", is.toString()); // NOI18N
+        //Pl refer to bug#6174887
+//        assert(me==null);
+//        if(me==null){
+        me = new APIRepository(is);
+//        }else throw new RuntimeException("Already Initialized");
+    }
+
+    /**
      * This method is used to find out if a particular class is part of 
      * a standard API or not. e.g. to find out if an EJB 2.0 application is 
      * allowed to use javax.ejb.Timer.class, call this method as 
@@ -188,9 +203,15 @@ public class APIRepository {
         traverseTree(d.getDocumentElement());
     }
     
+    private APIRepository(InputStream is) throws Exception {
+        logger.entering(myClsName, "init<>", is.toString()); // NOI18N
+        Document d = getDocumentBuilder().parse(is);
+        traverseTree(d.getDocumentElement());
+    }
+
     private DocumentBuilder getDocumentBuilder() throws Exception {
         DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
-        bf.setValidating(true);
+        bf.setValidating(false);
         bf.setIgnoringComments(false);
         bf.setIgnoringElementContentWhitespace(true);
         bf.setCoalescing(true);

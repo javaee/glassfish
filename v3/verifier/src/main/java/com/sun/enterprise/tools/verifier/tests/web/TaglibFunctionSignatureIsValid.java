@@ -40,7 +40,7 @@ package com.sun.enterprise.tools.verifier.tests.web;
 import com.sun.enterprise.tools.verifier.tests.TagLibTest;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.tools.verifier.Result;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.TagLibDescriptor;
 import com.sun.enterprise.tools.verifier.web.FunctionDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -57,7 +57,7 @@ public class TaglibFunctionSignatureIsValid extends TagLibTest implements WebChe
         ComponentNameConstructor compName =
                 getVerifierContext().getComponentNameConstructor();
         Result result = getInitializedResult();
-        Context context = getVerifierContext();
+        VerifierTestContext context = getVerifierContext();
         TagLibDescriptor tlds[] = context.getTagLibDescriptors();
         FunctionDescriptor[] fnDesc = null;
 

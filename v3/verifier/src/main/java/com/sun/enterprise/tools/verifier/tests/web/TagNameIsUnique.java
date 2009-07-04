@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.TagLibDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -57,7 +57,7 @@ public class TagNameIsUnique extends WebTest implements WebCheck {
 
     public Result check(WebBundleDescriptor descriptor) {
         ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
-        Context context = getVerifierContext();
+        VerifierTestContext context = getVerifierContext();
         Result result = loadWarFile(descriptor);
 
         TagLibDescriptor tlds[] = context.getTagLibDescriptors();

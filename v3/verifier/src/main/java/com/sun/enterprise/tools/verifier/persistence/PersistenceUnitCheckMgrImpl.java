@@ -44,11 +44,9 @@ import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import javax.enterprise.deploy.shared.ModuleType;
-import java.io.File;
 
 /**
  * This class is responsible for checking a PU represented by a {@link
@@ -65,8 +63,8 @@ public class PersistenceUnitCheckMgrImpl extends CheckMgr {
     
 
     public PersistenceUnitCheckMgrImpl(
-            FrameworkContext frameworkContext, Context context) {
-        this.frameworkContext = frameworkContext;
+            VerifierFrameworkContext verifierFrameworkContext, VerifierTestContext context) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
         this.context = context;
     }
 
@@ -79,12 +77,12 @@ public class PersistenceUnitCheckMgrImpl extends CheckMgr {
         } else {
             ModuleDescriptor mdesc =
                     BundleDescriptor.class.cast(rootDD).getModuleDescriptor();
-            final ModuleType moduleType = mdesc.getModuleType();
-            if(moduleType == ModuleType.EJB) {
+            final XModuleType moduleType = mdesc.getModuleType();
+            if(moduleType == XModuleType.EJB) {
                 moduleName = Result.EJB;
-            } else if (moduleType == ModuleType.WAR) {
+            } else if (moduleType == XModuleType.WAR) {
                 moduleName = Result.WEB;
-            } else if (moduleType == ModuleType.CAR) {
+            } else if (moduleType == XModuleType.CAR) {
                 moduleName = Result.APPCLIENT;
             } else {
                 throw new RuntimeException(
@@ -134,7 +132,7 @@ public class PersistenceUnitCheckMgrImpl extends CheckMgr {
      * @return the path to the module
      */
     protected String getAbstractArchiveUri(Descriptor descriptor) {
-        String archBase = context.getAbstractArchive().getArchiveUri();
+        String archBase = context.getAbstractArchive().getURI().toString();
         RootDeploymentDescriptor rootDD =
                 PersistenceUnitDescriptor.class.cast(descriptor).getParent().getParent();
         if(rootDD.isApplication()) {
@@ -145,8 +143,8 @@ public class PersistenceUnitCheckMgrImpl extends CheckMgr {
             if(mdesc.isStandalone()) {
                 return archBase;
             } else {
-                return archBase + File.separator +
-                        FileUtils.makeFriendlyFileName(mdesc.getArchiveUri());
+                return archBase + "/" +
+                        FileUtils.makeFriendlyFilename(mdesc.getArchiveUri());
             }
         }
     }

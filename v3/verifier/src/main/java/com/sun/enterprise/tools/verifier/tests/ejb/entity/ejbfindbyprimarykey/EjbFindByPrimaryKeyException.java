@@ -37,10 +37,9 @@ package com.sun.enterprise.tools.verifier.tests.ejb.entity.ejbfindbyprimarykey;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.lang.reflect.*;
-import java.util.*;
+
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
 import com.sun.enterprise.tools.verifier.*;
 import java.lang.ClassLoader;
@@ -95,7 +94,7 @@ public class EjbFindByPrimaryKeyException extends EjbTest implements EjbCheck {
 		int foundWarning = 0;
 		try {
 		    // retrieve the EJB Class Methods
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		    Class EJBClass = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
                     // start do while loop here....

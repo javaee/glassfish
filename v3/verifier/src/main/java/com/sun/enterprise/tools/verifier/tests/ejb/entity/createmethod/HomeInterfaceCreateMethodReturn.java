@@ -40,7 +40,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
-import java.util.*;
+
 import java.lang.reflect.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
@@ -157,7 +157,7 @@ public class HomeInterfaceCreateMethodReturn extends EjbTest implements EjbCheck
 	Class c,rc,lc,hc;
 	Method localMethods[],methods[];
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    if (remote_exists) {
 		c = Class.forName(home, false, getVerifierContext().getClassLoader());

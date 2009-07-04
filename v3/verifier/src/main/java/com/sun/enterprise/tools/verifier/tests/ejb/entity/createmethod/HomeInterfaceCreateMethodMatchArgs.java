@@ -138,7 +138,7 @@ public class HomeInterfaceCreateMethodMatchArgs extends EjbTest implements EjbCh
       boolean found = false;
       foundAtLeastOneCreate = false;
       try {
-	  Context context = getVerifierContext();
+	  VerifierTestContext context = getVerifierContext();
 	  ClassLoader jcl = context.getClassLoader();
 	  Class [] methodParameterTypes;
 	  Class [] businessMethodParameterTypes;

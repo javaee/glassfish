@@ -40,7 +40,7 @@ import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.tools.verifier.Result;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.Verifier;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
@@ -89,7 +89,7 @@ abstract public class HomeInterfaceExtendsRightInterface extends EjbTest impleme
 	    (descriptor instanceof EjbEntityDescriptor)) {
  
 	    try {
-		Context context = getVerifierContext();
+		VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		Class c = Class.forName(getClassName(descriptor), false, jcl);
 		str = getSuperInterface();

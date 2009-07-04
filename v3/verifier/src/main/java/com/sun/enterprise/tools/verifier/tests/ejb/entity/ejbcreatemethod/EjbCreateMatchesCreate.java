@@ -125,7 +125,7 @@ public class EjbCreateMatchesCreate extends EjbTest implements EjbCheck {
     private boolean commonToBothInterfaces(String remote, String local,EjbDescriptor descriptor) {
 	boolean oneFailed = false;
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class [] methodParameterTypes;
 	    Class [] businessMethodParameterTypes;

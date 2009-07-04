@@ -43,6 +43,8 @@ public class ASMain {
 
     private final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
 
+    // bundle containing module startup
+    private final static String GF_KERNEL = "org.glassfish.core.kernel";
     // Supported platform we know about, not limited to.
     public enum Platform {Felix, Knopflerfish, Equinox, Static}
 
@@ -104,16 +106,17 @@ public class ASMain {
     {
         Properties p = ArgumentManager.argsToMap(args);
         p.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
+        p.put(StartupContext.STARTUP_MODULE_NAME, GF_KERNEL);
         addRawStartupInfo(args, p);
 
         try {
             Writer writer = new StringWriter();
             p.store(writer, null);
-            System.setProperty(ARGS_KEY, writer.toString());
+            System.setProperty(StartupContext.ARGS_PROP, writer.toString());
         }
         catch (IOException e) {
             logger.info("Could not save startup parameters, will start with none");
-            System.setProperty(ARGS_KEY, "");
+            System.setProperty(StartupContext.ARGS_PROP, "");
         }
     }
 
@@ -130,16 +133,16 @@ public class ASMain {
 
         for(int i = 0; i < args.length; i++) {
             if(i > 0)
-                sb.append(ARG_SEP);
+                sb.append(StartupContext.ARG_SEP);
 
             sb.append(args[i]);
         }
 
         if(!wasStartedByCLI(p)) {
             // no sense doing this if we were started by CLI...
-            p.put(ORIGINAL_CP, System.getProperty("java.class.path"));
-            p.put(ORIGINAL_CN, ASMain.class.getName());
-            p.put(ORIGINAL_ARGS, sb.toString());
+            p.put(StartupContext.ORIGINAL_CP, System.getProperty("java.class.path"));
+            p.put(StartupContext.ORIGINAL_CN, ASMain.class.getName());
+            p.put(StartupContext.ORIGINAL_ARGS, sb.toString());
         }
     }
 
@@ -152,9 +155,4 @@ public class ASMain {
             props.getProperty("-asadmin-args")      != null;
     }
 
-    private static final String ARGS_KEY        = "hk2.startup.context.args";
-    private static final String ORIGINAL_CP     = "-startup-classpath";
-    private static final String ORIGINAL_CN     = "-startup-classname";
-    private static final String ORIGINAL_ARGS   = "-startup-args";
-    private static final String ARG_SEP         = ",,,";
 }

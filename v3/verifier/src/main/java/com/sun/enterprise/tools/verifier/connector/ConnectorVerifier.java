@@ -41,7 +41,7 @@ import java.io.IOException;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.tools.verifier.BaseVerifier;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.SpecVersionMapper;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactory;
 import com.sun.enterprise.tools.verifier.apiscan.packaging.ClassPathBuilder;
@@ -57,20 +57,20 @@ public class ConnectorVerifier extends BaseVerifier {
     private String classPath;//this is lazily populated in getClassPath()
     private boolean isASMode = false;
 
-    public ConnectorVerifier(FrameworkContext frameworkContext,
+    public ConnectorVerifier(VerifierFrameworkContext verifierFrameworkContext,
                              ConnectorDescriptor cond) {
-        this.frameworkContext = frameworkContext;
+        this.verifierFrameworkContext = verifierFrameworkContext;
         this.cond = cond;
-        this.isASMode = !frameworkContext.isPortabilityMode();
+        this.isASMode = !verifierFrameworkContext.isPortabilityMode();
     }
 
     public void verify() throws Exception {
-        if (areTestsNotRequired(frameworkContext.isConnector()))
+        if (areTestsNotRequired(verifierFrameworkContext.isConnector()))
             return;
 
         preVerification();
         createClosureCompiler();//this can be moved up to base verifier in future.
-        verify(cond, new ConnectorCheckMgrImpl(frameworkContext));
+        verify(cond, new ConnectorCheckMgrImpl(verifierFrameworkContext));
     }
 
     public Descriptor getDescriptor() {
@@ -83,7 +83,7 @@ public class ConnectorVerifier extends BaseVerifier {
     }
 
     protected String getArchiveUri() {
-        return FileUtils.makeFriendlyFileName(cond.getModuleDescriptor().getArchiveUri());
+        return FileUtils.makeFriendlyFilename(cond.getModuleDescriptor().getArchiveUri());
     }
 
     protected String[] getDDString() {
@@ -102,12 +102,12 @@ public class ConnectorVerifier extends BaseVerifier {
         if (classPath != null) return classPath;
 
         if(isASMode)
-            return (classPath = getClassPath(frameworkContext.getClassPath()));
+            return (classPath = getClassPath(verifierFrameworkContext.getClassPath()));
 
         String cp;
         if (!cond.getModuleDescriptor().isStandalone()) {
             //take the cp from the enclosing ear file
-            String ear_uri = frameworkContext.getExplodedArchivePath();
+            String ear_uri = verifierFrameworkContext.getExplodedArchivePath();
             File ear = new File(ear_uri);
             assert(ear.isDirectory());
             cp = ClassPathBuilder.buildClassPathForEar(ear);
@@ -123,14 +123,14 @@ public class ConnectorVerifier extends BaseVerifier {
             assert(module.isFile() && !module.isAbsolute());
             // exploder creates the directory replacing all dots by '_'
             File explodedModuleDir = new File(ear_uri,
-                    FileUtils.makeFriendlyFileName(module_uri));
+                    FileUtils.makeFriendlyFilename(module_uri));
             String moduleCP = ClassPathBuilder.buildClassPathForRar(
                     explodedModuleDir);
             cp = moduleCP + File.pathSeparator + earCP;
 */
         } else {
             //this is an absolute path
-            String module_uri = frameworkContext.getExplodedArchivePath();
+            String module_uri = verifierFrameworkContext.getExplodedArchivePath();
             File module = new File(module_uri);
             assert(module.isDirectory() && module.isAbsolute());
             cp = ClassPathBuilder.buildClassPathForRar(module);
@@ -147,7 +147,7 @@ public class ConnectorVerifier extends BaseVerifier {
      */
     protected void createClosureCompiler() throws IOException {
         String specVer = SpecVersionMapper.getJCAVersion(
-                frameworkContext.getJavaEEVersion());
+                verifierFrameworkContext.getJavaEEVersion());
         Object arg = (isASMode)?cond.getClassLoader():(Object)getClassPath();
         ConnectorClosureCompiler cc = new ConnectorClosureCompiler(specVer,
                 ClassFileLoaderFactory.newInstance(new Object[]{arg}));

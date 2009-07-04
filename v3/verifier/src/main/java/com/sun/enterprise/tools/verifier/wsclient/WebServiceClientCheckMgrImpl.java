@@ -36,11 +36,10 @@
 
 package com.sun.enterprise.tools.verifier.wsclient;
 
-import javax.enterprise.deploy.shared.ModuleType;
-
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 
@@ -58,8 +57,8 @@ public class WebServiceClientCheckMgrImpl extends CheckMgr implements JarCheck {
             .concat(testsListFileName);
     private String moduleName;
 
-    public WebServiceClientCheckMgrImpl(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
+    public WebServiceClientCheckMgrImpl(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     /**
@@ -69,13 +68,13 @@ public class WebServiceClientCheckMgrImpl extends CheckMgr implements JarCheck {
      */
     public void check(Descriptor descriptor) throws Exception {
         ServiceReferenceDescriptor rootDescriptor = (ServiceReferenceDescriptor) descriptor;
-        ModuleType moduleType = rootDescriptor.getBundleDescriptor()
+        XModuleType moduleType = rootDescriptor.getBundleDescriptor()
                 .getModuleType();
-        if (moduleType == ModuleType.EJB)
+        if (moduleType == XModuleType.EJB)
             moduleName = Result.EJB;
-        else if (moduleType == ModuleType.WAR)
+        else if (moduleType == XModuleType.WAR)
             moduleName = Result.WEB;
-        else if (moduleType == ModuleType.CAR)
+        else if (moduleType == XModuleType.CAR)
             moduleName = Result.APPCLIENT;
         super.check(rootDescriptor);
     }

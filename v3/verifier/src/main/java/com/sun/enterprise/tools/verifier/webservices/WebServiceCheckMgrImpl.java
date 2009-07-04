@@ -36,12 +36,12 @@
 
 package com.sun.enterprise.tools.verifier.webservices;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.Iterator;
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.tools.verifier.CheckMgr;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.JarCheck;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -60,8 +60,8 @@ public class WebServiceCheckMgrImpl extends CheckMgr implements JarCheck {
             testsListFileName);
     private String moduleName;
 
-    public WebServiceCheckMgrImpl(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
+    public WebServiceCheckMgrImpl(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     /**
@@ -71,11 +71,11 @@ public class WebServiceCheckMgrImpl extends CheckMgr implements JarCheck {
      */
     public void check(Descriptor descriptor) throws Exception {
         WebServicesDescriptor rootDescriptor = (WebServicesDescriptor) descriptor;
-        ModuleType moduleType = rootDescriptor.getBundleDescriptor()
+        XModuleType moduleType = rootDescriptor.getBundleDescriptor()
                 .getModuleType();
-        if (moduleType == ModuleType.EJB)
+        if (moduleType == XModuleType.EJB)
             moduleName = Result.EJB;
-        else if (moduleType == ModuleType.WAR)
+        else if (moduleType == XModuleType.WAR)
             moduleName = Result.WEB;
         for (Iterator itr = rootDescriptor.getWebServices().iterator();
              itr.hasNext();) {

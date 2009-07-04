@@ -103,7 +103,7 @@ abstract public class MessageBeanTest extends EjbTest {
     protected Class loadMessageBeanClass(EjbMessageBeanDescriptor descriptor, Result result) {
         try {
 	    compName = getVerifierContext().getComponentNameConstructor();
-            Context context = getVerifierContext();
+            VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
             return Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
         } catch (ClassNotFoundException e) {

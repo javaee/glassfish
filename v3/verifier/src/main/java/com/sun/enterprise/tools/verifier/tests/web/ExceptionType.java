@@ -41,7 +41,6 @@ import java.io.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.util.FileClassLoader;
 
 
 /** 
@@ -73,7 +72,7 @@ public class ExceptionType extends WebTest implements WebCheck {
 	    for (Enumeration e = descriptor.getErrorPageDescriptors() ; e.hasMoreElements() ;) {
 		foundIt = false;
                 oneExceptionType++;
-		ErrorPageDescriptorImpl errorpage = (ErrorPageDescriptorImpl) e.nextElement();
+		ErrorPageDescriptor errorpage = (ErrorPageDescriptor) e.nextElement();
                 if (errorpage.getErrorCode() == 0) {
 		    String exceptionType = errorpage.getExceptionType();
 		    if ((exceptionType != null) && (exceptionType.length() > 0)) {

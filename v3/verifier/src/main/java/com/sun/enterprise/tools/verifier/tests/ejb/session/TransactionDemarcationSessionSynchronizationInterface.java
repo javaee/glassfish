@@ -41,7 +41,7 @@ import com.sun.enterprise.deployment.ContainerTransaction;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.Verifier;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -83,7 +83,7 @@ public class TransactionDemarcationSessionSynchronizationInterface extends EjbTe
 
         if (descriptor instanceof EjbSessionDescriptor) {
             try {
-                Context context = getVerifierContext();
+                VerifierTestContext context = getVerifierContext();
                 ClassLoader jcl = context.getClassLoader();
                 Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
                 // walk up the class tree

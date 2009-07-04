@@ -39,16 +39,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 public class StringManagerHelper {
 
-    private static LocalStringManagerImpl localStrings;
-
-    /**
-     * Set local string manager
-     *
-     * @param c Class used to instantiate string manager
-     */
-    public static void setLocalStringsManager(Class c) {
-        localStrings = new LocalStringManagerImpl(c);
-    }
+    private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(Verifier.class);
 
     /**
      * Retrieve string manager helper Impl.

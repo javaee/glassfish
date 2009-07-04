@@ -40,7 +40,7 @@ import com.sun.enterprise.tools.verifier.apiscan.classfile.ClosureCompiler;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.tools.verifier.tests.util.ArchiveClassesLoadableHelper;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 import java.util.Enumeration;
 

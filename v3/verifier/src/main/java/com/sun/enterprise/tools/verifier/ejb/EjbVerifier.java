@@ -41,7 +41,7 @@ import java.io.IOException;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.tools.verifier.BaseVerifier;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.SpecVersionMapper;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactory;
 import com.sun.enterprise.tools.verifier.apiscan.packaging.ClassPathBuilder;
@@ -59,23 +59,23 @@ public class EjbVerifier extends BaseVerifier {
     private String classPath;//this is lazily populated in getClassPath()
     private boolean isASMode = false;
 
-    public EjbVerifier(FrameworkContext frameworkContext,
+    public EjbVerifier(VerifierFrameworkContext verifierFrameworkContext,
                        EjbBundleDescriptor ejbd) {
-        this.frameworkContext = frameworkContext;
+        this.verifierFrameworkContext = verifierFrameworkContext;
         this.ejbd = ejbd;
-        this.isASMode = !frameworkContext.isPortabilityMode();
+        this.isASMode = !verifierFrameworkContext.isPortabilityMode();
     }
 
     public void verify() throws Exception {
-        if (areTestsNotRequired(frameworkContext.isEjb()) &&
-                areTestsNotRequired(frameworkContext.isWebServices()) &&
-                areTestsNotRequired(frameworkContext.isWebServicesClient()) &&
-                areTestsNotRequired(frameworkContext.isPersistenceUnits()))
+        if (areTestsNotRequired(verifierFrameworkContext.isEjb()) &&
+                areTestsNotRequired(verifierFrameworkContext.isWebServices()) &&
+                areTestsNotRequired(verifierFrameworkContext.isWebServicesClient()) &&
+                areTestsNotRequired(verifierFrameworkContext.isPersistenceUnits()))
             return;
 
         preVerification();
         createClosureCompiler();//this can be moved up to base verifier in future.
-        verify(ejbd, new EjbCheckMgrImpl(frameworkContext));
+        verify(ejbd, new EjbCheckMgrImpl(verifierFrameworkContext));
     }
 
     public Descriptor getDescriptor() {
@@ -91,7 +91,7 @@ public class EjbVerifier extends BaseVerifier {
     }
 
     protected String getArchiveUri() {
-        return FileUtils.makeFriendlyFileName(ejbd.getModuleDescriptor().getArchiveUri());
+        return FileUtils.makeFriendlyFilename(ejbd.getModuleDescriptor().getArchiveUri());
     }
 
     protected String[] getDDString() {
@@ -111,12 +111,12 @@ public class EjbVerifier extends BaseVerifier {
         if (classPath != null) return classPath;
 
         if(isASMode)
-            return (classPath = getClassPath(frameworkContext.getClassPath()));
+            return (classPath = getClassPath(verifierFrameworkContext.getClassPath()));
 
         String cp;
         if (!ejbd.getModuleDescriptor().isStandalone()) {
             //take the cp from the enclosing ear file
-            String ear_uri = frameworkContext.getExplodedArchivePath();
+            String ear_uri = verifierFrameworkContext.getExplodedArchivePath();
             File ear = new File(ear_uri);
             assert(ear.isDirectory());
             String earCP = ClassPathBuilder.buildClassPathForEar(ear);
@@ -129,12 +129,12 @@ public class EjbVerifier extends BaseVerifier {
             assert(module.isFile() && !module.isAbsolute());
             // exploder creates the directory replacing all dots by '_'
             File explodedModuleDir = new File(ear_uri,
-                    FileUtils.makeFriendlyFileName(module_uri));
+                    FileUtils.makeFriendlyFilename(module_uri));
             String moduleCP = ClassPathBuilder.buildClassPathForJar(
                     explodedModuleDir);
             cp = moduleCP + File.pathSeparator + earCP;
         } else {
-            String module_uri = frameworkContext.getExplodedArchivePath();//this is an absolute path
+            String module_uri = verifierFrameworkContext.getExplodedArchivePath();//this is an absolute path
             File module = new File(module_uri);
             assert(module.isDirectory() && module.isAbsolute());
             cp = ClassPathBuilder.buildClassPathForJar(module);
@@ -151,7 +151,7 @@ public class EjbVerifier extends BaseVerifier {
      */
     protected void createClosureCompiler() throws IOException {
         String specVer = SpecVersionMapper.getEJBVersion(
-                frameworkContext.getJavaEEVersion());
+                verifierFrameworkContext.getJavaEEVersion());
         Object arg = (isASMode)?ejbd.getClassLoader():(Object)getClassPath();
         EjbClosureCompiler cc = new EjbClosureCompiler(specVer,
                 ClassFileLoaderFactory.newInstance(new Object[]{arg}));

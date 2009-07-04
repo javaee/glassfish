@@ -35,16 +35,14 @@
  */
 package com.sun.enterprise.tools.verifier.tests.app;
 
-import com.sun.enterprise.tools.verifier.tests.app.ApplicationTest;
 import java.io.*;
 import java.util.jar.*;
 import java.util.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
-
-/** 
+/**
  * The alt-dd element specifies a URI to the post-assembly deployment descriptor
  * relative to the root of the application 
  */

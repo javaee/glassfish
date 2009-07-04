@@ -101,7 +101,7 @@ implements ConnectorCheck
       }
       return result;
     }
-    Context context = getVerifierContext();
+    VerifierTestContext context = getVerifierContext();
     Class implClass = null;
     try
     {

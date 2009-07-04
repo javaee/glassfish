@@ -54,19 +54,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import com.sun.enterprise.deployment.archivist.Archivist;
-import com.sun.enterprise.deployment.archivist.ArchivistFactory;
-import com.sun.enterprise.deployment.deploy.shared.AbstractArchive;
-import com.sun.enterprise.deployment.deploy.shared.FileArchiveFactory;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.logging.LogDomains;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.tools.verifier.util.VerifierConstants;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.tools.verifier.tests.VerifierCheck;
 import com.sun.enterprise.tools.verifier.webservices.WebServiceCheckMgrImpl;
 import com.sun.enterprise.tools.verifier.persistence.PersistenceUnitCheckMgrImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 public abstract class CheckMgr {
 
@@ -97,12 +94,12 @@ public abstract class CheckMgr {
                 new Object[]{descriptor.getName()});
         String schemaVersion = getSchemaVersion(descriptor);
         context.setSchemaVersion(schemaVersion);
-        context.setJavaEEVersion(frameworkContext.getJavaEEVersion());
+        context.setJavaEEVersion(verifierFrameworkContext.getJavaEEVersion());
         context.setComponentNameConstructor(getComponentNameConstructor(descriptor));
         FileArchive moduleArchive = new FileArchive();
-        moduleArchive.open(getAbstractArchiveUri(descriptor));
+        moduleArchive.open(new File(getAbstractArchiveUri(descriptor)).toURI());
         context.setModuleArchive(moduleArchive);
-        ResultManager resultManager = frameworkContext.getResultManager();
+        ResultManager resultManager = verifierFrameworkContext.getResultManager();
         for (int i = 0; i < test.size(); i++) {
             TestInformation ti = (TestInformation) test.elementAt(i);
             String minVersion = ti.getMinimumVersion();
@@ -155,7 +152,7 @@ public abstract class CheckMgr {
     /**
      * This method sets the Context object
      */
-    public void setVerifierContext(Context context) {
+    public void setVerifierContext(VerifierTestContext context) {
         this.context = context;
     }
 
@@ -267,44 +264,51 @@ public abstract class CheckMgr {
         logger.log(Level.FINE,
                 "com.sun.enterprise.tools.verifier.CheckMgr.TestnamesPropsFile"); // NOI18N
 
-        File inputFile = getTestsFileFor(getTestsListFileName());
+        InputStream is = getTestsFileInputStreamFor(getTestsListFileName());
 
-        // parse the xml file
-        DocumentBuilder db = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder();
-        Document doc = db.parse(inputFile);
-        NodeList list = doc.getElementsByTagName("test"); // NOI18N
-        for (int i = 0; i < list.getLength(); i++) {
-            Element e = (Element) list.item(i);
-            NodeList nl = e.getChildNodes();
-            TestInformation ti = new TestInformation();
-            for (int j = 0; j < nl.getLength(); j++) {
-                String nodeName = nl.item(j).getNodeName();
-                if ("test-class".equals(nodeName.trim())) { // NOI18N
-                    Node el = nl.item(j);
-                    ti.setClassName(el.getFirstChild().getNodeValue().trim());
+        try
+        {
+            // parse the xml file
+            DocumentBuilder db = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            Document doc = db.parse(is);
+            NodeList list = doc.getElementsByTagName("test"); // NOI18N
+            for (int i = 0; i < list.getLength(); i++) {
+                Element e = (Element) list.item(i);
+                NodeList nl = e.getChildNodes();
+                TestInformation ti = new TestInformation();
+                for (int j = 0; j < nl.getLength(); j++) {
+                    String nodeName = nl.item(j).getNodeName();
+                    if ("test-class".equals(nodeName.trim())) { // NOI18N
+                        Node el = nl.item(j);
+                        ti.setClassName(el.getFirstChild().getNodeValue().trim());
+                    }
+                    if ("minimum-version".equals(nodeName.trim())) { // NOI18N
+                        Node el = nl.item(j);
+                        ti.setMinimumVersion(
+                                el.getFirstChild().getNodeValue().trim());
+                    }
+                    if ("maximum-version".equals(nodeName.trim())) { // NOI18N
+                        Node el = nl.item(j);
+                        ti.setMaximumVersion(
+                                el.getFirstChild().getNodeValue().trim());
+                    }
                 }
-                if ("minimum-version".equals(nodeName.trim())) { // NOI18N
-                    Node el = nl.item(j);
-                    ti.setMinimumVersion(
-                            el.getFirstChild().getNodeValue().trim());
-                }
-                if ("maximum-version".equals(nodeName.trim())) { // NOI18N
-                    Node el = nl.item(j);
-                    ti.setMaximumVersion(
-                            el.getFirstChild().getNodeValue().trim());
-                }
+                test.addElement(ti);
             }
-            test.addElement(ti);
-        }
 
-        if ((!frameworkContext.isPortabilityMode() && 
-                getRuntimeDDPresent()))
-            readSunONETests(test);
-        // to get the list of tests to be excluded
-        Vector<TestInformation> testExcluded = getTestFromExcludeList();
-        // to exclude the tests
-        test = getFinalTestList(test, testExcluded);
+            if ((!verifierFrameworkContext.isPortabilityMode() &&
+                    getRuntimeDDPresent()))
+                readSunONETests(test);
+            // to get the list of tests to be excluded
+            Vector<TestInformation> testExcluded = getTestFromExcludeList();
+            // to exclude the tests
+            test = getFinalTestList(test, testExcluded);
+        }
+        finally
+        {
+            is.close();
+        }
     }
 
     /**
@@ -316,24 +320,28 @@ public abstract class CheckMgr {
         logger.log(Level.FINE,
                 "com.sun.enterprise.tools.verifier.CheckMgr.TestnamesPropsFile"); // NOI18N
         // parse the xml file
-        File inputFile = getTestsFileFor(excludeListFileName);
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        InputStream is = getTestsFileInputStreamFor(excludeListFileName);
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
 
-        Document doc = builder.parse(inputFile);
-        NodeList list = doc.getElementsByTagName("test"); // NOI18N
-        for (int i = 0; i < list.getLength(); i++) {
-            Element e = (Element) list.item(i);
-            NodeList nl = e.getChildNodes();
-            TestInformation ti = new TestInformation();
-            for (int j = 0; j < nl.getLength(); j++) {
-                String nodeName = nl.item(j).getNodeName();
-                if ("test-class".equals(nodeName.trim())) { // NOI18N
-                    Node el = nl.item(j);
-                    ti.setClassName(el.getFirstChild().getNodeValue().trim());
+            Document doc = builder.parse(is);
+            NodeList list = doc.getElementsByTagName("test"); // NOI18N
+            for (int i = 0; i < list.getLength(); i++) {
+                Element e = (Element) list.item(i);
+                NodeList nl = e.getChildNodes();
+                TestInformation ti = new TestInformation();
+                for (int j = 0; j < nl.getLength(); j++) {
+                    String nodeName = nl.item(j).getNodeName();
+                    if ("test-class".equals(nodeName.trim())) { // NOI18N
+                        Node el = nl.item(j);
+                        ti.setClassName(el.getFirstChild().getNodeValue().trim());
+                    }
                 }
+                testExcluded.addElement(ti);
             }
-            testExcluded.addElement(ti);
+        } finally {
+            is.close();
         }
         return testExcluded;
     }
@@ -363,12 +371,12 @@ public abstract class CheckMgr {
 
     protected void checkWebServices(Descriptor descriptor)
             throws Exception {
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isWebServices())
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isWebServices())
             return;
         BundleDescriptor bundleDescriptor = (BundleDescriptor) descriptor;
         WebServiceCheckMgrImpl webServiceCheckMgr = new WebServiceCheckMgrImpl(
-                frameworkContext);
+                verifierFrameworkContext);
         if (bundleDescriptor.hasWebServices()) {
             WebServicesDescriptor wdesc = bundleDescriptor.getWebServices();
             webServiceCheckMgr.setVerifierContext(context);
@@ -378,13 +386,13 @@ public abstract class CheckMgr {
 
     protected void checkPersistenceUnits(RootDeploymentDescriptor descriptor)
             throws Exception {
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isPersistenceUnits())
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isPersistenceUnits())
             return;
         CheckMgr puCheckMgr = new PersistenceUnitCheckMgrImpl(
-                frameworkContext, context);
+                verifierFrameworkContext, context);
         for(PersistenceUnitsDescriptor pus :
-                descriptor.getPersistenceUnitsDescriptors()) {
+                descriptor.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
             for (PersistenceUnitDescriptor pu :
                     pus.getPersistenceUnitDescriptors()) {
                 puCheckMgr.check(pu);
@@ -399,30 +407,31 @@ public abstract class CheckMgr {
     }
 
     protected void setRuntimeDDPresent(String uri) {
-        InputStream is = null;
-        try {
-            AbstractArchive abstractArchive = new FileArchiveFactory().openArchive(
-                    uri);
-            Archivist archivist = ArchivistFactory.getArchivistForArchive(
-                    abstractArchive);
-            if(archivist != null) {
-                String ddFileEntryName = archivist.getRuntimeDeploymentDescriptorPath();
-                is = abstractArchive.getEntry(ddFileEntryName);
-                if (is != null) {
-                    isDDPresent = true;
-                }
-            }
-
-        } catch (IOException e) {
-            isDDPresent = false;
-        } finally {
-            try {
-                if(is != null)
-                    is.close();
-            } catch (Exception e) {
-                // nothing to do here
-            }
-        }
+        logger.warning("setRuntimeDDPresent method not implemented");
+//        InputStream is = null;
+//        try {
+//            AbstractArchive abstractArchive = new FileArchiveFactory().openArchive(
+//                    uri);
+//            Archivist archivist = ArchivistFactory.getArchivistForArchive(
+//                    abstractArchive);
+//            if(archivist != null) {
+//                String ddFileEntryName = archivist.getRuntimeDeploymentDescriptorPath();
+//                is = abstractArchive.getEntry(ddFileEntryName);
+//                if (is != null) {
+//                    isDDPresent = true;
+//                }
+//            }
+//
+//        } catch (IOException e) {
+//            isDDPresent = false;
+//        } finally {
+//            try {
+//                if(is != null)
+//                    is.close();
+//            } catch (Exception e) {
+//                // nothing to do here
+//            }
+//        }
     }
 
     private boolean getRuntimeDDPresent() {
@@ -434,35 +443,42 @@ public abstract class CheckMgr {
         String sunonetests = getSunONETestsListFileName();
         if (sunonetests == null)
             return;
-        File inputFile = getTestsFileFor(sunonetests);
-        if (!inputFile.exists())
+        InputStream is = getTestsFileInputStreamFor(sunonetests);
+        if (is == null)
             return;
-        DocumentBuilder db = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder();
-        Document doc = db.parse(inputFile);
-        NodeList list = doc.getElementsByTagName("test"); // NOI18N
-        for (int i = 0; i < list.getLength(); i++) {
-            Element e = (Element) list.item(i);
-            NodeList nl = e.getChildNodes();
-            TestInformation ti = new TestInformation();
-            for (int j = 0; j < nl.getLength(); j++) {
-                String nodeName = nl.item(j).getNodeName();
-                if ("test-class".equals(nodeName.trim())) { // NOI18N
-                    Node el = nl.item(j);
-                    ti.setClassName(el.getFirstChild().getNodeValue().trim());
+        try
+        {
+            DocumentBuilder db = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            Document doc = db.parse(is);
+            NodeList list = doc.getElementsByTagName("test"); // NOI18N
+            for (int i = 0; i < list.getLength(); i++) {
+                Element e = (Element) list.item(i);
+                NodeList nl = e.getChildNodes();
+                TestInformation ti = new TestInformation();
+                for (int j = 0; j < nl.getLength(); j++) {
+                    String nodeName = nl.item(j).getNodeName();
+                    if ("test-class".equals(nodeName.trim())) { // NOI18N
+                        Node el = nl.item(j);
+                        ti.setClassName(el.getFirstChild().getNodeValue().trim());
+                    }
+                    if ("minimum-version".equals(nodeName.trim())) { // NOI18N
+                        Node el = nl.item(j);
+                        ti.setMinimumVersion(
+                                el.getFirstChild().getNodeValue().trim());
+                    }
+                    if ("maximum-version".equals(nodeName.trim())) { // NOI18N
+                        Node el = nl.item(j);
+                        ti.setMaximumVersion(
+                                el.getFirstChild().getNodeValue().trim());
+                    }
                 }
-                if ("minimum-version".equals(nodeName.trim())) { // NOI18N
-                    Node el = nl.item(j);
-                    ti.setMinimumVersion(
-                            el.getFirstChild().getNodeValue().trim());
-                }
-                if ("maximum-version".equals(nodeName.trim())) { // NOI18N
-                    Node el = nl.item(j);
-                    ti.setMaximumVersion(
-                            el.getFirstChild().getNodeValue().trim());
-                }
+                test.addElement(ti);
             }
-            test.addElement(ti);
+        }
+        finally
+        {
+            is.close();
         }
     }
 
@@ -472,25 +488,21 @@ public abstract class CheckMgr {
      * @param filename file listing all web tests to run
      * @return <code>File</code> File handle for tests to run
      */
-    private File getTestsFileFor(String filename) {
-        // in case of appserver the config file will be <AS>/lib/verifier and
-        // for AVK it will be <AVK>/config/verifier.
-        // Put checks if this directory is null.
-        File f = new File(frameworkContext.getConfigDirStr());
-        f = new File(f, filename);
-        return new File(f.toString());
+    private InputStream getTestsFileInputStreamFor(String filename) {
+        // We expect all the resources to be in this pkg
+        return getClass().getClassLoader().getResourceAsStream(VerifierConstants.CFG_RESOURCE_PREFIX +filename);
     }
 
     protected String getAbstractArchiveUri(Descriptor descriptor) {
-        String archBase = context.getAbstractArchive().getArchiveUri();
+        String archBase = context.getAbstractArchive().getURI().toString();
         if (descriptor instanceof Application)
             return archBase;
         ModuleDescriptor mdesc = getBundleDescriptor(descriptor).getModuleDescriptor();
         if(mdesc.isStandalone()) {
             return archBase;
         } else {
-            return archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(mdesc.getArchiveUri());
+            return archBase + "/" +
+                    FileUtils.makeFriendlyFilename(mdesc.getArchiveUri());
         }
     }
     /**
@@ -502,9 +514,9 @@ public abstract class CheckMgr {
         return (BundleDescriptor) descriptor;
     }
 
-    protected FrameworkContext frameworkContext = null;
+    protected VerifierFrameworkContext verifierFrameworkContext = null;
     final protected boolean debug = Verifier.isDebug();
-    protected Context context = null;
+    protected VerifierTestContext context = null;
 
     /* TestExcludeList.xml Excluded tests */
     private static final String excludeListFileName = "TestExcludeList.xml"; // NOI18N

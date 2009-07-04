@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.logging;
+package com.sun.enterprise.tools.verifier.util;
 
 import java.util.Hashtable;
 import java.util.logging.Logger;
@@ -105,7 +105,10 @@ public class LogDomains {
     private LogDomains() {} // prevent instance creation
 
     public static Logger getLogger(String name) {
-        return (Logger) loggers.get(name);
+        return loggers.get(name);
     }
 
+    public static Logger getDefaultLogger() {
+        return loggers.get(AVK_VERIFIER_LOGGER);
+    }
 }

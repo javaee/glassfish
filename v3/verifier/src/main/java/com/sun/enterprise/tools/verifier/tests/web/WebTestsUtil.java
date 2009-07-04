@@ -37,7 +37,6 @@ package com.sun.enterprise.tools.verifier.tests.web;
 
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.web.WebCheckMgrImpl;
-import com.sun.enterprise.util.JarClassLoader;
 
 import java.io.*;
 import java.net.*;
@@ -77,29 +76,6 @@ public class WebTestsUtil implements VerifierEventsListener {
         return util;
     }
     
-    
-    /**
-     * <p>
-     * Extract if necessary the war file and return the path to the extracted
-     * archive file
-     * </p>
-     * @param warFilePath is the path for the warfile to extract
-     * @return the file identifier for the extracted directory
-     */
-    public File extractJarFile(File warFilePath) throws IOException {
-        
-        //if (!warFile.exists())
-	try {
-	    warFile = new File(System.getProperty("java.io.tmpdir"), "listenertmp");   
-            if (!warFile.exists()) {
-                warFile.mkdirs();
-            }
-	    VerifierUtils.copyArchiveToDir(warFilePath, warFile); 
-	    return warFile;
-	}catch (Exception e) {
-	    throw new IOException (e.getMessage());
-	}
-    }
     
     private void deleteDirectory(String oneDir) {
         
@@ -153,41 +129,6 @@ public class WebTestsUtil implements VerifierEventsListener {
         util=null;
         cl=null;
         WebCheckMgrImpl.removeVerifierEventsListener(this);        
-    }
-    
-    /**
-     * method that appends the class loader's class path
-     */
-    public void appendCLWithWebInfContents() throws Throwable{
-
-	try {
-	    File warclasses = new File(warFile, listenerClassPath);
-	    File libraries = new File(warFile, libraryClassPath);
-	    Vector<File> v = new Vector<File>();
-	    if (libraries.exists()) {
-		File[] libs = libraries.listFiles();
-		for (int i=0;i<libs.length;i++) {
-		    if (libs[i].getName().endsWith(".jar")) {
-			v.add(libs[i]);
-		    }
-		}
-	    }
-	    URL[] repositories = new URL[v.size() + 1];
-	    try {
-		repositories[0] = warclasses.toURI().toURL();
-		for (int i = 1;i <= v.size(); i++) {
-		    repositories[i] = ((File) v.elementAt(i-1)).toURI().toURL();
-		}
-	    }catch(MalformedURLException ex) {
-		throw ex;
-	    }
-	    
-	    for (int i = 0; i < repositories.length; i++) {
-		((JarClassLoader)cl).appendURL(repositories[i]);
-	    }
-	}catch (Exception e) {
-	    throw e;
-	}
     }
 
     private ClassLoader getClassLoader() {

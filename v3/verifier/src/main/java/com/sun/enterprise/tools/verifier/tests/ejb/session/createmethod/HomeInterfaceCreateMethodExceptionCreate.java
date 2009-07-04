@@ -40,7 +40,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
-import java.util.*;
+
 import java.lang.reflect.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
@@ -134,7 +134,7 @@ public class HomeInterfaceCreateMethodExceptionCreate extends EjbTest implements
 	//       methods which match ejbCreate, and returns the session Bean's
 	//       remote interface. 
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class c = Class.forName(home, false, getVerifierContext().getClassLoader());
 	    Method methods[] = c.getDeclaredMethods();

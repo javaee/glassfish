@@ -41,10 +41,9 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
-
-/** 
+/**
  * Application Client PUBLIC identifier test
  * The application client deployment descriptor has PUBLIC identifier with 
  * a PubidLiteral of 

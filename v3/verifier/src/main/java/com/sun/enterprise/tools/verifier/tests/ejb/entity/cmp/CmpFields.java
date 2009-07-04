@@ -91,7 +91,7 @@ public class CmpFields extends EjbTest implements EjbCheck {
         	    return result;                    
                 }   
                 
-		Context context = getVerifierContext();
+		VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		// RULE: container-managed fields are one of the following: 
 		// Java primitive types, Java serializable types, or references 

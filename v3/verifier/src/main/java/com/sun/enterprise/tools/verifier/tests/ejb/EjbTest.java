@@ -134,14 +134,14 @@ public abstract class EjbTest extends VerifierTest implements VerifierCheck, Ejb
 
     protected String getAbstractArchiveUri(EjbDescriptor desc) {
         String archBase = getVerifierContext().getAbstractArchive().
-                getArchiveUri();
+                getURI().toString();
         final ModuleDescriptor moduleDescriptor = desc.getEjbBundleDescriptor().
                 getModuleDescriptor();
         if (moduleDescriptor.isStandalone()) {
             return archBase; // it must be a stand-alone module; no such physical dir exists
         } else {
-            return archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(moduleDescriptor.getArchiveUri());
+            return archBase + "/" +
+                    FileUtils.makeFriendlyFilename(moduleDescriptor.getArchiveUri());
         }
     }
 

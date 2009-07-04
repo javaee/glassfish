@@ -37,7 +37,6 @@ package com.sun.enterprise.tools.verifier.tests.ejb.entity.pksinglefield;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.lang.reflect.Field;
-import java.util.*;
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
 import com.sun.enterprise.deployment.*;
@@ -69,7 +68,7 @@ public class PrimekeyFieldPrimaryKeyType extends EjbTest implements EjbCheck {
 
 	    if (EjbEntityDescriptor.CONTAINER_PERSISTENCE.equals(persistence)) {
 		try {
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		    Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
 		    try {

@@ -66,8 +66,8 @@ public class EjbCheckMgrImpl extends CheckMgr implements JarCheck {
     // the JDO Code generator needs to be initialized once per BundleDescriptor
     private JDOCodeGenerator jdc = new JDOCodeGenerator();
 
-    public EjbCheckMgrImpl(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
+    public EjbCheckMgrImpl(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     /**
@@ -83,8 +83,8 @@ public class EjbCheckMgrImpl extends CheckMgr implements JarCheck {
         // an EjbBundleDescriptor can have  WebService References
         checkWebServicesClient(descriptor);
 
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isEjb())
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isEjb())
             return;
 
         EjbBundleDescriptor bundleDescriptor = (EjbBundleDescriptor) descriptor;
@@ -104,7 +104,7 @@ public class EjbCheckMgrImpl extends CheckMgr implements JarCheck {
                 // to indicate whether we are in portable or AS mode.
                 jdc.init(bundleDescriptor, context.getClassLoader(),
                         getAbstractArchiveUri(bundleDescriptor),
-                        frameworkContext.isPortabilityMode());
+                        verifierFrameworkContext.isPortabilityMode());
             } catch (Throwable ex) {
                 context.setJDOException(ex);
             }
@@ -124,7 +124,7 @@ public class EjbCheckMgrImpl extends CheckMgr implements JarCheck {
                     result.setComponentName(new File(bundleDescriptor.getModuleDescriptor().
                             getArchiveUri()).getName());
                     setModuleName(result);
-                    frameworkContext.getResultManager().add(result);
+                    verifierFrameworkContext.getResultManager().add(result);
                 }
             } finally {
                 try {
@@ -143,11 +143,8 @@ public class EjbCheckMgrImpl extends CheckMgr implements JarCheck {
 
         if (bundleDescriptor.containsCMPEntity() &&
                 context.getJDOException() == null) {
-            try {
-                jdc.cleanup();
-            } catch (GeneratorException ge) {
-            } // eat up the exception
-            context.setJDOCodeGenerator(null);
+            jdc.cleanup();
+             context.setJDOCodeGenerator(null);
         }
     }
 
@@ -170,12 +167,12 @@ public class EjbCheckMgrImpl extends CheckMgr implements JarCheck {
 
     protected void checkWebServicesClient(Descriptor descriptor)
             throws Exception {
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isWebServicesClient())
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isWebServicesClient())
             return;
         EjbBundleDescriptor desc = (EjbBundleDescriptor) descriptor;
         WebServiceClientCheckMgrImpl webServiceClientCheckMgr = new WebServiceClientCheckMgrImpl(
-                frameworkContext);
+                verifierFrameworkContext);
         if (desc.hasWebServiceClients()) {
             Set ejbdescs = desc.getEjbs();
             Iterator ejbIt = ejbdescs.iterator();
@@ -229,13 +226,13 @@ public class EjbCheckMgrImpl extends CheckMgr implements JarCheck {
     }
 
     private String getAbstractArchiveUri(EjbBundleDescriptor desc) {
-        String archBase = context.getAbstractArchive().getArchiveUri();
+        String archBase = context.getAbstractArchive().getURI().toString();
         ModuleDescriptor mdesc = desc.getModuleDescriptor();
         if(mdesc.isStandalone()) {
             return archBase;
         } else {
-            return archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(mdesc.getArchiveUri());
+            return archBase + "/" +
+                    FileUtils.makeFriendlyFilename(mdesc.getArchiveUri());
         }
     }
 

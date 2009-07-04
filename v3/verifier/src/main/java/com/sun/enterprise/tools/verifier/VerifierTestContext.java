@@ -39,9 +39,8 @@ package com.sun.enterprise.tools.verifier;
 
 import com.sun.enterprise.tools.verifier.web.FacesConfigDescriptor;
 import org.w3c.dom.Document;
+import org.glassfish.api.deployment.archive.Archive;
 
-import com.sun.enterprise.deployment.deploy.shared.AbstractArchive;
-import com.sun.enterprise.deployment.deploy.shared.Archive;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClosureCompiler;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -51,12 +50,13 @@ import java.io.File;
 
 /**
  * <p/>
- * This class provides the classloader to all the tests.
+ * Context for each test execution
  * </p>
  *
  * @author Sheetal Vartak
  */
-public class Context {
+public class VerifierTestContext
+{
 
     private ClassLoader classLoader = null;
 
@@ -68,7 +68,7 @@ public class Context {
 
     // provides the abstract archive for use by tests which cannot get the
     // physical EAR file
-    private AbstractArchive archive = null;
+    private Archive archive = null;
 
     // this represents the archive that represents the module jar/war/rar.
     private Archive moduleArchive;
@@ -101,11 +101,11 @@ public class Context {
     // denotes the name of the component. Used in each test for reporting
     private ComponentNameConstructor compName;
 
-    public Context() {
+    public VerifierTestContext() {
         classLoader = null;
     }
 
-    public Context(ClassLoader classLoader) {
+    public VerifierTestContext(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
@@ -135,7 +135,7 @@ public class Context {
     }
     //end IASRI 4725528
 
-    public void setAbstractArchive(AbstractArchive arch) {
+    public void setAbstractArchive(Archive arch) {
         archive = arch;
     }
 
@@ -144,7 +144,7 @@ public class Context {
      *
      * @return <code>String</code> handle to current application .ear file
      */
-    public AbstractArchive getAbstractArchive() {
+    public Archive getAbstractArchive() {
         return archive;
     }
 

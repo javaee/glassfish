@@ -41,7 +41,6 @@ import java.io.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.util.FileClassLoader;
 
 
 /** 
@@ -68,7 +67,7 @@ ComponentNameConstructor compName = getVerifierContext().getComponentNameConstru
 
 	boolean na = false;
 	boolean foundIt = false;
-	Integer sessionTimeout = new Integer(descriptor.getSessionTimeout());
+	Integer sessionTimeout = descriptor.getSessionConfig().getSessionTimeout();
 	// tomcat doesn't throw exception to DOL if you pass "ten" to xml element,
 	// it initializes session-timeout to -1, hence this check
 	if (sessionTimeout.intValue() == -1 ) {

@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Logger;
 
 import com.sun.enterprise.module.bootstrap.PlatformMain;
 
@@ -52,6 +51,7 @@ import com.sun.enterprise.module.bootstrap.PlatformMain;
 @MetaInfServices(PlatformMain.class)
 public class ASMainFelix extends ASMainOSGi {
     private static final String FELIX_HOME = "FELIX_HOME";
+    protected final static String CACHE_DIR = "org.osgi.framework.storage";
 
     protected String getPreferedCacheDir() {
         return "felix-cache/gf/";
@@ -75,9 +75,11 @@ public class ASMainFelix extends ASMainOSGi {
     }
 
     @Override
-    void setUpCache(File sourceDir, File cacheDir) throws IOException {
-        System.setProperty("felix.cache.profiledir", cacheDir.getCanonicalPath());
-        super.setUpCache(sourceDir, cacheDir);    //To change body of overridden methods use File | Settings | File Templates.
+    protected void setUpCache(File sourceDir, File cacheDir) throws IOException {
+        // Starting with Felix 1.4.0, the cache dir is identified by
+        // property called org.osgi.framework.storage.
+        System.setProperty(CACHE_DIR, cacheDir.getCanonicalPath());
+        super.setUpCache(sourceDir, cacheDir);
     }
 
     protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
@@ -114,8 +116,8 @@ public class ASMainFelix extends ASMainOSGi {
         launcherThread.start();
 
         // Wait for framework to be started, otherwise the VM would exit since there is no
-        // non-daemon thread started yet. The first non-daemon thread is started
-        // when our hk2 osgi-adapter is started.
+        // non-daemon thread started yet. The first non-daemon thread
+        // will be started by some OSGi bundle (e.g. GlassFish kernel)
         launcherThread.join();
         logger.fine("Framework successfully started");
     }

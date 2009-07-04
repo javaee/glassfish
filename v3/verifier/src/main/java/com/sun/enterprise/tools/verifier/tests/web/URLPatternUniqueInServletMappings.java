@@ -41,7 +41,7 @@ import java.util.Iterator;
 public class URLPatternUniqueInServletMappings extends URLPatternUnique{ 
     protected Collection getUrlPatterns(WebBundleDescriptor descriptor) {
 	ArrayList patterns=new ArrayList();
-        for(Iterator iter=descriptor.getWebComponentDescriptorsSet().iterator();
+        for(Iterator iter=descriptor.getWebComponentDescriptors().iterator();
                 iter.hasNext();
                     patterns.addAll(((WebComponentDescriptor)iter.next()).getUrlPatternsSet()));
 	return patterns;

@@ -52,14 +52,13 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.logging.LogDomains;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.tools.verifier.util.XMLValidationHandler;
 import com.sun.enterprise.util.io.FileUtils;
-
-import tools.com.sun.enterprise.util.XMLValidationHandler;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /**
  * The base class of all the verifiers. It has all the common
@@ -70,8 +69,8 @@ import tools.com.sun.enterprise.util.XMLValidationHandler;
 public abstract class BaseVerifier {
 
     protected Logger logger = LogDomains.getLogger(LogDomains.AVK_VERIFIER_LOGGER);
-    protected FrameworkContext frameworkContext = null;
-    protected Context context = null;
+    protected VerifierFrameworkContext verifierFrameworkContext = null;
+    protected VerifierTestContext context = null;
 
     public abstract void verify() throws Exception;
 
@@ -89,7 +88,7 @@ public abstract class BaseVerifier {
         InputStream is = null;
         InputSource source = null;
 
-        String archBase = context.getAbstractArchive().getArchiveUri();
+        String archBase = new File(context.getAbstractArchive().getURI()).getAbsolutePath();
         String uri = null;
         if(descriptor instanceof Application) {
             uri = archBase;
@@ -123,16 +122,16 @@ public abstract class BaseVerifier {
 
     protected boolean areTestsNotRequired(
             boolean isModuleGivenInPartiotioningArgs) {
-        return (frameworkContext.isPartition() &&
+        return (verifierFrameworkContext.isPartition() &&
                 !isModuleGivenInPartiotioningArgs);
     }
 
     protected void preVerification() throws Exception {
         logger.log(Level.INFO, "Verifying: [ " + getArchiveUri() + " ]");
         ClassLoader loader = createClassLoader();
-        context = new Context(loader);
-        context.setAppserverMode(!frameworkContext.isPortabilityMode());
-        context.setAbstractArchive(frameworkContext.getAbstractArchive());
+        context = new VerifierTestContext(loader);
+        context.setAppserverMode(!verifierFrameworkContext.isPortabilityMode());
+        context.setAbstractArchive(verifierFrameworkContext.getArchive());
         context.setClassPath(getClassPath());
         logger.log(Level.FINE, "Using CLASSPATH: " + getClassPath());
     }
@@ -173,7 +172,7 @@ public abstract class BaseVerifier {
                                                             String ddName)
             throws IOException {
         FileArchive arch = new FileArchive();
-        arch.open(uri);
+        arch.open(new File(uri).toURI());
         InputStream deploymentEntry = arch.getEntry(ddName);
         return deploymentEntry;
     }

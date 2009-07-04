@@ -41,9 +41,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
-
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /**
  * Web PUBLIC identifier test
@@ -83,7 +81,7 @@ public class WebPublicID extends WebTest implements WebCheck {
                          FileArchive arch = new FileArchive();
                          arch.open(uri);
                          deploymentEntry = arch.getEntry(
-                         WebDeploymentDescriptorFile.DESC_PATH);
+                         "WEB-INF/web.xml");
                  if (deploymentEntry != null) {
                      BufferedReader in = new BufferedReader(new InputStreamReader(deploymentEntry));
                      String s = in.readLine();

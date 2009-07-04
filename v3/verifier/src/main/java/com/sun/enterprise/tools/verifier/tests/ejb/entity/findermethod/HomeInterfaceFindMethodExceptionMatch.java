@@ -145,7 +145,7 @@ public class HomeInterfaceFindMethodExceptionMatch extends EjbTest implements Ej
 	// RULE: entity home interface are only allowed to have find<METHOD> 
 	//       methods which match ejbfind<METHOD>, and exceptions match Bean's
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 	    Class c = Class.forName(home, false, getVerifierContext().getClassLoader());
 	    Method methods[] = c.getDeclaredMethods();

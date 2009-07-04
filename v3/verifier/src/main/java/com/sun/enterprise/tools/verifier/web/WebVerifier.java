@@ -43,12 +43,11 @@ import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.tools.verifier.BaseVerifier;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.SpecVersionMapper;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactory;
 import com.sun.enterprise.tools.verifier.apiscan.packaging.ClassPathBuilder;
 import com.sun.enterprise.tools.verifier.apiscan.stdapis.WebClosureCompiler;
-import com.sun.enterprise.util.FileUtil;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.loader.EJBClassLoader;
 
@@ -64,11 +63,11 @@ public class WebVerifier extends BaseVerifier {
     private boolean isASMode = false;
     private File jspOutDir = null;
 
-    public WebVerifier(FrameworkContext frameworkContext,
+    public WebVerifier(VerifierFrameworkContext verifierFrameworkContext,
                        WebBundleDescriptor webd) {
-        this.frameworkContext = frameworkContext;
+        this.verifierFrameworkContext = verifierFrameworkContext;
         this.webd = webd;
-        this.isASMode = !frameworkContext.isPortabilityMode();
+        this.isASMode = !verifierFrameworkContext.isPortabilityMode();
     }
 
     /**
@@ -78,10 +77,10 @@ public class WebVerifier extends BaseVerifier {
      * @throws Exception
      */
     public void verify() throws Exception {
-        if (areTestsNotRequired(frameworkContext.isWeb()) &&
-                areTestsNotRequired(frameworkContext.isWebServices()) &&
-                areTestsNotRequired(frameworkContext.isWebServicesClient()) &&
-                areTestsNotRequired(frameworkContext.isPersistenceUnits()))
+        if (areTestsNotRequired(verifierFrameworkContext.isWeb()) &&
+                areTestsNotRequired(verifierFrameworkContext.isWebServices()) &&
+                areTestsNotRequired(verifierFrameworkContext.isWebServicesClient()) &&
+                areTestsNotRequired(verifierFrameworkContext.isPersistenceUnits()))
             return;
 
         jspOutDir = getJspOutDir();
@@ -89,12 +88,12 @@ public class WebVerifier extends BaseVerifier {
             preVerification();
             context.setOutDir(jspOutDir);
             createClosureCompiler();
-            verify(webd, new WebCheckMgrImpl(frameworkContext));
+            verify(webd, new WebCheckMgrImpl(verifierFrameworkContext));
         } finally {
-            // frameworkContext.getJspOutDir() will be non-null only when the 
+            // verificationContext.getJspOutDir() will be non-null only when the
             // call is from deployment backend and precompilejsp is set
-            if(frameworkContext.getJspOutDir()==null)
-                FileUtil.deleteDir(jspOutDir);
+            if(verifierFrameworkContext.getJspOutDir()==null)
+                FileUtils.whack(jspOutDir);
         }
     }
 
@@ -124,7 +123,7 @@ public class WebVerifier extends BaseVerifier {
      * @return name of the war archive
      */
     protected String getArchiveUri() {
-        return FileUtils.makeFriendlyFileName(webd.getModuleDescriptor().getArchiveUri());
+        return FileUtils.makeFriendlyFilename(webd.getModuleDescriptor().getArchiveUri());
     }
 
     /**
@@ -147,14 +146,14 @@ public class WebVerifier extends BaseVerifier {
         if (classPath != null) return classPath;
 
         if(isASMode)
-            return (classPath = getClassPath(frameworkContext.getClassPath()) + 
+            return (classPath = getClassPath(verifierFrameworkContext.getClassPath()) +
                                 File.pathSeparator + 
                                 jspOutDir.getAbsolutePath());
 
         String cp;
         if (!webd.getModuleDescriptor().isStandalone()) {
             //take the cp from the enclosing ear file
-            String ear_uri = frameworkContext.getExplodedArchivePath();
+            String ear_uri = verifierFrameworkContext.getExplodedArchivePath();
             File ear = new File(ear_uri);
             assert(ear.isDirectory());
             String earCP = ClassPathBuilder.buildClassPathForEar(ear);
@@ -167,18 +166,18 @@ public class WebVerifier extends BaseVerifier {
             assert(module.isFile() && !module.isAbsolute());
             // exploder creates the directory replacing all dots by '_'
             File explodedModuleDir = new File(ear_uri,
-                    FileUtils.makeFriendlyFileName(module_uri));
+                    FileUtils.makeFriendlyFilename(module_uri));
             String moduleCP = ClassPathBuilder.buildClassPathForWar(
                     explodedModuleDir);
             cp = moduleCP + File.pathSeparator + earCP;
         } else {
-            String module_uri = frameworkContext.getExplodedArchivePath();//this is an absolute path
+            String module_uri = verifierFrameworkContext.getExplodedArchivePath();//this is an absolute path
             File module = new File(module_uri);
             assert(module.isDirectory() && module.isAbsolute());
             cp = ClassPathBuilder.buildClassPathForWar(module);
         }
         String as_lib_root=System.getProperty("com.sun.aas.installRoot")+File.separator+"lib"+File.separator;
-        if (frameworkContext.getJavaEEVersion().compareTo("5") >= 0) { // NOI18N
+        if (verifierFrameworkContext.getJavaEEVersion().compareTo("5") >= 0) { // NOI18N
             cp += File.pathSeparator+as_lib_root+"jsf-impl.jar"+File.pathSeparator+ // NOI18N
                   as_lib_root+"appserv-jstl.jar"+File.pathSeparator; // NOI18N
         }
@@ -195,7 +194,7 @@ public class WebVerifier extends BaseVerifier {
      */
     protected void createClosureCompiler() throws IOException {
         String specVer = SpecVersionMapper.getWebAppVersion(
-                frameworkContext.getJavaEEVersion());
+                verifierFrameworkContext.getJavaEEVersion());
         Object arg = (isASMode)?context.getClassLoader():(Object)getClassPath();
         WebClosureCompiler cc = new WebClosureCompiler(specVer,
                 ClassFileLoaderFactory.newInstance(new Object[]{arg}));
@@ -209,9 +208,9 @@ public class WebVerifier extends BaseVerifier {
      * @return the output directory where compiled JSPs will be put.
      */ 
     private File getJspOutDir(){
-        // frameworkContext.getJspOutDir() will be non-null only when the 
+        // verificationContext.getJspOutDir() will be non-null only when the
         // call is from deployment backend and precompilejsp is set
-        File jspOutDir = frameworkContext.getJspOutDir();
+        File jspOutDir = verifierFrameworkContext.getJspOutDir();
         if(jspOutDir != null) {
             ModuleDescriptor moduleDescriptor = webd.getModuleDescriptor();
             if(moduleDescriptor.isStandalone())

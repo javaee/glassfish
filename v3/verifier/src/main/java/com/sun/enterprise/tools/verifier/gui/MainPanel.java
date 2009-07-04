@@ -52,6 +52,7 @@ import java.util.logging.LogRecord;
 import com.sun.enterprise.tools.verifier.ResultManager;
 import com.sun.enterprise.tools.verifier.StringManagerHelper;
 import com.sun.enterprise.tools.verifier.Verifier;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 
 public class MainPanel extends JPanel implements Runnable {
 
@@ -240,8 +241,11 @@ public class MainPanel extends JPanel implements Runnable {
                             ".Status_Verifying", // NOI18N
                                     "Verifying archive {0}...", // NOI18N
                                     new Object[]{jarName})));
-                    ResultManager resultManager = getVerifier().verify(jarName);
-                    Iterator itr = resultManager.getError().iterator();
+                    VerifierFrameworkContext vfc = new VerifierFrameworkContext();
+                    vfc.setJarFileName(jarFile.getAbsolutePath());
+                    getVerifier().init(vfc);
+                    getVerifier().verify();
+                    Iterator itr = vfc.getResultManager().getError().iterator();
                     while (itr.hasNext()) {
                         LogRecord log = (LogRecord) itr.next();
                         log.setLoggerName(jarFile.getName());
@@ -253,8 +257,8 @@ public class MainPanel extends JPanel implements Runnable {
                                     "Writing report..."))); // NOI18N
                     verifier.generateReports();
 
-                    if (resultManager.getFailedCount() +
-                            resultManager.getErrorCount() ==
+                    if (vfc.getResultManager().getFailedCount() +
+                            vfc.getResultManager().getErrorCount() ==
                             0) { // this code might not be called
                         resultsPanel.addDetailText((smh.getLocalString
                                 ("com.sun.enterprise.tools.verifier.gui.MainPanel" + // NOI18N

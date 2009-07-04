@@ -84,6 +84,9 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
         return Lifecycle.SERVER;
     }
 
+    public void moduleResolved(Module module) {
+    }
+
     public synchronized void moduleStarted(Module module) {
         if (module == null) return;
         String str = module.getName();

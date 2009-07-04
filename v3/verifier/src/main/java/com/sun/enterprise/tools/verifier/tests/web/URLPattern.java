@@ -100,19 +100,16 @@ public abstract class URLPattern extends WebTest implements WebCheck {
         Enumeration e=descriptor.getSecurityConstraints();
         while (e.hasMoreElements()) {
             SecurityConstraint securityConstraint = (SecurityConstraint) e.nextElement();
-            Enumeration ee = securityConstraint.getWebResourceCollections();
-            while (ee.hasMoreElements()) {
-                WebResourceCollection webResourceCollection = (WebResourceCollection) ee.nextElement();
-                Enumeration eee = webResourceCollection.getUrlPatterns();
-                while (eee.hasMoreElements()) {
-                    checkUrlPatternAndSetResult((String) eee.nextElement(), descriptor, result, compName);
+            for (WebResourceCollection webResourceCollection : securityConstraint.getWebResourceCollections()) {
+                for (String s : webResourceCollection.getUrlPatterns()) {
+                    checkUrlPatternAndSetResult(s, descriptor, result, compName);
                 }
             }
         }
     }
 
     private void checkServletMappings(WebBundleDescriptor descriptor, Result result, ComponentNameConstructor compName){
-        for(Iterator iter=descriptor.getWebComponentDescriptorsSet().iterator();iter.hasNext();)
+        for(Iterator iter=descriptor.getWebComponentDescriptors().iterator();iter.hasNext();)
             for(Iterator iter2=((WebComponentDescriptor)iter.next()).getUrlPatternsSet().iterator(); iter2.hasNext();
                 checkUrlPatternAndSetResult((String)iter2.next(), descriptor, result, compName));
     }

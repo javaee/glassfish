@@ -36,11 +36,11 @@
 package com.sun.enterprise.tools.verifier.tests.ejb;
 
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
+import com.sun.enterprise.deploy.shared.FileArchive;
+
 import java.io.*;
 import java.util.jar.*;
 

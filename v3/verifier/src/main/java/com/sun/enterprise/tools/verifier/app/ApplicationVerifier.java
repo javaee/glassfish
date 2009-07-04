@@ -39,7 +39,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.tools.verifier.BaseVerifier;
 import com.sun.enterprise.tools.verifier.CheckMgr;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 
 /**
  * @author Vikas Awasthi
@@ -48,9 +48,9 @@ public class ApplicationVerifier extends BaseVerifier {
 
     private Application application = null;
 
-    public ApplicationVerifier(FrameworkContext frameworkContext,
+    public ApplicationVerifier(VerifierFrameworkContext verifierFrameworkContext,
                                Application application) {
-        this.frameworkContext = frameworkContext;
+        this.verifierFrameworkContext = verifierFrameworkContext;
         this.application = application;
     }
 
@@ -61,13 +61,13 @@ public class ApplicationVerifier extends BaseVerifier {
      * @throws Exception
      */
     public void verify() throws Exception {
-        if (areTestsNotRequired(frameworkContext.isApp()) &&
-                areTestsNotRequired(frameworkContext.isPersistenceUnits()))
+        if (areTestsNotRequired(verifierFrameworkContext.isApp()) &&
+                areTestsNotRequired(verifierFrameworkContext.isPersistenceUnits()))
             return;
         preVerification();
-        if(frameworkContext.isPortabilityMode())
+        if(verifierFrameworkContext.isPortabilityMode())
             application.setClassLoader(context.getClassLoader());
-        CheckMgr checkMgrImpl = new AppCheckMgrImpl(frameworkContext);
+        CheckMgr checkMgrImpl = new AppCheckMgrImpl(verifierFrameworkContext);
         verify(application, checkMgrImpl);
     }
 
@@ -83,7 +83,7 @@ public class ApplicationVerifier extends BaseVerifier {
      * @return String archive base
      */
     protected String getArchiveUri() {
-        return frameworkContext.getJarFileName();
+        return verifierFrameworkContext.getJarFileName();
     }
 
     protected String[] getDDString() {

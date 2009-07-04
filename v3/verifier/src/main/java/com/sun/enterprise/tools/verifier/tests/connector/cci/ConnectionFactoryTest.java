@@ -110,7 +110,7 @@ public abstract class ConnectionFactoryTest extends CCITest {
       if (className == null) 
       return null;
 
-      Context context = getVerifierContext();
+      VerifierTestContext context = getVerifierContext();
       ClassLoader jcl = context.getRarClassLoader();
       return jcl.loadClass(className);   */ 
   }

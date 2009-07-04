@@ -45,6 +45,7 @@ import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -67,10 +68,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.sun.enterprise.logging.LogDomains;
-import com.sun.enterprise.server.Constants;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
 import com.sun.enterprise.tools.verifier.util.VerifierConstants;
-import com.sun.enterprise.tools.verifier.StringManagerHelper;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
  * This class is responsible for generating the final output report file in xml and txt file.
@@ -105,22 +105,22 @@ public class ReportHandler {
     private Document document;
     private String textResult; // verification result in TEXT form.
     private ResultManager resultMgr;
-    private FrameworkContext frameworkContext;
+    private VerifierFrameworkContext verifierFrameworkContext;
     private Logger logger = LogDomains.getLogger(LogDomains.AVK_VERIFIER_LOGGER);
 
     /**
      * Verifier uses this constructor to generate test report.
-     * @param frameworkContext
+     * @param verifierFrameworkContext
      */
-    public ReportHandler(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
-        this.resultMgr = frameworkContext.getResultManager();
+    public ReportHandler(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
+        this.resultMgr = verifierFrameworkContext.getResultManager();
 
-        String onlyJarFile = new File(frameworkContext.getJarFileName()).getName();
-        String outputDirName = frameworkContext.getOutputDirName();
+        String onlyJarFile = new File(verifierFrameworkContext.getJarFileName()).getName();
+        String outputDirName = verifierFrameworkContext.getOutputDirName();
         outputDirName = (outputDirName == null) ?
                 "" : outputDirName + File.separator;
-        if (frameworkContext.isUseTimeStamp()) {
+        if (verifierFrameworkContext.isUseTimeStamp()) {
             SimpleDateFormat dateFormatter = new SimpleDateFormat(
                     "yyyyMMddhhmmss"); // NOI18N
             outputFileStr = outputDirName + onlyJarFile +
@@ -136,7 +136,7 @@ public class ReportHandler {
      */
     public void generateAllReports() throws IOException {
         try {
-            createResultsDocument(frameworkContext.getReportLevel());
+            createResultsDocument(verifierFrameworkContext.getReportLevel());
             writeToXmlFile();
             writeToTxtFile();
             writeToConsole();
@@ -149,9 +149,9 @@ public class ReportHandler {
      * writes the final output report file to the console.
      */
     private void writeToConsole() {
-        if (frameworkContext.isUsingGui())
+        if (verifierFrameworkContext.isUsingGui())
             return;
-        if (frameworkContext.isBackend()) {
+        if (verifierFrameworkContext.isBackend()) {
             logger.log(Level.SEVERE, textResult);
         } else {
             logger.log(Level.INFO, getClass().getName() + ".resultSummary",
@@ -161,7 +161,7 @@ public class ReportHandler {
         }
         if((resultMgr.getFailedCount() + resultMgr.getWarningCount()
             + resultMgr.getErrorCount()) != 0
-            || frameworkContext.getReportLevel() == VerifierConstants.ALL)
+            || verifierFrameworkContext.getReportLevel() == VerifierConstants.ALL)
             logger.log(Level.INFO, getClass().getName() +
                 ".LookInResultsTestAssertions", // NOI18N
                 new Object[]{outputFileStr + ".txt"}); // NOI18N
@@ -397,7 +397,7 @@ public class ReportHandler {
      * @throws IOException
      */
     private void writeToTxtFile() throws IOException {
-        File xslFile = getLocalizedXSLFile();
+        InputStream xslFile = getLocalizedXSLFile();
         
         Document dynamicDocument = document;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -427,10 +427,9 @@ public class ReportHandler {
      * Transforms the xml report to txt report.
      * @param xmlResult
      * @param stylesheet
-     * @param summaryFile
      * @throws IOException
      */
-    private void generateText(Document xmlResult, File stylesheet,
+    private void generateText(Document xmlResult, InputStream stylesheet,
                               OutputStream output)
             throws IOException {
         // Produce Output:
@@ -440,8 +439,7 @@ public class ReportHandler {
             Transformer transformer;
             TransformerFactory tFactory = TransformerFactory.newInstance();
             if (stylesheet != null) {
-                FileInputStream fis = new FileInputStream(stylesheet);
-                styleSource = new StreamSource(fis);
+                styleSource = new StreamSource(stylesheet);
                 transformer = tFactory.newTransformer(styleSource);
             } else {
                 transformer = tFactory.newTransformer();
@@ -555,33 +553,30 @@ public class ReportHandler {
      * directory. If not, return the default one which is english
      * </p>
      */
-    private File getLocalizedXSLFile() {
-        String xslHome = System.getProperty(Constants.VERIFIER_XSL);
-        if (xslHome == null) {
-            xslHome = System.getProperty(Constants.INSTALL_ROOT) +
-                    File.separator +
-                    "lib" + // NOI18N
-                    File.separator +
-                    "verifier"; // NOI18N
-        }
+    private InputStream getLocalizedXSLFile() {
+        InputStream is;
         Locale locale = Locale.getDefault();
         
         // check first with the language and country
-        String xslFileName = xslHome + File.separator + XSL_FILE + "_" + locale.toString() + ".xsl"; // NOI18N
-        File xslFile = new File(xslFileName);
-        if (xslFile.exists()) {
-            return xslFile;
+        String xslFileName = VerifierConstants.CFG_RESOURCE_PREFIX +
+                XSL_FILE + "_" + locale.toString() + ".xsl"; // NOI18N
+        final ClassLoader loader = getClass().getClassLoader();
+        is = loader.getResourceAsStream(xslFileName);
+        if (is != null) {
+            return is;
         }
         // check now with the language
-        xslFileName = xslHome + File.separator + XSL_FILE + "_" + locale.getLanguage() + ".xsl"; // NOI18N
-        xslFile = new File(xslFileName);
-        if (xslFile.exists()) {
-            return xslFile;
+        xslFileName = VerifierConstants.CFG_RESOURCE_PREFIX +
+                XSL_FILE + "_" + locale.getLanguage() + ".xsl"; // NOI18N
+        is = loader.getResourceAsStream(xslFileName);
+        if (is != null) {
+            return is;
         }
         // just take the english version now...
-        xslFileName = xslHome + File.separator + XSL_FILE +  ".xsl"; // NOI18N
-        xslFile = new File(xslFileName);
-        return xslFile;
+        xslFileName = VerifierConstants.CFG_RESOURCE_PREFIX +
+                XSL_FILE + ".xsl"; // NOI18N
+        is = loader.getResourceAsStream(xslFileName);
+        return is;
     }
 
 }

@@ -78,7 +78,7 @@ public class TransactionDemarcationHomeInterface extends EjbTest implements EjbC
 	    // bean's home interface.
 	    if (descriptor instanceof EjbSessionDescriptor) {
 		String transactionType = descriptor.getTransactionType();
-		Context context = getVerifierContext();
+		VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
                 if (EjbDescriptor.CONTAINER_TRANSACTION_TYPE.equals(transactionType)) {
 		    boolean oneFailed = false;
@@ -165,7 +165,7 @@ public class TransactionDemarcationHomeInterface extends EjbTest implements EjbC
     private boolean commonToBothInterfaces(String home, EjbSessionDescriptor descriptor, String methodIntf) {
 	boolean oneFailed = false;
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class c = Class.forName(home, false, getVerifierContext().getClassLoader());
 	    Method methods[] = c.getDeclaredMethods();

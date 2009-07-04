@@ -37,10 +37,9 @@ package com.sun.enterprise.tools.verifier.tests.ejb.entity.findermethod;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.lang.reflect.*;
-import java.util.*;
+
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
 import com.sun.enterprise.tools.verifier.*;
 import java.lang.ClassLoader;
@@ -144,7 +143,7 @@ public class HomeInterfaceFindMethodReturn extends EjbTest implements EjbCheck {
     private boolean commonToBothInterfaces(String home, String remote, EjbDescriptor descriptor) {
 	boolean oneFailed = false;
 	try {
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		    Class c = Class.forName(home, false, getVerifierContext().getClassLoader());
 		    Class rc = Class.forName(remote, false, getVerifierContext().getClassLoader());

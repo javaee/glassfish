@@ -42,7 +42,7 @@ import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.tools.verifier.*;
 
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /** 
  * Ejb PUBLIC identifier test

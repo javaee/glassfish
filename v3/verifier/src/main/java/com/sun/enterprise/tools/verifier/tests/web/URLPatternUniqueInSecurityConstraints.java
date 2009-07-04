@@ -43,9 +43,9 @@ public class URLPatternUniqueInSecurityConstraints extends URLPatternUnique{
     protected Collection getUrlPatterns(WebBundleDescriptor descriptor) {
         ArrayList<Object>patterns=new ArrayList<Object>();
         for (Enumeration e=descriptor.getSecurityConstraints(); e.hasMoreElements();){
-            for (Enumeration ee = ((SecurityConstraint) e.nextElement()).getWebResourceCollections(); ee.hasMoreElements();) {
-                for (Enumeration eee=((WebResourceCollection) ee.nextElement()).getUrlPatterns(); eee.hasMoreElements();) {
-                    patterns.add(eee.nextElement());
+            for (WebResourceCollection c :  ((SecurityConstraint) e.nextElement()).getWebResourceCollections()) {
+                for (String s : c.getUrlPatterns()) {
+                    patterns.add(s);
                 }
             }
         }

@@ -85,7 +85,7 @@ public abstract class ApplicationTest extends VerifierTest implements VerifierCh
     protected String getAbstractArchiveUri(Application desc) {
 
      String archBase = getVerifierContext().getAbstractArchive().
-                       getArchiveUri();
+                       getURI().toString();
      return archBase;
     }
 

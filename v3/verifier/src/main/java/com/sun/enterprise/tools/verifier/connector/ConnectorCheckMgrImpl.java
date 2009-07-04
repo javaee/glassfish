@@ -48,7 +48,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.io.ConnectorDeploymentDescriptorFile;
 import com.sun.enterprise.tools.verifier.CheckMgr;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.JarCheck;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -71,8 +71,8 @@ public class ConnectorCheckMgrImpl extends CheckMgr implements JarCheck {
     private static final String sunONETestsListFileName = getSunPrefix()
             .concat(testsListFileName);
 
-    public ConnectorCheckMgrImpl(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
+    public ConnectorCheckMgrImpl(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     public void check(Descriptor descriptor) throws Exception {
@@ -87,7 +87,7 @@ public class ConnectorCheckMgrImpl extends CheckMgr implements JarCheck {
                     Result result = new ParseDD().validateConnectorDescriptor(is);
                     result.setComponentName(getArchiveUri(descriptor));
                     setModuleName(result);
-                    frameworkContext.getResultManager().add(result);
+                    verifierFrameworkContext.getResultManager().add(result);
                 }
             } finally {
                try {

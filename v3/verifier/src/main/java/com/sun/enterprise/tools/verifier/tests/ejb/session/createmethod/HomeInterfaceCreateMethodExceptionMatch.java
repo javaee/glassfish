@@ -38,7 +38,7 @@ package com.sun.enterprise.tools.verifier.tests.ejb.session.createmethod;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
+
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
 import java.util.*;
@@ -157,7 +157,7 @@ public class HomeInterfaceCreateMethodExceptionMatch extends EjbTest implements 
 	// RULE: session home interface are only allowed to have create 
 	//       methods which match ejbCreate, and exceptions match Bean's
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class methodReturnType;
 	    Class [] methodParameterTypes;

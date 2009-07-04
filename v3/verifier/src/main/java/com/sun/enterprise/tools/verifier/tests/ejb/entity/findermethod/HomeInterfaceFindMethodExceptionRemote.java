@@ -40,7 +40,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
-import java.util.*;
+
 import java.lang.reflect.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
@@ -102,7 +102,7 @@ public class HomeInterfaceFindMethodExceptionRemote extends EjbTest implements E
 		}
 
 		try {
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		    Class c = Class.forName(descriptor.getHomeClassName(), false, getVerifierContext().getClassLoader());
 		    Method methods[] = c.getDeclaredMethods();

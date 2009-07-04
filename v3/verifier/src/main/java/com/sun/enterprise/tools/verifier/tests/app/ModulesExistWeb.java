@@ -85,7 +85,7 @@ public class ModulesExistWeb extends ApplicationTest implements AppCheck {
 //                            try {
                               String archBase = getAbstractArchiveUri(descriptor);
                               String moduleName = wbd.getModuleDescriptor().getArchiveUri();
-                              String moduleDir = FileUtils.makeFriendlyFileName(moduleName);
+                              String moduleDir = FileUtils.makeFriendlyFilename(moduleName);
                               File f = new File(archBase + File.separator + moduleDir);
                               moduleDirExists = f.isDirectory();
 //                            }catch (Exception e) { throw  new IOException(e.getMessage());}

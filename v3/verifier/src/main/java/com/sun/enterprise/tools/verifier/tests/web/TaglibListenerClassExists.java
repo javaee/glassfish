@@ -37,7 +37,7 @@
 package com.sun.enterprise.tools.verifier.tests.web;
 
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.TagLibDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -53,7 +53,7 @@ public class TaglibListenerClassExists extends WebTest implements WebCheck {
 
     public Result check(WebBundleDescriptor descriptor) {
         ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
-        Context context = getVerifierContext();
+        VerifierTestContext context = getVerifierContext();
         Result result = getInitializedResult();
         TagLibDescriptor tlds[] = context.getTagLibDescriptors();
         ClassLoader cl = context.getClassLoader();

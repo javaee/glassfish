@@ -36,7 +36,6 @@
 package com.sun.enterprise.tools.verifier.tests.ejb.entity.primarykeyclass;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
-import java.util.*;
 import com.sun.enterprise.tools.verifier.tests.ejb.RmiIIOPUtils;
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -81,7 +80,7 @@ public class EjbPrimaryKeyClassRmiIIOP extends EjbTest implements EjbCheck {
   	  
 	    if (!primaryKeyType.equals("")) {
 		try {
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		    ClassLoader jcl = context.getClassLoader();
 		    Class c = Class.forName(((EjbEntityDescriptor)descriptor).getPrimaryKeyClassName(), false, getVerifierContext().getClassLoader());
 		    if (RmiIIOPUtils.isValidRmiIIOPValueType(c)) {

@@ -35,13 +35,10 @@
  */
 package com.sun.enterprise.tools.verifier.tests.web;
 
-import com.sun.enterprise.tools.verifier.tests.web.WebTest;
 import java.util.*;
-import java.io.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.util.FileClassLoader;
 
 
 /** Error code element contains an HTTP error code within web application test.
@@ -128,7 +125,7 @@ public class ErrorCode extends WebTest implements WebCheck {
 	    for (Enumeration e = descriptor.getErrorPageDescriptors() ; e.hasMoreElements() ;) {
 		foundIt = false;
                 oneErrorCode++;
-		ErrorPageDescriptorImpl errorpage = (ErrorPageDescriptorImpl) e.nextElement();
+		ErrorPageDescriptor errorpage = (ErrorPageDescriptor) e.nextElement();
                 String exceptionType = errorpage.getExceptionType();
                 if (!((exceptionType != null) && (exceptionType.length() > 0))) {
 		    Integer errorCode = new Integer( errorpage.getErrorCode() );

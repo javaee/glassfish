@@ -173,7 +173,7 @@ public class TransactionDemarcationComponentInterface extends EjbTest implements
 	    Arrays.sort(EJBObjectMethods);
 	    
 	    // retrieve the component interface methods
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 	    Class componentInterfaceClass = Class.forName(component, false, getVerifierContext().getClassLoader());
 	    Method [] componentInterfaceMethods = componentInterfaceClass.getMethods();

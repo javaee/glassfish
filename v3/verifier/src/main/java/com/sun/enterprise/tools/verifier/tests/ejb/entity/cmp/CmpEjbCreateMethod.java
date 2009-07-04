@@ -38,7 +38,7 @@ package com.sun.enterprise.tools.verifier.tests.ejb.entity.cmp;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
-import javax.ejb.EntityBean;
+
 import java.lang.reflect.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
@@ -85,7 +85,7 @@ public class CmpEjbCreateMethod extends EjbTest implements EjbCheck {
 		boolean oneFailed = false;
 		int foundAtLeastOne = 0;
 		try {
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		    ClassLoader jcl = context.getClassLoader();
 		    Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
 		    Method [] methods1 = c.getDeclaredMethods();

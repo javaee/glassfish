@@ -41,15 +41,11 @@
 
 package com.sun.enterprise.tools.verifier.tests.connector;
 
-import java.io.File;
 import com.sun.enterprise.tools.verifier.tests.connector.ConnectorTest;
 import com.sun.enterprise.tools.verifier.tests.connector.ConnectorCheck;
 import com.sun.enterprise.tools.verifier.Result;
-import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.tools.verifier.tests.*;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Test that "resourceadapter-class" implements java.io.Serializable
@@ -98,7 +94,7 @@ public class CheckResourceAdapterClassSerializable
 }
 /*  CR: 6388236
     }
-    Context context = getVerifierContext();
+    VerifierTestContext context = getVerifierContext();
     ClassLoader jcl = context.getRarClassLoader();
     Class implClass = null;
     try

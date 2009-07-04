@@ -196,7 +196,7 @@ public class PrimaryKeyClassOpt extends EjbTest implements EjbCheck {
     private boolean commonToBothInterfaces(String home,EjbDescriptor descriptor) {
 	boolean oneFailed = false;
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class c = Class.forName(home, false, getVerifierContext().getClassLoader());
 	    Method [] ejbFinderMethods = c.getDeclaredMethods();

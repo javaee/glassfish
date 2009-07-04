@@ -38,8 +38,8 @@ package com.sun.enterprise.tools.verifier.tests.web;
 import java.util.*;
 import java.lang.reflect.Modifier;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.tools.verifier.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /**
  * All Servlet class of an war bundle should be declared in the deployment

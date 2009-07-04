@@ -89,7 +89,7 @@ public class DuplicatePUNameTest extends VerifierTest implements VerifierCheck {
         } else {
             // for war/ejb-jar/appclient-jar, PU name has to be unique within the whole BundleDescriptor.
             result = new ArrayList<PersistenceUnitDescriptor>();
-            for (PersistenceUnitsDescriptor pus : pu.getParent().getParent().getPersistenceUnitsDescriptors()) {
+            for (PersistenceUnitsDescriptor pus : pu.getParent().getParent().getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
                 for(PersistenceUnitDescriptor nextPU : pus.getPersistenceUnitDescriptors()) {
                     result.add(nextPU);
                 }

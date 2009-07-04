@@ -43,7 +43,7 @@ package com.sun.enterprise.tools.verifier.tests;
 
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 
 /**
  * <p>
@@ -66,6 +66,6 @@ public interface VerifierCheck {
      * performed
      */
     public Result check(Descriptor descriptor);
-    public Context getVerifierContext();
-    public void setVerifierContext(Context context);
+    public VerifierTestContext getVerifierContext();
+    public void setVerifierContext(VerifierTestContext context);
 }

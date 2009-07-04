@@ -72,7 +72,16 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             throw new FileNotFoundException(uri.getSchemeSpecificPart());
         }
     }
-    
+
+    /**
+     * @see #open(URI)
+     * @param uri a string representing URI
+     */
+    public void open(String uri) throws IOException
+    {
+        open(URI.create(uri));
+    }
+
     /**
      * Get the size of the archive
      * @return tje the size of this archive or -1 on error

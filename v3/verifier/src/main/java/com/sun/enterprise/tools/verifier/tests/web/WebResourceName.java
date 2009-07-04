@@ -35,109 +35,130 @@
  */
 package com.sun.enterprise.tools.verifier.tests.web;
 
-import com.sun.enterprise.tools.verifier.tests.web.WebTest;
-import java.util.*;
-import java.io.*;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.tools.verifier.*;
-import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.util.FileClassLoader;
+import com.sun.enterprise.deployment.SecurityConstraintImpl;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebResourceCollectionImpl;
+import com.sun.enterprise.deployment.web.WebResourceCollection;
+import com.sun.enterprise.tools.verifier.Result;
+import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
+
+import java.util.Enumeration;
 
 
-/** 
- * The web-resource-name element contains the name of this web resource 
+/**
+ * The web-resource-name element contains the name of this web resource
  * collection
  */
-public class WebResourceName extends WebTest implements WebCheck { 
+public class WebResourceName extends WebTest implements WebCheck
+{
 
-    
-    /** 
-     * The web-resource-name element contains the name of this web resource 
+
+    /**
+     * The web-resource-name element contains the name of this web resource
      * collection
      *
      * @param descriptor the Web deployment descriptor
-     *   
      * @return <code>Result</code> the results for this assertion
      */
-    public Result check(WebBundleDescriptor descriptor) {
+    public Result check(WebBundleDescriptor descriptor)
+    {
 
-	Result result = getInitializedResult();
-	ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
+        Result result = getInitializedResult();
+        ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
 
-	if (descriptor.getSecurityConstraints().hasMoreElements()) {
-	    boolean oneFailed = false;
+        if (descriptor.getSecurityConstraints().hasMoreElements())
+        {
+            boolean oneFailed = false;
             int na = 0;
             int noSc = 0;
-	    boolean foundIt = false;
-	    // get the security constraint's in this .war
-	    for (Enumeration e = descriptor.getSecurityConstraints() ; e.hasMoreElements() ;) {
-		foundIt = false;
+            boolean foundIt = false;
+            // get the security constraint's in this .war
+            for (Enumeration e = descriptor.getSecurityConstraints(); e.hasMoreElements();)
+            {
+                foundIt = false;
                 noSc++;
-		SecurityConstraintImpl securityConstraintImpl = (SecurityConstraintImpl) e.nextElement();
-                if (securityConstraintImpl.getWebResourceCollections().hasMoreElements()) {
-		    for (Enumeration ee = securityConstraintImpl.getWebResourceCollections(); ee.hasMoreElements();) {
-			WebResourceCollectionImpl webResCollection = (WebResourceCollectionImpl) ee.nextElement();
-			String webRCName = webResCollection.getName();
-			// cannot be blank
-			if (webRCName.length() > 0) {
-			    foundIt = true;
-			} else {
-			    foundIt = false;
-			}
-     
-			if (foundIt) {
-			    result.addGoodDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-			    result.addGoodDetails(smh.getLocalString
-						  (getClass().getName() + ".passed",
-						   "web-resource-name [ {0} ] contains the name of this web resource collection within web application [ {1} ]",
-						   new Object[] {webRCName, descriptor.getName()}));
-			} else {
-			    if (!oneFailed) {
-				oneFailed = true;
-			    }
-			    result.addErrorDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-			    result.addErrorDetails(smh.getLocalString
-						   (getClass().getName() + ".failed",
-						    "Error: web-resource-name [ {0} ] does not contain the name of this web resource collection within web application [ {1} ]",
-						    new Object[] {webRCName, descriptor.getName()}));
-			}
-		    }
-                } else {
-		    result.addNaDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
+                SecurityConstraintImpl securityConstraintImpl = (SecurityConstraintImpl) e.nextElement();
+                if (!securityConstraintImpl.getWebResourceCollections().isEmpty())
+                {
+                    for (WebResourceCollection webResCollection: securityConstraintImpl.getWebResourceCollections())
+                    {
+                        String webRCName = webResCollection.getName();
+                        // cannot be blank
+                        if (webRCName.length() > 0)
+                        {
+                            foundIt = true;
+                        }
+                        else
+                        {
+                            foundIt = false;
+                        }
+
+                        if (foundIt)
+                        {
+                            result.addGoodDetails(smh.getLocalString
+                                    ("tests.componentNameConstructor",
+                                            "For [ {0} ]",
+                                            new Object[]{compName.toString()}));
+                            result.addGoodDetails(smh.getLocalString
+                                    (getClass().getName() + ".passed",
+                                            "web-resource-name [ {0} ] contains the name of this web resource collection within web application [ {1} ]",
+                                            new Object[]{webRCName, descriptor.getName()}));
+                        }
+                        else
+                        {
+                            if (!oneFailed)
+                            {
+                                oneFailed = true;
+                            }
+                            result.addErrorDetails(smh.getLocalString
+                                    ("tests.componentNameConstructor",
+                                            "For [ {0} ]",
+                                            new Object[]{compName.toString()}));
+                            result.addErrorDetails(smh.getLocalString
+                                    (getClass().getName() + ".failed",
+                                            "Error: web-resource-name [ {0} ] does not contain the name of this web resource collection within web application [ {1} ]",
+                                            new Object[]{webRCName, descriptor.getName()}));
+                        }
+                    }
+                }
+                else
+                {
+                    result.addNaDetails(smh.getLocalString
+                            ("tests.componentNameConstructor",
+                                    "For [ {0} ]",
+                                    new Object[]{compName.toString()}));
                     result.notApplicable(smh.getLocalString
-					 (getClass().getName() + ".notApplicable2",
-					  "There are no web web resource collections in the web security constraint within [ {0} ]",
-					  new Object[] {descriptor.getName()}));
+                            (getClass().getName() + ".notApplicable2",
+                                    "There are no web web resource collections in the web security constraint within [ {0} ]",
+                                    new Object[]{descriptor.getName()}));
                     na++;
                 }
-	    }
-	    if (oneFailed) {
-		result.setStatus(Result.FAILED);
-            } else if (na == noSc) {
+            }
+            if (oneFailed)
+            {
+                result.setStatus(Result.FAILED);
+            }
+            else if (na == noSc)
+            {
                 result.setStatus(Result.NOT_APPLICABLE);
-	    } else {
-		result.setStatus(Result.PASSED);
-	    }
-	} else {
-	    result.addNaDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-	    result.notApplicable(smh.getLocalString
-				 (getClass().getName() + ".notApplicable",
-				  "There are no web-resource-name elements within the web archive [ {0} ]",
-				  new Object[] {descriptor.getName()}));
-	}
+            }
+            else
+            {
+                result.setStatus(Result.PASSED);
+            }
+        }
+        else
+        {
+            result.addNaDetails(smh.getLocalString
+                    ("tests.componentNameConstructor",
+                            "For [ {0} ]",
+                            new Object[]{compName.toString()}));
+            result.notApplicable(smh.getLocalString
+                    (getClass().getName() + ".notApplicable",
+                            "There are no web-resource-name elements within the web archive [ {0} ]",
+                            new Object[]{descriptor.getName()}));
+        }
 
-	return result;
+        return result;
     }
 }

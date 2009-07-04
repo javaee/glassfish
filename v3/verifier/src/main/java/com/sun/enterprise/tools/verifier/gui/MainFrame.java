@@ -101,7 +101,6 @@ public class MainFrame extends JFrame {
     }
 
     public static JFrame getDeploytoolVerifierFrame(File jarFile) {
-        StringManagerHelper.setLocalStringsManager(Verifier.class);
         if (verifierPanel == null) {
             verifierPanel = new MainFrame();
         } else {

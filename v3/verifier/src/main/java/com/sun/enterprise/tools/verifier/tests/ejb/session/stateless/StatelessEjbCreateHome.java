@@ -72,7 +72,7 @@ public class StatelessEjbCreateHome extends EjbTest implements EjbCheck {
 		// RULE: The stateless session enterprise Bean class must define a 
 		// single ejbCreate method that takes no arguments. 
 		try {
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		    Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
 		    Method m= null;

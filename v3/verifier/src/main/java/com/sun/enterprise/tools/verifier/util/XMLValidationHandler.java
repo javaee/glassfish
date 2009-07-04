@@ -34,7 +34,7 @@
  * holder.
  */
 
-package tools.com.sun.enterprise.util;
+package com.sun.enterprise.tools.verifier.util;
 
 import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
@@ -45,7 +45,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import com.sun.enterprise.deployment.xml.DTDRegistry;
-import com.sun.enterprise.logging.LogDomains;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+
 import java.util.Hashtable;
 import java.util.logging.Logger;
 import java.util.logging.Level;

@@ -87,7 +87,7 @@ public class ModulesExistAppClient extends ApplicationTest implements AppCheck {
                                  getAbstractArchiveUri(descriptor);
                               String moduleName =
 			         acd.getModuleDescriptor().getArchiveUri();
-                              String moduleDir = FileUtils.makeFriendlyFileName(moduleName);
+                              String moduleDir = FileUtils.makeFriendlyFilename(moduleName);
                               File f = new File(archBase + File.separator 
                                            + moduleDir);
                               moduleDirExists = f.isDirectory();

@@ -39,7 +39,6 @@ package com.sun.enterprise.tools.verifier.tests.ejb.messagebean;
 
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.tools.verifier.Result;
-import com.sun.enterprise.jms.IASJmsUtil;
 import com.sun.enterprise.tools.verifier.tests.*;
 
 
@@ -66,15 +65,18 @@ public class HasValidMessageSelector extends MessageBeanTest {
         String messageSelector = descriptor.getJmsMessageSelector();
         if (messageSelector != null) {
             try {
-                IASJmsUtil.validateJMSSelector(messageSelector);
-        	result.addGoodDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));	
-		result.passed(smh.getLocalString
-	            ("com.sun.enterprise.tools.verifier.tests.ejb.messagebean.HasValidMessageSelector.failed",
-                    "Message-driven bean [ {0} ] defines a valid message selector",
-                    new Object[] {descriptor.getName()}));                                            
+                // TODO(Sahoo): Fix me
+                // I don't see IAMJmsUtil.class in v3 yet, so currently
+                // this test does nothing.
+//                IASJmsUtil.validateJMSSelector(messageSelector);
+//        	result.addGoodDetails(smh.getLocalString
+//				       ("tests.componentNameConstructor",
+//					"For [ {0} ]",
+//					new Object[] {compName.toString()}));
+//		result.passed(smh.getLocalString
+//	            ("com.sun.enterprise.tools.verifier.tests.ejb.messagebean.HasValidMessageSelector.failed",
+//                    "Message-driven bean [ {0} ] defines a valid message selector",
+//                    new Object[] {descriptor.getName()}));
             } catch (Exception e) {
         	result.addErrorDetails(smh.getLocalString
 				       ("tests.componentNameConstructor",
@@ -83,7 +85,7 @@ public class HasValidMessageSelector extends MessageBeanTest {
 		result.failed(smh.getLocalString
 	            ("com.sun.enterprise.tools.verifier.tests.ejb.messagebean.HasValidMessageSelector.failed",
                     "Error : Message-driven bean [ {0} ] defines an invalid message selector",
-                    new Object[] {descriptor.getName()}));                            
+                    new Object[] {descriptor.getName()}));
             }           
         } else {
 	    result.addNaDetails(smh.getLocalString

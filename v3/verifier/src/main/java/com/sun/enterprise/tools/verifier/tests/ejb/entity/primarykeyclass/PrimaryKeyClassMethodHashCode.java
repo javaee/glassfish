@@ -36,7 +36,7 @@
 package com.sun.enterprise.tools.verifier.tests.ejb.entity.primarykeyclass;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
-import java.util.*;
+
 import java.lang.reflect.*;
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -83,7 +83,7 @@ public class PrimaryKeyClassMethodHashCode extends EjbTest implements EjbCheck {
 
 		    // RULE: Primary key class must defined HashCode() method
 		    try {
-			Context context = getVerifierContext();
+			VerifierTestContext context = getVerifierContext();
 			ClassLoader jcl = context.getClassLoader();
 			// retrieve the EJB primary key class 
 			Class c = Class.forName(((EjbEntityDescriptor)descriptor).getPrimaryKeyClassName(), false, getVerifierContext().getClassLoader());

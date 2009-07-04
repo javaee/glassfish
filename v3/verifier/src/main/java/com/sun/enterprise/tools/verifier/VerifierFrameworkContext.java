@@ -39,9 +39,9 @@ import java.io.File;
 import java.util.List;
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.deploy.shared.AbstractArchive;
-import com.sun.enterprise.server.Constants;
 import com.sun.enterprise.tools.verifier.util.VerifierConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.deployment.archive.Archive;
 
 /**
  * This is a data class that contains all the argument specific stuff and
@@ -50,7 +50,8 @@ import com.sun.enterprise.tools.verifier.util.VerifierConstants;
  *
  * @author Vikas Awasthi
  */
-public class FrameworkContext {
+public class VerifierFrameworkContext
+{
 
     private boolean app = false;
     private boolean appClient = false;
@@ -69,8 +70,8 @@ public class FrameworkContext {
     private String jarFileName = null;
     private String outputDirName = null;
     private String explodedArchivePath = null;
-    private ResultManager resultManager = null;
-    private AbstractArchive abstractArchive = null;
+    private ResultManager resultManager = new ResultManager();
+    private Archive archive = null;
     private boolean isPortabilityMode = false;
     private String domainDir = System.getProperty("com.sun.aas.installRoot")+
                                                     File.separator+"domains"+ // NOI18N
@@ -80,7 +81,7 @@ public class FrameworkContext {
     private Application application = null;
     private File jspOutDir = null;
 
-    private String configDirStr = System.getProperty(Constants.INSTALL_ROOT) +
+    private String configDirStr = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
             File.separator +
             "lib" + // NOI18N
             File.separator +
@@ -363,12 +364,12 @@ public class FrameworkContext {
         this.explodedArchivePath = explodedArchivePath;
     }
 
-    public AbstractArchive getAbstractArchive() {
-        return abstractArchive;
+    public Archive getArchive() {
+        return archive;
     }
 
-    public void setAbstractArchive(AbstractArchive abstractArchive) {
-        this.abstractArchive = abstractArchive;
+    public void setArchive(Archive archive) {
+        this.archive = archive;
     }
 
     public ResultManager getResultManager() {

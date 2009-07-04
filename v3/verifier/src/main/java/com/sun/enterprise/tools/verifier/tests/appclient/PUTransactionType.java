@@ -70,7 +70,7 @@ public class PUTransactionType extends VerifierTest implements VerifierCheck {
         addErrorDetails(result, getVerifierContext().getComponentNameConstructor());
         result.setStatus(Result.PASSED); // default status is PASSED
         
-        for(PersistenceUnitsDescriptor pus : appClient.getPersistenceUnitsDescriptors()) {
+        for(PersistenceUnitsDescriptor pus : appClient.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
             for(PersistenceUnitDescriptor nextPU : pus.getPersistenceUnitDescriptors()) {
                 if("JTA".equals(nextPU.getTransactionType())) {
                     result.failed(smh.getLocalString(getClass().getName() + ".puName",

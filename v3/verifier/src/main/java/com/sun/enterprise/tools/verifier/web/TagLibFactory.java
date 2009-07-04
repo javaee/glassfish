@@ -57,19 +57,19 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import tools.com.sun.enterprise.util.XMLValidationHandler;
 
 import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
-import com.sun.enterprise.logging.LogDomains;
-import com.sun.enterprise.tools.verifier.Context;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.tools.verifier.util.XMLValidationHandler;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.StringManagerHelper;
 import com.sun.enterprise.tools.verifier.TagLibDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /** This is the factory class used for obtainig the TagLibDescriptor objects for
  * the tag libraries defined in the war archive.
@@ -80,8 +80,8 @@ import com.sun.enterprise.util.io.FileUtils;
 public class TagLibFactory {
 
     private DocumentBuilder builder;
-    private Context context;
-    private FrameworkContext frameworkContext;
+    private VerifierTestContext context;
+    private VerifierFrameworkContext verifierFrameworkContext;
     private Logger logger = LogDomains.getLogger(
             LogDomains.AVK_VERIFIER_LOGGER);
     private boolean uninitialised = false;
@@ -92,11 +92,11 @@ public class TagLibFactory {
      * Constructor to create a factory object.
      *
      * @param context
-     * @param frameworkContext
+     * @param verifierFrameworkContext
      */
-    public TagLibFactory(Context context, FrameworkContext frameworkContext) {
+    public TagLibFactory(VerifierTestContext context, VerifierFrameworkContext verifierFrameworkContext) {
         this.context = context;
-        this.frameworkContext = frameworkContext;
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     /**
@@ -141,7 +141,7 @@ public class TagLibFactory {
                                                         taglibLocation,
                                                         e.getLocalizedMessage()}));
                     logRecord.setThrown(e);
-                    frameworkContext.getResultManager().log(logRecord);
+                    verifierFrameworkContext.getResultManager().log(logRecord);
                 }
                 continue; // we are continuing with creating the next document.
             }
@@ -218,13 +218,13 @@ public class TagLibFactory {
         else
             location = "WEB-INF/" + location; // NOI18N
         ModuleDescriptor moduleDesc = webd.getModuleDescriptor();
-        String archBase = context.getAbstractArchive().getArchiveUri();
+        String archBase = context.getAbstractArchive().getURI().getPath();
         String uri = null;
         if(moduleDesc.isStandalone()){
             uri = archBase;
         } else {
             uri = archBase + File.separator + 
-                FileUtils.makeFriendlyFileName(moduleDesc.getArchiveUri());
+                FileUtils.makeFriendlyFilename(moduleDesc.getArchiveUri());
         }
         FileArchive arch = new FileArchive();
         arch.open(uri);

@@ -47,8 +47,7 @@ import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
 import java.io.*;
 import java.util.jar.*;
 import com.sun.enterprise.deployment.*;
-
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /** enterprise-beans
  *    pm-descriptors ?

@@ -37,15 +37,15 @@ package com.sun.enterprise.tools.verifier.tests.web;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.deployment.ErrorPageDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilter;
 import com.sun.enterprise.deployment.web.AppListenerDescriptor;
-import com.sun.enterprise.deployment.web.ErrorPageDescriptor;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClosureCompiler;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClosureCompilerImpl;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.tools.verifier.tests.util.WebArchiveLoadableHelper;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 import java.util.*;
 import java.io.File;

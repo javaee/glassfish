@@ -40,7 +40,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.TagLibDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -61,7 +61,7 @@ public class TaglibFunctionMethodTest extends TagLibTest implements WebCheck {
         ComponentNameConstructor compName =
                 getVerifierContext().getComponentNameConstructor();
         Result result = getInitializedResult();
-        Context context = getVerifierContext();
+        VerifierTestContext context = getVerifierContext();
         TagLibDescriptor tlds[] = context.getTagLibDescriptors();
         FunctionDescriptor[] fnDesc = null;
 

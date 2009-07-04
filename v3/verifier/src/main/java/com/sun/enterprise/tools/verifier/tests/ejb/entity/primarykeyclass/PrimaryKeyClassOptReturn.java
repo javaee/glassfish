@@ -123,7 +123,7 @@ public class PrimaryKeyClassOptReturn extends EjbTest implements EjbCheck {
                 // <prim-key-class> to "java.lang.Object"
                 if (primkey.equals("java.lang.Object")) {
 		    try {
-			Context context = getVerifierContext();
+			VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 			Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
 			boolean returnsJLO = false;

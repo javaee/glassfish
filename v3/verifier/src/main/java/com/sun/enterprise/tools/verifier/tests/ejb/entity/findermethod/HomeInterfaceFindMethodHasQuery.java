@@ -39,11 +39,10 @@ import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import com.sun.enterprise.deployment.*;
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
-import java.util.*;
+
 import java.lang.reflect.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
-import com.sun.enterprise.tools.verifier.tests.ejb.EjbUtils;
 
 /** 
  * Entity beans home interface find<METHOD> method throws 
@@ -138,7 +137,7 @@ public class HomeInterfaceFindMethodHasQuery extends EjbTest implements EjbCheck
 	try {
 	    PersistenceDescriptor pers = ((EjbCMPEntityDescriptor)descriptor).getPersistenceDescriptor();
 
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class c = Class.forName(home, false, getVerifierContext().getClassLoader());
 	    Method methods[] = c.getDeclaredMethods();

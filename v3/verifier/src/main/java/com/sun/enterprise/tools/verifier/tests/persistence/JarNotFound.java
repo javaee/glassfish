@@ -42,7 +42,6 @@ import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.backend.DeploymentUtils;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.tests.VerifierCheck;
 import com.sun.enterprise.tools.verifier.tests.VerifierTest;
@@ -51,6 +50,8 @@ import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * jar files specified using <jar-file> element in persistence.xml should be
@@ -121,7 +122,7 @@ public class JarNotFound extends VerifierTest implements VerifierCheck {
     private File getAbsolutePuRootFile(
             PersistenceUnitDescriptor persistenceUnitDescriptor) {
         final String applicationLocation =
-                getVerifierContext().getAbstractArchive().getArchiveUri();
+                getVerifierContext().getAbstractArchive().getURI().getPath();
         File absolutePuRootFile = new File(applicationLocation,
                 getAbsolutePuRoot(applicationLocation, 
                 persistenceUnitDescriptor).replace('/', File.separatorChar));

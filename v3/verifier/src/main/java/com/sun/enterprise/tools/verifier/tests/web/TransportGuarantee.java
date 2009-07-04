@@ -41,8 +41,6 @@ import java.io.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.util.FileClassLoader;
-
 
 /** 
  * The transport-guarantee element specifies that the communication between 

@@ -39,7 +39,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.tools.verifier.CheckMgr;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.JarCheck;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -58,8 +58,8 @@ public class AppCheckMgrImpl extends CheckMgr implements JarCheck {
     private static final String sunONETestsListFileName = getSunPrefix()
             .concat(testsListFileName);
 
-    public AppCheckMgrImpl(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
+    public AppCheckMgrImpl(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     /**
@@ -71,8 +71,8 @@ public class AppCheckMgrImpl extends CheckMgr implements JarCheck {
         // run persistence tests first.
         checkPersistenceUnits(Application.class.cast(descriptor));
 
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isApp())
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isApp())
             return;
         // all tests for embedding application
         super.check(descriptor);

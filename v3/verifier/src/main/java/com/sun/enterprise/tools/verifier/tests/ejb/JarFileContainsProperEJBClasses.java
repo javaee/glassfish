@@ -38,7 +38,6 @@ package com.sun.enterprise.tools.verifier.tests.ejb;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
-import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
 
 /** 
@@ -63,7 +62,7 @@ public class JarFileContainsProperEJBClasses extends EjbTest implements EjbCheck
 	ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
 
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
         Class c = Class.forName(descriptor.getEjbClassName(), false,
                              getVerifierContext().getClassLoader());
             // if we are dealing with a CMP2 entity bean, the class is abstract..

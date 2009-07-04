@@ -37,10 +37,9 @@ package com.sun.enterprise.tools.verifier.tests.ejb.entity.findbyprimarykey;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.lang.reflect.*;
-import java.util.*;
+
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbCheck;
 import com.sun.enterprise.tools.verifier.*;
 import java.lang.ClassLoader;
@@ -120,7 +119,7 @@ public class HomeInterfaceFindByPrimaryKeyArg extends EjbTest implements EjbChec
 	boolean onlyOneParam = false;
 	try {
 	    // retrieve the home interface methods
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class homeInterfaceClass = Class.forName(home, false, getVerifierContext().getClassLoader());
 	    Method [] ejbFinderMethods = homeInterfaceClass.getDeclaredMethods();

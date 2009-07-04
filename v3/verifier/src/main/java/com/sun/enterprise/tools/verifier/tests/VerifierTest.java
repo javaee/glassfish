@@ -48,12 +48,12 @@ import java.util.jar.JarFile;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.net.URI;
 
 import com.sun.enterprise.tools.verifier.Verifier;
 import com.sun.enterprise.tools.verifier.StringManagerHelper;
 import com.sun.enterprise.tools.verifier.Result;
-import com.sun.enterprise.tools.verifier.Context;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -62,7 +62,8 @@ import com.sun.org.apache.xpath.internal.XPathAPI;
 import com.sun.org.apache.xpath.internal.NodeSet;
 import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 import com.sun.enterprise.tools.verifier.XpathPrefixResolver;
-import com.sun.enterprise.logging.LogDomains;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.org.apache.xpath.internal.objects.XObject;
 
 /**
@@ -96,19 +97,19 @@ abstract public class VerifierTest extends Object {
     protected static final com.sun.enterprise.util.LocalStringManagerImpl smh =
 	StringManagerHelper.getLocalStringsManager();
 
-    private Context context = null;
+    private VerifierTestContext context = null;
 
     /**
      * This method sets the Context object
      */
-    public void setVerifierContext(Context context) {
+    public void setVerifierContext(VerifierTestContext context) {
 	this.context = context;
     }
     
     /**
      * This method provides the Context object
      */
-    public Context getVerifierContext() {
+    public VerifierTestContext getVerifierContext() {
 	return context;
     }
     
@@ -326,7 +327,7 @@ abstract public class VerifierTest extends Object {
 //        if (file==null){
             try{
                 arch = new FileArchive();
-                arch.open(uri);
+                arch.open(URI.create(uri));
             }catch(Exception e){}   
 //        }else{
 //            try {
@@ -356,7 +357,7 @@ abstract public class VerifierTest extends Object {
 //            }
 //        }
 //        else{
-            File urif = new File(arch.getArchiveUri()+File.separator+fileName);
+            File urif = new File(new File(arch.getURI()), fileName);
             if(urif.exists()){
                 result.passed(smh.getLocalString
                 ("com.sun.enterprise.tools.verifier.tests.VerifierTest.fileexistence.passed",

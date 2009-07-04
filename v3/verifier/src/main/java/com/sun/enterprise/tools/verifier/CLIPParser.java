@@ -38,7 +38,7 @@ package com.sun.enterprise.tools.verifier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.enterprise.logging.LogDomains;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
 
 public class CLIPParser {
 

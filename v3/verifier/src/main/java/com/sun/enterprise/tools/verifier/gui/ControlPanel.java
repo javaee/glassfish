@@ -68,7 +68,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.enterprise.logging.LogDomains;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
 import com.sun.enterprise.tools.verifier.StringManagerHelper;
 import com.sun.enterprise.tools.verifier.util.VerifierConstants;
 

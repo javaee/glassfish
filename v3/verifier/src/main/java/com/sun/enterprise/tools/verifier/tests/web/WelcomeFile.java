@@ -150,7 +150,7 @@ public class WelcomeFile extends WebTest implements WebCheck {
     private Set dynamicResourceUrlPatterns = new HashSet();
     
     private void findDynamicResourceURIs(WebBundleDescriptor descriptor) {
-        Set webComponentDescriptors = descriptor.getWebComponentDescriptorsSet();
+        Set webComponentDescriptors = descriptor.getWebComponentDescriptors();
         for(Iterator iter = webComponentDescriptors.iterator(); iter.hasNext(); ) {
             WebComponentDescriptor webComponentDescriptor = (WebComponentDescriptor) iter.next();
             dynamicResourceUrlPatterns.addAll(webComponentDescriptor.getUrlPatternsSet());

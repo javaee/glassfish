@@ -137,7 +137,7 @@ public abstract class CCITest extends ConnectorTest {
       ConnectionDefDescriptor connDefDesc = (ConnectionDefDescriptor)
         iter.next();
       String intf = connDefDesc.getConnectionIntf();
-      Context context = getVerifierContext();
+      VerifierTestContext context = getVerifierContext();
       ClassLoader jcl = context.getRarClassLoader();
       Class intfClass = null;
       try

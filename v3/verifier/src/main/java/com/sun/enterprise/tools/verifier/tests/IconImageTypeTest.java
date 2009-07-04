@@ -39,13 +39,13 @@ package com.sun.enterprise.tools.verifier.tests;
 
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.SpecVersionMapper;
-import com.sun.enterprise.tools.verifier.util.VerifierConstants;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.deploy.shared.Archive;
 
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Enumeration;
+
+import org.glassfish.api.deployment.archive.Archive;
 
 /**
  * This test is deried from Java EE platform spec.
@@ -166,8 +166,8 @@ public class IconImageTypeTest extends VerifierTest implements VerifierCheck{
         // this is for itself
         collectIconURIs((Descriptor)webBundleDescriptor);
         // now collect for each servlet
-        for (Object o : webBundleDescriptor.getWebComponentDescriptorsSet()){
-            collectIconURIs(WebComponentDescriptor.class.cast(o));
+        for (WebComponentDescriptor o : webBundleDescriptor.getWebComponentDescriptors()){
+            collectIconURIs(o);
         }
         // now collect for each servlet filter
         for (Object o : webBundleDescriptor.getServletFilterDescriptors()) {

@@ -43,7 +43,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Logger;
 
 import com.sun.enterprise.module.bootstrap.PlatformMain;
 
@@ -125,7 +124,7 @@ public class ASMainEquinox extends ASMainOSGi {
     }
 
     @Override
-    void setUpCache(File sourceDir, File cacheDir) throws IOException {
+    protected void setUpCache(File sourceDir, File cacheDir) throws IOException {
         super.setUpCache(sourceDir, cacheDir);
         /*
         * Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html

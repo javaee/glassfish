@@ -109,7 +109,7 @@ abstract public class QueryMethodTest extends CMPTest {
 	boolean allIsWell = true;
 	boolean found = false;
 	String ejbClassName = descriptor.getEjbClassName();
-	Context context = getVerifierContext();
+	VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
         try {
             Class ejbClass = Class.forName(ejbClassName, false,

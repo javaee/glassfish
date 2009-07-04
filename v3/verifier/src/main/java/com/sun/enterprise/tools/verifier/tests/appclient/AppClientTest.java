@@ -84,13 +84,13 @@ public abstract class AppClientTest extends VerifierTest implements VerifierChec
 
     protected String getAbstractArchiveUri(ApplicationClientDescriptor desc) {
         String archBase = getVerifierContext().getAbstractArchive().
-                getArchiveUri();
+                getURI().toString();
         final ModuleDescriptor moduleDescriptor = desc.getModuleDescriptor();
         if (moduleDescriptor.isStandalone()) {
             return archBase; // it must be a stand-alone module; no such physical dir exists
         } else {
-            return archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(moduleDescriptor.getArchiveUri());
+            return archBase + "/" +
+                    FileUtils.makeFriendlyFilename(moduleDescriptor.getArchiveUri());
         }
     }
 

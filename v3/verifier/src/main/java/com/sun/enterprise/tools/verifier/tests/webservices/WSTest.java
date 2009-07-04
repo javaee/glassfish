@@ -103,7 +103,7 @@ public abstract class WSTest extends VerifierTest implements VerifierCheck, WSCh
 	ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
         
        try { 
-	   Context context = getVerifierContext();
+	   VerifierTestContext context = getVerifierContext();
 	   ClassLoader jcl = context.getClassLoader();
 	   Class cl = Class.forName(descriptor.getServiceEndpointInterface(), false, getVerifierContext().getClassLoader());
            result.passed(smh.getLocalString (
@@ -152,7 +152,7 @@ public abstract class WSTest extends VerifierTest implements VerifierCheck, WSCh
         }
        if (beanClassName != null) {
          try { 
-	     Context context = getVerifierContext();
+	     VerifierTestContext context = getVerifierContext();
 	     ClassLoader jcl = context.getClassLoader();
              return Class.forName(beanClassName, false, getVerifierContext().getClassLoader());                            
              } 
@@ -258,14 +258,14 @@ public abstract class WSTest extends VerifierTest implements VerifierCheck, WSCh
 
     protected String getAbstractArchiveUri(WebServiceEndpoint desc) {
         String archBase = getVerifierContext().getAbstractArchive().
-                getArchiveUri();
+                getURI().toString();
         final ModuleDescriptor moduleDescriptor = desc.getBundleDescriptor().
                 getModuleDescriptor();
         if (moduleDescriptor.isStandalone()) {
             return archBase; // it must be a stand-alone module; no such physical dir exists
         } else {
-            return archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(moduleDescriptor.getArchiveUri());
+            return archBase + "/" +
+                    FileUtils.makeFriendlyFilename(moduleDescriptor.getArchiveUri());
         }
     }
 

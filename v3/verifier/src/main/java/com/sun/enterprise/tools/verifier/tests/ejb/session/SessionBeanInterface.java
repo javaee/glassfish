@@ -40,7 +40,6 @@ import java.lang.ClassLoader;
 import java.util.logging.Level;
 
 import com.sun.enterprise.tools.verifier.tests.*;
-import javax.ejb.SessionBean;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.tools.verifier.*;
@@ -69,7 +68,7 @@ public class SessionBeanInterface extends EjbTest implements EjbCheck {
 
 	if (descriptor instanceof EjbSessionDescriptor) {
 	    try {
-		Context context = getVerifierContext();
+		VerifierTestContext context = getVerifierContext();
 		ClassLoader jcl = context.getClassLoader();
 		Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
 

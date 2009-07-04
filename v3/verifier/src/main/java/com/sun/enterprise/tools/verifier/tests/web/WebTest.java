@@ -42,7 +42,7 @@ import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.util.io.FileUtils;
 
 import java.io.*;
@@ -64,7 +64,7 @@ abstract public class WebTest extends VerifierTest implements VerifierCheck, Web
     private boolean addedWarning = false;
 
     final String separator= System.getProperty("file.separator");
-    Context context = null; 
+    VerifierTestContext context = null;
 
     /**
      * <p>
@@ -200,13 +200,13 @@ abstract public class WebTest extends VerifierTest implements VerifierCheck, Web
 
     protected String getAbstractArchiveUri(WebBundleDescriptor desc) {
         String archBase = getVerifierContext().getAbstractArchive().
-                getArchiveUri();
+                getURI().toString();
         final ModuleDescriptor moduleDescriptor = desc.getModuleDescriptor();
         if (moduleDescriptor.isStandalone()) {
             return archBase; // it must be a stand-alone module; no such physical dir exists
         } else {
-            return archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(moduleDescriptor.getArchiveUri());
+            return archBase + "/" +
+                    FileUtils.makeFriendlyFilename(moduleDescriptor.getArchiveUri());
         }
     }
 

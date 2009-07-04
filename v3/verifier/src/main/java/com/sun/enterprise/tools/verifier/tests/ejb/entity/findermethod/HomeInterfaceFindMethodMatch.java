@@ -110,7 +110,7 @@ public class HomeInterfaceFindMethodMatch extends EjbTest implements EjbCheck {
         int ejbFinderMethodLoopCounter = 0;
         try {
             // retrieve the home interface methods
-            Context context = getVerifierContext();
+            VerifierTestContext context = getVerifierContext();
             ClassLoader jcl = context.getClassLoader();
             Class homeInterfaceClass = Class.forName(home, false, getVerifierContext().getClassLoader());
             Class remoteInterfaceClass = Class.forName(remote, false, getVerifierContext().getClassLoader());

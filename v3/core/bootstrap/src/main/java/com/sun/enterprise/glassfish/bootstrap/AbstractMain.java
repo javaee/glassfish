@@ -39,7 +39,7 @@ public abstract class AbstractMain extends PlatformMain {
 
     AbstractMain() {
         this.bootstrapFile = findBootstrapFile();
-        System.setProperty("hk2.startup.context.root", bootstrapFile.getParent());
+        System.setProperty(StartupContext.ROOT_PROP, bootstrapFile.getParent());
         glassfishDir = bootstrapFile.getParentFile().getParentFile(); //glassfish/
         System.setProperty("com.sun.aas.installRoot",glassfishDir.getAbsolutePath());
     }
@@ -50,7 +50,7 @@ public abstract class AbstractMain extends PlatformMain {
         run(logger, args);
     }
 
-    public void run(Logger logger, String... args) throws Exception {
+    protected void run(Logger logger, String... args) throws Exception {
         this.logger = logger;
         domainDir = helper.getDomainRoot(new StartupContext(bootstrapFile, args));
         helper.verifyAndSetDomainRoot(domainDir);
@@ -94,7 +94,7 @@ public abstract class AbstractMain extends PlatformMain {
         return (recordedLastModified!=lastModified);
     }
     
-    void setUpCache(File sourceDir, File cacheDir) throws IOException  {
+    protected void setUpCache(File sourceDir, File cacheDir) throws IOException  {
 
         long lastModified = getLastModified(sourceDir, 0);
         long settingsLastModified = getSettingsLastModification();
@@ -108,7 +108,7 @@ public abstract class AbstractMain extends PlatformMain {
         System.setProperty("com.sun.hk2.cacheDir", cacheDir.getAbsolutePath());
     }
 
-    public void flushAndCreate(File cacheDir, long lastModified) throws IOException {
+    protected void flushAndCreate(File cacheDir, long lastModified) throws IOException {
         
         if (cacheDir.exists() && cacheDir.isDirectory()) {
             // remove this old cache so felix creates a new one.

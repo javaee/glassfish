@@ -36,16 +36,10 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.module.bootstrap.ArgumentManager;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.logging.Logger;
 import java.net.MalformedURLException;
-import java.net.URI;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -81,14 +75,6 @@ public abstract class ASMainOSGi extends AbstractMain {
     }
 
     protected abstract void setFwDir();
-
-    @Override
-    void setUpCache(File sourceDir, File cacheDir) throws IOException {
-        // Starting with Felix 1.4.0, the cache dir is identified by
-        // property called org.osgi.framework.storage.
-        System.setProperty("org.osgi.framework.storage", cacheDir.getCanonicalPath());
-        super.setUpCache(sourceDir, cacheDir);    //To change body of overridden methods use File | Settings | File Templates.
-    }
 
     /**
      * Adds the jar files of the OSGi platform to the given {@link ClassPathBuilder}

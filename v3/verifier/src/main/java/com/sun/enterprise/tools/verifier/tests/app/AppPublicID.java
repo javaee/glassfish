@@ -40,10 +40,9 @@ import java.io.*;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.tools.verifier.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
-
-/** 
+/**
  * Application PUBLIC identifier test
  * The application deployment descriptor has PUBLIC identifier with 
  * a PubidLiteral of "-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN"

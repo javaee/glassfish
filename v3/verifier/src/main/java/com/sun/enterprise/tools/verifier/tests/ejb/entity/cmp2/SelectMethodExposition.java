@@ -39,7 +39,7 @@ import java.lang.reflect.Method;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.*;
-import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
+
 import java.lang.ClassLoader;
 import com.sun.enterprise.tools.verifier.tests.*;
 
@@ -92,7 +92,7 @@ public class SelectMethodExposition extends SelectMethodTest {
     private boolean commonToBothInterfaces(String home,String remote,EjbDescriptor descriptor, Result result, Method m) {
 	try {
             // we must not find this method exposed in the home or remote interface
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
             Method m1 = getMethod(Class.forName(home, false,
                                  getVerifierContext().getClassLoader()),m.getName(), m.getParameterTypes());

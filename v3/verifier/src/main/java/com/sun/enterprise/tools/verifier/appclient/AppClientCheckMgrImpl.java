@@ -46,7 +46,7 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.tools.verifier.CheckMgr;
-import com.sun.enterprise.tools.verifier.FrameworkContext;
+import com.sun.enterprise.tools.verifier.VerifierFrameworkContext;
 import com.sun.enterprise.tools.verifier.JarCheck;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
@@ -66,8 +66,8 @@ public class AppClientCheckMgrImpl extends CheckMgr implements JarCheck {
     private static final String sunONETestsListFileName = getSunPrefix()
             .concat(testsListFileName);
 
-    public AppClientCheckMgrImpl(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
+    public AppClientCheckMgrImpl(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     /**
@@ -81,8 +81,8 @@ public class AppClientCheckMgrImpl extends CheckMgr implements JarCheck {
         //An ApplicationClient can have WebService References
         checkWebServicesClient(descriptor);
 
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isAppClient()) 
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isAppClient())
             return;
         // run the ParseDD test
         if (getSchemaVersion(descriptor).compareTo("1.4") < 0) { // NOI18N
@@ -95,7 +95,7 @@ public class AppClientCheckMgrImpl extends CheckMgr implements JarCheck {
                     Result result = new ParseDD().validateAppClientDescriptor(is);
                     result.setComponentName(getArchiveUri(descriptor));
                     setModuleName(result);
-                    frameworkContext.getResultManager().add(result);
+                    verifierFrameworkContext.getResultManager().add(result);
                 }
             } finally {
                 try {
@@ -138,11 +138,11 @@ public class AppClientCheckMgrImpl extends CheckMgr implements JarCheck {
 
     protected void checkWebServicesClient(Descriptor descriptor)
             throws Exception {
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isWebServicesClient()) 
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isWebServicesClient())
             return;
         WebServiceClientCheckMgrImpl webServiceClientCheckMgr = 
-                                new WebServiceClientCheckMgrImpl(frameworkContext);
+                                new WebServiceClientCheckMgrImpl(verifierFrameworkContext);
         ApplicationClientDescriptor desc = (ApplicationClientDescriptor) descriptor;
         if (desc.hasWebServiceClients()) {
             Set serviceRefDescriptors = desc.getServiceReferenceDescriptors();

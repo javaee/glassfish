@@ -68,8 +68,8 @@ public class WebCheckMgrImpl extends CheckMgr implements JarCheck {
             .concat(testsListFileName);
     private static TagLibDescriptor[] tlds;
 
-    public WebCheckMgrImpl(FrameworkContext frameworkContext) {
-        this.frameworkContext = frameworkContext;
+    public WebCheckMgrImpl(VerifierFrameworkContext verifierFrameworkContext) {
+        this.verifierFrameworkContext = verifierFrameworkContext;
     }
 
     /**
@@ -85,8 +85,8 @@ public class WebCheckMgrImpl extends CheckMgr implements JarCheck {
         // a WebBundleDescriptor can have  WebService References
         checkWebServicesClient(descriptor);
 
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isWeb())
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isWeb())
             return;
 
         createTaglibDescriptors(descriptor); //create document obj for all tld's defined in the war
@@ -104,7 +104,7 @@ public class WebCheckMgrImpl extends CheckMgr implements JarCheck {
                     Result result = new ParseDD().validateWebDescriptor(is);
                     result.setComponentName(getArchiveUri(descriptor));
                     setModuleName(result);
-                    frameworkContext.getResultManager().add(result);
+                    verifierFrameworkContext.getResultManager().add(result);
                     is.close();
                 }
             } finally {
@@ -143,7 +143,7 @@ public class WebCheckMgrImpl extends CheckMgr implements JarCheck {
      * @param descriptor
      */
     protected void createTaglibDescriptors(Descriptor descriptor) {
-        TagLibFactory tlf = new TagLibFactory(context, frameworkContext);
+        TagLibFactory tlf = new TagLibFactory(context, verifierFrameworkContext);
         tlds = tlf.getTagLibDescriptors((WebBundleDescriptor) descriptor);
         if (tlds != null) {
             context.setTagLibDescriptors(tlds);
@@ -163,13 +163,13 @@ public class WebCheckMgrImpl extends CheckMgr implements JarCheck {
     
     protected void checkWebServicesClient(Descriptor descriptor)
             throws Exception {
-        if (frameworkContext.isPartition() &&
-                !frameworkContext.isWebServicesClient())
+        if (verifierFrameworkContext.isPartition() &&
+                !verifierFrameworkContext.isWebServicesClient())
             return;
 
         WebBundleDescriptor desc = (WebBundleDescriptor) descriptor;
         WebServiceClientCheckMgrImpl webServiceClientCheckMgr = new WebServiceClientCheckMgrImpl(
-                frameworkContext);
+                verifierFrameworkContext);
         if (desc.hasWebServiceClients()) {
             Set serviceRefDescriptors = desc.getServiceReferenceDescriptors();
             Iterator it = serviceRefDescriptors.iterator();
@@ -200,7 +200,7 @@ public class WebCheckMgrImpl extends CheckMgr implements JarCheck {
      */ 
     protected Vector<TestInformation> getTestFromExcludeList() throws ParserConfigurationException, SAXException, IOException {
         Vector<TestInformation> tests = super.getTestFromExcludeList();
-        if(frameworkContext.getJspOutDir() !=null) { // pre-compile jsp flag set
+        if(verifierFrameworkContext.getJspOutDir() !=null) { // pre-compile jsp flag set
             TestInformation ti = new TestInformation();
             ti.setClassName("com.sun.enterprise.tools.verifier.tests.web.AllJSPsMustBeCompilable"); // NOI18N
             tests.addElement(ti);

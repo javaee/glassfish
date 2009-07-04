@@ -99,7 +99,7 @@ public class PersistenceFieldsElement extends EjbTest implements EjbCheck {
 
 		// check class to see if fields actually exist
 		try {
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
 		    ClassLoader jcl = context.getClassLoader();
 		    Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
 

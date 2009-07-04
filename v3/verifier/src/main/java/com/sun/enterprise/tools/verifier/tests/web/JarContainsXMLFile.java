@@ -35,12 +35,12 @@
  */
 package com.sun.enterprise.tools.verifier.tests.web;
 
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.tools.verifier.tests.web.WebTest;
+import com.sun.enterprise.deploy.shared.FileArchive;
+
 import java.io.*;
 
 /** 
@@ -83,8 +83,7 @@ public class JarContainsXMLFile extends WebTest implements WebCheck {
                try {
                  FileArchive arch = new FileArchive();
                  arch.open(uri);
-                 deploymentEntry = arch.getEntry(
-                                   WebDeploymentDescriptorFile.DESC_PATH);
+                 deploymentEntry = arch.getEntry("WEB-INF/web.xml");
                }catch (IOException e) { throw e;}
 /*
             }
@@ -105,7 +104,7 @@ public class JarContainsXMLFile extends WebTest implements WebCheck {
 		result.passed(smh.getLocalString
 			      (getClass().getName() + ".passed",
 			       "Found deployment descriptor xml file [ {0} ]",
-			       new Object[] {WebDeploymentDescriptorFile.DESC_PATH}));
+			       new Object[] {"WEB-INF/web.xml"}));
 	    } else {
 		result.addErrorDetails(smh.getLocalString
 			("tests.componentNameConstructor",
@@ -114,7 +113,7 @@ public class JarContainsXMLFile extends WebTest implements WebCheck {
 		result.failed(smh.getLocalString
 			      (getClass().getName() + ".failed",
 			       "Error: No deployment descriptor xml file found, looking for [ {0} ]",
-			       new Object[] {WebDeploymentDescriptorFile.DESC_PATH}));
+			       new Object[] {"WEB-INF/web.xml"}));
 	    }
 	
 	} catch (FileNotFoundException ex) {
@@ -126,7 +125,7 @@ public class JarContainsXMLFile extends WebTest implements WebCheck {
 		result.failed(smh.getLocalString
 			  (getClass().getName() + ".failedException",
 			   "Error: File not found trying to read deployment descriptor file [ {0} ]",
-			   new Object[] {WebDeploymentDescriptorFile.DESC_PATH}));
+			   new Object[] {"WEB-INF/web.xml"}));
 	} catch (IOException ex) {
 	    Verifier.debug(ex);
 	    result.addErrorDetails(smh.getLocalString
@@ -136,7 +135,7 @@ public class JarContainsXMLFile extends WebTest implements WebCheck {
 		result.failed(smh.getLocalString
 			  (getClass().getName() + ".failedException1",
 			   "Error: IO Error trying to read deployment descriptor file [ {0} ]",
-			   new Object[] {WebDeploymentDescriptorFile.DESC_PATH}));
+			   new Object[] {"WEB-INF/web.xml"}));
 	} finally {
             try {
 //               if (jarFile != null)

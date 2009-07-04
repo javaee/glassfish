@@ -36,15 +36,10 @@
 package com.sun.enterprise.tools.verifier.tests.web.spec22;
 
 import com.sun.enterprise.tools.verifier.tests.web.WebTest;
-import java.util.zip.*;
-import java.util.jar.*;
-import java.util.*;
-import java.io.*;
 import com.sun.enterprise.tools.verifier.tests.web.WebCheck;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.util.FileClassLoader;
 
 
 /** 

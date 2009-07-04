@@ -37,10 +37,9 @@
 
 package com.sun.enterprise.tools.verifier.apiscan.classfile;
 
-import com.sun.corba.ee.org.objectweb.asm.Label;
-import com.sun.corba.ee.org.objectweb.asm.Opcodes;
-import com.sun.corba.ee.org.objectweb.asm.commons.EmptyVisitor;
-import com.sun.corba.ee.org.objectweb.asm.util.AbstractVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.commons.EmptyVisitor;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -123,9 +122,9 @@ class ASMMethod extends EmptyVisitor implements Method {
 
     @Override public void visitFieldInsn(
             int opcode, String owner, String name, String desc) {
-        logger.entering(
-                "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitFieldInsn", // NOI18N
-                new Object[]{AbstractVisitor.OPCODES[opcode], owner, name, desc});
+//        logger.entering(
+//                "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitFieldInsn", // NOI18N
+//                new Object[]{AbstractVisitor.OPCODES[opcode], owner, name, desc});
         addClass(owner);
     }
 
@@ -141,17 +140,17 @@ class ASMMethod extends EmptyVisitor implements Method {
 
     public void visitMethodInsn(
             int opcode, String owner, String name, String desc) {
-        logger.entering(
-                "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitMethodInsn", new Object[]{ // NOI18N
-                    AbstractVisitor.OPCODES[opcode], owner, name, desc});
+//        logger.entering(
+//                "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitMethodInsn", new Object[]{ // NOI18N
+//                    AbstractVisitor.OPCODES[opcode], owner, name, desc});
         addMethod(owner, name, desc);
     }
 
     // things like instanceof, checkcast, new, newarray and anewarray
     @Override public void visitTypeInsn(int opcode, String desc) {
-        logger.entering(
-                "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitTypeInsn", new Object[]{ // NOI18N
-                    AbstractVisitor.OPCODES[opcode], desc});
+//        logger.entering(
+//                "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitTypeInsn", new Object[]{ // NOI18N
+//                    AbstractVisitor.OPCODES[opcode], desc});
         switch (opcode) {
             case Opcodes.INSTANCEOF:
             case Opcodes.CHECKCAST:
@@ -165,8 +164,8 @@ class ASMMethod extends EmptyVisitor implements Method {
                 // primitive type array, so skip
                 break;
             default:
-                logger.logp(Level.WARNING, "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitTypeInsn", // NOI18N
-                        getClass().getName() + ".warning1", AbstractVisitor.OPCODES[opcode]); // NOI18N
+//                logger.logp(Level.WARNING, "com.sun.enterprise.tools.verifier.apiscan.classfile.ASMMethod", "visitTypeInsn", // NOI18N
+//                        getClass().getName() + ".warning1", AbstractVisitor.OPCODES[opcode]); // NOI18N
                 break;
         }
     }

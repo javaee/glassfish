@@ -1,0 +1,3 @@
+# We don't export anything
+-exportcontents: 
+Import-Package: !javax.help, *

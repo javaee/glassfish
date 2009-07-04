@@ -41,8 +41,7 @@ import com.sun.enterprise.tools.verifier.tests.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.io.ConnectorDeploymentDescriptorFile;
 import com.sun.enterprise.tools.verifier.*;
-
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 /**
  * Connector PUBLIC identifier test

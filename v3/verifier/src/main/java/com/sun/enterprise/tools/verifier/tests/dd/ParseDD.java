@@ -36,8 +36,9 @@
 package com.sun.enterprise.tools.verifier.tests.dd;
 
 import com.sun.enterprise.deployment.*;
-import tools.com.sun.enterprise.util.XMLValidationHandler;
 import com.sun.enterprise.tools.verifier.*;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.tools.verifier.util.XMLValidationHandler;
 import com.sun.enterprise.tools.verifier.tests.*;
 
 import java.io.*;
@@ -48,7 +49,6 @@ import org.xml.sax.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.sun.enterprise.logging.LogDomains;
 
 
 /**

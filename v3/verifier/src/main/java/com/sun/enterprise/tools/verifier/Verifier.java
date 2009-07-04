@@ -35,19 +35,38 @@
  */
 package com.sun.enterprise.tools.verifier;
 
-import java.io.IOException;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.Descriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.tools.verifier.apiscan.stdapis.APIRepository;
+import com.sun.enterprise.tools.verifier.app.ApplicationVerifier;
+import com.sun.enterprise.tools.verifier.appclient.AppClientVerifier;
+import com.sun.enterprise.tools.verifier.connector.ConnectorVerifier;
+import com.sun.enterprise.tools.verifier.ejb.EjbVerifier;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.tools.verifier.util.VerifierConstants;
+import com.sun.enterprise.tools.verifier.web.WebVerifier;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.deployment.common.OptionalPkgDependency;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.List;
-
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.deploy.shared.AbstractArchive;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.logging.LogDomains;
-import com.sun.enterprise.tools.verifier.gui.MainFrame;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
  * This class is the main class to invoke the verification process. It
@@ -56,77 +75,80 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  * Deploytool GUI invokes verifier by calling the verify() and
  * generateReports() APIs.
  */
-public class Verifier {
+@Service
+@Scoped(PerLookup.class)
+public class Verifier
+{
+    @Inject
+    private DescriptorFactory descriptorFactory;
+
+    @Inject
+    private ClassLoaderHierarchy clh;
+
+    private Application application = null;
 
     private static boolean debug = false;
     private static Logger logger = LogDomains.getLogger(
             LogDomains.AVK_VERIFIER_LOGGER);
+    private LocalStringManagerImpl smh = StringManagerHelper.getLocalStringsManager();
+
+    private final String TMPDIR = System.getProperty("java.io.tmpdir");
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat(
+            "yyyyMMddhhmmss"); // NOI18N
+    private String explodeDirName = TMPDIR + File.separator + "exploded" + // NOI18N
+            dateFormatter.format(new Date());
+
     /**
      * contains arguments data. It is used throughout the verification framework
      */
-    private FrameworkContext frameworkContext = null;
+    private VerifierFrameworkContext verifierFrameworkContext = null;
 
-
-    /**
-     * Constructor that does the initialization. It parses and validates
-     * the arguments and creates the frameworkContext that is used
-     * throughout the verification framework.
-     *
-     * @param args
-     */
-    public Verifier(String[] args) {
-        StringManagerHelper.setLocalStringsManager(this.getClass());
-        frameworkContext = new Initializer(args).getFrameworkContext();
+    public Verifier()
+    {
+        // This needs to be done by deployment backlend
+//        verificationContext.setUseTimeStamp(true);
+//        verificationContext.setOutputDirName(System.getProperty("com.sun.aas.instanceRoot") + // NOI18N
+//                                                            File.separator +
+//                                                            "logs" + // NOI18N
+//                                                            File.separator +
+//                                                            "verifier-results"); // NOI18N
     }
 
-    /**
-     * This constructor is called by the deployment backend. The invocation
-     * of this method is in the server's process.
-     */
-    public Verifier() {
-        StringManagerHelper.setLocalStringsManager(this.getClass());
-        frameworkContext = new FrameworkContext();
-        frameworkContext.setUseTimeStamp(true);
-        frameworkContext.setOutputDirName(System.getProperty("com.sun.aas.instanceRoot") + // NOI18N
-                                                            File.separator +
-                                                            "logs" + // NOI18N
-                                                            File.separator + 
-                                                            "verifier-results"); // NOI18N
-    }
-
-    /**
-     * Main verifier method
-     *
-     * @param args Arguments to pass to verifier
-     *             returns 0 if successfully verified with ZERO failures & ZERO errors.
-     *             returns failure_count+error_count otherwise.
-     */
-    public static void main(String[] args) throws IOException {
-        Verifier verifier = new Verifier(args);
-        if (verifier.frameworkContext.isUsingGui()) {
-            MainFrame mf = new MainFrame(
-                    verifier.frameworkContext.getJarFileName(), true, verifier);
-            mf.setSize(800, 600);
-            mf.setVisible(true);
-        } else {
-            LocalStringManagerImpl smh = StringManagerHelper.getLocalStringsManager();
-            try {
-                verifier.verify();
-            } catch (Exception e) {
-                LogRecord logRecord = new LogRecord(Level.SEVERE,
-                        smh.getLocalString(
-                                verifier.getClass().getName() +
-                                ".verifyFailed", // NOI18N
-                                "Could not verify successfully.")); // NOI18N
-                logRecord.setThrown(e);
-                verifier.frameworkContext.getResultManager().log(logRecord);
+    public void init(VerifierFrameworkContext verifierFrameworkContext) throws IOException
+    {
+        this.verifierFrameworkContext = verifierFrameworkContext;
+        InputStream is = getClass().getClassLoader().getResourceAsStream(
+                VerifierConstants.CFG_RESOURCE_PREFIX + "standard-apis.xml"); // NOI18N
+        try
+        {
+            APIRepository.Initialize(is);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            if (is != null) {
+                is.close();
             }
-            verifier.generateReports();
-            int failedCount = verifier.frameworkContext.getResultManager()
-                    .getFailedCount() +
-                    verifier.frameworkContext.getResultManager().getErrorCount();
-            if (failedCount != 0)
-                System.exit(failedCount);
+        }
+        if (!verifierFrameworkContext.isBackend())
+        {
+            try
+            {
+                initStandalone();
+            }
+            catch (IOException ioe)
+            {
+                cleanup();
+                throw ioe;
+            }
+            catch (RuntimeException re)
+            {
+                cleanup();
+                throw re;
+            }
         }
     }
 
@@ -136,100 +158,250 @@ public class Verifier {
      * @return ResultManager that contains all the test results.
      * @throws IOException
      */
-    private ResultManager verify() throws IOException {
-        VerificationHandler verificationHandler = 
-                        new VerificationHandler(frameworkContext);
-        ResultManager resultManager;
-        try {
-            resultManager = verificationHandler.verifyArchive();
-        } finally {
-            verificationHandler.cleanup();
+    public void verify() throws IOException
+    {
+        assert (verifierFrameworkContext != null);
+        try
+        {
+            verifyArchive();
         }
-        return resultManager;
+        finally
+        {
+            cleanup();
+        }
     }
 
-    /**
-     * @param jarFile This method is called from gui MainPanel to run verifier
-     *                on selected archive
-     * @return ResultManager Object containing all test results
-     * @throws IOException
-     */
-    public ResultManager verify(String jarFile) throws IOException {
-        frameworkContext.setJarFileName(jarFile);
-        return verify();
-    }
+//    /**
+//     * @param jarFile This method is called from gui MainPanel to run verifier
+//     *                on selected archive
+//     * @return ResultManager Object containing all test results
+//     * @throws IOException
+//     */
+//    public ResultManager verify(String jarFile) throws IOException {
+//        verificationContext.setJarFileName(jarFile);
+//        return verify();
+//    }
 
-    /**
-     * Call from deployment backend. This call is in the appserver process.
-     * Verifier will run in appserver mode for this invocation.
-     * If parameter application is null then this api is equivalent to 
-     * invoking a standalone verifier. 
-     * Parameter abstractArchive must not be null.
-     * 
-     * @return status of the invocation. A non zero value will denote a failure.
-     * @throws IOException
-     */ 
-    public int verify(Application application,
-                      AbstractArchive abstractArchive,
-                      List<String> classPath,
-                      File jspOutDir)
-            throws IOException {
-        boolean originalBoundsChecking = Descriptor.isBoundsChecking();
-        Descriptor.setBoundsChecking(false);
-        ResultManager rmanager=null;
-        frameworkContext.setJspOutDir(jspOutDir);
-        frameworkContext.setIsBackend(true);
-        VerificationHandler verificationHandler = null;
-        try {
-            if(application == null) { //can be a standalone connector deployment
-                frameworkContext.setJarFileName(abstractArchive.getArchiveUri());
-                verificationHandler = new VerificationHandler(frameworkContext); 
-            } else
-                verificationHandler = new VerificationHandler(frameworkContext,
-                                                              application,
-                                                              abstractArchive,
-                                                              classPath);
-            rmanager = verificationHandler.verifyArchive();
-        } catch(Exception e) {
-            LocalStringManagerImpl smh = StringManagerHelper.getLocalStringsManager();
-            LogRecord logRecord = 
-                    new LogRecord(Level.SEVERE,
-                                 smh.getLocalString(getClass().getName() +
-                                                   ".verifyFailed", // NOI18N
-                                                   "Could not verify successfully.")); // NOI18N
-            logRecord.setThrown(e);
-            frameworkContext.getResultManager().log(logRecord);
-        } finally { // restore the original values
-            Descriptor.setBoundsChecking(originalBoundsChecking);
-            if(verificationHandler!=null)
-                verificationHandler.cleanup();
-        }
-        generateReports();
-        return rmanager.getErrorCount() + rmanager.getFailedCount();
-    }
+//    /**
+//     * Call from deployment backend. This call is in the appserver process.
+//     * Verifier will run in appserver mode for this invocation.
+//     * If parameter application is null then this api is equivalent to
+//     * invoking a standalone verifier.
+//     * Parameter abstractArchive must not be null.
+//     *
+//     * @return status of the invocation. A non zero value will denote a failure.
+//     * @throws IOException
+//     */
+//    public int verify(Application application,
+//                      Archive abstractArchive,
+//                      List<String> classPath,
+//                      File jspOutDir)
+//            throws IOException {
+//        boolean originalBoundsChecking = Descriptor.isBoundsChecking();
+//        Descriptor.setBoundsChecking(false);
+//        ResultManager rmanager=null;
+//        verificationContext.setJspOutDir(jspOutDir);
+//        verificationContext.setIsBackend(true);
+//        VerificationHandler verificationHandler = null;
+//        try {
+//            if(application == null) { //can be a standalone connector deployment
+//                verificationContext.setJarFileName(new File(abstractArchive.getURI()).getAbsolutePath());
+//                verificationHandler = new VerificationHandler(verificationContext);
+//            } else
+//                verificationHandler = new VerificationHandler(verificationContext,
+//                                                              application,
+//                                                              abstractArchive,
+//                                                              classPath);
+//            rmanager = verificationHandler.verifyArchive();
+//        } catch(Exception e) {
+//            LocalStringManagerImpl smh = StringManagerHelper.getLocalStringsManager();
+//            LogRecord logRecord =
+//                    new LogRecord(Level.SEVERE,
+//                                 smh.getLocalString(getClass().getName() +
+//                                                   ".verifyFailed", // NOI18N
+//                                                   "Could not verify successfully.")); // NOI18N
+//            logRecord.setThrown(e);
+//            verificationContext.getResultManager().log(logRecord);
+//        } finally { // restore the original values
+//            Descriptor.setBoundsChecking(originalBoundsChecking);
+//            if(verificationHandler!=null)
+//                verificationHandler.cleanup();
+//        }
+//        generateReports();
+//        return rmanager.getErrorCount() + rmanager.getFailedCount();
+//    }
 
     /**
      * It generates the reports using the ResultManager
      *
      * @throws IOException
      */
-    public void generateReports() throws IOException {
-        new ReportHandler(frameworkContext).generateAllReports();
+    public void generateReports() throws IOException
+    {
+        new ReportHandler(verifierFrameworkContext).generateAllReports();
     }
 
     /**
      * checks if verifier is running in debug mode
+     *
      * @return debug status
      */
-    public static boolean isDebug() {
+    public static boolean isDebug()
+    {
         return debug;
     }
 
     /**
      * debug messages are logged here.
+     *
      * @param t
      */
-    public static void debug(Throwable t) {
+    public static void debug(Throwable t)
+    {
         logger.log(Level.FINEST, "Exception occurred", t);
     }
+
+    private void verifyArchive()
+    {
+        if (!application.isVirtual())
+        { // don't run app tests for standalone module
+            runVerifier(new ApplicationVerifier(verifierFrameworkContext, application));
+        }
+
+        for (Iterator itr = application.getEjbBundleDescriptors().iterator();
+             itr.hasNext();)
+        {
+            EjbBundleDescriptor ejbd = (EjbBundleDescriptor) itr.next();
+            runVerifier(new EjbVerifier(verifierFrameworkContext, ejbd));
+        }
+
+        for (Iterator itr = application.getWebBundleDescriptors().iterator();
+             itr.hasNext();)
+        {
+            WebBundleDescriptor webd = (WebBundleDescriptor) itr.next();
+            runVerifier(new WebVerifier(verifierFrameworkContext, webd));
+        }
+
+        for (Iterator itr = application.getApplicationClientDescriptors()
+                .iterator();
+             itr.hasNext();)
+        {
+            ApplicationClientDescriptor appClientDescriptor =
+                    (ApplicationClientDescriptor) itr.next();
+            runVerifier(new AppClientVerifier(verifierFrameworkContext, appClientDescriptor));
+        }
+
+        for (Iterator itr = application.getRarDescriptors().iterator();
+             itr.hasNext();)
+        {
+            ConnectorDescriptor cond = (ConnectorDescriptor) itr.next();
+            runVerifier(new ConnectorVerifier(verifierFrameworkContext, cond));
+        }
+    }
+
+    /**
+     * initialization done for standalone verifier invocation.
+     *
+     * @throws IOException
+     */
+    private void initStandalone() throws IOException
+    {
+        logger.log(Level.FINE, getClass().getName() + ".debug.startingLoadJar");
+        // We will set PublicAPI class loader as our parent, so we don't
+        // need any server classpath.
+//        if (!verificationContext.isPortabilityMode())
+//        {
+//            String as_config_dir =
+//                    System.getProperty("com.sun.aas.installRoot") + File.separator + "config";
+//            classPath = PELaunch.getServerClassPath(as_config_dir,
+//                                                    verificationContext.getDomainDir());
+//        }
+//
+        // initialize /tmp/* directories
+        initVerifierTmpDirs();
+        String jarFile = verifierFrameworkContext.getJarFileName();
+        //We must call OptionalPkgDependency.satisfyOptionalPackageDependencies() before explodeArchive,
+        //because inside this call, the list of installed optional packages in the system gets initialised.
+        //That list is then used inside optionalPackageDependencyLogic() code.
+        //It looks to be a bug as ideally this kind of dependency should be taken care of inside
+        //OptionalPkgDependency class itself.
+        //But any way, we don't have a choice but to make this work around in our code.
+        OptionalPkgDependency.satisfyOptionalPackageDependencies();
+        Descriptor.setBoundsChecking(false);
+        try
+        {
+            DescriptorFactory.ResultHolder result =
+                descriptorFactory.createApplicationDescriptor(
+                    new File(jarFile),
+                    new File(explodeDirName),
+                    clh.getCommonClassLoader());
+            application = result.application;
+            verifierFrameworkContext.setApplication(application);
+            verifierFrameworkContext.setArchive(result.archive);
+        }
+        catch (IOException e)
+        {
+            log("Problem in creating application descriptor", e);
+            throw e;
+        }
+    }
+
+    private void runVerifier(BaseVerifier baseVerifier)
+    {
+        try
+        {
+            baseVerifier.verify();
+        }
+        catch (Exception e)
+        {
+            log("Problem in running tests for :" +
+                    baseVerifier.getDescriptor().getName(),
+                    e);
+        }
+    }
+
+    private boolean initVerifierTmpDirs() throws IOException
+    {
+        // Make sure we can create the directory appservResultDir
+        File test = new File(explodeDirName);
+        if (!test.isDirectory() && !test.getAbsoluteFile().mkdirs())
+        {
+            logger.log(Level.SEVERE, getClass().getName() +
+                    ".explodedircreateerror", test.getAbsolutePath()); // NOI18N
+            throw new IOException(smh.getLocalString(getClass().getName()
+                    + ".explodedircreateerror", test.getAbsolutePath())); // NOI18N
+        }
+        return true;
+    }
+
+    public void cleanup()
+    {
+//        if(!isBackend && application!=null)
+//            ((JarClassLoader)application.getClassLoader()).done();
+        if (!verifierFrameworkContext.isBackend() &&
+                !((new File(verifierFrameworkContext.getJarFileName())).isDirectory()))
+        {
+            FileUtils.whack(new File(explodeDirName));
+        }
+    }
+
+    /**
+     * This method is used to log exception messges in the error vector of
+     * ResultManager object.
+     *
+     * @param message
+     * @param e
+     */
+    private void log(String message, Exception e)
+    {
+        if (message == null)
+        {
+            message = "";
+        }
+        LogRecord logRecord = new LogRecord(Level.SEVERE, message);
+        logRecord.setThrown(e);
+        verifierFrameworkContext.getResultManager().log(logRecord);
+    }
+
+
 }

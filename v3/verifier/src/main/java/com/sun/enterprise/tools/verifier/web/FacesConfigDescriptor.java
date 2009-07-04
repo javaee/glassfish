@@ -36,15 +36,18 @@
 
 package com.sun.enterprise.tools.verifier.web;
 
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deploy.shared.FileArchive;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.net.URI;
+
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
@@ -63,10 +66,10 @@ public class FacesConfigDescriptor {
     private final String MANAGED_BEAN_CLASS = "managed-bean-class"; // NOI18N
     private final String facesConfigFileName = "WEB-INF/faces-config.xml"; // NOI18N
     
-    private Context context;
+    private VerifierTestContext context;
     private Document facesConfigDocument;
     
-    public FacesConfigDescriptor(Context context, WebBundleDescriptor descriptor) {
+    public FacesConfigDescriptor(VerifierTestContext context, WebBundleDescriptor descriptor) {
         try {
             this.context = context;
             readFacesConfigDocument(descriptor);
@@ -80,16 +83,16 @@ public class FacesConfigDescriptor {
         factory.setValidating(false);
         DocumentBuilder builder = factory.newDocumentBuilder();
         ModuleDescriptor moduleDesc = webd.getModuleDescriptor();
-        String archBase = context.getAbstractArchive().getArchiveUri();
+        String archBase = context.getAbstractArchive().getURI().toString();
         String uri = null;
         if(moduleDesc.isStandalone()){
             uri = archBase;
         } else {
             uri = archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(moduleDesc.getArchiveUri());
+                    FileUtils.makeFriendlyFilename(moduleDesc.getArchiveUri());
         }
         FileArchive arch = new FileArchive();
-        arch.open(uri);
+        arch.open(URI.create(uri));
         InputStream is = arch.getEntry(facesConfigFileName);
         InputSource source = new InputSource(is);
         try {

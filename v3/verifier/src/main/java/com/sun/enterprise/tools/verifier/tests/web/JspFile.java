@@ -41,11 +41,9 @@ import java.io.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
-
-
-/** 
+/**
  * Jsp file element contains the full path to Jsp file within web application
  * test.
  */
@@ -99,7 +97,7 @@ public class JspFile extends WebTest implements WebCheck {
 //                        ze = jar.getEntry(jspFilename);
 //                        foundIt=(ze !=null);
 //                    }else{ 
-                        File jspf = new File(arch.getArchiveUri()+File.separator+jspFilename);
+                        File jspf = new File(new File(arch.getURI()), jspFilename);
                         if(jspf.exists())
                             foundIt=true;
                         jspf = null;                 

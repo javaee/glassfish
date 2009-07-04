@@ -35,132 +35,156 @@
  */
 package com.sun.enterprise.tools.verifier.tests.web;
 
-import com.sun.enterprise.tools.verifier.tests.web.WebTest;
-import java.util.*;
-import java.io.*;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.tools.verifier.*;
-import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.util.FileClassLoader;
+import com.sun.enterprise.deployment.SecurityConstraintImpl;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.web.WebResourceCollection;
+import com.sun.enterprise.tools.verifier.Result;
+import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
+
+import java.util.Enumeration;
 
 
-/** 
+/**
  * The http-method element contains the name of web resource collection's HTTP
  * method
  */
-public class WebResourceHTTPMethod extends WebTest implements WebCheck { 
+public class WebResourceHTTPMethod extends WebTest implements WebCheck
+{
 
-    
+
     /**
      * The http-method element contains the name of web resource collection's HTTP
      * method
      *
      * @param descriptor the Web deployment descriptor
-     *   
      * @return <code>Result</code> the results for this assertion
      */
-    public Result check(WebBundleDescriptor descriptor) {
+    public Result check(WebBundleDescriptor descriptor)
+    {
 
-	Result result = getInitializedResult();
-	ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
+        Result result = getInitializedResult();
+        ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
 
-	if (descriptor.getSecurityConstraints().hasMoreElements()) {
-	    boolean oneFailed = false;
-	    boolean foundIt = false;
+        if (descriptor.getSecurityConstraints().hasMoreElements())
+        {
+            boolean oneFailed = false;
+            boolean foundIt = false;
             int na = 0;
             int noSc = 0;
             int naWRC = 0;
             int noWRC = 0;
-	    // get the http method's in this .war
-	    for (Enumeration e = descriptor.getSecurityConstraints() ; e.hasMoreElements() ;) {
-		foundIt = false;
+            // get the http method's in this .war
+            for (Enumeration e = descriptor.getSecurityConstraints(); e.hasMoreElements();)
+            {
+                foundIt = false;
                 noSc++;
-		SecurityConstraintImpl securityConstraintImpl = (SecurityConstraintImpl) e.nextElement();
-                if (securityConstraintImpl.getWebResourceCollections().hasMoreElements()) {
-		    for (Enumeration ee = securityConstraintImpl.getWebResourceCollections(); ee.hasMoreElements();) {
-			noWRC++;
-			WebResourceCollectionImpl webResourceCollection = (WebResourceCollectionImpl) ee.nextElement();
-			if (webResourceCollection.getHttpMethods().hasMoreElements()) {
-			    for (Enumeration eee = webResourceCollection.getHttpMethods(); eee.hasMoreElements();) {
-				String webRCHTTPMethod = (String) eee.nextElement();
-				// valid methods are the following
-				if ((webRCHTTPMethod.equals("OPTIONS")) ||
-				    (webRCHTTPMethod.equals("GET")) ||
-				    (webRCHTTPMethod.equals("HEAD")) ||
-				    (webRCHTTPMethod.equals("POST")) ||
-				    (webRCHTTPMethod.equals("PUT")) ||
-				    (webRCHTTPMethod.equals("DELETE")) ||
-				    (webRCHTTPMethod.equals("TRACE")) ||
-				    (webRCHTTPMethod.equals("CONNECT")))  {
-				    foundIt = true;
-				} else {
-				    foundIt = false;
-				}
-       
-				if (foundIt) {
-				    result.addGoodDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-				    result.addGoodDetails(smh.getLocalString
-							  (getClass().getName() + ".passed",
-							   "http-method [ {0} ] is valid HTTP method name within web resource collection [ {1} ] in web application [ {2} ]",
-							   new Object[] {webRCHTTPMethod, webResourceCollection.getName(), descriptor.getName()}));
-				} else {
-				    if (!oneFailed) {
-					oneFailed = true;
-				    }
-				    result.addErrorDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-				    result.addErrorDetails(smh.getLocalString
-							   (getClass().getName() + ".failed",
-							    "Error: http-method [ {0} ] is not valid HTTP method name within web resource collection [ {1} ] in web application [ {2} ]",
-							    new Object[] {webRCHTTPMethod, webResourceCollection.getName(), descriptor.getName()}));
-				}
-			    }
-			} else {
-			    result.addNaDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-			    result.notApplicable(smh.getLocalString
-						 (getClass().getName() + ".notApplicable1",
-						  "There are no web http-methods in the web resource collection [ {0} ] within [ {1} ]",
-						  new Object[] {webResourceCollection.getName(),  descriptor.getName()}));
-			    naWRC++;
-			}
-		    }
-                } else {
-		    result.addNaDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-                    result.notApplicable(smh.getLocalString
-                                         (getClass().getName() + ".notApplicable2",
-                                          "There are no web web resource collections in the web security constraint within [ {0} ]",
-                                          new Object[] {descriptor.getName()}));                    na++;    
-                }
-	    }
-	    if (oneFailed) {
-		result.setStatus(Result.FAILED);
-            } else if ((na == noSc) || (naWRC == noWRC)) {
-                result.setStatus(Result.NOT_APPLICABLE);
-	    } else {
-		result.setStatus(Result.PASSED);
-	    }
-	} else {
-	    result.addNaDetails(smh.getLocalString
-				       ("tests.componentNameConstructor",
-					"For [ {0} ]",
-					new Object[] {compName.toString()}));
-	    result.notApplicable(smh.getLocalString
-				 (getClass().getName() + ".notApplicable",
-				  "There are no http-method elements within the web archive [ {0} ]",
-				  new Object[] {descriptor.getName()}));
-	}
+                SecurityConstraintImpl securityConstraintImpl = (SecurityConstraintImpl) e.nextElement();
+                if (!securityConstraintImpl.getWebResourceCollections().isEmpty())
+                {
+                    for (WebResourceCollection webResourceCollection : securityConstraintImpl.getWebResourceCollections())
+                    {
+                        noWRC++;
+                        if (!webResourceCollection.getHttpMethods().isEmpty())
+                        {
+                            for (String webRCHTTPMethod : webResourceCollection.getHttpMethods())
+                            {
+                                // valid methods are the following
+                                if ((webRCHTTPMethod.equals("OPTIONS")) ||
+                                        (webRCHTTPMethod.equals("GET")) ||
+                                        (webRCHTTPMethod.equals("HEAD")) ||
+                                        (webRCHTTPMethod.equals("POST")) ||
+                                        (webRCHTTPMethod.equals("PUT")) ||
+                                        (webRCHTTPMethod.equals("DELETE")) ||
+                                        (webRCHTTPMethod.equals("TRACE")) ||
+                                        (webRCHTTPMethod.equals("CONNECT")))
+                                {
+                                    foundIt = true;
+                                }
+                                else
+                                {
+                                    foundIt = false;
+                                }
 
-	return result;
+                                if (foundIt)
+                                {
+                                    result.addGoodDetails(smh.getLocalString
+                                            ("tests.componentNameConstructor",
+                                                    "For [ {0} ]",
+                                                    new Object[]{compName.toString()}));
+                                    result.addGoodDetails(smh.getLocalString
+                                            (getClass().getName() + ".passed",
+                                                    "http-method [ {0} ] is valid HTTP method name within web resource collection [ {1} ] in web application [ {2} ]",
+                                                    new Object[]{webRCHTTPMethod, webResourceCollection.getName(), descriptor.getName()}));
+                                }
+                                else
+                                {
+                                    if (!oneFailed)
+                                    {
+                                        oneFailed = true;
+                                    }
+                                    result.addErrorDetails(smh.getLocalString
+                                            ("tests.componentNameConstructor",
+                                                    "For [ {0} ]",
+                                                    new Object[]{compName.toString()}));
+                                    result.addErrorDetails(smh.getLocalString
+                                            (getClass().getName() + ".failed",
+                                                    "Error: http-method [ {0} ] is not valid HTTP method name within web resource collection [ {1} ] in web application [ {2} ]",
+                                                    new Object[]{webRCHTTPMethod, webResourceCollection.getName(), descriptor.getName()}));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            result.addNaDetails(smh.getLocalString
+                                    ("tests.componentNameConstructor",
+                                            "For [ {0} ]",
+                                            new Object[]{compName.toString()}));
+                            result.notApplicable(smh.getLocalString
+                                    (getClass().getName() + ".notApplicable1",
+                                            "There are no web http-methods in the web resource collection [ {0} ] within [ {1} ]",
+                                            new Object[]{webResourceCollection.getName(), descriptor.getName()}));
+                            naWRC++;
+                        }
+                    }
+                }
+                else
+                {
+                    result.addNaDetails(smh.getLocalString
+                            ("tests.componentNameConstructor",
+                                    "For [ {0} ]",
+                                    new Object[]{compName.toString()}));
+                    result.notApplicable(smh.getLocalString
+                            (getClass().getName() + ".notApplicable2",
+                                    "There are no web web resource collections in the web security constraint within [ {0} ]",
+                                    new Object[]{descriptor.getName()}));
+                    na++;
+                }
+            }
+            if (oneFailed)
+            {
+                result.setStatus(Result.FAILED);
+            }
+            else if ((na == noSc) || (naWRC == noWRC))
+            {
+                result.setStatus(Result.NOT_APPLICABLE);
+            }
+            else
+            {
+                result.setStatus(Result.PASSED);
+            }
+        }
+        else
+        {
+            result.addNaDetails(smh.getLocalString
+                    ("tests.componentNameConstructor",
+                            "For [ {0} ]",
+                            new Object[]{compName.toString()}));
+            result.notApplicable(smh.getLocalString
+                    (getClass().getName() + ".notApplicable",
+                            "There are no http-method elements within the web archive [ {0} ]",
+                            new Object[]{descriptor.getName()}));
+        }
+
+        return result;
     }
 }

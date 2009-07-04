@@ -36,10 +36,11 @@
 package com.sun.enterprise.tools.verifier.tests.web;
 
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
 import com.sun.enterprise.tools.verifier.tests.web.WebTest;
+import com.sun.enterprise.deploy.shared.FileArchive;
+
 import java.io.*;
 
 
@@ -97,7 +98,7 @@ public class FormErrorPage extends WebTest implements WebCheck {
 //                        foundIt = (ze != null);
 //                    }
 //                    else{
-                        File fep = new File(arch.getArchiveUri() + File.separator + formErrorPage);
+                        File fep = new File(new File(arch.getURI()), formErrorPage);
                         if(fep.exists())
                             foundIt=true;
                         fep = null;

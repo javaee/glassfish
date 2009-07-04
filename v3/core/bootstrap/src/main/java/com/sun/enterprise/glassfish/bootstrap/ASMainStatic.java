@@ -49,7 +49,6 @@ import com.sun.hk2.component.Holder;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.logging.Logger;
@@ -79,7 +78,7 @@ public class ASMainStatic extends AbstractMain {
     }
 
     @Override
-    void setUpCache(File sourceDir, File cacheDir) throws IOException {
+    protected void setUpCache(File sourceDir, File cacheDir) throws IOException {
         // I take care of this when running...
     }
 

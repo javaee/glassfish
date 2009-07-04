@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.logging;
+package com.sun.enterprise.tools.verifier.util;
 
 import java.util.logging.SimpleFormatter;
 import java.util.logging.LogRecord;

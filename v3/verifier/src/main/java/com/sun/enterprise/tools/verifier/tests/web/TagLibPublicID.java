@@ -38,7 +38,7 @@ package com.sun.enterprise.tools.verifier.tests.web;
 
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.TagLibDescriptor;
-import com.sun.enterprise.tools.verifier.Context;
+import com.sun.enterprise.tools.verifier.VerifierTestContext;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 
@@ -58,7 +58,7 @@ public class TagLibPublicID extends WebTest implements WebCheck {
 
         String acceptableURLs[] = {"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd",
                                    "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd"};
-        Context context = getVerifierContext();
+        VerifierTestContext context = getVerifierContext();
         TagLibDescriptor tlds[] = context.getTagLibDescriptors();
 
         addGoodDetails(result, compName);

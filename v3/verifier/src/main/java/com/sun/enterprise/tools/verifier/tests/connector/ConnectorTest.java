@@ -44,12 +44,12 @@ package com.sun.enterprise.tools.verifier.tests.connector;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.Verifier;
 import com.sun.enterprise.tools.verifier.tests.VerifierCheck;
 import com.sun.enterprise.tools.verifier.tests.VerifierTest;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -254,13 +254,13 @@ public abstract class ConnectorTest extends VerifierTest implements VerifierChec
 
     protected String getAbstractArchiveUri(ConnectorDescriptor desc) {
         String archBase = getVerifierContext().getAbstractArchive().
-                getArchiveUri();
+                getURI().toString();
         final ModuleDescriptor moduleDescriptor = desc.getModuleDescriptor();
         if (moduleDescriptor.isStandalone()) {
             return archBase; // it must be a stand-alone module; no such physical dir exists
         } else {
-            return archBase + File.separator +
-                    FileUtils.makeFriendlyFileName(moduleDescriptor.getArchiveUri());
+            return archBase + "/" +
+                    FileUtils.makeFriendlyFilename(moduleDescriptor.getArchiveUri());
         }
     }
 

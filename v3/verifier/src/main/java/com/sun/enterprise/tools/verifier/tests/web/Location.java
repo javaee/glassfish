@@ -41,7 +41,7 @@ import java.io.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
+import com.sun.enterprise.deploy.shared.FileArchive;
 
 
 /**
@@ -73,7 +73,7 @@ public class Location extends WebTest implements WebCheck {
 	    // get the errorpage's in this .war
 	    for (Enumeration e = descriptor.getErrorPageDescriptors() ; e.hasMoreElements() ;) {
 		foundIt = false;
-		ErrorPageDescriptorImpl errorpage = (ErrorPageDescriptorImpl) e.nextElement();
+		ErrorPageDescriptor errorpage = (ErrorPageDescriptor) e.nextElement();
 		String location = errorpage.getLocation();
             String uri = null;
                 try{
@@ -94,7 +94,7 @@ public class Location extends WebTest implements WebCheck {
 //                        foundIt = (ze != null);
 //                    }
 //                    else{
-                        File loc = new File(arch.getArchiveUri()+File.separator+location);
+                        File loc = new File(new File(arch.getURI()), location);
                         if(loc.exists())
                             foundIt=true;
                         loc = null;

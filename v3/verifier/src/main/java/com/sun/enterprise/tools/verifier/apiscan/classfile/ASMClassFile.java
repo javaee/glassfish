@@ -37,10 +37,10 @@
 
 package com.sun.enterprise.tools.verifier.apiscan.classfile;
 
-import static com.sun.corba.ee.org.objectweb.asm.Opcodes.*;
-import com.sun.corba.ee.org.objectweb.asm.ClassReader;
-import com.sun.corba.ee.org.objectweb.asm.MethodVisitor;
-import com.sun.corba.ee.org.objectweb.asm.commons.EmptyVisitor;
+import static org.objectweb.asm.Opcodes.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.commons.EmptyVisitor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,7 +93,7 @@ class ASMClassFile implements ClassFile {
     public ASMClassFile(InputStream is)
             throws IOException {
         cr = new ClassReader(is);
-        cr.accept(new MyVisitor(this), true);
+        cr.accept(new MyVisitor(this), ClassReader.SKIP_CODE);
         is.close();
     }
 

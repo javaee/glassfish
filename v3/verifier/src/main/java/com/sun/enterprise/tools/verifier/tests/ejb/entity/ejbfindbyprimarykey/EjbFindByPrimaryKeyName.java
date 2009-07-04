@@ -78,7 +78,7 @@ public class EjbFindByPrimaryKeyName extends EjbTest implements EjbCheck {
 		boolean oneFailed = false;
 		try {
 		    // retrieve the EJB Class Methods
-		    Context context = getVerifierContext();
+		    VerifierTestContext context = getVerifierContext();
             ClassLoader jcl = context.getClassLoader();
 		    Class EJBClass = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
             // start do while loop here....

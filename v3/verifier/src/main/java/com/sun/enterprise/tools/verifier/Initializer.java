@@ -41,8 +41,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.ConsoleHandler;
 
-import com.sun.enterprise.logging.LogDomains;
-import com.sun.enterprise.logging.VerifierFormatter;
+import com.sun.enterprise.tools.verifier.util.LogDomains;
+import com.sun.enterprise.tools.verifier.util.VerifierFormatter;
 import com.sun.enterprise.tools.verifier.util.VerifierConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -59,7 +59,7 @@ public class Initializer {
     private Logger logger = LogDomains.getLogger(
             LogDomains.AVK_VERIFIER_LOGGER);
 
-    private FrameworkContext frameworkContext = null;
+    private VerifierFrameworkContext verifierFrameworkContext = null;
     private String _FOStr = "Failures only"; // NOI18N
     private String _WFOStr = "Warning and Failures only"; // NOI18N
     private String _AOStr = "All"; // NOI18N
@@ -69,7 +69,7 @@ public class Initializer {
      * @param args
      */
     public Initializer(String[] args) {
-        this.frameworkContext = new FrameworkContext();
+        this.verifierFrameworkContext = new VerifierFrameworkContext();
         parseArgs(args);
     }
 
@@ -77,8 +77,8 @@ public class Initializer {
      *
      * @return returns the initialized FrameworkContext object
      */
-    public FrameworkContext getFrameworkContext() {
-        return frameworkContext;
+    public VerifierFrameworkContext getVerificationContext() {
+        return verifierFrameworkContext;
     }
 
     /**
@@ -149,7 +149,7 @@ public class Initializer {
                     break;
 
                 case 't':
-                    frameworkContext.setUseTimeStamp(true);
+                    verifierFrameworkContext.setUseTimeStamp(true);
                     break;
 
                 case 'h':
@@ -166,7 +166,7 @@ public class Initializer {
                 case 'u':
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.startGUI"); // NOI18N
-                    frameworkContext.setUsingGui(true);
+                    verifierFrameworkContext.setUsingGui(true);
                     break;
 
                 case 'r':
@@ -218,53 +218,53 @@ public class Initializer {
                     break;
                 case 'a':
                     logger.log(Level.FINE, getClass().getName() + ".debug.app");
-                    frameworkContext.setApp(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setApp(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case 'A':
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.appclient"); // NOI18N
-                    frameworkContext.setAppClient(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setAppClient(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case 'c':
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.connector"); // NOI18N
-                    frameworkContext.setConnector(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setConnector(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case 'e':
                     logger.log(Level.FINE, getClass().getName() + ".debug.ejb");
-                    frameworkContext.setEjb(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setEjb(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case 'w':
                     logger.log(Level.FINE, getClass().getName() + ".debug.web");
-                    frameworkContext.setWeb(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setWeb(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case 's':
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.webservices"); // NOI18N
-                    frameworkContext.setWebServices(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setWebServices(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case 'l':
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.webservicesclient"); // NOI18N
-                    frameworkContext.setWebServicesClient(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setWebServicesClient(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case 'P':
-                    frameworkContext.setPersistenceUnits(true);
-                    frameworkContext.setPartition(true);
+                    verifierFrameworkContext.setPersistenceUnits(true);
+                    verifierFrameworkContext.setPartition(true);
                     break;
 
                 case '?':
@@ -287,11 +287,11 @@ public class Initializer {
                                 new Object[]{"verifier", "-C"}); // NOI18N
                         usage();
                     }
-                    frameworkContext.setConfigDirStr(arg);
+                    verifierFrameworkContext.setConfigDirStr(arg);
                     break;
 
                 case 'p':
-                    frameworkContext.setPortabilityMode(true);
+                    verifierFrameworkContext.setPortabilityMode(true);
                     break;
 
                 case 'm':
@@ -301,7 +301,7 @@ public class Initializer {
                             arg.equals(SpecVersionMapper.JavaEEVersion_1_3) ||
                             arg.equals(SpecVersionMapper.JavaEEVersion_1_4) ||
                             arg.equals(SpecVersionMapper.JavaEEVersion_5))) {
-                        frameworkContext.setJavaEEVersion(arg);
+                        verifierFrameworkContext.setJavaEEVersion(arg);
                     } else {
                         logger.log(Level.SEVERE,
                                 getClass().getName() + ".invalidjavaeeversion", // NOI18N
@@ -309,7 +309,7 @@ public class Initializer {
                         usage();
                     }
                     logger.log(Level.INFO, getClass().getName() + ".specversion",
-                            new Object[]{frameworkContext.getJavaEEVersion()});
+                            new Object[]{verifierFrameworkContext.getJavaEEVersion()});
                     break;
 
                 case 'D':
@@ -326,7 +326,7 @@ public class Initializer {
                                 new Object[]{arg});
                         usage();
                     }
-                    frameworkContext.setDomainDir(arg);
+                    verifierFrameworkContext.setDomainDir(arg);
                     break;
 
                 case 'E':
@@ -337,7 +337,7 @@ public class Initializer {
                                 new Object[]{"verifier", "-E"}); // NOI18N
                         usage();
                     }
-                    frameworkContext.setExtDir(arg);
+                    verifierFrameworkContext.setExtDir(arg);
                     break;
 
                 default:
@@ -358,9 +358,9 @@ public class Initializer {
                         new Object[]{argv[i]});
                 usage();
             }
-            frameworkContext.setJarFileName(jarFile.getPath());
+            verifierFrameworkContext.setJarFileName(jarFile.getPath());
             logger.log(Level.FINE, getClass().getName() + ".debug.jarFileName",
-                    new Object[]{frameworkContext.getJarFileName()});
+                    new Object[]{verifierFrameworkContext.getJarFileName()});
 
             i++;
             for (; i < argv.length; i++)
@@ -368,7 +368,7 @@ public class Initializer {
                         new Object[]{"verifier", argv[i]}); // NOI18N
 
         } else {
-            if (!frameworkContext.isUsingGui()) {
+            if (!verifierFrameworkContext.isUsingGui()) {
                 logger.log(Level.SEVERE, getClass().getName() + ".jarmissing",
                         new Object[]{"verifier"}); // NOI18N
                 usage();
@@ -400,7 +400,7 @@ public class Initializer {
                 break;
 
             case 't':
-                frameworkContext.setUseTimeStamp(true);
+                verifierFrameworkContext.setUseTimeStamp(true);
                 break;
 
             case 'h':
@@ -417,7 +417,7 @@ public class Initializer {
             case 'u':
                 logger.log(Level.FINE,
                         getClass().getName() + ".debug.startGUI"); // NOI18N
-                frameworkContext.setUsingGui(true);
+                verifierFrameworkContext.setUsingGui(true);
                 break;
 
             case 'r':
@@ -478,14 +478,14 @@ public class Initializer {
                     logger.log(Level.FINE,
                             getClass().getName() +
                             ".debug.displayWarningFailures"); // NOI18N
-                    frameworkContext.setReportLevel(VerifierConstants.WARN);
+                    verifierFrameworkContext.setReportLevel(VerifierConstants.WARN);
                     setWarningLevelOnce = true;
                 } else {
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.reportLevel", // NOI18N
                             new Object[]{
                                 getReportLevelString(
-                                        frameworkContext.getReportLevel())});
+                                        verifierFrameworkContext.getReportLevel())});
                 }
                 break;
 
@@ -493,14 +493,14 @@ public class Initializer {
                 if (!setWarningLevelOnce) {
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.displayFailures"); // NOI18N
-                    frameworkContext.setReportLevel(VerifierConstants.FAIL);
+                    verifierFrameworkContext.setReportLevel(VerifierConstants.FAIL);
                     setWarningLevelOnce = true;
                 } else {
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.reportLevel", // NOI18N
                             new Object[]{
                                 getReportLevelString(
-                                        frameworkContext.getReportLevel())});
+                                        verifierFrameworkContext.getReportLevel())});
                 }
                 break;
 
@@ -508,14 +508,14 @@ public class Initializer {
                 if (!setWarningLevelOnce) {
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.displayAll"); // NOI18N
-                    frameworkContext.setReportLevel(VerifierConstants.ALL);
+                    verifierFrameworkContext.setReportLevel(VerifierConstants.ALL);
                     setWarningLevelOnce = true;
                 } else {
                     logger.log(Level.FINE,
                             getClass().getName() + ".debug.reportLevel", // NOI18N
                             new Object[]{
                                 getReportLevelString(
-                                        frameworkContext.getReportLevel())});
+                                        verifierFrameworkContext.getReportLevel())});
                 }
                 break;
 
@@ -532,7 +532,7 @@ public class Initializer {
      * Display usage message to user upon encountering invalid option
      */
     private void usage() {
-        if (!frameworkContext.isUsingGui()) {
+        if (!verifierFrameworkContext.isUsingGui()) {
             logger.log(Level.INFO, getUsageString());
             //If any argument is found invalid then Veriifer will bail out.
             System.exit(1);
@@ -708,7 +708,7 @@ public class Initializer {
         if (outputDir.exists()) {
             if (outputDir.isDirectory()) {
                 if (outputDir.canWrite()) {
-                    frameworkContext.setOutputDirName(name);
+                    verifierFrameworkContext.setOutputDirName(name);
                     return true;
                 } else {
                     logger.log(Level.SEVERE, getClass().getName() +

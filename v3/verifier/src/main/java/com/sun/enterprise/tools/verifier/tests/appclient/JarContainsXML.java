@@ -39,12 +39,12 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.tools.verifier.tests.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
+
 import java.io.*;
 import java.util.jar.*;
 
-import com.sun.enterprise.deployment.deploy.shared.FileArchive;
-
-/** 
+/**
  * An AppClient jar file must contain the XML-based deployment descriptor.  The
  * deployment descriptor must be name META-INF/application-client-jar.xml in the
  * JAR file.

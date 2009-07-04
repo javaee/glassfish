@@ -74,7 +74,7 @@ public class EjbRemoveMethodNameExistInSLSB extends WSTest implements WSCheck {
                 EjbSessionDescriptor descriptor = (EjbSessionDescriptor)ejbdesc;
                 if (EjbSessionDescriptor.STATELESS.equals(descriptor.getSessionType())) {
                     try {
-                        //Context context = getVerifierContext();
+                        //VerifierTestContext context = getVerifierContext();
                         ClassLoader jcl = getVerifierContext().getClassLoader();
                         Class c = Class.forName(descriptor.getEjbClassName(), false, getVerifierContext().getClassLoader());
                         int foundAtLeastOne = 0;

@@ -93,7 +93,7 @@ abstract public class HomeInterfaceClassExist extends EjbTest {
 
 	// verify that the home interface class exist and is loadable
 	try {
-	    Context context = getVerifierContext();
+	    VerifierTestContext context = getVerifierContext();
 	    ClassLoader jcl = context.getClassLoader();
 	    Class c = Class.forName(getClassName(descriptor), false, jcl);
 	    if (c != null) {
