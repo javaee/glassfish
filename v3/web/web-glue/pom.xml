@@ -198,12 +198,10 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jsp-impl</artifactId>
-            <version>${jsp-impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>el-impl</artifactId>
-            <version>${el-impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>

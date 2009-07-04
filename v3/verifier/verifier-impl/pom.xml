@@ -45,8 +45,8 @@
     </parent>
     <artifactId>verifier</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Static verification tool for Java EE applications</name>
-    
+    <name>Verifier implementation module</name>
+
     <developers>
         <developer>
             <id>ss141213</id>
@@ -58,16 +58,6 @@
         </developer>
     </developers>
     
-    <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <compilerArgument>-nowarn</compilerArgument>
-            </configuration>
-          </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
@@ -107,9 +97,6 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jsp-impl</artifactId>
-            <!-- This is bad. We should use dependencyManagement, but
-                 it's not there yet in super POM -->
-            <version>${jsp-impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
