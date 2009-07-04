@@ -10,17 +10,17 @@
 	    </form>
 	    <script type="text/javascript">
 		function sendLogMessage(theMsg) {
-		    // Invoke the println handler
-		    admingui.gadget.invoke("println", {value: 'test string'});
 
-	    /*
 		    admingui.gadget.invoke(
-			'getChildrenTable',
+			"getChildrenTable",
 			{
-			    objectNameStr: 'v3:pp=/domain/configs/config[server-config],type=iiop-service',
-			    childType: 'iiop-listener',
-			    result: '#{requestScope.listOfRows}'
+			    objectNameStr: "v3:pp=/domain/configs/config[server-config],type=iiop-service",
+			    childType: "iiop-listener",
+			    result: "#{requestScope.listOfRows}"
 			});
+
+		    /*
+		    admingui.gadget.invoke("println", {value: 'test string'});
 
 		    admingui.gadget.invoke("dumpSessionAttributes",
 			{
@@ -31,13 +31,11 @@
 			    input: "33.638377",
 			    output: "#{requestScope.foo}"
 			});
-
-		    // The response "object" contains variables for each output
-		    // value.  The variable names are the same as the output
-		    // name (i.e. "output" for roundTo2DecimalPoint()).
+		    */
 		    var response = admingui.gadget.getResponse();
-		    alert(response.value);
-	    */
+		    alert(response.result);
+		    alert(response.result[1].Port);
+		    alert(response.result[1].Name);
 		}
 	    </script>
 	]]>
