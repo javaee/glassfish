@@ -42,7 +42,7 @@
         setSessionAttribute(key="serverInstTabs" value="general");
         />   
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageSession.appServerVersion}" />
+        <sun:head id="propertyhead" title="#{sessionScope.appServerVersion}" />
         <sun:body id="body3">
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$attribute{bodyId})
@@ -57,7 +57,7 @@
                 productImageDescription="$resource{i18n.versionImage.description}" 
                 productImageHeight="42"
                 productImageWidth="318"
-                versionString="#{pageSession.appServerVersion}"
+                versionString="#{sessionScope.appServerVersion}"
                 copyrightString="$resource{i18n.copyright.shortMessage}"
             />
             </sun:form>
