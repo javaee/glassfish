@@ -63,7 +63,12 @@
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-javaee-full</artifactId>
             <version>${project.version}</version>
-        </dependency>        
+        </dependency>   
+        <dependency>
+		  <groupId>javax.help</groupId>
+		  <artifactId>javahelp</artifactId>
+		  <version>2.0.02</version>
+  		</dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.ejb</artifactId>
