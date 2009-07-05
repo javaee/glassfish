@@ -135,9 +135,27 @@ interface Launchable {
                             archive.exists(classNameToArchivePath(callerSpecifiedMainClassName));
         }
 
-        static boolean matchesName(
+        static String moduleID(
                 final URI groupFacadeURI,
-                final ReadableArchive clientFacadeArchive,
+                final URI clientURI,
+                final ApplicationClientDescriptor clientFacadeDescriptor) {
+            String moduleID = clientFacadeDescriptor.getModuleID();
+            /*
+             * If the moduleID was never set explicitly in the descriptor then
+             * it will fall back to  the URI of the archive...ending in .jar we
+             * presume.  In that case, change the module ID to be the path
+             * relative to the downloaded root directory.
+             */
+            if (moduleID.endsWith(".jar")) {
+                moduleID = deriveModuleID(groupFacadeURI, clientURI);
+            }
+            return moduleID;
+        }
+
+        static boolean matchesName(
+                final String moduleID,
+                final URI groupFacadeURI,
+                final ApplicationClientDescriptor clientFacadeDescriptor,
                 final String appClientName) throws IOException, SAXParseException {
 
             /*
@@ -147,20 +165,7 @@ interface Launchable {
              * in the client facade) not the minimal or non-existent
              * descriptor (which could be in the developer's original client).
              */
-            ApplicationClientDescriptor acd = null;
-            AppClientArchivist archivist = new AppClientArchivist();
-            acd = archivist.open(clientFacadeArchive);
-            String moduleID = acd.getModuleID();
-            /*
-             * If the moduleID was never set explicitly in the descriptor then
-             * it will fall back to  the URI of the archive...ending in .jar we
-             * presume.  In that case, change the module ID to be the path
-             * relative to the downloaded root directory.
-             */
-            if (moduleID.endsWith(".jar")) {
-                moduleID = deriveModuleID(groupFacadeURI, clientFacadeArchive.getURI());
-            }
-            final String displayName = acd.getDisplayName();
+            final String displayName = clientFacadeDescriptor.getDisplayName();
             return (   (moduleID != null && moduleID.equals(appClientName))
                     || (displayName != null && displayName.equals(appClientName)));
         }

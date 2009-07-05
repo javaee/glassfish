@@ -46,6 +46,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
@@ -259,6 +261,14 @@ public class FacadeLaunchable implements Launchable {
             String msg = localStrings.getLocalString(FacadeLaunchable.class, "appclient.noClientsInGroup", "No app clients are listed in the app client group {0}", new Object[]{groupFacadeURI});
             throw new UserError(msg);
         }
+        
+        /*
+         * Save the client names and main classes in case we need them in an
+         * error to the user.
+         */
+        final List<String> knownClientNames = new ArrayList<String>();
+        final List<String> knownMainClasses = new ArrayList<String>();
+
         for (String uriText : archiveURIs) {
             URI clientFacadeURI = groupFacadeURI.resolve(uriText);
             ReadableArchive clientFacadeRA = af.openArchive(clientFacadeURI);
@@ -266,6 +276,18 @@ public class FacadeLaunchable implements Launchable {
             Attributes facadeMainAttrs = facadeMF.getMainAttributes();
             URI clientURI = clientFacadeURI.resolve(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
             ReadableArchive clientRA = af.openArchive(clientURI);
+            
+            Manifest clientMF = clientRA.getManifest();
+            Attributes mainAttrs = clientMF.getMainAttributes();
+            final String clientMainClassName = mainAttrs.getValue(Attributes.Name.MAIN_CLASS);
+            knownMainClasses.add(clientMainClassName);
+
+            AppClientArchivist facadeClientArchivist = new AppClientArchivist();
+            final ApplicationClientDescriptor facadeClientDescriptor = facadeClientArchivist.open(clientFacadeRA);
+            final String moduleID = Launchable.LaunchableUtil.moduleID(
+                    groupFacadeURI, clientURI, facadeClientDescriptor);
+            knownClientNames.add(moduleID);
+
             /*
              * Look for an entry corresponding to the
              * main class or app name the caller requested.  Treat as a%
@@ -286,25 +308,32 @@ public class FacadeLaunchable implements Launchable {
                  * go ahead an run it anyway.
                  */
                 if ((callerSpecifiedMainClassName != null &&
-                        ! Launchable.LaunchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName))
+                         ! clientMainClassName.equals(callerSpecifiedMainClassName) )
                     ||
                     (callerSpecifiedAppClientName != null &&
                         ! Launchable.LaunchableUtil.matchesName(
-                            groupFacadeURI, clientFacadeRA, callerSpecifiedAppClientName))) {
-                    final String msg = localStrings.getLocalString(FacadeLaunchable.class, "appclient.singleNestedClientNoMatch", "Using the only client in {0} even though it does not match the specified main class name or client name", new Object[]{groupFacadeURI});
+                            moduleID,
+                            groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName))) {
+                    final String msg = localStrings.getLocalString(FacadeLaunchable.class,
+                            "appclient.singleNestedClientNoMatch", "Using the " +
+                            "only client {1} with main class {2} in {0} even " +
+                            "though it does not match the specified main class " +
+                            "name {3} or client name {4}",
+                            new Object[]{groupFacadeURI, knownClientNames.toString(), 
+                                         knownMainClasses.toString(),
+                                         callerSpecifiedMainClassName,
+                                         callerSpecifiedAppClientName});
                     logger.warning(msg);
                 }
             } else if (Launchable.LaunchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
                 facade = new FacadeLaunchable(habitat, clientFacadeRA, 
                         facadeMainAttrs, clientRA, callerSpecifiedMainClassName,
                         anchorDir);
-            } else if (Launchable.LaunchableUtil.matchesName(groupFacadeURI, clientFacadeRA, callerSpecifiedAppClientName)) {
+            } else if (Launchable.LaunchableUtil.matchesName(
+                    moduleID, groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName)) {
                 /*
                  * Get the main class name from the matching client JAR's manifest.
                  */
-                Manifest clientMF = clientRA.getManifest();
-                Attributes mainAttrs = clientMF.getMainAttributes();
-                String clientMainClassName = mainAttrs.getValue(Attributes.Name.MAIN_CLASS);
                 facade = new FacadeLaunchable(habitat, clientFacadeRA,
                         facadeMainAttrs, clientRA,
                         clientMainClassName,
@@ -316,11 +345,27 @@ public class FacadeLaunchable implements Launchable {
         }
         /*
          * No client facade matched the caller-provided selection (either
-         * main class name or app client name.  Yet we know we're working
+         * main class name or app client name), or there are multiple clients
+         * but the caller did not specify either mainClass or name.
+         * Yet we know we're working
          * with a group facade, so report the failure to find a matching
          * client as an error.
          */
-        final String msg = localStrings.getLocalString(FacadeLaunchable.class, "appclient.noMatchingClientInGroup", "No app client in the app client group {0} matches the main class name \"{1}\" or the app client name \"{2}\"", new Object[]{groupFacadeURI, callerSpecifiedMainClassName, callerSpecifiedAppClientName});
+        String msg;
+        if ((callerSpecifiedAppClientName == null) &&
+            (callerSpecifiedMainClassName == null)) {
+            msg = localStrings.getLocalString(FacadeLaunchable.class,
+                    "appclient.multClientsNoChoice",
+                    "The application contains multiple app clients; please choose one using -mainclass {0} or -name {1}",
+                    new Object[] {knownMainClasses.toString(), knownClientNames.toString()});
+        } else {
+            msg = localStrings.getLocalString(FacadeLaunchable.class,
+                    "appclient.noMatchingClientInGroup",
+                    "No app client in the app client group {0} matches the main class name \"{1}\" or the app client name \"{2}\";\nPlease choose one using -mainclass {3} or -name {4}",
+                    new Object[]{groupFacadeURI, callerSpecifiedMainClassName, 
+                        callerSpecifiedAppClientName, knownMainClasses.toString(),
+                        knownClientNames.toString()});
+        }
         throw new UserError(msg);
     }
 }
