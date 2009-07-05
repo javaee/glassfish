@@ -139,6 +139,7 @@ public final class OSGiModuleImpl implements Module {
                         "Ignoring start of bundle {0} as it is in {1} state",
                         new Object[]{bundle, toString(bundle.getState())} );
             }
+            return;
         }
         try {
             bundle.start(Bundle.START_TRANSIENT);
