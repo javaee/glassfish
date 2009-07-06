@@ -522,7 +522,7 @@ public class Java2DBProcessorHelper {
     public static String getDDLNamePrefix(Object info) {
         StringBuffer rc = new StringBuffer();
 
-        if (info instanceof BundleDescriptor) {
+        if (info instanceof BundleDescriptor && !(info instanceof Application)) {
             BundleDescriptor bundle = (BundleDescriptor)info;
             rc.append(bundle.getApplication().getRegistrationName());
 
