@@ -66,6 +66,57 @@ public interface WorkSecurityMap  extends ConfigBeanProxy, Injectable, Resource 
      */
     public void setName(String value) throws PropertyVetoException;
 
+    /**
+     * Gets the value of the objectType property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="user")
+    String getObjectType();
+
+    /**
+     * Sets the value of the objectType property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setObjectType(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the enabled property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="true")
+    String getEnabled();
+
+    /**
+     * Sets the value of the enabled property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setEnabled(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the description property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getDescription();
+
+    /**
+     * Sets the value of the description property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setDescription(String value) throws PropertyVetoException;
+
 
     /**
      * Gets the value of the ra name
