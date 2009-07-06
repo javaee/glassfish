@@ -96,11 +96,23 @@ public class MBeanListener implements NotificationListener
         mCallback = callback;
     }
 
+    /** listen for the registration of AMX DomainRoot */
     public static MBeanListener listenForDomainRoot(
         final MBeanServer server,
         final Callback callback)
     {
         final String type = AMXValues.domainRoot().getKeyProperty(TYPE_KEY);
+        return new MBeanListener( server, type, callback);
+    }
+    
+    /** listen for the registration of the {@link BootAMXMBean}. 
+        This MBean can be used to start AMX.
+     */
+    public static MBeanListener listenForBootAMX(
+        final MBeanServer server,
+        final Callback callback)
+    {
+        final String type = BootAMXMBean.OBJECT_NAME.getKeyProperty(TYPE_KEY);
         return new MBeanListener( server, type, callback);
     }
 

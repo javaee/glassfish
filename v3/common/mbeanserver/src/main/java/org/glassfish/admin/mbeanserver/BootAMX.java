@@ -30,18 +30,19 @@ import org.jvnet.hk2.component.Habitat;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
+import javax.management.StandardMBean;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
 import org.glassfish.api.amx.AMXValues;
+import org.glassfish.api.amx.BootAMXMBean;
 
 /**
-Registers the AMX Booter MBean.
+    The MBean implementation for BootAMXMBean.
 
-Public API is the name of the booter MBean: "amx-support:name=amx-booter" along with the
-methods found in AMXStartupServiceMBean, in particular bootAMX(),
+    Public API is the name of the booter MBean eg {@link BootAMXMBean.OBJECT_NAME}
  */
-final class BooterNew implements BooterNewMBean
+final class BootAMX implements BootAMXMBean
 {
     private final MBeanServer mMBeanServer;
 
@@ -56,13 +57,13 @@ final class BooterNew implements BooterNewMBean
         System.out.println(s);
     }
 
-    private BooterNew(
+    private BootAMX(
             final Habitat habitat,
             final MBeanServer mbeanServer)
     {
         mHabitat = habitat;
         mMBeanServer = mbeanServer;
-        mObjectName = BooterNewMBean.OBJECT_NAME;
+        mObjectName = BootAMXMBean.OBJECT_NAME;
         mDomainRootObjectName = null;
 
         if (mMBeanServer.isRegistered(mObjectName))
@@ -74,20 +75,23 @@ final class BooterNew implements BooterNewMBean
     /**
     Create an instance of the booter.
      */
-    public static synchronized BooterNew create(final Habitat habitat, final MBeanServer server)
+    public static synchronized BootAMX create(final Habitat habitat, final MBeanServer server)
     {
-        final BooterNew booter = new BooterNew(habitat, server);
+        final BootAMX booter = new BootAMX(habitat, server);
         final ObjectName objectName = booter.OBJECT_NAME;
 
         try
         {
-            if (!server.registerMBean(booter, objectName).getObjectName().equals(objectName))
+            final StandardMBean mbean = new StandardMBean(booter, BootAMXMBean.class);
+           
+            if (!server.registerMBean(mbean, objectName).getObjectName().equals(objectName))
             {
                 throw new IllegalStateException();
             }
         }
         catch (JMException e)
         {
+            e.printStackTrace();
             throw new IllegalStateException(e);
         }
         return booter;

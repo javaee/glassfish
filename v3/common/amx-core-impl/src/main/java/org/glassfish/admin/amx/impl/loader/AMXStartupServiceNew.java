@@ -49,20 +49,13 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import org.glassfish.admin.amx.impl.util.Issues;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.admin.mbeanserver.BooterNewMBean;
 import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
 import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.amx.BootAMXMBean;
 
 /**
-    Startup service that waits for AMX to be pinged to load.  At startup, it registers
-    itself as an MBean after first loading a JMXXConnector so that the outside world can
-    "talk" to it. This initial sequence is very fast (~20ms), but does not load any
-    AMX MBeans, not even DomainRoot.
-    <p>
-    Later, the {@link #startAMX} method can be invoked on the MBean to cause AMX
-    to load all the AMX MBeans.
-    @see org.glassfish.admin.mbeanserver.AMXStartupServiceMBean
+    An {@link AMXLoader} responsible for loading core amx MBeans
  */
 @Service
 public final class AMXStartupServiceNew
@@ -84,12 +77,10 @@ public final class AMXStartupServiceNew
     private volatile ObjectName      mAMXLoaderObjectName;
     
     private volatile MBeanTracker     mSupport;
-    
-    private static final ObjectName MBEAN_TRACKER_OBJECT_NAME = JMXUtil.newObjectName(AMXLoader.AMX3_SUPPORT_DOMAIN, "type=mbean-tracker");
-    
+        
     public static MBeanTrackerMBean getMBeanTracker( final MBeanServer server )
     {
-        return MBeanServerInvocationHandler.newProxyInstance( server, MBEAN_TRACKER_OBJECT_NAME, MBeanTrackerMBean.class, false);
+        return MBeanServerInvocationHandler.newProxyInstance( server, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME, MBeanTrackerMBean.class, false);
     }
     
     public AMXStartupServiceNew()
@@ -114,7 +105,7 @@ public final class AMXStartupServiceNew
            
            mSupport = new MBeanTracker();
            //final StandardMBean supportMBean = new StandardMBean(mSupport, MBeanTrackerMBean.class);
-           mMBeanServer.registerMBean( mSupport, MBEAN_TRACKER_OBJECT_NAME );
+           mMBeanServer.registerMBean( mSupport, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME );
         }
         catch( final Exception e )
         {
@@ -134,7 +125,7 @@ public final class AMXStartupServiceNew
     {
         try
         {
-            return (JMXServiceURL[])mMBeanServer.getAttribute( BooterNewMBean.OBJECT_NAME, "JMXServiceURLs" );
+            return (JMXServiceURL[])mMBeanServer.getAttribute( BootAMXMBean.OBJECT_NAME, "JMXServiceURLs" );
         }
         catch ( final JMException e )
         {

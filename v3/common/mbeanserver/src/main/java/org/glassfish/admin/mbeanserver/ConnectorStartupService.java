@@ -46,6 +46,8 @@ import javax.management.ListenerNotFoundException;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 
+import org.glassfish.api.amx.BootAMXMBean;
+
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
@@ -69,7 +71,8 @@ import java.rmi.registry.LocateRegistry;
 import java.io.IOException;
 
 /**
-Responsible for starting AMXBooter initialization, and starting JMXConnectors as configured.
+    Responsible for creating the {@link BootAMXMBean}, and starting JMXConnectors,
+    which will initialize (boot) AMX when a connection arrives.
  */
 @Service
 @Async
@@ -89,7 +92,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct
     @Inject
     private Habitat mHabitat;
 
-    private volatile BooterNew mNewBooter;
+    private volatile BootAMX mBootAMX;
 
     public ConnectorStartupService()
     {
@@ -98,11 +101,11 @@ public final class ConnectorStartupService implements Startup, PostConstruct
 
     public void postConstruct()
     {
-        mNewBooter = BooterNew.create(mHabitat, mMBeanServer);
+        mBootAMX = BootAMX.create(mHabitat, mMBeanServer);
 
         final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
 
-        final ConnectorsStarterThread starter = new ConnectorsStarterThread(mMBeanServer, configuredConnectors, mNewBooter);
+        final ConnectorsStarterThread starter = new ConnectorsStarterThread(mMBeanServer, configuredConnectors, mBootAMX);
         starter.start();
     }
 
@@ -136,9 +139,9 @@ public final class ConnectorStartupService implements Startup, PostConstruct
     {
         private final JMXConnectorServer mServer;
 
-        private final Booter mBooter;
+        private final BootAMXMBean mBooter;
 
-        public BootAMXListener(final JMXConnectorServer server, final Booter booter)
+        public BootAMXListener(final JMXConnectorServer server, final BootAMXMBean booter)
         {
             mServer = server;
             mBooter = booter;
@@ -192,16 +195,16 @@ public final class ConnectorStartupService implements Startup, PostConstruct
 
         private final MBeanServer mMBeanServer;
 
-        private final BooterNew mAMXBooterNew;
+        private final BootAMX mAMXBooterNew;
 
         public ConnectorsStarterThread(
                 final MBeanServer mbs,
                 final List<JmxConnector> configuredConnectors,
-                final BooterNew amxBooterNew)
+                final BootAMX amxBooter)
         {
             mMBeanServer = mbs;
             mConfiguredConnectors = configuredConnectors;
-            mAMXBooterNew = amxBooterNew;
+            mAMXBooterNew = amxBooter;
         }
 
         private static String toString(final JmxConnector c)

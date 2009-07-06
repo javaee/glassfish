@@ -50,6 +50,7 @@ import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.api.amx.AMXValues;
 import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
@@ -59,7 +60,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 @Taxonomy( stability=Stability.NOT_AN_INTERFACE )
 public interface AMXConfigLoaderMBean extends AMXSupport, MBeanRegistration, NotificationListener
 {
-    public static final ObjectName OBJECT_NAME = JMXUtil.newObjectName( AMXLoader.AMX3_SUPPORT_DOMAIN, "name=config" );
+    public static final ObjectName OBJECT_NAME = JMXUtil.newObjectName( AMXLoader.LOADER_PREFIX + "config" );
     /**
         Make the AMX configuration infrastructure aware of new @Configured interfaces that
         might otherwise be unknown or inaccessible.

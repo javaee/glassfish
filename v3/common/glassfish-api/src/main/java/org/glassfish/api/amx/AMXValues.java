@@ -14,6 +14,16 @@ import javax.management.ObjectName;
  */
 public final class AMXValues
 {
+    /** JMX domain used by AMX MBeans.
+     * <p>
+     * All MBeans in this domain must be AMX-compliant, see http://tinyurl.com/nryoqp =
+    https://glassfish.dev.java.net/nonav/v3/admin/planning/V3Changes/V3_AMX_SPI.html */
+    public static final String AMX_JMX_DOMAIN = AMXValues.amxJMXDomain();
+
+    /** JMX domain used by AMX support MBeans */
+    public static final String AMX_SUPPORT_DOMAIN = AMX_JMX_DOMAIN + "-support";
+
+
     /** constant for the name of the Parent attribute {@link AMXProxy#getParent} */
     public static final String ATTR_PARENT = "Parent";
     /** constant for the name of the Children attribute {@link AMXProxy#getChildren} */

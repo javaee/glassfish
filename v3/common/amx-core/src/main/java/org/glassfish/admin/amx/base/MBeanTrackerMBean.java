@@ -6,14 +6,19 @@ import javax.management.ObjectName;
 import java.util.Set;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.glassfish.api.amx.AMXValues;
+
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 /**
     MBean providing server-side support for AMX eg for efficiency or other
     reasons.
  */
-@AMXMBeanMetadata(type="updown",singleton=true, globalSingleton=true, leaf=true)
+@AMXMBeanMetadata(type="mbean-tracker",singleton=true, globalSingleton=true, leaf=true)
 public interface MBeanTrackerMBean
 {
+    public static final ObjectName MBEAN_TRACKER_OBJECT_NAME = JMXUtil.newObjectName(AMXValues.AMX_SUPPORT_DOMAIN, "type=mbean-tracker");
+
     /**
         Get all children of the specified MBean.  An empty set is returned
         if no children are found.

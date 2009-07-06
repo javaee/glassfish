@@ -70,7 +70,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.admin.amx.impl.util.InjectedValues;
-import org.glassfish.admin.mbeanserver.BooterNewMBean;
+import org.glassfish.api.amx.BootAMXMBean;
 
 
 import org.glassfish.api.admin.AdminCommandContext;
@@ -282,7 +282,7 @@ public final class RuntimeImpl extends AMXImplBase
     {
         try
         {
-            return (JMXServiceURL[]) getMBeanServer().getAttribute(BooterNewMBean.OBJECT_NAME, "JMXServiceURLs");
+            return (JMXServiceURL[]) getMBeanServer().getAttribute(BootAMXMBean.OBJECT_NAME, "JMXServiceURLs");
         }
         catch (final JMException e)
         {

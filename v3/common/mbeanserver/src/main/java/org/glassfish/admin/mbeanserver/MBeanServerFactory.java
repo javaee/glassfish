@@ -46,9 +46,8 @@ import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 
 /**
-    Factory for the MBeanServer.  Not particularly useful now, since it just loads
-    the default MBeanServer.  But this could change in the future.
-    @see PendingConfigBeans
+    Factory for the MBeanServer.  Required so that HK2 can find an MBeanServer
+    for modules doing @Inject MBeanServer.
  */
 @Service
 @Async

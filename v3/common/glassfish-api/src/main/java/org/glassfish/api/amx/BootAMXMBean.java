@@ -20,19 +20,31 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package org.glassfish.admin.mbeanserver;
+package org.glassfish.api.amx;
 
 import javax.management.ObjectName;
+import javax.management.remote.JMXServiceURL;
+
 import org.glassfish.api.amx.AMXLoader;
 import org.glassfish.api.amx.AMXValues;
 
 /**
-MBean responsible for booting the AMX system.
+    MBean responsible for booting the AMX system.
  */
-public interface BooterNewMBean extends Booter
+public interface BootAMXMBean 
 {
+    /**
+    Start AMX and return the ObjectName of DomainRoot.
+     */
+    public ObjectName bootAMX();
+    
+    /** same as method above */
+    public static final String BOOT_AMX_OPERATION_NAME = "bootAMX";
+
+    public JMXServiceURL[] getJMXServiceURLs();
+    
     /** ObjectName for BooterNewMBean */
-    public static final ObjectName OBJECT_NAME = AMXValues.newObjectName(AMXLoader.AMX3_SUPPORT_DOMAIN, "name=booter-new");
+    public static final ObjectName OBJECT_NAME = AMXValues.newObjectName(AMXValues.AMX_SUPPORT_DOMAIN, "name=boot-amx");
 
 }
 

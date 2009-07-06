@@ -51,6 +51,8 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.api.amx.AMXValues;
 import org.glassfish.api.amx.AMXLoader;
 
+import org.glassfish.api.amx.BootAMXMBean;
+
 /**
 	AMX must be "booted" before use.
  */
@@ -58,10 +60,6 @@ import org.glassfish.api.amx.AMXLoader;
 public final class AMXBooter
 {
     private AMXBooter() {}
-    
-    /** see BooterNewMBean.java */
-    public static final ObjectName AMX_BOOTER_OBJECT_NAME = JMXUtil.newObjectName(AMXLoader.AMX3_SUPPORT_DOMAIN + ":name=booter-new");
-    public static final String BOOT_AMX_OPERATION_NAME = "bootAMX";
     
     /**
         Ensure that AMX is loaded and ready to go.  Can be called more than once.
@@ -76,7 +74,7 @@ public final class AMXBooter
         { 
             try
             {
-                domainRootObjectName = (ObjectName)conn.invoke( AMX_BOOTER_OBJECT_NAME, BOOT_AMX_OPERATION_NAME, null, null );
+                domainRootObjectName = (ObjectName)conn.invoke( BootAMXMBean.OBJECT_NAME, BootAMXMBean.BOOT_AMX_OPERATION_NAME, null, null );
             }
             catch( final Exception e )
             {

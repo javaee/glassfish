@@ -39,6 +39,7 @@ package org.glassfish.admin.mbeanserver;
 import org.jvnet.hk2.config.ConfigBean;
 import java.util.concurrent.CountDownLatch;
 
+/** used internally for the queue {@link PendindingConfigBeans} */
 public final class PendingConfigBeanJob
 {
     private final ConfigBean mConfigBean;

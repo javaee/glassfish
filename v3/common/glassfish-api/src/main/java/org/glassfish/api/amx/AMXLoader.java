@@ -42,25 +42,26 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 /**
-	A loader of AMX MBeans.
+    A loader of AMX MBeans.
+    @see AMXValues
  */
 @Contract
 public interface AMXLoader
 {
-    public static final String  AMX_JMX_DOMAIN  = AMXValues.amxJMXDomain();
-    
-    public static final String AMX3_SUPPORT_DOMAIN = AMX_JMX_DOMAIN + "-support";
-    public static String LOADER_PREFIX = AMX3_SUPPORT_DOMAIN + ":type=amx-loader,name=";
+    /** property prefix used by AMXLoader MBeans, name to be suffixed to it */
+    public static String LOADER_PREFIX = AMXValues.AMX_SUPPORT_DOMAIN + ":type=amx-loader,name=";
     
     /**
-        Loader a hierarchy of AMX MBeans, returning the ObjectName of the root
-        of the hierarchy.
+    Loader a hierarchy of AMX MBeans, returning the ObjectName of the root
+    of the hierarchy.
      */
     public ObjectName loadAMXMBeans();
-    
+
     /**
-        Unload (unregister) AMX MBeans.
+     *
+    Unload (unregister) AMX MBeans.
      */
     public void unloadAMXMBeans();
+
 }
 
