@@ -68,7 +68,7 @@ public class StringStatisticImpl extends StatisticImpl
 
     public synchronized Map getStaticAsMap() {
         Map m = super.getStaticAsMap();
-        m.put("current-value", getCurrent());
+        m.put("name-current", getCurrent());
         return m;
     }
 
