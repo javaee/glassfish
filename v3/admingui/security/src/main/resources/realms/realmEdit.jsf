@@ -46,7 +46,7 @@
         setPageSessionAttribute(key="helpKey" value="$resource{help_security.realmEdit}");
         setPageSessionAttribute(key="edit" value="#{true}" )
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        getRequestValue(key="name" value=>$page{Name});
+        getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/security/realms/realms.jsf");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/realms/realmEdit.jsf");
         setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=auth-realm,name=#{pageSession.Name}")

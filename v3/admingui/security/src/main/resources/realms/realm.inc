@@ -67,7 +67,7 @@
         <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
             <sun:button id="manageUsersButton" rendered="#{showUserButton}" immediate="#{true}" style="margin-left: 8pt"  text="$resource{i18n.button.ManageUsers}" >
                 <!command
-                    redirect(page="#{request.contextPath}/security/realms/manageUsers.jsf?name=#{name}&configName=#{configName}");
+                    redirect(page="#{request.contextPath}/security/realms/manageUsers.jsf?name=#{pageSession.Name}&configName=#{configName}");
                 />
             </sun:button>
 
