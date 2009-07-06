@@ -168,17 +168,34 @@ public interface ConnectorConstants {
 
     public static String RESOURCENAME_APPENDER="#";
 
+
+    /**
+     * represents the monitoring-service level element name
+     */
+    public static String MONITORING_CONNECTOR_SERVICE_MODULE_NAME = "connector-service";
+
+    /**
+     * represents the monitoring-service hierarchy elements <br>
+     * eg: server.connector-service.&lt;RA-NAME&gt;.work-management<br>
+     */
+    public static String MONITORING_CONNECTOR_SERVICE = "connector-service";
+    public static String MONITORING_WORK_MANAGEMENT = "work-management";
+    public static String MONITORING_SEPARATOR = "/";
+
+    /**
+     *  Reserved sub-context where datasource-definition objets (resource and pool) are bound with generated names.
+     */
+    public static String DATASOURCE_DEFINITION_JNDINAME_PREFIX="__datasource_definition/";
+
     /**
      *  Reserved sub-context where pool objets are bound with generated names.
      */
-
     public static String POOLS_JNDINAME_PREFIX=RESERVE_PREFIX+"/pools/";
 
     /**
      *  Reserved sub-context where connector resource objects are bound with 
      *  generated names.
      */
-
     public static String RESOURCE_JNDINAME_PREFIX=RESERVE_PREFIX+"/resource/";
     public static String USERGROUPDISTINGUISHER="#";
     public static String CAUTION_MESSAGE="Please add the following permissions to the server.policy file and restart the appserver.";

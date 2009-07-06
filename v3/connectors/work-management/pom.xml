@@ -34,6 +34,20 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+		        <manifestEntries>
+                           <probe-provider-class-names>com.sun.enterprise.connectors.work.monitor.WorkManagementProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+
     </build>
     <dependencies>
 
@@ -58,6 +72,11 @@
             <groupId>org.glassfish.transaction</groupId>
             <artifactId>transaction-internal-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+           <groupId>org.glassfish.provider</groupId>
+           <artifactId>gfprobe-provider-client</artifactId>
         </dependency>
 
         <dependency>

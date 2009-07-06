@@ -164,12 +164,18 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
      */
     public boolean removeWorkManager(String moduleName) {
         boolean result = true;
-        if (workManagers.remove(moduleName) == null) {
+        WorkManager wm = workManagers.remove(moduleName);
+        if (wm == null) {
             _logger.log(Level.FINE, "Failed to remove workManager for RAR [ " + moduleName + " ] from registry.");
             result = false;
         } else {
             _logger.log(Level.FINE, "Removed the workManager for RAR [ " + moduleName + " ] from registry.");
+
+            if(wm instanceof CommonWorkManager){
+                ((CommonWorkManager)wm).cleanUp();
+            }
         }
+
         return result;
     }
 

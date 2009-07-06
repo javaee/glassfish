@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.connectors.work;
 
-import com.sun.enterprise.connectors.work.monitor.MonitorableWorkManager;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.work.*;
@@ -50,18 +49,18 @@ import java.util.logging.Logger;
  *
  * @author Jagadish Ramu
  */
-public class WorkManagerProxy implements WorkManager, Externalizable, MonitorableWorkManager {
+public class WorkManagerProxy implements WorkManager, Externalizable/*, MonitorableWorkManager */{
 
     private transient WorkManager wm;
     private String moduleName;
-    private boolean monitorableInstance;
+    //private boolean monitorableInstance;
     private static Logger _logger = LogDomains.getLogger(WorkManagerProxy.class, LogDomains.RSR_LOGGER);
 
 
     public WorkManagerProxy(WorkManager wm, String moduleName){
         this.wm = wm;
         this.moduleName = moduleName;
-        monitorableInstance = isMonitorableInstance(wm);
+        //monitorableInstance = isMonitorableInstance(wm);
     }
 
     public WorkManagerProxy(){
@@ -121,7 +120,7 @@ public class WorkManagerProxy implements WorkManager, Externalizable, Monitorabl
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         moduleName = in.readUTF();
         wm = WorkManagerFactory.retrieveWorkManager(moduleName);
-        monitorableInstance = isMonitorableInstance(wm);
+        //monitorableInstance = isMonitorableInstance(wm);
         _logger = LogDomains.getLogger(WorkManagerProxy.class, LogDomains.RSR_LOGGER);
     }
 
@@ -138,6 +137,7 @@ public class WorkManagerProxy implements WorkManager, Externalizable, Monitorabl
         return wm.hashCode();
     }
 
+/*
     private boolean isMonitorableInstance(WorkManager wm){
         boolean isMonitorable = (wm instanceof MonitorableWorkManager);
         if(!isMonitorable){
@@ -248,4 +248,5 @@ public class WorkManagerProxy implements WorkManager, Externalizable, Monitorabl
             return -1;
         }
     }
+*/
 }

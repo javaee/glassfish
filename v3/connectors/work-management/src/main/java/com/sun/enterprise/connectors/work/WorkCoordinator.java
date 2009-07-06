@@ -40,6 +40,7 @@ package com.sun.enterprise.connectors.work;
 import com.sun.corba.se.spi.orbutil.threadpool.WorkQueue;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.connectors.work.context.WorkContextHandler;
+import com.sun.enterprise.connectors.work.monitor.WorkManagementProbeProvider;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
@@ -83,12 +84,7 @@ public final class WorkCoordinator {
     private static final Logger logger =
             LogDomains.getLogger(WorkCoordinator.class, LogDomains.RSR_LOGGER);
 
-    /**
-     * <code>workStats</code> is responsible for holding all monitorable
-     * properties of a work-manager. Workstats would be null, if monitoring is
-     * *not* enabled.
-     */
-    private WorkStats workStats = null;
+    private WorkManagementProbeProvider probeProvider = null;
 
     private ConnectorRuntime runtime;
     private String raName = null;
@@ -109,7 +105,7 @@ public final class WorkCoordinator {
                            long timeout,
                            ExecutionContext ec,
                            WorkQueue queue,
-                           WorkListener listener, WorkStats workStats,
+                           WorkListener listener, WorkManagementProbeProvider probeProvider,
                            ConnectorRuntime runtime, String raName,
                            WorkContextHandler handler) {
 
@@ -123,7 +119,7 @@ public final class WorkCoordinator {
         }
         this.runtime = runtime;
         this.lock = new Object();
-        this.workStats = workStats;
+        this.probeProvider = probeProvider;
         this.raName = raName;
         this.contextHandler = handler;
     }
@@ -142,9 +138,9 @@ public final class WorkCoordinator {
             listener.workAccepted(
                     new WorkEvent(this, WorkEvent.WORK_ACCEPTED, work, null));
         }
-        if (workStats != null) {
-            workStats.submittedWorkCount++;
-            workStats.incrementWaitQueueLength();
+        if (probeProvider != null) {
+            probeProvider.workSubmitted(raName);
+            probeProvider.workQueued(raName);
         }
         queue.addWork( new OneWork(work, this, contextHandler));
     }
@@ -163,8 +159,8 @@ public final class WorkCoordinator {
         if (waitMode == NO_WAIT && timeout > -1) {
             long elapsedTime = System.currentTimeMillis() - startTime;
 
-            if (workStats != null) {
-                workStats.setWorkWaitTime(elapsedTime);
+            if (probeProvider != null) {
+                probeProvider.workWaitedFor(raName, elapsedTime);
             }
 
             if (elapsedTime > timeout) {
@@ -181,8 +177,8 @@ public final class WorkCoordinator {
 
         // If the work is timed out then return.
         if (!proceed()) {
-            if (workStats != null) {
-                workStats.decrementWaitQueueLength();
+            if (probeProvider != null) {
+                probeProvider.workDequeued(raName);
             }
             return;
         }
@@ -199,9 +195,9 @@ public final class WorkCoordinator {
 
     public void setupContext() {
         contextHandler.setupContext(getExecutionContext(ec, work), this);
-        if (workStats != null) {
-            workStats.setActiveWorkCount(++workStats.currentActiveWorkCount);
-            workStats.decrementWaitQueueLength();
+        if (probeProvider != null) {
+            probeProvider.workProcessingStarted(raName);
+            probeProvider.workDequeued(raName);
         }
     }
 
@@ -224,10 +220,9 @@ public final class WorkCoordinator {
             setException(ex);
         } finally {
             try {
-                if (workStats != null) {
-                    workStats.setActiveWorkCount
-                            (--workStats.currentActiveWorkCount);
-                    workStats.completedWorkCount++;
+                if (probeProvider != null) {
+                    probeProvider.workProcessingCompleted(raName);
+                    probeProvider.workProcessed(raName);
                 }
 
                 //If exception is not null, the work has already been rejected.
@@ -270,9 +265,9 @@ public final class WorkCoordinator {
             listener.workRejected(
                     new WorkEvent(this, WorkEvent.WORK_REJECTED, work, exception));
         }
-        if (workStats != null) {
-            workStats.rejectedWorkCount++;
-            workStats.setActiveWorkCount(--workStats.currentActiveWorkCount);
+        if (probeProvider != null) {
+            probeProvider.workTimedOut(raName);
+            probeProvider.workProcessingCompleted(raName);
         }
     }
 

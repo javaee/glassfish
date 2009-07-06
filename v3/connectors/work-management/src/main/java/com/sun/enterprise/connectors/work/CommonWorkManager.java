@@ -38,10 +38,14 @@ package com.sun.enterprise.connectors.work;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.enterprise.connectors.work.monitor.MonitorableWorkManager;
+import com.sun.enterprise.connectors.work.monitor.WorkManagementProbeProvider;
+import com.sun.enterprise.connectors.work.monitor.WorkManagementStatsProvider;
 import com.sun.enterprise.connectors.work.context.WorkContextHandler;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -50,6 +54,9 @@ import javax.resource.spi.work.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.probe.provider.PluginPoint;
+
 
 /**
  * WorkManager implementation.
@@ -57,7 +64,7 @@ import java.util.logging.Logger;
  * @author Binod P.G
  */
 
-public final class CommonWorkManager implements MonitorableWorkManager {
+public final class CommonWorkManager implements WorkManager /*implements MonitorableWorkManager*/ {
 
     //TODO V3 need to use ee.threadpool
     private static WorkManager wm = null;
@@ -68,9 +75,14 @@ public final class CommonWorkManager implements MonitorableWorkManager {
     private static final Logger logger =
             LogDomains.getLogger(CommonWorkManager.class, LogDomains.RSR_LOGGER);
 
+/*
     private boolean isMonitoringEnabled = false; //default = false;
+*/
 
-    private WorkStats workStats = null;
+    //private WorkStats workStats = null;
+    private WorkManagementProbeProvider probeProvider = null;
+    private WorkManagementStatsProvider statsProvider = null;
+    private String dottedNamesHierarchy;
 
     private StringManager localStrings = StringManager.getManager(
             CommonWorkManager.class);
@@ -104,6 +116,45 @@ public final class CommonWorkManager implements MonitorableWorkManager {
                 logger.log(Level.SEVERE, msg, threadPoolId);
                 throw new ConnectorRuntimeException(msg);
             }
+            registerWithMonitoringService();
+        }
+    }
+
+    private void registerWithMonitoringService() {
+
+        if(ConnectorsUtil.belongsToSystemRA(raName)){
+            if(!ConnectorsUtil.isJMSRA(raName)){
+                return ;    
+            }
+        }
+        probeProvider = new WorkManagementProbeProvider();
+        dottedNamesHierarchy = ConnectorConstants.MONITORING_CONNECTOR_SERVICE +
+                ConnectorConstants.MONITORING_SEPARATOR + raName + ConnectorConstants.MONITORING_SEPARATOR +
+                ConnectorConstants.MONITORING_WORK_MANAGEMENT;
+        statsProvider = new WorkManagementStatsProvider(raName);
+        StatsProviderManager.register(ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME,
+                    PluginPoint.SERVER, dottedNamesHierarchy, statsProvider);
+        logger.log(Level.FINE, "Registered work-monitoring stats [ "+dottedNamesHierarchy+" ]  " +
+                "for [ " + raName + " ] with monitoring-stats-registry.");
+    }
+
+    private void deregisterFromMonitoringService(){
+
+        if(ConnectorsUtil.belongsToSystemRA(raName)){
+            if(!ConnectorsUtil.isJMSRA(raName)){
+                return ;
+            }
+        }
+        if (statsProvider != null) {
+            StatsProviderManager.unregister(statsProvider);
+            logger.log(Level.FINE, "De-registered work-monitoring stats [ "+dottedNamesHierarchy+" ]" +
+                    "  for [ " + raName + " ] from monitoring-stats-registry.");
+        }
+    }
+
+    public void cleanUp(){
+        if (runtime.isServer()) {
+            deregisterFromMonitoringService();
         }
     }
 
@@ -150,7 +201,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats, runtime, raName, contextHandler);
+                        this.probeProvider, runtime, raName, contextHandler);
         wc.submitWork(WorkCoordinator.WAIT_UNTIL_FINISH);
         wc.lock();
 
@@ -208,7 +259,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats, runtime, raName, contextHandler);
+                        this.probeProvider, runtime, raName, contextHandler);
         wc.submitWork(WorkCoordinator.WAIT_UNTIL_START);
         wc.lock();
 
@@ -271,7 +322,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats, runtime, raName, contextHandler);
+                        this.probeProvider, runtime, raName, contextHandler);
         wc.submitWork(WorkCoordinator.NO_WAIT);
         wc.lock();
 
@@ -307,6 +358,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
     }
 
     //SJSAS 8.1 Monitoring additions begins
+/*
     public boolean isMonitoringEnabled() {
         return this.isMonitoringEnabled;
     }
@@ -377,6 +429,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
     //SJSAS 8.1 Monitoring additions end
 
 }
+*/
 
 /**
  * A simple class that holds all statistics-related entries captured by the
@@ -388,7 +441,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
  *
  * @author Sivakumar Thyagarajan
  */
-class WorkStats {
+/*class WorkStats {
     long submittedWorkCount;
     long completedWorkCount;
     long rejectedWorkCount;
@@ -461,5 +514,5 @@ class WorkStats {
         if (currentActiveWorkCount < minActiveWorkCount) {
             minActiveWorkCount = currentActiveWorkCount;
         }
-    }
+    }*/
 }
