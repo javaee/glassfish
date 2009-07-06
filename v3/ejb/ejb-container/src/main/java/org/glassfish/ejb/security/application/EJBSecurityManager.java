@@ -645,14 +645,6 @@ public final class EJBSecurityManager
         return prdm;
     }
 
-    private boolean isEmbeddedServer() {
-        List<String> servers = Server.Builder.getServerNames();
-        if (!servers.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
-
     /**
      * This method is called by the EJB container to decide whether or not
      * a method specified in the Invocation should be allowed.
@@ -663,10 +655,6 @@ public final class EJBSecurityManager
      *         to invoke the EJB.
      */
     public boolean authorize(ComponentInvocation compInv) {
-        //TODO:v3 temporary hack to get others unblocked
-        if (isEmbeddedServer()) {
-            return true;
-        }
         EjbInvocation inv = (EjbInvocation) compInv;    //FIXME: Param type should be EjbInvocation
         if (inv.getAuth() != null) {
             return inv.getAuth().booleanValue();

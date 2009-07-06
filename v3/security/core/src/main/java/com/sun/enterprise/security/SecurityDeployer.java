@@ -50,6 +50,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.internal.data.ApplicationInfo;
+import javax.security.jacc.PolicyConfigurationFactory;
+import javax.security.jacc.PolicyContextException;
 
 
 /**
@@ -77,33 +80,83 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     public static class AppDeployEventListener implements EventListener {
 
         public void event(Event event) {
-            if (Deployment.APPLICATION_PREPARED.equals(event.type())) {
-                //this is an Application Prepare Completion Event
-                DeploymentContext dc = (DeploymentContext) event.hook();
-                OpsParams params = dc.getCommandParameters(OpsParams.class);
-                //needed to prevent re-linking during appserver restart.
-                if (params.origin != OpsParams.Origin.deploy) {
-                    return;
+            
+            Application app = null;
+            String appName = null;
+            if (Deployment.APPLICATION_PREPARED.equals(event.type()) ||
+                   Deployment.APPLICATION_LOADED.equals(event.type())) {               
+                if (Deployment.APPLICATION_PREPARED.equals(event.type())) {
+                    //this is an Application Prepare Completion Event
+                    DeploymentContext dc = (DeploymentContext) event.hook();
+                    OpsParams params = dc.getCommandParameters(OpsParams.class);
+                    //needed to prevent re-linking during appserver restart.
+                    if (params.origin != OpsParams.Origin.deploy) {
+                        return;
+                    }
+                    appName = params.name();
+                    app = dc.getModuleMetaData(Application.class);
+                } else if (Deployment.APPLICATION_LOADED.equals(event.type())) {
+                    //when the server is restarted we do not get an
+                    //APPLICATION_PREPARED but just APPLICATION_LOADED.
+                    // But in the normal case of deploying an app we get both APPLICATION_PREPARED
+                    // followed by APPLICATION_LOADED.
+                    // For some apps (not sure which) an APPLICATION_PREPARED is also raised during restart
+                    //however params.origin != OpsParams.Origin.deploy in that case
+                    ApplicationInfo appInfo = (ApplicationInfo) event.hook();
+                    app = appInfo.getMetaData(Application.class);
+                    appName = appInfo.getName();
+                    if ("__admingui".equals(appName)) {
+                        //do nothing. Temporary workaround before we fix the real issue
+                        return;
+                    }
+                    
                 }
-                String appName = params.name();
-                Application app = dc.getModuleMetaData(Application.class);
                 if (app==null) {
                     // this is not a Java EE module, just return
                     return;
                 }
                 Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
                 Set<EjbBundleDescriptor> ejbDesc = app.getEjbBundleDescriptors();
+                boolean alreadyVisitedDuringAppPrepare = false;
                 try {
                     // link with the ejb name                     
                     String linkName = null;
                     boolean lastInService = false;
                     for (WebBundleDescriptor wbd : webDesc) {
                         String name = SecurityUtil.getContextID(wbd);
+                        try {
+                            boolean inService =
+                                    PolicyConfigurationFactory.getPolicyConfigurationFactory().inService(name);
+                            if (inService) {
+                                //we probably linked when the APPLICATION_PREPARED event came in.
+                                // see comment earlier in this method
+                                alreadyVisitedDuringAppPrepare = true;
+                                break;
+                            }
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        } catch (PolicyContextException e) {
+                            throw new RuntimeException(e);
+                        }
                         lastInService = SecurityUtil.linkPolicyFile(name, linkName, lastInService);
                         linkName = name;
                     }
                     for (EjbBundleDescriptor ejbd : ejbDesc) {
                         String name = SecurityUtil.getContextID(ejbd);
+                        try {
+                            boolean inService =
+                                    PolicyConfigurationFactory.getPolicyConfigurationFactory().inService(name);
+                            if (inService) {
+                                //we probably linked when the APPLICATION_PREPARED event came in.
+                                //see comment earlier in this method.
+                                alreadyVisitedDuringAppPrepare = true;
+                                break;
+                            }
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }  catch (PolicyContextException e) {
+                            throw new RuntimeException(e);
+                        }
                         //handle EJB's inside a WAR file
                         if (!name.equals(linkName)) {
                             lastInService = SecurityUtil.linkPolicyFile(name, linkName, lastInService);
@@ -111,13 +164,16 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                         }
                     }
                     //generate policies
-                    for (WebBundleDescriptor wbd : webDesc) {
-                        String name = SecurityUtil.getContextID(wbd);
-                        SecurityUtil.generatePolicyFile(name);
-                    }
-                    for (EjbBundleDescriptor ejbd : ejbDesc) {
-                        String name = SecurityUtil.getContextID(ejbd);
-                        SecurityUtil.generatePolicyFile(name);
+                    if (!alreadyVisitedDuringAppPrepare) {
+                        //trying to avoid an expensive call PCF.getPCF.inService()
+                        for (WebBundleDescriptor wbd : webDesc) {
+                            String name = SecurityUtil.getContextID(wbd);
+                            SecurityUtil.generatePolicyFile(name);
+                        }
+                        for (EjbBundleDescriptor ejbd : ejbDesc) {
+                            String name = SecurityUtil.getContextID(ejbd);
+                            SecurityUtil.generatePolicyFile(name);
+                        }
                     }
 
                 } catch (IASSecurityException se) {
