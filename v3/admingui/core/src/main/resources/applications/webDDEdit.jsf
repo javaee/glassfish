@@ -39,9 +39,9 @@
 <!define name="content">
     <event>
         <!beforeCreate
-            setSessionAttribute(key="appGeneralTabs" value="editDDTab");
+            setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
             getRequestValue(key="appName" value="#{pageSession.appName}");
-            getDescriptors(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
+            getDeploymentDescriptors(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
         />
     </event>
 #include "/shared/restart.inc"    
@@ -49,70 +49,65 @@
 #include "/applications/appGeneralTabs.inc"
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.descriptorPageTitle}" helpText="$resource{i18n.enterpriseApplications.descriptorPageTitleHelp}" >
-        <!facet pageButtonsTop>
-            <sun:panelGroup id="topButtons">
-                <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
-                <!command
-                    redirect(page="#{request.contextPath}/applications/applications.jsf");
-                />
-            </sun:button>
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
+    <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.descriptorPageTitle}" helpText="$resource{i18n.enterpriseApplications.descriptorPageTitleHelp}" />
+       
             "<br />
             "<br />
 #include "/applications/descriptorsTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
         </sun:form>
-            "<div id="panels"/>
-            <sc:panel id="webDDPanel" header="View Web Deployment Descriptor" fixedCenter="true" visible="false" modal="true" width="800px" height="600px" closable="true">
-                "<div id="ddContent" style="height: 550px; overflow: auto;">
-                    "Default content
-                "</div>
-            </sc:panel>
-    <f:verbatim>
-        <script type="text/javascript">
-            function showDD(appName, descriptorPath) {
-                var callback = {
-                    success : function (o) {
-                        scalesPanels['webDDPanel'].setHeader('View Web Deployment Descriptor: ' + appName + descriptorPath);
-                        YAHOO.util.Dom.get('ddContent').innerHTML = o.responseText;
-                        showPanel('webDDPanel');
-                    },
-                    failure : function (o) {
-                        alert (o.statusText);
-                    },
-                    timeout: 5000
-                };
-                YAHOO.util.Connect.asyncRequest('GET', 'viewDD.jsf?appName='+appName+'&descriptorName='+descriptorPath, callback, null);
-            }
 
-            function dynamicWindow(appName, path) {
-                var callback = {
-                    success : function (o) {
-                        var panel = new YAHOO.widget.Panel(null, {
-                            width : screen.width*0.75,
-                            height:screen.width*0.75,
-                            closable:true,
-                            draggable: true,
-                            modal: true,
-                            visible: false,
-                            fixedcenter:true});
-                        panel.render(document);
-                        panel.setHeader('View Web Deployment Descriptor: ' + appName + path);
-                        panel.setBody(o.responseText);
-                        //panel.hideEvent = function() { this.destroy; };
-                        panel.show();
-                    },
-                    failure : function (o) {
-                        alert (o.statusText);
-                    },
-                    timeout: 5000
-                };
-                YAHOO.util.Connect.asyncRequest('GET', 'viewDD.jsf?appName='+appName+'&descriptorName='+path, callback, null);
-            }
-        </script>
-    </f:verbatim>
+
+//
+//            "<div id="panels"/>
+//            <sc:panel id="webDDPanel" header="View Web Deployment Descriptor" fixedCenter="true" visible="false" modal="true" width="800px" height="600px" closable="true">
+//                "<div id="ddContent" style="height: 550px; overflow: auto;">
+//                    "Default content
+//                "</div>
+//            </sc:panel>
+//    <f:verbatim>
+//        <script type="text/javascript">
+//            function showDD(appName, descriptorPath) {
+//                var callback = {
+//                    success : function (o) {
+//                        scalesPanels['webDDPanel'].setHeader('View Web Deployment Descriptor: ' + appName + descriptorPath);
+//                        YAHOO.util.Dom.get('ddContent').innerHTML = o.responseText;
+//                        showPanel('webDDPanel');
+//                    },
+//                    failure : function (o) {
+//                        alert (o.statusText);
+//                    },
+//                    timeout: 5000
+//                };
+//                YAHOO.util.Connect.asyncRequest('GET', 'viewDD.jsf?appName='+appName+'&descriptorName='+descriptorPath, callback, null);
+//            }
+//
+//            function dynamicWindow(appName, path) {
+//                var callback = {
+//                    success : function (o) {
+//                        var panel = new YAHOO.widget.Panel(null, {
+//                            width : screen.width*0.75,
+//                            height:screen.width*0.75,
+//                            closable:true,
+//                            draggable: true,
+//                            modal: true,
+//                            visible: false,
+//                            fixedcenter:true});
+//                        panel.render(document);
+//                        panel.setHeader('View Web Deployment Descriptor: ' + appName + path);
+//                        panel.setBody(o.responseText);
+//                        //panel.hideEvent = function() { this.destroy; };
+//                        panel.show();
+//                    },
+//                    failure : function (o) {
+//                        alert (o.statusText);
+//                    },
+//                    timeout: 5000
+//                };
+//                YAHOO.util.Connect.asyncRequest('GET', 'viewDD.jsf?appName='+appName+'&descriptorName='+path, callback, null);
+//            }
+//        </script>
+//    </f:verbatim>
+
  </define>
  </composition>

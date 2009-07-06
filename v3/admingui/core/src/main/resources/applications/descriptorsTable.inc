@@ -42,26 +42,16 @@
 
     <sun:tableRowGroup id="rowGroup1" data={"$attribute{descriptors}"} sourceVar="td">      
         <sun:tableColumn headerText="$resource{i18n.deploy.ApplicationName}" rowHeader="$boolean{false}" id="col1">
-        	<staticText id="name" value="#{td.value.name}" />
+        	<staticText id="name" value="#{pageSession.appName}" />
         </sun:tableColumn>
-        <sun:tableColumn rendered="$pageSession{showSubComponentColumn}"  headerText="$resource{i18n.deploy.subCompName}" rowHeader="$boolean{false}" id="col2">
+        <sun:tableColumn  headerText="$resource{i18n.deploy.subCompName}" rowHeader="$boolean{false}" id="col2">
         	<staticText id="name" value="#{td.value.moduleName}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.deploy.descriptorFileName}" rowHeader="$boolean{false}" id="col3">
-        	<sun:hyperlink id="link" text="#{td.value.descriptor}"
-            onClick="var win=window.open('#{request.contextPath}/applications/viewDD.jsf?appName=$pageSession{appName}&descriptorName=#{td.value.descriptorPath}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">
-                >
+        	<sun:hyperlink id="link" text="#{td.value.ddPath}" >
 				<!command
-<!--
-					descriptorDisplay(filePath="#{td.value.descriptorPath}"
-									  appName="#{appName}"
-									  pageName="#{descriptorPage}"
-									  descriptor=>$attribute{descriptor}
-									  appName=>$attribute{appName}
-									  pageName=>$attribute{pageName});
-
-					navigate(page="applications/descriptorDisplay.jsf");
--->
+                    setSessionAttribute(key="descriptorForDisplay" value="#{td.value.ddContent}")
+                    redirect(page="#{request.contextPath}/applications/viewDD.jsf?appName=#{pageSession.appName}&moduleName=#{td.value.moduleName}&ddPath=#{td.value.ddPath}");
 				/>
 			</sun:hyperlink>
         </sun:tableColumn>

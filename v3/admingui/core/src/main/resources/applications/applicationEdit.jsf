@@ -59,7 +59,7 @@
 #include "/shared/restart.inc"    
         <sun:form id="propertyForm">
         
-         //#include "/applications/appGeneralTabs.inc"
+#include "/applications/appGeneralTabs.inc"
 #include "/shared/alertMsg.inc"
 #include "/applications/edit.inc"
 #include "subComponentTable.inc"
