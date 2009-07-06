@@ -7,8 +7,15 @@ package org.glassfish.admin.monitor.jvm;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.List;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.RestrictTo;
 import org.glassfish.probe.provider.PluginPoint;
 import org.glassfish.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.component.PostConstruct;
@@ -20,10 +27,19 @@ import org.glassfish.api.Startup;
  */
 @Service//(name="jvm")
 //@Scoped(Singleton.class)
-public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/ PostConstruct {
+public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/ PostConstruct, EventListener {
 
     //@Inject
     //Logger logger;
+
+    @Inject Events events;
+
+    private JVMClassLoadingStatsProvider clStatsProvider = new JVMClassLoadingStatsProvider();
+    private JVMCompilationStatsProvider compileStatsProvider = new JVMCompilationStatsProvider();
+    private JVMMemoryStatsProvider memoryStatsProvider = new JVMMemoryStatsProvider();
+    private JVMOSStatsProvider osStatsProvider = new JVMOSStatsProvider();
+    private JVMRuntimeStatsProvider runtimeStatsProvider = new JVMRuntimeStatsProvider();
+    private List<JVMGCStatsProvider> jvmStatsProviderList = new ArrayList();
 
     public void postConstruct(){
         //System.out.println (" In JVMStatsProviderBootstrap.PostConstruct ********");
@@ -41,18 +57,35 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
         //buildTopLevelMonitoringTree();
 
         /* register with monitoring */
-        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", new JVMClassLoadingStatsProvider());
-        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/compilation-system", new JVMCompilationStatsProvider());
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", clStatsProvider);
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/compilation-system", compileStatsProvider);
         for (GarbageCollectorMXBean gc : ManagementFactory.getGarbageCollectorMXBeans()) {
-            StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/garbage-collectors/"+gc.getName(), new JVMGCStatsProvider(gc.getName()));
+            JVMGCStatsProvider jvmStatsProvider = new JVMGCStatsProvider(gc.getName());
+            jvmStatsProviderList.add(jvmStatsProvider);
+            StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/garbage-collectors/"+gc.getName(), jvmStatsProvider);
         }
-        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/memory", new JVMMemoryStatsProvider());
-        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/operating-system", new JVMOSStatsProvider());
-        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/runtime", new JVMRuntimeStatsProvider());
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/memory", memoryStatsProvider);
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/operating-system", osStatsProvider);
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/runtime", runtimeStatsProvider);
+
+        events.register(this);
     }
 
     public Lifecycle getLifecycle() {
         return Startup.Lifecycle.SERVER;
+    }
+
+    public void event(Event event) {
+        if (event.name().equals(EventTypes.PREPARE_SHUTDOWN_NAME)) {
+            StatsProviderManager.unregister(this.clStatsProvider);
+            StatsProviderManager.unregister(this.compileStatsProvider);
+            StatsProviderManager.unregister(this.memoryStatsProvider);
+            StatsProviderManager.unregister(this.osStatsProvider);
+            StatsProviderManager.unregister(this.runtimeStatsProvider);
+            for (JVMGCStatsProvider gc : this.jvmStatsProviderList) {
+                StatsProviderManager.unregister(gc);
+            }
+        }
     }
 
     /*public void onLevelChange(String newLevel) {
