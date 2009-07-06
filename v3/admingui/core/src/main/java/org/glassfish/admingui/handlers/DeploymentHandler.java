@@ -356,60 +356,27 @@ public class DeploymentHandler {
      *  <p> Output value: "descriptors" -- Type: <code>java.util.List</code>/</p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="getDescriptors",
+    @Handler(id="getDeploymentDescriptors",
     input={
-        @HandlerInput(name="appName", type=String.class, required=true),
-        @HandlerInput(name="includeSubComponent", type=Boolean.class)},
+        @HandlerInput(name="appName", type=String.class, required=true)},
     output={
         @HandlerOutput(name="descriptors", type=List.class)})
-        public static void getDescriptors(HandlerContext handlerCtx) {
-//            String appName = (String)handlerCtx.getInputValue("appName");
-            List list = new ArrayList();
-//            Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
-//            Map<String,String> descriptors = runtimeMgr.getDeploymentConfigurations(appName);
-//            try{
-//                for(String dd : descriptors.keySet()){
-//                    HashMap map = new HashMap();
-//                    map.put("name", appName);
-//                    map.put("moduleName", "");
-//                    int index = dd.lastIndexOf(File.separator)+1;
-//                    map.put("descriptor", dd.substring(index));
-//                    map.put("descriptorPath", dd);
-//                    list.add(map);
-//                }
-//            }catch(Exception ex){
-//                GuiUtil.handleException(handlerCtx, ex);
-//            }
-            handlerCtx.setOutputValue("descriptors", list);
+        public static void getDeploymentDescriptors(HandlerContext handlerCtx) {
+            String appName = (String)handlerCtx.getInputValue("appName");
+            List result = new ArrayList();
+            Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
+            List<Map<String,String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
+            if (ddList.size() >0 ){
+                for(Map<String, String> oneDD : ddList){
+                    HashMap oneRow = new HashMap();
+                    oneRow.put("moduleName", oneDD.get(Runtime.MODULE_NAME_KEY) );
+                    oneRow.put("ddPath", oneDD.get(Runtime.DD_PATH_KEY) );
+                    oneRow.put("ddContent", oneDD.get(Runtime.DD_CONTENT_KEY) );
+                    result.add(oneRow);
+                }
+            }
+            handlerCtx.setOutputValue("descriptors", result);  
     }   
 
 
-
-    /**
-     * This handler will return the contents of the specified deployment
-     * descriptor as a String.
-     * @param handlerCtx
-     */
-    @Handler(id="getDeploymentDescriptor",
-        input={
-            @HandlerInput(name="appName", type=String.class, required=true),
-            @HandlerInput(name="descriptorName", type=String.class, required=true)
-        },
-        output={
-            @HandlerOutput(name="descriptorText", type=String.class)
-    })
-    public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
-//        String appName = (String) handlerCtx.getInputValue("appName");
-//        String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
-//        Runtime runtimeMgr = V3AMX.getInstance().getRuntime();
-//        String descriptorText = runtimeMgr.getDeploymentConfigurations(appName).get(descriptorName);  //get the content of the descriptor
-//
-//        if (GuiUtil.isEmpty(descriptorText)){
-//            System.out.printf("Could not locate %s%n", descriptorName);
-//        }
-//        handlerCtx.setOutputValue("descriptorText", descriptorText);
-        handlerCtx.setOutputValue("descriptorText", "");
-
-    }
- 
 }
