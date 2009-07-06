@@ -1,10 +1,12 @@
 package com.acme;
 
 import javax.ejb.*;
+import javax.interceptor.Interceptors;
 import javax.annotation.*;
 import java.util.concurrent.Future;
 
 @Stateful
+@Interceptors(NonSerializableInterceptor.class)
 public class HelloBean implements Hello {
 
     @Resource
@@ -37,6 +39,9 @@ public class HelloBean implements Hello {
 
     public String hello() {
 	System.out.println("In HelloBean::hello()");
+
+	StatefulExpiration se = (StatefulExpiration) sessionCtx.lookup("java:module/StatefulExpiration");
+	se.hello();
 
 	singletonNoIntf.hello();
 	singletonMultiIntf.hello();

@@ -41,10 +41,20 @@ public class HelloServlet extends HttpServlet {
 	try {
 
 	    doTest(numIter, "java:module/ManagedBeanNoInt", 0, "");
-	    doTest(numIter, "java:module/ManagedBean1Int", 2, "A");
-	    doTest(numIter, "java:module/ManagedBean2Int", 4, "AB");
-	    doTest(numIter, "java:module/ManagedBean2IntPlusBean", 4, "ABM");
+	    doTest(numIter, "java:module/ManagedBean1Int", numIter, "A");
+	    doTest(numIter, "java:module/ManagedBean2Int", numIter*2, "AB");
+	    doTest(numIter, "java:module/ManagedBean2IntPlusBean", numIter*2, "ABM");
 	    doTest(numIter, "java:module/ManagedBeanNoIntPlusBean", 0, "M");
+
+	    doTest(numIter, "java:module/ManagedBean2IntExcludeClass", numIter*2, "");
+
+	    doTest(numIter, "java:module/ManagedBean1Class1MethodLevelInt", numIter*1, "BA");
+
+	    doTest(numIter, "java:module/ManagedBean1MethodLevelIntExcludeClass",
+		   numIter*1, "A");
+
+	    doTest(numIter, "java:module/ManagedBean2MethodLevelInt", 0, "AB");
+	    
 
 	} catch(Exception e) {
 	    throw new RuntimeException(e);

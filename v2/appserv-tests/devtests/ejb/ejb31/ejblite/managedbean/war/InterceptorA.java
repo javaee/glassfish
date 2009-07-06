@@ -37,7 +37,7 @@ public class InterceptorA {
 
     @PreDestroy
     private void destroy(InvocationContext c) throws Exception {
-	System.out.println("In InterceptorB::destroy() ");
+	System.out.println("In InterceptorA::destroy() ");
 	c.proceed();
     }
 

@@ -17,6 +17,7 @@
         <antcall target="singleton"/>
         <antcall target="asynchronous"/>
         <antcall target="timer31"/>
+        <antcall target="security"/>
     </target>
 
     <target name="ejblite">
@@ -47,6 +48,12 @@
         <record name="timer31.output" action="start" />
             <ant dir="timer31" target="all"/>
         <record name="timer31.output" action="stop" />
+    </target>
+
+    <target name="security">
+        <record name="security.output" action="start" />
+            <ant dir="security" target="all"/>
+        <record name="security.output" action="stop" />
     </target>
 
     <target name="usage">
