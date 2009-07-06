@@ -1,9 +1,9 @@
 /*
- * 
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,50 +34,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package test.admin.admincli;
+package test.admincli;
 
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.Assert;
+import test.admincli.util.*;
 
+//@Test(sequential = true)
 public class RestartDomainTests {
+    private boolean execReturn = false;
+    private String ASADMIN = System.getProperty("ASADMIN");
+    private String cmd, cmd1;
+    @Test
+    public void createJDBCPool() throws Exception {
+//        System.out.println(ASADMIN);
+        cmd = ASADMIN + " create-jdbc-connection-pool " +
+            "--datasourceclassname=org.apache.derby.jdbc.ClientDataSource --property " +
+            "DatabaseName=sun-appserv-samples:PortNumber=1527:serverName=localhost:Password=APP:User=APP QLJdbcPool";
 
-    private boolean result=false;
-    private Process proc;
-    private Runtime runtime = Runtime.getRuntime();
-
-    @BeforeTest
-    @Test(groups = { "init" })
-    public void stopDomainTest() throws Exception {
-        String ASADMIN = System.getProperty("ASADMIN");
-        proc = runtime.exec(ASADMIN+" stop-domain");
-        try {
-            if (proc.waitFor() != 0) {
-               System.err.println("asadmin exit value = " + proc.exitValue());
-            }
-	    if (proc.exitValue() == 0) 
-		result = true;
-	    Assert.assertEquals(result, true, "Stop-domain test failed ...");
-        }
-        catch (Exception e) {
-                System.err.println(e);
-        }
+        execReturn = RtExec.execute(cmd);
+        Assert.assertEquals(execReturn, true, "Create jdbc connection pool failed ...");
     }
 
-    @Test(dependsOnMethods = { "stopDomainTest" })
-    public void startDomainTest() throws Exception {
-        String ASADMIN = System.getProperty("ASADMIN");
-        proc = runtime.exec(ASADMIN+" start-domain");
-        try {
-            if (proc.waitFor() != 0) {
-               System.err.println("asadmin exit value = " + proc.exitValue());
-            }
-            if (proc.exitValue() == 0)
-                result = true;
-            Assert.assertEquals(result, true, "Start-domain test failed ...");
-        }
-        catch (InterruptedException e) {
-                System.err.println(e);
-        }
+    @Test(dependsOnMethods = { "createJDBCPool" })
+    public void pingJDBCPool() throws Exception {
+//      extra ping of DerbyPool to create sun-appserv-samples DB.
+        cmd = ASADMIN + " ping-connection-pool DerbyPool";
+        RtExec.execute(cmd);
+        cmd1 = ASADMIN + " ping-connection-pool QLJdbcPool";
+        execReturn = RtExec.execute(cmd1);
+        Assert.assertEquals(execReturn, true, "Ping jdbc connection pool failed ...");
+    }
+
+    @Test(dependsOnMethods = { "pingJDBCPool" })
+    public void deleteJDBCPool() throws Exception {
+        cmd = ASADMIN + " delete-jdbc-connection-pool QLJdbcPool";
+        execReturn = RtExec.execute(cmd);
+        Assert.assertEquals(execReturn, true, "Delete jdbc connection pool failed ...");
     }
 }

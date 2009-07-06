@@ -19,7 +19,7 @@
 <target  name="runtest">
    <antcall target="runtest-impl">
        <param name="testng.test.name" value="${testng.test.name}"/>
-       <param name="testng.testclient" value="RestartDomainTests"/>
+       <param name="testng.testclient" value="ExistStatusTests"/>
    </antcall>
 </target>
 
