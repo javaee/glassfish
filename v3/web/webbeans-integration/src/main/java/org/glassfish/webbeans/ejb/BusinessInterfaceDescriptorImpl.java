@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,23 +34,37 @@
  * holder.
  */
 
-package com.sun.ejb.spi.container;
+
+package org.glassfish.webbeans.ejb;
+
+import org.jboss.webbeans.ejb.spi.BusinessInterfaceDescriptor;
 
 /**
- *@author Mahesh Kannan
  */
+public class BusinessInterfaceDescriptorImpl<T> implements BusinessInterfaceDescriptor<T>
+{
+    
+    private Class clientViewType;
+    private String jndiName;
 
-public interface SFSBContainerCallback {
+    public BusinessInterfaceDescriptorImpl(Class clientViewType, String jndiName) {
+	    this.clientViewType = clientViewType;
+	    this.jndiName = jndiName;
+    }
 
-    public ClassLoader getClassLoader();
+    /**
+    * Gets the business interface class
+    */
+    public Class<T> getInterface() {
+	    return clientViewType;
+    }
 
-    public int getPassivationBatchCount();
-
-    public void invokePeriodically(long delay, long periodicity, Runnable target);
-
-    public void activateEJB(Object sessionKey,
-            StatefulEJBContext ctx, Object cookie);
-
-    public boolean passivateEJB(StatefulEJBContext ctx);
-
+   /**
+    * Gets the JNDI name under which the EJB is registered
+    * 
+    * @return The JNDI name
+    */
+    public String getJndiName() {
+	    return jndiName;
+    }
 }

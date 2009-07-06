@@ -640,6 +640,38 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	    super.print(toStringBuffer);
     }
 
+    /**
+     * Return the fully-qualified portable JNDI name for a given
+     * client view (Remote, Local, or no-interface).  
+     */
+    public String getPortableJndiName(String clientViewType) {
+        String appName = null;
+
+        Application app = getEjbBundleDescriptor().getApplication();
+        if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+            appName = app.getAppName();
+        }
+
+        String modName = getEjbBundleDescriptor().getModuleDescriptor().getModuleName();
+
+        StringBuffer javaGlobalPrefix = new StringBuffer("java:global/");
+
+        if (appName != null) {
+            javaGlobalPrefix.append(appName);
+            javaGlobalPrefix.append("/");
+        }
+
+        javaGlobalPrefix.append(modName);
+        javaGlobalPrefix.append("/");
+
+        javaGlobalPrefix.append(getName());
+
+        javaGlobalPrefix.append("!");
+        javaGlobalPrefix.append(clientViewType);
+
+        return javaGlobalPrefix.toString();
+    }
+
     public static class AccessTimeoutHolder {
         public AccessTimeoutHolder(long v, TimeUnit u, MethodDescriptor m) {
             value = v;

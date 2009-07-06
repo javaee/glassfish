@@ -74,7 +74,7 @@ public interface J2EEObjectStreamFactory {
      *@return an ObjectInputStream that can be used to deserialize objects
      */
 	public ObjectInputStream createObjectInputStream(InputStream is,
-            boolean resolveObject, ClassLoader appClassLoader, ClassLoader containerClassLoader)
+            boolean resolveObject, ClassLoader appClassLoader)
         throws Exception;
 
 }

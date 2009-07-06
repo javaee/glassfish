@@ -155,7 +155,6 @@ public abstract class BaseContainer
     protected ClassLoader loader = null;
     protected Class ejbClass = null;
     protected Class sfsbSerializedClass = null;
-    protected AsmSerializableBeanGenerator sfsbSerializedClassLoader = null;
     protected Method ejbPassivateMethod = null;
     protected Method ejbActivateMethod = null;
     protected Method ejbRemoveMethod = null;
@@ -405,7 +404,7 @@ public abstract class BaseContainer
 
     protected EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
 
-    protected ClassLoader optIntfClassLoader;
+    protected EjbOptionalIntfGenerator optIntfClassLoader;
 
     private Set<String> publishedPortableGlobalJndiNames = new HashSet<String>();
 
@@ -507,24 +506,17 @@ public abstract class BaseContainer
 
                         if( isStatefulSession ) {
 
-
                             /**
                              * If bean class isn't explicitly marked Serializable, generate
                              * a subclass that is.   We do this with a generator that uses
                              * ASM directly instead of the CORBA codegen library since none
                              * of the corba .jars are part of the Web Profile.
-                             * There is also special handling required for the class loader
-                             * in which the serializable subclass is loaded.  That class loader
-                             * must be used during deserialization to find the class. 
                              */
                             if( !Serializable.class.isAssignableFrom(ejbClass) ) {
-                                sfsbSerializedClassLoader =
-                                    EJBUtils.getSerializableSubClassLoader
-                                    (loader, ejbClass.getName());
-                                sfsbSerializedClass = sfsbSerializedClassLoader.getSerializableSubclass();
-                            }
-                            
 
+                                sfsbSerializedClass = EJBUtils.loadGeneratedSerializableClass(ejbClass.getClassLoader(),
+                                        ejbClass.getName());
+                            }
 
                         }
                     }
@@ -1407,7 +1399,7 @@ public abstract class BaseContainer
                 proxyInterfaces[1] = ejbGeneratedOptionalLocalBusinessIntfClass =
                         optIntfClassLoader.loadClass(optionalIntfName);
 
-                Class proxyClass = Proxy.getProxyClass(optIntfClassLoader,proxyInterfaces);
+                Class proxyClass = Proxy.getProxyClass(loader,proxyInterfaces);
                 ejbOptionalLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
 
@@ -1847,10 +1839,10 @@ public abstract class BaseContainer
 
             if( isSystemUncheckedException(inv.exception) ) {
                 _logger.log(Level.WARNING, "A system exception occurred during an invocation on EJB " +
-                                           ejbDescriptor.getName(), inv.exception);
+                                           ejbDescriptor.getName() + " method " + inv.beanMethod, inv.exception);
             } else {
                 _logger.log(Level.FINE, "An application exception occurred during an invocation on EJB " +
-                                           ejbDescriptor.getName(), inv.exception);
+                                           ejbDescriptor.getName() + " method " + inv.beanMethod, inv.exception);
             }
             
             if ( inv.isRemote ) {
@@ -3122,7 +3114,7 @@ public abstract class BaseContainer
     }
 
     void registerSystemInterceptor(Object o) {
-        interceptorManager.registerSystemInterceptor(o);
+        interceptorManager.registerRuntimeInterceptor(o);
     }
     
     /*
@@ -3584,7 +3576,7 @@ public abstract class BaseContainer
             new EJBLocalObjectInvocationHandlerDelegate(
                     businessIntfClass, getContainerId(), handler);
         Proxy proxy = (Proxy) Proxy.newProxyInstance(
-                optIntfClassLoader, new Class[] { IndirectlySerializable.class,
+                loader, new Class[] { IndirectlySerializable.class,
                                businessIntfClass}, delegate);
 
         String beanSubClassName = ejbGeneratedOptionalLocalBusinessIntfClass.getName() + "__Bean__";

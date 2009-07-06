@@ -12,6 +12,8 @@ import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 
 
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.internal.grizzly.LazyServiceInitializer;
+
 
 import java.util.Properties;
 import java.rmi.Remote;
@@ -62,9 +64,12 @@ public class GlassFishORBHelper implements PostConstruct {
 
     private volatile ProtocolManager protocolManager;
 
+    private ORBLazyServiceInitializer lazyServiceInitializer;
+
     public void postConstruct() {
-        orbFactory = habitat.getByContract(GlassFishORBFactory.class);   
+        orbFactory = habitat.getByContract(GlassFishORBFactory.class);
     }
+
 
     /**
      * Get or create the default orb.  This can be called for any process type.  However,
@@ -129,6 +134,15 @@ public class GlassFishORBHelper implements PostConstruct {
 
         return orb;
     }
+
+    public void setLazyServiceInitializer(ORBLazyServiceInitializer lazyInit) {
+        lazyServiceInitializer = lazyInit;
+    }
+
+    public ORBLazyServiceInitializer getLazyServiceInitializer() {
+        return lazyServiceInitializer;
+    }
+    
 
     /**
      * Get a protocol manager for creating remote references. ProtocolManager is only

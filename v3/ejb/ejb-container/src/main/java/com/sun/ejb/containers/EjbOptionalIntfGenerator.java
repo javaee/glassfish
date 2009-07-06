@@ -43,6 +43,8 @@ import org.objectweb.asm.commons.Method;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+
+import java.lang.reflect.ReflectPermission;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,11 +54,14 @@ import java.net.URL;
 import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.Serializable;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
+import java.security.Permission;
 
 import com.sun.enterprise.deployment.util.TypeUtil;
 
 public class EjbOptionalIntfGenerator
-    extends ClassLoader
     implements Opcodes {
 
     private static final int INTF_FLAGS = ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES;
@@ -69,34 +74,46 @@ public class EjbOptionalIntfGenerator
             ;
     private ClassLoader loader;
 
+    private ProtectionDomain protectionDomain;
+
 
     private static final boolean _debug = Boolean.valueOf(System.getProperty("emit.ejb.optional.interface"));
 
     public EjbOptionalIntfGenerator(ClassLoader loader) {
-        super(loader);
         this.loader = loader;
     }
 
     public Class loadClass(String name)
         throws ClassNotFoundException
     {
-        byte[] classData = (byte []) classMap.get(name);
-        
-        if (classData != null) {
-            Class clz = loadedClasses.get(name);
-            if (clz == null) {
-                clz = super.defineClass(name, classData, 0, classData.length);
-                loadedClasses.put(name, clz);
-            }
+        Class clz = null;
 
-            return clz;
-        } else {
-            return loader.loadClass(name);
+        try {
+            clz = loader.loadClass(name);
+        } catch(ClassNotFoundException cnfe) {
+
+            byte[] classData = (byte []) classMap.get(name);
+
+            if (classData != null) {
+
+                clz = makeClass(name, classData, protectionDomain, loader);
+            }
         }
+
+        if( clz == null ) {
+
+            throw new ClassNotFoundException(name);
+        }
+
+        return clz;       
     }
 
     public void generateOptionalLocalInterface(Class ejbClass, String intfClassName)
         throws Exception {
+
+        if( protectionDomain == null ) {
+            ejbClass.getProtectionDomain();
+        }
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
@@ -147,6 +164,10 @@ public class EjbOptionalIntfGenerator
     public void generateOptionalLocalInterfaceSubClass(Class superClass, String subClassName,
                                                        Class delegateClass)
         throws Exception {
+
+        if( protectionDomain == null ) {
+            superClass.getProtectionDomain();
+        }
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
@@ -322,5 +343,51 @@ public class EjbOptionalIntfGenerator
                 DELEGATE_FIELD_NAME, delIntClassDesc);
         mg2.returnValue();
         mg2.endMethod();
+    }
+
+       // Name that Java uses for constructor methods
+    private static final String CONSTRUCTOR_METHOD_NAME = "<init>" ;
+
+    // Name that Java uses for a classes static initializer method
+    private static final String STATIC_INITIALIZER_METHOD_NAME = "<clinit>" ;
+
+     // A Method for the protected ClassLoader.defineClass method, which we access
+    // using reflection.  This requires the supressAccessChecks permission.
+    private static final java.lang.reflect.Method defineClassMethod = AccessController.doPrivileged(
+	new PrivilegedAction<java.lang.reflect.Method>() {
+	    public java.lang.reflect.Method run() {
+		try {
+		    java.lang.reflect.Method meth = ClassLoader.class.getDeclaredMethod(
+			"defineClass", String.class,
+			byte[].class, int.class, int.class,
+			ProtectionDomain.class ) ;
+		    meth.setAccessible( true ) ;
+		    return meth ;
+		} catch (Exception exc) {
+		    throw new RuntimeException(
+			"Could not find defineClass method!", exc ) ;
+		}
+	    }
+	}
+    ) ;
+
+    private static final Permission accessControlPermission =
+	    new ReflectPermission( "suppressAccessChecks" ) ;
+
+    // This requires a permission check
+    private Class<?> makeClass( String name, byte[] def, ProtectionDomain pd,
+	    ClassLoader loader ) {
+
+	SecurityManager sman = System.getSecurityManager() ;
+	if (sman != null)
+	    sman.checkPermission( accessControlPermission ) ;
+
+	try {
+	    return (Class)defineClassMethod.invoke( loader,
+		name, def, 0, def.length, pd ) ;
+	} catch (Exception exc) {
+	    throw new RuntimeException( "Could not invoke defineClass!",
+		exc ) ;
+	}
     }
 }

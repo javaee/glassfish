@@ -38,6 +38,11 @@ package com.sun.enterprise.container.common.impl.managedbean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Set;
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.lang.reflect.Method;
+
 
 import org.glassfish.api.managedbean.ManagedBeanManager;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -141,7 +146,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
 
 
                     if( !interceptorClasses.isEmpty() || next.hasAroundInvokeMethod()) {
-                        // Inject instance and have injection manager call PostConstruct
+
 
                         Class targetClass = bundle.getClassLoader().loadClass(next.getBeanClassName());
                         InterceptorInfo interceptorInfo = new InterceptorInfo();
@@ -155,8 +160,12 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                             interceptorInfo.setHasTargetClassAroundInvoke(true);
                         }
 
-                        // TODO handle method-level interceptors
-                        interceptorInfo.setAroundInvokeInterceptorChain(next.getAroundInvokeInterceptors(null));
+                        Map<Method, List> interceptorChains = new HashMap<Method, List>();
+                        for(Method m : targetClass.getMethods()) {
+                            interceptorChains.put(m, next.getAroundInvokeInterceptors(m) );
+                        }
+
+                        interceptorInfo.setAroundInvokeInterceptorChains(interceptorChains);
 
                         JavaEEInterceptorBuilderFactory interceptorBuilderFactory =
                                 habitat.getByContract(JavaEEInterceptorBuilderFactory.class);

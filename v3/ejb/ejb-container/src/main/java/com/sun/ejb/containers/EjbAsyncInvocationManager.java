@@ -137,10 +137,12 @@ public class EjbAsyncInvocationManager
         inv.clearYetToSubmitStatus();
         asyncInv.clearYetToSubmitStatus();
 
-        //TODO: FIXME => We need to propogate SecurityPrincipal
         EjbFutureTask futureTask = asyncInv.getEjbFutureTask();
-        futureTask.getEjbAsyncTask().initialize(asyncInv);
 
+        // EjbAsyncTask.initialize captures calling thread's
+        // CallerPrincipal and sets it on the dispatch thread
+        // before authorization.
+        futureTask.getEjbAsyncTask().initialize(asyncInv);
 
         return super.submit(futureTask.getEjbAsyncTask());
     }

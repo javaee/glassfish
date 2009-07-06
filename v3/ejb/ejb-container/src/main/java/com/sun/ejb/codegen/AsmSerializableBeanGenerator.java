@@ -39,25 +39,19 @@ package com.sun.ejb.codegen;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
-//import org.objectweb.asm.util.TraceClassVisitor;
 
 
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
 import java.io.Serializable;
 
 import com.sun.enterprise.deployment.util.TypeUtil;
 
+import java.security.ProtectionDomain ;
+import java.security.PrivilegedAction ;
+import java.security.AccessController ;
+import java.security.Permission ;
+import java.lang.reflect.ReflectPermission ;
+
 public class AsmSerializableBeanGenerator
-    extends ClassLoader
     implements Opcodes {
 
     private static final int INTF_FLAGS = ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES;
@@ -77,7 +71,6 @@ public class AsmSerializableBeanGenerator
     private static final boolean _debug = Boolean.valueOf(System.getProperty("emit.ejb.optional.interface"));
 
     public AsmSerializableBeanGenerator(ClassLoader loader, Class baseClass, String serializableSubclassName) {
-        super(loader);
         this.loader = loader;
         this.baseClass = baseClass;
         subclassName = serializableSubclassName;
@@ -88,13 +81,16 @@ public class AsmSerializableBeanGenerator
         return subclassName;
 
     }
-
-    public Class getSerializableSubclass() {
-        return loadedClass;
-    }
-
+    
     public Class generateSerializableSubclass()
         throws Exception {
+
+        try {
+            loadedClass = loader.loadClass(subclassName);
+            return loadedClass;
+        } catch(ClassNotFoundException e) {
+            // Not loaded yet.  Just continue
+        }
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
@@ -188,13 +184,58 @@ public class AsmSerializableBeanGenerator
 
         classData = cw.toByteArray();
 
-        loadedClass = super.defineClass(subclassName, classData, 0, classData.length);
+        loadedClass = makeClass(subclassName, classData, baseClass.getProtectionDomain(), loader);
 
         return loadedClass;
 
 
     }
 
+      // Name that Java uses for constructor methods
+    private static final String CONSTRUCTOR_METHOD_NAME = "<init>" ;
+
+    // Name that Java uses for a classes static initializer method
+    private static final String STATIC_INITIALIZER_METHOD_NAME = "<clinit>" ;
+    
+     // A Method for the protected ClassLoader.defineClass method, which we access
+    // using reflection.  This requires the supressAccessChecks permission.
+    private static final java.lang.reflect.Method defineClassMethod = AccessController.doPrivileged(
+	new PrivilegedAction<java.lang.reflect.Method>() {
+	    public java.lang.reflect.Method run() {
+		try {
+		    java.lang.reflect.Method meth = ClassLoader.class.getDeclaredMethod(
+			"defineClass", String.class,
+			byte[].class, int.class, int.class,
+			ProtectionDomain.class ) ;
+		    meth.setAccessible( true ) ;
+		    return meth ;
+		} catch (Exception exc) {
+		    throw new RuntimeException(
+			"Could not find defineClass method!", exc ) ;
+		}
+	    }
+	}
+    ) ;
+
+    private static final Permission accessControlPermission =
+	    new ReflectPermission( "suppressAccessChecks" ) ;
+
+    // This requires a permission check
+    private Class<?> makeClass( String name, byte[] def, ProtectionDomain pd,
+	    ClassLoader loader ) {
+
+	SecurityManager sman = System.getSecurityManager() ;
+	if (sman != null)
+	    sman.checkPermission( accessControlPermission ) ;
+
+	try {
+	    return (Class)defineClassMethod.invoke( loader,
+		name, def, 0, def.length, pd ) ;
+	} catch (Exception exc) {
+	    throw new RuntimeException( "Could not invoke defineClass!",
+		exc ) ;
+	}
+    }
 
 
 }

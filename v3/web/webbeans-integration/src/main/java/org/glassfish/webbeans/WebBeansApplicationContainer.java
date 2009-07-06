@@ -39,17 +39,48 @@ package org.glassfish.webbeans;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 
+
+
+import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import com.sun.logging.LogDomains;
+
 public class WebBeansApplicationContainer implements ApplicationContainer {
+
+    private Logger _logger = LogDomains.getLogger(WebBeansApplicationContainer.class, LogDomains.CORE_LOGGER);
+
+    private WebBeansBootstrap webBeansBootstrap;
+
+
+    public WebBeansApplicationContainer(WebBeansBootstrap bootstrap) {
+        webBeansBootstrap = bootstrap;
+    }
 
     public Object getDescriptor() {
         return null;
     }
-
+   
     public boolean start(ApplicationContext startupContxt) {
+
+        // Boot() is delayed until start phase because calling boot can result in the
+        // instantiation of bean instances and sending of events.  Therefore it must
+        // not run until all other modules have made it past the load() phase.
+        webBeansBootstrap.boot();
+
         return true;
     }
 
     public boolean stop(ApplicationContext stopContext) {
+
+        try {
+            webBeansBootstrap.shutdown();
+        } catch(Exception e) {
+            _logger.log(Level.WARNING, "JCDI shutdown error", e);    
+        }
+
         return true;
     }
 

@@ -48,7 +48,7 @@ public class InterceptorInfo {
     private List postConstructInterceptors = new LinkedList();
     private List preDestroyInterceptors = new LinkedList();
 
-    private List aroundInvokeInterceptorChain = new LinkedList();
+    private Map<Method, List> aroundInvokeChains = new HashMap<Method, List>();
 
     private Set<String> interceptorClassNames = new HashSet<String>();
 
@@ -97,9 +97,8 @@ public class InterceptorInfo {
         return interceptorClassNames;
     }
 
-    // TODO revisit this to account for method-level interceptors
-    public void setAroundInvokeInterceptorChain(List chain) {
-        aroundInvokeInterceptorChain = new LinkedList(chain);
+    public void setAroundInvokeInterceptorChains(Map<Method, List> chains) {
+        aroundInvokeChains = new HashMap<Method, List>(chains);
     }
 
 
@@ -114,9 +113,7 @@ public class InterceptorInfo {
 
     public List getAroundInvokeInterceptors(Method m) {
 
-        // TODO need to implement per-method logic.
-        return aroundInvokeInterceptorChain;
-
+        return aroundInvokeChains.get(m);
     }
 
 }

@@ -51,6 +51,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.logging.Level;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class ManagedBeanHandler extends AbstractHandler {
@@ -92,13 +94,17 @@ public class ManagedBeanHandler extends AbstractHandler {
         managedBeanDesc.setBeanClassName(managedBeanClass.getName());
 
 
-        Class[] interceptors = null;
+        Class[] classInterceptors = null;
+        Map<Method, Class[]> methodLevelInterceptors = new HashMap<Method, Class[]>();
+        Map<String, InterceptorDescriptor> interceptorDescs = new HashMap<String, InterceptorDescriptor>();
 
 
         // For now, just process the javax.interceptor related annotations directly instead
         // of relying on the annotation framework.   All the existing javax.interceptor
         // handlers are very tightly coupled to ejb so it would be more work to abstract those
-        // than to just process the annotations directly.
+        // than to just process the annotations directly.  Also, do javax.interceptor
+        // annotation processing reflectively to avoid dependency on javax.interceptor from
+        // DOL module.
 
         // TODO refactor javax.interceptor annotation handlers to support both ejb and non-ejb
         // related interceptors
@@ -107,7 +113,7 @@ public class ManagedBeanHandler extends AbstractHandler {
         if( interceptorsAnn != null ) {
             try {
                 Method m = interceptorsAnn.annotationType().getDeclaredMethod("value");
-                interceptors = (Class[]) m.invoke(interceptorsAnn);
+                classInterceptors = (Class[]) m.invoke(interceptorsAnn);
             } catch(Exception e) {
                 AnnotationProcessorException ape = new AnnotationProcessorException(e.getMessage(), element);
                 ape.initCause(e);
@@ -125,7 +131,32 @@ public class ManagedBeanHandler extends AbstractHandler {
             managedBeanDesc.addAroundInvokeDescriptor(desc);
         }
 
+        for(Method m : managedBeanClass.getMethods()) {
+            Annotation ann = getMethodAnnotation(m, "javax.interceptor.Interceptors");
+            if(ann != null) {
+                try {
+                    Method valueM = ann.annotationType().getDeclaredMethod("value");
+                    methodLevelInterceptors.put(m, (Class[]) valueM.invoke(ann));
+                } catch(Exception e) {
+                    AnnotationProcessorException ape = new AnnotationProcessorException(e.getMessage(), element);
+                    ape.initCause(e);
+                    throw ape;
+                }
+            } else {
+                // If the method doesn't declare any method-level interceptors but it excludes
+                // class-level interceptors, explicitly set method-level to an empty list.
+                boolean excludeClassInterceptors =
+                        ( getMethodAnnotation(m, "javax.interceptor.ExcludeClassInterceptors")
+                            != null );
+                if( excludeClassInterceptors ) {
+                    MethodDescriptor mDesc = new MethodDescriptor(m);
+                    managedBeanDesc.setMethodLevelInterceptorChain(mDesc,
+                            new LinkedList<InterceptorDescriptor>());
+                }
 
+            }
+
+        }
 
 
         if( aeHandler instanceof ResourceContainerContext ) {
@@ -141,48 +172,89 @@ public class ManagedBeanHandler extends AbstractHandler {
             procContext.getProcessor().process(
                 procContext, new Class[] { managedBeanClass });
 
-            if( interceptors != null ) {
+            List<InterceptorDescriptor> classInterceptorChain = new LinkedList<InterceptorDescriptor>();
 
-                List<InterceptorDescriptor> classInterceptorChain = new LinkedList<InterceptorDescriptor>();
+            if( classInterceptors != null ) {
 
-                for(Class i : interceptors) {
+                for(Class i : classInterceptors) {
 
-                    InterceptorDescriptor nextInterceptor = new InterceptorDescriptor();
-                    nextInterceptor.setInterceptorClassName(i.getName());
+                    InterceptorDescriptor nextInterceptor = processInterceptor(i, managedBeanContext,
+                            procContext);
 
-                    // Redirect PostConstruct / PreDestroy methods to InterceptorDescriptor
-                    // during annotation processing
-                    managedBeanContext.setInterceptorMode(nextInterceptor);
-
-                    // Process annotations on interceptor
-                    procContext.pushHandler(managedBeanContext);
-                    procContext.getProcessor().process(procContext, new Class[] {i});
-
-
-                    managedBeanContext.unsetInterceptorMode();
-
-                    // Add interceptor to class-leve chain
+                    // Add interceptor to class-level chain
                     classInterceptorChain.add(nextInterceptor);
 
-                    Method interceptorAroundInvoke =
-                        getMethodForMethodAnnotation(i, "javax.interceptor.AroundInvoke");
-                    if( interceptorAroundInvoke != null ) {
-                        // TODO process superclasses for AroundInvoke
-                        LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
-                        desc.setLifecycleCallbackClass(i.getName());
-                        desc.setLifecycleCallbackMethod(interceptorAroundInvoke.getName());
-                        nextInterceptor.addAroundInvokeDescriptor(desc);
-                    }
+                    interceptorDescs.put(i.getName(), nextInterceptor);
 
                 }
                 
                 managedBeanDesc.setClassInterceptorChain(classInterceptorChain);
 
             }
+
+            for(Map.Entry<Method, Class[]> next : methodLevelInterceptors.entrySet()) {
+
+                Method m = next.getKey();
+                Class[] interceptors = next.getValue();
+
+                boolean excludeClassInterceptors =
+                        ( getMethodAnnotation(m, "javax.interceptor.ExcludeClassInterceptors")
+                            != null );
+
+                List<InterceptorDescriptor> methodInterceptorChain = excludeClassInterceptors ?
+                        new LinkedList<InterceptorDescriptor>() :
+                        new LinkedList<InterceptorDescriptor>(classInterceptorChain);
+
+
+                for(Class nextInterceptor : interceptors) {
+                    InterceptorDescriptor interceptorDesc = interceptorDescs.get(nextInterceptor.getName());
+                    if( interceptorDesc == null ) {
+                        interceptorDesc = processInterceptor(nextInterceptor, managedBeanContext,
+                                procContext);
+                        interceptorDescs.put(nextInterceptor.getName(), interceptorDesc);
+                    }
+                    methodInterceptorChain.add(interceptorDesc);
+                }
+
+                MethodDescriptor mDesc = new MethodDescriptor(m);
+                managedBeanDesc.setMethodLevelInterceptorChain(mDesc, methodInterceptorChain);
+            }
            
         }
 
         return getDefaultProcessedResult();
+    }
+
+    private InterceptorDescriptor processInterceptor(Class interceptorClass, ManagedBeanContext managedBeanCtx,
+                                                     ProcessingContext procCtx)
+        throws AnnotationProcessorException {
+
+        InterceptorDescriptor interceptorDesc = new InterceptorDescriptor();
+        interceptorDesc.setInterceptorClassName(interceptorClass.getName());
+
+        // Redirect PostConstruct / PreDestroy methods to InterceptorDescriptor
+        // during annotation processing
+        managedBeanCtx.setInterceptorMode(interceptorDesc);
+
+        // Process annotations on interceptor
+        procCtx.pushHandler(managedBeanCtx);
+        procCtx.getProcessor().process(procCtx, new Class[] {interceptorClass});
+
+
+        managedBeanCtx.unsetInterceptorMode();
+
+
+        Method interceptorAroundInvoke =
+            getMethodForMethodAnnotation(interceptorClass, "javax.interceptor.AroundInvoke");
+        if( interceptorAroundInvoke != null ) {
+            // TODO process superclasses for AroundInvoke
+            LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+            desc.setLifecycleCallbackClass(interceptorClass.getName());
+            desc.setLifecycleCallbackMethod(interceptorAroundInvoke.getName());
+            interceptorDesc.addAroundInvokeDescriptor(desc);
+        }
+
+        return interceptorDesc;
     }
 
     private Annotation getClassAnnotation(Class c, String annotationClassName) {
@@ -207,7 +279,17 @@ public class ManagedBeanHandler extends AbstractHandler {
         return null;
     }
 
+    private Annotation getMethodAnnotation(Method m, String annotationClassName) {
 
+        for(Annotation next : m.getDeclaredAnnotations()) {
+
+            if( next.annotationType().getName().equals(annotationClassName)) {
+                return next;
+            }
+        }
+
+        return null;
+    }
 
 
 }

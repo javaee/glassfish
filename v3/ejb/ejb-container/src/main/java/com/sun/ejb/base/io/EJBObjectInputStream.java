@@ -66,21 +66,17 @@ class EJBObjectInputStream extends ObjectInputStream
 {
     private ClassLoader appLoader;
 
-    // Can be null
-    private ClassLoader containerLoader;
-
     private static final Logger _ejbLogger =
        LogDomains.getLogger(EJBObjectInputStream.class, LogDomains.EJB_LOGGER);
 
     private ObjectInputOutputStreamFactory inputStreamHelper;
 
-    EJBObjectInputStream(InputStream in, ClassLoader appCl, ClassLoader containerCl, boolean resolve)
+    EJBObjectInputStream(InputStream in, ClassLoader appCl, boolean resolve)
         throws IOException, StreamCorruptedException
     {
         super(in);
         
         appLoader = appCl;
-        containerLoader = containerCl;
         
         if (resolve == true) {
             enableResolveObject(resolve);
@@ -162,19 +158,7 @@ class EJBObjectInputStream extends ObjectInputStream
                 clazz = appLoader.loadClass(desc.getName());
             }  catch (ClassNotFoundException e) {
 
-                if( containerLoader != null ) {
-                    try {
-                        // Try loader associated with generated container classes
-                        // such as the sfsb generated serializable sub class
-                        clazz = containerLoader.loadClass(desc.getName());
-
-                    } catch( ClassNotFoundException ee) {
-                        // Try also the superclass because of primitive types
-                        clazz = super.resolveClass(desc);
-                    }
-                } else {
-                    clazz = super.resolveClass(desc);
-                }
+                clazz = super.resolveClass(desc);               
             }
 
         }

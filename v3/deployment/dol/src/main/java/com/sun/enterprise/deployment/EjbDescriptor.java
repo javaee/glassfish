@@ -107,6 +107,12 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private Set<LifecycleCallbackDescriptor> aroundTimeoutDescs =
             new HashSet<LifecycleCallbackDescriptor>();
 
+
+    // Late-binding system-level interceptors for this EJB.  These can be set
+    // as late as initialization time, so they are not part of the interceptor
+    // binding translation that happens for application-defined interceptors.
+    private List<EjbInterceptor> frameworkInterceptors = new LinkedList<EjbInterceptor>();
+
     private Set<EntityManagerFactoryReferenceDescriptor>
             entityManagerFactoryReferences =
             new HashSet<EntityManagerFactoryReferenceDescriptor>();
@@ -490,6 +496,26 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         return (getAroundTimeoutDescriptors().size() > 0);
     }
 
+
+    public void addFrameworkInterceptor(EjbInterceptor interceptor) {
+        boolean found = false;
+        for(EjbInterceptor next : frameworkInterceptors) {
+            if( next.getInterceptorClassName().equals(interceptor.getInterceptorClassName())) {
+                found = true;
+                break;
+            }
+        }
+
+        if( !found ) {
+            frameworkInterceptors.add(interceptor);
+        }
+
+    }
+
+    public List<EjbInterceptor> getFrameworkInterceptors() {
+        return frameworkInterceptors;
+    }
+
     /**
      * Since ejb-class is optional, in some cases the lifecycle-class
      * for AroundInvoke, PostConstruct, etc. methods on the bean-class
@@ -593,7 +619,8 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
      * and/or callbacks.
      */
     public Set<EjbInterceptor> getInterceptorClasses() {
-        return new HashSet<EjbInterceptor>(allInterceptorClasses);
+        Set<EjbInterceptor> classes = new HashSet<EjbInterceptor>(allInterceptorClasses);
+        return classes;
     }
 
     /**

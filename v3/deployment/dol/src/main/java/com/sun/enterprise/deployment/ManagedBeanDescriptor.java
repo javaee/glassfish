@@ -70,7 +70,21 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
     private List<InterceptorDescriptor> classInterceptorChain = new LinkedList<InterceptorDescriptor>();
 
     private Set<LifecycleCallbackDescriptor> aroundInvokeDescs = new HashSet<LifecycleCallbackDescriptor>();
-       
+
+    //
+    // Interceptor info per business method.  If the map does not
+    // contain an entry for the business method, there is no method-specific
+    // interceptor information for that method.  In that case the standard
+    // class-level interceptor information applies.
+    //
+    // If there is an entry for the business method, the corresponding list
+    // represents the *complete* ordered list of interceptor classes for that
+    // method.  An empty list would mean all the interceptors have been
+    // disabled for that particular business method.
+    //
+    private Map<MethodDescriptor, List<InterceptorDescriptor>> methodInterceptorsMap =
+            new HashMap<MethodDescriptor, List<InterceptorDescriptor>>();
+
 	/** 
 	* Default constructor. 
 	*/
@@ -146,16 +160,29 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
 
     public Set<String> getAllInterceptorClasses() {
         Set<String> classes = new HashSet<String>();
+        
         for(InterceptorDescriptor desc : classInterceptorChain) {
             classes.add(desc.getInterceptorClassName());
         }
-        // TODO update return value to include any method-level interceptors
+
+        for(List intList : methodInterceptorsMap.values()) {
+            for(Object o : intList) {
+                InterceptorDescriptor interceptor = (InterceptorDescriptor) o;
+                classes.add(interceptor.getInterceptorClassName());
+            }
+        }
 
         return classes;
     }
 
     public void setClassInterceptorChain(List<InterceptorDescriptor> chain) {
         classInterceptorChain = new LinkedList<InterceptorDescriptor>(chain);
+    }
+
+    public void setMethodLevelInterceptorChain(MethodDescriptor m, List<InterceptorDescriptor> chain) {
+
+        methodInterceptorsMap.put(m, chain);
+
     }
 
      /**
@@ -235,22 +262,23 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
     public List<InterceptorDescriptor> getAroundInvokeInterceptors
             (Method m) {
 
-        // TODO add method-level interceptor support .  For now,
-        // just return class-level chain
-        
-        LinkedList<InterceptorDescriptor> aroundInvokeInterceptors =
-                new LinkedList<InterceptorDescriptor>();
+        MethodDescriptor mDesc = new MethodDescriptor(m);
 
-        //List<EjbInterceptor> classOrMethodInterceptors =
-          //      getClassOrMethodInterceptors(businessMethod);
+        // See if there's any method-level setting (either a chain
+        // or a empty list ).  If not, use class-level chain
+        List<InterceptorDescriptor> aroundInvokeInterceptors =
+                methodInterceptorsMap.get(mDesc);
 
-        for(InterceptorDescriptor desc : classInterceptorChain) {
-            if( desc.hasAroundInvokeDescriptor() ) {
-                aroundInvokeInterceptors.add(desc);
+        if( aroundInvokeInterceptors == null ) {
+            aroundInvokeInterceptors = new LinkedList<InterceptorDescriptor>();
+            for(InterceptorDescriptor desc : classInterceptorChain) {
+                if( desc.hasAroundInvokeDescriptor() ) {
+                    aroundInvokeInterceptors.add(desc);
+                }
             }
         }
 
-
+        // Add any managed bean around invokes
         if (hasAroundInvokeMethod()) {
 
             EjbInterceptor interceptorInfo = new EjbInterceptor();

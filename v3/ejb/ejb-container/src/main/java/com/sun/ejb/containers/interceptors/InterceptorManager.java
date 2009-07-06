@@ -61,6 +61,8 @@ import javax.annotation.PostConstruct;
 import org.glassfish.api.interceptor.InterceptorInfo;
 import javax.interceptor.InvocationContext;
 
+import com.sun.ejb.EJBUtils;
+
 
 /**
  * UserInterceptorsManager manages UserInterceptors. There
@@ -71,7 +73,7 @@ import javax.interceptor.InvocationContext;
 public class InterceptorManager {
 
 
-    // Set when initializing interceptors for an ejb
+    // The following are set when initializing EJB interceptors
     private BaseContainer container;
     private EjbDescriptor ejbDesc;
 
@@ -93,7 +95,7 @@ public class InterceptorManager {
     private Map<String, Integer> instanceIndexMap
             = new HashMap<String, Integer>();
 
-    private boolean methodInterceptorsExists;
+    private boolean interceptorsExists;
 
     private String[] pre30LCMethodNames;
 
@@ -101,8 +103,11 @@ public class InterceptorManager {
 
     private CallbackChainImpl[] callbackChain;
 
-    private List<SystemInterceptorDescriptor> systemInterceptors =
-            new ArrayList<SystemInterceptorDescriptor>();
+    // System-level interceptors not registered until after the
+    // interceptor manager has initialized.  These need special
+    // handling to rejigger the various interceptor data-structures.
+    private List<RuntimeInterceptorDescriptor> runtimeInterceptors =
+            new ArrayList<RuntimeInterceptorDescriptor>();
 
 
     public InterceptorManager(Logger _logger, BaseContainer container,
@@ -146,7 +151,7 @@ public class InterceptorManager {
 
 
     public Object[] createInterceptorInstances() {
-        int size = serializableInterceptorClasses.length + systemInterceptors.size();
+        int size = serializableInterceptorClasses.length + runtimeInterceptors.size();
         Object[] interceptors = new Object[size];
 
         int newInstanceSize = serializableInterceptorClasses.length;
@@ -171,7 +176,7 @@ public class InterceptorManager {
         // application ones since the interceptor/callback chains will determine the
         // order of invocation.
         int index = newInstanceSize;
-        for (SystemInterceptorDescriptor systemInterceptor : systemInterceptors) {
+        for (RuntimeInterceptorDescriptor systemInterceptor : runtimeInterceptors) {
             interceptors[index] = systemInterceptor.interceptorInstance;
             index++;
         }
@@ -185,18 +190,18 @@ public class InterceptorManager {
      * level interceptors.
      * param o  instance of an interceptor class with a @PostConstruct method.
      */
-    public void registerSystemInterceptor(Object o) {
+    public void registerRuntimeInterceptor(Object o) {
 
         int index = serializableInterceptorClasses.length +
-                systemInterceptors.size();
+                runtimeInterceptors.size();
 
         boolean hasPostConstruct = false;
 
-        SystemInterceptorDescriptor desc = new SystemInterceptorDescriptor();
+        RuntimeInterceptorDescriptor desc = new RuntimeInterceptorDescriptor();
         desc.index = index;
         desc.interceptorInstance = o;
 
-        // for now, we only support post construct methods
+
         for(Method m : o.getClass().getDeclaredMethods()) {
             PostConstruct postConstruct = m.getAnnotation(PostConstruct.class);
             if( postConstruct != null ) {
@@ -211,7 +216,10 @@ public class InterceptorManager {
             callbackChain[CallbackType.POST_CONSTRUCT.ordinal()].prependInterceptor(ci);
         }
 
-        systemInterceptors.add(desc);
+        // NOTE : for now, we only support PostConstruct methods on runtime interceptors
+        // Need to add support for @AroundInvoke and @PreDestroy.
+
+        runtimeInterceptors.add(desc);
 
 
     }
@@ -219,12 +227,41 @@ public class InterceptorManager {
     public InterceptorManager.InterceptorChain getAroundInvokeChain(
             MethodDescriptor mDesc, Method beanMethod) {
 
+        ArrayList<AroundInvokeInterceptor> interceptors =
+                new ArrayList<AroundInvokeInterceptor>();
+
+        // Any any EJB framework interceptors first
+        if( ejbDesc != null ) {
+            for(EjbInterceptor interceptor : ejbDesc.getFrameworkInterceptors()) {
+                Set<LifecycleCallbackDescriptor> aroundInvokeDescs =
+                    interceptor.getAroundInvokeDescriptors();
+                if(aroundInvokeDescs.isEmpty() ) {
+                    continue;
+                }
+
+                List<LifecycleCallbackDescriptor> orderedAIInterceptors = null;
+                Class interceptorClass = interceptor.getInterceptorClass();
+                ClassLoader classLoaderToUse = (interceptorClass != null) ?
+                            interceptorClass.getClassLoader() : loader;
+                try {
+                    orderedAIInterceptors = interceptor.getOrderedAroundInvokeDescriptors(classLoaderToUse);
+                } catch (Exception e) {
+                    throw new IllegalStateException("No AroundInvokeIntercetpors found "
+                    + " on class " + interceptor.getInterceptorClassName(), e);
+                }
+                addAroundInvokeInterceptors(interceptors, interceptor,
+                    orderedAIInterceptors, interceptor.getInterceptorClassName(),
+                        classLoaderToUse);
+            }
+
+        }
+
+
         List<InterceptorDescriptor> list = (ejbDesc != null) ?
                 ejbDesc.getAroundInvokeInterceptors(mDesc) :
                 interceptorInfo.getAroundInvokeInterceptors(beanMethod);
 
-        ArrayList<AroundInvokeInterceptor> interceptors =
-                new ArrayList<AroundInvokeInterceptor>();
+
         for (InterceptorDescriptor interceptor : list) {
             String className = interceptor.getInterceptorClassName();
             Set<LifecycleCallbackDescriptor> aroundInvokeDescs = 
@@ -242,7 +279,7 @@ public class InterceptorManager {
                    + " on class " + className, e); 
             }
             addAroundInvokeInterceptors(interceptors, interceptor,
-                    orderedAIInterceptors, className);
+                    orderedAIInterceptors, className, loader);
         }
 
         AroundInvokeInterceptor[] inter = interceptors.toArray(
@@ -253,9 +290,39 @@ public class InterceptorManager {
     public InterceptorManager.InterceptorChain getAroundTimeoutChain(
             MethodDescriptor mDesc, Method beanMethod) {
 
-        List<EjbInterceptor> list = ejbDesc.getAroundTimeoutInterceptors(mDesc);
+
         ArrayList<AroundInvokeInterceptor> interceptors =
                 new ArrayList<AroundInvokeInterceptor>();
+
+
+        // Any any EJB framework interceptors first
+        if( ejbDesc != null ) {
+            for(EjbInterceptor interceptor : ejbDesc.getFrameworkInterceptors()) {
+                Set<LifecycleCallbackDescriptor> aroundTimeoutDescs =
+                    interceptor.getAroundTimeoutDescriptors();
+                if(aroundTimeoutDescs.isEmpty() ) {
+                    continue;
+                }
+
+                List<LifecycleCallbackDescriptor> orderedAIInterceptors = null;
+                Class interceptorClass = interceptor.getInterceptorClass();
+                ClassLoader classLoaderToUse = (interceptorClass != null) ?
+                            interceptorClass.getClassLoader() : loader;
+                try {
+                    orderedAIInterceptors = interceptor.getOrderedAroundTimeoutDescriptors(classLoaderToUse);
+                } catch (Exception e) {
+                    throw new IllegalStateException("No AroundTimeoutIntercetpors found "
+                    + " on class " + interceptor.getInterceptorClassName(), e);
+                }
+                addAroundInvokeInterceptors(interceptors, interceptor,
+                    orderedAIInterceptors, interceptor.getInterceptorClassName(),
+                        classLoaderToUse);
+            }
+
+        }
+
+        List<EjbInterceptor> list = ejbDesc.getAroundTimeoutInterceptors(mDesc);
+
         for (EjbInterceptor interceptor : list) {
             String className = interceptor.getInterceptorClassName();
             Set<LifecycleCallbackDescriptor> aroundTimeoutDescs = 
@@ -273,7 +340,7 @@ public class InterceptorManager {
                    + " on class " + className, e); 
             }
             addAroundInvokeInterceptors(interceptors, interceptor, 
-                    orderedATInterceptors, className);
+                    orderedATInterceptors, className, loader);
         }
 
         AroundInvokeInterceptor[] inter = interceptors.toArray(
@@ -285,12 +352,13 @@ public class InterceptorManager {
             List<AroundInvokeInterceptor> interceptors,
             InterceptorDescriptor interceptor,
             List<LifecycleCallbackDescriptor> orderedInterceptors, 
-            String className) {
+            String className,
+            ClassLoader classLoaderToUse) {
 
         for(LifecycleCallbackDescriptor desc : orderedInterceptors) {
             Method method = null;
             try {
-                method = desc.getLifecycleCallbackMethodObject(loader);
+                method = desc.getLifecycleCallbackMethodObject(classLoaderToUse);
             } catch(Exception e) {
                throw new IllegalStateException("No callback method of name " +
                        desc.getLifecycleCallbackMethod() 
@@ -314,7 +382,7 @@ public class InterceptorManager {
     }
 
     public boolean hasInterceptors() {
-        return this.methodInterceptorsExists;
+        return this.interceptorsExists;
     }
 
     public Object intercept(InterceptorManager.InterceptorChain chain,
@@ -356,13 +424,28 @@ public class InterceptorManager {
 
 
     private void buildEjbInterceptorChain()
-            throws ClassNotFoundException, Exception {
-        Set<String> interceptorClassNames = ejbDesc.getInterceptorClassNames();
-        initInterceptorClassNames(interceptorClassNames);
+            throws Exception {
 
-        if (ejbDesc.hasAroundInvokeMethod() || ejbDesc.hasAroundTimeoutMethod()) {
-            methodInterceptorsExists = true;
+        Set<Class> listOfClasses = new HashSet<Class>();
+        for(String name : ejbDesc.getInterceptorClassNames()) {
+            listOfClasses.add( loader.loadClass(name));
         }
+
+        // Add framework interceptors to list, but check for existence of
+        // class before attempting to load it via application class loader
+        for(EjbInterceptor frameworkInterceptor : ejbDesc.getFrameworkInterceptors()) {
+            Class clazz = frameworkInterceptor.getInterceptorClass();
+            if( clazz == null ) {
+                clazz = loader.loadClass(frameworkInterceptor.getInterceptorClassName());
+            }
+            listOfClasses.add(clazz);
+
+        }
+
+        initInterceptorClasses(listOfClasses);
+
+        interceptorsExists = (listOfClasses.size() > 0) ||
+            ejbDesc.hasAroundInvokeMethod() || ejbDesc.hasAroundTimeoutMethod();
 
         initEjbCallbackIndices();
     }
@@ -371,11 +454,15 @@ public class InterceptorManager {
             throws Exception {
 
 
-        initInterceptorClassNames(interceptorInfo.getInterceptorClassNames());
+        Set<Class> listOfClasses = new HashSet<Class>();
+        for(String name : interceptorInfo.getInterceptorClassNames()) {
+            listOfClasses.add( loader.loadClass(name));
+        }
 
-        // TODO AroundInvoke
-        // TODO
-        // // Set methodInterceptorExists if bean class has aroundinvoke or aroundtimeout
+        initInterceptorClasses(listOfClasses);
+
+         interceptorsExists = (listOfClasses.size() > 0) ||
+            interceptorInfo.getHasTargetClassAroundInvoke();
 
         int size = CallbackType.values().length;
         callbackChain = new CallbackChainImpl[size];
@@ -385,27 +472,28 @@ public class InterceptorManager {
 
     }
 
-    private void initInterceptorClassNames(Set<String> interceptorClassNames)
-            throws ClassNotFoundException, Exception {
 
-        int size = interceptorClassNames.size();
+    private void initInterceptorClasses(Set<Class> classes) throws  Exception {
+
+        int size = classes.size();
         interceptorClasses = new Class[size];
         serializableInterceptorClasses = new Class[size];
         int index = 0;
-        for (String className : interceptorClassNames) {
-        	Class interClass = loader.loadClass(className);
+        for (Class interClass : classes) {
+
             interceptorClasses[index] = interClass;
             serializableInterceptorClasses[index] = interClass;
-            instanceIndexMap.put(className, index);
+            instanceIndexMap.put(interClass.getName(), index);
             if (!Serializable.class.isAssignableFrom(interClass)) {
-                /*TODO
+
                 serializableInterceptorClasses[index] = 
-                    EJBUtils.loadGeneratedSerializableClass(loader, className);
-                */
+                    EJBUtils.loadGeneratedSerializableClass(interClass.getClassLoader(),
+                            interClass.getName());
+
             }
             index++;
         }
-        methodInterceptorsExists = interceptorClassNames.size() > 0;
+
 
         // bean class is never accessed from instanceIndexMap so it's
         // never added.
@@ -430,6 +518,21 @@ public class InterceptorManager {
             }
 
             if (scanForCallbacks) {
+
+                // Make sure any framework interceptors are first
+                for(EjbInterceptor callback : ejbDesc.getFrameworkInterceptors()) {
+                    if( callback.hasCallbackDescriptor(eventType)) {
+                        Class interceptorClass = callback.getInterceptorClass();
+                        ClassLoader classLoaderToUse = (interceptorClass != null) ?
+                                interceptorClass.getClassLoader() : loader;
+                        List<CallbackInterceptor> inters = createCallbackInterceptors(eventType, callback,
+                                classLoaderToUse);
+                        for (CallbackInterceptor inter : inters) {
+                            callbacks[index].add(inter);
+                        }
+                    }
+                }
+
                 List<EjbInterceptor> callbackList = ejbDesc.getCallbackInterceptors(eventType);
                 for (EjbInterceptor callback : callbackList) {
                     List<CallbackInterceptor> inters = createCallbackInterceptors(eventType, callback);
@@ -493,27 +596,32 @@ public class InterceptorManager {
 
     }
 
-
     private List<CallbackInterceptor> createCallbackInterceptors(CallbackType eventType,
                                                           InterceptorDescriptor inter) throws Exception {
+        // Create callback interceptors using loader provided at initialization time
+        return createCallbackInterceptors(eventType, inter, loader);
+
+    }
+
+    private List<CallbackInterceptor> createCallbackInterceptors(CallbackType eventType,
+                                                          InterceptorDescriptor inter,
+                                                          ClassLoader classLoaderToUse) throws Exception {
         List<CallbackInterceptor> callbackList = new ArrayList<CallbackInterceptor>();
         
         List<LifecycleCallbackDescriptor> orderedCallbackMethods = 
-            inter.getOrderedCallbackDescriptors(eventType, loader);
+            inter.getOrderedCallbackDescriptors(eventType, classLoaderToUse);
 
         String className = inter.getInterceptorClassName();
-
 
         for (LifecycleCallbackDescriptor callbackDesc : orderedCallbackMethods) {
             Method method = null;
             try {
-                method = callbackDesc.getLifecycleCallbackMethodObject(loader);
+                method = callbackDesc.getLifecycleCallbackMethodObject(classLoaderToUse);
             } catch(Exception e) {
                 throw new IllegalStateException("No callback method of name " +
                    callbackDesc.getLifecycleCallbackMethod() 
                    + " found on class " + className, e);
-	    }
-
+	        }
 
             CallbackInterceptor interceptor = null;
             if (inter.getFromBeanClass()) {
@@ -526,8 +634,10 @@ public class InterceptorManager {
                 }
                 interceptor = new CallbackInterceptor(index, method);
             }
+
             callbackList.add(interceptor);
         }
+
         return callbackList;
     }
 
@@ -907,7 +1017,7 @@ class BeanCallbackInterceptor
     }
 }
 
-class SystemInterceptorDescriptor {
+class RuntimeInterceptorDescriptor {
     int index;
     Object interceptorInstance;
     Method postConstructMethod;

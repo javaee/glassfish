@@ -34,23 +34,48 @@
  * holder.
  */
 
-package com.sun.ejb.spi.container;
+package com.sun.ejb.containers;
+
+import org.glassfish.ejb.api.EjbContainerServices;
+import org.jvnet.hk2.annotations.Service;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationHandler;
 
 /**
- *@author Mahesh Kannan
+ *
  */
+@Service
+public class EjbContainerServicesImpl implements EjbContainerServices {
 
-public interface SFSBContainerCallback {
+    public Object resolveRemoteEjb(Annotation ejbAnnotation, Member member)
+    {
 
-    public ClassLoader getClassLoader();
+        return null;
 
-    public int getPassivationBatchCount();
+    }
 
-    public void invokePeriodically(long delay, long periodicity, Runnable target);
+    public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> sClass) {
 
-    public void activateEJB(Object sessionKey,
-            StatefulEJBContext ctx, Object cookie);
+        return null;
 
-    public boolean passivateEJB(StatefulEJBContext ctx);
+    }
+
+    public void remove(Object ejbRef) {
+
+        
+        try {
+            InvocationHandler invHandler = Proxy.getInvocationHandler(ejbRef);
+        } catch(IllegalArgumentException iae) {
+
+
+
+        }
+
+        
+
+    }
 
 }

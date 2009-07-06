@@ -36,6 +36,8 @@
 
 package org.glassfish.webbeans;
 
+import java.util.Vector;
+
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -48,18 +50,50 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+
+import org.jvnet.hk2.component.Habitat;
 
 import org.jboss.webbeans.bootstrap.WebBeansBootstrap;
 import org.jboss.webbeans.bootstrap.api.Environments;
 import org.jboss.webbeans.bootstrap.spi.WebBeanDiscovery;
 import org.jboss.webbeans.context.api.BeanStore;
 import org.jboss.webbeans.context.api.helpers.ConcurrentHashMapBeanStore;
+import org.jboss.webbeans.ejb.spi.EjbServices;
+
+import org.glassfish.webbeans.ejb.EjbServicesImpl;
+import org.glassfish.ejb.api.EjbContainerServices;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
+
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 @Service
 public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeansApplicationContainer> {
 
     private static final String WEB_BEAN_EXTENSION = "org.glassfish.webbeans";
     private static final String WEB_BEAN_LISTENER = "org.jboss.webbeans.servlet.WebBeansListener"; 
+
+    @Inject
+    private Habitat habitat;
+
 
     @Override
     public MetaData getMetaData() {
@@ -80,30 +114,154 @@ public class WebBeansDeployer extends SimpleDeployer<WebBeansContainer, WebBeans
 
     @Override
     public boolean prepare(DeploymentContext context) {
+
+        // If the app contains any ejbs associate the web beans interceptor
+        // with each of the ejbs so it's available during the ejb load phase
+
+        /**  Skip this until org.jboss.webbeans.ejb package is exported
+         *   from webbeans impl OSGI bundle so we can access interceptor
+         *   class
+         
+        EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
+
+        if( ejbBundle != null ) {
+
+            Set<EjbDescriptor> ejbs = ejbBundle.getEjbs();
+
+            EjbInterceptor interceptor = createEjbInterceptor(ejbBundle);
+
+
+
+            for(EjbDescriptor next : ejbs) {
+
+                if( next.getType().equals(EjbSessionDescriptor.TYPE) ||
+                    next.getType().equals(EjbMessageBeanDescriptor.TYPE) ) {
+                    next.addFrameworkInterceptor(interceptor);
+                }
+
+            }
+        }
+
+        **/
+
         return true;
     }
 
+
     @Override
     public WebBeansApplicationContainer load(WebBeansContainer container, DeploymentContext context) {
+
+        // TODO *** change this logic to share one instance of web beans bootstrap per application ***
+
         ReadableArchive archive = context.getSource();
         BeanStore applicationBeanStore = new ConcurrentHashMapBeanStore();
+
         WebBeansBootstrap bootstrap = new WebBeansBootstrap();
+
+        
         bootstrap.setEnvironment(Environments.SERVLET);
         bootstrap.getServices().add(WebBeanDiscovery.class, new WebBeanDiscoveryImpl(archive) {});
         bootstrap.setApplicationContext(applicationBeanStore);
-        bootstrap.initialize();
-        bootstrap.boot();
+
+
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
-        wDesc.setExtensionProperty(WEB_BEAN_EXTENSION, "true");
+        if( wDesc != null) {
+            wDesc.setExtensionProperty(WEB_BEAN_EXTENSION, "true");
 
-        // Add the Web Beans Listener if it does not already exist..
+            // Add the Web Beans Listener if it does not already exist..
+            wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WEB_BEAN_LISTENER));
+        }
 
-        wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WEB_BEAN_LISTENER));
+        /** TODO Holding off on EjbServices registration until interceptor /
+         *  and EnterpriseBeanInstance proxy classloading issues are resolved
+         * 
+        EjbBundleDescriptor ejbBundle = getEjbBundleFromContext(context);
 
-        WebBeansApplicationContainer wbApp = new WebBeansApplicationContainer();
+
+        if( ejbBundle != null ) {
+
+            Set<EjbDescriptor> ejbs = ejbBundle.getEjbs();
+
+            EjbServices ejbServices = new EjbServicesImpl(habitat, ejbs);
+            bootstrap.getServices().add(EjbServices.class, ejbServices);
+
+        }
+         **/
+
+        WebBeansApplicationContainer wbApp = new WebBeansApplicationContainer(bootstrap);
+
+
+        // Do first stage of web beans initialization.  Note that we delay calling
+        // bootstrap.boot() until start phase (see WebBeansApplicationContainer)
+        bootstrap.initialize();      
+
         return wbApp; 
     }
+
+
+    private EjbBundleDescriptor getEjbBundleFromContext(DeploymentContext context) {
+
+
+        EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
+
+        if( ejbBundle == null ) {
+
+            WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
+            if( wDesc != null ) {
+                Collection<EjbBundleDescriptor> ejbBundles = wDesc.getExtensionsDescriptors(EjbBundleDescriptor.class);
+                ejbBundle = ejbBundles.iterator().next();
+            }
+
+        }
+
+        return ejbBundle;
+
+    }
+
+    /**
+    private EjbInterceptor createEjbInterceptor(EjbBundleDescriptor ejbBundle) {
+
+        EjbInterceptor interceptor = new EjbInterceptor();
+        interceptor.setEjbBundleDescriptor(ejbBundle);
+
+        Class wbInterceptor = org.jboss.webbeans.ejb.SessionBeanInterceptor.class;
+        String wbInterceptorName = wbInterceptor.getName();
+
+        interceptor.setInterceptorClass(wbInterceptor);
+
+        for(Method m : wbInterceptor.getDeclaredMethods() ) {
+
+           if( m.getAnnotation(PostConstruct.class) != null ) {
+               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+               desc.setLifecycleCallbackClass(wbInterceptorName);
+               desc.setLifecycleCallbackMethod(m.getName());
+               interceptor.addCallbackDescriptor(CallbackType.POST_CONSTRUCT, desc);
+           } else if( m.getAnnotation(PreDestroy.class) != null ) {
+               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+               desc.setLifecycleCallbackClass(wbInterceptorName);
+               desc.setLifecycleCallbackMethod(m.getName());
+               interceptor.addCallbackDescriptor(CallbackType.PRE_DESTROY, desc);
+           } else if( m.getAnnotation(AroundInvoke.class) != null ) {
+               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+               desc.setLifecycleCallbackClass(wbInterceptorName);
+               desc.setLifecycleCallbackMethod(m.getName());
+               interceptor.addAroundInvokeDescriptor(desc);
+           } else if( m.getAnnotation(AroundTimeout.class) != null ) {
+               LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+               desc.setLifecycleCallbackClass(wbInterceptorName);
+               desc.setLifecycleCallbackMethod(m.getName());
+               interceptor.addAroundTimeoutDescriptor(desc);
+           }
+
+        }
+
+        return interceptor;
+
+
+
+    }
+    **/
 
 }
 

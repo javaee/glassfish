@@ -68,7 +68,7 @@ public class IOUtils {
 	    final ClassLoader loader)
 	throws Exception
     {
-	    return _streamFactory.createObjectInputStream(is, resolveObject, loader, null);
+	    return _streamFactory.createObjectInputStream(is, resolveObject, loader);
     }
 
     public static ObjectOutputStream createObjectOutputStream(
@@ -107,22 +107,16 @@ public class IOUtils {
 	return data;
     }
 
-    public static final Object deserializeObject(byte[] data, boolean resolveObject,
-            ClassLoader classLoader)
-	throws Exception
-    {
-        return deserializeObject(data, resolveObject, classLoader, null);
-    }
 
      public static final Object deserializeObject(byte[] data, boolean resolveObject,
-            ClassLoader appClassLoader, ClassLoader containerClassLoader) throws Exception {
+            ClassLoader appClassLoader) throws Exception {
           Object obj = null;
 	ByteArrayInputStream bis = null;
 	ObjectInputStream ois = null;
         try {
             bis = new ByteArrayInputStream(data);
             ois = _streamFactory.createObjectInputStream(bis, resolveObject,
-		        appClassLoader, containerClassLoader);
+		        appClassLoader);
             obj = ois.readObject();
         } catch (Exception ex) {
             _ejbLogger.log(Level.FINE, "Error during deserialization", ex);

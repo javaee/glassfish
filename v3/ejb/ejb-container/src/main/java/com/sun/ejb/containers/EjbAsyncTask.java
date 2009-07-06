@@ -46,6 +46,8 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.lang.reflect.InvocationTargetException;
 
+import com.sun.enterprise.security.SecurityContext;
+
 /**
  * @author Mahesh Kannan
  */
@@ -56,9 +58,15 @@ public class EjbAsyncTask<V>
 
     private EjbFutureTask ejbFutureTask;
 
+    private SecurityContext callerSecurityContext;
+
     public void initialize(EjbInvocation inv) {
         this.inv = inv;
         this.ejbFutureTask = inv.getEjbFutureTask();
+
+        // Capture calling thread's security context and set
+        // it on dispatch thread.
+        callerSecurityContext = SecurityContext.getCurrent();
     }
 
     public long getInvId() {
@@ -80,6 +88,10 @@ public class EjbAsyncTask<V>
         ClassLoader prevCL = Thread.currentThread().getContextClassLoader();
         try {
             Utility.setContextClassLoader(container.getClassLoader());
+
+            // Must be set before preinvoke so it happens before authorization.
+            SecurityContext.setCurrent(callerSecurityContext);
+
             container.preInvoke(inv);
 
             returnValue = (V) container.intercept(inv);

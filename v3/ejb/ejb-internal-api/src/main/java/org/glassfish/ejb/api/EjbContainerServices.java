@@ -34,23 +34,32 @@
  * holder.
  */
 
-package com.sun.ejb.spi.container;
+package org.glassfish.ejb.api;
+
+
 
 /**
- *@author Mahesh Kannan
+ *
+ * @author Kenneth Saks
  */
 
-public interface SFSBContainerCallback {
+import org.jvnet.hk2.annotations.Contract;
 
-    public ClassLoader getClassLoader();
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 
-    public int getPassivationBatchCount();
+/**
+ * Various container services needed by other modules. E.g., the
+ * JSR 299 integration module.
+ */
 
-    public void invokePeriodically(long delay, long periodicity, Runnable target);
+@Contract
+public interface EjbContainerServices {
 
-    public void activateEJB(Object sessionKey,
-            StatefulEJBContext ctx, Object cookie);
+    public Object resolveRemoteEjb(Annotation ejbAnnotation, Member member);
 
-    public boolean passivateEJB(StatefulEJBContext ctx);
+    public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> sClass);
+
+    public void remove(Object ejbRef);
 
 }

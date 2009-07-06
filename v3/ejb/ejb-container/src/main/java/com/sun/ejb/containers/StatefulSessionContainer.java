@@ -515,12 +515,6 @@ public final class StatefulSessionContainer
         }
     }
 
-    // Return sfsb serializable subclass loader for use in loading class during
-    // deserialization since it won't be found by application class loader
-    public final ClassLoader getSFSBContainerClassLoader() {
-        return this.sfsbSerializedClassLoader;
-    }
-    
     /**
      * Create a new Session Bean and set Session Context.
      */

@@ -96,7 +96,7 @@ public class JavaEEInterceptorBuilderImpl implements JavaEEInterceptorBuilder {
         InterceptorInvocationHandler invoker = new InterceptorInvocationHandler();
 
         Proxy proxy = (Proxy) Proxy.newProxyInstance(
-            gen, new Class[] { subClassIntf }, invoker);
+            subClass.getClassLoader(), new Class[] { subClassIntf }, invoker);
 
 
         // Object passed back to the caller.

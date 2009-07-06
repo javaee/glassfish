@@ -101,8 +101,7 @@ public class J2EEObjectStreamFactoryImpl
 	public ObjectInputStream createObjectInputStream(
             final InputStream is,
             final boolean resolveObject,
-            final ClassLoader appClassLoader,
-            final ClassLoader containerClassLoader)
+            final ClassLoader appClassLoader)
         throws Exception
     {
         ObjectInputStream ois = null;
@@ -110,7 +109,7 @@ public class J2EEObjectStreamFactoryImpl
             // Need privileged block here because EJBObjectInputStream
             // does enableResolveObject
             if(System.getSecurityManager() == null) {
-                ois = new EJBObjectInputStream(is, appClassLoader, containerClassLoader, resolveObject);
+                ois = new EJBObjectInputStream(is, appClassLoader, resolveObject);
             } else {
                 try {
                     ois = (ObjectInputStream)AccessController.doPrivileged(
@@ -118,7 +117,7 @@ public class J2EEObjectStreamFactoryImpl
                         public java.lang.Object run()
                         throws Exception {
                             return new EJBObjectInputStream(
-                                    is, appClassLoader, containerClassLoader, resolveObject);
+                                    is, appClassLoader, resolveObject);
                         }
                     });
                 } catch ( PrivilegedActionException ex ) {

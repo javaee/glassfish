@@ -441,6 +441,19 @@ public class EJBUtils {
                
     }
 
+    public static Class loadGeneratedSerializableClass(ClassLoader loader, String className)
+        throws Exception {
+        String generatedSerializableClassName = getGeneratedSerializableClassName(className);
+
+        Class developerClass = loader.loadClass(className);
+        AsmSerializableBeanGenerator gen = new AsmSerializableBeanGenerator
+                (loader, developerClass, generatedSerializableClassName);
+                                     
+        Class serializableClass = gen.generateSerializableSubclass();
+
+        return serializableClass;
+    }
+
     public static void loadGeneratedRemoteBusinessClasses
         (String businessInterfaceName) throws Exception {
 
@@ -530,22 +543,6 @@ public class EJBUtils {
         return generatedGenericEJBHomeClass;
     }
 
-    public static AsmSerializableBeanGenerator getSerializableSubClassLoader
-        (ClassLoader appClassLoader,
-            String developerClassName) throws Exception {
-
-        String generatedSerializableClassName = 
-            getGeneratedSerializableClassName(developerClassName);
-
-
-        Class developerClass = appClassLoader.loadClass(developerClassName);
-        AsmSerializableBeanGenerator gen = new AsmSerializableBeanGenerator
-                (appClassLoader, developerClass, generatedSerializableClassName);
-
-        gen.generateSerializableSubclass();
-        
-        return gen;
-    }
 
     public static Class generateSEI(ClassGeneratorFactory cgf,
                                     final String seiClassName,
