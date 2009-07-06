@@ -93,7 +93,7 @@ public class AMXTestBase
 
     AMXTestBase()
     {
-        debug("################################ AMXTestBase");
+        //debug("################################ AMXTestBase");
     }
 
     // might need these later: "admin.user", "admin.password"
@@ -129,7 +129,7 @@ public class AMXTestBase
      */
     protected void setup()
     {
-        debug("################################ AMXTestBase.setup");
+        //debug("################################ AMXTestBase.setup");
 
         final TimingDelta timing = new TimingDelta();
         final TimingDelta overall = new TimingDelta();
