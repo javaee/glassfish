@@ -214,7 +214,7 @@ public class FileUserHandler {
             @HandlerOutput(name="endSession", type=Boolean.class)}
      )
      public static void checkCurrentUser(HandlerContext handlerCtx){
-        boolean endSession = true;
+        boolean endSession = false;
         String realmName = (String) handlerCtx.getInputValue("Realm");
         if (realmName.equals("admin-realm")){
             String[] userNames = V3AMX.getInstance().getRealmsMgr().getUserNames(realmName);
