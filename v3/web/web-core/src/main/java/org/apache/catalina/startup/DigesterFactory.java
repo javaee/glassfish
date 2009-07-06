@@ -57,7 +57,6 @@
 
 package org.apache.catalina.startup;
 
-import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
 import org.apache.tomcat.util.digester.Digester;
 import org.apache.tomcat.util.digester.RuleSet;
@@ -79,9 +78,6 @@ import java.util.logging.Logger;
 @Service
 public class DigesterFactory {
 
-    @Inject
-    ServerContext serverContext;
-
     /**
      * Used to resolve DTDs and XML Schemas of JavaEE.
      */
@@ -99,7 +95,7 @@ public class DigesterFactory {
     
     /**
      * Create a <code>Digester</code> parser with XML validation turned off.
-    ???* @param rule an instance of <code>Rule</code??? used for parsing the xml.
+     * @param rule an instance of <code>Rule</code> used for parsing the xml.
      */
     public Digester newDigester(RuleSet rule){
         return newDigester(false,false,rule);
@@ -112,8 +108,8 @@ public class DigesterFactory {
      * @param rule an instance of <code>Rule</code??? used for parsing the xml.
      */
     public Digester newDigester(boolean xmlValidation,
-                                       boolean xmlNamespaceAware,
-                                       RuleSet rule) {
+                                boolean xmlNamespaceAware,
+                                RuleSet rule) {
 
         Digester digester = new Digester();
         digester.setNamespaceAware(xmlNamespaceAware);
