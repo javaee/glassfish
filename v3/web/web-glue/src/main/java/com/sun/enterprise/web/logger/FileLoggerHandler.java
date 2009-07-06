@@ -46,6 +46,7 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.logging.*;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
+import com.sun.enterprise.v3.services.impl.LogManagerService;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -55,11 +56,12 @@ import org.jvnet.hk2.component.*;
 
 //specify that the contract is provided by handler.class in the JDK
 @Service
-@ContractProvided(Handler.class) 
-@Scoped(Singleton.class)
 public class FileLoggerHandler extends Handler implements PostConstruct {
     
-    
+
+    @Inject
+    LogManagerService logManager;
+
     private String webLogger = "javax.enterprise.system.container.web.com.sun.enterprise.web";
     private String catalinaLogger = "org.apache.catalina";
     
@@ -76,7 +78,8 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
     public void setLogFile(String logFile) {
         try {
             fileOutputStream = new FileOutputStream(logFile);
-            printWriter = new PrintWriter(fileOutputStream);     
+            printWriter = new PrintWriter(fileOutputStream);
+            logManager.addHandler(this);
     	} catch (IOException e) {
     	}
     }

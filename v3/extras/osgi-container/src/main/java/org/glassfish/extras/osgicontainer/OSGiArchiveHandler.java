@@ -137,7 +137,10 @@ public class OSGiArchiveHandler extends GenericHandler {
         // add the new module or retrieve the existing one.
         final Module module = mr.add(moduleDef);
 
-        return getClassLoader(parent, module);
+        if (module!=null) {
+            throw new RuntimeException("Cannot install bundle " + context.getSource() + " in osgi runtime");
+        }
+            return getClassLoader(parent, module);
         /*
         // we need to protect the class loader so we stop the bundle from the OSGi runtime
         // when the classloader is gced is stopped. Eventually the ApplicationContainer start/stop

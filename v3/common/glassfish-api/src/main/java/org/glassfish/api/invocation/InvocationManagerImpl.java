@@ -38,6 +38,7 @@ package org.glassfish.api.invocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.jvnet.hk2.annotations.Scoped;
@@ -45,11 +46,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 
 @Service
 @Scoped(Singleton.class)
 public class InvocationManagerImpl
-        implements InvocationManager, PostConstruct {
+        implements InvocationManager {
 
     static public boolean debug;
 
@@ -59,9 +61,8 @@ public class InvocationManagerImpl
     // dont need to be synchronized because each thread has its own ArrayList.
     private InheritableThreadLocal<InvocationArray<ComponentInvocation>> frames;
 
-    @Inject(optional = true)
-    private ComponentInvocationHandler[] handlers
-            = new ComponentInvocationHandler[0]; //Just for junit testing
+    @Inject
+    Habitat habitat;
 
     public InvocationManagerImpl() {
 
@@ -112,12 +113,6 @@ public class InvocationManagerImpl
         };
     }
 
-    public void postConstruct() {
-        if (handlers == null) {
-            handlers = new ComponentInvocationHandler[0];
-        }
-    }
-
     public <T extends ComponentInvocation> void preInvoke(T inv)
             throws InvocationException {
 
@@ -133,15 +128,25 @@ public class InvocationManagerImpl
         // if ejb call EJBSecurityManager, for servlet call RealmAdapter
         ComponentInvocationType invType = inv.getInvocationType();
 
-        for (ComponentInvocationHandler handler : handlers) {
-            handler.beforePreInvoke(invType, prevInv, inv);
+        // dochez : we use habitat lookup at each call, if this proves to be a bottleneck (don't think so,
+        // since it's just one hashMap lookup, we could consider caching this.
+        Collection<ComponentInvocationHandler> handlers = null;
+        if (habitat!=null) {
+            handlers = habitat.getAllByContract(ComponentInvocationHandler.class);
+        }
+        if (handlers!=null) {
+            for (ComponentInvocationHandler handler : handlers) {
+                handler.beforePreInvoke(invType, prevInv, inv);
+            }
         }
 
         //push this invocation on the stack
         v.add(inv);
 
-        for (ComponentInvocationHandler handler : handlers) {
-            handler.afterPreInvoke(invType, prevInv, inv);
+        if (handlers!=null) {
+            for (ComponentInvocationHandler handler : handlers) {
+                handler.afterPreInvoke(invType, prevInv, inv);
+            }
         }
 
     }
@@ -164,20 +169,29 @@ public class InvocationManagerImpl
         ComponentInvocation prevInv = beforeSize > 1 ? v.get(beforeSize - 2) : null;
         ComponentInvocation curInv = v.get(beforeSize - 1);
 
+        // same lazy look up, room for optimization
+        Collection<ComponentInvocationHandler> handlers = null;
+        if (habitat!=null) {
+            handlers = habitat.getAllByContract(ComponentInvocationHandler.class);
+        }
+
         try {
             ComponentInvocationType invType = inv.getInvocationType();
 
-            for (ComponentInvocationHandler handler : handlers) {
-                handler.beforePostInvoke(invType, prevInv, curInv);
+            if (handlers!=null) {
+                for (ComponentInvocationHandler handler : handlers) {
+                    handler.beforePostInvoke(invType, prevInv, curInv);
+                }
             }
 
         } finally {
             // pop the stack
             v.remove(beforeSize - 1);
 
-
-            for (ComponentInvocationHandler handler : handlers) {
-                handler.afterPostInvoke(inv.getInvocationType(), prevInv, inv);
+            if (handlers!=null) {
+                for (ComponentInvocationHandler handler : habitat.getAllByContract(ComponentInvocationHandler.class)) {
+                    handler.afterPostInvoke(inv.getInvocationType(), prevInv, inv);
+                }
             }
         }
 

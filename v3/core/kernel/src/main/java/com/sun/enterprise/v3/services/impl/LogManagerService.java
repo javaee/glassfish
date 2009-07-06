@@ -91,6 +91,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
     @Inject
     LoggingConfigImpl loggingConfig;
+
+    final Map <String, Handler> gfHandlers = new HashMap <String,Handler>();
+    
     /**
      * Initialize the loggers
      */
@@ -119,8 +122,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
             agentDelegate = new AgentFormatterDelegate(agent);
 
         }
-        
-        final Map <String, Handler> gfHandlers = new HashMap <String,Handler>();
 
         Collection<Handler> handlers = habitat.getAllByContract(Handler.class);
         if (handlers!=null && handlers.size()>0) {
@@ -138,12 +139,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 }
                 // add the new handlers to the root logger
                 for (Handler handler : handlers) {
-                    Logger rootLogger = Logger.global.getParent();
-                    if (rootLogger!=null) {
-                       rootLogger.addHandler(handler);
-                       String handlerName = handler.toString();
-                       gfHandlers.put(handlerName.substring(0, handlerName.indexOf("@")), handler);
-                    }
+                    addHandler(handler);
                 }
 
             }
@@ -178,37 +174,39 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         if (logging!=null) {
             fileMonitoring.monitors(logging, new FileMonitoring.FileChangeListener() {
                 public void changed(File changedFile) {
-                    try {
+                    synchronized(gfHandlers) {
+                        try {
 
-                         Map<String,String> props = loggingConfig.getLoggingProperties();
-                        Set<String> keys = props.keySet();
-                        for (String a : keys)   {
-                            if (a.endsWith(".level")) {
-                                String n = a.substring(0,a.lastIndexOf(".level"));
-                                Level l = Level.parse(props.get(a));
-                                if (logMgr.getLogger(n) != null) {
-                                    logMgr.getLogger(n).setLevel(l);
-                                } else if (gfHandlers.containsKey(n)) {
-                                    // check if this is one of our handlers
-                                    Handler h = (Handler) gfHandlers.get(n);
-                                    h.setLevel(l);
-                                } else if (n.equals("java.util.logging.ConsoleHandler")) {
-                                    Logger logger = Logger.global.getParent();
-                                    Handler[] h= logger.getHandlers();
-                                    for(int i=0;i<h.length;i++){
-                                        String name = h[i].toString();
-                                        if(name.contains("java.util.logging.ConsoleHandler"))
-                                            h[i].setLevel(l);
+                             Map<String,String> props = loggingConfig.getLoggingProperties();
+                            Set<String> keys = props.keySet();
+                            for (String a : keys)   {
+                                if (a.endsWith(".level")) {
+                                    String n = a.substring(0,a.lastIndexOf(".level"));
+                                    Level l = Level.parse(props.get(a));
+                                    if (logMgr.getLogger(n) != null) {
+                                        logMgr.getLogger(n).setLevel(l);
+                                    } else if (gfHandlers.containsKey(n)) {
+                                        // check if this is one of our handlers
+                                        Handler h = (Handler) gfHandlers.get(n);
+                                        h.setLevel(l);
+                                    } else if (n.equals("java.util.logging.ConsoleHandler")) {
+                                        Logger logger = Logger.global.getParent();
+                                        Handler[] h= logger.getHandlers();
+                                        for(int i=0;i<h.length;i++){
+                                            String name = h[i].toString();
+                                            if(name.contains("java.util.logging.ConsoleHandler"))
+                                                h[i].setLevel(l);
+                                        }
                                     }
+
                                 }
 
-                            }                           
+                            }
 
+                            logger.log(Level.INFO,"Updated log levels for loggers.");
+                        } catch (IOException e) {
+                            logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
                         }
-
-                        logger.log(Level.INFO,"Updated log levels for loggers.");                                                     
-                    } catch (IOException e) {
-                        logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
                     }
 
                 }
@@ -217,6 +215,21 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                     logger.log(Level.INFO, "logging.properties file removed, updating log levels disabled");
                 }
             });
+        }
+    }
+
+    /**
+     * Adds a new handler to the root logger
+     * @param handler handler to be iadded.
+     */
+    public void addHandler(Handler handler) {
+        Logger rootLogger = Logger.global.getParent();
+        if (rootLogger!=null) {
+            synchronized(gfHandlers) {
+               rootLogger.addHandler(handler);
+               String handlerName = handler.toString();
+               gfHandlers.put(handlerName.substring(0, handlerName.indexOf("@")), handler);
+            }
         }
     }
 

@@ -2,6 +2,8 @@ package org.glassfish.kernel.embedded;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.api.embedded.Port;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.ActionReport;
@@ -12,6 +14,7 @@ import java.util.Properties;
  * Abstract to port creation and destruction
  */
 @Service
+@Scoped(PerLookup.class)
 public class PortImpl implements Port {
 
     @Inject
@@ -20,12 +23,15 @@ public class PortImpl implements Port {
     @Inject(name="plain")
     ActionReport report=null;
 
+    String listenerName;
+
     public void bind(int portNumber) {
 
         Properties props = new Properties();
         props.put("listenerport", Integer.toString(portNumber));
         props.put("listeneraddress", "127.0.0.1");
-        props.put("listener_id", getListenerName());
+        listenerName = getListenerName();
+        props.put("listener_id", listenerName);
         props.put("servername", "");
         props.put("defaultvs", "server");
         runner.doCommand("create-http-listener", props, report);
@@ -48,6 +54,8 @@ public class PortImpl implements Port {
     }
 
     public void unbind() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Properties props = new Properties();
+        props.put("listener_id", listenerName);
+        runner.doCommand("delete-http-listener", props, report);
     }
 }

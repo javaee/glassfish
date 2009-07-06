@@ -71,8 +71,8 @@ public class EmbeddedFileSystem {
             return this;
         }
 
-        public EmbeddedFileSystem build(Builder builder) {
-            return new EmbeddedFileSystem(builder);
+        public EmbeddedFileSystem build() {
+            return new EmbeddedFileSystem(this);
         }
 
     }

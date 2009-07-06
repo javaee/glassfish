@@ -42,6 +42,7 @@ import java.util.*;
 import java.io.File;
 
 import com.sun.enterprise.module.bootstrap.PlatformMain;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
  * Defines a embedded Server, capable of attaching containers (entities running
@@ -146,7 +147,6 @@ public class Server {
         loggerEnabled = builder.loggerEnabled;
         verbose = builder.verbose;
         loggerFile = builder.loggerFile;
-        fileSystem = builder.fileSystem;
         final PlatformMain embedded = getMain();
         if (embedded==null) {
             throw new RuntimeException("Embedded startup not found");
@@ -158,7 +158,12 @@ public class Server {
             e.printStackTrace();
         }
         habitat = embedded.getStartedService(Habitat.class);
-        
+        if (builder.fileSystem==null) {
+            fileSystem = (new EmbeddedFileSystem.Builder()).build();
+        } else {
+            fileSystem = builder.fileSystem;
+        }
+        habitat.add(new ExistingSingletonInhabitant<EmbeddedFileSystem>(fileSystem));
     }
 
     @SuppressWarnings("unchecked")

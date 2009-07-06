@@ -36,6 +36,9 @@
 package org.glassfish.api.embedded.web;
 
 import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.Server;
+import org.jvnet.hk2.annotations.Service;
 
 import java.net.URL;
 import java.io.File;
@@ -45,7 +48,8 @@ import java.io.File;
  *
  * @author Jerome Dochez
  */
-public abstract class WebContainerInfo implements ContainerBuilder<EmbeddedWebContainer> {
+@Service(name="web")
+public class WebContainerInfo implements ContainerBuilder<EmbeddedWebContainer> {
 
     URL     defaultWebXml;
     String  listenerName;
@@ -70,6 +74,14 @@ public abstract class WebContainerInfo implements ContainerBuilder<EmbeddedWebCo
     public WebContainerInfo setListings(boolean b) {
         this.listings = b;
         return this;        
+    }
+
+    public void attach(Port.PortType type, Port port) {
+
+    }
+
+    public EmbeddedWebContainer create(Server server) {
+        return null;
     }
 
     /**
