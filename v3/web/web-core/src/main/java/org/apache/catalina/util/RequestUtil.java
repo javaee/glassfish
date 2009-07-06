@@ -195,8 +195,8 @@ public final class RequestUtil {
      * @param replaceBackSlash Should '\\' be replaced with '/'
      */
     public static String normalize(String path, boolean replaceBackSlash) {
-        // the logic has been moved org.apache.naming.Util
-        // so that it can be shared with web-naming
+        // Implementation has been moved to org.apache.naming.Util
+        // so that it may be accessed by code in web-naming
         return Util.normalize(path, replaceBackSlash);
     }
 
@@ -320,9 +320,9 @@ public final class RequestUtil {
      * by a valid 2-digit hexadecimal number
      */
     public static String URLDecode(String str) {
-
-        return URLDecode(str, null);
-
+        // Implementation has been moved to org.apache.naming.Util
+        // so that it may be accessed by code in war-util
+        return Util.URLDecode(str);
     }
 
 
@@ -335,24 +335,9 @@ public final class RequestUtil {
      * by a valid 2-digit hexadecimal number
      */
     public static String URLDecode(String str, String enc) {
-
-        if (str == null)
-            return (null);
-
-        // use the specified encoding to extract bytes out of the
-        // given string so that the encoding is not lost. If an
-        // encoding is not specified, let it use platform default
-        byte[] bytes = null;
-        try {
-            if (enc == null) {
-                bytes = str.getBytes();
-            } else {
-                bytes = str.getBytes(enc);
-            }
-        } catch (UnsupportedEncodingException uee) {}
-
-        return URLDecode(bytes, enc);
-
+        // Implementation has been moved to org.apache.naming.Util
+        // so that it may be accessed by code in war-util
+        return Util.URLDecode(str, enc);
     }
 
 
@@ -364,7 +349,9 @@ public final class RequestUtil {
      * by a valid 2-digit hexadecimal number
      */
     public static String URLDecode(byte[] bytes) {
-        return URLDecode(bytes, null);
+        // Implementation has been moved to org.apache.naming.Util
+        // so that it may be accessed by code in war-util
+        return Util.URLDecode(bytes);
     }
 
 
@@ -377,32 +364,9 @@ public final class RequestUtil {
      * by a valid 2-digit hexadecimal number
      */
     public static String URLDecode(byte[] bytes, String enc) {
-
-        if (bytes == null)
-            return (null);
-
-        int len = bytes.length;
-        int ix = 0;
-        int ox = 0;
-        while (ix < len) {
-            byte b = bytes[ix++];     // Get byte to test
-            if (b == '+') {
-                b = (byte)' ';
-            } else if (b == '%') {
-                b = (byte) ((convertHexDigit(bytes[ix++]) << 4)
-                            + convertHexDigit(bytes[ix++]));
-            }
-            bytes[ox++] = b;
-        }
-        if (enc != null) {
-            try {
-                return new String(bytes, 0, ox, enc);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return new String(bytes, 0, ox);
-
+        // Implementation has been moved to org.apache.naming.Util
+        // so that it may be accessed by code in war-util
+        return Util.URLDecode(bytes, enc);
     }
 
 
@@ -439,8 +403,8 @@ public final class RequestUtil {
             if (b == '+') {
                 b = (byte)' ';
             } else if (b == '%') {
-                b = (byte) ((convertHexDigit(bytes[ix++]) << 4)
-                            + convertHexDigit(bytes[ix++]));
+                b = (byte) ((Util.convertHexDigit(bytes[ix++]) << 4)
+                            + Util.convertHexDigit(bytes[ix++]));
             }
             bytes[ox++] = b;
         }
@@ -450,19 +414,6 @@ public final class RequestUtil {
         } else {
             return null;
         }
-    }
-
-
-    /**
-     * Convert a byte character value to hexidecimal digit value.
-     *
-     * @param b the character value byte
-     */
-    private static byte convertHexDigit( byte b ) {
-        if ((b >= '0') && (b <= '9')) return (byte)(b - '0');
-        if ((b >= 'a') && (b <= 'f')) return (byte)(b - 'a' + 10);
-        if ((b >= 'A') && (b <= 'F')) return (byte)(b - 'A' + 10);
-        return 0;
     }
 
 
@@ -540,8 +491,8 @@ public final class RequestUtil {
                     data[ox++] = (byte)' ';
                     break;
                 case '%':
-                    data[ox++] = (byte)((convertHexDigit(data[ix++]) << 4)
-                                    + convertHexDigit(data[ix++]));
+                    data[ox++] = (byte)((Util.convertHexDigit(data[ix++]) << 4)
+                                    + Util.convertHexDigit(data[ix++]));
                     break;
                 default:
                     data[ox++] = c;
