@@ -352,11 +352,6 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                         " must declare <service-endpoint> interface";
                 throw new IllegalStateException(msg);
             }
-        } else if( endpoints.size() > 1 ) {
-            String msg = "Ejb " + ejbDescriptor.getName() +
-                    " implements " + endpoints.size() + " web service endpoints " +
-                    " but must only implement 1";
-            throw new IllegalStateException(msg);
         }
     }
 

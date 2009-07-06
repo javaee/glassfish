@@ -415,40 +415,41 @@ public class WebServiceHandler extends AbstractHandler {
             }
         } else {
 
-               if(endpoint.getEjbLink() == null) {
-                  //TODO BM handle stateless
-               Stateless stateless = null;
-                try {
-                    stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
-                } catch (Exception e) {
-                    //This can happen in the web.zip installation where there is no ejb
-                    //Just logging the error
-                    logger.fine(rb.getString("exception.thrown") + e.getMessage() );
-                }
-                Singleton singleton = null;
-                try {
-                    singleton = annElem.getAnnotation(javax.ejb.Singleton.class);
-                } catch (Exception e) {
-                    //This can happen in the web.zip installation where there is no ejb
-                    //Just logging the error
-                    logger.fine(rb.getString("exception.thrown") + e.getMessage() );
-                }
-                String name;
-
-                
-                if ((stateless != null) &&((stateless).name()==null || stateless.name().length()>0)) {
-                    name = stateless.name();
-                } else if ((singleton != null) &&((singleton).name()==null || singleton.name().length()>0)) {
-                    name = singleton.name();
-
-                }else {
-                    name = ((Class) annElem).getSimpleName();
-                }
-                EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
-                endpoint.setEjbComponentImpl(ejb);
-                ejb.setWebServiceEndpointInterfaceName(endpoint.getServiceEndpointInterface());
-                endpoint.setEjbLink(ejb.getName());
+           
+            //TODO BM handle stateless
+            Stateless stateless = null;
+            try {
+                stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
+            } catch (Exception e) {
+                //This can happen in the web.zip installation where there is no ejb
+                //Just logging the error
+                logger.fine(rb.getString("exception.thrown") + e.getMessage() );
             }
+            Singleton singleton = null;
+            try {
+                singleton = annElem.getAnnotation(javax.ejb.Singleton.class);
+            } catch (Exception e) {
+                //This can happen in the web.zip installation where there is no ejb
+                //Just logging the error
+                logger.fine(rb.getString("exception.thrown") + e.getMessage() );
+            }
+            String name;
+
+
+            if ((stateless != null) &&((stateless).name()==null || stateless.name().length()>0)) {
+                name = stateless.name();
+            } else if ((singleton != null) &&((singleton).name()==null || singleton.name().length()>0)) {
+                name = singleton.name();
+
+            }else {
+                name = ((Class) annElem).getSimpleName();
+            }
+            EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
+            endpoint.setEjbComponentImpl(ejb);
+            ejb.setWebServiceEndpointInterfaceName(endpoint.getServiceEndpointInterface());
+            if (endpoint.getEjbLink()== null)
+                endpoint.setEjbLink(ejb.getName());
+
         }
 
         if(endpoint.getWsdlPort() == null) {
