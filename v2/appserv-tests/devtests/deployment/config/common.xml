@@ -351,7 +351,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
-               value="${deploy} ${ASADMIN-ARGS} --force true ${arg.list}"/>
+               value="${deploy} ${ASADMIN-ARGS} --force=true ${arg.list}"/>
     </antcall>
     <antcall target="createAppRef">
         <param name="testName" value="${testName}"/>
@@ -410,7 +410,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="common.redeploydir.asadmin" depends="setAsadminArgs">
     <antcall target="common.run.asadmin">
         <param name="arg.list"
-               value="${deploydir} ${ASADMIN-ARGS} --force true ${arg.list}"/>
+               value="${deploydir} ${ASADMIN-ARGS} --force=true ${arg.list}"/>
     </antcall>
 </target>
 
