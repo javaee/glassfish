@@ -77,7 +77,13 @@ public class WebArchiveClassesLoadable extends WebTest implements WebCheck {
         
         boolean allPassed = true;
         ClosureCompiler closureCompiler=getVerifierContext().getClosureCompiler();
+
+        // org.apache.jasper takes care of internal JSP stuff
         ((ClosureCompilerImpl)closureCompiler).addExcludedPattern("org.apache.jasper");
+
+        // DefaultServlet takes care of the default servlet in GlassFish.
+        // For some reason, for every web app, this is returned as a component
+        ((ClosureCompilerImpl)closureCompiler).addExcludedClass("org.apache.catalina.servlets.DefaultServlet");
         if(getVerifierContext().isAppserverMode())
         	((ClosureCompilerImpl)closureCompiler).addExcludedPattern("com.sun.enterprise");
 
@@ -147,7 +153,7 @@ public class WebArchiveClassesLoadable extends WebTest implements WebCheck {
             return results;
 
         FileArchive arch= new FileArchive();
-        arch.open(file.getAbsolutePath());
+        arch.open(file.toURI());
         Enumeration entries = arch.entries();
         while(entries.hasMoreElements()){
             String name=(String)entries.nextElement();

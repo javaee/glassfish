@@ -49,6 +49,7 @@ import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
+import java.net.URI;
 
 import org.apache.jasper.JspC;
 import org.apache.jasper.JasperException;
@@ -84,7 +85,7 @@ public class AllJSPsMustBeCompilable extends WebTest implements WebCheck{
         File outDir=getVerifierContext().getOutDir();
         logger.log(Level.INFO, "Compiling JSPs in [ " +new File(archiveUri).getName()+ " ]");
         JspC jspc=new JspC();
-        jspc.setUriroot(archiveUri);
+        jspc.setUriroot(new File(URI.create(archiveUri)).getAbsolutePath());
         jspc.setCompile(true);
         jspc.setOutputDir(outDir.getAbsolutePath());
         jspc.setFailOnError(false);

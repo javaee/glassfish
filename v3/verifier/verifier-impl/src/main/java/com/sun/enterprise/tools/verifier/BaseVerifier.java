@@ -218,6 +218,7 @@ public abstract class BaseVerifier {
 
     /** converts list of paths to a string of paths separated by pathSeparator*/
     protected String getClassPath(List<String> classPath) {
+        if (classPath == null) return "";
         StringBuilder cp = new StringBuilder("");
         for (int i = 0; i < classPath.size(); i++) {
             cp.append(classPath.get(i));

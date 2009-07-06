@@ -97,7 +97,7 @@ public abstract class CheckMgr {
         context.setJavaEEVersion(verifierFrameworkContext.getJavaEEVersion());
         context.setComponentNameConstructor(getComponentNameConstructor(descriptor));
         FileArchive moduleArchive = new FileArchive();
-        moduleArchive.open(new File(getAbstractArchiveUri(descriptor)).toURI());
+        moduleArchive.open(getAbstractArchiveUri(descriptor));
         context.setModuleArchive(moduleArchive);
         ResultManager resultManager = verifierFrameworkContext.getResultManager();
         for (int i = 0; i < test.size(); i++) {

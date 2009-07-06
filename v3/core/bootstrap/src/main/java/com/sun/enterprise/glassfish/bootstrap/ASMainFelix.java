@@ -94,8 +94,8 @@ public class ASMainFelix extends ASMainOSGi {
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
         final Method m = mc.getMethod("main", new Class[]{args.getClass()});
-        // Call Felix on a daemon Thread so that the thread created by
-        // Felix EventDispatcher also inherits the daemon status.
+        // Call Felix on a separate Thread as the main class in Felix
+        // does not return until the framework is stopped.
         Thread launcherThread = new Thread(new Runnable(){
             public void run() {
                 try {
@@ -109,17 +109,11 @@ public class ASMainFelix extends ASMainOSGi {
         },"OSGi Framework Launcher");
 
         // The EventDispatcher thread in Felix inherits the daemon status of the thread
-        // that starts Felix. So, it is very important to start Felix on a daemon thread.
-        // Otherwise, the server process would not exit even when all the server specific
-        // non-daemon threads are stopped.
-        launcherThread.setDaemon(true);
+        // that starts Felix. As the code below does, we start felix in a non-daemon
+        // thread, which means for VM to exit, we need to shutdown the framework
+        // in addition to stopping all the server specific non-daemon threads.
+        launcherThread.setDaemon(false);
         launcherThread.start();
-
-        // Wait for framework to be started, otherwise the VM would exit since there is no
-        // non-daemon thread started yet. The first non-daemon thread
-        // will be started by some OSGi bundle (e.g. GlassFish kernel)
-        launcherThread.join();
-        logger.fine("Framework successfully started");
     }
 
     private String getFWMainClassName() {
