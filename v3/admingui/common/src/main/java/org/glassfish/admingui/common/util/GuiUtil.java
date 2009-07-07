@@ -175,7 +175,7 @@ public class GuiUtil {
          * Otherwise GUI's main page can't come up.
          */
         try {
-            AMXProxy das = V3AMX.getInstance().getConfig("server-config").getAdminService().getDAS();
+            AMXProxy das = V3AMX.getInstance().getConfig("server-config").getAdminService().child("das-config");
             String timeOut = (String) das.attributesMap().get("AdminSessionTimeoutInMinutes");
             if ((timeOut != null) && (!timeOut.equals(""))) {
                 int time = new Integer(timeOut).intValue();
