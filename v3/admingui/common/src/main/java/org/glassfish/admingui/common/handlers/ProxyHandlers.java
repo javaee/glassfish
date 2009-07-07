@@ -80,6 +80,38 @@ public class ProxyHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
+    @Handler(id="filterTable",
+        input={
+            @HandlerInput(name="table", type=java.util.List.class, required=true),
+            @HandlerInput(name="attr", type=java.lang.String.class, required=true),
+            @HandlerInput(name="value", type=java.lang.String.class, required=true)
+        },
+        output={
+            @HandlerOutput(name="table", type=java.util.List.class)
+        }
+    )
+    public static void filterTable(HandlerContext handlerCtx) {
+        List<Map> table = (List)handlerCtx.getInputValue("table");
+        String attr = (String)handlerCtx.getInputValue("attr");
+        String value = (String)handlerCtx.getInputValue("value");
+        List<Map> results = new ArrayList<Map>();
+        if ((attr == null) || ("".equals(attr))){
+            GuiUtil.getLogger().info("'attr' must be non-null, and non-blank");
+        }
+        if ((value == null) || ("".equals(value))){
+            GuiUtil.getLogger().info("'value' must be non-null, and non-blank");
+        }
+        // Concurrent acces problems?
+        for (Map child : table) {
+            if (value.equals(child.get(attr))) {
+//                table.remove(child);
+                results.add(child);
+            }
+        }
+
+        handlerCtx.setOutputValue("table", results);
+    }
+
 
     private static String getA(Map<String, Object> attrs,  String key){
         Object val = attrs.get(key);
