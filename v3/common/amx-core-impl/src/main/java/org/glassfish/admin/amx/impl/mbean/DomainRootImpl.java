@@ -92,10 +92,6 @@ public class DomainRootImpl extends AMXImplBase
         return child(Query.class);
     }
 
-    public ObjectName getUploadDownloadMgr()
-    {
-        return child(UploadDownloadMgr.class);
-    }
 
     public ObjectName getPathnames()
     {
@@ -186,10 +182,6 @@ public class DomainRootImpl extends AMXImplBase
 
         childObjectName = objectNames.buildChildObjectName(BulkAccess.class);
         mbean = new BulkAccessImpl(self);
-        registerChild(mbean, childObjectName);
-
-        childObjectName = objectNames.buildChildObjectName(UploadDownloadMgr.class);
-        mbean = new UploadDownloadMgrImpl(self);
         registerChild(mbean, childObjectName);
 
         childObjectName = objectNames.buildChildObjectName(Sample.class);

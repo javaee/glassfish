@@ -111,10 +111,6 @@ public interface DomainRoot extends AMXProxy
     @Description("Get the BulkAccess MBean" )
     public BulkAccess		getBulkAccess();
 
-    @ManagedAttribute
-    @Description("Get the UploadDownloadMgr MBean (experimental, not supported)" )
-    public UploadDownloadMgr		getUploadDownloadMgr();
-
     /**
         @return the singleton {@link Pathnames}.
      */
