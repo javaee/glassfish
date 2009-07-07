@@ -59,8 +59,8 @@ import org.jvnet.hk2.component.*;
 public class FileLoggerHandler extends Handler implements PostConstruct {
     
 
-    @Inject
-    LogManagerService logManager;
+    @Inject(optional=true)
+    LogManagerService logManager=null;
 
     private String webLogger = "javax.enterprise.system.container.web.com.sun.enterprise.web";
     private String catalinaLogger = "org.apache.catalina";
@@ -79,7 +79,9 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
         try {
             fileOutputStream = new FileOutputStream(logFile);
             printWriter = new PrintWriter(fileOutputStream);
-            logManager.addHandler(this);
+            if (logManager!=null) {
+                logManager.addHandler(this);
+            }
     	} catch (IOException e) {
     	}
     }

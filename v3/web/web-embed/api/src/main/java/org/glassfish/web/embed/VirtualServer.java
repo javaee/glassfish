@@ -41,6 +41,7 @@ import java.io.File;
 import java.util.Collection;
 import org.apache.catalina.Valve;
 import org.glassfish.web.embed.config.VirtualServerConfig;
+import org.glassfish.api.embedded.LifecycleException;
 
 /**
  * Representation of a virtual server.
@@ -98,7 +99,7 @@ public interface VirtualServer extends Lifecycle {
      *
      * @throws ConfigException if a <tt>Context</tt> already exists
      * at the given context root on this <tt>VirtualServer</tt>
-     * @throws LifecycleException if the given <tt>context</tt> fails
+     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>context</tt> fails
      * to be started
      */
     public void addContext(Context context, String contextRoot)
@@ -110,7 +111,7 @@ public interface VirtualServer extends Lifecycle {
      *
      * @param context the <tt>Context</tt> to be stopped and removed
      *
-     * @throws LifecycleException if an error occurs during the stopping
+     * @throws org.glassfish.api.embedded.LifecycleException if an error occurs during the stopping
      * or removal of the given <tt>context</tt>
      */
     public void removeContext(Context context);

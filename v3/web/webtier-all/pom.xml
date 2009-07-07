@@ -110,6 +110,16 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-ajp</artifactId>
             <version>${project.version}</version>
-    	</dependency>        
+    	</dependency> 
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-embed-api</artifactId>
+            <version>${project.version}</version>
+    	</dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-embed-impl</artifactId>
+            <version>${project.version}</version>
+    	</dependency>     	
     </dependencies>
 </project>

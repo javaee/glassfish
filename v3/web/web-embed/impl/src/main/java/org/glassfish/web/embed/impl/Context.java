@@ -43,14 +43,12 @@ import java.net.URL;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import org.apache.catalina.Valve;
-import org.glassfish.web.embed.LifecycleException;
+
+import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.web.embed.config.SecurityConfig;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.Constants;
-import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.Enumerator;
 
 
 /**

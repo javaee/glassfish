@@ -37,6 +37,8 @@
 
 package org.glassfish.web.embed;
 
+import org.glassfish.api.embedded.LifecycleException;
+
 /**
  * Interface for lifecycle events
  */
@@ -52,7 +54,7 @@ public interface Lifecycle {
     /**
      * Disables this component.
      * 
-     * @throws LifecycleException if this component fails to be disabled
+     * @throws org.glassfish.api.embedded.LifecycleException if this component fails to be disabled
      */
     public void disable() throws LifecycleException;
 

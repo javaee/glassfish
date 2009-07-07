@@ -248,7 +248,7 @@ public class Server {
     /**
      * Starts the server
      */
-    public void start() {
+    public void start() throws LifecycleException {
         for (EmbeddedContainer container : containers) {
             container.start();
         }
@@ -257,7 +257,7 @@ public class Server {
     /**
      * Stops the container
      */
-    public void stop() {
+    public void stop() throws LifecycleException {
         for (EmbeddedContainer container : containers) {
             container.stop();
         }

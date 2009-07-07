@@ -52,8 +52,8 @@ public interface EmbeddedContainer {
 
     public List<Sniffer> getSniffers();
 
-    public void start();
+    public void start() throws LifecycleException;
 
-    public void stop();
+    public void stop() throws LifecycleException;
 
 }

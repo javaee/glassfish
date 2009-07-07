@@ -3,6 +3,7 @@ package org.glassfish.ejb.embedded;
 import org.glassfish.api.embedded.EmbeddedContainer;
 import org.glassfish.api.embedded.Port;
 import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Service;
@@ -23,7 +24,6 @@ import com.sun.enterprise.config.serverbeans.Config;
 /**
  * @author Jerome Dochez
  */
-@Service
 public class EmbeddedEjbContainer implements EmbeddedContainer {
 
     final Habitat habitat;
@@ -44,10 +44,10 @@ public class EmbeddedEjbContainer implements EmbeddedContainer {
         return sniffers;
     }
 
-    public void start() {
+    public void start() throws LifecycleException {
     }
 
-    public void stop() {
+    public void stop() throws LifecycleException {
 
     }
 

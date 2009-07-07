@@ -40,6 +40,8 @@ package org.glassfish.web.embed;
 import java.io.File;
 import java.util.Collection;
 import org.glassfish.web.embed.config.*;
+import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.embedded.EmbeddedContainer;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -49,7 +51,7 @@ import org.jvnet.hk2.annotations.Contract;
  * web resources into the URI namespace.
  */
 @Contract
-public interface EmbeddedWebContainer {
+public interface EmbeddedWebContainer extends EmbeddedContainer {
 
     /**
      * Starts this <tt>EmbeddedWebContainer</tt> and any of the
@@ -253,7 +255,7 @@ public interface EmbeddedWebContainer {
      * @throws ConfigException if a <tt>VirtualServer</tt> with the
      * same id has already been registered with this
      * <tt>EmbeddedWebContainer</tt>
-     * @throws LifecycleException if the given <tt>virtualServer</tt> fails
+     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>virtualServer</tt> fails
      * to be started
      */
     public void addVirtualServer(VirtualServer virtualServer)

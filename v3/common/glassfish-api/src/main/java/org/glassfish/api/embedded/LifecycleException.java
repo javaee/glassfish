@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,66 +32,60 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
-package org.glassfish.api.embedded.web;
 
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.Server;
-import org.jvnet.hk2.annotations.Service;
-
-import java.net.URL;
-import java.io.File;
+package org.glassfish.api.embedded;
 
 /**
- * Configuration for the WebContainer instance
- *
- * @author Jerome Dochez
+ * Exception thrown when a web container component fails to start or
+ * stop.
  */
-@Service(name="web")
-public class WebContainerInfo implements ContainerBuilder<EmbeddedWebContainer> {
-
-    URL     defaultWebXml;
-    String  listenerName;
-    File    docRoot;
-    boolean listings;
-
-    public WebContainerInfo setDefaultWebXml(URL url) {
-        defaultWebXml = url;
-        return this;
-    }
-
-    public WebContainerInfo setHttpListenerName(String name) {
-        listenerName = name;
-        return this;
-    }
-
-    public WebContainerInfo setDocRootDir(File f) {
-        docRoot = f;
-        return this;
-    }
-
-    public WebContainerInfo setListings(boolean b) {
-        this.listings = b;
-        return this;        
-    }
-
-    public void attach(Port.PortType type, Port port) {
-
-    }
-
-    public EmbeddedWebContainer create(Server server) {
-        return null;
-    }
+public class LifecycleException extends Exception {
 
     /**
+     * Constructs a <tt>LifecycleException</tt> with no detail message.
+     * The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause(Throwable) initCause}.
+     */
+    protected LifecycleException() { }
+
+    /**
+     * Constructs a <tt>LifecycleException</tt> with the specified detail
+     * message. The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause(Throwable) initCause}.
      *
-     * @return
+     * @param message the detail message
      */
+    protected LifecycleException(String message) {
+        super(message);
+    }
+
     /**
-     * uncomment when this moves into web-glue.
-     * public void setConfig(HttpService config) {
-     * }
+     * Constructs a <tt>LifecycleException</tt> with the specified detail
+     * message and cause.
+     *
+     * @param  message the detail message
+     * @param  cause the cause (which is saved for later retrieval by the
+     *         {@link #getCause()} method)
      */
+    public LifecycleException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Constructs a <tt>LifecycleException</tt> with the specified cause.
+     * The detail message is set to:
+     * <pre>
+     *  (cause == null ? null : cause.toString())</pre>
+     * (which typically contains the class and detail message of
+     * <tt>cause</tt>).
+     *
+     * @param  cause the cause (which is saved for later retrieval by the
+     *         {@link #getCause()} method)
+     */
+    public LifecycleException(Throwable cause) {
+        super(cause);
+    }
 
 }

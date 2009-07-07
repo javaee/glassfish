@@ -41,11 +41,16 @@ import java.io.File;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.*;
 import org.glassfish.web.embed.ConfigException;
-import org.glassfish.web.embed.LifecycleException;
+import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.container.Sniffer;
 import org.glassfish.web.embed.config.*;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
@@ -67,6 +72,9 @@ import org.apache.catalina.Connector;
 public class EmbeddedWebContainer implements 
         org.glassfish.web.embed.EmbeddedWebContainer {
 
+
+    @Inject
+    Habitat habitat;
     
     private static Logger log = 
             Logger.getLogger(EmbeddedWebContainer.class.getName());
@@ -91,6 +99,21 @@ public class EmbeddedWebContainer implements
     
 
     // --------------------------------------------------------- Public Methods
+
+    /**
+     * Returns the list of sniffers associated with this embedded container
+     * @return list of sniffers
+     */
+    public List<Sniffer> getSniffers() {
+        List<Sniffer> sniffers = new ArrayList<Sniffer>();
+        sniffers.add(habitat.getComponent(Sniffer.class, "web"));
+        sniffers.add(habitat.getComponent(Sniffer.class, "webbeans"));        
+        Sniffer security = habitat.getComponent(Sniffer.class, "Security");
+        if (security!=null) {
+            sniffers.add(security);
+        }
+        return sniffers;
+    }
 
     /**
      * Starts this <tt>EmbeddedWebContainer</tt> and any of the

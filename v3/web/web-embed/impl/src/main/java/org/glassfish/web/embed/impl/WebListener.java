@@ -38,7 +38,7 @@
 package org.glassfish.web.embed.impl;
 
 import org.glassfish.web.embed.ConfigException;
-import org.glassfish.web.embed.LifecycleException;
+import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.web.embed.config.WebListenerConfig;
 import org.apache.catalina.connector.Connector;
 
@@ -104,7 +104,7 @@ public class WebListener extends Connector
     /**
      * Enables this component.
      * 
-     * @throws LifecycleException if this component fails to be enabled
+     * @throws org.glassfish.api.embedded.LifecycleException if this component fails to be enabled
      */    
     public void enable() throws LifecycleException {               
        try {
