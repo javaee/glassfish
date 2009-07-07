@@ -483,12 +483,26 @@ public class AMXConfigImpl extends AMXImplBase
     return createChild( "thread-pool", args );
     }
      */
-    private ObjectName createChild(final Class<? extends ConfigBeanProxy> intf, final Map<String, Object> params)
+    private ObjectName createChild(final Class<? extends ConfigBeanProxy> intf, final Map<String, Object> paramsIn)
             throws ClassNotFoundException, TransactionFailure
     {
         //cdebug( "createChild: " + intf.getName() + ", params =  " + MapUtil.toString(params) );
-
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(intf);
+        
+         // If present, cconvert the Name attribute to the key attribute
+         // so that callers can always use ATTR_NAME to refer to the unique id
+        final Map<String, Object> params = new HashMap<String,Object>(paramsIn);
+        if ( params.containsKey(ATTR_NAME) )
+        {
+            final String xmlKeyName = spt.getNameHint();
+            if ( xmlKeyName != null )
+            {
+                //cdebug( "Mapped Name to " + xmlKeyName );
+                final Object value = params.remove(ATTR_NAME);
+                params.put(xmlKeyName, value);
+            }
+        }
+    
         if (!spt.isSingleton())
         {
             if (params == null)
