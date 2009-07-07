@@ -53,7 +53,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.j2ee.statistics.Statistic;
+import org.glassfish.api.statistics.Statistic;
 
 /**
  * @author Rajeshwar Patil

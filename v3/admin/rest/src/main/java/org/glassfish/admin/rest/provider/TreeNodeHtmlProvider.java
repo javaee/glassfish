@@ -45,7 +45,7 @@ import java.util.Set;
 import java.util.Map;
 
 //import javax.management.j2ee.statistics.Statistics; //?
-import  org.glassfish.j2ee.statistics.Statistic;
+import  org.glassfish.api.statistics.Statistic;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;

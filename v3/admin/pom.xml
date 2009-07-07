@@ -63,5 +63,6 @@
         <!-- not needed at the moment -->
         <module>launcher</module>
         <module>javax.management.j2ee</module>
+        <module>rest</module>
     </modules>
 </project>
