@@ -1,8 +1,8 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
+
  Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- 
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
+
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -34,39 +34,44 @@
  holder.
 -->
 <sun:table id="resourcesTable" title="#{tableTitle}"
-            deselectMultipleButton="$boolean{true}"
-            deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
-            selectMultipleButton="$boolean{true}"
-            selectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)" >
-         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{tableId});
-        />
+           deselectMultipleButton="$boolean{true}"
+           deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
+           selectMultipleButton="$boolean{true}"
+           selectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)" >
+    <!afterCreate
+        getClientId(component="$this{component}" clientId=>$page{tableId});
+    />
 
 #include "/jms/shared/tableButtons.inc"
 
-   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
-     <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
         />
-   <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+        <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
             <sun:checkbox id="select"
-                selected="#{td.value.selected}"
-                selectedValue="$boolean{true}"
-                onClick="setTimeout('initAllRows(); changeThreeTableButtons()', 0)"
-            />
-    </sun:tableColumn>
+                          selected="#{td.value.selected}"
+                          selectedValue="$boolean{true}"
+                          onClick="setTimeout('initAllRows(); changeThreeTableButtons()', 0)"
+                          />
+        </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}?name=#{td.value.Name}" />
-    </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
+            <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?name=#{td.value.Name}" />
+        </sun:tableColumn>
 
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colEnabled}" sort="name" rowHeader="$boolean{true}" id="col2">
+            <staticText id="enabled" value="#{td.value.Enabled}" />
+        </sun:tableColumn>
 
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colResourceType}" sort="name" rowHeader="$boolean{true}" id="col3">
+            <staticText id="resType" value="#{td.value.ResType}" url="#{pageSession.editLink}?name=#{td.value.Name}" />
+        </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
-        <staticText id="typeDesc" value="#{td.value.Description}" />
-    </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
+            <staticText id="typeDesc" value="#{td.value.Description}" />
+        </sun:tableColumn>
 
-  </sun:tableRowGroup>
+    </sun:tableRowGroup>
 
 </sun:table>

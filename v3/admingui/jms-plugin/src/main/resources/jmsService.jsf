@@ -74,7 +74,8 @@
                               <!beforeCreate
                                 //getJmsHosts(ConfigName="#{configName}", Hosts=>$attribute{hosts});
                               />   
-                            </event>                        
+                            </event>
+                            // TODO: Figure what this needs to make it work. :(
                             <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Type}" helpText="$resource{i18n.jms.TypeHelp}">                           
                                <sun:dropDown id="Type"  selected="#{pageSession.valueMap['Type']}" labels={"LOCAL" "REMOTE" "EMBEDDED"} >
                                </sun:dropDown>
