@@ -17,8 +17,14 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
 
-    private static final String EXPECTED_RESPONSE = 
-        "RemoteHost=localhost";
+    private static String EXPECTED_RESPONSE = null;
+    static{
+        try {
+            EXPECTED_RESPONSE = "RemoteHost=" + InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private static final String TEST_NAME =
         "auth-passthrough-get-remote-host";
@@ -33,7 +39,7 @@ public class WebTest {
         port = args[1];
         contextRoot = args[2];
     }
-    
+
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6347215");
         WebTest webTest = new WebTest(args);
@@ -42,7 +48,7 @@ public class WebTest {
     }
 
     public void doTest() {
-     
+
         try { 
             testRemoteAddress();
             stat.addStatus(TEST_NAME, stat.PASS);
@@ -62,7 +68,7 @@ public class WebTest {
     }
 
     private void testRemoteAddress() throws Exception {
-         
+
         sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/jsp/remoteHost.jsp "
@@ -71,7 +77,7 @@ public class WebTest {
         os.write(get.getBytes());
         os.write("Proxy-ip: 127.0.0.1\n".getBytes());
         os.write("\n".getBytes());
-        
+
         InputStream is = null;
         BufferedReader bis = null;
         String line = null;
@@ -101,7 +107,7 @@ public class WebTest {
 
         if (!lastLine.startsWith(EXPECTED_RESPONSE)) {
             throw new Exception("Wrong response. " + "Expected: " +
-                EXPECTED_RESPONSE + ", received: " + lastLine);
+                    EXPECTED_RESPONSE + ", received: " + lastLine);
         }
     }
 }
