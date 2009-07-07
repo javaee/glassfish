@@ -85,11 +85,16 @@
             <artifactId>flashlight-agent</artifactId>
             <version>${project.version}</version>
         </dependency>   	
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>extra-jdk-packages</artifactId>
             <version>${project.version}</version>
-        </dependency>   	
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>rest-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>    
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->
