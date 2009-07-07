@@ -70,11 +70,11 @@ final class JMXMPConnectorStarter
         mMBeanServer = mbs;
     }
 
-    public synchronized void start()
+    public synchronized JMXConnectorServer start()
     {
         if (STARTED)
         {
-            return;
+            return mJMXMP;
         }
 
         final int TRY_COUNT = 100;
@@ -85,7 +85,7 @@ final class JMXMPConnectorStarter
         {
             try
             {
-                final JMXConnectorServer cs = startJMXMPConnectorServer(port);
+                mJMXMP = startJMXMPConnectorServer(port);
                 break;
             }
             catch (final java.net.BindException e)
@@ -105,6 +105,7 @@ final class JMXMPConnectorStarter
                 port = port + 1;
             }
         }
+        return mJMXMP;
     }
 
     public synchronized void stop()

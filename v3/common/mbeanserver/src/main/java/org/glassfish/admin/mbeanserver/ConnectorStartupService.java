@@ -53,6 +53,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -69,6 +70,9 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 
 import java.io.IOException;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 
 /**
     Responsible for creating the {@link BootAMXMBean}, and starting JMXConnectors,
@@ -92,21 +96,45 @@ public final class ConnectorStartupService implements Startup, PostConstruct
     @Inject
     private Habitat mHabitat;
 
+    @Inject Events mEvents;
+
     private volatile BootAMX mBootAMX;
+    
+    private volatile ConnectorsStarterThread mConnectorsStarterThread;
 
     public ConnectorStartupService()
     {
         mMBeanServer = ManagementFactory.getPlatformMBeanServer();
     }
 
+    private final class ShutdownListener implements EventListener
+    {
+        public void event(EventListener.Event event)
+        {
+            if ( event.is(EventTypes.SERVER_SHUTDOWN) )
+            {
+                shutdown();
+            }
+        }
+    }
+    
     public void postConstruct()
     {
         mBootAMX = BootAMX.create(mHabitat, mMBeanServer);
 
         final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
 
-        final ConnectorsStarterThread starter = new ConnectorsStarterThread(mMBeanServer, configuredConnectors, mBootAMX);
-        starter.start();
+        mConnectorsStarterThread = new ConnectorsStarterThread(mMBeanServer, configuredConnectors, mBootAMX);
+        mConnectorsStarterThread.start();
+        
+        mEvents.register( new ShutdownListener() );
+    }
+    
+    private void shutdown()
+    {
+       Util.getLogger().info("ConnectorStartupService: shutting down AMX and JMX");
+       
+       mConnectorsStarterThread.shutdown();
     }
 
     /*
@@ -205,6 +233,24 @@ public final class ConnectorStartupService implements Startup, PostConstruct
             mMBeanServer = mbs;
             mConfiguredConnectors = configuredConnectors;
             mAMXBooterNew = amxBooter;
+        }
+        
+        void shutdown()
+        {
+            for( final JMXConnectorServer connector : mConnectorServers )
+            {
+                try
+                {
+                    final JMXServiceURL address = connector.getAddress();
+                    connector.stop();
+                    Util.getLogger().info("Stopped JMXConnectorServer: " + address);
+                }
+                catch( final Exception e )
+                {
+                    e.printStackTrace();
+                }
+            }
+            mConnectorServers.clear();
         }
 
         private static String toString(final JmxConnector c)
@@ -338,6 +384,8 @@ public final class ConnectorStartupService implements Startup, PostConstruct
             return server;
         }
 
+        private final List<JMXConnectorServer> mConnectorServers = new ArrayList<JMXConnectorServer>();
+
         public void run()
         {
             // JmxConnectorServerDriver.testStart(8686, "rmi_jrmp", true );
@@ -355,6 +403,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct
                 try
                 {
                     final JMXConnectorServer server = startConnector(c);
+                    mConnectorServers.add(server);
                 }
                 catch (final Throwable t)
                 {
@@ -378,7 +427,8 @@ public final class ConnectorStartupService implements Startup, PostConstruct
             final JMXMPConnectorStarter jmxmpStarter = new JMXMPConnectorStarter(mMBeanServer);
             try
             {
-                jmxmpStarter.start();
+                final JMXConnectorServer server = jmxmpStarter.start();
+                mConnectorServers.add( server );
             }
             catch (Throwable t)
             {

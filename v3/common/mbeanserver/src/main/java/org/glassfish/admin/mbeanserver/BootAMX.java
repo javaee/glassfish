@@ -96,6 +96,19 @@ final class BootAMX implements BootAMXMBean
         }
         return booter;
     }
+    
+    AMXStartupServiceMBean getLoader()
+    {       
+        try
+        {
+            return mHabitat.getByContract(AMXStartupServiceMBean.class);
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            throw new RuntimeException(t);
+        }
+    }
 
     /**
     We need to dynamically load the AMX module.  HOW?  we can't depend on the amx-impl module.
@@ -108,16 +121,8 @@ final class BootAMX implements BootAMXMBean
         if (mDomainRootObjectName == null)
         {
             //debug( "Booter.bootAMX: getting AMXStartupServiceMBean via contract" );
-            AMXStartupServiceMBean loader = null;
-            try
-            {
-                loader = mHabitat.getByContract(AMXStartupServiceMBean.class);
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-                throw new RuntimeException(t);
-            }
+            final AMXStartupServiceMBean loader = getLoader();
+
             //debug( "Got loader for AMXStartupServiceMBean: " + loader );
             //debug( "Booter.bootAMX: assuming that amx-impl loads through other means" );
 
