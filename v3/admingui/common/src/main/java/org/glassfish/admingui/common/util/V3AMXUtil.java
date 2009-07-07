@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.management.ObjectName;
 
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.intf.config.ApplicationRef;
 import org.glassfish.admin.amx.intf.config.Config;
 import org.glassfish.admin.amx.intf.config.HttpService;
 import org.glassfish.admin.amx.intf.config.VirtualServer;
@@ -27,9 +26,13 @@ import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
  */
 public class V3AMXUtil {
 
+    public static String getInstallDir(){
+        return V3AMX.getInstance().getDomainRoot().getInstallDir();
+    }
 
     public static Integer getAdminPort(){
-        String port = (String) V3AMX.getAttrsMap(AMX.ADMIN_LISTENER).get("Port");
+        AMXProxy amx = V3AMX.getInstance().getAdminListener();
+        String port = (String) amx.attributesMap().get("Port");
         if (port.startsWith("$")){
             //TODO: resolve attribute
             port = "4848";
@@ -42,8 +45,6 @@ public class V3AMXUtil {
     public static String getHttpPortNumber(String serverName, String configName){
         StringBuffer ports = new StringBuffer();
         try{
-//            ObjectName serverObj = new ObjectName("v3:pp=/domain/servers,type=server,name=" + serverName);
-            //Map<String,NetworkListener> nls = V3AMX.getServerConfig(configName).child(NetworkConfig.class).child(NetworkListeners.class).childrenMap(NetworkListener.class);
             Config config = V3AMX.getServerConfig(configName);
             Map<String, NetworkListener> nls = config.getNetworkConfig().as(NetworkConfig.class).getNetworkListeners().getNetworkListener();
             for (NetworkListener listener : nls.values()){
@@ -70,8 +71,7 @@ public class V3AMXUtil {
      */
     public static String getPortForApplication(String appName) {
         try{
-            String objectNameStr ="v3:pp=/domain/servers,type=server,name=server";
-            AMXProxy  server = (AMXProxy) V3AMX.objectNameToProxy(objectNameStr);
+            AMXProxy  server = (AMXProxy) V3AMX.getInstance().getDomain().getServers().getServer().get("server");
             AMXProxy appRef = server.childrenMap("application-ref").get(appName);
             NetworkListener listener = null;
             if (appRef == null) { // no application-ref found for this application, shouldn't happen for PE. TODO: think about EE

@@ -73,6 +73,7 @@ import javax.faces.context.ExternalContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
@@ -136,7 +137,7 @@ public class GuiUtil {
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
         try{
-            sessionMap.put("domainName", V3AMX.getAttribute(AMX.DOMAIN_ROOT, "AppserverDomainName"));
+            sessionMap.put("domainName", V3AMX.getInstance().getDomainRoot().getAppserverDomainName());
         }catch(Exception ex){
             ex.printStackTrace();
             sessionMap.put("domainName", "");
@@ -163,9 +164,9 @@ public class GuiUtil {
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));
         sessionMap.put("reqNum", GuiUtil.getMessage("msg.JS.enterNumericValue"));
         sessionMap.put("reqPort", GuiUtil.getMessage("msg.JS.enterPortValue"));
-        sessionMap.put("RUNTIME", AMX.RUNTIME);
-        sessionMap.put("DOMAIN_ROOT", AMX.DOMAIN_ROOT);
-        sessionMap.put("ADMIN_LISTENER", AMX.ADMIN_LISTENER);
+        sessionMap.put("RUNTIME", V3AMX.getInstance().getRuntime().objectName());
+        sessionMap.put("DOMAIN_ROOT", V3AMX.getInstance().getDomainRoot().objectName());
+        sessionMap.put("ADMIN_LISTENER", V3AMX.getInstance().getAdminListener().objectName());
         sessionMap.put("_SESSION_INITIALIZED","TRUE");
 
         /* refer to issue# 5698 and issue# 3691
@@ -174,7 +175,8 @@ public class GuiUtil {
          * Otherwise GUI's main page can't come up.
          */
         try {
-            String timeOut = (String)V3AMX.getAttribute("v3:pp=/domain/configs/config[server-config]/admin-service,type=das-config", "AdminSessionTimeoutInMinutes");
+            AMXProxy das = V3AMX.getInstance().getConfig("server-config").getAdminService().getDAS();
+            String timeOut = (String) das.attributesMap().get("AdminSessionTimeoutInMinutes");
             if ((timeOut != null) && (!timeOut.equals(""))) {
                 int time = new Integer(timeOut).intValue();
                 if (time == 0) {

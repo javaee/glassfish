@@ -413,7 +413,7 @@ public class ProxyHandlers {
 
     public static void getApplicationByType(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
-        AMXProxy amx = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
+        AMXProxy amx = V3AMX.getInstance().getApplications();
         Map<String, AMXProxy> children = amx.childrenMap("application");
         List result = new ArrayList();
         for (AMXProxy oneChild : children.values()) {
@@ -423,7 +423,7 @@ public class ProxyHandlers {
                 for (String attrName : attrs.keySet()) {
                     if (attrName.equals("Name")) {
                         String appName = getA(attrs, "Name");
-                        Map<String, AMXProxy> module = V3AMX.objectNameToProxy("v3:pp=/domain/applications,type=application,name=" +appName ).childrenMap("module");
+                        Map<String, AMXProxy> module = V3AMX.getInstance().getApplication(appName).childrenMap("module");
 
                         //The above 6 lines can be writen as
                         //Map <String, AMXProxy> module = oneChild.childrenMap("module");
@@ -481,7 +481,7 @@ public class ProxyHandlers {
         if (fullName==null)
             fullName = false;
 
-        AMXProxy amx = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
+        AMXProxy amx = V3AMX.getInstance().getApplications();
         Map<String, AMXProxy> applications = amx.childrenMap("application");
         List result = new ArrayList();
         eachApp:  for (AMXProxy oneApp : applications.values()) {

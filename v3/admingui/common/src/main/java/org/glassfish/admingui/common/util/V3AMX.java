@@ -31,6 +31,9 @@ import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.proxy.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
+import org.glassfish.admin.amx.intf.config.Application;
+import org.glassfish.admin.amx.intf.config.ApplicationRef;
+import org.glassfish.admin.amx.intf.config.Applications;
 import org.glassfish.admin.amx.intf.config.Config;
 import org.glassfish.admin.amx.intf.config.ConfigTools;
 import org.glassfish.admin.amx.intf.config.Configs;
@@ -38,6 +41,7 @@ import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 import org.glassfish.admin.amx.intf.config.Property;
 
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -126,6 +130,27 @@ public class V3AMX {
     public ConnectorRuntimeAPIProvider getConnectorRuntime(){
         return domainRoot.getExt().getConnectorRuntimeAPIProvider();
     }    
+
+    public Applications getApplications(){
+        return domain.getApplications();
+    }
+
+    public Application getApplication(String appName){
+        return getApplications().getApplication().get(appName);
+    }
+
+    public ApplicationRef getApplicationRef(String server, String appName){
+        return getDomain().getServers().getServer().get(server).getApplicationRef().get(appName);
+    }
+
+
+    public Config getConfig(String configName){
+        return domain.getConfigs().getConfig().get(configName);
+    }
+
+    public AMXProxy getAdminListener(){
+        return getConfig("server-config").getNetworkConfig().child("network-listeners").childrenMap("network-listener").get("admin-listener");
+    }
 
 
     public  boolean isEE(){
