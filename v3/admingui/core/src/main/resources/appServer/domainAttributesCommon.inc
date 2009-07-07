@@ -34,22 +34,18 @@
  holder.
 -->
 
-<! appServer/domainAttributesCommon.inc ->
-               
-                    <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
-                        <!-- Text Field section -->               
-                        <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.AppRoot}" helpText="$resource{i18n.server.AppRootHelp}">
-                                <sun:textField id="AppRoot" columns="$int{55}" text="#{pageSession.valueMap['ApplicationRoot']}"/> 
-                            </sun:property>                       
-                            <sun:property id="logRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.LogRoot}" helpText="$resource{i18n.server.LogRootHelp}">                           
-                                <sun:textField id="LogRoot" columns="$int{55}" text="#{pageSession.valueMap['LogRoot']}"/>     
-                            </sun:property>                  
-                            <sun:property id="localeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Locale}" helpText="$resource{i18n.server.LocaleHelp}">                           
-                                <sun:textField id="Locale" columns="$int{55}" text="#{pageSession.valueMap['Locale']}"/>     
-                            </sun:property>                                              
-                        "<br /><br />
-                        </sun:propertySheetSection>
+<sun:propertySheet id="propertySheet">			 
+    <sun:propertySheetSection id="propertSectionTextField">
+        <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.AppRoot}" helpText="$resource{i18n.server.AppRootHelp}">
+            <sun:textField id="AppRoot" columns="$int{55}" text="#{pageSession.valueMap['ApplicationRoot']}"/>
+        </sun:property>
+        <sun:property id="logRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.LogRoot}" helpText="$resource{i18n.server.LogRootHelp}">
+            <sun:textField id="LogRoot" columns="$int{55}" text="#{pageSession.valueMap['LogRoot']}"/>
+        </sun:property>
+        <sun:property id="localeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Locale}" helpText="$resource{i18n.server.LocaleHelp}">
+            <sun:textField id="Locale" columns="$int{55}" text="#{pageSession.valueMap['Locale']}"/>
+        </sun:property>
+    "<br /><br />
+    </sun:propertySheetSection>
 
-                    </sun:propertySheet>
+</sun:propertySheet>
