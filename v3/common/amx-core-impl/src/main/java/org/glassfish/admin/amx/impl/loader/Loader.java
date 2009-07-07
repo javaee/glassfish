@@ -65,7 +65,7 @@ import org.glassfish.admin.amx.util.FeatureAvailability;
 	
  */
 final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
-	implements LoaderMBean, LoaderRegHandler
+	implements LoaderMBean
 {
 		public
 	Loader()
@@ -82,7 +82,6 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		
 		//mStarted	    = false;
 	}
-    
 	
 	    protected Object
     createDomainRoot()
@@ -97,38 +96,10 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		return( BootUtil.getInstance().getAMXJMXDomainName() );
 	}
 	
-	
 		public String
 	getAdministrativeDomainName()
 	{
 		return( BootUtil.getInstance().getAppserverDomainName() );
-	}
-	
-	
-		public void
-	handleNotification(
-		final Notification	notifIn, 
-		final Object		handback) 
-	{
-	    /* nothing by default */
-	}
-	
-		public void
-	handleMBeanRegistered( final ObjectName	oldObjectName )
-		throws InstanceNotFoundException
-	{
-	}
-	
-		public void
-	handleMBeanUnregistered( final ObjectName	oldObjectName )
-		throws InstanceNotFoundException, MBeanRegistrationException
-	{
-	}
-	
-		protected static long
-	now()
-	{
-		return( System.currentTimeMillis() );
 	}
 	
 		protected final ObjectName
@@ -158,34 +129,11 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		final ObjectName	objectNameIn)
 		throws Exception
 	{
-	    debug( "preRegister" );
 		final ObjectName	superObjectName	= super.preRegister( server, objectNameIn );
 		
 		final String    domain  = BootUtil.getInstance().getAMXSupportJMXDomain();
 		mSelfObjectName	= Util.newObjectName( domain, LOADER_NAME_PROPS );
 		
-		try
-		{
-			//loadSystemInfo( server );  // now loaded as part of DomainRoot
-			
-			final MBeanServerNotificationFilter filter	= new MBeanServerNotificationFilter();
-
-            filter.enableAllObjectNames();
-            
-            if ( mServer != server )
-            {
-                throw new IllegalStateException();
-            }
-		
-			JMXUtil.listenToMBeanServerDelegate( mServer, this, filter, null );
-			
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException( e );
-		}
-		
-	    debug( "preRegister done: " + mSelfObjectName );
 		return( mSelfObjectName );
 	}
 	
@@ -197,11 +145,10 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		
 		if ( registrationSucceeded.booleanValue() )
 		{
-			initLOADER( getMBeanServer(), getObjectName() );
+			//initLOADER( getMBeanServer(), getObjectName() );
             start();
             
-            FeatureAvailability.getInstance().registerFeature(
-                FeatureAvailability.AMX_LOADER_FEATURE, getObjectName() );
+            FeatureAvailability.getInstance().registerFeature( FeatureAvailability.AMX_LOADER_FEATURE, getObjectName() );
 		}
 	}
 
@@ -264,6 +211,7 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 		return( factory.getDomainRootProxy() );
 	}
 	
+    /*
 	private static LoaderMBean	LOADER	= null;
 	
 		private static void
@@ -292,6 +240,7 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
 	{
 		return( LOADER );
 	}
+    */
 	
 	
 	protected volatile boolean    mStarted;
@@ -303,6 +252,7 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
             return;
         }
 		
+        /*
         try
         {
             final AMXDebugSupport dbg = new AMXDebugSupport( mServer );
@@ -315,42 +265,10 @@ final class Loader extends org.glassfish.admin.amx.impl.mbean.MBeanImplBase
                  rootCause + ", msg=" + rootCause.getMessage() );
             throw new RuntimeException( rootCause );
         }
+        */
         
 		loadDomainRoot();
-		
-		//(new CheckStartedThread()).start();
 	}
-    
-	/*
-	protected volatile boolean    mStarted;
-    
-	private final class CheckStartedThread extends Thread
-	{
-	    public void CheckStartedThread()    {}
-	    
-	        public void
-	    run()
-	    {
-	        final long   AMX_READY_SLEEP_DURATION  = 100;
-	        
-	        while ( ! isStarted() )
-	        {
-	            debug( "Waiting " + AMX_READY_SLEEP_DURATION + "ms for AMX to start");
-	            sleepMillis( AMX_READY_SLEEP_DURATION );
-	        }
-
-            BootUtil.getInstance().setAMXReady( true );
-	    }
-	}
-	
-
-		public boolean
-	isStarted( )
-	{
-		return( mStarted );
-	}
-    */
-
 }
 
 

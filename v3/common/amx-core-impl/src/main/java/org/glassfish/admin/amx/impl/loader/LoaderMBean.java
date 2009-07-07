@@ -44,11 +44,9 @@ import javax.management.*;
 	Loads MBeans. <b>INTERNAL USE ONLY</b>
  */
 public interface LoaderMBean
-	extends AMXSupport, MBeanRegistration, 
-	NotificationListener
+	extends AMXSupport, MBeanRegistration
 {
-	public static final String	LOADER_NAME_PROPS	= "name=mbean-loader";
-	
+	public static final String	LOADER_NAME_PROPS	= "type=domain-bootstrapper";
 	
 	/**
 		The name of the appserver administrative domain.

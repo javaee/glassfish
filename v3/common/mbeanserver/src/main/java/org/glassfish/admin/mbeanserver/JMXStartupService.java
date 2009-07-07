@@ -80,7 +80,7 @@ import org.glassfish.api.event.Events;
  */
 @Service
 @Async
-public final class ConnectorStartupService implements Startup, PostConstruct
+public final class JMXStartupService implements Startup, PostConstruct
 {
     private static void debug(final String s)
     {
@@ -100,9 +100,9 @@ public final class ConnectorStartupService implements Startup, PostConstruct
 
     private volatile BootAMX mBootAMX;
     
-    private volatile ConnectorsStarterThread mConnectorsStarterThread;
+    private volatile JMXConnectorsStarterThread mConnectorsStarterThread;
 
-    public ConnectorStartupService()
+    public JMXStartupService()
     {
         mMBeanServer = ManagementFactory.getPlatformMBeanServer();
     }
@@ -124,7 +124,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct
 
         final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
 
-        mConnectorsStarterThread = new ConnectorsStarterThread(mMBeanServer, configuredConnectors, mBootAMX);
+        mConnectorsStarterThread = new JMXConnectorsStarterThread(mMBeanServer, configuredConnectors, mBootAMX);
         mConnectorsStarterThread.start();
         
         mEvents.register( new ShutdownListener() );
@@ -162,6 +162,11 @@ public final class ConnectorStartupService implements Startup, PostConstruct
     }
     return jndiWorking;
     }
+     */
+
+    /**
+     * Listens for a connection on the connector server, and when made,
+     * ensures that AMX has been started.
      */
     private static final class BootAMXListener implements NotificationListener
     {
@@ -217,7 +222,10 @@ public final class ConnectorStartupService implements Startup, PostConstruct
         }
     }
 
-    private static final class ConnectorsStarterThread extends Thread
+    /**
+        Thread that starts the configured JMXConnectors.
+     */
+    private static final class JMXConnectorsStarterThread extends Thread
     {
         private final List<JmxConnector> mConfiguredConnectors;
 
@@ -225,7 +233,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct
 
         private final BootAMX mAMXBooterNew;
 
-        public ConnectorsStarterThread(
+        public JMXConnectorsStarterThread(
                 final MBeanServer mbs,
                 final List<JmxConnector> configuredConnectors,
                 final BootAMX amxBooter)
@@ -442,7 +450,6 @@ public final class ConnectorStartupService implements Startup, PostConstruct
     {
         return Startup.Lifecycle.SERVER;
     }
-
 }
 
 
