@@ -749,7 +749,7 @@ public class AMXConfigImpl extends AMXImplBase
         
         return out;
     }
-    
+        
     /**
     Automatically figure out get<abc>Factory(),
     create<Abc>Config(), remove<Abc>Config().
@@ -855,6 +855,38 @@ public class AMXConfigImpl extends AMXImplBase
         Object result = null;
 
         final MBeanAttributeInfo attrInfo = getAttributeInfo(amxName);
+        if ( attrInfo == null )
+        {
+            // 
+            // check for  PSEUDO ATTTRIBUTES implemented as methods eg getFoo()
+            //
+            //cdebug( "getAttributeFromConfigBean: no info for " + amxName );
+            
+            ConfigBeanJMXSupport.DuckTypedInfo info = getConfigBeanJMXSupport().findDuckTyped("get" + amxName, null);
+            if ( info == null )
+            {
+                info = getConfigBeanJMXSupport().findDuckTyped("is" + amxName, null);
+            }
+            if ( info != null )
+            {
+                //cdebug( "getAttributeFromConfigBean: found DuckTyped for " + amxName );
+                try
+                {
+                    result = invokeDuckMethod( info, null);
+                    return result;
+                }
+                catch( final Exception e )
+                {
+                    throw new RuntimeException( new MBeanException( e, amxName ) );
+                }
+                
+            }
+            else
+            {
+                //cdebug( "getAttributeFromConfigBean: no DuckTyped for " + amxName );
+            }
+            throw new RuntimeException( new AttributeNotFoundException( amxName ) );
+        }
         final String xmlName = ConfigBeanJMXSupport.xmlName(attrInfo, amxName);
         final boolean isAttribute = ConfigBeanJMXSupport.isAttribute(attrInfo);
 

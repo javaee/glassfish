@@ -54,6 +54,11 @@ import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.amx.BootAMXMBean;
 
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+
+
 /**
     An {@link AMXLoader} responsible for loading core amx MBeans
  */
@@ -73,6 +78,9 @@ public final class AMXStartupServiceNew
     
     @Inject
     private MBeanServer mMBeanServer;
+
+    @Inject
+    Events mEvents;
         
     private volatile ObjectName      mAMXLoaderObjectName;
     
@@ -87,6 +95,23 @@ public final class AMXStartupServiceNew
     {
         //debug( "AMXStartupServiceNew.AMXStartupServiceNew()" );
        // debug( this.getClass().getName() );
+    }
+    
+    private final class ShutdownListener implements EventListener
+    {
+        public void event(EventListener.Event event)
+        {
+            if ( event.is(EventTypes.SERVER_SHUTDOWN) )
+            {
+                shutdown();
+            }
+        }
+    }
+    
+    private void shutdown()
+    {
+        ImplUtil.getLogger().info( "AMXStartupService: shutting down AMX MBeans" );
+        unloadAMXMBeans();
     }
     
     public void postConstruct()
@@ -114,6 +139,8 @@ public final class AMXStartupServiceNew
         }
         //debug( "AMXStartupServiceNew.postConstruct(): registered: " + OBJECT_NAME );
         ImplUtil.getLogger().fine( "Initialized AMXStartupServiceNew in " + delta.elapsedMillis() + " ms, registered as " + OBJECT_NAME);
+        
+        mEvents.register( new ShutdownListener() );
     }
 
     public void preDestroy() {
@@ -318,6 +345,8 @@ public final class AMXStartupServiceNew
             final Collection<AMXLoader> loaders = mHabitat.getAllByContract(AMXLoader.class);
             for( final AMXLoader loader : loaders )
             {
+                if ( loader == this ) continue;
+                
                 try
                 {
                     loader.unloadAMXMBeans();

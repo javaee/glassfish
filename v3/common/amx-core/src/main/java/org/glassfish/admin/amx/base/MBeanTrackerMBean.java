@@ -17,7 +17,7 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 @AMXMBeanMetadata(type="mbean-tracker",singleton=true, globalSingleton=true, leaf=true)
 public interface MBeanTrackerMBean
 {
-    public static final ObjectName MBEAN_TRACKER_OBJECT_NAME = JMXUtil.newObjectName(AMXValues.AMX_SUPPORT_DOMAIN, "type=mbean-tracker");
+    public static final ObjectName MBEAN_TRACKER_OBJECT_NAME = JMXUtil.newObjectName(AMXValues.amxSupportDomain(), "type=mbean-tracker");
 
     /**
         Get all children of the specified MBean.  An empty set is returned

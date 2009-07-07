@@ -66,6 +66,7 @@ public final class MBeanTracker implements NotificationListener, MBeanRegistrati
             }
             else if ( type.equals( MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
             {
+                //debug( "MBeanTracker.handleNotification: MBean unregistered: " + objectName );
                 removeChild(objectName);
             }
         }

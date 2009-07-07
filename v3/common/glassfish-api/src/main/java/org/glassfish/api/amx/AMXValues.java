@@ -14,16 +14,6 @@ import javax.management.ObjectName;
  */
 public final class AMXValues
 {
-    /** JMX domain used by AMX MBeans.
-     * <p>
-     * All MBeans in this domain must be AMX-compliant, see http://tinyurl.com/nryoqp =
-    https://glassfish.dev.java.net/nonav/v3/admin/planning/V3Changes/V3_AMX_SPI.html */
-    public static final String AMX_JMX_DOMAIN = AMXValues.amxJMXDomain();
-
-    /** JMX domain used by AMX support MBeans */
-    public static final String AMX_SUPPORT_DOMAIN = AMX_JMX_DOMAIN + "-support";
-
-
     /** constant for the name of the Parent attribute {@link AMXProxy#getParent} */
     public static final String ATTR_PARENT = "Parent";
     /** constant for the name of the Children attribute {@link AMXProxy#getChildren} */
@@ -70,7 +60,7 @@ public final class AMXValues
     
     
     /** prefix for AMX descriptor fields */
-    public static final String DESC_PREFIX = "amx.";
+    public static final String DESC_PREFIX = amxJMXDomain() + ".";
     
     /** prefix for notification types */
     public static final String NOTIFICATION_PREFIX = DESC_PREFIX;
@@ -170,10 +160,20 @@ public final class AMXValues
     {
     }
 
-    /** The JMX domain in which all AMX MBeans are located. */
+    /** JMX domain used by AMX MBeans.
+     * <p>
+     * All MBeans in this domain must be AMX-compliant, see http://tinyurl.com/nryoqp =
+    https://glassfish.dev.java.net/nonav/v3/admin/planning/V3Changes/V3_AMX_SPI.html
+    */
     public static String amxJMXDomain()
     {
         return "amx";
+    }
+    
+    /** JMX domain used by AMX support MBeans */
+    public static String amxSupportDomain()
+    {
+        return amxJMXDomain() + "-support";
     }
 
     /** name of the Domain Admin Server (DAS) as found in an ObjectName */

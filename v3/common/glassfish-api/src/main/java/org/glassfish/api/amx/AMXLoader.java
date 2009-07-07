@@ -49,7 +49,7 @@ import javax.management.ObjectName;
 public interface AMXLoader
 {
     /** property prefix used by AMXLoader MBeans, name to be suffixed to it */
-    public static String LOADER_PREFIX = AMXValues.AMX_SUPPORT_DOMAIN + ":type=amx-loader,name=";
+    public static String LOADER_PREFIX = AMXValues.amxSupportDomain() + ":type=amx-loader,name=";
     
     /**
     Loader a hierarchy of AMX MBeans, returning the ObjectName of the root

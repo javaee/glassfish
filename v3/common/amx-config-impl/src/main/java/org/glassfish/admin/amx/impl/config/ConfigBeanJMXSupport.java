@@ -163,21 +163,52 @@ public class ConfigBeanJMXSupport {
         return buf.toString();
     }
     
+    /**
+        Is the signature a perfect match?
+        In a modular system, we can't load classes from classnames to compare, so we
+        can't do isAssignableFrom().  So look for  a perfect match as the priority.
+     */
+    private boolean isPerfectMatch( final String[] types, final Class<?>[] sig )
+    {
+        if ( types == null && (sig == null || sig.length == 0) )
+        {
+            return true;
+        }
+        boolean mismatch = false;
+        
+        for( int i = 0; i < sig.length; ++ i )
+        {
+            if ( sig[i].getName().equals( types[i] ) )
+            {
+                mismatch = true;
+                break;
+            }
+        }
+        return ! mismatch;
+    }
+    
     public DuckTypedInfo findDuckTyped(final String name, final String[] types)
     {
         DuckTypedInfo    info = null;
+        
+        final int numTypes = types == null ? 0 : types.length;
         for( final DuckTypedInfo candidate : mDuckTypedInfos )
         {
-            if ( candidate.name().equals(name) && types.length == candidate.signature().length )
+            // debug( "Match " + name + "=" + numTypes + " against " + candidate.name()  + "=" + candidate.signature().length );
+            final Class<?>[] sig = candidate.signature();
+            if ( candidate.name().equals(name) && numTypes == sig.length )
             {
-                for( int i = 0; i < types.length; ++ i )
-                {
-                    // match types
-                }
-                
                 //debug( "Matched DuckTyped method: " + name );
-                info = candidate;
-                break;
+                if ( isPerfectMatch(types, sig ) )
+                {
+                    info = candidate;
+                    break;
+                }
+                else if ( info == null )
+                {
+                    // first one takes priority
+                    info = candidate;
+                }
             }
         }
         
@@ -951,6 +982,10 @@ public class ConfigBeanJMXSupport {
 
         public Class<?> returnType() {
             return method().getReturnType();
+        }
+        
+        public boolean isPseudoAttribute() {
+            return name().startsWith("get") || name().startsWith("is") && signature().length == 0;
         }
         
         public Class<?>[] signature() { return method().getParameterTypes(); }

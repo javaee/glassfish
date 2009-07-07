@@ -407,7 +407,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             mLoaderThread.start();
         
             // Make the listener start listening
-            final ObjectName objectName = JMXUtil.newObjectName( AMXValues.AMX_SUPPORT_DOMAIN, "name=config" );
+            final ObjectName objectName = JMXUtil.newObjectName( AMXValues.amxSupportDomain(), "name=config" );
             try
             {
                 mMBeanServer.registerMBean( this, objectName );

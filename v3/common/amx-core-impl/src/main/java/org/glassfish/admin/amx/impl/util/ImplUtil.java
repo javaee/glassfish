@@ -66,11 +66,12 @@ public final class ImplUtil
      */
         public static void
     unregisterAMXMBeans( final AMXProxy top )
-    {
+    {                
         if ( top == null) throw new IllegalArgumentException();
         
-        final MBeanServer mbeanServer = (MBeanServer)
-            top.extra().mbeanServerConnection();
+        //debug( "ImplUtil.unregisterOneMBean: unregistering hierarchy under: " + top.objectName() );
+
+        final MBeanServer mbeanServer = (MBeanServer)top.extra().mbeanServerConnection();
         
         final Set<AMXProxy> children = top.extra().childrenSet();
         if ( children != null )
@@ -89,7 +90,6 @@ public final class ImplUtil
         public static void
     unregisterAMXMBeans( final MBeanServer mbs, final ObjectName objectName )
     {
-        ImplUtil.getLogger().fine( "Unregister MBean hierarchy for: " + objectName );
         unregisterAMXMBeans( ProxyFactory.getInstance(mbs).getProxy(objectName, AMXProxy.class) );
     }
     
@@ -100,17 +100,16 @@ public final class ImplUtil
     unregisterOneMBean( final MBeanServer mbeanServer, final ObjectName objectName )
     {
         boolean success = false;
+        //getLogger().fine( "UNREGISTER MBEAN: " + objectName );
+        //debug( "ImplUtil.unregisterOneMBean: unregistering: " + objectName );
         try
         {
-            getLogger().fine( "UNREGISTER MBEAN: " + objectName );
-            if ( mbeanServer.isRegistered(objectName) )
-            {
-                mbeanServer.unregisterMBean( objectName );
-            }
+            mbeanServer.unregisterMBean( objectName );
         }
-        catch( JMException e )
+        catch( final Exception e )
         {
-            getLogger().warning( "unregisterOneMBean: " + objectName + " FAILED: " + ExceptionUtil.toString(e));
+            // ignore
+            success = false;
         }
         return success;
     }
