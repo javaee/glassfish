@@ -167,13 +167,6 @@
             imageURL="/resource/images/connector.png"
         />
 
-        <sun:treeNode id="systemProps"
-            text="$resource{i18n.tree.systemProps}"
-            url="/configuration/systemProperties.jsf?configName=#{configName}"
-            imageURL="/resource/images/system_properties.png"
-            >
-        </sun:treeNode>
-
     </sun:treeNode>
     </sun:tree>
     <event>
