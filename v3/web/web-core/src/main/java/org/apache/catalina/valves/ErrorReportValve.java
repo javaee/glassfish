@@ -395,12 +395,16 @@ public class ErrorReportValve
         Locale responseLocale = response.getLocale();
         // END SJSAS 6412710
 
+        String serverInfo = ServerInfo.getPublicServerInfo();
+
         StringBuffer sb = new StringBuffer();
 
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"");
         sb.append(" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
         sb.append("<html><head><title>");
-        sb.append(ServerInfo.getServerInfo()).append(" - ");
+        if (serverInfo != null && !serverInfo.isEmpty()) {
+            sb.append(serverInfo).append(" - ");
+        }
         /* 6412710
         sb.append(sm.getString("errorReportValve.errorReport"));
         */
@@ -553,17 +557,26 @@ public class ErrorReportValve
                                    ServerInfo.getServerInfo()));
             */
             // START SJSAS 6412710
-            sb.append(sm.getString("errorReportValve.rootCauseInLogs",
-                                   ServerInfo.getServerInfo(),
-                                   responseLocale));
+            if (serverInfo != null && !serverInfo.isEmpty()) {
+                sb.append(sm.getString("errorReportValve.rootCauseInLogs",
+                                       serverInfo, responseLocale));
+            } else {
+                sb.append(sm.getString("errorReportValve.rootCauseInLogs",
+                                       "server", responseLocale));
+            }
             // END SJSAS 6412710
             sb.append("</u></p>");
 
         }
 
         sb.append("<hr/>");
-        sb.append("<h3>").append(ServerInfo.getServerInfo()).append("</h3>");
+
+        if (serverInfo != null && !serverInfo.isEmpty()) {
+            sb.append("<h3>").append(serverInfo).append("</h3>");
+        }
+
         sb.append("</body></html>");
+
         return sb.toString();
     }
 

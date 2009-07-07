@@ -470,19 +470,28 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         engine.setName(_serverContext.getDefaultDomainName());
 
         /*
-         * Set the server name and version.
-         * Allow customers to override this information by specifying
-         * product.name system property. For example, some customers prefer
-         * not to disclose the product name and version for security
-         * reasons, in which case they would set the value of the
-         * product.name system property to the empty string.
+         * Set the server info. 
+         * By default, the server info is taken from Version#getVersion.
+         * However, customers may override it via the product.name system
+         * property.
+         * Some customers prefer not to disclose the server info
+         * for security reasons, in which case they would set the value of the 
+         * product.name system property to the empty string. In this case,
+         * the server name will not be publicly disclosed via the "Server"
+         * HTTP response header (which will be suppressed) or any container
+         * generated error pages. However, it will still appear in the
+         * server logs (see IT 6900).
          */
         String serverInfo = System.getProperty("product.name");
-        if (serverInfo != null) {
-            ServerInfo.setServerInfo(serverInfo);
-        } else {
+        if (serverInfo == null) {
             ServerInfo.setServerInfo(Version.getVersion());
-            System.setProperty("product.name", Version.getVersion());
+            ServerInfo.setPublicServerInfo(Version.getVersion());
+        } else if (serverInfo.isEmpty()) {
+            ServerInfo.setServerInfo(Version.getVersion());
+            ServerInfo.setPublicServerInfo(serverInfo);
+        } else {
+            ServerInfo.setServerInfo(serverInfo);
+            ServerInfo.setPublicServerInfo(serverInfo);
         }
 
         initInstanceSessionProperties();

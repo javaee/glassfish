@@ -69,6 +69,7 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.Host;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
 import org.glassfish.web.valve.GlassFishValve;
 import com.sun.grizzly.tcp.ActionCode;
@@ -121,7 +122,7 @@ public class CoyoteAdapter
      */
     private boolean compatWithTomcat = false;
     
-    private String serverName = System.getProperty("product.name");
+    private String serverName = ServerInfo.getPublicServerInfo();
     
     // Make sure this value is always aligned with {@link ContainerMapper}
     // (@see com.sun.enterprise.v3.service.impl.ContainerMapper)
@@ -978,7 +979,7 @@ public class CoyoteAdapter
             serverName = "Apache/" + serverName;
         } else {
             // Recalculate.
-            serverName = System.getProperty("product.name");
+            serverName = ServerInfo.getPublicServerInfo();
         }
     }
 
