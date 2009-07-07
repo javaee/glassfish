@@ -38,6 +38,8 @@ package org.glassfish.appclient.server.core;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.module.Module;
 import java.io.IOException;
+import java.util.jar.Manifest;
+import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
@@ -46,11 +48,17 @@ import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -58,6 +66,8 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.appclient.server.core.jws.RestrictedContentAdapter;
+import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
@@ -155,11 +165,16 @@ public class AppClientDeployer
     /** Save the helper across phases in the deployment context's appProps */
     public static final String HELPER_KEY_NAME = "org.glassfish.appclient.server.core.helper";
 
+    public static final String JWSAPPCLIENT_SYSTEM_PREFIX = "/__JWSappclient/__system";
+
     @Inject
     protected ServerContext sc;
 
     @Inject
     protected Domain domain;
+
+    @Inject
+    private ServerContext serverContext;
 
     @Inject
     private DownloadableArtifacts downloadInfo;
@@ -189,6 +204,9 @@ public class AppClientDeployer
     final private Set<AppClientServerApplication> appClientApps =
             new HashSet<AppClientServerApplication>();
 
+    private URI installRootURI;
+    private URI umbrellaRootURI;
+
     public AppClientDeployer() {
     }
 
@@ -201,6 +219,10 @@ public class AppClientDeployer
         for (Module module : modulesRegistry.getModules(GF_CLIENT_MODULE_NAME)) {
             gfClientModuleClassLoader = module.getClassLoader();
         }
+        installRootURI = serverContext.getInstallRoot().toURI();
+        umbrellaRootURI = new File(installRootURI).getParentFile().toURI();
+
+        startSystemContentAdapter();
     }
 
     @Override
@@ -272,6 +294,50 @@ public class AppClientDeployer
     private String moduleURI(final DeploymentContext dc) {
         ApplicationClientDescriptor acd = dc.getModuleMetaData(ApplicationClientDescriptor.class);
         return acd.getModuleDescriptor().getArchiveUri();
+    }
+
+    private void startSystemContentAdapter() {
+
+        final Map<String,StaticContent> systemContent = new HashMap<String,StaticContent>();
+
+        try {
+            File gfClientJAR = new File(
+                    new File(installRootURI.getRawPath(), "modules"),
+                    "gf-client.jar");
+
+            final String classPathExpr = getGFClientModuleClassPath(gfClientJAR);
+            final URI gfClientJARURI = gfClientJAR.toURI();
+
+            systemContent.put(systemPath(gfClientJARURI), new FixedContent(new File(gfClientJARURI)));
+            for (String classPathElement : classPathExpr.split(" ")) {
+                final URI uri = gfClientJARURI.resolve(classPathElement);
+                systemContent.put(systemPath(uri), new FixedContent(new File(uri)));
+            }
+
+            RestrictedContentAdapter systemAdapter = new RestrictedContentAdapter(systemContent);
+            requestDispatcher.registerEndpoint(JWSAPPCLIENT_SYSTEM_PREFIX,
+                    systemAdapter, null);
+
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Registered system content adapter serving " + systemAdapter);
+            }
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "enterprise.deployment.appclient.jws.errStartSystemAdapter", e);
+        }
+    }
+
+    private String systemPath(final URI systemFileURI) {
+        return JWSAPPCLIENT_SYSTEM_PREFIX + "/" + 
+                umbrellaRootURI.relativize(systemFileURI).getPath();
+    }
+
+
+    private String getGFClientModuleClassPath(final File gfClientJAR) throws IOException {
+        final JarFile jf = new JarFile(gfClientJAR);
+        final Manifest mf = jf.getManifest();
+        Attributes mainAttrs = mf.getMainAttributes();
+        return mainAttrs.getValue(Attributes.Name.CLASS_PATH);
     }
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {

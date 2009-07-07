@@ -39,75 +39,42 @@
 
 package org.glassfish.appclient.server.core.jws;
 
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.MimeType;
 import com.sun.logging.LogDomains;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 
 /**
  * GrizzlyAdapter for serving static and dynamic content.
  *
  * @author tjquinn
  */
-public class AppClientHTTPAdapter extends GrizzlyAdapter {
+public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     private final static String LAST_MODIFIED_HEADER_NAME = "Last-Modified";
     private final static String DATE_HEADER_NAME = "Date";
 
-    private enum State {
-        RESUMED,
-        SUSPENDED
-    }
-
-    private volatile State state = State.RESUMED;
-
     private Logger jwsLogger = LogDomains.getLogger(getClass(),
             LogDomains.ACC_LOGGER);
 
-    private final Map<String,File> staticContent;
     private final Map<String,DynamicContent> dynamicContent;
     private final Properties tokens;
 
     public AppClientHTTPAdapter(
-            final Map<String,File> staticContent,
+            final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent,
-            final Properties tokens) {
-        this.staticContent = staticContent;
+            final Properties tokens) throws IOException {
+        super(staticContent);
         this.dynamicContent = dynamicContent;
         this.tokens = tokens;
-
-        /*
-         * Preload the adapter's cache with the static content.  This helps
-         * performance but is essential to the operation of the adapter.
-         * Normally the Grizzly logic will qualify the URI in the request
-         * with the root folder of the adapter.  But the files this
-         * adapter needs to serve can come from a variety of places that
-         * might not share any common parent directory for the root folder.
-         * Preloading the cache with the known static content lets the Grizzly
-         * logic serve the files we want, from whereever they are.
-         */
-        cache.putAll(staticContent);
-
-        /*
-         * Turn off the default static resource handling.  We do our own from
-         * our service method, rather than letting the StaticResourcesAdapter
-         * have a try at each request first.
-         */
-        setHandleStaticResources(false);
-
-        setUseSendFile(true);
-        commitErrorResponse = true;
     }
 
     /**
@@ -119,46 +86,13 @@ public class AppClientHTTPAdapter extends GrizzlyAdapter {
      */
     @Override
     public void service(GrizzlyRequest gReq, GrizzlyResponse gResp) {
-        /*
-         * "Forbidden" seems like a more helpful response than "not found"
-         * if the corresponding app client has been suspended.
-         */
-        if (state == State.SUSPENDED) {
-            gResp.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        String uriString = gReq.getRequestURI();
-        /*
-         * The Grizzly-managed cache could contain entries for non-existent
-         * files that users request.  If the URI indicates it's a request for
-         * static content make sure the requested URI is in the predefined staticContent
-         * before having Grizzly serve it.
-         *
-         * Alternatively, if the URI indicates the request is for dynamic content
-         * then handle that separately.
-         *
-         * If the request is for a URI in neither the static nor dynamic
-         * content this adapter should serve, then just return a 404.
-         */
-        if (staticContent.containsKey(uriString)) {
-            processStaticContent(uriString, gReq, gResp);
-        } else if (dynamicContent.containsKey(uriString)) {
-            processDynamicContent(tokens, uriString, gReq, gResp);
-        } else {
-            gResp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-    }
-
-    private void processStaticContent(final String uriString,
-            final GrizzlyRequest gReq, final GrizzlyResponse gResp) {
-        try {
-            super.service(uriString, gReq.getRequest(), gResp.getResponse());
-            return;
-        } catch (Exception e) {
-            gResp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            gResp.getResponse().setErrorException(e);
-            return;
+        if ( ! serviceContent(gReq, gResp) ) {
+            final String uriString = gReq.getRequestURI();
+            if (dynamicContent.containsKey(uriString)) {
+                processDynamicContent(tokens, uriString, gReq, gResp);
+            } else {
+                respondNotFound(gResp);
+            }
         }
     }
 
@@ -193,14 +127,6 @@ public class AppClientHTTPAdapter extends GrizzlyAdapter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void suspend() {
-        state = State.SUSPENDED;
-    }
-
-    public void resume() {
-        state = State.RESUMED;
     }
 
     /**

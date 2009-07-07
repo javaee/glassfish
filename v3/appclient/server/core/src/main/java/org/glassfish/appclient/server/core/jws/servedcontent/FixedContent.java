@@ -58,4 +58,11 @@ public class FixedContent implements StaticContent {
     public File file() {
         return file;
     }
+
+    @Override
+    public String toString() {
+        return file.toString();
+    }
+
+
 }

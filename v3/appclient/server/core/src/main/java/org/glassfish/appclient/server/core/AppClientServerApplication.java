@@ -40,6 +40,7 @@
 package org.glassfish.appclient.server.core;
 
 import com.sun.enterprise.deployment.Application;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import org.glassfish.api.admin.config.Property;
@@ -62,6 +63,8 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
@@ -72,7 +75,11 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  * <p>
  * The primary purpose of this class is to implement Java Web Start support for
  * launches of this app client.  Other than in that sense, app clients do not
- * run in the server.
+ * run in the server.  To support a client for Java Web Start launches, this
+ * class figures out what static content (JAR files) and dynamic content (JNLP
+ * documents) are needed by the client.  It then generates the required
+ * dynamic content templates and submits them and the static content to a
+ * Grizzly adapter which actually serves the data in response to requests.
  *
  * @author tjquinn
  */
@@ -157,7 +164,7 @@ public class AppClientServerApplication implements
                 public void run() {
                     try {
                         startJWSServices();
-                    } catch (EndpointRegistrationException ex) {
+                    } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
                 }
@@ -211,7 +218,7 @@ public class AppClientServerApplication implements
         return new URLClassLoader(new URL[0]);
     }
 
-    private void startJWSServices() throws EndpointRegistrationException {
+    private void startJWSServices() throws EndpointRegistrationException, IOException {
         if (clientAdapter == null) {
             clientAdapter = initAdapter();
         }
@@ -238,13 +245,14 @@ public class AppClientServerApplication implements
         }
     }
 
-    private AppClientHTTPAdapter initAdapter() {
-        final Map<String,File> staticContent = new HashMap<String,File>();
+    private AppClientHTTPAdapter initAdapter() throws IOException {
+        final Map<String,StaticContent> staticContent = new HashMap<String,StaticContent>();
         /*
          * The following code is a temporary test hack which provides a
          * single static file and a single dynamic content instance
          */
-        staticContent.put(clientContextRoot() + "/VirtualFile", new File("/Users/Tim/asgroup/sampleOutput.html"));
+        staticContent.put(clientContextRoot() + "/VirtualFile", 
+                new FixedContent(new File("/Users/Tim/asgroup/sampleOutput.html")));
 
         final Map<String,AppClientHTTPAdapter.DynamicContent> dynamicContent =
                 new HashMap<String,AppClientHTTPAdapter.DynamicContent>();
