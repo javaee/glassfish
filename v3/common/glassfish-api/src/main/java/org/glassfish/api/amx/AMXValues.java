@@ -173,7 +173,7 @@ public final class AMXValues
     /** The JMX domain in which all AMX MBeans are located. */
     public static String amxJMXDomain()
     {
-        return "v3";
+        return "amx";
     }
 
     /** name of the Domain Admin Server (DAS) as found in an ObjectName */
