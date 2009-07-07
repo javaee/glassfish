@@ -48,7 +48,7 @@
             <param name="operand.props" value="httpServletFormTestAuthModule"/>
         </antcall>
 
-        <antcall target="reconfig-common"/>
+       <!-- <antcall target="reconfig-common"/>-->
 
         <!-- may not be able to delete this file in PC environment -->
         <delete file="${env.S1AS_HOME}/lib/test-${appname}-provider.jar" failonerror="false"/>

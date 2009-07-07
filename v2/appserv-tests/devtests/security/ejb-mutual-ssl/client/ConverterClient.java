@@ -54,7 +54,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class ConverterClient {
 
-    private SimpleReporterAdapter stat = 
+    private static SimpleReporterAdapter stat = 
             new SimpleReporterAdapter("appserv-tests");
 
     ConverterClient() {

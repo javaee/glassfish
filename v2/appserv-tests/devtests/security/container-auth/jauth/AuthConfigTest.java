@@ -1,9 +1,11 @@
 import com.sun.enterprise.security.jauth.*;
 
 import javax.security.auth.Subject;
+import javax.security.auth.message.config.ServerAuthContext;
+import javax.security.auth.message.config.ClientAuthContext;;
+import com.sun.enterprise.security.jauth.AuthConfig;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.AppConfigurationEntry;
-import com.sun.enterprise.Switch;
 import java.util.*;
 import java.lang.reflect.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;

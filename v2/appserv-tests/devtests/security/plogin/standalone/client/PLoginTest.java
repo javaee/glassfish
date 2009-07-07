@@ -1,5 +1,4 @@
 import com.sun.appserv.security.ProgrammaticLogin;
-import com.sun.enterprise.server.ApplicationServer;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 

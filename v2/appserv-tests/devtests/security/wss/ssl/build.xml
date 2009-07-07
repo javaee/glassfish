@@ -40,9 +40,10 @@
     <target name="compile-client" depends="prepare-truststore-common, init-security-util">
         <mkdir dir="${build.classes.dir}/client"/> 
         <antcall target="wsimport">
+                <!--value="-keep -d ${build.classes.dir}/client https://${s1asCN}:${https.port}/WssSslEjbService/HelloEjb?WSDL"/>-->
             <param name="wsimport.VMARGS" value=" -Djavax.net.ssl.trustStore=${build.base.dir}/cacerts.jks -Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
             <param name="wsimport.args"
-                value="-keep -d ${build.classes.dir}/client https://${s1asCN}:${https.port}/WssSslEjbService/HelloEjb?WSDL"/>
+                value="-keep -d ${build.classes.dir}/client https://localhost:${https.port}/WssSslEjbService/HelloEjb?WSDL"/>
         </antcall>
         <antcall target="wsimport">
             <param name="wsimport.VMARGS" value=" -Djavax.net.ssl.trustStore=${build.base.dir}/cacerts.jks -Djavax.net.ssl.trustStorePassword=${ssl.password}"/>

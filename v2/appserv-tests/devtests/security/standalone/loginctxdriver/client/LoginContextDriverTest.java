@@ -8,8 +8,8 @@ import javax.ejb.EJBObject;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
-import com.sun.enterprise.appclient.AppContainer;
-import com.sun.enterprise.security.auth.LoginContextDriver;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.common.SecurityConstants;
 
 /**
  * This test is for BACKWARD COMPATIBILITY ONLY
@@ -38,7 +38,7 @@ public class LoginContextDriverTest {
             // Use the default callback handler for login - using textauth (false)
             LoginCallbackHandler handler = new LoginCallbackHandler(false);
             LoginContextDriver.doClientLogin(
-                AppContainer.USERNAME_PASSWORD, handler);
+                SecurityConstants.USERNAME_PASSWORD, handler);
 
             // Initialize the Context
             ic = new InitialContext();

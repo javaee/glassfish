@@ -56,7 +56,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class ConverterClient {
 
-    private SimpleReporterAdapter stat =
+    private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
 
     ConverterClient() {
@@ -77,7 +77,7 @@ public class ConverterClient {
     private void run(String[] args) {
         String url = null;
 	String testIdPrefix = null;
-	String testId = null;
+	String testId = "";
         String jndiName = null;
         Context context = null;
         String ctxFactory = null;
@@ -178,6 +178,7 @@ public class ConverterClient {
             processRequest(home, "800");
             stat.addStatus(testId, stat.PASS);
         } catch (Throwable ex) {
+	    System.err.println("TestID" +testId);
             stat.addStatus(testId, stat.FAIL);
             System.err.println("Caught an unexpected exception!");
             ex.printStackTrace();

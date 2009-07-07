@@ -15,6 +15,8 @@
     &reporting;
     &run;
 
+<property file="build.properties" />
+
     <target name="all">
         <delete>
            <fileset dir="${env.APS_HOME}" includes="test_results*, security-gtest-results.xml"/>

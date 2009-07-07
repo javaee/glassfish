@@ -10,7 +10,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 
-import com.sun.enterprise.util.net.NetUtils;
+//import com.sun.enterprise.util.net.NetUtils;
 
 public class S1ASCN extends Java {
     public S1ASCN() {
@@ -19,7 +19,8 @@ public class S1ASCN extends Java {
     public void execute() throws BuildException {
         String hostName = null;
         try {
-            hostName = NetUtils.getCanonicalHostName();                       
+//            hostName = NetUtils.getCanonicalHostName();                       
+	      hostName = java.net.InetAddress.getLocalHost().getCanonicalHostName();
         } catch (Exception ex) {
             hostName = "localhost";
         }

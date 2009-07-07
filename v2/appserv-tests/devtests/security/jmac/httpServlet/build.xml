@@ -64,7 +64,7 @@
             <param name="operand.props" value="file123"/>
         </antcall>
 
-        <antcall target="reconfig-common"/>
+       <!-- <antcall target="reconfig-common"/>-->
 
         <!--antcall target="restart"/-->
         <!-- may not be able to delete this file in PC environment -->

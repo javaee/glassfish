@@ -23,9 +23,6 @@ import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sun.enterprise.deployment.Group;
-import com.sun.enterprise.deployment.PrincipalImpl;
-import com.sun.enterprise.security.auth.login.PasswordCredential;
 
 import sun.misc.BASE64Decoder;
 

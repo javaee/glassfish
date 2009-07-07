@@ -19,7 +19,7 @@ import java.security.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class RpaClient {
-    private SimpleReporterAdapter stat =
+    private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
 
     public static void main (String[] args) {

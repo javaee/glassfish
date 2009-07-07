@@ -144,7 +144,7 @@
     </target> 
 
     <target name="deploy"
-            depends="init-common, reconfig-common">
+            depends="init-common">
         <antcall target="deploy-common"/>
     </target>
 	 

@@ -31,7 +31,7 @@
       <param name="password" value="bb"/>
       <param name="groups" value="dummygroup"/>
     </antcall>
-    <antcall target="reconfig-common"/>
+  <!--  <antcall target="reconfig-common"/>-->
   </target>
   
   <target name="unsetup" depends="init-common">

@@ -133,7 +133,7 @@
       <param name="groups" value="abc"/>
     </antcall>
     
-    <antcall target="reconfig-common"/>
+  <!--  <antcall target="reconfig-common"/>-->
   </target>
   
   <target name="unsetup" depends="init-common">

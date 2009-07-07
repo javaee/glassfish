@@ -43,7 +43,7 @@
         <mkdir dir="${build.classes.dir}/client/META-INF/wsdl"/>
         <antcall target="wsgen">
             <param name="wsgen.args"
-                value="-wsdl -cp ${build.classes.dir}/ejbws -keep -d ${build.classes.dir}/ejbws com.sun.s1asdev.security.wss.gartner.PingEjb"/>
+                value="-wsdl -cp ${build.classes.dir}/ejbws:${s1astest.classpath}/modules/javax.ejb.jar -keep -d ${build.classes.dir}/ejbws com.sun.s1asdev.security.wss.gartner.PingEjb"/>
         </antcall>
 
         <antcall target="wsgen">
@@ -57,16 +57,18 @@
 
         <copy file="${basedir}/custom-client.xml" todir="${build.classes.dir}/client" overwrite="true"/>
         <replace file="${build.classes.dir}/client/custom-client.xml" token="@build.classes.dir@" value="${build.classes.dir}/ejbws"/>
+                <!--<value="-b ${build.classes.dir}/client/custom-client.xml -keep -wsdllocation META-INF/wsdl/PingEjbService.wsdl -d ${build.classes.dir}/client ${build.classes.dir}/ejbws/PingEjbService.wsdl"/>-->
         <antcall target="wsimport">
             <param name="wsimport.args"
-                value="-b ${build.classes.dir}/client/custom-client.xml -keep -wsdllocation META-INF/wsdl/PingEjbService.wsdl -d ${build.classes.dir}/client ${build.classes.dir}/ejbws/PingEjbService.wsdl"/>
+                value="-keep  -p com.sun.s1asdev.security.wss.gartner.client -d ${build.classes.dir}/client ${build.classes.dir}/ejbws/PingEjbService.wsdl"/>
         </antcall>
 
         <copy file="${basedir}/custom-client2.xml" todir="${build.classes.dir}/client" overwrite="true"/>
         <replace file="${build.classes.dir}/client/custom-client2.xml" token="@build.classes.dir@" value="${build.classes.dir}/servletws/WEB-INF/classes"/>
+                <!--value="-b ${build.classes.dir}/client/custom-client2.xml -keep -wsdllocation META-INF/wsdl/PingServletService.wsdl -d ${build.classes.dir}/client ${build.classes.dir}/servletws/WEB-INF/classes/PingServletService.wsdl"/>-->
         <antcall target="wsimport">
             <param name="wsimport.args"
-                value="-b ${build.classes.dir}/client/custom-client2.xml -keep -wsdllocation META-INF/wsdl/PingServletService.wsdl -d ${build.classes.dir}/client ${build.classes.dir}/servletws/WEB-INF/classes/PingServletService.wsdl"/>
+                value=" -keep  -p com.sun.s1asdev.security.wss.gartner.client -d ${build.classes.dir}/client ${build.classes.dir}/servletws/WEB-INF/classes/PingServletService.wsdl"/>
         </antcall>
 
         <javac srcdir="client" destdir="${build.classes.dir}/client"

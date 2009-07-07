@@ -41,7 +41,7 @@
             <param name="file.realm.name" value="file2"/>
             <param name="keyfile.path" value="${admin.domain.dir}/${admin.domain}/config/keyfile2"/>
         </antcall>
-        <antcall target="reconfig-common"/>
+        <!--<antcall target="reconfig-common"/>-->
 
         <antcall target="create-user-common">
             <param name="user" value="shingwai"/>

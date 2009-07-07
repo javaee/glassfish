@@ -34,7 +34,7 @@
             <param name="realmclass" value="com.sun.enterprise.security.auth.realm.file.FileRealm"/>
             <param name="realmproperties" value="--property file=${file}:jaas-context=fileRealm:assign-groups=agroup"/>
         </antcall>
-        <antcall target="reconfig-common"/>
+       <!-- <antcall target="reconfig-common"/>-->
 
         <antcall target="create-user-common">
             <param name="user" value="javaee"/>

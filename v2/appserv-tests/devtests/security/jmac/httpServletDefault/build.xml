@@ -33,16 +33,16 @@
         <copy file="${assemble.dir}/test-${appname}-provider.jar"
             todir="${env.S1AS_HOME}/lib"/>
 
-        <antcall target="asadmin-common">
+      <!--  <antcall target="asadmin-common">
             <param name="admin.command" value="create-message-security-provider"/>
-            <param name="as.props" value="${as.props} --classname com.sun.s1asdev.security.jmac.httpservletdefault.HttpServletDefaultTestAuthModule --layer HttpServlet --providertype server --requestauthsource sender"/>
+            <param name="as.props" value="${as.props} -classname com.sun.s1asdev.security.jmac.httpservletdefault.HttpServletDefaultTestAuthModule -layer HttpServlet -providertype server -requestauthsource sender"/>
             <param name="operand.props" value="httpServletDefaultTestAuthModule"/>
-        </antcall>
+        </antcall>-->
 
-        <antcall target="asadmin-common">
+       <!-- <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${appserver.config.name}.security-service.message-security-config.HttpServlet.default_provider=httpServletDefaultTestAuthModule"/>
-        </antcall>
+        </antcall>-->
 
         <!--antcall target="restart"/-->
     </target>
@@ -52,18 +52,18 @@
             <param name="user" value="shingwai"/>
         </antcall>
 
-        <antcall target="asadmin-common">
+      <!--  <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${appserver.config.name}.security-service.message-security-config.HttpServlet.default_provider="/>
-        </antcall>
+        </antcall>-->
 
-        <antcall target="asadmin-common">
+       <!-- <antcall target="asadmin-common">
             <param name="admin.command" value="delete-message-security-provider"/>
-            <param name="as.props" value="${as.props} --layer HttpServlet"/>
+            <param name="as.props" value="${as.props} -layer HttpServlet"/>
             <param name="operand.props" value="httpServletDefaultTestAuthModule"/>
         </antcall>
 
-        <antcall target="reconfig-common"/>
+        <antcall target="reconfig-common"/>-->
 
         <!--antcall target="restart"/-->
         <!-- may not be able to delete this file in PC environment -->

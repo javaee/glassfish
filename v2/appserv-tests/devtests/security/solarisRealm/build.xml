@@ -41,7 +41,7 @@
             <param name="admin.command" value="create-auth-realm" />
             <param name="operand.props" value="--classname com.sun.enterprise.security.auth.realm.solaris.SolarisRealm --property jaas-context=solarisRealm solaris"/>
         </antcall>
-        <antcall target="reconfig-common"/>
+       <!-- <antcall target="reconfig-common"/>-->
     </target>
 
     <target name="deploy" depends="init-common">
@@ -67,7 +67,7 @@
             <param name="admin.command" value="delete-auth-realm" />
             <param name="operand.props" value="solaris" />
         </antcall>
-        <antcall target="reconfig-common"/>
+      <!--  <antcall target="reconfig-common"/>-->
     </target>
 
     <target name="usage">

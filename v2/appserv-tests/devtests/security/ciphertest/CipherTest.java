@@ -199,7 +199,7 @@ public class CipherTest {
     }
 
 
-    private SimpleReporterAdapter stat = 
+    private static SimpleReporterAdapter stat = 
             new SimpleReporterAdapter("appserv-tests");
 
     private int startCipher = -1;

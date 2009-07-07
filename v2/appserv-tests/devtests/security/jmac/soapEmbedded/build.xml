@@ -99,7 +99,7 @@
             <replacefilter token="@PORT@" value="${http.port}"/>
         </replace>
         <javac srcdir="webclient" destdir="${build.classes.dir}/webclient"
-            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar:${build.classes.dir}/webclient" debug="on" failonerror="true"/>
+            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar:${build.classes.dir}/webclient:${env.S1AS_HOME}/modules/javax.servlet.jar" debug="on" failonerror="true"/>
     </target>
 
     <target name="build-server" depends="compile-server">
