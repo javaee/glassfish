@@ -35,27 +35,39 @@
  */
 package org.glassfish.appclient.server.core;
 
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.module.Module;
+import java.io.IOException;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.logging.Logger;
+import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DummyApplication;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvent;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * AppClient module deployer.
@@ -63,7 +75,9 @@ import org.jvnet.hk2.component.PostConstruct;
  * Prepares JARs for download to the admin client and tracks which JARs should
  * be downloaded for each application.  (Downloads occur during
  * <code>deploy --retrieve</code> or <code>get-client-stubs</code> command
- * processing, or during Java Web Start launches of app clients.
+ * processing, or during Java Web Start launches of app clients.  Also creates
+ * AppClientServerApplication instances for each client to provide Java Web Start
+ * support.
  * <p>
  * Main responsibilities:
  * <ul>
@@ -118,11 +132,12 @@ import org.jvnet.hk2.component.PostConstruct;
  * 
  */
 @Service
+@Scoped(Singleton.class)
 public class AppClientDeployer
-        extends JavaEEDeployer<AppClientContainerStarter, DummyApplication>
-        implements PostConstruct {
+        extends JavaEEDeployer<AppClientContainerStarter, AppClientServerApplication>
+        implements PostConstruct, ConfigListener {
 
-    private static Logger logger = LogDomains.getLogger(AppClientDeployer.class, LogDomains.ACC_LOGGER);
+    private Logger logger;
 
     public static final String APPCLIENT_FACADE_CLASS_FILE = "org/glassfish/appclient/client/AppClientFacade.class";
     public static final String APPCLIENT_COMMAND_CLASS_NAME = "org.glassfish.appclient.client.AppClientFacade";
@@ -135,34 +150,44 @@ public class AppClientDeployer
     public static final Attributes.Name SPLASH_SCREEN_IMAGE =
             new Attributes.Name("SplashScreen-Image");
 
-
-    private static final String GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS_NAME =
-            "org.glassfish.appclient.client.AppClientGroupFacade";
-
-    private static final Attributes.Name GLASSFISH_APPCLIENT_GROUP = new Attributes.Name("GlassFish-AppClient-Group");
-
-    private static final String GENERATED_JAR_SUFFIX = "Client";
-    
     private static final String GF_CLIENT_MODULE_NAME = "org.glassfish.appclient.gf-client-module";
+
+    /** Save the helper across phases in the deployment context's appProps */
+    public static final String HELPER_KEY_NAME = "org.glassfish.appclient.server.core.helper";
 
     @Inject
     protected ServerContext sc;
+
     @Inject
     protected Domain domain;
-    @Inject
-    protected Habitat habitat;
+
     @Inject
     private DownloadableArtifacts downloadInfo;
 
     @Inject
-    private AppClientArchivist archivist;
-
-    @Inject
     private ModulesRegistry modulesRegistry;
 
-    private AppClientDeployerHelper helper = null;
+    @Inject
+    private Applications applications;
 
+    @Inject
+    private RequestDispatcher requestDispatcher;
+
+    /** the class loader which knows about the org.glassfish.appclient.gf-client-module */
     private ClassLoader gfClientModuleClassLoader;
+
+    /*
+     * Each app client server application will listen for config change
+     * events - for creation, deletion, or change of java-web-start-enabled
+     * property settings.  Because they are not handled as services hk2 will
+     * not automatically register them for notification.  This deployer, though,
+     * is a service and so by implementing ConfigListener is registered
+     * by hk2 automatically for config changes.  The following Set collects
+     * all app client server applications so the deployer can forward
+     * notifications to each app client server app.
+     */
+    final private Set<AppClientServerApplication> appClientApps =
+            new HashSet<AppClientServerApplication>();
 
     public AppClientDeployer() {
     }
@@ -172,11 +197,11 @@ public class AppClientDeployer
     }
 
     public void postConstruct() {
+        logger = LogDomains.getLogger(AppClientDeployer.class, LogDomains.ACC_LOGGER);
         for (Module module : modulesRegistry.getModules(GF_CLIENT_MODULE_NAME)) {
             gfClientModuleClassLoader = module.getClassLoader();
         }
     }
-
 
     @Override
     public MetaData getMetaData() {
@@ -184,11 +209,17 @@ public class AppClientDeployer
     }
 
     @Override
-    public DummyApplication load(AppClientContainerStarter containerStarter, DeploymentContext dc) {
-        return new DummyApplication();
+    public AppClientServerApplication load(AppClientContainerStarter containerStarter, DeploymentContext dc) {
+        AppClientDeployerHelper helper = savedHelper(dc);
+        final AppClientServerApplication newACServerApp =
+                new AppClientServerApplication(dc, this, helper,
+                requestDispatcher, applications, logger);
+        appClientApps.add(newACServerApp);
+        return newACServerApp;
     }
 
-    public void unload(DummyApplication application, DeploymentContext dc) {
+    public void unload(AppClientServerApplication application, DeploymentContext dc) {
+        appClientApps.remove(application);
     }
 
     /**
@@ -209,15 +240,54 @@ public class AppClientDeployer
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         try {
-            helper = AppClientDeployerHelper.newInstance(dc, archivist, gfClientModuleClassLoader);
+            final AppClientArchivist archivist = habitat.getComponent(AppClientArchivist.class);
+            AppClientDeployerHelper helper = createAndSaveHelper(
+                    dc, archivist, gfClientModuleClassLoader);
             helper.prepareJARs();
             downloadInfo.addArtifacts(params.name(), helper.downloads());
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
     }
+    
+    private AppClientDeployerHelper createAndSaveHelper(final DeploymentContext dc,
+            final AppClientArchivist archivist, final ClassLoader clientModuleLoader) throws IOException {
+        final AppClientDeployerHelper h =
+            AppClientDeployerHelper.newInstance(dc, archivist, clientModuleLoader);
+        dc.addTransientAppMetaData(HELPER_KEY_NAME + moduleURI(dc), h.proxy());
+        return h;
+    }
 
-    AppClientDeployerHelper helper() {
-        return helper;
+    private AppClientDeployerHelper savedHelper(final DeploymentContext dc) {
+        final String key = HELPER_KEY_NAME + moduleURI(dc);
+        AppClientDeployerHelper h = dc.getTransientAppMetaData(key,
+                AppClientDeployerHelper.Proxy.class).helper();
+        if (h == null) {
+            h = dc.getTransientAppMetaData(key,
+                    StandaloneAppClientDeployerHelper.class);
+        }
+        return h;
+    }
+
+    private String moduleURI(final DeploymentContext dc) {
+        ApplicationClientDescriptor acd = dc.getModuleMetaData(ApplicationClientDescriptor.class);
+        return acd.getModuleDescriptor().getArchiveUri();
+    }
+
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        /* Record any events we tried to process but could not. */
+        List<UnprocessedChangeEvent> unprocessedEvents =
+                new ArrayList<UnprocessedChangeEvent>();
+//        System.out.println("****** AppClientDeployer.changed invoked");
+        for (ConfigListener listener : appClientApps) {
+//            System.out.println("******      changed invoking listener " + listener.toString());
+            final UnprocessedChangeEvents unprocessedEventsFromOneListener =
+                    listener.changed(events);
+            if (unprocessedEventsFromOneListener != null) {
+                unprocessedEvents.addAll(unprocessedEventsFromOneListener.getUnprocessed());
+            }
+        }
+
+        return (unprocessedEvents.size() > 0) ? new UnprocessedChangeEvents(unprocessedEvents) : null;
     }
 }

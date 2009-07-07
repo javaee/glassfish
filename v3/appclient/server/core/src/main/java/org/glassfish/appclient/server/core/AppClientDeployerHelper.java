@@ -40,14 +40,10 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.universal.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -78,8 +74,6 @@ abstract class AppClientDeployerHelper {
 
     private final DeploymentContext dc;
     private final ApplicationClientDescriptor appClientDesc;
-    private final URI facadeDirURI;
-//    private final String renamedOriginalJarFileName;
     protected final AppClientArchivist archivist;
 
     private final ClassLoader gfClientModuleClassLoader;
@@ -111,7 +105,6 @@ abstract class AppClientDeployerHelper {
         this.appClientDesc = bundleDesc;
         this.archivist = archivist;
         this.gfClientModuleClassLoader = gfClientModuleClassLoader;
-        this.facadeDirURI = facadeServerURI(dc);
     }
 
     /**
@@ -225,30 +218,6 @@ abstract class AppClientDeployerHelper {
         int lastDot = uriText.lastIndexOf('.');
         return URI.create(uriText.substring(0, lastDot) + "_" + uriText.substring(lastDot + 1));
     }
-
-//    protected String renamedOriginalJarFileName() {
-//        return renamedOriginalJarFileName;
-//    }
-
-//    protected String chooseNameForRenamedOriginalJar(final DeploymentContext dc) throws IOException {
-//        ModuleDescriptor modDesc = appClientDesc.getModuleDescriptor();
-//        String moduleURI = modDesc.getArchiveUri();
-//        return renameModUri(moduleURI, dc.getSource().getParentArchive());
-//    }
-
-//    private static String renameModUri(String jarName, ReadableArchive parent) throws IOException {
-//        String ext = ".jar";
-//        String suffix = ".orig";
-//        String nameNoExt = jarName.substring(0, jarName.length() - 4); //".jar" length
-//        String newName = nameNoExt + suffix + ext;
-//        if (parent != null) {
-//            for (int i = 1; parent.exists(newName); i++) {
-//                newName = nameNoExt + suffix + "-" + i + ext;
-//            }
-//        }
-//        return newName;
-//    }
-
 
     /**
      * Creates a generated manifest for either the facade (for app client or
@@ -377,6 +346,31 @@ abstract class AppClientDeployerHelper {
         int len;
         while ((len = in.read(buf)) >= 0) {
             out.write(buf, 0, len);
+        }
+    }
+
+    Proxy proxy() {
+        return new Proxy(this);
+    }
+    
+    /**
+     * Wrapper around AppClientDeployer for storage in the deployment context's
+     * meta data.
+     * <p>
+     * Storage and retrieval of meta data is type-based.  We cannot retrieve
+     * stored AppClientDeployerHelper by type alone because the actual instance
+     * is one of the concrete subclasses.  So this wrapper provides a way to
+     * store a single type in the meta data so we can retrieve it.
+     */
+    public static class Proxy {
+        private final AppClientDeployerHelper helper;
+
+        public Proxy(final AppClientDeployerHelper helper) {
+            this.helper = helper;
+        }
+
+        public AppClientDeployerHelper helper() {
+            return helper;
         }
     }
 }
