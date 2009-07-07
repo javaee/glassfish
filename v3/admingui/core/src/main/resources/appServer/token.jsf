@@ -1,8 +1,8 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- 
+
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
+
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -33,51 +33,44 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!-- appServer/token.jsf -->
+<!initPage 
+    setResourceBundle(key="i18n" bundle="org.glassfish.web.admingui.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks");
+/>
 
-<!-- appServer/serverInstAppsConfig.jsf -->
-
-
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.appServer.tokenTitle}" >
 <!define name="content">
-    <event>
+<event>
     <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        setPageSessionAttribute(key="instanceName" value="server");       # we can hard code it here because this page is only for DAS
-        setSessionAttribute(key="serverInstTabs" value="appConfig");
+        setSessionAttribute(key="serverInstTabs" value="token");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/admin-service,type=das-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config],type=admin-service");
-        setPageSessionAttribute(key="childType" value="das-config");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"DynamicReloadEnabled" "AutodeployEnabled" "AutodeployVerifierEnabled" "AutodeployJspPrecompilationEnabled"});
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstAppsConfig.jsf");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/servers,type=server,name=server");
+        setPageSessionAttribute(key="childType" value="system-property");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/token.jsf");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
-        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-        
-        
-        />
+        setPageSessionAttribute(key="systemProp" value="#{true}" );
+    />
     </event>
-#include "/shared/restart.inc"
-            <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
-#include "serverInstTabs.inc"
+
+#include "/shared/restart.inc"    
+            <sun:form id="form1">
+#include "/appServer/serverInstTabs.inc"
 #include "/shared/alertMsg.inc"
-   <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18n.server.AppsConfigPageTitle}" 
-        helpText="$resource{i18n.server.AppsConfigPageHelp}" >
+<sun:title id="propertyContentPage" title="$resource{i18n.appServer.tokenTitle}" helpText="$resource{i18n.appServer.tokenTitleHelp}">
 #include "/shared/editPageButtons.inc"
-    </sun:title>
-    
-    "<br><br>
-#include "/shared/appConfig_2.inc"
+</sun:title>
+"<br/><br/>
 #include "/shared/propertyDescTable.inc"
-#include "/shared/editPageBottomButtons.inc"
-	<sun:hidden id="helpKey" value="$resource{help.serverInstAppsConfig}" />
-            </sun:form>
-</define>
+    	<sun:hidden id="helpKey" value="$resource{help.appServerToken}" />
+</sun:form>
+            "<br/>
+#include "/shared/changeButtonsJS.inc" 
+    </define>
 </composition>

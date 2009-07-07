@@ -53,7 +53,7 @@
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
     #include "/shared/treeBreadcrumbs.inc"
-#include "serverInstTabs.inc"
+#include "/appServer/serverInstTabs.inc"
           
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" >
