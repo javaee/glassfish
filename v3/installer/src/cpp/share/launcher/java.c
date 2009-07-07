@@ -562,7 +562,7 @@ main(int argc, char **argv)
 
     /* Setup INSTALL_RESOURCE */
    s = (char *)MemAlloc(strlen(INSTALL_RESOURCE_OPTION) + strlen(workdir) + 19 + 1);
-    sprintf(s, INSTALL_RESOURCE_OPTION "%s" FILE_SEPARATOR "install" FILE_SEPARATOR "metadata",workdir);
+    sprintf(s, INSTALL_RESOURCE_OPTION "%s" FILE_SEPARATOR "metadata",workdir);
     AddOption(s);
     s = NULL;
 
