@@ -90,7 +90,8 @@
 	<module>glassfish-jms</module>
 	<module>glassfish-ejb</module>
 	<module>glassfish-cmp</module>
-	<module>metro</module>	
+	<module>metro</module>
+        <module>glassfish-verifier</module>	
 	<module>glassfish-appclient</module>
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
