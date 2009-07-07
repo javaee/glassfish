@@ -44,6 +44,14 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbEntityDescriptor;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.jvnet.hk2.annotations.Service;
@@ -63,7 +71,10 @@ import java.util.ArrayList;
 public class ListSubComponentsCommand implements AdminCommand {
 
     @Param(primary=true)
-    private String appName = null;
+    private String modulename = null;
+
+    @Param(optional=true)
+    private String appname = null;
 
     @Inject
     public ApplicationRegistry appRegistry;
@@ -79,34 +90,56 @@ public class ListSubComponentsCommand implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
 
-        if (!deployment.isRegistered(appName)) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
+        String applicationName = modulename; 
+        if (appname != null) {
+            applicationName = appname;
+        }
+
+        if (!deployment.isRegistered(applicationName)) {
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", applicationName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
 
         }
 
-        Named module = ConfigBeansUtilities.getModule(appName);
+        Named module = ConfigBeansUtilities.getModule(applicationName);
   
         Application application = null;
         if (module instanceof Application) {
             application = (Application) module;
         }
 
-        ApplicationInfo appInfo = appRegistry.get(appName);
+        ApplicationInfo appInfo = appRegistry.get(applicationName);
         com.sun.enterprise.deployment.Application app = appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
 
-        // TODO: we need to make output conform to v2 output
-        // the impl now is only to provide support for JSR88
-         
-        if (Boolean.valueOf(application.getDeployProperties(
-            ).getProperty("isComposite"))) {
-            for (String modInfo : getSubModulesForEar(app)) {
-                ActionReport.MessagePart childPart = part.addChild();
-                childPart.setMessage(modInfo);
+        List<String> subComponents = new ArrayList<String>();    
+
+        if (appname == null) {
+            subComponents = getAppLevelComponents(app);
+        } else {
+           subComponents = getModuleLevelComponents(
+               app.getModuleByUri(modulename));
+        }
+        
+        List<String> subModuleInfos = new ArrayList<String>();    
+        if (!app.isVirtual()) {
+            subModuleInfos = getSubModulesForEar(app);
+        }
+
+        for (int i = 0; i < subComponents.size(); i++) {
+            ActionReport.MessagePart childPart = part.addChild();
+            childPart.setMessage(subComponents.get(i));
+            if (appname == null && !app.isVirtual()) {
+                // we use the property mechanism to provide 
+                // support for JSR88 client
+                if (subModuleInfos.get(i) != null) {
+                    childPart.addProperty("moduleInfo", 
+                        subModuleInfos.get(i));
+                }
             }
         }
 
+        // now this is the normal output for the list-sub-components command
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
@@ -122,5 +155,91 @@ public class ListSubComponentsCommand implements AdminCommand {
              moduleInfoList.add(moduleInfo);
         }
         return moduleInfoList;
+    }
+
+    private List<String> getAppLevelComponents(com.sun.enterprise.deployment.Application application) {
+        List<String> subComponentList = new ArrayList<String>(); 
+        if (application.isVirtual()) {
+            // for standalone module, get servlets or ejbs
+            BundleDescriptor bundleDescriptor = 
+                application.getStandaloneBundleDescriptor();
+            subComponentList = getModuleLevelComponents(bundleDescriptor);
+        } else {
+            // for ear case, get modules
+            for (ModuleDescriptor module : application.getModules()) {
+                StringBuffer sb = new StringBuffer();    
+                sb.append(module.getArchiveUri()); 
+                sb.append(" <"); 
+                sb.append(getModuleType(module));
+                sb.append(">"); 
+                subComponentList.add(sb.toString());    
+            }
+        }
+        return subComponentList;
+    }
+
+    private List<String> getModuleLevelComponents(BundleDescriptor bundle) {
+        List<String> moduleSubComponentList = new ArrayList<String>(); 
+        if (bundle instanceof WebBundleDescriptor) {
+            WebBundleDescriptor wbd = (WebBundleDescriptor)bundle;
+            for (WebComponentDescriptor wcd : 
+                    wbd.getWebComponentDescriptors()) {
+                StringBuffer sb = new StringBuffer();    
+                sb.append(wcd.getCanonicalName()); 
+                sb.append(" <"); 
+                String type = (wcd.isServlet() ? "Servlet" : "JSP");
+                sb.append(type);
+                sb.append(">"); 
+                moduleSubComponentList.add(sb.toString());
+            }
+        } else if (bundle instanceof EjbBundleDescriptor)  {
+            EjbBundleDescriptor ebd = (EjbBundleDescriptor)bundle;
+            for (EjbDescriptor ejbDesc : ebd.getEjbs()) {
+                StringBuffer sb = new StringBuffer();    
+                sb.append(ejbDesc.getName()); 
+                sb.append(" <"); 
+                sb.append(getEjbType(ejbDesc));
+                sb.append(">"); 
+                moduleSubComponentList.add(sb.toString());
+            }
+        }
+
+        return moduleSubComponentList;
+    }
+
+
+    private String getEjbType(EjbDescriptor ejbDesc) {
+        String type = null;
+        if (ejbDesc.getType().equals(EjbSessionDescriptor.TYPE)) {
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor)ejbDesc;
+            if (sessionDesc.isStateful()) {
+                type = "StatefulSessionBean";
+            } else if (sessionDesc.isStateless()) {
+                type = "StatelessSessionBean";
+            } else if (sessionDesc.isSingleton()) {
+                type = "SingletonSessionBean";
+            }
+        } else if (ejbDesc.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
+            type = "MessageDrivenBean";
+        } else if (ejbDesc.getType().equals(EjbEntityDescriptor.TYPE)) {
+            type = "EntityBean";
+        }
+
+        return type;
+    }
+
+    private String getModuleType(ModuleDescriptor modDesc) {
+        String type = null;
+        if (modDesc.getModuleType().equals(XModuleType.EJB)) {
+            type = "EJBModule";
+        } else if (modDesc.getModuleType().equals(XModuleType.WAR)) {
+            type = "WebModule";
+        } else if (modDesc.getModuleType().equals(XModuleType.CAR)) {
+            type = "AppClientModule";
+        } else if (modDesc.getModuleType().equals(XModuleType.CAR)) {
+            type = "ConnectorModule";
+        }
+
+        return type;
     }
 }

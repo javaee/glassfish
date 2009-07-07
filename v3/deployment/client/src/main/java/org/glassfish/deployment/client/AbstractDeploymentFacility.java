@@ -411,7 +411,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         ensureConnected();
         String commandName = LIST_SUB_COMPONENTS_COMMAND;
         Map commandParams = new HashMap();
-        commandParams.put("appName", appName);
+        commandParams.put("modulename", appName);
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
@@ -425,8 +425,10 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                     subIter.hasNext();) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    subModuleInfoList.add(
-                        subStage.getStageStatusMessage());
+                    if (subStage.getProperty("moduleInfo") != null) {
+                        subModuleInfoList.add(
+                            subStage.getProperty("moduleInfo"));
+                    }
                 }
             } else {
                 /*
