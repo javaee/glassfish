@@ -157,6 +157,12 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
+            <artifactId>jersey</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-management</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
