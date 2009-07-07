@@ -421,6 +421,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                             http.setEnableDnsLookup(httpProtocol.getDnsLookupEnabled());
                             http.setForcedResponseType(httpProtocol.getForcedResponseType());
                             http.setDefaultResponseType(httpProtocol.getDefaultResponseType());
+                            http.setEnableDnsLookup(httpProtocol.getDnsLookupEnabled());
                             return null;
                         }
                     }, protocol.getHttp());
