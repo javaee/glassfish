@@ -42,7 +42,6 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.api.amx.AMXValues;
-import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;

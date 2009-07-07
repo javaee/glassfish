@@ -37,9 +37,6 @@ package org.glassfish.admin.amx.impl.util;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
 import org.glassfish.internal.api.Globals;
 
 import org.glassfish.api.Async;

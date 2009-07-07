@@ -38,12 +38,9 @@ package org.glassfish.admin.amx.impl.util;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.admin.amx.util.ExceptionUtil;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.JMException;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 
