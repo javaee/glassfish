@@ -41,6 +41,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+
 import java.util.logging.*;
 
 /**
@@ -67,7 +69,8 @@ public class ConnectionDefinitionUtils {
         TreeMap propertySet= new TreeMap();
         try {
             Method[] methods=
-                Thread.currentThread().getContextClassLoader().loadClass(connectionDefinitionClassName).getMethods();
+                ConnectorRuntime.getRuntime().getConnectorClassLoader().loadClass(
+                        connectionDefinitionClassName).getMethods();
             for (int i= 0; i < methods.length; i++) {
                 //Method starts with "set" and has only one parameter and has
                 // a
@@ -168,7 +171,7 @@ public class ConnectionDefinitionUtils {
         Class connectionDefinitionClass;
         try {
             connectionDefinitionClass=
-                Thread.currentThread().getContextClassLoader().loadClass(connectionDefinitionClassName);
+                ConnectorRuntime.getRuntime().getConnectorClassLoader().loadClass(connectionDefinitionClassName);
             Object obj= connectionDefinitionClass.newInstance();
             for (Iterator iter= s.iterator(); iter.hasNext();) {
                 String property= (String) iter.next();
