@@ -41,20 +41,17 @@ import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 import java.util.Map;
-import java.util.Set;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
 @since GlassFish V3
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
+@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
 public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleton
 {
     /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
@@ -104,7 +101,6 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
      * **/
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
 
-
     /**
     Get properties of JDBC Data Source
     @see #PROPERTY_MAP_KEY
@@ -123,7 +119,6 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     @Description("List of connection definition names for the given resource-adapter")
     public Map<String, Object> getConnectionDefinitionNames(@Param(name = "rarName") String rarName);
 
-
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get the MCF config properties of the connection definition")
     public Map<String, Object> getMCFConfigProps(
@@ -137,7 +132,6 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of resource adapter configuration properties of a resource-adapter")
     public Map<String, Object> getResourceAdapterConfigProps(@Param(name = "rarName") String rarName);
-
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of administered object configuration proeprties")
@@ -160,7 +154,7 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get message listener types of a resource-adapter")
-    public Map<String,Object> getMessageListenerTypes(@Param(name = "rarName") String rarName);
+    public Map<String, Object> getMessageListenerTypes(@Param(name = "rarName") String rarName);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("get message listener config properties for the given message-listener-type of a resource-adapter")
@@ -198,16 +192,16 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Get Jdbc driver implementation class names")
-    public Map<String, Object> getJdbcDriverClassNames(@Param(name = "dbVendor") String dbVendor, 
-            @Param(name="resType") String resType);
+    public Map<String, Object> getJdbcDriverClassNames(@Param(name = "dbVendor") String dbVendor,
+                                                       @Param(name = "resType") String resType);
 
     /**
      * Ping the ConnectionPool and return status.
      * @param poolName
      * @return
      */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Ping Connection Pool and return status")
-    public Map<String,Object> pingJDBCConnectionPool( final String poolName );    
-    
+    public Map<String, Object> pingJDBCConnectionPool(final String poolName);
+
 }

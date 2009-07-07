@@ -40,8 +40,6 @@ import java.util.Map;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.annotation.*;
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 

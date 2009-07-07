@@ -44,88 +44,84 @@ import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
-	Provides information about the capabilities of the running server.
-	Callers should check only for specific capabilities, never whether
-	the server is PE/SE/EE, since the feature assortment could vary with
-	release.
+Provides information about the capabilities of the running server.
+Callers should check only for specific capabilities, never whether
+the server is PE/SE/EE, since the feature assortment could vary with
+release.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
+@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
 public interface SystemInfo extends AMXProxy, Singleton, Utility
 {
-	/**
-		Call supportsFeature() with this value to determine if the server
-		supports clusters.
-	 */
-	public final String	CLUSTERS_FEATURE	= "SupportsClusters";
-	
-	/**
-		Call supportsFeature() with this value to determine if the server
-		supports more than one server.
-	 */
-	public final String	MULTIPLE_SERVERS_FEATURE	= "SupportsMultipleServers";
-	
-	
-	/**
-		Call supportsFeature() with this value to determine if this MBean
-		is running in the Domain Admin Server.
-	 */
-	public final String	RUNNING_IN_DAS_FEATURE		= "RunningInDomainAdminServer";
-	
-    
-	/**
-		Call supportsFeature() with this value to determine if the
-        high availability feature (HADB) is available.
-	 */
-    public final String HADB_CONFIG_FEATURE    = "HighAvailabilityDatabase";
-	
-	
-	/**
-		Query whether a feature is supported.  Features require the use
-		of a key, which may be any of:
-		<ul>
-		<li>#CLUSTERS_FEATURE</li>
-		<li>#MULTIPLE_SERVERS_FEATURE</li>
-		<li>#RUNNING_IN_DAS_FEATURE</li>
-        <li>any dynamically-added feature (see {@link #getFeatureNames}) </li>
-		</ul>
-        
-        Other features might also be added dynamically, see {@link #getFeatureNames}.
-		
-		@param key	the feature name to query
-	 */
-	public boolean	supportsFeature( String key );
-	
-	/**
-		Return all features names.
-		
-		@return Set
-	 */
-    @ManagedAttribute
-	public String[]		getFeatureNames();
-    
-    
+    /**
+    Call supportsFeature() with this value to determine if the server
+    supports clusters.
+     */
+    public final String CLUSTERS_FEATURE = "SupportsClusters";
 
     /**
-        Key for time for server to complete its startup sequence.  The presence of this item
-        in the Map returned by {@link #getPerformanceMillis} indicates that the server has
-        completed its startup sequence. However, some server features might still be initializing
-        asynchronously, or might be lazily loaded.
-        @see #getPerformanceMillis
+    Call supportsFeature() with this value to determine if the server
+    supports more than one server.
      */
-    public static final String  STARTUP_SEQUENCE_MILLIS_KEY    = "StartupMillis";
+    public final String MULTIPLE_SERVERS_FEATURE = "SupportsMultipleServers";
 
     /**
-        Return a Map keyed by an arbitrary String denoting some feature.  The value
-        is the time in milliseconds.  Code should not rely on the keys as they are subject to 
-        changes, additions, or removal at any time, except as otherwise documented.
-        Even documented items should be used only for informational purposes,
-        such as assessing performance.
-        
-         @return Map<String,Long>
+    Call supportsFeature() with this value to determine if this MBean
+    is running in the Domain Admin Server.
+     */
+    public final String RUNNING_IN_DAS_FEATURE = "RunningInDomainAdminServer";
+
+    /**
+    Call supportsFeature() with this value to determine if the
+    high availability feature (HADB) is available.
+     */
+    public final String HADB_CONFIG_FEATURE = "HighAvailabilityDatabase";
+
+    /**
+    Query whether a feature is supported.  Features require the use
+    of a key, which may be any of:
+    <ul>
+    <li>#CLUSTERS_FEATURE</li>
+    <li>#MULTIPLE_SERVERS_FEATURE</li>
+    <li>#RUNNING_IN_DAS_FEATURE</li>
+    <li>any dynamically-added feature (see {@link #getFeatureNames}) </li>
+    </ul>
+
+    Other features might also be added dynamically, see {@link #getFeatureNames}.
+
+    @param key	the feature name to query
+     */
+    public boolean supportsFeature(String key);
+
+    /**
+    Return all features names.
+
+    @return Set
      */
     @ManagedAttribute
-    public Map<String,Long> getPerformanceMillis();
+    public String[] getFeatureNames();
+
+    /**
+    Key for time for server to complete its startup sequence.  The presence of this item
+    in the Map returned by {@link #getPerformanceMillis} indicates that the server has
+    completed its startup sequence. However, some server features might still be initializing
+    asynchronously, or might be lazily loaded.
+    @see #getPerformanceMillis
+     */
+    public static final String STARTUP_SEQUENCE_MILLIS_KEY = "StartupMillis";
+
+    /**
+    Return a Map keyed by an arbitrary String denoting some feature.  The value
+    is the time in milliseconds.  Code should not rely on the keys as they are subject to
+    changes, additions, or removal at any time, except as otherwise documented.
+    Even documented items should be used only for informational purposes,
+    such as assessing performance.
+
+    @return Map<String,Long>
+     */
+    @ManagedAttribute
+    public Map<String, Long> getPerformanceMillis();
+
 }
 
 

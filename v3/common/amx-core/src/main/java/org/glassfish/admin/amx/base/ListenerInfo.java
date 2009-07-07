@@ -38,29 +38,28 @@ package org.glassfish.admin.amx.base;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
-
 /**
-	Provide information about who's listening.
+Provide information about who's listening.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public interface ListenerInfo
 {
-	/**
-		Get the number of listeners which are listening for the
-		specified type of Notification.  If there are anonymous listeners (those
-		that have no filter or a non-standard filter) then this routine will
-		return the value 1.
-		
-		@param notificationType  any Notification type, should usually be one advertised via MBeanInfo
-		@return count of listeners
-	 */
-	public int	getNotificationTypeListenerCount( final String notificationType );
-	
-	
-	/**
-		Get the total number of listeners listening for anything.
-		
-		@return count of listeners
-	 */
-	public int	getListenerCount();
+    /**
+    Get the number of listeners which are listening for the
+    specified type of Notification.  If there are anonymous listeners (those
+    that have no filter or a non-standard filter) then this routine will
+    return the value 1.
+
+    @param notificationType  any Notification type, should usually be one advertised via MBeanInfo
+    @return count of listeners
+     */
+    public int getNotificationTypeListenerCount(final String notificationType);
+
+    /**
+    Get the total number of listeners listening for anything.
+
+    @return count of listeners
+     */
+    public int getListenerCount();
+
 }

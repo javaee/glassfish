@@ -50,66 +50,73 @@ import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import com.sun.logging.LogDomains;
 import org.glassfish.server.ServerEnvironmentImpl;
 
-public final class ImplUtil 
+public final class ImplUtil
 {
-    private static void debug( final String s ) { System.out.println(s); }
-    
-    public static Logger getLogger() { return LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER); }
-    
+    private static void debug(final String s)
+    {
+        System.out.println(s);
+    }
+
+    public static Logger getLogger()
+    {
+        return LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
+    }
+
     /**
-        Unload this AMX MBean and all its children.
-        MBean should be unloaded at the leafs first, working back to DomainRoot so as to
-        not violate the rule that a Container must always be present for a Containee.
+    Unload this AMX MBean and all its children.
+    MBean should be unloaded at the leafs first, working back to DomainRoot so as to
+    not violate the rule that a Container must always be present for a Containee.
      */
-        public static void
-    unregisterAMXMBeans( final AMXProxy top )
-    {                
-        if ( top == null) throw new IllegalArgumentException();
-        
+    public static void unregisterAMXMBeans(final AMXProxy top)
+    {
+        if (top == null)
+        {
+            throw new IllegalArgumentException();
+        }
+
         //debug( "ImplUtil.unregisterOneMBean: unregistering hierarchy under: " + top.objectName() );
 
-        final MBeanServer mbeanServer = (MBeanServer)top.extra().mbeanServerConnection();
-        
+        final MBeanServer mbeanServer = (MBeanServer) top.extra().mbeanServerConnection();
+
         final Set<AMXProxy> children = top.extra().childrenSet();
-        if ( children != null )
+        if (children != null)
         {
             // unregister all Containees first
-            for( final AMXProxy amx : children )
+            for (final AMXProxy amx : children)
             {
-                unregisterAMXMBeans( amx );
+                unregisterAMXMBeans(amx);
             }
         }
-        
-        unregisterOneMBean( mbeanServer, Util.getObjectName(top) );
+
+        unregisterOneMBean(mbeanServer, Util.getObjectName(top));
     }
-    
+
     /** see javadoc for unregisterAMXMBeans(AMX) */
-        public static void
-    unregisterAMXMBeans( final MBeanServer mbs, final ObjectName objectName )
+    public static void unregisterAMXMBeans(final MBeanServer mbs, final ObjectName objectName)
     {
-        unregisterAMXMBeans( ProxyFactory.getInstance(mbs).getProxy(objectName, AMXProxy.class) );
+        unregisterAMXMBeans(ProxyFactory.getInstance(mbs).getProxy(objectName, AMXProxy.class));
     }
-    
+
     /**
-        Unregister a single MBean, returning true if it was unregistered, false otherwise.
+    Unregister a single MBean, returning true if it was unregistered, false otherwise.
      */
-        public static boolean
-    unregisterOneMBean( final MBeanServer mbeanServer, final ObjectName objectName )
+    public static boolean unregisterOneMBean(final MBeanServer mbeanServer, final ObjectName objectName)
     {
         boolean success = false;
         //getLogger().fine( "UNREGISTER MBEAN: " + objectName );
         //debug( "ImplUtil.unregisterOneMBean: unregistering: " + objectName );
         try
         {
-            mbeanServer.unregisterMBean( objectName );
+            mbeanServer.unregisterMBean(objectName);
         }
-        catch( final Exception e )
+        catch (final Exception e)
         {
             // ignore
             success = false;
         }
         return success;
     }
+
 }
 
 

@@ -61,135 +61,138 @@ import org.jvnet.hk2.config.*;
 import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
 
 /**
-    
+
  */
 public final class SystemStatusImpl extends AMXImplBase
-	// implements SystemStatus
+// implements SystemStatus
 {
     public SystemStatusImpl(final ObjectName parent)
-	{
-        super( parent, SystemStatus.class );
-	}
-    
-        private Habitat
-    getHabitat()
     {
-        return  org.glassfish.internal.api.Globals.getDefaultHabitat();
+        super(parent, SystemStatus.class);
     }
-    
-        public Map<String,Object>
-    pingJDBCConnectionPool( final String poolName )
+
+    private Habitat getHabitat()
     {
-        final Map<String,Object> result = new HashMap<String,Object>();
+        return org.glassfish.internal.api.Globals.getDefaultHabitat();
+    }
+
+    public Map<String, Object> pingJDBCConnectionPool(final String poolName)
+    {
+        final Map<String, Object> result = new HashMap<String, Object>();
         final Habitat habitat = getHabitat();
         ConnectorRuntime connRuntime = null;
 
-        result.put( PING_SUCCEEDED_KEY, false);
+        result.put(PING_SUCCEEDED_KEY, false);
         if (habitat == null)
         {
-            result.put( REASON_FAILED_KEY, "Habitat is null");
+            result.put(REASON_FAILED_KEY, "Habitat is null");
             return result;
         }
-            
+
         // check pool name
         final Resources resources = getDomainRootProxy().child(Domain.class).getResources();
-        
-        final Map<String,JDBCConnectionPool> pools = resources.childrenMap( JDBCConnectionPool.class );
+
+        final Map<String, JDBCConnectionPool> pools = resources.childrenMap(JDBCConnectionPool.class);
         final JDBCConnectionPool cfg = pools.get(poolName);
         if (cfg == null)
         {
-            result.put( REASON_FAILED_KEY, "The JDBCConnectionPool \"" + poolName + "\" does not exist");
+            result.put(REASON_FAILED_KEY, "The JDBCConnectionPool \"" + poolName + "\" does not exist");
             return result;
         }
 
         // get connector runtime
-        try {
+        try
+        {
             connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
         }
-        catch ( final ComponentException e)
+        catch (final ComponentException e)
         {
-            result.putAll( ExceptionUtil.toMap(e) );
-            result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
+            result.putAll(ExceptionUtil.toMap(e));
+            result.put(REASON_FAILED_KEY, ExceptionUtil.toString(e));
             return result;
         }
-        
+
         // do the ping
-        try {
-            final boolean pingable = connRuntime.pingConnectionPool(poolName);
-            result.put( PING_SUCCEEDED_KEY, pingable);
-        }
-        catch ( final ResourceException e)
+        try
         {
-            result.putAll( ExceptionUtil.toMap(e) );
-            assert REASON_FAILED_KEY.equals( ExceptionUtil.MESSAGE_KEY );
+            final boolean pingable = connRuntime.pingConnectionPool(poolName);
+            result.put(PING_SUCCEEDED_KEY, pingable);
+        }
+        catch (final ResourceException e)
+        {
+            result.putAll(ExceptionUtil.toMap(e));
+            assert REASON_FAILED_KEY.equals(ExceptionUtil.MESSAGE_KEY);
             return result;
         }
-        
+
         return result;
     }
-    
+
 //-------------------------------------
-    
-    private static void xdebug( final String s ) { System.out.println( "### " + s); }
-    
-    private static String str(final Object o ) {
-        return o == null ? null : (""+o);
+    private static void xdebug(final String s)
+    {
+        System.out.println("### " + s);
     }
-    
-        private ObjectName
-    sourceToObjectName( final Object source )
+
+    private static String str(final Object o)
+    {
+        return o == null ? null : ("" + o);
+    }
+
+    private ObjectName sourceToObjectName(final Object source)
     {
         ObjectName objectName = null;
 
         if (source instanceof ConfigBean)
         {
-            objectName = ((ConfigBean)source).getObjectName();
+            objectName = ((ConfigBean) source).getObjectName();
         }
-        else if ( source instanceof ConfigBeanProxy )
+        else if (source instanceof ConfigBeanProxy)
         {
-            objectName = ((ConfigBean)Dom.unwrap((ConfigBeanProxy)source)).getObjectName();
+            objectName = ((ConfigBean) Dom.unwrap((ConfigBeanProxy) source)).getObjectName();
         }
         else
         {
-            xdebug( "UnprocessedConfigChange.sourceToObjectName: source is something else" );
+            xdebug("UnprocessedConfigChange.sourceToObjectName: source is something else");
         }
-        
+
         return objectName;
     }
-    
-        public List<Object[]>
-    getRestartRequiredChanges() {
-        final UnprocessedConfigListener unp = getHabitat().getComponent( UnprocessedConfigListener.class );
-        
+
+    public List<Object[]> getRestartRequiredChanges()
+    {
+        final UnprocessedConfigListener unp = getHabitat().getComponent(UnprocessedConfigListener.class);
+
         final List<UnprocessedChangeEvents> items = unp.getUnprocessedChangeEvents();
-        
+
         final List<Object[]> changesObjects = new ArrayList<Object[]>();
-        
+
         //xdebug( "SystemStatusImpl: UnprocessedConfigChange: processing events: " + items.size() );
-        for( final UnprocessedChangeEvents events : items )
+        for (final UnprocessedChangeEvents events : items)
         {
-            for( final UnprocessedChangeEvent event : events.getUnprocessed() )
+            for (final UnprocessedChangeEvent event : events.getUnprocessed())
             {
                 //xdebug( "SystemStatusImpl: UnprocessedConfigChange: event: " + event );
                 final String reason = event.getReason();
                 final PropertyChangeEvent pce = event.getEvent();
                 final long when = event.getWhen();
-                
+
                 final ObjectName objectName = sourceToObjectName(pce.getSource());
-                
+
                 final UnprocessedConfigChange ucc = new UnprocessedConfigChange(
                         pce.getPropertyName(),
                         str(pce.getOldValue()),
                         str(pce.getNewValue()),
                         objectName,
                         reason);
-                xdebug( "SystemStatusImpl: UnprocessedConfigChange: " + ucc );
-                changesObjects.add( ucc.toArray() );
-            } 
+                xdebug("SystemStatusImpl: UnprocessedConfigChange: " + ucc);
+                changesObjects.add(ucc.toArray());
+            }
         }
-        
+
         return changesObjects;
     }
+
 }
 
 

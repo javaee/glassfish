@@ -39,33 +39,31 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
-    Enforce singletone semantics: if an item already exists, an Error is thrown.
-    Otherwise it is recorded for future checks.  This facility exists because of 
-    ugly framework requirements for singletons to offer public constructors, which can allow
-    more than one instance of a class to be instantiated.
+Enforce singletone semantics: if an item already exists, an Error is thrown.
+Otherwise it is recorded for future checks.  This facility exists because of 
+ugly framework requirements for singletons to offer public constructors, which can allow
+more than one instance of a class to be instantiated.
  */
 public final class SingletonEnforcer
 {
-    private static final ConcurrentMap<Class<?>, Object> mItems = new ConcurrentHashMap<Class<?>,Object>();
-    
+    private static final ConcurrentMap<Class<?>, Object> mItems = new ConcurrentHashMap<Class<?>, Object>();
+
     private SingletonEnforcer()
     {
     }
-    
-        public static <T> T
-    get( final Class<T> theClass )
+
+    public static <T> T get(final Class<T> theClass)
     {
-        return theClass.cast(mItems.get( theClass ));
+        return theClass.cast(mItems.get(theClass));
     }
-    
-        public static void
-    register( final Class<?> theClass, final Object theInstance )
+
+    public static void register(final Class<?> theClass, final Object theInstance)
     {
-        if ( mItems.putIfAbsent(theClass, theInstance) != null )
+        if (mItems.putIfAbsent(theClass, theInstance) != null)
         {
-            throw new IllegalArgumentException( "Illegal to register more than one instance of " + theClass.getName() );
+            throw new IllegalArgumentException("Illegal to register more than one instance of " + theClass.getName());
         }
     }
-    
+
 }
 

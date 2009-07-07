@@ -42,75 +42,81 @@ import java.util.concurrent.TimeUnit;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 /**
-    Blocks until an MBean is UNregistered using a CountdownLatch (highly efficient).
-    
- */
- public final class UnregistrationListener implements NotificationListener
- {
-    final MBeanServerConnection mMBeanServer;
-    final ObjectName            mObjectName;
-    final CountDownLatch        mLatch;
+Blocks until an MBean is UNregistered using a CountdownLatch (highly efficient).
 
-    public UnregistrationListener( final MBeanServerConnection conn, final ObjectName objectName )
+ */
+public final class UnregistrationListener implements NotificationListener
+{
+    final MBeanServerConnection mMBeanServer;
+
+    final ObjectName mObjectName;
+
+    final CountDownLatch mLatch;
+
+    public UnregistrationListener(final MBeanServerConnection conn, final ObjectName objectName)
     {
         mMBeanServer = conn;
-        mObjectName  = objectName;
-        mLatch       = new CountDownLatch(1);
+        mObjectName = objectName;
+        mLatch = new CountDownLatch(1);
         // DO NOT listen here; thread-safety problem
     }
-    
-    public void handleNotification( final Notification notifIn, final Object handback )
+
+    public void handleNotification(final Notification notifIn, final Object handback)
     {
-        if ( notifIn instanceof MBeanServerNotification )
+        if (notifIn instanceof MBeanServerNotification)
         {
-            final MBeanServerNotification notif = (MBeanServerNotification)notifIn;
-            
-            if ( notif.getType().equals( MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) &&
-                    mObjectName.equals( notif.getMBeanName() ) )
+            final MBeanServerNotification notif = (MBeanServerNotification) notifIn;
+
+            if (notif.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION) &&
+                mObjectName.equals(notif.getMBeanName()))
             {
                 mLatch.countDown();
             }
         }
     }
-    
-    private static void cdebug( final String s ) { System.out.println(s); }
+
+    private static void cdebug(final String s)
+    {
+        System.out.println(s);
+    }
+
     /**
-        Wait (block) until the MBean is unregistered.
-        @return true if unregistered, false if an error
+    Wait (block) until the MBean is unregistered.
+    @return true if unregistered, false if an error
      */
-    public boolean waitForUnregister( final long timeoutMillis )
+    public boolean waitForUnregister(final long timeoutMillis)
     {
         boolean unregisteredOK = false;
-        
+
         try
         {
             // could have already been unregistered
-            if ( mMBeanServer.isRegistered(mObjectName) )
+            if (mMBeanServer.isRegistered(mObjectName))
             {
                 try
                 {
                     // CAUTION: we must register first to avoid a race condition
-                    JMXUtil.listenToMBeanServerDelegate( mMBeanServer, this, null, mObjectName );
+                    JMXUtil.listenToMBeanServerDelegate(mMBeanServer, this, null, mObjectName);
 
-                    if ( mMBeanServer.isRegistered(mObjectName) )
+                    if (mMBeanServer.isRegistered(mObjectName))
                     {
                         // block
-                        mLatch.await( timeoutMillis, TimeUnit.MILLISECONDS );
+                        mLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
                     }
-                    
+
                     unregisteredOK = true;
                 }
-                catch ( final java.lang.InterruptedException e)
+                catch (final java.lang.InterruptedException e)
                 {
                     throw new RuntimeException(e);
                 }
-                catch( final InstanceNotFoundException e )
+                catch (final InstanceNotFoundException e)
                 {
                     // fine, we're expecting it to be unregistered anyway
                 }
                 finally
                 {
-                    mMBeanServer.removeNotificationListener( JMXUtil.getMBeanServerDelegateObjectName(), this );
+                    mMBeanServer.removeNotificationListener(JMXUtil.getMBeanServerDelegateObjectName(), this);
                 }
             }
             else
@@ -118,12 +124,13 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
                 unregisteredOK = true;
             }
         }
-        catch( final Exception e )
+        catch (final Exception e)
         {
             throw new RuntimeException(e);
         }
         return unregisteredOK;
-     }
+    }
+
 }
 
 

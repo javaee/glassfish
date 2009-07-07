@@ -122,22 +122,29 @@ public final class RuntimeImpl extends AMXImplBase
         final List<Map<String, String>> resultList = new ArrayList<Map<String, String>>();
         try
         {
-            if (appInfo.getEngineRefs().size() > 0) {
+            if (appInfo.getEngineRefs().size() > 0)
+            {
                 // composite archive case, i.e. ear
-                for (EngineRef ref : appInfo.getEngineRefs()) {
+                for (EngineRef ref : appInfo.getEngineRefs())
+                {
                     Sniffer appSniffer = ref.getContainerInfo().getSniffer();
                     addToResultDDList("", appSniffer.getDeploymentConfigurations(appInfo.getSource()), resultList);
                 }
 
-                for (ModuleInfo moduleInfo : appInfo.getModuleInfos()) {
-                    for (Sniffer moduleSniffer :  moduleInfo.getSniffers()) {
+                for (ModuleInfo moduleInfo : appInfo.getModuleInfos())
+                {
+                    for (Sniffer moduleSniffer : moduleInfo.getSniffers())
+                    {
                         ReadableArchive moduleArchive = appInfo.getSource().getSubArchive(moduleInfo.getName());
                         addToResultDDList(moduleInfo.getName(), moduleSniffer.getDeploymentConfigurations(moduleArchive), resultList);
                     }
                 }
-            } else {
+            }
+            else
+            {
                 // standalone module
-                for (Sniffer sniffer : appInfo.getSniffers()) {
+                for (Sniffer sniffer : appInfo.getSniffers())
+                {
                     addToResultDDList(appName, sniffer.getDeploymentConfigurations(appInfo.getSource()), resultList);
                 }
             }
@@ -151,10 +158,12 @@ public final class RuntimeImpl extends AMXImplBase
         return resultList;
     }
 
-    private void addToResultDDList(String moduleName, Map<String, String> snifferConfigs, List<Map<String, String>> resultList) {
-        for (String pathKey : snifferConfigs.keySet()) {
-            HashMap<String, String> resultMap = 
-                new HashMap<String, String>();
+    private void addToResultDDList(String moduleName, Map<String, String> snifferConfigs, List<Map<String, String>> resultList)
+    {
+        for (String pathKey : snifferConfigs.keySet())
+        {
+            HashMap<String, String> resultMap =
+                    new HashMap<String, String>();
             resultMap.put(Runtime.MODULE_NAME_KEY, moduleName);
             resultMap.put(Runtime.DD_PATH_KEY, pathKey);
             resultMap.put(Runtime.DD_CONTENT_KEY, snifferConfigs.get(pathKey));
@@ -179,17 +188,15 @@ public final class RuntimeImpl extends AMXImplBase
         ImplUtil.getLogger().warning("Stopping server forcibly");
         System.exit(0);
     }
-    
-    
+
     public void restartDomain()
     {
         final ModulesRegistry registry = InjectedValues.getInstance().getModulesRegistry();
-        
-        final AdminCommandContext ctx = new AdminCommandContext(ImplUtil.getLogger(),  new PlainTextActionReporter());
+
+        final AdminCommandContext ctx = new AdminCommandContext(ImplUtil.getLogger(), new PlainTextActionReporter());
         final AdminCommand cmd = new RestartDomainCommand(registry);
         cmd.execute(ctx);
     }
-
 
     private NetworkConfig networkConfig()
     {

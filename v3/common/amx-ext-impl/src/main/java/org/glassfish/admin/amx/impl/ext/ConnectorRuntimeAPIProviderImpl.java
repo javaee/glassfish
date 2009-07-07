@@ -59,25 +59,33 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 {
     private final Habitat mHabitat;
 
-    public ConnectorRuntimeAPIProviderImpl(final ObjectName parent, Habitat habitat) {
+    public ConnectorRuntimeAPIProviderImpl(final ObjectName parent, Habitat habitat)
+    {
         super(parent, ConnectorRuntimeAPIProvider.class);
 
-        if(habitat != null){
+        if (habitat != null)
+        {
             mHabitat = habitat;
-        }else{
-            throw new IllegalStateException("Habitat is null");    
+        }
+        else
+        {
+            throw new IllegalStateException("Habitat is null");
         }
     }
 
-    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(final String datasourceClassName) {
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(final String datasourceClassName)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
         // get connector runtime
-        try {
+        try
+        {
             final Map<String, Object> connProps = getConnectorRuntime().
                     getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
             result.put(ConnectorRuntimeAPIProvider.PROPERTY_MAP_KEY, connProps);
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.PROPERTY_MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
@@ -86,119 +94,156 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         return result;
     }
 
-
-    private ConnectorRuntime getConnectorRuntime() {
+    private ConnectorRuntime getConnectorRuntime()
+    {
         return mHabitat.getComponent(ConnectorRuntime.class, null);
     }
 
-    public Map<String, Object> getBuiltInCustomResources() {
+    public Map<String, Object> getBuiltInCustomResources()
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
+        try
+        {
             final Map<String, String> customResources = getConnectorRuntime().getBuiltInCustomResources();
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, customResources);
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
-    public Map<String, Object> getConnectionDefinitionNames(String rarName) {
+    public Map<String, Object> getConnectionDefinitionNames(String rarName)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
         final String[] conDefnNames;
-        try {
+        try
+        {
             conDefnNames = getConnectorRuntime().getConnectionDefinitionNames(rarName);
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, conDefnNames);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
-    public Map<String, Object> getMCFConfigProps(String rarName, String connectionDefName) {
+    public Map<String, Object> getMCFConfigProps(String rarName, String connectionDefName)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
-            Map<String,String> configProperties = getConnectorRuntime().getMCFConfigProps(rarName, connectionDefName);
+        try
+        {
+            Map<String, String> configProperties = getConnectorRuntime().getMCFConfigProps(rarName, connectionDefName);
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
-    public Map<String, Object> getAdminObjectInterfaceNames(String rarName) {
+    public Map<String, Object> getAdminObjectInterfaceNames(String rarName)
+    {
 
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
+        try
+        {
             final String[] adminObjectInterfaceNames = getConnectorRuntime().getAdminObjectInterfaceNames(rarName);
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, adminObjectInterfaceNames);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
-    public Map<String, Object> getResourceAdapterConfigProps(String rarName) {
+    public Map<String, Object> getResourceAdapterConfigProps(String rarName)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
-            Map<String,String> configProperties = getConnectorRuntime().getResourceAdapterConfigProps(rarName);
+        try
+        {
+            Map<String, String> configProperties = getConnectorRuntime().getResourceAdapterConfigProps(rarName);
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
-
-    public Map<String, Object> getAdminObjectConfigProps(String rarName, String adminObjectIntf) {
+    public Map<String, Object> getAdminObjectConfigProps(String rarName, String adminObjectIntf)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
-            Map<String,String> configProperties = getConnectorRuntime().getAdminObjectConfigProps(rarName, adminObjectIntf);
+        try
+        {
+            Map<String, String> configProperties = getConnectorRuntime().getAdminObjectConfigProps(rarName, adminObjectIntf);
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
-
-    public Map<String, Object> getConnectorConfigJavaBeans(String rarName, String connectionDefName, String type) {
+    public Map<String, Object> getConnectorConfigJavaBeans(String rarName, String connectionDefName, String type)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
-            Map<String,String> configProperties = getConnectorRuntime().getConnectorConfigJavaBeans
-                    (rarName, connectionDefName, type);
+        try
+        {
+            Map<String, String> configProperties = getConnectorRuntime().getConnectorConfigJavaBeans(rarName, connectionDefName, type);
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
@@ -206,33 +251,45 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
     }
 
     public Map<String, Object> getActivationSpecClass(String rarName,
-                                                      String messageListenerType) {
+                                                      String messageListenerType)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
+        try
+        {
             String activationSpec = getConnectorRuntime().getActivationSpecClass(rarName, messageListenerType);
             result.put(ConnectorRuntimeAPIProvider.STRING_KEY, activationSpec);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
 
-    public Map<String, Object> getMessageListenerTypes(String rarName) {
+    public Map<String, Object> getMessageListenerTypes(String rarName)
+    {
 
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
+        try
+        {
             final String[] messageListenerTypes = getConnectorRuntime().getMessageListenerTypes(rarName);
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, messageListenerTypes);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.STRING_ARRAY_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
@@ -240,50 +297,60 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
     }
 
     public Map<String, Object> getMessageListenerConfigProps(String rarName,
-                                                             String messageListenerType) {
+                                                             String messageListenerType)
+    {
 
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
-            Map<String,String> configProperties = getConnectorRuntime().getMessageListenerConfigProps(
+        try
+        {
+            Map<String, String> configProperties = getConnectorRuntime().getMessageListenerConfigProps(
                     rarName, messageListenerType);
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
-
 
     public Map<String, Object> getMessageListenerConfigPropTypes(String rarName,
-                                                                 String messageListenerType) {
+                                                                 String messageListenerType)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
-            Map<String,String> configProperties = getConnectorRuntime().getMessageListenerConfigPropTypes(
+        try
+        {
+            Map<String, String> configProperties = getConnectorRuntime().getMessageListenerConfigPropTypes(
                     rarName, messageListenerType);
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, configProperties);
-        } catch (ConnectorRuntimeException e) {
+        }
+        catch (ConnectorRuntimeException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.MAP_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
-
-
 
     /**
      * Flush Connection pool.
      * @param poolName
      */
-    public Map<String, Object> flushConnectionPool(final String poolName) {
+    public Map<String, Object> flushConnectionPool(final String poolName)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
         if (mHabitat == null)
@@ -292,14 +359,19 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, "Habitat is null");
             return result;
         }
-        try {
+        try
+        {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             connRuntime.flushConnectionPool(poolName);
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, true);
-        } catch (ConnectorRuntimeException ex) {
+        }
+        catch (ConnectorRuntimeException ex)
+        {
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(ex));
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
@@ -310,17 +382,23 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
      * Obtain connection validation table names.
      * @param poolName
      */
-    public Map<String, Object> getValidationTableNames(final String poolName) {
+    public Map<String, Object> getValidationTableNames(final String poolName)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
+        try
+        {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final Set<String> tableNames = connRuntime.getValidationTableNames(poolName);
             result.put(ConnectorRuntimeAPIProvider.SET_KEY, tableNames);
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
@@ -333,17 +411,23 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
      * @param resType
      */
     public Map<String, Object> getJdbcDriverClassNames(final String dbVendor,
-            final String resType) {
+                                                       final String resType)
+    {
         final Map<String, Object> result = new HashMap<String, Object>();
 
-        try {
+        try
+        {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final Set<String> implClassNames = connRuntime.getJdbcDriverClassNames(dbVendor, resType);
             result.put(ConnectorRuntimeAPIProvider.SET_KEY, implClassNames);
-        } catch (ComponentException e) {
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
@@ -355,30 +439,38 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
      * @param poolName
      * @return
      */
-    public Map<String,Object> pingJDBCConnectionPool( final String poolName ) {
-        final Map<String,Object> result = new HashMap<String,Object>();
-        
+    public Map<String, Object> pingJDBCConnectionPool(final String poolName)
+    {
+        final Map<String, Object> result = new HashMap<String, Object>();
+
         if (mHabitat == null)
         {
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, false);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, "Habitat is null");
             return result;
-        }        
-        try {
+        }
+        try
+        {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final boolean pingStatus = connRuntime.pingConnectionPool(poolName);
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, pingStatus);
-        } catch(ResourceException ex) {
+        }
+        catch (ResourceException ex)
+        {
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
-            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(ex));            
-        } catch (ComponentException e) {
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(ex));
+        }
+        catch (ComponentException e)
+        {
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             result.put(ConnectorRuntimeAPIProvider.BOOLEAN_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;
     }
-    
+
 }

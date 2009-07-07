@@ -49,9 +49,9 @@ import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.module.ModulesRegistry;
 
 /**
-    Utility class that gets various useful values injected into it for use
-    by other AMX facilities which don't have injection available to themselves.  This is needed
-    because many AMX MBeans and support code don't have any access to injection.
+Utility class that gets various useful values injected into it for use
+by other AMX facilities which don't have injection available to themselves.  This is needed
+because many AMX MBeans and support code don't have any access to injection.
  */
 @Service
 @Async
@@ -59,30 +59,49 @@ public class InjectedValues
 {
     @Inject
     Habitat mHabitat;
-    
+
     @Inject
     private MBeanServer mMBeanServer;
-    
+
     @Inject
     private ServerEnvironmentImpl mServerEnvironment;
-    
+
     @Inject
-    UnprocessedConfigListener   mUnprocessedConfigListener;
+    UnprocessedConfigListener mUnprocessedConfigListener;
 
     @Inject
     ModulesRegistry mModulesRegistry;
-    
-    public MBeanServer getMBeanServer() { return mMBeanServer; }
-    public Habitat getHabitat()         { return mHabitat; }
-    public ServerEnvironmentImpl getServerEnvironment() { return mServerEnvironment; }
-    public UnprocessedConfigListener getUnprocessedConfigListener() { return mUnprocessedConfigListener; }
-    public ModulesRegistry getModulesRegistry() { return mModulesRegistry; }
-    
+
+    public MBeanServer getMBeanServer()
+    {
+        return mMBeanServer;
+    }
+
+    public Habitat getHabitat()
+    {
+        return mHabitat;
+    }
+
+    public ServerEnvironmentImpl getServerEnvironment()
+    {
+        return mServerEnvironment;
+    }
+
+    public UnprocessedConfigListener getUnprocessedConfigListener()
+    {
+        return mUnprocessedConfigListener;
+    }
+
+    public ModulesRegistry getModulesRegistry()
+    {
+        return mModulesRegistry;
+    }
+
     public static Habitat getDefaultHabitat()
     {
         return Globals.getDefaultHabitat();
     }
-    
+
     public static InjectedValues getInstance()
     {
         return getDefaultHabitat().getByType(InjectedValues.class);
@@ -91,6 +110,7 @@ public class InjectedValues
     public InjectedValues()
     {
     }
+
 }
 
 

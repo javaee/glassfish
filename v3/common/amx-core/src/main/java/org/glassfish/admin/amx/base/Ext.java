@@ -40,45 +40,41 @@ import org.glassfish.admin.amx.annotation.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
-
 /**
-    "Ex" = extensions: any additional MBeans, especially those that are derivative
-    and/or have other dependencies than amx-core.
+"Ex" = extensions: any additional MBeans, especially those that are derivative
+and/or have other dependencies than amx-core.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
+@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
 public interface Ext extends AMXProxy, Singleton, Utility
 {
     @ManagedAttribute
     public Realms getRealms();
-    
+
     @ManagedAttribute
     public Runtime getRuntime();
 
     @ManagedAttribute
     public ConnectorRuntimeAPIProvider getConnectorRuntimeAPIProvider();
-    
-    @ManagedAttribute
-    public LoggingProperties getLoggingProperties();
-    
+
     /**
-       Contacts Update Center Server and get the updates status.
+    Contacts Update Center Server and get the updates status.
      */
     //@ManagedAttribute
     //public UpdateStatus  getUpdateStatus();
-    
     /**
-        @return the singleton SystemInfo
+    @return the singleton SystemInfo
      */
     @ManagedAttribute
-    public SystemStatus		getSystemStatus();
-    
+    public SystemStatus getSystemStatus();
+
     /** 
-        Get ConfigTools, defined in the amx-config module.
-        Use proxy.as(ConfigTools.class) to narrow it to the right type.
+    Get ConfigTools, defined in the amx-config module.
+    Use proxy.as(ConfigTools.class) to narrow it to the right type.
      */
     @ManagedAttribute
     public AMXProxy getConfigTools();
+
 }
 
 

@@ -28,16 +28,15 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.api.amx.AMXLoader;
 
 /**
-    MBean responsible for starting AMX configuration support.
-    
-    @see AMXConfigStartupService
+MBean responsible for starting AMX configuration support.
+
+@see AMXConfigStartupService
  */
 public interface AMXExtStartupServiceMBean extends AMXLoader
 {
-    
     /** ObjectName of the MBean which actually loads AMX MBeans; that MBean references this constant */
-    public static final ObjectName OBJECT_NAME = Util.newObjectName( LOADER_PREFIX + "ext" );
-    
+    public static final ObjectName OBJECT_NAME = Util.newObjectName(LOADER_PREFIX + "ext");
+
 }
 
 

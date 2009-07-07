@@ -43,26 +43,29 @@ import java.util.Set;
  */
 public final class Issues
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
-    
+    private final Set<String> mIssues = Collections.synchronizedSet(new HashSet<String>());
+
     private Issues()
     {
         // disallow instantiation
     }
-    
+
     private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
+
+    public static Issues getAMXIssues()
     {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
+        return AMX_ISSUES;
+    }
+
+    public void notDone(final String description)
+    {
+        final boolean wasMissing = mIssues.add(description);
+        if (wasMissing)
         {
-            ImplUtil.getLogger().fine( "NOT DONE: " + description );
+            ImplUtil.getLogger().fine("NOT DONE: " + description);
         }
     }
+
 }
 
 

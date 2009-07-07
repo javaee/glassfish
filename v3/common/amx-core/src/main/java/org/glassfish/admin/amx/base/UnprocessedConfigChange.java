@@ -43,106 +43,141 @@ import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.ObjectUtil;
 
 /**
-    <em>Note: this API is highly volatile and subject to change<em>.
-    <p>
-	Class representing a change to a configuration attribute.
-    A PropertyChangeEvent is unsuitable, as its 'source' is transient.
+<em>Note: this API is highly volatile and subject to change<em>.
+<p>
+Class representing a change to a configuration attribute.
+A PropertyChangeEvent is unsuitable, as its 'source' is transient.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public final class UnprocessedConfigChange
 {
-    private final String  mName;
-    private final String  mOldValue;
-    private final String  mNewValue;
-    private final Object  mSource;
-    private final String  mReason;
-    
+    private final String mName;
+
+    private final String mOldValue;
+
+    private final String mNewValue;
+
+    private final Object mSource;
+
+    private final String mReason;
+
     /** indicates that the change represents more than one property. The old/new values are arbitrary */
     public static final String MULTI = "*";
-    
-    public Object[] toArray() {
-        return new Object[] { mName, mOldValue, mNewValue, mSource, mReason };
-    }
-    
-    /** must match the order in {@link #toArray} */
-    public UnprocessedConfigChange( final Object[] data )
+
+    public Object[] toArray()
     {
-        this( (String)data[0], (String)data[1], (String)data[2], data[3], (String)data[4] );
+        return new Object[]
+                {
+                    mName, mOldValue, mNewValue, mSource, mReason
+                };
+    }
+
+    /** must match the order in {@link #toArray} */
+    public UnprocessedConfigChange(final Object[] data)
+    {
+        this((String) data[0], (String) data[1], (String) data[2], data[3], (String) data[4]);
 
         // nice to do this first, but compiler won't allow it!
-        if ( data.length != 5 ) {
+        if (data.length != 5)
+        {
             throw new IllegalArgumentException();
         }
     }
-    
+
     public UnprocessedConfigChange(
-        final String name,
-        final String oldValue,
-        final String newValue,
-        final Object source,
-        final String reason)
+            final String name,
+            final String oldValue,
+            final String newValue,
+            final Object source,
+            final String reason)
     {
         mReason = reason == null ? "unspecified" : reason;
-        mName     = name;
-        mSource   = source;
+        mName = name;
+        mSource = source;
         mOldValue = oldValue;
         mNewValue = newValue;
     }
-    
-    public UnprocessedConfigChange( final String reason, final PropertyChangeEvent e )
+
+    public UnprocessedConfigChange(final String reason, final PropertyChangeEvent e)
     {
-        this( e.getPropertyName(), ""+e.getOldValue(), ""+e.getNewValue(), e.getSource(), reason);
+        this(e.getPropertyName(), "" + e.getOldValue(), "" + e.getNewValue(), e.getSource(), reason);
     }
-    
+
     /** The (human readable) reason the change could not be made. */
-    public String getReason() { return mReason; }
-    
+    public String getReason()
+    {
+        return mReason;
+    }
+
     /** name of the property.  Can be null */
-    public String getPropertyName() { return mName; }
-    
+    public String getPropertyName()
+    {
+        return mName;
+    }
+
     /**
-        Preferred value is an ObjectName, otherwise a String suitable for a user to understand
-        what might have been affected.  Can be null.
+    Preferred value is an ObjectName, otherwise a String suitable for a user to understand
+    what might have been affected.  Can be null.
      */
-    public Object getSource() { return mSource; }
-    
+    public Object getSource()
+    {
+        return mSource;
+    }
+
     /** Old value of the property.  Can be null */
-    public String getOldValue() { return mOldValue; }
-    
+    public String getOldValue()
+    {
+        return mOldValue;
+    }
+
     /** New value of the property.  Can be null */
-    public String getNewValue() { return mNewValue; }
-    
-    public String toString() {
+    public String getNewValue()
+    {
+        return mNewValue;
+    }
+
+    public String toString()
+    {
         return "UnprocessedConfigChange: name = " + getPropertyName() +
-            ", source = " + getSource() + 
-            ", oldValue = " + getOldValue() +
-            ", newValue = " + getNewValue() +
-            ", reason = " + StringUtil.quote(""+getReason());
+               ", source = " + getSource() +
+               ", oldValue = " + getOldValue() +
+               ", newValue = " + getNewValue() +
+               ", reason = " + StringUtil.quote("" + getReason());
     }
-    
-    private boolean eq( final Object lhs, final Object rhs ) {
-        if ( lhs == rhs ) return true;
-        
+
+    private boolean eq(final Object lhs, final Object rhs)
+    {
+        if (lhs == rhs)
+        {
+            return true;
+        }
+
         return lhs != null ? lhs.equals(rhs) : rhs.equals(lhs);
-        
+
     }
-    
-    public boolean equals( final Object rhs ) {
-        if ( ! (rhs instanceof UnprocessedConfigChange) ) return false;
-        
-        final UnprocessedConfigChange x = (UnprocessedConfigChange)rhs;
-        
-        return  eq(mName, x.mName) &&
-                eq(mOldValue, x.mOldValue) &&
-                eq(mNewValue,x.mNewValue) &&
-                eq(mSource,x.mSource) &&
-                eq(mReason,x.mReason);
+
+    public boolean equals(final Object rhs)
+    {
+        if (!(rhs instanceof UnprocessedConfigChange))
+        {
+            return false;
+        }
+
+        final UnprocessedConfigChange x = (UnprocessedConfigChange) rhs;
+
+        return eq(mName, x.mName) &&
+               eq(mOldValue, x.mOldValue) &&
+               eq(mNewValue, x.mNewValue) &&
+               eq(mSource, x.mSource) &&
+               eq(mReason, x.mReason);
     }
-    
+
     @Override
-    public int hashCode() {
-        return ObjectUtil.hashCode( mName, mOldValue, mNewValue, mSource, mReason );
+    public int hashCode()
+    {
+        return ObjectUtil.hashCode(mName, mOldValue, mNewValue, mSource, mReason);
     }
+
 }
 
 

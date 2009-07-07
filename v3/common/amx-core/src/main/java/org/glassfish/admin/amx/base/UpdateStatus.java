@@ -38,31 +38,29 @@ package org.glassfish.admin.amx.base;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
-	Provides information about the updates from the Update Center Server.
+Provides information about the updates from the Update Center Server.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
+@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
 public interface UpdateStatus extends AMXProxy, Singleton, Utility
 {
-	/**
-		Return the number of available updated modules. These modules could be 
-        can be addon component installer or configurator jar file as specified 
-        in Addon installer and configurator plug-in which can perform an update.
-        Alternatively, these also can be jar or zip archive containing 
-        component files archived relative to Glassfish
-        main installation directory. For example, they could be non-runtime
-        components such as documentation, tutorials, sample applications
-        packaged as zip or jar archive files. 
-		
-		@return return the number of available updated modules
-	 */
+    /**
+    Return the number of available updated modules. These modules could be
+    can be addon component installer or configurator jar file as specified
+    in Addon installer and configurator plug-in which can perform an update.
+    Alternatively, these also can be jar or zip archive containing
+    component files archived relative to Glassfish
+    main installation directory. For example, they could be non-runtime
+    components such as documentation, tutorials, sample applications
+    packaged as zip or jar archive files.
+
+    @return return the number of available updated modules
+     */
     @ManagedAttribute
-	public int	getNumModules();
+    public int getNumModules();
 
 }

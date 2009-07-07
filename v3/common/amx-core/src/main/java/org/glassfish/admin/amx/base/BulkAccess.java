@@ -47,129 +47,127 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
-	Bulk access to various JMX constructs. The term "bulk" refers to the fact the multiple
-	MBeans are accessed together on the server side, to minimize remote
-	invocation of many MBeans.
-	<p>
-	Because a failure can occur with a particular MBeans, results or failures are
-	communicated back in an array of the exact size of the original ObjectName[].
-	Examining the results array yields either the result, or a Throwable, if one
-	occured.  This is why all results are of type Object[].
-	<p>
-	Clients wishing to use this interface should note that they may first
-	need to obtain an ObjectName[] from a Set or Map of {@link AMXProxy}.  The easiest way
-	to do this is to use {@link Util#toObjectNames} followed by
-	conversion of the Set to an ObjectName[].
+Bulk access to various JMX constructs. The term "bulk" refers to the fact the multiple
+MBeans are accessed together on the server side, to minimize remote
+invocation of many MBeans.
+<p>
+Because a failure can occur with a particular MBeans, results or failures are
+communicated back in an array of the exact size of the original ObjectName[].
+Examining the results array yields either the result, or a Throwable, if one
+occured.  This is why all results are of type Object[].
+<p>
+Clients wishing to use this interface should note that they may first
+need to obtain an ObjectName[] from a Set or Map of {@link AMXProxy}.  The easiest way
+to do this is to use {@link Util#toObjectNames} followed by
+conversion of the Set to an ObjectName[].
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
+@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
 public interface BulkAccess extends AMXProxy, Singleton, Utility
 {
-	/**
-		Call getMBeanInfo() for multiple MBeans.
-		For objectNames[ i ], results[ i ] will be the resulting MBeanInfo[],
-		or contain a Throwable if something was thrown.
-		
-		@param objectNames
-		@return Info[], one for each objectName, null if not found
-	 */
+    /**
+    Call getMBeanInfo() for multiple MBeans.
+    For objectNames[ i ], results[ i ] will be the resulting MBeanInfo[],
+    or contain a Throwable if something was thrown.
+
+    @param objectNames
+    @return Info[], one for each objectName, null if not found
+     */
     @ManagedOperation
-	public Object[]	bulkGetMBeanInfo( ObjectName[] objectNames );
-	
-	/**
-		Call getMBeanInfo().getAttributes() for multiple MBeans.
-		For objectNames[ i ], results[ i ] will be the resulting MBeanAttributeInfo[],
-		or contain a Throwable if something was thrown.
-		
-		@param objectNames
-		@return AttributeInfo[][], one AttributeInfo[] for each objectName, null if not found
-	 */
+    public Object[] bulkGetMBeanInfo(ObjectName[] objectNames);
+
+    /**
+    Call getMBeanInfo().getAttributes() for multiple MBeans.
+    For objectNames[ i ], results[ i ] will be the resulting MBeanAttributeInfo[],
+    or contain a Throwable if something was thrown.
+
+    @param objectNames
+    @return AttributeInfo[][], one AttributeInfo[] for each objectName, null if not found
+     */
     @ManagedOperation
-	public Object[]	bulkGetMBeanAttributeInfo( ObjectName[] objectNames );
-	
-	/**
-		Call getMBeanInfo().getOperations() for multiple MBeans.
-		For objectNames[ i ], results[ i ] will be the resulting MBeanOperationInfo[],
-		or contain a Throwable if something was thrown.
-		
-		@param objectNames
-		@return OperationInfo[][], one OperationInfo[] for each objectName, null if not found
-	 */
+    public Object[] bulkGetMBeanAttributeInfo(ObjectName[] objectNames);
+
+    /**
+    Call getMBeanInfo().getOperations() for multiple MBeans.
+    For objectNames[ i ], results[ i ] will be the resulting MBeanOperationInfo[],
+    or contain a Throwable if something was thrown.
+
+    @param objectNames
+    @return OperationInfo[][], one OperationInfo[] for each objectName, null if not found
+     */
     @ManagedOperation
-	public Object[]	bulkGetMBeanOperationInfo( ObjectName[] objectNames );
-	
-	/**
-		Call getMBeanInfo().getAttributes() for multiple MBeans, then extracts the
-		Attribute name from each Attribute.
-		For objectNames[ i ], results[ i ] will be the resulting String[], consisting
-		of all Attribute names for that MBean,
-		or contain a Throwable if something was thrown.
-		
-		@param objectNames
-		@return Object[][], one String[] for each objectName, null if not found, or a Throwable
-	 */
+    public Object[] bulkGetMBeanOperationInfo(ObjectName[] objectNames);
+
+    /**
+    Call getMBeanInfo().getAttributes() for multiple MBeans, then extracts the
+    Attribute name from each Attribute.
+    For objectNames[ i ], results[ i ] will be the resulting String[], consisting
+    of all Attribute names for that MBean,
+    or contain a Throwable if something was thrown.
+
+    @param objectNames
+    @return Object[][], one String[] for each objectName, null if not found, or a Throwable
+     */
     @ManagedOperation
-	public Object[]	bulkGetAttributeNames( ObjectName[] objectNames );
-	
-	
-	/**
-		Call getAttribute( attributeName ) for multiple MBeans.
-		For objectNames[ i ], results[ i ] will be the resulting value,
-		or contain a Throwable if something was thrown..
-		
-		@param objectNames
-		@param attributeName
-		@return array of Object, which may be the Attribute value, or a Throwable
-	 */
+    public Object[] bulkGetAttributeNames(ObjectName[] objectNames);
+
+    /**
+    Call getAttribute( attributeName ) for multiple MBeans.
+    For objectNames[ i ], results[ i ] will be the resulting value,
+    or contain a Throwable if something was thrown..
+
+    @param objectNames
+    @param attributeName
+    @return array of Object, which may be the Attribute value, or a Throwable
+     */
     @ManagedOperation
-	public Object[]	bulkGetAttribute( final ObjectName[] objectNames,
-						final String attributeName );
-						
-	/**
-		Call setAttribute( attr ) for multiple MBeans.
-		For objectNames[ i ], results[ i ] will be null if successful,
-		or contain a Throwable if not.
-		
-		@param objectNames
-		@param attr
-		@return array of Object, each is null or a Throwable
-	 */
+    public Object[] bulkGetAttribute(final ObjectName[] objectNames,
+                                     final String attributeName);
+
+    /**
+    Call setAttribute( attr ) for multiple MBeans.
+    For objectNames[ i ], results[ i ] will be null if successful,
+    or contain a Throwable if not.
+
+    @param objectNames
+    @param attr
+    @return array of Object, each is null or a Throwable
+     */
     @ManagedOperation
-	public Object[]	bulkSetAttribute( final ObjectName[] objectNames,
-						final Attribute attr );
-						
-	
-	/**
-		Call getAttributes( attributeNames ) for multiple MBeans.
-		For objectNames[ i ], results[ i ] will contain the resulting
-		AttributeList, or a Throwable if unsuccessful.
-		
-		@return array of Object, which may be the AttributeList, or a Throwable
-	 */
+    public Object[] bulkSetAttribute(final ObjectName[] objectNames,
+                                     final Attribute attr);
+
+    /**
+    Call getAttributes( attributeNames ) for multiple MBeans.
+    For objectNames[ i ], results[ i ] will contain the resulting
+    AttributeList, or a Throwable if unsuccessful.
+
+    @return array of Object, which may be the AttributeList, or a Throwable
+     */
     @ManagedOperation
-	public Object[]	bulkGetAttributes( final ObjectName[] objectNames,
-						final String[] attributeNames );
-						
-	
-	/**
-		Call invoke( ... ) for multiple MBeans.
-		For objectNames[ i ], results[ i ] will be the result,
-		or contain a Throwable if something was thrown..
-		<p>
-		<b>WARNING: No guarantee can be made that the MBeans being
-		invoked will not alter their arguments, thus altering the
-		parameters that subsequent MBeans receive when invoked.</b>
-		
-		@param objectNames
-		@param operationName
-		@param args
-		@param types
-		@return array of Object, which will be the result of the invoke, or a Throwable
-	 */
+    public Object[] bulkGetAttributes(final ObjectName[] objectNames,
+                                      final String[] attributeNames);
+
+    /**
+    Call invoke( ... ) for multiple MBeans.
+    For objectNames[ i ], results[ i ] will be the result,
+    or contain a Throwable if something was thrown..
+    <p>
+    <b>WARNING: No guarantee can be made that the MBeans being
+    invoked will not alter their arguments, thus altering the
+    parameters that subsequent MBeans receive when invoked.</b>
+
+    @param objectNames
+    @param operationName
+    @param args
+    @param types
+    @return array of Object, which will be the result of the invoke, or a Throwable
+     */
     @ManagedOperation
-	public Object[]	bulkInvoke( final ObjectName[] objectNames,
-						final String operationName,
-						final Object[] args, final String[] types );
+    public Object[] bulkInvoke(final ObjectName[] objectNames,
+                               final String operationName,
+                               final Object[] args, final String[] types);
+
 }
 
 

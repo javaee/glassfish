@@ -43,66 +43,69 @@ import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.base.SystemInfo;
-import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
-	Provides various routines for system status.
-    <p>
-    <b>WARNING: some of these routines may be relocated.</b>
-    @see SystemInfo
+Provides various routines for system status.
+<p>
+<b>WARNING: some of these routines may be relocated.</b>
+@see SystemInfo
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
-@AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
+@AMXMBeanMetadata(singleton = true, globalSingleton = true, leaf = true)
 public interface SystemStatus extends AMXProxy, Utility, Singleton
 {
     /** Key into Map returned by various methods including {@link #pingJDBCConnectionPool} */
     public static final String PING_SUCCEEDED_KEY = "PingSucceededKey";
-    
+
     /** @deprecated use ExceptionUtil.MESSAGE_KEY */
     public static final String REASON_FAILED_KEY = ExceptionUtil.MESSAGE_KEY;
-    
+
     /**
-        Ping the JDBCConnectionPool and return status.  Various values can be found in the
-        resulting Map.
-        @see #PING_SUCCEEDED_KEY
-        @see #REASON_FAILED_KEY
-        @see org.glassfish.admin.amx.util.ExceptionUtil#toMap
+    Ping the JDBCConnectionPool and return status.  Various values can be found in the
+    resulting Map.
+    @see #PING_SUCCEEDED_KEY
+    @see #REASON_FAILED_KEY
+    @see org.glassfish.admin.amx.util.ExceptionUtil#toMap
      */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public Map<String,Object> pingJDBCConnectionPool( final String poolName );
-    
-    
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public Map<String, Object> pingJDBCConnectionPool(final String poolName);
+
     /**
-        <em>Note: this API is highly volatile and subject to change<em>.
-        <p>
-        Query configuration changes that require restart.
-        <p>
-        Changes are listed oldest first.  The system may drop older changes in order to limit the size
-        of the list and/or merge related changes to the most recent.
-        <p>
-        Over the wire transmission of 'UnprocessedConfigChange' would require the client to have its class;
-        as delivered the Object[] contains only standard JDK types.
-        See the Javadoc for {@link UnprocessedConfigChange} for the order of values in the Object[].
-        Clients with access to the class can use {@link SystemStatus.Helper#toUnprocessedConfigChange}
+    <em>Note: this API is highly volatile and subject to change<em>.
+    <p>
+    Query configuration changes that require restart.
+    <p>
+    Changes are listed oldest first.  The system may drop older changes in order to limit the size
+    of the list and/or merge related changes to the most recent.
+    <p>
+    Over the wire transmission of 'UnprocessedConfigChange' would require the client to have its class;
+    as delivered the Object[] contains only standard JDK types.
+    See the Javadoc for {@link UnprocessedConfigChange} for the order of values in the Object[].
+    Clients with access to the class can use {@link SystemStatus.Helper#toUnprocessedConfigChange}
      */
     @ManagedAttribute
-    public List<Object[]>  getRestartRequiredChanges();
-    
+    public List<Object[]> getRestartRequiredChanges();
+
     /** helper class, in particular to convert results from {@link #getRestartRequiredChanges} */
-    public final class Helper {
-        private Helper() {}
-        public List<UnprocessedConfigChange>  toUnprocessedConfigChange( final List<Object[]> items) {
+    public final class Helper
+    {
+        private Helper()
+        {
+        }
+
+        public List<UnprocessedConfigChange> toUnprocessedConfigChange(final List<Object[]> items)
+        {
             final List<UnprocessedConfigChange> l = new java.util.ArrayList<UnprocessedConfigChange>();
-            for( final Object[] a : items ) {
-                l.add( new UnprocessedConfigChange(a) );
+            for (final Object[] a : items)
+            {
+                l.add(new UnprocessedConfigChange(a));
             }
             return l;
         }
+
     }
 }
 

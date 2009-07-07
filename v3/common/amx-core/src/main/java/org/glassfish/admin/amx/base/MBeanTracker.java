@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
