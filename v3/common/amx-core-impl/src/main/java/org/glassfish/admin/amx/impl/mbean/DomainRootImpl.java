@@ -42,7 +42,6 @@ import org.glassfish.admin.amx.logging.Logging;
 import org.glassfish.admin.amx.util.FeatureAvailability;
 import com.sun.appserv.server.util.Version;
 
-import org.glassfish.admin.amx.impl.loader.BootUtil;
 import org.glassfish.admin.amx.impl.util.Issues;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 
@@ -54,12 +53,12 @@ import com.sun.enterprise.universal.io.SmartFile;
 
 import com.sun.enterprise.universal.Duration;
 
+import java.io.File;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import java.util.Set;
-import java.util.HashSet;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.util.CollectionUtil;
@@ -70,14 +69,17 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 public class DomainRootImpl extends AMXImplBase
 // implements DomainRoot
 {
-    private String mAppserverDomainName;
+	private final String	mAppserverDomainName;
+	private final File      mInstanceRoot;
 
     private volatile ComplianceMonitor mCompliance;
 
     public DomainRootImpl()
     {
         super(null, DomainRoot.class);
-        mAppserverDomainName = null;
+        
+        mInstanceRoot        =  new File( System.getProperty( "com.sun.aas.instanceRoot" ) );
+        mAppserverDomainName = mInstanceRoot.getName();
     }
 
     public void stopDomain()
@@ -113,8 +115,6 @@ public class DomainRootImpl extends AMXImplBase
     protected ObjectName preRegisterHook(final MBeanServer server, final ObjectName selfObjectName)
             throws Exception
     {
-        mAppserverDomainName = BootUtil.getInstance().getAppserverDomainName();
-
         // DomainRoot has not yet been registered; any MBeans that exist are non-compliant
         // because they cannot have a Parent.
         final Set<ObjectName> existing = JMXUtil.queryAllInDomain(server, selfObjectName.getDomain());
@@ -238,7 +238,7 @@ public class DomainRootImpl extends AMXImplBase
 
     public String getDomainDir()
     {
-        return SmartFile.sanitize(BootUtil.getInstance().getInstanceRoot().toString());
+        return SmartFile.sanitize(mInstanceRoot.toString());
     }
 
     public String getConfigDir()

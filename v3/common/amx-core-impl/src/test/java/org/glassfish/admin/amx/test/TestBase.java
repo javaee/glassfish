@@ -35,8 +35,6 @@
  */
 package org.glassfish.admin.amx.test;
 
-import org.glassfish.admin.amx.impl.loader.BootUtil;
-
 import org.junit.Ignore;
 
 @Ignore
@@ -45,8 +43,6 @@ class TestBase extends junit.framework.TestCase {
     /** some tests might need this */
     protected static void initBootUtil() {
         System.setProperty( "com.sun.aas.instanceRoot", "/tmp/amx-test" );
-        BootUtil.init( true );
-        BootUtil.getInstance();
     }
 
     

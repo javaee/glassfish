@@ -42,12 +42,22 @@ import javax.management.remote.JMXServiceURL;
 import java.util.Collection;
 
 import java.util.concurrent.CountDownLatch;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.NotCompliantMBeanException;
 import org.glassfish.admin.amx.base.MBeanTracker;
 import org.glassfish.admin.amx.base.MBeanTrackerMBean;
+import org.glassfish.admin.amx.base.SystemInfo;
+import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.impl.mbean.DomainRootImpl;
+import org.glassfish.admin.amx.impl.mbean.SystemInfoFactory;
+import org.glassfish.admin.amx.impl.mbean.SystemInfoImpl;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import org.glassfish.admin.amx.impl.util.Issues;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
+import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
 import org.glassfish.api.amx.AMXLoader;
@@ -57,6 +67,13 @@ import org.glassfish.api.amx.BootAMXMBean;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+
+
+import org.glassfish.admin.amx.util.jmx.stringifier.StringifierRegistryIniter;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
+import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl;
+import org.glassfish.api.amx.AMXValues;
+import static org.glassfish.api.amx.AMXValues.*;
 
 
 /**
@@ -82,9 +99,7 @@ public final class AMXStartupServiceNew
     @Inject
     Events mEvents;
         
-    private volatile ObjectName      mAMXLoaderObjectName;
-    
-    private volatile MBeanTracker     mSupport;
+    private volatile MBeanTracker     mMBeanTracker;
         
     public static MBeanTrackerMBean getMBeanTracker( final MBeanServer server )
     {
@@ -95,6 +110,9 @@ public final class AMXStartupServiceNew
     {
         //debug( "AMXStartupServiceNew.AMXStartupServiceNew()" );
        // debug( this.getClass().getName() );
+       
+		new StringifierRegistryIniterImpl( StringifierRegistryImpl.DEFAULT );
+		new StringifierRegistryIniter( StringifierRegistryImpl.DEFAULT );
     }
     
     private final class ShutdownListener implements EventListener
@@ -128,9 +146,9 @@ public final class AMXStartupServiceNew
            final StandardMBean mbean = new StandardMBean(this, AMXStartupServiceMBean.class);
            mMBeanServer.registerMBean( mbean, OBJECT_NAME);
            
-           mSupport = new MBeanTracker();
-           //final StandardMBean supportMBean = new StandardMBean(mSupport, MBeanTrackerMBean.class);
-           mMBeanServer.registerMBean( mSupport, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME );
+           mMBeanTracker = new MBeanTracker();
+           //final StandardMBean supportMBean = new StandardMBean(mMBeanTracker, MBeanTrackerMBean.class);
+           mMBeanServer.registerMBean( mMBeanTracker, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME );
         }
         catch( final Exception e )
         {
@@ -217,37 +235,46 @@ public final class AMXStartupServiceNew
         return objectName;
     }
     
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    = AMXLoader.LOADER_PREFIX + "core";
-    private static ObjectName LOADER_OBJECTNAME = null;
+    private volatile ObjectName DOMAIN_ROOT_OBJECTNAME = null;
     
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
+    	private synchronized ObjectName
+	loadDomainRoot()
+	{
+        if ( DOMAIN_ROOT_OBJECTNAME != null ) return DOMAIN_ROOT_OBJECTNAME;
+        
+	    final DomainRootImpl    domainRoot  = new DomainRootImpl();
+        DOMAIN_ROOT_OBJECTNAME	= ObjectNameBuilder.getDomainRootObjectName(AMXValues.amxJMXDomain());
+        try
         {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-                }
-                catch( final Exception e)
-                {
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
-                }
-            }
+            DOMAIN_ROOT_OBJECTNAME  = mMBeanServer.registerMBean( domainRoot, DOMAIN_ROOT_OBJECTNAME ).getObjectName();
+            loadSystemInfo();
         }
-        return LOADER_OBJECTNAME;
-    }
+        catch( final Exception e )
+        {
+            final Throwable rootCause   = ExceptionUtil.getRootCause(e);
+            rootCause.printStackTrace();
+            throw new RuntimeException( rootCause );
+        }
+    	
+        return DOMAIN_ROOT_OBJECTNAME;
+	}
+
+
+		protected final ObjectName
+	loadSystemInfo()
+		throws NotCompliantMBeanException, MBeanRegistrationException,
+		InstanceAlreadyExistsException
+	{
+		final SystemInfoImpl	systemInfo	= SystemInfoFactory.createInstance( mMBeanServer );
+
+        ObjectName systemInfoObjectName =
+            ObjectNameBuilder.buildChildObjectName(mMBeanServer, DOMAIN_ROOT_OBJECTNAME, SystemInfo.class);
+        
+		systemInfoObjectName	= mMBeanServer.registerMBean( systemInfo, systemInfoObjectName ).getObjectName();
+		
+		return systemInfoObjectName;
+	}
+
 
     /** run each AMXLoader in its own thread */
     private static final class AMXLoaderThread extends Thread
@@ -301,8 +328,7 @@ public final class AMXStartupServiceNew
     _loadAMXMBeans()
     {
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
-        mAMXLoaderObjectName = loadAMX( mMBeanServer );
-        //ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans(): loaded name = " + mAMXLoaderObjectName);
+        loadDomainRoot();
         FeatureAvailability.getInstance().registerFeature( FeatureAvailability.AMX_CORE_READY_FEATURE, getDomainRoot() );
         ImplUtil.getLogger().info( "AMXStartupServiceNew: AMX core MBeans are ready for use, DamainRoot = " + getDomainRoot() );
         
