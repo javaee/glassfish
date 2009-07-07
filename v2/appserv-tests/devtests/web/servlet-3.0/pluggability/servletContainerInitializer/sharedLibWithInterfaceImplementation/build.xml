@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "./../../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &run;
+
+    <target name="all" depends="init-sharedlib,build,deploy,run,undeploy,stopDomain,clean-lib"/>
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+    </target>
+       
+    <target name="clean-lib" depends="init-common">
+	<delete file="${env.S1AS_HOME}/lib/TestSharedLib1.jar"/>
+	<delete dir="./lib"/>
+        <antcall target="startDomain"/>
+    </target>
+
+    <target name="init-sharedlib" depends="init-common">
+        <antcall target="stopDomain"/>
+        <mkdir dir="lib"/>
+  	<javac srcdir="./interface"
+    		destdir="./interface"
+    		classpath="${s1astest.classpath}"
+    		debug="on"
+    		failonerror="true"/>
+	<jar destfile="lib/CommonInterface.jar">
+	    <fileset dir="./interface"/>
+	</jar>
+  	<javac srcdir="./sharedlib1"
+    		destdir="./sharedlib1"
+    		classpath="${s1astest.classpath};./interface"
+    		debug="on"
+    		failonerror="true"/>
+	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib1.jar">
+	    <fileset dir="./sharedlib1"/>
+	    <fileset dir="./interface"/>
+	</jar>
+        <sleep seconds="15" />
+        <antcall target="startDomain"/>
+    </target>
+
+    <target name="compile" depends="init-common, clean">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="./servlet"
+          destdir="${build.classes.dir}"
+          classpath="${s1astest.classpath};./interface"
+          debug="on"
+          failonerror="true"/>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes"/>
+            <param name="webclient.war.classes" value="**/*.class"/> 
+        </antcall>
+	<mkdir dir="${env.APS_HOME}/build/module/archive/META-INF"/>
+	<copy file="./application.xml" todir="${env.APS_HOME}/build/module/archive/META-INF"/>
+	<jar destfile="${assemble.dir}/${appname}App.ear">
+	    <fileset dir="${env.APS_HOME}/build/module/archive"/>
+	</jar>
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+               includes="WebTest.java"/>
+    </target> 
+
+    <target name="run" depends="init-common">
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="/mytest1"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+    
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+    
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+</project>
