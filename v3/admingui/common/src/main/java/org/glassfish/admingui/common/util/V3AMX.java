@@ -41,7 +41,6 @@ import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 import org.glassfish.admin.amx.intf.config.Property;
 
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
 /**
