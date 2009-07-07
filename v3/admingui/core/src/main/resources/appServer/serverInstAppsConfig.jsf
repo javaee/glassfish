@@ -76,7 +76,7 @@
 #include "/shared/appConfig_2.inc"
 #include "/shared/propertyDescTable.inc"
 #include "/shared/editPageBottomButtons.inc"
-	<sun:hidden id="helpKey" value="$resource{help..serverInstAppsConfig}" />
+	<sun:hidden id="helpKey" value="$resource{help.serverInstAppsConfig}" />
             </sun:form>
 </define>
 </composition>
