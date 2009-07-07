@@ -58,19 +58,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
-
 import com.sun.logging.LogDomains;
+import org.apache.naming.Util;
 
 /**
  *  Utility class - contains util methods used for implementation of pluggable Shared Library features
@@ -95,7 +90,52 @@ public class ServletContainerInitializerUtil {
       */
 
 
-    public static Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getInterestList(ClassLoader cl) {
+    public static Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getInterestList(
+            Map<String, String> webFragmentMap, List<String> absoluteOrderingList,
+            boolean hasOthers, ClassLoader cl) {
+        // If there is an absoluteOrderingList specified, then ensure that the ServletContainerInitializers in the JARs
+        // that are part of fragment NOT in the absoluteOrderingList do not get included. For this, we remove unwanted
+        // fragment JARs from the class loaders URL
+        if((absoluteOrderingList != null) && !hasOthers) {
+            if(!(cl instanceof WebappClassLoader)) {
+                log.warning(sm.getString("servletContainerInitializerUtil.wrongClassLoaderType",
+                        cl.getClass().getCanonicalName()));
+                return null;
+            }
+            WebappClassLoader webAppCl = (WebappClassLoader) cl;
+
+            // Create a new List of URLs with missing fragments removed from the currentUrls
+            URL[] currentUrlsInClassLoader = webAppCl.getURLs();
+            ArrayList<URL> newClassLoaderUrlList = new ArrayList<URL>();
+            for (int i=0; i<currentUrlsInClassLoader.length; i++) {
+                // Check that the URL is using file protocol, else ignore it
+                if (!"file".equals(currentUrlsInClassLoader[i].getProtocol())) {
+                    continue;
+                }
+                File file = new File(Util.URLDecode(currentUrlsInClassLoader[i].getFile()));
+                try {
+                    file = file.getCanonicalFile();
+                } catch (IOException e) {
+                    // Ignore
+                }
+                if (!file.exists()) {
+                    continue;
+                }
+                String path = file.getAbsolutePath();
+                if (!path.endsWith(".jar")) {
+                    continue;
+                }
+                if (!isFragmentMissingFromAbsoluteOrdering(file.getName(), webFragmentMap, absoluteOrderingList)) {
+                    newClassLoaderUrlList.add(currentUrlsInClassLoader[i]);
+                }
+            }
+
+            //Create a new classloader and use for ServiceLoader
+            URL[] urlsForNewClassLoader = new URL[newClassLoaderUrlList.size()];
+            cl = new URLClassLoader(newClassLoaderUrlList.toArray(urlsForNewClassLoader),
+                    webAppCl.getParent());
+        }
+
         ServiceLoader<ServletContainerInitializer> frameworks =
                 ServiceLoader.load(ServletContainerInitializer.class, cl);
         Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList = null;
@@ -194,7 +234,7 @@ public class ServletContainerInitializerUtil {
                                     Class aClass = cl.loadClass(className);
                                     initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
                                 } catch (ClassNotFoundException e) {
-                                    log.warning(sm.getString("ServletContainerInitializerUtil.CNFWarning",
+                                    log.warning(sm.getString("servletContainerInitializerUtil.cnfWarning",
                                             anEntry.getName()));
                                     continue;
                                 }
@@ -207,17 +247,33 @@ public class ServletContainerInitializerUtil {
                         if(file.isDirectory()) {
                             initializerList = scanDirectory(file, path, cl, interestList, initializerList);
                         } else {
-                            log.warning(sm.getString("ServletContainerInitializerUtil.UnkownFileWarning", path));
+                            log.warning(sm.getString("servletContainerInitializerUtil.unkownFileWarning", path));
                         }
                     }
                 } catch(IOException ioex) {
-                    log.severe(sm.getString("ServletContainerInitializerUtil.IOerror", ioex.getLocalizedMessage()));
+                    log.severe(sm.getString("servletContainerInitializerUtil.ioError", ioex.getLocalizedMessage()));
                     return null;
                 }
             }
         }
         return initializerList;
     }
+
+    /**
+     * Checks if a given JAR file is to be excluded while searching for ServletContainerInitializer implementations
+     * @param jarName the JAR file
+     * @param webFragmentMap fragment information from deployment desc
+     * @param absoluteOrderingList give ordering list
+     * @return true if the given JAR file is NOT present in the absolute ordering list
+     */
+    private static boolean isFragmentMissingFromAbsoluteOrdering(
+           String jarName, Map<String, String> webFragmentMap,
+           List<String> absoluteOrderingList) {
+       return (webFragmentMap != null &&
+           absoluteOrderingList != null &&
+           !absoluteOrderingList.contains(
+               webFragmentMap.get(jarName)));
+   }
 
     /**
      * Given a path (say /Users/user/glassfish/domains/.../WEB-INF/classes/com/sun/x.class) and the topmost directory
@@ -262,7 +318,7 @@ public class ServletContainerInitializerUtil {
                         Class aClass = cl.loadClass(getClassNameFromPath(fileName, path));
                         initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
                     } catch (ClassNotFoundException e) {
-                        log.warning(sm.getString("ServletContainerInitializerUtil.CNFWarning", fileName));
+                        log.warning(sm.getString("servletContainerInitializerUtil.cnfWarning", fileName));
                         continue;
                     }
                 }

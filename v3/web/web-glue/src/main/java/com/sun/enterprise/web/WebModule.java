@@ -495,8 +495,13 @@ public class WebModule extends PwcWebModule {
     @Override
     public synchronized void start() throws LifecycleException {
         // Get interestList of ServletContainerInitializers present, if any.
+        List<String> orderingList = (webBundleDescriptor.getAbsoluteOrderingDescriptor() == null) ? null :
+                webBundleDescriptor.getAbsoluteOrderingDescriptor().getOrdering();
+        boolean hasOthers = (webBundleDescriptor.getAbsoluteOrderingDescriptor() == null) ? false :
+                webBundleDescriptor.getAbsoluteOrderingDescriptor().hasOthers();
         this.setServletContainerInitializerInterestList(
-                ServletContainerInitializerUtil.getInterestList(wmInfo.getAppClassLoader()));
+                ServletContainerInitializerUtil.getInterestList(webBundleDescriptor.getJarNameToWebFragmentNameMap(),
+                        orderingList, hasOthers, wmInfo.getAppClassLoader()));
 
         // Start and register Tomcat mbeans
         super.start();
