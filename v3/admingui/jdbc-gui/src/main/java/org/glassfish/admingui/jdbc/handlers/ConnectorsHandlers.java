@@ -109,7 +109,6 @@ public class ConnectorsHandlers {
         } else {
             Map extra = new HashMap();
             Map attrMap = (Map) handlerCtx.getInputValue("attrMap");
-            //Map attrMap = (Map)proxyHandlers.getDefaultProxyAttrsMap("v3:pp=/domain,type=resources", "connector-connection-pool");
             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("valueMap", attrMap);
             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolExtra", extra);
         }
