@@ -48,7 +48,7 @@
             setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.edJmsHost.edJmsHostInfo}");
             getRequestValue(key="configName" value=>$page{configName});
 
-            setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/jms-service,type=jms-host,name=#{pageSession.name}");
+            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/jms-service,type=jms-host,name=#{pageSession.name}");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         />
     </event>

@@ -46,9 +46,9 @@
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/jacc/jaccProviderEdit.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/security/jacc/jaccProviders.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="jacc-provider");
-        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=jacc-provider,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=jacc-provider,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         println("$attribute{tableList}")

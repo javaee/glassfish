@@ -44,8 +44,8 @@
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         setPageSessionAttribute(key="instanceName" value="server");       # we can hard code it here because this page is only for DAS                                   
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/admin-service,type=das-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config],type=admin-service");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/admin-service,type=das-config");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config],type=admin-service");
         setPageSessionAttribute(key="childType" value="das-config");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"DynamicReloadEnabled" "AutodeployEnabled" "AutodeployVerifierEnabled" "AutodeployJspPrecompilationEnabled"});

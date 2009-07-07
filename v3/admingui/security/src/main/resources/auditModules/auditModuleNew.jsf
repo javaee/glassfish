@@ -45,7 +45,7 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/auditModules/auditModuleNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/security/auditModules/auditModules.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="audit-module");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         //set the following for including buttons.inc

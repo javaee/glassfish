@@ -45,7 +45,7 @@
     <!beforeCreate
         setSessionAttribute(key="serverInstTabs" value="profiler");
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config],type=java-config");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstProfiler.jsf");
         setPageSessionAttribute(key="childType" value="profiler");
         getProfilerAttrs(objectName="#{pageSession.profilerObjectNameStr}" edit="#{pageSession.edit}");

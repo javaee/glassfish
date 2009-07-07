@@ -74,7 +74,7 @@
                 labels="$pageSession{availableNetworkListeners}"
                 selected="#{pageSession.selectedNetworkListeners}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners"
+                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners"
                         type="network-listener" result="#{pageSession.networkListeners}");
                     getListBoxOptions(
                         availableList="#{pageSession.networkListeners}",

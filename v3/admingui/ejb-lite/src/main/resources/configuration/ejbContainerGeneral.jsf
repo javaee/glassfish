@@ -50,9 +50,9 @@
     <!beforeCreate
         setSessionAttribute(key="ejbContainerTabs" value="ejbSettingsTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="ejb-container");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=ejb-container");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=ejb-container");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb-lite/configuration/ejbContainerGeneral.jsf");

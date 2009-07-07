@@ -44,17 +44,17 @@
 <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
         setPageSessionAttribute(key="childType" value="orb");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=orb");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=orb");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/orb/orb.jsf");
 
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
-        setPageSessionAttribute(key="parentObjectNameStr2", value="v3:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType2" value="iiop-service");
-        setPageSessionAttribute(key="objectNameStr2" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
+        setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
         setPageSessionAttribute(key="convertToFalseList2" value={"ClientAuthenticationRequired"});
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
         //set the following for including buttons.inc
@@ -112,7 +112,7 @@
                 labels="$pageSession{availableThreadPools}"
                 selected="#{pageSession.selectedThreadPools}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools"
+                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools"
                         type="thread-pool" result="#{pageSession.threadPools}");
                     getListBoxOptions(
                         availableList="#{pageSession.threadPools}",

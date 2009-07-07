@@ -45,7 +45,7 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="jacc-provider");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nSecurity.msg.JS.confirmDeleteJaccProviders}");

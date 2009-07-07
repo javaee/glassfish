@@ -47,7 +47,7 @@
         <sun:property id="DefaultVirtServersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.defVirtualServerLabel}" helpText="$resource{i18n_web.http.defVirtualServerLabel}">
             <sun:dropDown id="vs" selected="#{pageSession.httpMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
             />
            </sun:dropDown>
         </sun:property>

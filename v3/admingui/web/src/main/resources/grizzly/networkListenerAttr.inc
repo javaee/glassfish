@@ -63,14 +63,14 @@
         <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" helpText="$resource{i18n_web.grizzly.networkListener.protocolHelp}">
             <sun:dropDown id="protocol" selected="#{pageSession.valueMap['Protocol']}" labels="$pageSession{protocolList}"  values="$pageSession{protocolList}" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolList}");
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolList}");
 />
            </sun:dropDown>
         </sun:property>
         <sun:property id="threadpool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.threadPool}" helpText="$resource{i18n_web.grizzly.networkListener.threadPoolHelp}">
             <sun:dropDown id="threadpool" selected="#{pageSession.valueMap['ThreadPool']}" labels="$pageSession{threadPoolList}"  values="$pageSession{threadPoolList}" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools" type="thread-pool" result="#{pageSession.threadPoolList}");
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools" type="thread-pool" result="#{pageSession.threadPoolList}");
             />
            </sun:dropDown>
         </sun:property>
@@ -78,7 +78,7 @@
         <sun:property id="transport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.transport}" helpText="$resource{i18n_web.grizzly.networkListener.transportHelp}">
             <sun:dropDown id="transport" selected="#{pageSession.valueMap['Transport']}" labels="$pageSession{transportList}"  values="$pageSession{transportList}"  >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=transports" type="transport" result="#{pageSession.transportList}");
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=transports" type="transport" result="#{pageSession.transportList}");
             />
            </sun:dropDown>
         </sun:property>

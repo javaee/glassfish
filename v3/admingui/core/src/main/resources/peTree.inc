@@ -118,7 +118,7 @@
 	
     <dynamicTreeNode id="applications"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain,type=applications"
+        objectName="amx:pp=/domain,type=applications"
         useV3AMX="true"
         methodName=""
         text="$resource{i18n.tree.applications}"

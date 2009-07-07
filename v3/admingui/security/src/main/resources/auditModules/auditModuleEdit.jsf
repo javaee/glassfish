@@ -48,9 +48,9 @@
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/auditModules/auditModuleEdit.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/security/auditModules/auditModules.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="audit-modules");
-        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=audit-module,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=audit-module,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc

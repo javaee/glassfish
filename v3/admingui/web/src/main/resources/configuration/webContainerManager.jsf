@@ -45,9 +45,9 @@
     <!beforeCreate
         setSessionAttribute(key="webContainerTabs" value="managerTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/web-container/session-config,type=session-manager");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/web-container/session-config,type=session-manager");
         setPageSessionAttribute(key="childType" value="manager-properties");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/web-container/session-config/session-manager,type=manager-properties");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/web-container/session-config/session-manager,type=manager-properties");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/webContainerManager.jsf");

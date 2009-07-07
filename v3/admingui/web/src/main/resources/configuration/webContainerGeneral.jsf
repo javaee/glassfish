@@ -45,7 +45,7 @@
     <!beforeCreate
         setSessionAttribute(key="webContainerTabs" value="general");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=web-container");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=web-container");
         setPageSessionAttribute(key="childType" value="property");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/webContainerGeneral.jsf");

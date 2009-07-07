@@ -48,8 +48,8 @@
     getRequestValue(key="name" value="#{pageSession.Name}");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/connectorConnectionPoolAdvance.jsf");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/connectorConnectionPools.jsf");
-    setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
-    setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources");
+    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
+    setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="connector-connection-pool");
     getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
     setPageSessionAttribute(key="convertToFalseList" value={"FailAllConnections" "IsConnectionValidationRequired" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections"});

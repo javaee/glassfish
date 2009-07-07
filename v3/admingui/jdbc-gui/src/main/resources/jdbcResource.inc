@@ -52,7 +52,7 @@
         <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njdbc.jdbcResource.poolHelp}">
             <sun:dropDown id="PoolName" selected="#{pageSession.valueMap['PoolName']}" labels="$pageSession{jdbcList}"  values="$pageSession{jdbcList}" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain,type=resources" type="jdbc-connection-pool" result="#{pageSession.jdbcList}");
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain,type=resources" type="jdbc-connection-pool" result="#{pageSession.jdbcList}");
             />
            </sun:dropDown>
         </sun:property>   

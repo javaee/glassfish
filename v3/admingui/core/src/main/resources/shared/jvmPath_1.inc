@@ -42,8 +42,8 @@
         <!beforeCreate
             setSessionAttribute(key="serverInstTabs" value="pathSettings");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
-            setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config],type=java-config");
-            setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=server-config");
+            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
+            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             formatStringsforDisplay(string="#{pageSession.valueMap['ServerClasspath']}"  formattedString="#{requestScope.scp}");
             mapPut(map="#{pageSession.valueMap}" key="ServerClasspath" value="$attribute{scp}");

@@ -44,8 +44,8 @@
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="appServer/serverInstGeneralPe.jsf");
-        getProxyAttrs(objectNameStr="v3:pp=,type=domain-root,name=v3" valueMap="#{pageSession.valueMap}")
-        getProxyAttrs(objectNameStr="v3:pp=/domain/configs/config[server-config],type=java-config" valueMap="#{pageSession.valueMap2}")
+        getProxyAttrs(objectNameStr="#{sessionScope.DOMAIN_ROOT}" valueMap="#{pageSession.valueMap}")
+        getProxyAttrs(objectNameStr="amx:pp=/domain/configs/config[server-config],type=java-config" valueMap="#{pageSession.valueMap2}")
         getDebugInfo(debugEnabled="#{pageSession.valueMap2['DebugEnabled']}"
             debugOptions="#{pageSession.valueMap2['DebugOptions']}" debugInfo="#{pageSession.debugInfo}")
         />   

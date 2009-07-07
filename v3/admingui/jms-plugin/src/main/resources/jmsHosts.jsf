@@ -49,7 +49,7 @@
 
         //getConfigList(ConfigName="$pageSession{configName}", type="jmsHost" result=>$attribute{listOfRows} );
 
-        setPageSessionAttribute(key="parentObjectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
+        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
         setPageSessionAttribute(key="childType" value="jms-host");
 
         getChildrenTable(objectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");

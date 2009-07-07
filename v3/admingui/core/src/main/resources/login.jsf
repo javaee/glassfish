@@ -36,7 +36,7 @@
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
-    getProxyAttribute( objectNameStr="v3:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonymousLogin}" )
+    getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonymousLogin}" )
     convertStrToBoolean(str="#{pageSession.anonymousLogin}" out="#{pageSession.anonLogin}")
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
 />

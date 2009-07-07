@@ -14,7 +14,7 @@
 		    admingui.gadget.invoke(
 			"getChildrenTable",
 			{
-			    objectNameStr: "v3:pp=/domain/configs/config[server-config],type=iiop-service",
+			    objectNameStr: "amx:pp=/domain/configs/config[server-config],type=iiop-service",
 			    childType: "iiop-listener",
 			    result: "#{requestScope.listOfRows}"
 			});

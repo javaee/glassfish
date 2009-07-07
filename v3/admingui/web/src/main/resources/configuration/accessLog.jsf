@@ -45,18 +45,18 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
 
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="http-service");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/accessLog.jsf");
         setPageSessionAttribute(key="convertToFalseList" value={"SsoEnabled", "AccessLogEnabled" });
 
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
-        setPageSessionAttribute(key="parentObjectNameStr2", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         setPageSessionAttribute(key="childType2" value="access-log");
-        setPageSessionAttribute(key="objectNameStr2" value="v3:pp=/domain/configs/config[server-config]/http-service,type=access-log");
+        setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[server-config]/http-service,type=access-log");
         setPageSessionAttribute(key="convertToFalseList2" value={"RotationEnabled"});
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
 

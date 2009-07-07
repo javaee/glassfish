@@ -43,7 +43,7 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service")
+        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service")
         setPageSessionAttribute(key="childType" value="iiop-listener")
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerNew.jsf");

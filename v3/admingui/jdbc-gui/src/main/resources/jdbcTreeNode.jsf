@@ -5,7 +5,7 @@
         >
         <dynamicTreeNode id="jdbcResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain,type=resources"
+        objectName="amx:pp=/domain,type=resources"
         useV3AMX="true"
         amxChildType="jdbc-resource"
         methodName=""
@@ -22,7 +22,7 @@
     </dynamicTreeNode>
         <dynamicTreeNode id="connectionPoolResources"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-            objectName="v3:pp=/domain,type=resources"
+            objectName="amx:pp=/domain,type=resources"
             useV3AMX="true"
             amxChildType="jdbc-connection-pool"  
             methodName=""
@@ -46,7 +46,7 @@
             
         <dynamicTreeNode id="connectorResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain,type=resources"
+        objectName="amx:pp=/domain,type=resources"
         useV3AMX="true"
         amxChildType="connector-resource"
         methodName=""
@@ -63,7 +63,7 @@
         </dynamicTreeNode>                  
         <dynamicTreeNode id="connectorConnectionPools"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain,type=resources"
+        objectName="amx:pp=/domain,type=resources"
         useV3AMX="true"
         amxChildType="connector-connection-pool"
         methodName=""
@@ -80,7 +80,7 @@
         </dynamicTreeNode>    
         <dynamicTreeNode id="adminObjectResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain,type=resources"
+        objectName="amx:pp=/domain,type=resources"
         useV3AMX="true"
         amxChildType="admin-object-resource"
         methodName=""
@@ -98,7 +98,7 @@
  </sun:treeNode> 
     <dynamicTreeNode id="mailResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain,type=resources"
+        objectName="amx:pp=/domain,type=resources"
         useV3AMX="true"
         amxChildType="mail-resource"
         methodName=""

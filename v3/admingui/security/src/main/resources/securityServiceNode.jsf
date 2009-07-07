@@ -46,7 +46,7 @@
     
     <dynamicTreeNode id="realms"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
+        objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
         useV3AMX="true"
         amxChildType="auth-realm"
         methodName=""
@@ -65,7 +65,7 @@
 
     <dynamicTreeNode id="auditModules"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
+        objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
         useV3AMX="true"
         amxChildType="audit-module"
         methodName=""
@@ -83,7 +83,7 @@
     
     <dynamicTreeNode id="jaccProviders"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
+        objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
         useV3AMX="true"
         amxChildType="jacc-provider"
         methodName=""

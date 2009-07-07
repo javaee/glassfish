@@ -47,7 +47,7 @@
             setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.newJmsHost.NewPageHelp}");
             getRequestValue(key="configName" value=>$page{configName});
 
-            setPageSessionAttribute(key="parentObjectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
+            setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
             setPageSessionAttribute(key="childType" value="jms-host");
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         />

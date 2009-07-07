@@ -49,7 +49,7 @@
       <sun:property id="defaultRealmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultRealm}" helpText="$resource{i18nSecurity.security.DefaultRealmHelp}">
             <sun:dropDown id="DefaultRealm" labels="$pageSession{realms}" selected="#{pageSession.valueMap['DefaultRealm']}" />
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service"
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service"
                 type="auth-realm" result="#{pageSession.realms}");
             />
         </sun:property>
@@ -62,7 +62,7 @@
       <sun:property id="jaccProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.Jacc}" helpText="$resource{i18nSecurity.security.JaccHelp}">
             <sun:dropDown id="Jacc" labels="$pageSession{jaccs}" selected="#{pageSession.valueMap['Jacc']}" />
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service" type="jacc-provider" result="#{pageSession.jaccs}");
+                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service" type="jacc-provider" result="#{pageSession.jaccs}");
             />
         </sun:property>
      <sun:property id="auditModulesProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.AuditModules}" helpText="$resource{i18nSecurity.security.AuditModulesHelp}">
@@ -70,7 +70,7 @@
                 labels="$pageSession{availableAudits}"
                 selected="#{pageSession.selectedAuditModules}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service" type="audit-module" result="#{pageSession.audits}");
+                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service" type="audit-module" result="#{pageSession.audits}");
                     getListBoxOptions(
                         availableList="#{pageSession.audits}",
                         selectedCommaString="#{pageSession.valueMap['AuditModules']}",

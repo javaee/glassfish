@@ -48,8 +48,8 @@
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/fileCache.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
-        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}]/http,type=file-cache");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}]/http,type=file-cache");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
         setPageSessionAttribute(key="childType" value="file-cache");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.fileMap}");
         setPageSessionAttribute(key="valueMap" value="#{pageSession.fileMap}");

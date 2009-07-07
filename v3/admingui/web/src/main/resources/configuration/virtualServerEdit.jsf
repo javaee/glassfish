@@ -48,9 +48,9 @@
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         setPageSessionAttribute(key="childType" value="virtual-server");
-        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         println("#{pageSession.valueMap}");
         //set the following for including buttons.inc

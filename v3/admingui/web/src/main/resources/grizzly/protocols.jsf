@@ -46,7 +46,7 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
         setPageSessionAttribute(key="childType" value="protocol");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteProtocol}");

@@ -49,7 +49,7 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/connectorConnectionPoolNew1.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/connectorConnectionPools.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain,type=resources");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         getApplicationByType(type="connector" result="#{pageSession.connectorList}");

@@ -49,12 +49,12 @@
             setAttribute(key="edit" value="#{true}");
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}");
 
-            setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
+            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
             setPageSessionAttribute(key="childType" value="jms-service");
             gui.log(message="#{pageSession.objectNameStr}", level="INFO");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             setPageSessionAttribute(key="convertToFalseList" value={"ReconnectEnabled"});
-            getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service" type="jms-host" result="#{pageSession.jmsHostList}");
+            getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service" type="jms-host" result="#{pageSession.jmsHostList}");
         />   
     </event>   
 <!-- TO DO: NEED TO ADD CHECK FOR PE OR EE IN ORDER TO POPULATE JMS HOST DROPDOWN  -->   

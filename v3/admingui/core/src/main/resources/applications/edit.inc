@@ -77,7 +77,7 @@
                 labels="$pageSession{availableVS}"
                 selected="#{pageSession.selectedVS}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service"
+                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service"
                         type="virtual-server" result="#{pageSession.vsList}");
                     getListBoxOptions(
                         availableList="#{pageSession.vsList}",

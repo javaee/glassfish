@@ -71,7 +71,7 @@
 
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/security/realms/realmNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/security/realms/realms.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
 
         getRealmAttrForCreate(attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props}  );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");

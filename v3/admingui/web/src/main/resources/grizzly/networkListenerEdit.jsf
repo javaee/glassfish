@@ -48,8 +48,8 @@
         getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/networkListeners.jsf");
-        setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config/network-listeners,type=network-listener,name=#{pageSession.Name}");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/network-listeners,type=network-listener,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
         setPageSessionAttribute(key="childType" value="network-listener");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});

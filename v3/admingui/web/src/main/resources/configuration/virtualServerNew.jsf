@@ -46,7 +46,7 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/virtualServerNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         setPageSessionAttribute(key="childType" value="virtual-server");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         setPageSessionAttribute(key="edit" value="#{false}" );

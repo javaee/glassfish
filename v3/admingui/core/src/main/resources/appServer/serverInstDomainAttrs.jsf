@@ -45,8 +45,8 @@
             setSessionAttribute(key="serverInstTabs" value="domainAttrs");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             getRequestValue(key="name" value="#{pageSession.Name}");
-            setPageSessionAttribute(key="objectNameStr", value="v3:pp=/,type=domain");
-            setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=,type=domain-root,name=v3");
+            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/,type=domain");
+            setPageSessionAttribute(key="parentObjectNameStr", value="#{sessionScope.DOMAIN_ROOT}");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstDomainAttrs.jsf");
              //set the following for including buttons.inc

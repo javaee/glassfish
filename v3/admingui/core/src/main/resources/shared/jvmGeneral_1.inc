@@ -45,8 +45,8 @@
             setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
             setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
-            setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config],type=java-config");
-            setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs,type=config,name=server-config");
+            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
+            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             setPageSessionAttribute(key="convertToFalseList" value={"DebugEnabled"});
             setPageSessionAttribute(key="childType" value="java-config");            

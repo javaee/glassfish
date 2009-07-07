@@ -47,8 +47,8 @@
     <!beforeCreate
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/monitor/monitoringPage.jsf");
-    setPageSessionAttribute(key="objectNameStr", value="v3:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels");
-    setPageSessionAttribute(key="parentObjectNameStr", value="v3:pp=/domain/configs/config[server-config],type=monitoring-service");
+    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels");
+    setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config],type=monitoring-service");
     setPageSessionAttribute(key="childType" value="module-monitoring-levels");
     getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});

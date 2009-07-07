@@ -42,7 +42,7 @@
     >
     <dynamicTreeNode id="iiopListeners"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="v3:pp=/domain/configs/config[server-config],type=iiop-service"
+        objectName="amx:pp=/domain/configs/config[server-config],type=iiop-service"
         useV3AMX="true"
         amxChildType="iiop-listener"
         methodName=""

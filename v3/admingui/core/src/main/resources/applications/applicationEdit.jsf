@@ -44,10 +44,10 @@
     <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
-        setPageSessionAttribute(key="objectNameStr" value="v3:pp=/domain/applications,type=application,name=#{pageSession.appName}");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         
-        setPageSessionAttribute(key="appRefObjectName" value="v3:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
+        setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
         getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
 
         getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap['Enabled']}")

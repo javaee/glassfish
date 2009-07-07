@@ -36,7 +36,7 @@
 <!-- header.jsf -->
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    getProxyAttribute( objectNameStr="v3:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
+    getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
 />
 <sun:page>
     <!beforeCreate
