@@ -87,9 +87,15 @@ public class SecuritySupportImpl implements SecuritySupport {
 
     protected void initJKS() {
         if (!initialized) {
-            loadStores(null, KeyStore.getDefaultType(), null,
-                System.getProperty(keyStoreProp), SSLUtils.getKeyStorePass(),
-                System.getProperty(trustStoreProp), SSLUtils.getTrustStorePass());
+            loadStores(
+                    null, 
+                    null, 
+                    System.getProperty(keyStoreProp), 
+                    SSLUtils.getKeyStorePass(),
+                    SSLUtils.getKeyStoreType(),
+                    System.getProperty(trustStoreProp), 
+                    SSLUtils.getTrustStorePass(),
+                    SSLUtils.getTrustStoreType());
             initialized = true;
         }
     }
@@ -98,21 +104,32 @@ public class SecuritySupportImpl implements SecuritySupport {
      * This method will load keystore and truststore and add into
      * corresponding list.
      * @param tokenName
-     * @param storeType
      * @param provider
      * @param keyStorePass
      * @param keyStoreFile
+     * @param keyStoreType
      * @param trustStorePass
      * @param trustStoreFile
+     * @param trustStoreType
      */
-    protected synchronized static void loadStores(String tokenName, 
+    /*protected synchronized static void loadStores(String tokenName, 
             String storeType, Provider provider,
             String keyStoreFile, String keyStorePass, 
-            String trustStoreFile, String trustStorePass) {
+            String trustStoreFile, String trustStorePass) {*/
+    protected synchronized static void loadStores(
+                       String tokenName,
+                       Provider provider,
+                       String keyStoreFile,
+                       String keyStorePass,
+                       String keyStoreType,
+                       String trustStoreFile,
+                       String trustStorePass,                       
+                       String trustStoreType) {
+
         try {
-            KeyStore keyStore = loadKS(storeType, provider, keyStoreFile,
+            KeyStore keyStore = loadKS(keyStoreType, provider, keyStoreFile,
                 keyStorePass);
-            KeyStore trustStore = loadKS(storeType, provider,trustStoreFile,
+            KeyStore trustStore = loadKS(trustStoreType, provider,trustStoreFile,
                 trustStorePass);
             keyStores.add(keyStore);
             trustStores.add(trustStore);

@@ -1371,10 +1371,11 @@ public class PECoyoteConnector extends Connector {
          * Keystore
          */
         String prop = System.getProperty("javax.net.ssl.keyStore");
+        String keyStoreType = System.getProperty("javax.net.ssl.keyStoreType",DEFAULT_KEYSTORE_TYPE);
         if (prop != null) {
             // PE
             setKeystoreFile(prop);
-            setKeystoreType(DEFAULT_KEYSTORE_TYPE);
+            setKeystoreType(keyStoreType);
         }
 
         /*

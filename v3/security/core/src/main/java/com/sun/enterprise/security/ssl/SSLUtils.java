@@ -88,6 +88,8 @@ public final class SSLUtils implements PostConstruct {
     private static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
     private static final String DEFAULT_OUTBOUND_KEY_ALIAS = "s1as";
     public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
+    private static final String KEYSTORE_TYPE_PROP="javax.net.ssl.keyStoreType";
+    private static final String TRUSTSTORE_TYPE_PROP="javax.net.ssl.trustStoreType";
 
     private static final Logger _logger = LogDomains.getLogger(SSLUtils.class, LogDomains.SECURITY_LOGGER);
 
@@ -205,6 +207,14 @@ public final class SSLUtils implements PostConstruct {
     public static String getTrustStorePass () {
         //XXX need to revisit if the value should be cached
         return System.getProperty(TRUSTSTORE_PASS_PROP, DEFAULT_TRUSTSTORE_PASS);
+    }
+
+    public static String getKeyStoreType() {
+        return System.getProperty(KEYSTORE_TYPE_PROP, KeyStore.getDefaultType());
+    }
+
+    public static String getTrustStoreType() {
+        return System.getProperty(TRUSTSTORE_TYPE_PROP, KeyStore.getDefaultType());
     }
 
     /**
