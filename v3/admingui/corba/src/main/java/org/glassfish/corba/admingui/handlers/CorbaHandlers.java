@@ -62,8 +62,7 @@ public class CorbaHandlers {
      )
     public static void getAllIiopPorts(HandlerContext handlerCtx){
         String configName = (String) handlerCtx.getInputValue("configName");
-        String objectNameString = "v3:pp=/domain/configs/config["+configName+"],type=iiop-service";
-        AMXProxy listeners = V3AMX.objectNameToProxy(objectNameString);
+        AMXProxy listeners = V3AMX.getInstance().getConfig(configName).getIiopService();
         Map<String, AMXProxy> networkListeners = listeners.childrenMap("iiop-listener");
         StringBuffer sb = new StringBuffer();
         for(AMXProxy oneListener:  networkListeners.values()){
