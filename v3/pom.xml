@@ -900,7 +900,13 @@
                 <groupId>org.glassfish.web</groupId>
                 <artifactId>el-impl</artifactId>
                 <version>${el-impl.version}</version>
-          </dependency>
+	  </dependency>
+
+	  <dependency>
+            <groupId>com.sun.jersey</groupId>
+	    <artifactId>jersey-server</artifactId>
+            <version>${jersey.version}</version>
+         </dependency>
 
         </dependencies>
     </dependencyManagement>
