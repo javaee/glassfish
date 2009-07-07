@@ -4,6 +4,8 @@ UNIT TESTS ON SECURITY
 FOR RUNNING THE SECURITY TESTS:
 -------------------------------
 1. Update appserv-tests/config.properties.
+1a. Set the ENV variables S1AS_HOME to GFv3 home
+1b. Set the ENV variable APS_HOME t0 appserv-tests
 2. Start the domain
 3. Simple type "ant all" from appserv-tests/devtests/security.
 
