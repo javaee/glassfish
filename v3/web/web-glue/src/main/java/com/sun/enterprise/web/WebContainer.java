@@ -1033,30 +1033,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /**
      * Validate the docroot properties of a virtual-server.
      */
-    protected boolean validateDocroot(String docroot, String vs_id,
-                                      String defaultWebModule){
+    protected void validateDocroot(String docroot, String vs_id,
+                                   String defaultWebModule){
+        if (docroot == null) {
+            return;
+        }
 
-        // docroot vs default-web-module
-        if (docroot != null ) {
-            // If the docroot is invalid and there is no default module,
-            // stop the process.
-            boolean isValid = new File(docroot).exists();
-            if ( !isValid && defaultWebModule == null){
-                String msg = rb.getString(
-                    "pewebcontainer.virtual_server.invalid_docroot");
-                msg = MessageFormat.format(msg, vs_id, docroot);
-                throw new IllegalArgumentException(msg);
-            } else if (!isValid) {
-
-                _logger.log(Level.WARNING, "virtual-server " + vs_id
-                            + " has an invalid docroot: " + docroot );
-            }
-        } else if (defaultWebModule == null) {
-            String msg = rb.getString("pewebcontainer.virtual_server.missing_docroot");
-            msg = MessageFormat.format(msg, vs_id);
+        boolean isValid = new File(docroot).exists();
+        if (!isValid) {
+            String msg = rb.getString(
+                "pewebcontainer.virtual_server.invalid_docroot");
+            msg = MessageFormat.format(msg, vs_id, docroot);
             throw new IllegalArgumentException(msg);
         }
-        return true;
     }
 
 
@@ -3054,18 +3043,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             VirtualServer vs,
             com.sun.enterprise.config.serverbeans.VirtualServer vsBean) {
 
-        boolean isValid = validateDocroot(docroot,
-                                          vsBean.getId(),
-                                          vsBean.getDefaultWebModule());
-        if (isValid) {
-            vs.setAppBase(docroot);
-            removeDummyModule(vs);
-            WebModuleConfig wmInfo =
-                vs.createSystemDefaultWebModuleIfNecessary(
-                    habitat.getComponent(WebArchivist.class));
-            if (wmInfo != null) {
-                loadStandaloneWebModule(vs, wmInfo);
-            }
+        validateDocroot(docroot, vsBean.getId(),
+                        vsBean.getDefaultWebModule());
+        vs.setAppBase(docroot);
+        removeDummyModule(vs);
+        WebModuleConfig wmInfo =
+            vs.createSystemDefaultWebModuleIfNecessary(
+                habitat.getComponent(WebArchivist.class));
+        if (wmInfo != null) {
+            loadStandaloneWebModule(vs, wmInfo);
         }
     }
 
