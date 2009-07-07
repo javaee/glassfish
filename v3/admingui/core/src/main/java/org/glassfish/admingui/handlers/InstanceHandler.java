@@ -117,7 +117,7 @@ public class InstanceHandler {
         ObjectName objName = null;
         Boolean edit = false; 
         try{
-            AMXProxy amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName("v3:pp=/domain/configs/config[server-config],type=java-config"));
+            AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getJava();
             objName = (ObjectName) amx.attributesMap().get("Profiler");
             if (objName != null) {
                 edit = true;

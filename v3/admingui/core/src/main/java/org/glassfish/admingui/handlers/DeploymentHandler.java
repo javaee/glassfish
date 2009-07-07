@@ -63,6 +63,7 @@ import com.sun.webui.jsf.model.UploadedFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -227,8 +228,8 @@ public class DeploymentHandler {
 
              //If we are redeploying a web app, we want to preserve context root.
              //can use Query instead of hard code object name
-             String appObjectNameStr = "v3:pp=/domain/applications,type=application,name="+appName;
-             String ctxRoot = (String) V3AMX.getAttribute(appObjectNameStr, "ContextRoot");
+             AMXProxy app = V3AMX.getInstance().getApplication(appName);
+             String ctxRoot = (String) app.attributesMap().get("ContextRoot");
              if (ctxRoot != null){
                  deploymentProps.setContextRoot(ctxRoot);
              }

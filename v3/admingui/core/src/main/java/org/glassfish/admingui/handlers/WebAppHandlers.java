@@ -149,7 +149,7 @@ public class WebAppHandlers {
     public static void getSubComponents(HandlerContext handlerCtx) {
         List result = new ArrayList();
         String appName = (String) handlerCtx.getInputValue("appName");
-        AMXProxy applications = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
+        AMXProxy applications = V3AMX.getInstance().getApplications();
         Map<String, AMXProxy> modules = applications.childrenMap("application").get(appName).childrenMap("module");
         for(AMXProxy oneModule: modules.values()){
             Map oneRow = new HashMap();
@@ -182,7 +182,7 @@ public class WebAppHandlers {
         if (GuiUtil.isEmpty(filterValue))
             filterValue = null;
         List result = new ArrayList();
-        AMXProxy applications = V3AMX.objectNameToProxy("v3:pp=/domain,type=applications");
+        AMXProxy applications = V3AMX.getInstance().getApplications();
         Map<String, AMXProxy> application = applications.childrenMap("application");
         eachApp:  for (AMXProxy oneApp : application.values()) {
             HashMap oneRow = new HashMap();
