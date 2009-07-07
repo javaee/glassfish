@@ -138,7 +138,6 @@
 
             <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
                 <sun:staticText id="debugPort" text="#{pageSession.debugInfo}"/>
-            "<br /><br />
             </sun:property>
         </sun:propertySheetSection>
         <event>

@@ -153,12 +153,21 @@
 	    expanded="$boolean{true}"
 	    >
 
+        //java-config
+        <sun:treeNode id="jvmSettings"
+            text="$resource{i18n.tree.jvmSettings}"
+            url="/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}"
+            imageURL="/resource/images/jvm.gif"
+        />
+
         //Admin Service
         <sun:treeNode id="adminService"
             text="$resource{i18n.tree.adminService}"
             url="/configuration/jmxConnectorEdit.jsf?configName=#{configName}"
             imageURL="/resource/images/connector.png"
         />
+
+
 
 	</sun:treeNode>
     <sun:treeNode id="systemProps"

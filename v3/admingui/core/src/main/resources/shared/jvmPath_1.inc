@@ -40,7 +40,7 @@
 <!define name="content">
     <event>
         <!beforeCreate
-            setSessionAttribute(key="serverInstTabs" value="pathSettings");
+            setSessionAttribute(key="javaConfigTab" value="pathSettings");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
@@ -58,7 +58,7 @@
             formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
             mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{nps}");
             setPageSessionAttribute(key="convertToFalseList" value={"EnvClasspathIgnored"});
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstJvmPathSettings.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfigTab/serverInstJvmPathSettings.jsf");
             setPageSessionAttribute(key="skipAttrsList", value={"RmicOptions" "JavacOptions" "JavaHome" "DebugOptions" "DebugEnabled" "BytecodePreprocessors"});
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );

@@ -43,11 +43,11 @@
     <!beforeCreate
         # for EE, the following session attribute will just be ignored.
             setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
-            setSessionAttribute(key="serverInstTabs" value="jvmOptions");
+            setSessionAttribute(key="javaConfigTab" value="jvmOptions");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             getJvmOptionsValues(objectNameStr="#{pageSession.objectNameStr}"  result=>$attribute{tableList});
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverJvmOptions.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfigTab/serverJvmOptions.jsf");
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );

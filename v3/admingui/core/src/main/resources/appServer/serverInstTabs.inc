@@ -45,40 +45,6 @@
 	    />       
     </sun:tab>
 
-
-    <sun:tab id="jvmSettings" immediate="true" text="$resource{i18n.jvm.JvmSettings}">
-	<!command
-            setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
-	    redirect(page="#{request.contextPath}/appServer/serverInstJvmGeneral.jsf?configName=server-config");
-	/>
-	<sun:tab id="jvmGeneral" immediate="true" text="$resource{i18n.common.General}">
-	<!command
-            setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
-	    redirect(page="#{request.contextPath}/appServer/serverInstJvmGeneral.jsf?configName=server-config");
-	/>
-	</sun:tab>
-	<sun:tab id="pathSettings" immediate="true" text="$resource{i18n.jvm.PathSettings}">
-	    <!command
-                setSessionAttribute(key="serverInstTabs" value="pathSettings");
-		redirect(page="#{request.contextPath}/appServer/serverInstJvmPathSettings.jsf?configName=server-config");
-	    />        
-
-	</sun:tab>
-	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18n.jvm.Options}" >
-	    <!command
-                setSessionAttribute(key="serverInstTabs" value="jvmOptions");
-		redirect(page="#{request.contextPath}/appServer/serverJvmOptions.jsf?configName=server-config");
-	    />        
-	</sun:tab>
-	<sun:tab id="profiler" immediate="true" text="$resource{i18n.jvm.Profiler}" >
-	    <!command
-                setSessionAttribute(key="serverInstTabs" value="profiler");
-		redirect(page="#{request.contextPath}/appServer/serverInstProfiler.jsf?configName=server-config");
-	    />        
-	</sun:tab>
-    </sun:tab>
-
-
     <!--
     <sun:tab id="logging" immediate="true" text="$resource{i18n.log.Logging}">
          <!command

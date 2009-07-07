@@ -43,7 +43,7 @@
     <!beforeCreate
             # for EE, the following session attribute will just be ignored.
             setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
-            setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
+            setSessionAttribute(key="javaConfigTab" value="jvmGeneral");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
@@ -51,7 +51,7 @@
             setPageSessionAttribute(key="convertToFalseList" value={"DebugEnabled"});
             setPageSessionAttribute(key="childType" value="java-config");            
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});            
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/appServer/serverInstJvmGeneral.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmGeneral.jsf");
             setPageSessionAttribute(key="skipAttrsList", value={"EnvClasspathIgnored" "ServerClasspath" "SystemClasspath" "ClasspathPrefix" "ClasspathSuffix" "NativeLibraryPathPrefix" "NativeLibraryPathSuffix"});
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
@@ -63,4 +63,4 @@
     </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
-     #include "/shared/treeBreadcrumbs.inc"
+     //#include "/shared/treeBreadcrumbs.inc"
