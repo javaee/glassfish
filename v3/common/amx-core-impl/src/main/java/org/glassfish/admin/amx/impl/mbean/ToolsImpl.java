@@ -46,11 +46,9 @@ import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.base.Tools;
 import org.glassfish.admin.amx.core.AMXValidator;
-import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.StringUtil;
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.MBeanInterfaceGenerator;
 import org.glassfish.admin.amx.core.Util;
 

@@ -42,179 +42,164 @@ import javax.management.ObjectName;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.List;
 
 import org.glassfish.admin.amx.base.Sample;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.core.Util;
 
-
 /**
-	@see Sample
+@see Sample
  */
 public final class SampleImpl extends AMXImplBase
 {
-	// all Attributes live in a Map
-	private final Map<String,Serializable>	mAttributes;
-	private MBeanInfo	mExtendedMBeanInfo;
-	
-		public void
-	emitNotifications( final Serializable data, final int numNotifs, final long interval )
-	{
-		if ( numNotifs <= 0 )
-		{
-			throw new IllegalArgumentException( "" + numNotifs );
-		}
-		
-		new EmitterThread( data, numNotifs, interval ).start();
-	}
-		
-		public
-	SampleImpl(final ObjectName parentObjectName)
-	{
-        super( parentObjectName, Sample.class );
-		mAttributes	= Collections.synchronizedMap( new HashMap<String,Serializable>() );
-		mExtendedMBeanInfo	= null;
-	}
-		
-		public void
-	addAttribute( final String name, final Serializable value )
-	{
-		if ( name == null || name.length() == 0 )
-		{
-			throw new IllegalArgumentException( );
-		}
-		
-		mAttributes.put( name, value );
-		//mExtendedMBeanInfo	= null;
-	}
-	
-		public void
-	removeAttribute( final String name )
-	{
-		mAttributes.remove( name );
-		mExtendedMBeanInfo	= null;
-	}
-	
-	
-		public boolean
-	getMBeanInfoIsInvariant()
-	{
-		return( false );
-	}
-	
-		private synchronized MBeanInfo
-	createMBeanInfo( final MBeanInfo baseMBeanInfo)
-	{
-		final MBeanAttributeInfo[]	dynamicAttrInfos	= new MBeanAttributeInfo[ mAttributes.keySet().size() ];
-		int	i = 0;
-		for( final String name : mAttributes.keySet() )
-		{
-			final Object	value	= mAttributes.get( name );
-			final String	type	= value == null ? String.class.getName() : value.getClass().getName();
-			
-			dynamicAttrInfos[ i ]	= new MBeanAttributeInfo( name, type, "dynamically-added Attribute",
-										true, true, false );
-			++i;
-		}
-		
-		final MBeanAttributeInfo[]	attrInfos	=
-			JMXUtil.mergeMBeanAttributeInfos( dynamicAttrInfos, baseMBeanInfo.getAttributes() );
-		
-		return( JMXUtil.newMBeanInfo( baseMBeanInfo, attrInfos ) );
-	}
-	
-		public synchronized MBeanInfo
-	getMBeanInfo()
-	{
-		if ( mExtendedMBeanInfo == null )
-		{
-			mExtendedMBeanInfo	= createMBeanInfo( super.getMBeanInfo() );
-		}
-		
-		return( mExtendedMBeanInfo );
-	}
-	
-		protected Serializable
-	getAttributeManually( final String name )
-	{
-		return( mAttributes.get( name ) );
-	}
-	
-	
-		protected void
-	setAttributeManually( final Attribute attr )
-	{
-		mAttributes.put( attr.getName(), Serializable.class.cast( attr.getValue() ) );
-	}
-	
-	
-	
-	private final class EmitterThread extends Thread
-	{
-		private final Serializable	mData;
-		private final int		mNumNotifs;
-		private final long		mIntervalMillis;
-	
-		public	EmitterThread( final Serializable data, final int numNotifs, final long intervalMillis )
-		{
-			mData			= data;
-			mNumNotifs		= numNotifs;
-			mIntervalMillis	= intervalMillis;
-		}
-	
-			public void
-		run()
-		{
-			for( int i = 0; i < mNumNotifs; ++i )
-			{
-				sendNotification( Sample.SAMPLE_NOTIFICATION_TYPE, Sample.USER_DATA_KEY, mData );
-				
-				try
-				{
-					Thread.sleep( mIntervalMillis );
-				}
-				catch( InterruptedException e )
-				{
-					break;
-				}
-			}
-		}
-	}
-	
-	
-		public void
-	uploadBytes( final byte[] bytes )
-	{	
-		// do nothing; just a bandwidth test
-	}
-	
-	private final static int MEGABYTE	= 1024 * 1024;
-		public byte[]
-	downloadBytes( final int numBytes )
-	{	
-		if ( numBytes <0 || numBytes > 10 * MEGABYTE )
-		{
-			throw new IllegalArgumentException( "Illegal count: " + numBytes );
-		}
+    // all Attributes live in a Map
+    private final Map<String, Serializable> mAttributes;
 
-		final byte[]	bytes	= new byte[ numBytes ];
-		
-		return( bytes );
-	}
-    
+    private MBeanInfo mExtendedMBeanInfo;
+
+    public void emitNotifications(final Serializable data, final int numNotifs, final long interval)
+    {
+        if (numNotifs <= 0)
+        {
+            throw new IllegalArgumentException("" + numNotifs);
+        }
+
+        new EmitterThread(data, numNotifs, interval).start();
+    }
+
+    public SampleImpl(final ObjectName parentObjectName)
+    {
+        super(parentObjectName, Sample.class);
+        mAttributes = Collections.synchronizedMap(new HashMap<String, Serializable>());
+        mExtendedMBeanInfo = null;
+    }
+
+    public void addAttribute(final String name, final Serializable value)
+    {
+        if (name == null || name.length() == 0)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        mAttributes.put(name, value);
+        //mExtendedMBeanInfo	= null;
+    }
+
+    public void removeAttribute(final String name)
+    {
+        mAttributes.remove(name);
+        mExtendedMBeanInfo = null;
+    }
+
+    public boolean getMBeanInfoIsInvariant()
+    {
+        return (false);
+    }
+
+    private synchronized MBeanInfo createMBeanInfo(final MBeanInfo baseMBeanInfo)
+    {
+        final MBeanAttributeInfo[] dynamicAttrInfos = new MBeanAttributeInfo[mAttributes.keySet().size()];
+        int i = 0;
+        for (final String name : mAttributes.keySet())
+        {
+            final Object value = mAttributes.get(name);
+            final String type = value == null ? String.class.getName() : value.getClass().getName();
+
+            dynamicAttrInfos[i] = new MBeanAttributeInfo(name, type, "dynamically-added Attribute",
+                    true, true, false);
+            ++i;
+        }
+
+        final MBeanAttributeInfo[] attrInfos =
+                JMXUtil.mergeMBeanAttributeInfos(dynamicAttrInfos, baseMBeanInfo.getAttributes());
+
+        return (JMXUtil.newMBeanInfo(baseMBeanInfo, attrInfos));
+    }
+
+    public synchronized MBeanInfo getMBeanInfo()
+    {
+        if (mExtendedMBeanInfo == null)
+        {
+            mExtendedMBeanInfo = createMBeanInfo(super.getMBeanInfo());
+        }
+
+        return (mExtendedMBeanInfo);
+    }
+
+    protected Serializable getAttributeManually(final String name)
+    {
+        return (mAttributes.get(name));
+    }
+
+    protected void setAttributeManually(final Attribute attr)
+    {
+        mAttributes.put(attr.getName(), Serializable.class.cast(attr.getValue()));
+    }
+
+    private final class EmitterThread extends Thread
+    {
+        private final Serializable mData;
+
+        private final int mNumNotifs;
+
+        private final long mIntervalMillis;
+
+        public EmitterThread(final Serializable data, final int numNotifs, final long intervalMillis)
+        {
+            mData = data;
+            mNumNotifs = numNotifs;
+            mIntervalMillis = intervalMillis;
+        }
+
+        public void run()
+        {
+            for (int i = 0; i < mNumNotifs; ++i)
+            {
+                sendNotification(Sample.SAMPLE_NOTIFICATION_TYPE, Sample.USER_DATA_KEY, mData);
+
+                try
+                {
+                    Thread.sleep(mIntervalMillis);
+                }
+                catch (InterruptedException e)
+                {
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public void uploadBytes(final byte[] bytes)
+    {
+        // do nothing; just a bandwidth test
+    }
+
+    private final static int MEGABYTE = 1024 * 1024;
+
+    public byte[] downloadBytes(final int numBytes)
+    {
+        if (numBytes < 0 || numBytes > 10 * MEGABYTE)
+        {
+            throw new IllegalArgumentException("Illegal count: " + numBytes);
+        }
+
+        final byte[] bytes = new byte[numBytes];
+
+        return (bytes);
+    }
+
     public ObjectName[] getAllAMX()
     {
-        final List<ObjectName> all = Util.toObjectNames( getDomainRootProxy().getQueryMgr().queryAll() );
-        
-        return CollectionUtil.toArray( all, ObjectName.class );
+        final List<ObjectName> all = Util.toObjectNames(getDomainRootProxy().getQueryMgr().queryAll());
+
+        return CollectionUtil.toArray(all, ObjectName.class);
     }
+
 }
 
 

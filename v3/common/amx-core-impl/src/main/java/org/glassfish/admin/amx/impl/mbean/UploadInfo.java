@@ -39,106 +39,98 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
 public final class UploadInfo extends UpDownInfo
 {
-	private final String		mName;
-	private final long			mTotalSize;
-	private FileOutputStream	mOutputStream;
-	private long			mWrittenSoFar;
-	
-	
-		public
-	UploadInfo(
-		final Object	id,
-		final String	name,
-		final long		totalSize )
-		throws IOException
-	{
-		super( id, createTempFile( id, name, totalSize ) );
-		
-		mName	= name;
-		
-		mTotalSize	= totalSize;
-		
-		getFile().createNewFile();
-		getFile().deleteOnExit();
-		mOutputStream	= new FileOutputStream( getFile() );
-		
-		mWrittenSoFar	= 0;
-	}
-	
-		private static File
-	createTempFile( final Object id, final String name, final long totalSize )
-		throws IOException
-	{
+    private final String mName;
+
+    private final long mTotalSize;
+
+    private FileOutputStream mOutputStream;
+
+    private long mWrittenSoFar;
+
+    public UploadInfo(
+            final Object id,
+            final String name,
+            final long totalSize)
+            throws IOException
+    {
+        super(id, createTempFile(id, name, totalSize));
+
+        mName = name;
+
+        mTotalSize = totalSize;
+
+        getFile().createNewFile();
+        getFile().deleteOnExit();
+        mOutputStream = new FileOutputStream(getFile());
+
+        mWrittenSoFar = 0;
+    }
+
+    private static File createTempFile(final Object id, final String name, final long totalSize)
+            throws IOException
+    {
         final String tempName = (name != null) ? name : id + "_" + totalSize;
-        File  actual   = new File( tempName );
-        if ( actual.exists() )
+        File actual = new File(tempName);
+        if (actual.exists())
         {
-            actual  = File.createTempFile( tempName, null );
+            actual = File.createTempFile(tempName, null);
         }
-        return( actual ); 
-	}
-	
-		public boolean
-	isDone()
-	{
-		return( mWrittenSoFar == mTotalSize );
-	}
-	
-	
-	/**
-		@return true if done, false otherwise
-	 */
-		public boolean
-	write( final byte[] bytes )
-		throws IOException
-	{
-		if ( isDone() || mWrittenSoFar + bytes.length > mTotalSize )
-		{
-			throw new IllegalArgumentException( "too many bytes" );
-		}
-		getOutputStream().write( bytes );
-		
-		mWrittenSoFar	+= bytes.length;
-		
-		if ( isDone() )
-		{
-			mOutputStream.close();
-			mOutputStream	= null;
-		}
-		
-		accessed();
-		
-		return( isDone() );
-	}
-	
-	
-	
-		public long
-	getTotalSize()
-	{
-		return( mTotalSize );
-	}
-	
-		public void
-	cleanup()
-		throws IOException
-	{
-		if ( mOutputStream != null )
-		{
-			mOutputStream.close();
-		}
-		
-		getFile().delete();
-	}
-	
-		private FileOutputStream
-	getOutputStream()
-	{
-		return( mOutputStream );
-	}
+        return (actual);
+    }
+
+    public boolean isDone()
+    {
+        return (mWrittenSoFar == mTotalSize);
+    }
+
+    /**
+    @return true if done, false otherwise
+     */
+    public boolean write(final byte[] bytes)
+            throws IOException
+    {
+        if (isDone() || mWrittenSoFar + bytes.length > mTotalSize)
+        {
+            throw new IllegalArgumentException("too many bytes");
+        }
+        getOutputStream().write(bytes);
+
+        mWrittenSoFar += bytes.length;
+
+        if (isDone())
+        {
+            mOutputStream.close();
+            mOutputStream = null;
+        }
+
+        accessed();
+
+        return (isDone());
+    }
+
+    public long getTotalSize()
+    {
+        return (mTotalSize);
+    }
+
+    public void cleanup()
+            throws IOException
+    {
+        if (mOutputStream != null)
+        {
+            mOutputStream.close();
+        }
+
+        getFile().delete();
+    }
+
+    private FileOutputStream getOutputStream()
+    {
+        return (mOutputStream);
+    }
+
 }
 
 

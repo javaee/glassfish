@@ -38,18 +38,16 @@ package org.glassfish.admin.amx.impl.mbean;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.Ext;
 
-
 /**
-    Extensions.
+Extensions.
  */
 public class ExtImpl extends AMXImplBase
-	// implements Ext
+// implements Ext
 {
-		public
-	ExtImpl(final ObjectName parentObjectName)
-	{
-        super( parentObjectName, Ext.class );
-	}
+    public ExtImpl(final ObjectName parentObjectName)
+    {
+        super(parentObjectName, Ext.class);
+    }
 
     //  children are added elsewhere, by other modules
 }

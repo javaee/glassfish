@@ -145,8 +145,8 @@ public final class ComplianceMonitor implements NotificationListener
             super("ComplianceMonitor.ValidatorThread");
             mServer = server;
         }
-        
-        private static final ObjectName QUIT = JMXUtil.newObjectName( "quit:type=quit" );
+
+        private static final ObjectName QUIT = JMXUtil.newObjectName("quit:type=quit");
 
         void quit()
         {
@@ -190,8 +190,8 @@ public final class ComplianceMonitor implements NotificationListener
                 try
                 {
                     //debug( "VALIDATING MBeans: " + toValidate.size() );
-                    final ObjectName[] objectNames = new ObjectName[ toValidate.size() ];
-                    toValidate.toArray( objectNames );
+                    final ObjectName[] objectNames = new ObjectName[toValidate.size()];
+                    toValidate.toArray(objectNames);
                     final AMXValidator.ValidationResult result = validator.validate(objectNames);
                     if (result.numFailures() != 0)
                     {

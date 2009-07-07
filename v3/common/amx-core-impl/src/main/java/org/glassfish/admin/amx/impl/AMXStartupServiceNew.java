@@ -20,7 +20,7 @@
  *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package org.glassfish.admin.amx.impl.loader;
+package org.glassfish.admin.amx.impl;
 
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
@@ -48,17 +48,14 @@ import javax.management.NotCompliantMBeanException;
 import org.glassfish.admin.amx.base.MBeanTracker;
 import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 import org.glassfish.admin.amx.base.SystemInfo;
-import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.mbean.DomainRootImpl;
 import org.glassfish.admin.amx.impl.mbean.SystemInfoFactory;
 import org.glassfish.admin.amx.impl.mbean.SystemInfoImpl;
 import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
-import org.glassfish.admin.amx.impl.util.Issues;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.ExceptionUtil;
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
 import org.glassfish.api.amx.AMXLoader;
 import org.jvnet.hk2.component.Habitat;
@@ -73,7 +70,6 @@ import org.glassfish.admin.amx.util.jmx.stringifier.StringifierRegistryIniter;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl;
 import org.glassfish.api.amx.AMXValues;
-import static org.glassfish.api.amx.AMXValues.*;
 
 
 /**
@@ -108,9 +104,6 @@ public final class AMXStartupServiceNew
     
     public AMXStartupServiceNew()
     {
-        //debug( "AMXStartupServiceNew.AMXStartupServiceNew()" );
-       // debug( this.getClass().getName() );
-       
 		new StringifierRegistryIniterImpl( StringifierRegistryImpl.DEFAULT );
 		new StringifierRegistryIniter( StringifierRegistryImpl.DEFAULT );
     }

@@ -48,122 +48,116 @@ import java.util.concurrent.ConcurrentMap;
 import org.glassfish.api.amx.AMXValues;
 
 /**
-    Loaded as MBean "amx:j2eeType=X-SystemInfo,name=na"
+Loaded as MBean "amx:j2eeType=X-SystemInfo,name=na"
  */
 public final class SystemInfoImpl extends AMXImplBase
-	//implements SystemInfo
+//implements SystemInfo
 {
-	private final MBeanServer	mServer;
-	
-	//public static final String	NAME_PROP_VALUE	= "system-info";
-	
-	private final ConcurrentMap<String,Boolean>	mFeatures;
-	
-	public SystemInfoImpl(
-		final MBeanServer server )
-	{
-        super( ObjectNameBuilder.getDomainRootObjectName(AMXValues.amxJMXDomain()), SystemInfo.class );
-		
-		mServer			= server;
-		
+    private final MBeanServer mServer;
+
+    //public static final String	NAME_PROP_VALUE	= "system-info";
+    private final ConcurrentMap<String, Boolean> mFeatures;
+
+    public SystemInfoImpl(
+            final MBeanServer server)
+    {
+        super(ObjectNameBuilder.getDomainRootObjectName(AMXValues.amxJMXDomain()), SystemInfo.class);
+
+        mServer = server;
+
         // must be thread-safe, because features can be added at a later time
-		mFeatures	= new ConcurrentHashMap<String,Boolean>();
-	}
+        mFeatures = new ConcurrentHashMap<String, Boolean>();
+    }
 
     /**
-        Advertise the presence of a feature.  For consistency, feature names should normally be
-        of the form <description>_FEATURE.  For example: "HELLO-WORLD_FEATURE".
-        <p>
-        To change a feature’s availability to unavailable, pass 'false' for 'available' (there is no
-        removeFeature() call).  This is discouraged unless dynamic presence/absence is an inherent
-        characteristic of the feature; clients might check only once for presence or absence.
-        
-        @param featureName name of the feature
-        @param available  should be 'true' unless an explicit 'false' (unavailable) is desired
+    Advertise the presence of a feature.  For consistency, feature names should normally be
+    of the form <description>_FEATURE.  For example: "HELLO-WORLD_FEATURE".
+    <p>
+    To change a feature’s availability to unavailable, pass 'false' for 'available' (there is no
+    removeFeature() call).  This is discouraged unless dynamic presence/absence is an inherent
+    characteristic of the feature; clients might check only once for presence or absence.
+
+    @param featureName name of the feature
+    @param available  should be 'true' unless an explicit 'false' (unavailable) is desired
      */
-        public void
-    addFeature( final String featureName, final boolean available )
+    public void addFeature(final String featureName, final boolean available)
     {
-        if ( featureName == null || featureName.length() == 0 )
+        if (featureName == null || featureName.length() == 0)
         {
             throw new IllegalArgumentException();
         }
 
-        mFeatures.put( featureName, Boolean.valueOf(available) );
+        mFeatures.put(featureName, Boolean.valueOf(available));
     }
-		
-		public String[]
-	getFeatureNames()
-	{
+
+    public String[] getFeatureNames()
+    {
         // make a copy so that we can reliably call List.size()
         // According to Brian Goetz, this approach is thread safe for using the keySet.
-        final List<String> nameList = new ArrayList<String>( mFeatures.keySet() );
-        
+        final List<String> nameList = new ArrayList<String>(mFeatures.keySet());
+
         final String[] names = new String[nameList.size()];
-        nameList.toArray( names );
+        nameList.toArray(names);
         return names;
     }
-	
-		public boolean
-	supportsFeature( final String key )
-	{
-		boolean	supports	= false;
-		
-		Boolean	result	= mFeatures.get( key );
-		if ( result == null )
-		{
-			result	= Boolean.FALSE;
-		}
-		
-		return( result );
-	}
-    
+
+    public boolean supportsFeature(final String key)
+    {
+        boolean supports = false;
+
+        Boolean result = mFeatures.get(key);
+        if (result == null)
+        {
+            result = Boolean.FALSE;
+        }
+
+        return (result);
+    }
+
     /**
-        Return a Map keyed by an arbitrary String denoting some feature.  The value
-        is the time in milliseconds.  Code should not rely on the keys as they are subject to 
-        changes, additions, or removal at any time, except as otherwise documented.
-        Even documented items should be used only for informational purposes,
-        such as assessing performance.
-        
-         @return Map<String,Long>
-        public Map<String,Long>
+    Return a Map keyed by an arbitrary String denoting some feature.  The value
+    is the time in milliseconds.  Code should not rely on the keys as they are subject to
+    changes, additions, or removal at any time, except as otherwise documented.
+    Even documented items should be used only for informational purposes,
+    such as assessing performance.
+
+    @return Map<String,Long>
+    public Map<String,Long>
     getPerformanceMillis()
     {
-        final Map<String,Long> data = SystemInfoData.getInstance().getPerformanceMillis();
-        
-        // By copying, we ensure that we return a copy which is both serializable and standard
-        // We are also in effect taking a "snapshot", the desired semantics.
-        final HashMap<String,Long>  result = new HashMap<String,Long>( data );
-        
-        return result;
+    final Map<String,Long> data = SystemInfoData.getInstance().getPerformanceMillis();
+
+    // By copying, we ensure that we return a copy which is both serializable and standard
+    // We are also in effect taking a "snapshot", the desired semantics.
+    final HashMap<String,Long>  result = new HashMap<String,Long>( data );
+
+    return result;
     }
      */
-    
-        public Map<String,Long>
-    getPerformanceMillis()
+    public Map<String, Long> getPerformanceMillis()
     {
-        return new HashMap<String,Long>();
+        return new HashMap<String, Long>();
     }
-    
-         private  void
-    _refresh()
+
+    private void _refresh()
     {
     }
-    
-    private static long LAST_REFRESH    = 0;
+
+    private static long LAST_REFRESH = 0;
+
     /**
-        How will this ever be called?
+    How will this ever be called?
      */
-        private synchronized void
-    refresh()
+    private synchronized void refresh()
     {
-        final long REFRESH_MILLIS   = 5 * 1000; // 5 seconds
-        final long elapsed   = System.currentTimeMillis() - LAST_REFRESH;
-        if ( elapsed > REFRESH_MILLIS )
+        final long REFRESH_MILLIS = 5 * 1000; // 5 seconds
+        final long elapsed = System.currentTimeMillis() - LAST_REFRESH;
+        if (elapsed > REFRESH_MILLIS)
         {
             _refresh();
         }
     }
+
 }
 
 

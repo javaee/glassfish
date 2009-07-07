@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
-import org.glassfish.admin.amx.core.AMXConstants;
 import org.glassfish.admin.amx.core.Util;
 
 import org.glassfish.admin.amx.base.Query;
@@ -44,10 +43,7 @@ import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImpl;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.RegexUtil;
 import org.glassfish.admin.amx.util.CollectionUtil;
-import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import java.io.IOException;
 import java.util.HashSet;
@@ -64,29 +60,28 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
 
     public ObjectName[] queryProps(final String props)
     {
-        return queryPattern( Util.newObjectNamePattern( getJMXDomain(), props) );
+        return queryPattern(Util.newObjectNamePattern(getJMXDomain(), props));
     }
-    
 
     public ObjectName[] queryTypes(final Set<String> types)
             throws IOException
     {
         final Set<ObjectName> result = new HashSet<ObjectName>();
 
-        for (final ObjectName objectName : queryAll() )
+        for (final ObjectName objectName : queryAll())
         {
-            if ( types.contains(Util.getTypeProp(objectName)) )
+            if (types.contains(Util.getTypeProp(objectName)))
             {
                 result.add(objectName);
             }
         }
 
-        return asArray( result );
+        return asArray(result);
     }
 
     public ObjectName[] queryType(final String type)
     {
-        return queryProps( Util.makeTypeProp(type) );
+        return queryProps(Util.makeTypeProp(type));
     }
 
     public ObjectName[] queryName(final String name)
@@ -94,12 +89,10 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         return queryProps(Util.makeNameProp(name));
     }
 
-
     public ObjectName[] queryPattern(final ObjectName pattern)
     {
-        return asArray( JMXUtil.queryNames(getMBeanServer(), pattern, null) );
+        return asArray(JMXUtil.queryNames(getMBeanServer(), pattern, null));
     }
-
 
     /**
     @return Set<ObjectName> containing all items that have the matching type and name
@@ -108,7 +101,7 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
             final String type,
             final String name)
     {
-        return queryProps( Util.makeRequiredProps(type, name) );
+        return queryProps(Util.makeRequiredProps(type, name));
     }
 
     private static String[] convertToRegex(String[] wildExprs)
@@ -152,7 +145,7 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         final ObjectName[] candidates = queryAll();
         final Set<ObjectName> candidatesSet = SetUtil.newSet(candidates);
 
-        return asArray( matchWild(candidatesSet, wildKeys, wildValues) );
+        return asArray(matchWild(candidatesSet, wildKeys, wildValues));
     }
 
     public ObjectName[] queryAll()
@@ -160,14 +153,13 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         final ObjectName pat = Util.newObjectNamePattern(getJMXDomain(), "");
 
         final Set<ObjectName> names = JMXUtil.queryNames(getMBeanServer(), pat, null);
-        
+
         return asArray(names);
     }
-    
-        private final ObjectName[]
-    asArray( final Set<ObjectName> items )
+
+    private final ObjectName[] asArray(final Set<ObjectName> items)
     {
-        return CollectionUtil.toArray( items, ObjectName.class );
+        return CollectionUtil.toArray(items, ObjectName.class);
     }
 
 }

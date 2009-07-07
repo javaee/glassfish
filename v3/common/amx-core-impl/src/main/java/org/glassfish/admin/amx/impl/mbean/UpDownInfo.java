@@ -38,58 +38,53 @@ package org.glassfish.admin.amx.impl.mbean;
 import java.io.File;
 import java.io.IOException;
 
-
 public abstract class UpDownInfo
 {
-	private final File			mFile;
-	private Object				mID;
-	private long				mLastAccessTime;
-	
-	
-	public abstract	void	cleanup() throws IOException;
-	public abstract	boolean	isDone();
+    private final File mFile;
 
-		public
-	UpDownInfo(
-		final Object	id,
-		final File		theFile )
-	{
-		mID		= id;
-		mFile	= theFile;
-		
-		mLastAccessTime	= System.currentTimeMillis();
-	}
-	
-		public final long
-	getLastUseTime()
-	{
-		return( mLastAccessTime );
-	}
-	
-		public final long
-	getMillisSinceLastAccess()
-	{
-		return( System.currentTimeMillis() - mLastAccessTime );
-	}
-	
-		protected void
-	accessed()
-	{
-		mLastAccessTime	= System.currentTimeMillis();
-	}
-	
-	
-		public final Object
-	getID()
-	{
-		return( mID );
-	}
-	
-		public File
-	getFile()
-	{
-		return( mFile );
-	}
+    private Object mID;
+
+    private long mLastAccessTime;
+
+    public abstract void cleanup() throws IOException;
+
+    public abstract boolean isDone();
+
+    public UpDownInfo(
+            final Object id,
+            final File theFile)
+    {
+        mID = id;
+        mFile = theFile;
+
+        mLastAccessTime = System.currentTimeMillis();
+    }
+
+    public final long getLastUseTime()
+    {
+        return (mLastAccessTime);
+    }
+
+    public final long getMillisSinceLastAccess()
+    {
+        return (System.currentTimeMillis() - mLastAccessTime);
+    }
+
+    protected void accessed()
+    {
+        mLastAccessTime = System.currentTimeMillis();
+    }
+
+    public final Object getID()
+    {
+        return (mID);
+    }
+
+    public File getFile()
+    {
+        return (mFile);
+    }
+
 }
 
 

@@ -39,116 +39,110 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-
 public final class DownloadInfo extends UpDownInfo
 {
-	private FileInputStream	mInputStream;
-	
-	private long			mReadSoFar;
-	private final long		mTotalSize;
-	private final boolean	mDeleteWhenDone;
-	
-		public
-	DownloadInfo(
-		final Object	id,
-		final File		theFile,
-		final boolean	deleteWhenDone )
-		throws IOException
-	{
-		super( id, theFile );
-		
-		mTotalSize		= theFile.length();
-		if ( theFile.length() == 0 )
-		{
-			throw new IllegalArgumentException( theFile.toString() );
-		}
-		
-		mReadSoFar		= 0;
-		mDeleteWhenDone	= deleteWhenDone;
-		
-		if ( mDeleteWhenDone )
-		{
-			theFile.deleteOnExit();
-		}
-		
-		mInputStream	= new FileInputStream( theFile );
-		
-		assert( ! isDone() );
-	}
-	
-	
-		public final long
-	getLength()
-	{
-		return( mTotalSize );
-	}
-	
-		private final long
-	getRemaining()
-	{
-		return( mTotalSize - mReadSoFar );
-	}
-	
-		public boolean
-	isDone()
-	{
-		return( mReadSoFar == mTotalSize );
-	}
-	
-	
-	/**
-		@return true if done, false otherwise
-	 */
-		public synchronized byte[]
-	read( final int requestSize )
-		throws IOException
-	{
-		if ( isDone() )
-		{
-			throw new IllegalArgumentException( "operation has been completed" );
-		}
-		
-		final long	remaining	= getRemaining();
-		
-		byte[]		bytes	= null;
-		if ( remaining != 0 )
-		{
-			final long	actual		= remaining < requestSize ? remaining : requestSize;
-			
-			bytes	= new byte[ (int)actual ];
-			final int	numRead	= mInputStream.read( bytes );
-			if ( numRead != bytes.length )
-			{
-				throw new IOException();
-			}
-			
-			mReadSoFar	+= numRead;
-			
-			if ( isDone() )
-			{
-				cleanup();
-			}
-			
-			accessed();
-		}
-		
-		return( bytes );
-	}
-	
-		public synchronized void
-	cleanup()
-		throws IOException
-	{
-		if ( mInputStream != null )
-		{
-			mInputStream.close();
-			mInputStream	= null;
-		}
-		
-		if ( mDeleteWhenDone )
-		{
-			getFile().delete();
-		}
-	}
+    private FileInputStream mInputStream;
+
+    private long mReadSoFar;
+
+    private final long mTotalSize;
+
+    private final boolean mDeleteWhenDone;
+
+    public DownloadInfo(
+            final Object id,
+            final File theFile,
+            final boolean deleteWhenDone)
+            throws IOException
+    {
+        super(id, theFile);
+
+        mTotalSize = theFile.length();
+        if (theFile.length() == 0)
+        {
+            throw new IllegalArgumentException(theFile.toString());
+        }
+
+        mReadSoFar = 0;
+        mDeleteWhenDone = deleteWhenDone;
+
+        if (mDeleteWhenDone)
+        {
+            theFile.deleteOnExit();
+        }
+
+        mInputStream = new FileInputStream(theFile);
+
+        assert (!isDone());
+    }
+
+    public final long getLength()
+    {
+        return (mTotalSize);
+    }
+
+    private final long getRemaining()
+    {
+        return (mTotalSize - mReadSoFar);
+    }
+
+    public boolean isDone()
+    {
+        return (mReadSoFar == mTotalSize);
+    }
+
+    /**
+    @return true if done, false otherwise
+     */
+    public synchronized byte[] read(final int requestSize)
+            throws IOException
+    {
+        if (isDone())
+        {
+            throw new IllegalArgumentException("operation has been completed");
+        }
+
+        final long remaining = getRemaining();
+
+        byte[] bytes = null;
+        if (remaining != 0)
+        {
+            final long actual = remaining < requestSize ? remaining : requestSize;
+
+            bytes = new byte[(int) actual];
+            final int numRead = mInputStream.read(bytes);
+            if (numRead != bytes.length)
+            {
+                throw new IOException();
+            }
+
+            mReadSoFar += numRead;
+
+            if (isDone())
+            {
+                cleanup();
+            }
+
+            accessed();
+        }
+
+        return (bytes);
+    }
+
+    public synchronized void cleanup()
+            throws IOException
+    {
+        if (mInputStream != null)
+        {
+            mInputStream.close();
+            mInputStream = null;
+        }
+
+        if (mDeleteWhenDone)
+        {
+            getFile().delete();
+        }
+    }
+
 }
 

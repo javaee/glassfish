@@ -35,8 +35,6 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.base.Utility;
 import org.glassfish.admin.amx.base.UploadDownloadMgr;
 import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.impl.util.UniqueIDGenerator;
@@ -49,276 +47,256 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class UploadDownloadMgrImpl extends AMXImplBase
-	//implements Utility, Singleton, UploadDownloadMgr
+//implements Utility, Singleton, UploadDownloadMgr
 {
-	/**
-		A Map keyed by uploadID to values of UploadInfo
-	 */
-	private final Map<Object,UploadInfo>	mUploadInfos;
-	
-	/**
-		A Map keyed by downloadID to values of DownloadInfo
-	 */
-	private final Map<Object,DownloadInfo>	mDownloadInfos;
-	
-	
-	private final UniqueIDGenerator	mUploadIDs;
-	private final UniqueIDGenerator	mDownloadIDs;
-	
-		public
-	UploadDownloadMgrImpl(final ObjectName parentObjectName)
-	{
-        super( parentObjectName, UploadDownloadMgr.class );
-        
-		mUploadInfos	= Collections.synchronizedMap( new HashMap<Object,UploadInfo>() );
-		mDownloadInfos	= Collections.synchronizedMap( new HashMap<Object,DownloadInfo>() );
-		
-		mUploadIDs		= new UniqueIDGenerator( "upload-" );
-		mDownloadIDs	= new UniqueIDGenerator( "download-" );
-	}
-	
-	
-	/**
-		Cleanup any threads that have been done for a proscribed
-		amount of time given by UPLOAD_KEEP_ALIVE_MILLIS.
-	 */
-		private final void
-	staleUploadCheck()
-		throws IOException
-	{
-		String[]	keys	= null;
-		
-		synchronized( mUploadInfos )
-		{
-			keys	= SetUtil.toStringArray( mUploadInfos.keySet() );
-		}
-		
-		// block other threads from trying to do the same stale check
-		synchronized( this )
-		{
-			for( int i = 0; i < keys.length; ++i )
-			{
-				final Object		key	= keys[ i ];
-				
-				final UploadInfo	info	= mUploadInfos.get( key );
-				
-				if ( info != null && info.getMillisSinceLastAccess() > UPLOAD_KEEP_ALIVE_MILLIS )
-				{
-					trace( "Cleaning up stale upload: " + info.getID() );
-					mUploadInfos.remove( key );
-					info.cleanup();
-				}
-			}
-		}
-	}
-	
-		private String
-	mangleUploadName( final String name )
-	{
-		String	result	= name;
-		
-		if ( result != null )
-		{
-			result	= result.replaceAll( "/", "_" );
-			result	= result.replaceAll( "\\\\", "_" );
-			result	= result.replaceAll( ":", "_" );
-
-		}
-		
-		return( result );
-	}
-
-		public Object
-	initiateUpload(
-		final String	name,
-		final long		totalSize )
-		throws IOException
-	{
-		staleUploadCheck();
-		
-		final String	actualName	= mangleUploadName( name );
-		
-		final UploadInfo	info	= new UploadInfo( mUploadIDs.createID(),  actualName, totalSize );
-		
-		mUploadInfos.put( info.getID(), info );
-		
-		return( info.getID() );
-	}
-
-		public boolean
-	uploadBytes(
-		final Object	uploadID,
-		final byte[]	bytes)
-		throws IOException
-	{
-		final UploadInfo	info	= mUploadInfos.get( uploadID );
-		
-		if ( info == null )
-		{
-			throw new IllegalArgumentException( "" + uploadID );
-		}
-		
-		boolean	done	= false;
-		synchronized( info )
-		{
-			done	= info.write( bytes );
-		}
-		
-		return( done );
-	}
-	
-	
-		public File
-	takeUpload( final Object uploadID )
-	{
-		// don't remove it until we find out it's done
-		final UploadInfo	info	= mUploadInfos.get( uploadID );
-		
-		if ( info == null )
-		{
-			throw new IllegalArgumentException( "" + uploadID );
-		}
-		
-		synchronized( info )
-		{
-			// by being synchronized, we can safely block any uploadBytes() activity
-			// while we check for it being done
-			if ( ! info.isDone() )
-			{
-				throw new IllegalArgumentException( "not done:" + uploadID );
-			}
-			
-			mUploadInfos.remove( uploadID );
-		}
-		return( info.getFile() );
-	}
-	
-
-	private static final long	SECOND_MILLIS	= 60 * 1000;
-	private static final long	UPLOAD_KEEP_ALIVE_MILLIS	= 60 * SECOND_MILLIS;
-	private static final long	DOWNLOAD_KEEP_ALIVE_MILLIS	= 180 * SECOND_MILLIS;
-	
-	
-
-
-	/**
-		Cleanup any downloads that have been accessed for a proscribed
-		amount of time given by DOWNLOAD_KEEP_ALIVE_MILLIS.
-	 */
-		private final void
-	staleDownloadCheck()
-		throws IOException
-	{
-		String[]	keys	= null;
-		
-		synchronized( mDownloadInfos )
-		{
-			keys	= SetUtil.toStringArray( mDownloadInfos.keySet() );
-		}
-		
-		// block other threads from trying to do the same stale check
-		synchronized( this )
-		{
-			for( int i = 0; i < keys.length; ++i )
-			{
-				final Object		key	= keys[ i ];
-				
-				final DownloadInfo	info	= mDownloadInfos.get( key );
-				
-				if ( info != null  && info.isDone() )
-				{
-					mDownloadInfos.remove( key );
-					trace( "Cleaning up stale download: " + info.getID() +
-						"length was " + info.getLength() );
-					info.cleanup();
-				}
-			}
-		}
-	}
-	
-	
-	
-		public Object
-	initiateDownload(
-		final File	theFile,
-		boolean		deleteWhenDone )
-		throws IOException
-	{
-		//setTrace( true );
-		staleDownloadCheck();
-		
-		final DownloadInfo	info	=
-			new DownloadInfo( mDownloadIDs.createID(),  theFile, deleteWhenDone );
-		
-		trace( "Created download info: " + info.getID() );
-		mDownloadInfos.put( info.getID(), info );
-		
-		return( info.getID() );
-	}
-    
-
-	   	private DownloadInfo
-	getDownloadInfo( Object downloadID )
-	{
-		final DownloadInfo	info	= mDownloadInfos.get( downloadID );
-		if ( info == null )
-		{
-			throw new IllegalArgumentException( "" + downloadID );
-		}
-		return( info );
-	}
-
-    	
     /**
-    	Get the total length the download will be, in bytes.
-    	
-     	@param downloadID the file download operation id, from initiateFileDownload()
+    A Map keyed by uploadID to values of UploadInfo
      */
-    	public long
-    getDownloadLength( final Object downloadID )
+    private final Map<Object, UploadInfo> mUploadInfos;
+
+    /**
+    A Map keyed by downloadID to values of DownloadInfo
+     */
+    private final Map<Object, DownloadInfo> mDownloadInfos;
+
+    private final UniqueIDGenerator mUploadIDs;
+
+    private final UniqueIDGenerator mDownloadIDs;
+
+    public UploadDownloadMgrImpl(final ObjectName parentObjectName)
     {
-    	try
-    	{
-			final DownloadInfo	info	= getDownloadInfo( downloadID );
-			return( info.getLength() );
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-			assert( false );
-		}
-		return( 0 );
+        super(parentObjectName, UploadDownloadMgr.class);
+
+        mUploadInfos = Collections.synchronizedMap(new HashMap<Object, UploadInfo>());
+        mDownloadInfos = Collections.synchronizedMap(new HashMap<Object, DownloadInfo>());
+
+        mUploadIDs = new UniqueIDGenerator("upload-");
+        mDownloadIDs = new UniqueIDGenerator("download-");
     }
-    
-    	public int
-    getMaxDownloadChunkSize()
+
+    /**
+    Cleanup any threads that have been done for a proscribed
+    amount of time given by UPLOAD_KEEP_ALIVE_MILLIS.
+     */
+    private final void staleUploadCheck()
+            throws IOException
     {
-    	return( 5 * 1024 * 1024 );
+        String[] keys = null;
+
+        synchronized (mUploadInfos)
+        {
+            keys = SetUtil.toStringArray(mUploadInfos.keySet());
+        }
+
+        // block other threads from trying to do the same stale check
+        synchronized (this)
+        {
+            for (int i = 0; i < keys.length; ++i)
+            {
+                final Object key = keys[i];
+
+                final UploadInfo info = mUploadInfos.get(key);
+
+                if (info != null && info.getMillisSinceLastAccess() > UPLOAD_KEEP_ALIVE_MILLIS)
+                {
+                    trace("Cleaning up stale upload: " + info.getID());
+                    mUploadInfos.remove(key);
+                    info.cleanup();
+                }
+            }
+        }
     }
-    
-    	public byte[]
-    downloadBytes(
-    	final Object	downloadID,
-    	final int		requestSize )
-    	throws IOException
+
+    private String mangleUploadName(final String name)
     {
-    	if ( requestSize > getMaxDownloadChunkSize() )
-    	{
-			trace( "Request too large: " + requestSize );
-    		throw new IllegalArgumentException( "request too large: " + requestSize );
-    	}
-    	
-		final DownloadInfo	info	= getDownloadInfo( downloadID );
-		
-		final byte[]	bytes	= info.read( requestSize );
-		
-		if ( info.isDone() )
-		{
-			trace( "download done: " + info.getID() );
-			staleDownloadCheck();
-		}
-		
-		return( bytes );
+        String result = name;
+
+        if (result != null)
+        {
+            result = result.replaceAll("/", "_");
+            result = result.replaceAll("\\\\", "_");
+            result = result.replaceAll(":", "_");
+
+        }
+
+        return (result);
+    }
+
+    public Object initiateUpload(
+            final String name,
+            final long totalSize)
+            throws IOException
+    {
+        staleUploadCheck();
+
+        final String actualName = mangleUploadName(name);
+
+        final UploadInfo info = new UploadInfo(mUploadIDs.createID(), actualName, totalSize);
+
+        mUploadInfos.put(info.getID(), info);
+
+        return (info.getID());
+    }
+
+    public boolean uploadBytes(
+            final Object uploadID,
+            final byte[] bytes)
+            throws IOException
+    {
+        final UploadInfo info = mUploadInfos.get(uploadID);
+
+        if (info == null)
+        {
+            throw new IllegalArgumentException("" + uploadID);
+        }
+
+        boolean done = false;
+        synchronized (info)
+        {
+            done = info.write(bytes);
+        }
+
+        return (done);
+    }
+
+    public File takeUpload(final Object uploadID)
+    {
+        // don't remove it until we find out it's done
+        final UploadInfo info = mUploadInfos.get(uploadID);
+
+        if (info == null)
+        {
+            throw new IllegalArgumentException("" + uploadID);
+        }
+
+        synchronized (info)
+        {
+            // by being synchronized, we can safely block any uploadBytes() activity
+            // while we check for it being done
+            if (!info.isDone())
+            {
+                throw new IllegalArgumentException("not done:" + uploadID);
+            }
+
+            mUploadInfos.remove(uploadID);
+        }
+        return (info.getFile());
+    }
+
+    private static final long SECOND_MILLIS = 60 * 1000;
+
+    private static final long UPLOAD_KEEP_ALIVE_MILLIS = 60 * SECOND_MILLIS;
+
+    private static final long DOWNLOAD_KEEP_ALIVE_MILLIS = 180 * SECOND_MILLIS;
+
+    /**
+    Cleanup any downloads that have been accessed for a proscribed
+    amount of time given by DOWNLOAD_KEEP_ALIVE_MILLIS.
+     */
+    private final void staleDownloadCheck()
+            throws IOException
+    {
+        String[] keys = null;
+
+        synchronized (mDownloadInfos)
+        {
+            keys = SetUtil.toStringArray(mDownloadInfos.keySet());
+        }
+
+        // block other threads from trying to do the same stale check
+        synchronized (this)
+        {
+            for (int i = 0; i < keys.length; ++i)
+            {
+                final Object key = keys[i];
+
+                final DownloadInfo info = mDownloadInfos.get(key);
+
+                if (info != null && info.isDone())
+                {
+                    mDownloadInfos.remove(key);
+                    trace("Cleaning up stale download: " + info.getID() +
+                          "length was " + info.getLength());
+                    info.cleanup();
+                }
+            }
+        }
+    }
+
+    public Object initiateDownload(
+            final File theFile,
+            boolean deleteWhenDone)
+            throws IOException
+    {
+        //setTrace( true );
+        staleDownloadCheck();
+
+        final DownloadInfo info =
+                new DownloadInfo(mDownloadIDs.createID(), theFile, deleteWhenDone);
+
+        trace("Created download info: " + info.getID());
+        mDownloadInfos.put(info.getID(), info);
+
+        return (info.getID());
+    }
+
+    private DownloadInfo getDownloadInfo(Object downloadID)
+    {
+        final DownloadInfo info = mDownloadInfos.get(downloadID);
+        if (info == null)
+        {
+            throw new IllegalArgumentException("" + downloadID);
+        }
+        return (info);
+    }
+
+    /**
+    Get the total length the download will be, in bytes.
+
+    @param downloadID the file download operation id, from initiateFileDownload()
+     */
+    public long getDownloadLength(final Object downloadID)
+    {
+        try
+        {
+            final DownloadInfo info = getDownloadInfo(downloadID);
+            return (info.getLength());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            assert (false);
+        }
+        return (0);
+    }
+
+    public int getMaxDownloadChunkSize()
+    {
+        return (5 * 1024 * 1024);
+    }
+
+    public byte[] downloadBytes(
+            final Object downloadID,
+            final int requestSize)
+            throws IOException
+    {
+        if (requestSize > getMaxDownloadChunkSize())
+        {
+            trace("Request too large: " + requestSize);
+            throw new IllegalArgumentException("request too large: " + requestSize);
+        }
+
+        final DownloadInfo info = getDownloadInfo(downloadID);
+
+        final byte[] bytes = info.read(requestSize);
+
+        if (info.isDone())
+        {
+            trace("download done: " + info.getID());
+            staleDownloadCheck();
+        }
+
+        return (bytes);
     }
 
 }

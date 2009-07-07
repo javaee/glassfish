@@ -38,44 +38,43 @@ package org.glassfish.admin.amx.impl.mbean;
 import javax.management.MBeanServer;
 
 /**
-    Factory to create the org.glassfish.admin.amx.base.SystemInfo implementation.
-    For now, only one implementation instance is allowed.
+Factory to create the org.glassfish.admin.amx.base.SystemInfo implementation.
+For now, only one implementation instance is allowed.
  */
 public final class SystemInfoFactory
 {
     static SystemInfoImpl INSTANCE = null;
-    
+
     /**
-        Return the actual implementation class, because some method(s) are needed internal to the
-        server, but not appropriate for the MBean clients.
-        
-        @return the SystemInfoImpl, *or null if not yet initialized*
+    Return the actual implementation class, because some method(s) are needed internal to the
+    server, but not appropriate for the MBean clients.
+
+    @return the SystemInfoImpl, *or null if not yet initialized*
      */
-		public static synchronized SystemInfoImpl
-	getInstance()
-	{
+    public static synchronized SystemInfoImpl getInstance()
+    {
         return INSTANCE;
-	}
-    
+    }
+
     /**
-        Create the singleton instance.  Intended for exclusive use by the appropriate code
-        to initialize once at startup.
-     */ 
-    	public static synchronized SystemInfoImpl
-	createInstance( final MBeanServer server )
-	{
-        if ( INSTANCE == null )
+    Create the singleton instance.  Intended for exclusive use by the appropriate code
+    to initialize once at startup.
+     */
+    public static synchronized SystemInfoImpl createInstance(final MBeanServer server)
+    {
+        if (INSTANCE == null)
         {
-            INSTANCE = new SystemInfoImpl( server );
-            
-            new SystemInfoIniter( server, INSTANCE ).init();
+            INSTANCE = new SystemInfoImpl(server);
+
+            new SystemInfoIniter(server, INSTANCE).init();
         }
         else
         {
-            throw new RuntimeException( "can only initialize once--bug" );
+            throw new RuntimeException("can only initialize once--bug");
         }
         return INSTANCE;
-	}
+    }
+
 }
 
 
