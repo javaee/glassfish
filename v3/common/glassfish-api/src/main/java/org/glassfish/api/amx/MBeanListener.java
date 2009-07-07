@@ -18,16 +18,25 @@ import static org.glassfish.api.amx.AMXValues.*;
  * Intended usage is for subsystems to lazy-load only when the Parent
  * MBean is registered.
  */
-public class MBeanListener implements NotificationListener
+public class MBeanListener<T extends MBeanListener.Callback> implements NotificationListener
 {
+    private static void debug(final Object o) { System.out.println( "" + o ); }
+    
     private final String mType;
-
     private final String mName;
+    
+    /** mType and mName should be null if mObjectName is non-null, and vice versa */
+    private final ObjectName mObjectName;
 
     private final MBeanServer mMBeanServer;
 
-    private final Callback mCallback;
+    private final T mCallback;
 
+    public String toString()
+    {
+        return "MBeanListener: ObjectName=" + mObjectName + ", type=" + mType + ", name=" + mName;
+    }
+    
     public String getType()
     {
         return mType;
@@ -42,37 +51,89 @@ public class MBeanListener implements NotificationListener
     {
         return mMBeanServer;
     }
-
-    public Callback getCallback()
+    
+    /** Callback interface.  */
+    public interface Callback
+    {
+        public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener);
+        public void mbeanUnregistered(final ObjectName objectName, final MBeanListener listener);
+    }
+    
+    /**
+        Default callback implementation, can be subclassed if needed
+        Remembers only the last MBean that was seen.
+     */
+    public static class CallbackImpl implements MBeanListener.Callback
+    {
+        private volatile ObjectName mRegistered = null;
+        private volatile ObjectName mUnregistered = null;
+        private final boolean mStopAtFirst;
+        
+        public CallbackImpl() {
+            this(true);
+        }
+        
+        public CallbackImpl(final boolean stopAtFirst)
+        {
+            mStopAtFirst = stopAtFirst;
+        }
+        
+        public ObjectName getRegistered()   { return mRegistered; }
+        public ObjectName getUnregistered() { return mUnregistered; }
+        
+        public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener)
+        {
+            mRegistered = objectName;
+            if ( mStopAtFirst )
+            {
+                listener.stopListening();
+            }
+        }
+        public void mbeanUnregistered(final ObjectName objectName, final MBeanListener listener)
+        {
+            mUnregistered = objectName;
+            if ( mStopAtFirst )
+            {
+                listener.stopListening();
+            }
+        }
+    }
+    
+    public T getCallback()
     {
         return mCallback;
     }
-
-    public interface Callback
+ 
+    /**
+     * Listener for a specific MBean.
+     * Caller must call {@link #start} to start listening.
+     * @param server
+     * @param objectName
+     * @param callback
+     */
+    public MBeanListener(
+            final MBeanServer server,
+            final ObjectName objectName,
+            final T callback)
     {
-        /**
-        Subclass should override this method, verifying the ObjectName represents
-        the desired MBean.
-         */
-        public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener);
-
-        /**
-        Subclass should override this method, verifying the ObjectName represents
-        the desired MBean.
-         */
-        public void mbeanUnregistered(final ObjectName objectName, final MBeanListener listener);
-
+        mMBeanServer = server;
+        mObjectName = objectName;
+        mType = null;
+        mName = null;
+        mCallback = callback;
     }
-
+    
     /**
      * Listener for all MBeans of specified type, with or without a name.
+     * Caller must call {@link #start} to start listening.
+     * @param server
      * @param type type of the MBean (as found in the ObjectName)
-     * @param handback arbitrary value passed to {@link mbeanRegistered}
+     * @param callback
      */
     public MBeanListener(
             final MBeanServer server,
             final String type,
-            final Callback callback)
+            final T callback)
     {
         this(server, type, null, callback);
     }
@@ -80,40 +141,49 @@ public class MBeanListener implements NotificationListener
     /**
      * Listener for MBeans of specified type, with specified name (or any name
      * if null is passed for the name).
+     * Caller must call {@link #start} to start listening.
+     * @param server
      * @param type type of the MBean (as found in the ObjectName)
      * @param name name of the MBean, or null if none
-     * @param handback arbitrary value passed to {@link mbeanRegistered}
+     * @param callback
      */
     public MBeanListener(
             final MBeanServer server,
             final String type,
             final String name,
-            final Callback callback)
+            final T callback)
     {
         mMBeanServer = server;
         mType = type;
         mName = name;
+        mObjectName = null;
         mCallback = callback;
     }
 
-    /** listen for the registration of AMX DomainRoot */
-    public static MBeanListener listenForDomainRoot(
+    /**
+        Listen for the registration of AMX DomainRoot 
+        Listening starts automatically.
+     */
+    public static <T extends Callback> MBeanListener<T> listenForDomainRoot(
         final MBeanServer server,
-        final Callback callback)
+        final T callback)
     {
-        final String type = AMXValues.domainRoot().getKeyProperty(TYPE_KEY);
-        return new MBeanListener( server, type, callback);
+        final MBeanListener<T> listener = new MBeanListener<T>( server, AMXValues.domainRoot(), callback);
+        listener.start();
+        return listener;
     }
     
-    /** listen for the registration of the {@link BootAMXMBean}. 
-        This MBean can be used to start AMX.
+    /**
+        Listen for the registration of the {@link BootAMXMBean}.
+        Listening starts automatically.
      */
-    public static MBeanListener listenForBootAMX(
+    public static <T extends Callback> MBeanListener<T> listenForBootAMX(
         final MBeanServer server,
-        final Callback callback)
+        final T callback)
     {
-        final String type = BootAMXMBean.OBJECT_NAME.getKeyProperty(TYPE_KEY);
-        return new MBeanListener( server, type, callback);
+        final MBeanListener<T> listener = new MBeanListener<T>( server, BootAMXMBean.OBJECT_NAME, callback);
+        listener.start();
+        return listener;
     }
 
     /**
@@ -133,23 +203,33 @@ public class MBeanListener implements NotificationListener
             throw new RuntimeException("Can't add NotificationListener", e);
         }
 
-        // query for AMX MBeans of the requisite type
-        String props = TYPE_KEY + "=" + mType;
-        if (mName != null)
+        if ( mObjectName != null )
         {
-            props = props + "," + NAME_KEY + mName;
+            if ( mMBeanServer.isRegistered(mObjectName) )
+            {
+                mCallback.mbeanRegistered(mObjectName, this);
+            }
         }
-
-        final ObjectName pattern = AMXValues.newObjectName(AMXValues.amxJMXDomain(), props);
-        final Set<ObjectName> matched = mMBeanServer.queryNames(pattern, null);
-        for (final ObjectName objectName : matched)
+        else
         {
-            mCallback.mbeanRegistered(objectName, this);
+            // query for AMX MBeans of the requisite type
+            String props = TYPE_KEY + "=" + mType;
+            if (mName != null)
+            {
+                props = props + "," + NAME_KEY + mName;
+            }
+
+            final ObjectName pattern = AMXValues.newObjectName(AMXValues.amxJMXDomain(), props);
+            final Set<ObjectName> matched = mMBeanServer.queryNames(pattern, null);
+            for (final ObjectName objectName : matched)
+            {
+                mCallback.mbeanRegistered(objectName, this);
+            }
         }
     }
 
     /** unregister the listener */
-    public void stop()
+    public void stopListening()
     {
         try
         {
@@ -157,7 +237,7 @@ public class MBeanListener implements NotificationListener
         }
         catch (final Exception e)
         {
-            throw new RuntimeException("Can't remove NotificationListener", e);
+            throw new RuntimeException("Can't remove NotificationListener " + this, e);
         }
     }
 
@@ -169,22 +249,34 @@ public class MBeanListener implements NotificationListener
         {
             final MBeanServerNotification notif = (MBeanServerNotification) notifIn;
             final ObjectName objectName = notif.getMBeanName();
-            final String mbeanType = objectName.getKeyProperty(TYPE_KEY);
-            final String mbeanName = objectName.getKeyProperty(NAME_KEY);
 
-            if (mType.equals(mbeanType))
+            boolean match = false;
+            if ( mObjectName != null && mObjectName.equals(objectName) )
             {
-                if (mName != null && mName.equals(mbeanName))
+                match = true;
+            }
+            else if ( objectName.getDomain().equals( AMXValues.amxJMXDomain() ) )
+            {
+                if ( mType != null && mType.equals(objectName.getKeyProperty(TYPE_KEY)) )
                 {
-                    final String notifType = notif.getType();
-                    if (MBeanServerNotification.REGISTRATION_NOTIFICATION.equals(notifType))
+                    final String mbeanName = objectName.getKeyProperty(NAME_KEY);
+                    if (mName != null && mName.equals(mbeanName))
                     {
-                        mCallback.mbeanRegistered(objectName, this);
+                        match = true;
                     }
-                    else if (MBeanServerNotification.UNREGISTRATION_NOTIFICATION.equals(notifType))
-                    {
-                        mCallback.mbeanUnregistered(objectName, this);
-                    }
+                }
+            }
+            
+            if ( match )
+            {
+                final String notifType = notif.getType();
+                if (MBeanServerNotification.REGISTRATION_NOTIFICATION.equals(notifType))
+                {
+                    mCallback.mbeanRegistered(objectName, this);
+                }
+                else if (MBeanServerNotification.UNREGISTRATION_NOTIFICATION.equals(notifType))
+                {
+                    mCallback.mbeanUnregistered(objectName, this);
                 }
             }
         }

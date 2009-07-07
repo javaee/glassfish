@@ -32,6 +32,8 @@ import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
+import org.glassfish.api.amx.MBeanListener;
+
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerInvocationHandler;
@@ -320,11 +322,24 @@ public final class AMXStartupServiceNew
         {
             return mTop;
         }
+    }
 
+    class MyListener extends MBeanListener.CallbackImpl {
+        @Override
+        public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener) {
+            super.mbeanRegistered(objectName,listener);
+            // verification code, nothing more to do
+            //debug( "MBean registered: " + objectName );
+        }
     }
 
     public synchronized ObjectName _loadAMXMBeans()
     {
+        // self-check important MBeans
+        final MBeanListener<MyListener> bootAMXListener = MBeanListener.listenForBootAMX(mMBeanServer, new MyListener() );
+        
+        final MBeanListener<MyListener> domainRootListener = MBeanListener.listenForDomainRoot(mMBeanServer, new MyListener() );
+        
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
         loadDomainRoot();
         FeatureAvailability.getInstance().registerFeature(FeatureAvailability.AMX_CORE_READY_FEATURE, getDomainRoot());
@@ -357,6 +372,16 @@ public final class AMXStartupServiceNew
         {
             FeatureAvailability.getInstance().registerFeature(FeatureAvailability.AMX_READY_FEATURE, getDomainRoot());
             ImplUtil.getLogger().info("AMXStartupServiceNew: AMX ready for use, DomainRoot = " + getDomainRoot());
+        }
+        
+        // sanity-check our listeners
+        if ( bootAMXListener.getCallback().getRegistered() == null )
+        {
+            throw new IllegalStateException( "BootAMX listener was not called" );
+        }
+        if ( domainRootListener.getCallback().getRegistered() == null )
+        {
+            throw new IllegalStateException( "DomainRoot listener was not called" );
         }
 
         return getDomainRoot();
