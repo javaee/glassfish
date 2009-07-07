@@ -62,8 +62,7 @@ public class WebHandlers {
      )
     public static void getAllHttpPorts(HandlerContext handlerCtx){
         String configName = (String) handlerCtx.getInputValue("configName");
-        String objectNameString = "v3:pp=/domain/configs/config["+configName+"]/network-config,type=network-listeners";
-        AMXProxy listeners = V3AMX.objectNameToProxy(objectNameString);
+        AMXProxy listeners = V3AMX.getInstance().getConfig(configName).getNetworkConfig().child("network-listeners");
         Map<String, AMXProxy> networkListeners = listeners.childrenMap("network-listener");
         StringBuffer sb = new StringBuffer();
         for(AMXProxy oneListener:  networkListeners.values()){
