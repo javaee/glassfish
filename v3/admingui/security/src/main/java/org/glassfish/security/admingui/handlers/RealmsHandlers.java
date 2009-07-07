@@ -17,7 +17,6 @@ import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.intf.config.AuthRealm;
 import org.glassfish.admin.amx.intf.config.Property;
-import org.glassfish.admingui.common.util.AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -199,7 +198,7 @@ public class RealmsHandlers {
              Map<String, Object> cMap = new HashMap();
              cMap.put("Name", attrMap.get("Name"));
              cMap.put("Classname", attrMap.get("classname"));
-             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(AMX.SECURITY_SERVICE);
+             AMXConfigProxy amx = V3AMX.getInstance().getConfig("server-config").getSecurityService();
              AMXConfigProxy child =  amx.createChild("auth-realm", cMap);
              V3AMX.setProperties(child.objectName().toString(), propList, false);
           }
