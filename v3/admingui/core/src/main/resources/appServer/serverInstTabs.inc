@@ -67,7 +67,7 @@
       <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" >
 	    <!command
         setSessionAttribute(key="serverInstTabs" value="adminPassword");
-		redirect(page="#{request.contextPath}/appServer/serverInstAdminPassword.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstAdminPassword.jsf");
 	    />
     </sun:tab>
 
