@@ -849,7 +849,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // proxyHandler property
         connector.setProxyHandler(new ProxyHandlerImpl());
 
-        globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLogEnabled());
+        globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLoggingEnabled());
         globalAccessLogWriteInterval = httpService.getAccessLog().getWriteIntervalSeconds();
         globalAccessLogBufferSize = httpService.getAccessLog().getBufferSizeBytes();
         if (httpServiceProps != null) {
@@ -2807,7 +2807,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         globalSSOEnabled = ConfigBeansUtilities.toBoolean(httpService.getSsoEnabled());
         globalAccessLogWriteInterval = httpService.getAccessLog().getWriteIntervalSeconds();
         globalAccessLogBufferSize = httpService.getAccessLog().getBufferSizeBytes();
-        globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLogEnabled());
+        globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLoggingEnabled());
 
         List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers =
             httpService.getVirtualServer();

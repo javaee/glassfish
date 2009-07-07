@@ -4,6 +4,7 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -44,8 +45,13 @@ import org.jvnet.hk2.config.TransactionFailure;
 @SuppressWarnings({"deprecation"})
 @Service
 public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostConstruct {
+    private final static String SSL_CONFIGURATION_WANTAUTH = "com.sun.grizzly.ssl.auth";
+
+    private final static String SSL_CONFIGURATION_SSLIMPL = "com.sun.grizzly.ssl.sslImplementation";
+
     @Inject
     private Domain domain;
+
     @Inject
     private Habitat habitat;
 
@@ -55,6 +61,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             processHttpListeners(config);
             promoteHttpServiceProperties(config.getHttpService());
             promoteVirtualServerProperties(config.getHttpService());
+            promoteSystemProperties();
             moveThreadPools(config);
         } catch (TransactionFailure tf) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.  Please redeploy", tf);
@@ -62,6 +69,50 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         } catch (PropertyVetoException e) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.  Please redeploy", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void promoteSystemProperties() throws TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<JavaConfig>() {
+            @Override
+            public Object run(JavaConfig param) throws PropertyVetoException, TransactionFailure {
+                final List<String> props = new ArrayList<String>(param.getJvmOptions());
+                final Iterator<String> iterator = props.iterator();
+                while (iterator.hasNext()) {
+                    String prop = iterator.next();
+                    if (prop.startsWith("-D")) {
+                        final String[] parts = prop.split("=");
+                        String name = parts[0].substring(2);
+                        if (SSL_CONFIGURATION_WANTAUTH.equals(name)
+                            || SSL_CONFIGURATION_SSLIMPL.equals(name)) {
+                            iterator.remove();
+                            updateSsl(name, parts[1]);
+                        }
+                    }
+                }
+                param.setJvmOptions(props);
+                return param;
+            }
+        }, habitat.getByType(JavaConfig.class));
+    }
+
+    private void updateSsl(final String propName, final String value) throws TransactionFailure {
+        final Collection<Protocol> protocols = habitat.getAllByType(Protocol.class);
+        for (Protocol protocol : protocols) {
+            final Ssl ssl = protocol.getSsl();
+            if (ssl != null) {
+                ConfigSupport.apply(new SingleConfigCode<Ssl>() {
+                    @Override
+                    public Object run(Ssl param) throws PropertyVetoException, TransactionFailure {
+                        if (SSL_CONFIGURATION_WANTAUTH.equals(propName)) {
+                            param.setClientAuth(value);
+                        } else if (SSL_CONFIGURATION_SSLIMPL.equals(propName)) {
+                            param.setClassname(value);
+                        }
+                        return param;
+                    }
+                }, ssl);
+            }
         }
     }
 
@@ -85,7 +136,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
                 @Override
                 public Object run(VirtualServer param) throws PropertyVetoException {
-                    if(param.getHttpListeners() != null && !"".equals(param.getHttpListeners())) {
+                    if (param.getHttpListeners() != null && !"".equals(param.getHttpListeners())) {
                         param.setNetworkListeners(param.getHttpListeners());
                     }
                     param.setHttpListeners(null);
@@ -121,7 +172,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 while (it.hasNext()) {
                     final Property property = it.next();
                     if ("accessLoggingEnabled".equals(property.getName())) {
-                        param.setAccessLogEnabled(property.getValue());
+                        param.setAccessLoggingEnabled(property.getValue());
                         it.remove();
                     } else if ("accessLogBufferSize".equals(property.getName())) {
                         param.getAccessLog().setBufferSizeBytes(property.getValue());
@@ -157,7 +208,6 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         final Config config = threadPools.getParent(Config.class);
         final NetworkListeners networkListeners = config.getNetworkConfig().getNetworkListeners();
         threadPools.getThreadPool().addAll(networkListeners.getThreadPool());
-
         ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
             public Object run(NetworkListeners param) throws PropertyVetoException {
                 param.getThreadPool().clear();

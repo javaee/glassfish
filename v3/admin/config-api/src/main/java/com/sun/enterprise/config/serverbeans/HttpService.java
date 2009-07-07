@@ -224,9 +224,9 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
     HttpListener getHttpListenerById(String id);
 
     @Attribute(defaultValue = "false")
-    String getAccessLogEnabled();
+    String getAccessLoggingEnabled();
 
-    void setAccessLogEnabled(String enabled);
+    void setAccessLoggingEnabled(String enabled);
 
     /**
      * If true, single sign-on is enabled by default for all web applications on all virtual servers on this

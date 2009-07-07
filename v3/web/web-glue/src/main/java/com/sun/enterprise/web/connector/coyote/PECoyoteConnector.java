@@ -1128,14 +1128,6 @@ public class PECoyoteConnector extends Connector {
      */
     public boolean configureHttpListenerProperty(String propName, String propValue)
         throws NumberFormatException {
-        if ("reader-selectors".equals(propName)) {
-            setSelectorReadThreadsCount(Integer.parseInt(propValue));
-            return true;
-        }
-        if ("selectorThreadImpl".equals(propName)) {
-            setSelectorThreadImpl(propValue);
-            return true;
-        }
         if ("proxyHandler".equals(propName)) {
             setProxyHandler(propValue);
             return true;
