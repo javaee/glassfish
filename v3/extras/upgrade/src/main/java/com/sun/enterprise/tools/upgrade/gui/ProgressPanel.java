@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,128 +34,112 @@
  * holder.
  */
 
-/*
- * ProgressPanel.java
- *
- * Created on September 3, 2003, 3:14 PM
- */
-
 package com.sun.enterprise.tools.upgrade.gui;
 
-/**
- *
- * @author  prakash
- */
-import com.sun.enterprise.tools.upgrade.common.*;
+import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
+import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
-import java.awt.*;
-import javax.swing.*;
+import java.util.logging.Logger;
 
-public class ProgressPanel extends JPanel {
-    
-    private JLabel progressLabel;
-    private JTextArea resultTextArea;
-    private ProgressBar progressBar;
-    private JScrollPane jscrollpane;
-    
+/**
+ * Panel to show the progress and results of an upgrade.
+ * Still a work in progress.
+ * 
+ * @author Bobby Bissett
+ */
+public class ProgressPanel extends javax.swing.JPanel {
+
+    private static final Logger logger = LogService.getLogger();
     private StringManager stringManager =
-        StringManager.getManager(ProgressPanel.class);
+        StringManager.getManager(MainFrame.class);
+    private static final CommonInfoModel commonInfoModel =
+        CommonInfoModel.getInstance();
     
-    /** Creates a new instance of ProgressPanel */
+    /** Creates new form DataCollectionPanel */
     public ProgressPanel() {
-        initialize();
+        initComponents();
     }
-  
-    private void initialize(){
-        this.setLayout(new BorderLayout());
-        HeaderPanel headerPanel = new HeaderPanel(
-            stringManager.getString("upgrade.gui.progresspanel.headerPanel"));
-        headerPanel.setInsets(new Insets(12, 10, 12, 10));
-        add(headerPanel, BorderLayout.NORTH);
-        add(getWizardPanel(), BorderLayout.CENTER);
-    }
-    
-    private JPanel getWizardPanel(){
-        JPanel panel = new JPanel(new GridBagLayout());
-        JLabel topLabel = new JLabel();
-        JLabel textAreaLabel = new JLabel();
-        progressLabel = new JLabel();
-        progressLabel.setForeground(Color.BLUE);
-        progressBar = new ProgressBar();
-        resultTextArea = new JTextArea();
-        resultTextArea.setFocusable(false);
-        resultTextArea.setEditable(false);
-        resultTextArea.setLineWrap(true);
-        jscrollpane = new JScrollPane(resultTextArea, 20, 30);
-        jscrollpane.setAutoscrolls(true);
-        resultTextArea.setAutoscrolls(true);
 
-        topLabel.setText(stringManager.getString("upgrade.gui.progresspanel.contentLabel"));
-        topLabel.setForeground(Color.BLUE);
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new Insets(0, 10, 10, 0);
-        gridBagConstraints.weightx = 1.0;
-        panel.add(topLabel, gridBagConstraints);
-        
-        textAreaLabel.setText(stringManager.getString("upgrade.gui.progresspanel.textAreaText"));
-        textAreaLabel.setForeground(Color.BLUE);
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new Insets(5, 10, 10, 10);
-        gridBagConstraints.weightx = 1.0;
-        panel.add(textAreaLabel, gridBagConstraints);
-        
-        gridBagConstraints = new GridBagConstraints();  
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new Insets(0, 10, 10, 10);
-        gridBagConstraints.weightx = 1.0; gridBagConstraints.weighty = 1.0;
-        panel.add(jscrollpane, gridBagConstraints);
-        
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        javax.swing.JLabel headerLabel = new javax.swing.JLabel();
+        separator = new javax.swing.JSeparator();
+        javax.swing.JLabel contentLabel = new javax.swing.JLabel();
+        resultsLabel = new javax.swing.JLabel();
+        resultTextAreaScrollPane = new javax.swing.JScrollPane();
+        resultTextArea = new javax.swing.JTextArea();
+        progressLabel = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
+
+        headerLabel.setText(stringManager.getString("upgrade.gui.progresspanel.headerPanel"));
+
+        contentLabel.setForeground(java.awt.Color.blue);
+        contentLabel.setText(stringManager.getString("upgrade.gui.progresspanel.contentLabel"));
+
+        resultsLabel.setForeground(java.awt.Color.blue);
+        resultsLabel.setLabelFor(resultTextArea);
+        resultsLabel.setText(stringManager.getString("upgrade.gui.progresspanel.textAreaText"));
+
+        resultTextArea.setColumns(20);
+        resultTextArea.setRows(5);
+        resultTextAreaScrollPane.setViewportView(resultTextArea);
+
+        progressLabel.setForeground(java.awt.Color.blue);
+        progressLabel.setLabelFor(progressBar);
         progressLabel.setText(stringManager.getString("upgrade.gui.progresspanel.progressLabel"));
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new Insets(10, 10, 10, 10);
-        gridBagConstraints.weightx = 1.0;
-        panel.add(progressLabel, gridBagConstraints);
-        
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new Insets(0, 10, 10, 10);
-        gridBagConstraints.weightx = 1.0;
-        panel.add(progressBar, gridBagConstraints);
-        
-        return panel;
-    }
-    
-    public void updateProgress(UpgradeUpdateEvent evt){
-        int progressState = evt.getProgressState();
-        String labelText = null;
-        if(evt.getProgressState() == 100){
-                labelText = stringManager.getString("upgrade.gui.progresspanel.progressLabel.DONE");
-        }
-        if(evt.getProgressState() == -1){
-            progressState = 0;
-            labelText = stringManager.getString("upgrade.gui.progresspanel.progressLabel.ERROR");
-            JOptionPane.showMessageDialog(this, stringManager.getString(
-                "upgrade.gui.progresspanel.errorProgressMsg"),
-                stringManager.getString(
-                "upgrade.gui.progresspanel.errorProgressMsgTitle"),
-                JOptionPane.ERROR_MESSAGE);
-        }
-        this.progressBar.setProgress(progressState);         
-        if(labelText != null)
-            progressLabel.setText(labelText);
-    }    
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(resultTextAreaScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                    .addComponent(separator, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                    .addComponent(headerLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                    .addComponent(progressLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(contentLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(resultsLabel, javax.swing.GroupLayout.Alignment.LEADING))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(headerLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(separator, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(contentLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(resultsLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(resultTextAreaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(progressLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JLabel progressLabel;
+    private javax.swing.JTextArea resultTextArea;
+    private javax.swing.JScrollPane resultTextAreaScrollPane;
+    private javax.swing.JLabel resultsLabel;
+    private javax.swing.JSeparator separator;
+    // End of variables declaration//GEN-END:variables
+
 }

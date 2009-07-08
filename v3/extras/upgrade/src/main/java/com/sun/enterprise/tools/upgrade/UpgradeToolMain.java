@@ -38,11 +38,11 @@ package com.sun.enterprise.tools.upgrade;
 
 import com.sun.enterprise.tools.upgrade.common.*;
 import com.sun.enterprise.tools.upgrade.gui.MainFrame;
-import com.sun.enterprise.tools.upgrade.gui.util.*;
-import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.*;
-import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.tools.upgrade.common.arguments.*;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.util.i18n.StringManager;
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,27 +56,29 @@ public class UpgradeToolMain {
 
     private static final Logger logger = LogService.getLogger();
 
-    static{
+    static {
         String domainRoot = System.getProperty(AS_DOMAIN_ROOT);
-        if(domainRoot == null){
+        if (domainRoot == null) {
             System.err.println("Configuration Error: AS_DEFS_DOMAINS_PATH is not set.");
             System.exit(1);
         }
     }
     
 
-    private StringManager sm = StringManager.getManager(UpgradeToolMain.class);
+    private static final StringManager sm =
+        StringManager.getManager(UpgradeToolMain.class);
     private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
  
     public UpgradeToolMain() {
-        logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
+        logger.log(Level.INFO,
+            sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
 
         //- Have GF sets asenv.conf properties to system properties
         new ASenvPropertyReader();
 
         //- Default location of all traget server domains
         String rawTargetDomainRoot = System.getProperty(AS_DOMAIN_ROOT);
-        if(rawTargetDomainRoot == null) {
+        if (rawTargetDomainRoot == null) {
             rawTargetDomainRoot = "";
         }
         String targetDomainRoot = null;
@@ -90,29 +92,32 @@ public class UpgradeToolMain {
             }
             targetDomainRoot = new File(rawTargetDomainRoot).getAbsolutePath();
         }
-		commonInfo.getTarget().setInstallDir(targetDomainRoot);
+        commonInfo.getTarget().setInstallDir(targetDomainRoot);
     }
     
-    public void startGUI(String [] args){
-        logger.log(Level.FINE,sm.getString("enterprise.tools.upgrade.start_upgrade_tool_gui"));
-        if(args.length > 0){
-			//- set all vaild options user provided on cmd-line
-			GUICmdLineInput guiIn = new GUICmdLineInput();
-			guiIn.processArguments(guiIn.parse(args));
+    public void startGUI(String[] args) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, sm.getString(
+                "enterprise.tools.upgrade.start_upgrade_tool_gui"));
+        }
+        if (args.length > 0) {
+            //- set all vaild options user provided on cmd-line
+            GUICmdLineInput guiIn = new GUICmdLineInput();
+            guiIn.processArguments(guiIn.parse(args));
         }
 
-		MainFrame gui = new MainFrame();
-        gui.addDialogListener(new DialogListener(){
-            public void dialogProcessed(DialogEvent evt){
-                processUIEvent(evt);
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MainFrame().setVisible(true);
             }
         });
-        UpdateProgressManager.getProgressManager().addUpgradeUpdateListener(gui);
-        gui.setVisible(true);
     }
     
     public void startCLI(String [] args){
-        logger.log(Level.FINE, sm.getString("enterprise.tools.upgrade.start_upgrade_tool_cli"));
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, sm.getString(
+                "enterprise.tools.upgrade.start_upgrade_tool_cli"));
+        }
         try{
 			cliParse(args);
         }catch(Exception e){
@@ -155,14 +160,14 @@ public class UpgradeToolMain {
 		logger.fine(UpgradeConstants.ASUPGRADE + " " + buff.toString());
 	}
 	
-    private void processUIEvent(DialogEvent evt){
-        if(evt.getAction() == DialogEvent.FINISH_ACTION ||
-           evt.getAction() == DialogEvent.CANCEL_ACTION){
-           System.exit(0);
-        }else if(evt.getAction() == DialogEvent.UPGRADE_ACTION){
-            this.upgrade();
-        }
-    }
+//    private void processUIEvent(DialogEvent evt) {
+//        if (evt.getAction() == DialogEvent.FINISH_ACTION ||
+//            evt.getAction() == DialogEvent.CANCEL_ACTION) {
+//            System.exit(0);
+//        } else if (evt.getAction() == DialogEvent.UPGRADE_ACTION) {
+//            this.upgrade();
+//        }
+//    }
     
     private void upgrade() {
         try {
