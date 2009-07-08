@@ -91,6 +91,9 @@ public class WebBundleDescriptor extends BundleDescriptor
             entityManagerReferences =
             new HashSet<EntityManagerReferenceDescriptor>();
 
+    private Set<DataSourceDefinitionDescriptor> datasourceDefinitionDescs =
+            new HashSet<DataSourceDefinitionDescriptor>();
+
     private Boolean isDistributable;
     private Set<SecurityRoleDescriptor> securityRoles;
     private Set<SecurityConstraint> securityConstraints;
@@ -217,6 +220,14 @@ public class WebBundleDescriptor extends BundleDescriptor
                 setDistributable(isDistributable && otherIsDistributable);
             } else {
                 setDistributable(otherIsDistributable);
+            }
+        }
+
+        Set<DataSourceDefinitionDescriptor> dataSourceDescriptors =
+                webBundleDescriptor.getDataSourceDefinitionDescriptors();
+        if(dataSourceDescriptors.size() > 0 ){
+            for(DataSourceDefinitionDescriptor desc : dataSourceDescriptors){
+                this.addDataSourceDefinitionDescriptor(desc);
             }
         }
     }
@@ -402,6 +413,28 @@ public class WebBundleDescriptor extends BundleDescriptor
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionwebapphasnojmsdestrefbyname",
                 "This web app [{0}] has no resource environment reference by the name of [{1}]", new Object[]{getName(), name}));
+    }
+
+    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors() {
+        return datasourceDefinitionDescs;
+    }
+
+
+    public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        for(Iterator itr = this.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
+            DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor)itr.next();
+            if(desc.getName().equals(reference.getName())){
+                throw new IllegalStateException(
+                        localStrings.getLocalString("exceptionwebduplicatedatasourcedefinition",
+                                "This web app [{0}] cannot have datasource definitions of same name : [{1}]",
+                                getName(), reference.getName()));
+            }
+        }
+        getDataSourceDefinitionDescriptors().add(reference);
+    }
+
+    public void removeDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        this.getDataSourceDefinitionDescriptors().remove(reference);
     }
 
     private Set<MimeMapping> getMimeMappingsSet() {

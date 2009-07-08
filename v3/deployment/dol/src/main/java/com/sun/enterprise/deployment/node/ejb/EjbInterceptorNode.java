@@ -64,7 +64,8 @@ public class EjbInterceptorNode extends DeploymentDescriptorNode {
 
         //jndiEnvironmentRefsGroup
         registerElementHandler(new XMLElement(TagNames.POST_CONSTRUCT), LifecycleCallbackNode.class, "addPostConstructDescriptor");       
-        registerElementHandler(new XMLElement(TagNames.PRE_DESTROY), LifecycleCallbackNode.class, "addPreDestroyDescriptor");       
+        registerElementHandler(new XMLElement(TagNames.PRE_DESTROY), LifecycleCallbackNode.class, "addPreDestroyDescriptor");
+        registerElementHandler(new XMLElement(TagNames.DATA_SOURCE), DataSourceDefinitionNode.class, "addDataSourceDefinitionDescriptor");
 
         registerElementHandler(new XMLElement(TagNames.ENVIRONMENT_PROPERTY), 
                EnvEntryNode.class, "addEnvironmentProperty");
@@ -177,6 +178,11 @@ public class EjbInterceptorNode extends DeploymentDescriptorNode {
             writePrePassivateDescriptors(interceptorNode,
                 descriptor.getCallbackDescriptors(CallbackType.PRE_PASSIVATE).iterator());
         }
+
+        //TODO V3 should we check for the availability of datasource-definition similar to above ? (hasCallbackDescriptor)
+       // datasource-definition*
+       writeDataSourceDefinitionDescriptors(interceptorNode, descriptor.getDataSourceDefinitionDescriptors().iterator());
+
 
         return interceptorNode;
     }

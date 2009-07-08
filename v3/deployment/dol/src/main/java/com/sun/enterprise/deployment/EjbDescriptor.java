@@ -186,6 +186,9 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     private IASEjbExtraDescriptors iASEjbExtraDescriptors = new IASEjbExtraDescriptors();  // Ludo 12/10/2001 extra DTD info only for iAS
 
+    private Set<DataSourceDefinitionDescriptor> datasourceDefinitionDescs =
+            new HashSet<DataSourceDefinitionDescriptor>();
+
     /**
      * returns the extra iAS specific info (not in the RI DID) in the iAS DTD.
      * no setter. You have to modify some fields of the returned object to change it.
@@ -218,6 +221,12 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         this.getServiceReferenceDescriptors().addAll(other.getServiceReferenceDescriptors());
         this.getRoleReferences().addAll(other.getRoleReferences());
         this.getIORConfigurationDescriptors().addAll(other.getIORConfigurationDescriptors());
+        Set<DataSourceDefinitionDescriptor> dataSourceDescriptors = other.getDataSourceDefinitionDescriptors();
+        if(dataSourceDescriptors.size() > 0){
+            for(DataSourceDefinitionDescriptor desc : dataSourceDescriptors){
+                this.addDataSourceDefinitionDescriptor(desc);
+            }
+        }
         this.transactionType = other.transactionType;
         this.ejbClassName = other.ejbClassName;
         this.usesCallerIdentity = other.usesCallerIdentity;
@@ -1436,6 +1445,28 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     public void removeEjbReferenceDescriptor(EjbReference ejbReference) {
         ejbReferences.remove(ejbReference);
         ejbReference.setReferringBundleDescriptor(null);
+    }
+
+    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors() {
+        return datasourceDefinitionDescs;
+    }
+
+
+    public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        for(Iterator itr = this.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
+            DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor)itr.next();
+            if(desc.getName().equals(reference.getName())){
+                throw new IllegalStateException(
+                        localStrings.getLocalString("exceptionejbduplicatedatasourcedefinition",
+                                "This ejb [{0}] cannot have datasource definitions of same name : [{1}]",
+                                getName(), reference.getName()));
+            }
+        }
+        getDataSourceDefinitionDescriptors().add(reference);
+    }
+
+    public void removeDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        this.getDataSourceDefinitionDescriptors().remove(reference);
     }
 
     public Set<ServiceReferenceDescriptor> getServiceReferenceDescriptors() {

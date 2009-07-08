@@ -192,6 +192,9 @@ public class Application extends BundleDescriptor
 
     private final Habitat habitat;
 
+    private Set<DataSourceDefinitionDescriptor> datasourceDefinitionDescs =
+            new HashSet<DataSourceDefinitionDescriptor>();
+
     public Application(Habitat habitat) {
         super("", localStrings.getLocalString(
                 "enterprise.deployment.application.description",
@@ -521,6 +524,28 @@ public class Application extends BundleDescriptor
             (EntityManagerReferenceDescriptor reference) {
         reference.setReferringBundleDescriptor(this);
         this.getEntityManagerReferenceDescriptors().add(reference);
+    }
+
+    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors() {
+        return datasourceDefinitionDescs;
+    }
+
+
+    public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        for(Iterator itr = this.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
+            DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor)itr.next();
+            if(desc.getName().equals(reference.getName())){
+                throw new IllegalStateException(
+                        localStrings.getLocalString("exceptionapplicationduplicatedatasourcedefinition",
+                                "This application [{0}] cannot have datasource definitions of same name : [{1}]",
+                                getName(), reference.getName()));
+            }
+        }
+        getDataSourceDefinitionDescriptors().add(reference);
+    }
+
+    public void removeDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        this.getDataSourceDefinitionDescriptors().remove(reference);
     }
 
     public Set<LifecycleCallbackDescriptor>

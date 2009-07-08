@@ -74,6 +74,8 @@ public class MessageDrivenBeanNode extends EjbNode {
 
         registerElementHandler(new XMLElement(TagNames.PRE_DESTROY), LifecycleCallbackNode.class, "addPreDestroyDescriptor");
 
+        registerElementHandler(new XMLElement(TagNames.DATA_SOURCE), DataSourceDefinitionNode.class, "addDataSourceDefinitionDescriptor");
+
         registerElementHandler(new XMLElement(EjbTagNames.TIMEOUT_METHOD), MethodNode.class, "setEjbTimeoutMethod");      
 
         registerElementHandler(new XMLElement(EjbTagNames.ROLE_REFERENCE), SecurityRoleRefNode.class, "addRoleReference");
@@ -205,6 +207,9 @@ public class MessageDrivenBeanNode extends EjbNode {
         // pre-destroy
         writePreDestroyDescriptors(ejbNode, ejbDesc.getPreDestroyDescriptors().iterator());
 
+        // datasource-definition*
+        writeDataSourceDefinitionDescriptors(ejbNode, ejbDesc.getDataSourceDefinitionDescriptors().iterator());
+        
         // security-role-ref*
         writeRoleReferenceDescriptors(ejbNode, ejbDesc.getRoleReferences().iterator());
 

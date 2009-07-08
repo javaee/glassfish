@@ -865,6 +865,28 @@ public abstract class DeploymentDescriptorNode<T> implements XMLNode<T>  {
                                     next);
         }
     }
+
+    /**
+     * write a list of datasource-definition descriptors to a DOM Tree
+     *
+     * @param parentNode parent node for the DOM tree
+     * @param dsDefinitionDescIterator the iterator over the descriptors to write
+     */
+    protected void writeDataSourceDefinitionDescriptors(Node parentNode,
+                                                        Iterator<DataSourceDefinitionDescriptor>
+                                                                dsDefinitionDescIterator) {
+        if(dsDefinitionDescIterator == null || !dsDefinitionDescIterator.hasNext()){
+            return;
+        }
+
+        DataSourceDefinitionNode subNode = new DataSourceDefinitionNode();
+        for(;dsDefinitionDescIterator.hasNext();){
+            DataSourceDefinitionDescriptor next = dsDefinitionDescIterator.next();
+            subNode.writeDescriptor(parentNode, TagNames.DATA_SOURCE, next);
+        }
+    }
+
+
     /**
      * writes iocalized descriptions (if any) to the DOM node
      */

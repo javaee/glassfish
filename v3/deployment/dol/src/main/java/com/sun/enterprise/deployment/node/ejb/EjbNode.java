@@ -67,7 +67,8 @@ public abstract class EjbNode extends DisplayableComponentNode {
         registerElementHandler(new XMLElement(EjbTagNames.EJB_LOCAL_REFERENCE), EjbLocalReferenceNode.class);     
         registerElementHandler(new XMLElement(WebServicesTagNames.SERVICE_REF), ServiceReferenceNode.class, "addServiceReferenceDescriptor");
         registerElementHandler(new XMLElement(EjbTagNames.RESOURCE_REFERENCE), 
-                                                             ResourceRefNode.class, "addResourceReferenceDescriptor");   
+                                                             ResourceRefNode.class, "addResourceReferenceDescriptor");
+        registerElementHandler(new XMLElement(TagNames.DATA_SOURCE), DataSourceDefinitionNode.class, "addDataSourceDefinitionDescriptor");
         registerElementHandler(new XMLElement(EjbTagNames.SECURITY_IDENTITY),
                                                             SecurityIdentityNode.class);             
         registerElementHandler(new XMLElement(TagNames.RESOURCE_ENV_REFERENCE), 

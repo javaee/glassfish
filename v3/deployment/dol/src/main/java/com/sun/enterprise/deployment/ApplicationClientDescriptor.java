@@ -74,6 +74,8 @@ public class ApplicationClientDescriptor extends BundleDescriptor
         new HashSet<LifecycleCallbackDescriptor>();
     private Set<LifecycleCallbackDescriptor> preDestroyDescs =
         new HashSet<LifecycleCallbackDescriptor>();
+    private Set<DataSourceDefinitionDescriptor> datasourceDefinitionDescs =
+            new HashSet<DataSourceDefinitionDescriptor>();
     private String mainClassName=null;
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(ApplicationClientDescriptor.class);
@@ -267,6 +269,7 @@ public class ApplicationClientDescriptor extends BundleDescriptor
     public Set<LifecycleCallbackDescriptor> getPreDestroyDescriptors() {
         return preDestroyDescs;
     }
+
 
     public void addPreDestroyDescriptor(LifecycleCallbackDescriptor preDestroyDesc) {
         String className = preDestroyDesc.getLifecycleCallbackClass();
@@ -466,7 +469,29 @@ public class ApplicationClientDescriptor extends BundleDescriptor
         this.getEntityManagerReferenceDescriptors().add(reference);
 
     }
-    
+
+    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors() {
+        return datasourceDefinitionDescs;
+    }
+
+
+    public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        for(Iterator itr = this.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
+            DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor)itr.next();
+            if(desc.getName().equals(reference.getName())){
+                throw new IllegalStateException(
+                        localStrings.getLocalString("exceptionappclientduplicatedatasourcedefinition",
+                                "The application client [{0}] cannot have datasource definitions of same name : [{1}]",
+                                getName(), reference.getName()));    
+            }
+        }
+        getDataSourceDefinitionDescriptors().add(reference);
+    }
+
+    public void removeDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+        this.getDataSourceDefinitionDescriptors().remove(reference);
+    }
+
     public List<InjectionCapable> 
         getInjectableResourcesByClass(String className) {
         return getInjectableResourcesByClass(className, this);

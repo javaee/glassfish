@@ -180,7 +180,23 @@ public interface WritableJndiNameEnvironment extends JndiNameEnvironment {
     public void addEntityManagerReferenceDescriptor(
                 EntityManagerReferenceDescriptor reference);
 
+    /**  
+     * Adds the specified data-source-definition to the receiver.
+     *   
+     * @param reference DataSourceDefinitionDescriptor to add.
+     *
+     */
+    public void addDataSourceDefinitionDescriptor(
+				DataSourceDefinitionDescriptor reference);
 
+    /**  
+     * Removes the specified data-source-definition from the receiver.
+     *   
+     * @param reference DataSourceDefinitionDescriptor to remove.
+     *
+     */
+    public void removeDataSourceDefinitionDescriptor(
+				DataSourceDefinitionDescriptor reference);
 
 }
 

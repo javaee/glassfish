@@ -47,10 +47,7 @@ import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is responsible for handling app clients
@@ -104,6 +101,7 @@ public class AppClientNode extends BundleNode<ApplicationClientDescriptor> {
                                "addMessageDestination");
         registerElementHandler(new XMLElement(TagNames.POST_CONSTRUCT), LifecycleCallbackNode.class, "addPostConstructDescriptor");
         registerElementHandler(new XMLElement(TagNames.PRE_DESTROY), LifecycleCallbackNode.class, "addPreDestroyDescriptor");
+        registerElementHandler(new XMLElement(TagNames.DATA_SOURCE), DataSourceDefinitionNode.class, "addDataSourceDefinitionDescriptor");
     }
 
     /**
@@ -220,8 +218,11 @@ public class AppClientNode extends BundleNode<ApplicationClientDescriptor> {
         
         // pre-destroy
         writePreDestroyDescriptors(appclientNode, appclientDesc.getPreDestroyDescriptors().iterator());
+
+        // datasource-definition*
+        writeDataSourceDefinitionDescriptors(appclientNode, appclientDesc.getDataSourceDefinitionDescriptors().iterator());
         
-        appendTextChild(appclientNode, ApplicationClientTagNames.CALLBACK_HANDLER, appclientDesc.getCallbackHandler());                
+        appendTextChild(appclientNode, ApplicationClientTagNames.CALLBACK_HANDLER, appclientDesc.getCallbackHandler());
 
          // message-destination*
         writeMessageDestinations
@@ -230,7 +231,6 @@ public class AppClientNode extends BundleNode<ApplicationClientDescriptor> {
 	return appclientNode;
               
     }
-    
     /**
      * @return the default spec version level this node complies to
      */

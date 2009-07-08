@@ -126,7 +126,8 @@ public class ApplicationNode extends BundleNode<Application> {
         registerElementHandler(new XMLElement(TagNames.MESSAGE_DESTINATION),
                                MessageDestinationNode.class,
                                "addMessageDestination");
-    }            
+        registerElementHandler(new XMLElement(TagNames.DATA_SOURCE), DataSourceDefinitionNode.class, "addDataSourceDefinitionDescriptor");
+    }
     
     /**
      * @return the XML tag associated with this XMLNode
@@ -269,6 +270,9 @@ public class ApplicationNode extends BundleNode<Application> {
 
         // message-destination*
         writeMessageDestinations(appNode, application.getMessageDestinations().iterator());
+
+        // datasource-definition*
+        writeDataSourceDefinitionDescriptors(appNode, application.getDataSourceDefinitionDescriptors().iterator());
 
         return appNode;
     }

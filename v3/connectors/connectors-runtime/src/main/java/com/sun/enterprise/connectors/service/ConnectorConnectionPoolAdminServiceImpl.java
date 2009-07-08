@@ -188,15 +188,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
         String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
         try {
-/*
-            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(connectorPoolObj);
-            _runtime.getNamingManager().publishObject(jndiNameForPool, proxy, true);
-*/
+            //TODO V3 why is rebind=true as pool should have been undeployed for reconfiguration ?
             _runtime.getNamingManager().publishObject(jndiNameForPool, connectorPoolObj, true);
             ManagedConnectionFactory mcf = obtainManagedConnectionFactory(poolName);
             if (mcf == null) {
-                /*TODO V3 use this later
-                 InitialContext ic = new InitialContext(); */
                 Context ic = _runtime.getNamingManager().getInitialContext();
                 ic.unbind(jndiNameForPool);
                 String i18nMsg = localStrings.getString("ccp_adm.failed_to_create_mcf", poolName);
@@ -216,9 +211,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throw cre;
         } catch (NullPointerException ex) {
             try {
-                /* TODO V3 use this later
-                InitialContext ic = new InitialContext();
-                 */
                 Context ic = _runtime.getNamingManager().getInitialContext();
                 ic.unbind(jndiNameForPool);
             } catch (NamingException ne) {
@@ -339,8 +331,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
 
         boolean errorOccured = false;
-        ResourcesUtil resUtil = ResourcesUtil.createInstance();
-        /* TODO V3 handle cascade (resource deletion) later
+
+        /*  Not needed as --cascade is handled via v3's application life cycle contracts
+
+                ResourcesUtil resUtil = ResourcesUtil.createInstance();
                 Object[] connectorResourcesJndiNames =
                                 resUtil.getConnectorResourcesJndiNames(poolName);
                 if(cascade==true && connectorResourcesJndiNames != null) {
@@ -369,9 +363,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
 
         try {
+            //String originalPoolName = ConnectorAdminServiceUtils.getOriginalResourceName(poolName);
             String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
-            /* TODO V3 use this later
-            InitialContext ic = new InitialContext(); */
             Context ic = _runtime.getNamingManager().getInitialContext();
             ic.unbind(jndiNameForPool);
         } catch (NamingException ne) {
@@ -548,7 +541,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             if (checkAndLoadPool(poolName)) {
                 logFine("getUnpooledConnection:: checkAndLoadPoolResource is true");
                 try {
-                    /*TODO V3 not needed for non-cluster
+                    /* TODO not needed for non-cluster
                  //deploy the pool resource if not already done
                  //The pool resource would get loaded in case we are in DAS
                  //due to the checkAndLoadPoolResource call
@@ -633,15 +626,17 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throws ResourceException {
         ManagedConnectionFactory mcf = getManagedConnectionFactory(poolName);
         ManagedConnection mc = null;
+        final Subject defaultSubject = getDefaultSubject(poolName, mcf, prin);
+        mc = getManagedConnection(mcf, defaultSubject, null);
+
+    /* TODO Not needed for non-cluster
+
         boolean needToUndeployPool = false;
         JdbcConnectionPool
                 jdbcPoolToDeploy = null;
         com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
                 ccPoolToDeploy = null;
-        final Subject defaultSubject = getDefaultSubject(poolName, mcf, prin);
-        mc = getManagedConnection(mcf, defaultSubject, null);
 
-/*TODO V3 not needed for non-cluster
 	//We are done with the pool for now, so undeploy if we deployed
 	//it here
         if ( needToUndeployPool ) {
@@ -761,10 +756,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
 
             _runtime.getNamingManager().getInitialContext().unbind(jndiNameForPool);
-/*
-            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(origCcp);
-            _runtime.getNamingManager().publishObject(jndiNameForPool, proxy, true);
-*/
             _runtime.getNamingManager().publishObject(jndiNameForPool, (Object) origCcp, true);
         } catch (NamingException e) {
             ConnectorRuntimeException ex =
@@ -839,13 +830,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throws ConnectorRuntimeException {
 
         String rarName = connectorConnectionPool.getConnectorDescriptorInfo().getRarName();
-        ActiveResourceAdapter activeResourceAdapter = _registry.getActiveResourceAdapter(rarName);
-        /* TODO V3 handle system rar later
-        if (activeResourceAdapter == null) {
-            ifSystemRarLoad(rarName);
-            activeResourceAdapter = _registry.getActiveResourceAdapter(rarName);
-        }
-        */
+        ActiveResourceAdapter activeResourceAdapter = getActiveResourceAdapter(rarName);
         if (activeResourceAdapter == null) {
             String i18nMsg = localStrings.getString("ccp_adm.active_ra_not_init", rarName);
 
@@ -855,6 +840,17 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                 _logger.log(Level.FINE, "", cre);
             }
             throw cre;
+        }
+        return activeResourceAdapter;
+    }
+
+    private ActiveResourceAdapter getActiveResourceAdapter(String rarName)
+            throws ConnectorRuntimeException {
+        ActiveResourceAdapter activeResourceAdapter = _registry.getActiveResourceAdapter(rarName);
+        //we dont need this check for normal resources of domain.xml config, but datasource-definition needs it.
+        if (activeResourceAdapter == null) {
+            ifSystemRarLoad(rarName);
+            activeResourceAdapter = _registry.getActiveResourceAdapter(rarName);
         }
         return activeResourceAdapter;
     }
@@ -1179,10 +1175,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
             InitialContext ic = new InitialContext();
             ic.unbind(jndiNameForPool);
-/*
-            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(origCcp);
-            _runtime.getNamingManager().publishObject(jndiNameForPool, proxy, true);
-*/
             _runtime.getNamingManager().publishObject(jndiNameForPool, (Object) origCcp, true);
 
 
@@ -1260,16 +1252,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         try {
             String jndiNameForPool = ConnectorAdminServiceUtils.
                     getReservePrefixedJNDINameForPool(poolName);
-/*
-            ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(ccp);
-            _runtime.getNamingManager().publishObject(jndiNameForPool, proxy, true);
-*/
             _runtime.getNamingManager().publishObject(jndiNameForPool, (Object) ccp, true);
             ManagedConnectionFactory mcf = null;
             mcf = obtainManagedConnectionFactory(poolName);
             if (mcf == null) {
-                /*TODO V3 use this later
-                 InitialContext ic = new InitialContext(); */
                 Context ic = _runtime.getNamingManager().getInitialContext();
                 ic.unbind(jndiNameForPool);
                 _logger.log(Level.WARNING, "rardeployment.mcf_creation_failure", poolName);

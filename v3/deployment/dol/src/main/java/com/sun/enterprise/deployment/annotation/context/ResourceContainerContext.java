@@ -38,6 +38,8 @@ package com.sun.enterprise.deployment.annotation.context;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 
+import java.util.Set;
+
 /**
  * This interface provides an abstraction for handle resource references.
  *
@@ -178,6 +180,18 @@ public interface ResourceContainerContext extends ServiceReferenceContainerConte
      * @param className
      */
     public LifecycleCallbackDescriptor getPreDestroy(String className);
+
+    /**
+     * Adds the specified data-source-definition to the receiver.
+     * @param desc DataSourceDefinitionDescriptor to add.
+     */
+    public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor desc);
+
+    /**
+     * get all datasource-definition descriptors
+     * @return datasource-definition descriptors
+     */
+    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors();
 
     public void addManagedBean(ManagedBeanDescriptor managedBeanDesc);
 }

@@ -39,6 +39,9 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.*;
 import org.glassfish.apf.context.AnnotationContext;
 
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * This provides an abstraction for handle resource references.
  *
@@ -335,6 +338,26 @@ public class ResourceContainerContextImpl extends AnnotationContext
         LifecycleCallbackDescriptor preDestroyDesc = 
             getPreDestroyContainer().getPreDestroyDescriptorByClass(className);
         return preDestroyDesc;
+    }
+
+    protected WritableJndiNameEnvironment getDataSourceDefinitionContainer(){
+        return (WritableJndiNameEnvironment)descriptor;
+    }
+
+    /**
+     * Adds the specified data-source-definition to the receiver.
+     * @param desc DataSourceDefinitionDescriptor to add.
+     */
+    public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor desc) {
+        getDataSourceDefinitionContainer().addDataSourceDefinitionDescriptor(desc);
+    }
+
+    /**
+     * get all datasource-definition descriptors
+     * @return datasource-definition descriptors
+     */
+    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors() {
+        return getDataSourceDefinitionContainer().getDataSourceDefinitionDescriptors();
     }
 
     protected WritableJndiNameEnvironment getPreDestroyContainer() {

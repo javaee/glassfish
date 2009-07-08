@@ -203,7 +203,8 @@ public class ConnectorsUtil {
      * @param resource connector-resource
      * @return connector-connection-pool
      */
-    public static ConnectorConnectionPool getAssociatedConnectorConnectionPool(ConnectorResource resource, Resources allResources) {
+    public static ConnectorConnectionPool getAssociatedConnectorConnectionPool(ConnectorResource resource,
+                                                                               Resources allResources) {
         for(Resource configuredResource : allResources.getResources()){
             if(configuredResource instanceof ConnectorConnectionPool){
                 ConnectorConnectionPool pool = (ConnectorConnectionPool)configuredResource;
@@ -421,14 +422,15 @@ public class ConnectorsUtil {
         }
 
         if (ref == null) {
-            _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
+            _logger.fine("ConnectorsUtil :: isResourceReferenceEnabled null ref");
             //todo for V3
             // if(isADeployEvent())
                 return true;
             //else
               //  return false;
         }
-        _logger.fine("ResourcesUtil :: isResourceReferenceEnabled ref enabled ?" + Boolean.parseBoolean(ref.getEnabled()));
+        _logger.fine("ConnectorsUtil :: isResourceReferenceEnabled ref enabled ?" +
+                Boolean.parseBoolean(ref.getEnabled()));
         return  Boolean.parseBoolean(ref.getEnabled());
     }
 
@@ -699,7 +701,19 @@ public class ConnectorsUtil {
         }
     }
 
-    public static String deriveDataSourceDefinitionName(String name) {
+    public static String deriveDataSourceDefinitionResourceName(String compId, String name) {
+        //String derivedName = escapeJavaName(name);
+        String derivedName = name;
+        return getReservePrefixedJNDINameForDataSourceDefinitionResource(compId, derivedName);
+    }
+
+    public static String deriveDataSourceDefinitionPoolName(String compId, String name) {
+        //String derivedName = escapeJavaName(name);
+        String derivedName = name;
+        return getReservePrefixedJNDINameForDataSourceDefinitionPool(compId, derivedName);
+    }
+
+    private static String escapeJavaName(String name) {
         if (name != null) {
             //replace all 'delimiter' to double delimiter
             name = name.replace("-", "--");
@@ -716,5 +730,33 @@ public class ConnectorsUtil {
 
     public static Map<String,String> convertPropertiesToMap(Properties properties){
         return new TreeMap<String, String>((Map) properties);
+    }
+
+    public static String getReservePrefixedJNDINameForDataSourceDefinitionPool(String compId, String poolName) {
+        String prefix = null;
+        if(compId == null){
+            prefix = ConnectorConstants.POOLS_JNDINAME_PREFIX +
+                ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX ;
+        }else{
+            prefix = ConnectorConstants.POOLS_JNDINAME_PREFIX +
+                ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX + compId +"/";
+        }
+        return getReservePrefixedJNDIName(prefix, poolName);
+    }
+
+    private static String getReservePrefixedJNDIName(String prefix, String resourceName) {
+        return prefix + resourceName;
+    }
+
+    public static String getReservePrefixedJNDINameForDataSourceDefinitionResource(String compId, String resourceName) {
+        String prefix = null;
+        if(compId == null){
+            prefix = ConnectorConstants.RESOURCE_JNDINAME_PREFIX +
+                ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX ;
+        }else{
+            prefix = ConnectorConstants.RESOURCE_JNDINAME_PREFIX +
+                ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX + compId +"/";
+        }
+        return getReservePrefixedJNDIName(prefix, resourceName);
     }
 }

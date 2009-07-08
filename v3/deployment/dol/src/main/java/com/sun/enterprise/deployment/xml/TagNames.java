@@ -80,6 +80,28 @@ public interface TagNames {
     public static final String RESOURCE_ENV_REFERENCE_NAME = "resource-env-ref-name";
     public static final String RESOURCE_ENV_REFERENCE_TYPE = "resource-env-ref-type";
 
+    public static final String DATA_SOURCE = "data-source";
+    public static final String DATA_SOURCE_DESCRIPTION = "description";
+    public static final String DATA_SOURCE_NAME = "name";
+    public static final String DATA_SOURCE_CLASS_NAME = "class-name";
+    public static final String DATA_SOURCE_URL = "url";
+    public static final String DATA_SOURCE_SERVER_NAME = "server-name";
+    public static final String DATA_SOURCE_PORT_NUMBER = "port-number";
+    public static final String DATA_SOURCE_DATABASE_NAME = "database-name";
+    public static final String DATA_SOURCE_USER = "user";
+    public static final String DATA_SOURCE_PASSWORD = "password";
+    public static final String DATA_SOURCE_LOGIN_TIMEOUT = "login-timeout";
+    public static final String DATA_SOURCE_TRANSACTIONAL = "transactional";
+    public static final String DATA_SOURCE_ISOLATION_LEVEL = "isolation-level";
+    public static final String DATA_SOURCE_INITIAL_POOL_SIZE = "initial-pool-size";
+    public static final String DATA_SOURCE_MIN_POOL_SIZE = "min-pool-size";
+    public static final String DATA_SOURCE_MAX_POOL_SIZE = "max-pool-size";
+    public static final String DATA_SOURCE_MAX_IDLE_TIME = "max-idle-time";
+    public static final String DATA_SOURCE_MAX_STATEMENTS = "max-statements";
+    public static final String DATA_SOURCE_PROPERTY = "property";
+    public static final String DATA_SOURCE_PROPERTY_NAME = "name";
+    public static final String DATA_SOURCE_PROPERTY_VALUE = "value";
+
     public static final String PERSISTENCE_CONTEXT_REF = "persistence-context-ref";
     public static final String PERSISTENCE_CONTEXT_REF_NAME = "persistence-context-ref-name";
 

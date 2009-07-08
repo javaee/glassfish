@@ -78,7 +78,7 @@ public class EjbBundleDescriptor extends BundleDescriptor {
 
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbBundleDescriptor.class);
-	    
+
     static Logger _logger = DOLUtils.getDefaultLogger();
     
     private List<SecurityRoleMapping> roleMaps = new ArrayList<SecurityRoleMapping>();

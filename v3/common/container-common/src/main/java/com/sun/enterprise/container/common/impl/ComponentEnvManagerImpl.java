@@ -36,7 +36,6 @@
  */
 package com.sun.enterprise.container.common.impl;
 
-import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
 import com.sun.enterprise.container.common.spi.WebServiceReferenceManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
@@ -46,23 +45,21 @@ import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import com.sun.enterprise.naming.spi.NamingUtils;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.JNDIBinding;
 import org.glassfish.api.naming.NamingObjectProxy;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.javaee.services.DataSourceDefinitionProxy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 
 import javax.naming.NamingException;
 import javax.naming.NameNotFoundException;
 import javax.naming.Context;
-import javax.enterprise.deploy.shared.ModuleType;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -70,7 +67,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.File;
 
 @Service
 public class ComponentEnvManagerImpl
@@ -166,8 +162,52 @@ public class ComponentEnvManagerImpl
         return compEnvId;
     }
 
+    private void addDataSourceBindings(JndiNameEnvironment env, ScopeType scope, Collection<JNDIBinding> jndiBindings) {
+
+        for(Iterator itr = env.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
+            DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
+
+            if(!dependencyAppliesToScope(next, scope)){
+                continue;
+            }
+
+            //TODO V3 handle once rules for "module", "app" is set
+            if(!dependencyAppliesToScope(next, ScopeType.COMPONENT) &&
+                    !(dependencyAppliesToScope(next, ScopeType.GLOBAL))){
+                continue;
+            }
+
+            if(!dependencyAppliesToScope(next, ScopeType.GLOBAL)){
+                String componentEnvId = getComponentEnvId(env);
+                next.setComponentId(componentEnvId);
+            }
+
+            DataSourceDefinitionProxy proxy = habitat.getComponent(DataSourceDefinitionProxy.class);
+            proxy.setDescriptor(next);
+
+            String logicalJndiName = descriptorToLogicalJndiName(next);
+            CompEnvBinding envBinding = new CompEnvBinding(logicalJndiName, proxy);
+            jndiBindings.add(envBinding);
+        }
+    }
+
+    private ResourceDeployer getResourceDeployer(Object resource, Collection<ResourceDeployer> deployers) {
+        ResourceDeployer resourceDeployer = null;
+        for(ResourceDeployer deployer : deployers){
+            if(deployer.handles(resource)){
+                resourceDeployer = deployer;
+                break;
+            }
+        }
+        return resourceDeployer;
+    }
+
+
     public void unbindFromComponentNamespace(JndiNameEnvironment env)
         throws NamingException {
+
+        //undeploy data-sources as they hold physical connections to database.
+        undeployDataSourceDefinitions(env);
 
         // Unbind anything in the component namespace
         String compEnvId = getComponentEnvId(env);
@@ -181,8 +221,57 @@ public class ComponentEnvManagerImpl
             namingManager.unpublishObject(next.getName());
         }
 
-
         this.unregister(compEnvId);
+    }
+
+    private void undeployDataSourceDefinitions(JndiNameEnvironment env) {
+
+
+        for(Iterator itr = env.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
+            DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
+
+            if(!(dependencyAppliesToScope(next, ScopeType.GLOBAL) ||
+                    (dependencyAppliesToScope(next, ScopeType.COMPONENT)))){
+               continue;
+            }
+
+            undeployDataSource(next);
+        }
+
+        /* TODO V3 handle once rules for "module", "app" is set
+        for(JndiNameEnvironment moduleEnv : getJndiNameEnvironmentsForModule(env)) {
+            for(Iterator itr = moduleEnv.getDataSourceDefinitionDescriptors().iterator();itr.hasNext();){
+                DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
+
+                if(!dependencyAppliesToScope(next, ScopeType.MODULE)){
+                    continue;
+                }
+                undeployDataSource(next);
+            }
+        }
+
+        for(JndiNameEnvironment appEnv : getJndiNameEnvironmentsForApp(env)) {
+            for(Iterator itr = appEnv.getDataSourceDefinitionDescriptors().iterator();itr.hasNext();){
+                DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
+
+                if(!dependencyAppliesToScope(next, ScopeType.APP)){
+                    continue;
+                }
+                undeployDataSource(next);
+            }
+        }
+        */
+    }
+
+    private void undeployDataSource(DataSourceDefinitionDescriptor next) {
+        Collection<ResourceDeployer> resourceDeployers = habitat.getAllByContract(ResourceDeployer.class);
+
+        try{
+                ResourceDeployer deployer = getResourceDeployer(next, resourceDeployers);
+            deployer.undeployResource(next);
+        }catch(Exception e){
+            _logger.log(Level.WARNING, "unable to undeploy DataSourceDefinition [ " + next.getName() + " ] ", e);
+        }
     }
 
     private void addJNDIBindings(JndiNameEnvironment env, ScopeType scope, Collection<JNDIBinding> jndiBindings) {
@@ -221,6 +310,8 @@ public class ComponentEnvManagerImpl
 
             jndiBindings.add(getCompEnvBinding(next));
         }
+
+        addDataSourceBindings(env, scope, jndiBindings); 
 
         for (Iterator itr = env.getEjbReferenceDescriptors().iterator();
              itr.hasNext();) {

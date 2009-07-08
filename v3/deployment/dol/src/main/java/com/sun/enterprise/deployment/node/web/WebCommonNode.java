@@ -107,6 +107,7 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
                                "addMessageDestination");
         registerElementHandler(new XMLElement(TagNames.POST_CONSTRUCT), LifecycleCallbackNode.class, "addPostConstructDescriptor");
         registerElementHandler(new XMLElement(TagNames.PRE_DESTROY), LifecycleCallbackNode.class, "addPreDestroyDescriptor");
+        registerElementHandler(new XMLElement(TagNames.DATA_SOURCE), DataSourceDefinitionNode.class, "addDataSourceDefinitionDescriptor");
     }
     
     /**
@@ -389,6 +390,9 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
 
         // pre-destroy
         writePreDestroyDescriptors(jarNode, webBundleDesc.getPreDestroyDescriptors().iterator());
+
+        // datasource-definition*
+        writeDataSourceDefinitionDescriptors(jarNode, webBundleDesc.getDataSourceDefinitionDescriptors().iterator());
 
          // message-destination*
        writeMessageDestinations

@@ -38,10 +38,7 @@ package com.sun.enterprise.deployment.node.ejb;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.EjbSessionDescriptor.ConcurrencyManagementType;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.LifecycleCallbackNode;
-import com.sun.enterprise.deployment.node.MethodNode;
-import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -74,6 +71,8 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
        registerElementHandler(new XMLElement(EjbTagNames.POST_CONSTRUCT), LifecycleCallbackNode.class, "addPostConstructDescriptor");       
 
        registerElementHandler(new XMLElement(EjbTagNames.PRE_DESTROY), LifecycleCallbackNode.class, "addPreDestroyDescriptor");       
+
+       registerElementHandler(new XMLElement(EjbTagNames.DATA_SOURCE), DataSourceDefinitionNode.class, "addDataSourceDefinitionDescriptor");
 
        registerElementHandler(new XMLElement(EjbTagNames.POST_ACTIVATE_METHOD), LifecycleCallbackNode.class, "addPostActivateDescriptor");       
 
@@ -322,6 +321,9 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
 
         // pre-destroy
         writePreDestroyDescriptors(ejbNode, ejbDesc.getPreDestroyDescriptors().iterator());
+
+        // datasource-definition*
+        writeDataSourceDefinitionDescriptors(ejbNode, ejbDesc.getDataSourceDefinitionDescriptors().iterator());
 
         // post-activate-method
         writePostActivateDescriptors(ejbNode, ejbDesc.getPostActivateDescriptors().iterator());

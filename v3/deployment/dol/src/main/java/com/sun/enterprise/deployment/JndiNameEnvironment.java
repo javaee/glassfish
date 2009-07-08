@@ -153,6 +153,13 @@ public interface JndiNameEnvironment {
     public Set<LifecycleCallbackDescriptor> getPreDestroyDescriptors();
 
     /**
+     * Return a set of data-source-definition descriptors.
+     *
+     * @return java.util.Set of data-source-definition objects
+     */
+    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors();    
+
+    /**
      * Return the pre-destroy descriptor corresponding to
      * the given name.
      *

@@ -216,6 +216,9 @@ public class EjbEntityNode  extends InterfaceBasedEjbNode {
         // pre-destroy
         writePreDestroyDescriptors(ejbNode, ejbDesc.getPreDestroyDescriptors().iterator());
 
+        // datasource-definition*
+        writeDataSourceDefinitionDescriptors(ejbNode, ejbDesc.getDataSourceDefinitionDescriptors().iterator());
+
         // security-role-ref*
         writeRoleReferenceDescriptors(ejbNode, ejbDesc.getRoleReferences().iterator());
         
