@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.tests.ejb.sample.SimpleEjb;
 
@@ -47,5 +48,10 @@ public class EmbeddedTest {
         }
 
         deployer.undeploy(appName);
+        try {
+            server.stop();
+        } catch (LifecycleException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 }

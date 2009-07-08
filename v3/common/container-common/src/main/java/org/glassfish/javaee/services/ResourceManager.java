@@ -132,7 +132,10 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         //TODO V3 : even in case when there is no resource used by an application (no RAR was started),
         //TODO V3 not undeploying resources other than jdbc, connector pool/resource ?
         undeployResources(resources);
-        getConnectorRuntime().shutdownAllActiveResourceAdapters();
+        ConnectorRuntime cr = getConnectorRuntime();
+        if (cr!=null) {
+            cr.shutdownAllActiveResourceAdapters();
+        }
         removeListenerFromResources();
         removeListenerFromResourceRefs();
     }

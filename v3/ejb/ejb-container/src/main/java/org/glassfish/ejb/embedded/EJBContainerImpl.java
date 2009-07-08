@@ -52,6 +52,8 @@ import javax.ejb.EJBException;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.ejb.embedded.EmbeddedEjbContainer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
@@ -66,6 +68,8 @@ public class EJBContainerImpl extends EJBContainer {
     private static final Logger _logger =
             LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
+    private final Server server;
+    
     private final EmbeddedEjbContainer ejbContainer;
 
     private final EmbeddedDeployer deployer;
@@ -75,7 +79,8 @@ public class EJBContainerImpl extends EJBContainer {
     /**
      * Construct new EJBContainerImpl instance 
      */                                               
-    EJBContainerImpl(EmbeddedEjbContainer ejbContainer, EmbeddedDeployer deployer) {
+    EJBContainerImpl(Server server, EmbeddedEjbContainer ejbContainer, EmbeddedDeployer deployer) {
+        this.server = server;
         this.ejbContainer = ejbContainer;
         this.deployer = deployer;
     }
@@ -126,6 +131,11 @@ public class EJBContainerImpl extends EJBContainer {
 
         } catch (Exception e) {
             System.err.println("Cannot undeploy deployed modules: " + e.getMessage());
+        }
+        try {
+            server.stop();
+        } catch (LifecycleException e) {
+            System.err.println("Cannot stop embedded container " + e.getMessage());
         }
     }
 

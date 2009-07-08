@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.*;
 import org.glassfish.web.embed.ConfigException;
+import org.glassfish.web.embed.WebBuilder;
 import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.web.embed.config.*;
@@ -95,10 +96,14 @@ public class EmbeddedWebContainer implements
     
     private Embedded embedded = null;
     
-    private String path = "";
+    private File path = null;
     
 
     // --------------------------------------------------------- Public Methods
+
+    public void setConfiguration(WebBuilder builder) {
+        setPath(builder.getDocRootDir());
+    }
 
     /**
      * Returns the list of sniffers associated with this embedded container
@@ -156,7 +161,7 @@ public class EmbeddedWebContainer implements
             WebListener[] webListeners = new WebListener[1];
             webListeners[0] = webListener;
             
-            File docRoot = new File(getPath());
+            File docRoot = getPath();
             defaultVirtualServer = (VirtualServer)
                 createVirtualServer(virtualServerId, docRoot, webListeners);
             defaultVirtualServer.addAlias(hostName);
@@ -210,7 +215,7 @@ public class EmbeddedWebContainer implements
             WebListener[] webListeners = new WebListener[1];
             webListeners[0] = webListener;
             
-            File docRoot = new File(getPath());
+            File docRoot = getPath();
             defaultVirtualServer = (VirtualServer)createVirtualServer(
                 config.getVirtualServerId(), docRoot, webListeners);
             for (String alias : config.getHostNames()) {
@@ -588,7 +593,7 @@ public class EmbeddedWebContainer implements
      * 
      * @param path - the path
      */
-    public void setPath(String path) {
+    public void setPath(File path) {
         this.path = path;
     }
 
@@ -598,7 +603,7 @@ public class EmbeddedWebContainer implements
      *
      * @return - the context path
      */
-    public String getPath() {
+    public File getPath() {
         return path;
     }
 

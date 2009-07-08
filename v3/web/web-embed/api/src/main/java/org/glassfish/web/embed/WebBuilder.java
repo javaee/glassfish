@@ -68,6 +68,10 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
         return this;
     }
 
+    public URL getDefaultWebXml() {
+        return defaultWebXml;
+    }
+
     public WebBuilder setHttpListenerName(String name) {
         listenerName = name;
         return this;
@@ -76,6 +80,10 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
     public WebBuilder setDocRootDir(File f) {
         docRoot = f;
         return this;
+    }
+
+    public File getDocRootDir() {
+        return docRoot;
     }
 
     public WebBuilder setListings(boolean b) {
@@ -90,6 +98,7 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
     public synchronized EmbeddedWebContainer create(Server server) {
         if (container==null) {
             container=habitat.getByContract(EmbeddedWebContainer.class);
+            container.setConfiguration(this);
         }
         return container;
     }

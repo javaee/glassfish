@@ -102,7 +102,7 @@ public class EmbeddedTest {
         System.out.println("Done with EJB");
     }
 
-    //@Test
+    @Test
     public void testWeb() throws Exception {
         System.out.println("Starting Web " + server);
         ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
@@ -152,7 +152,7 @@ public class EmbeddedTest {
             http.unbind();
             http=null;
         }
-        System.out.println("Stopping server");
+        System.out.println("Stopping server " + server);
         if (server!=null) {
             server.stop();
             server=null;

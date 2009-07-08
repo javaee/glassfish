@@ -33,82 +33,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.api.embedded;
 
-import org.jvnet.hk2.component.PreDestroy;
-
-import java.io.File;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Abstraction for a virtual filesystem that be used by the server to store important files.
+ * Listener type contract to be notified of embedded server creation and
+ * destruction.
  *
  * @author Jerome Dochez
  */
-public class EmbeddedFileSystem implements PreDestroy {
+@Contract
+public interface EmbeddedLifecycle {
 
-    public static class Builder {
-        boolean autoDelete=false;
-        File configFile=null;
-        File installRoot=null;
-        File instanceRoot=null;
+    /**
+     * Notification of embedded server creation
+     * @param server the newly created server
+     */
+    public void creation(Server server);
 
-        public Builder setAutoDelete(boolean b) {
-            this.autoDelete = b;
-            return this;
-        }
-
-        public Builder setConfigurationFile(File f) {
-            this.configFile = f;
-            return this;
-
-        }
-
-        public Builder setInstallRoot(File f) {
-            this.installRoot = f;
-            return this;
-        }
-
-        public Builder setInstanceRoot(File f) {
-            this.instanceRoot=f;
-            return this;
-        }
-
-        public EmbeddedFileSystem build() {
-            return new EmbeddedFileSystem(this);
-        }
-
-    }
-
-    public final boolean autoDelete;
-    public final File installRoot;
-    public final File instanceRoot;
-    public final File configFile;
-
-    private EmbeddedFileSystem(Builder builder) {
-        autoDelete = builder.autoDelete;
-        installRoot = builder.installRoot;
-        instanceRoot = builder.instanceRoot;
-        configFile = builder.configFile;
-    }
-
-    public void preDestroy() {
-        System.out.println("delete " + instanceRoot + " = " + autoDelete);
-        if (autoDelete) {
-            // recursively delete instanceRoot directory
-            System.out.println("Deleting recursively" + instanceRoot);
-            deleteAll(instanceRoot);
-        }
-
-    }
-
-    private void deleteAll(File f) {
-        for (File child : f.listFiles()) {
-            if (child.isDirectory()) {
-                deleteAll(child);
-            } else {
-                child.delete();
-            }
-        }
-        f.delete();
-    }
+    /**
+     * Notification of embedded server destruction
+     * @param server the stopped embedded server instance
+     */
+    public void destruction(Server server);
 }

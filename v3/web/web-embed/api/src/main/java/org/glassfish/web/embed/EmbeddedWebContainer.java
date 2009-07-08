@@ -54,6 +54,15 @@ import org.jvnet.hk2.annotations.Contract;
 public interface EmbeddedWebContainer extends EmbeddedContainer {
 
     /**
+     * Sets the embedded configuration for this embedded instance.
+     * Such configuration should always override any xml based
+     * configuration.
+     *
+     * @param builder the embedded instance configuration
+     */
+    public void setConfiguration(WebBuilder builder);
+
+    /**
      * Starts this <tt>EmbeddedWebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.

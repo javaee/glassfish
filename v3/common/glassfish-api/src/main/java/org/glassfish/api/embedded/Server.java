@@ -36,12 +36,18 @@
 package org.glassfish.api.embedded;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.io.File;
+import java.io.IOException;
 
 import com.sun.enterprise.module.bootstrap.PlatformMain;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
@@ -130,15 +136,25 @@ public class Server {
         }
     }
 
+    private class Container {
+        private final EmbeddedContainer container;
+        boolean started;
+
+        private Container(EmbeddedContainer container) {
+            this.container = container;
+        }
+        
+    }
+
     private final static Map<String, Server> servers = new HashMap<String, Server>();
 
     public final String serverName;
     public final boolean loggerEnabled;
     public final boolean verbose;
     public final File loggerFile;
-    public final EmbeddedFileSystem fileSystem;
+    public final Inhabitant<EmbeddedFileSystem> fileSystem;
     private final Habitat habitat;
-    private final List<EmbeddedContainer> containers = new ArrayList<EmbeddedContainer>();
+    private final List<Container> containers = new ArrayList<Container>();
 
 
 
@@ -151,6 +167,29 @@ public class Server {
         if (embedded==null) {
             throw new RuntimeException("Embedded startup not found");
         }
+        EmbeddedFileSystem fs;
+        if (builder.fileSystem==null) {
+            // there is no instance root directory, let's create one.
+            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
+            try {
+                File f = File.createTempFile("gfembed", "tmp", new File(System.getProperty("user.dir")));
+                f.delete();
+                fsBuilder.setInstanceRoot(new File(f.getParent(), f.getName()));
+                fsBuilder.setAutoDelete(true);
+            } catch (IOException e) {
+
+            }
+            fs = fsBuilder.build();
+        } else {
+            fs = builder.fileSystem;
+        }
+        if (!fs.instanceRoot.exists()) {
+            fs.instanceRoot.mkdirs();
+            // todo : dochez : temporary fix for docroot
+            File f = new File(fs.instanceRoot, "docroot");
+            f.mkdirs();
+        }
+        embedded.setContext(new StartupContext(fs.instanceRoot, new String[0]));
         embedded.setContext(this);
         try {
             embedded.start(new String[0]);
@@ -158,12 +197,19 @@ public class Server {
             e.printStackTrace();
         }
         habitat = embedded.getStartedService(Habitat.class);
-        if (builder.fileSystem==null) {
-            fileSystem = (new EmbeddedFileSystem.Builder()).build();
-        } else {
-            fileSystem = builder.fileSystem;
+
+
+        fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
+        habitat.add(fileSystem);
+
+
+        for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
+            try {
+                lifecycle.creation(this);
+            } catch(Exception e) {
+                Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server startup",e);
+            }
         }
-        habitat.add(new ExistingSingletonInhabitant<EmbeddedFileSystem>(fileSystem));
     }
 
     @SuppressWarnings("unchecked")
@@ -195,7 +241,7 @@ public class Server {
      */
     public <T extends EmbeddedContainer> T addContainer(ContainerBuilder<T> info) {
         T container = info.create(this);
-        if (container!=null && containers.add(container)) {
+        if (container!=null && containers.add(new Container(container))) {
             return container;
         }
         return null;
@@ -210,7 +256,9 @@ public class Server {
      */
     public Collection<EmbeddedContainer> getContainers() {
         ArrayList<EmbeddedContainer> copy = new ArrayList<EmbeddedContainer>();
-        copy.addAll(containers);
+        for (Container c : containers) {
+            copy.add(c.container);
+        }
         return copy;        
     }
 
@@ -249,8 +297,14 @@ public class Server {
      * Starts the server
      */
     public void start() throws LifecycleException {
-        for (EmbeddedContainer container : containers) {
-            container.start();
+        for (Container c : containers) {
+            try {
+                c.container.start();
+                c.started=true;
+            } catch (LifecycleException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                c.started=false;
+            }
         }
     }
 
@@ -258,12 +312,34 @@ public class Server {
      * Stops the container
      */
     public void stop() throws LifecycleException {
-        for (EmbeddedContainer container : containers) {
-            container.stop();
+        System.out.println("Received Stop");
+        for (Container c : containers) {
+            try {
+                if (c.started) {
+                    c.container.stop();
+                }
+            } catch (LifecycleException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            c.started=false;
+        }
+        ModuleStartup ms = habitat.getComponent(ModuleStartup.class);
+        if (ms!=null) {
+            System.out.println("Sending stop event to ms");
+            ms.stop();
         }
         synchronized(servers) {
             servers.remove(serverName);
         }
+        for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
+            try {
+                lifecycle.destruction(this);
+            } catch(Exception e) {
+                Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server destruction",e);
+            }
+        }
+        fileSystem.get().preDestroy();
+        
     }
 
     /**

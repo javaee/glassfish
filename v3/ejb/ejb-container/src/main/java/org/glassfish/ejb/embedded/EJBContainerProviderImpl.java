@@ -110,7 +110,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
                 EmbeddedDeployer deployer = server.getDeployer();
 
-                container = new EJBContainerImpl(ejbContainer, deployer);
+                container = new EJBContainerImpl(server, ejbContainer, deployer);
             }
         }
     }

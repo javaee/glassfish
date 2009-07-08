@@ -95,9 +95,7 @@ public class ASEmbedded extends AbstractMain {
     @Override
     public void run(final Logger logger, String... args) throws Exception {
         
-        final File modulesDir = findBootstrapFile().getParentFile();
-
-        final StartupContext startupContext = new StartupContext(modulesDir, args);
+        final StartupContext startupContext = getContext(StartupContext.class);
 
         final ModulesRegistry registry = new SingleModulesRegistry(ASEmbedded.class.getClassLoader());
         registry.setParentClassLoader(ASEmbedded.class.getClassLoader());
@@ -115,11 +113,12 @@ public class ASEmbedded extends AbstractMain {
         @Override
         protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
             Habitat habitat = registry.newHabitat();
-            habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
+            for (Object c : getContexts()) {
+                habitat.add(Inhabitants.create(c));
+            }
             // the root registry must be added as other components sometimes inject it
             habitat.add(new ExistingSingletonInhabitant<ModulesRegistry>(ModulesRegistry.class, registry));
             habitat.add(new ExistingSingletonInhabitant<Logger>(Logger.class, ASEmbedded.this.logger));
-            habitat.add(Inhabitants.create(getContext(Object.class)));
             registry.createHabitat("default", createInhabitantsParser(habitat));
 
             // post massaging, will need to be cleaned

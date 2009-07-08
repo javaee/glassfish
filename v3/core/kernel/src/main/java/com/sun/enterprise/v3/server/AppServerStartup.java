@@ -180,6 +180,7 @@ public class AppServerStartup implements ModuleStartup {
         }
 
         // prepare the global variables
+        habitat.addComponent(null, this);
         habitat.addComponent(null, systemRegistry);
         habitat.addComponent(LogDomains.CORE_LOGGER, logger);
         Inhabitant<ProcessEnvironment> inh = habitat.getInhabitantByType(ProcessEnvironment.class);
