@@ -23,7 +23,8 @@
                         com.sun.enterprise.web.stats; \
                         com.sun.enterprise.web.util; \
                         com.sun.web.server; \
-                        org.glassfish.web
+                        org.glassfish.web; \
+                        version=${project.osgi.version}
 
 Import-Package: \
                         com.sun.logging.enterprise.system.container.web, \
