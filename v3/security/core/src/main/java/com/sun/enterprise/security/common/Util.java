@@ -35,9 +35,18 @@
  */
 package com.sun.enterprise.security.common;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 import javax.security.auth.callback.CallbackHandler;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.embedded.Server;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -58,6 +67,7 @@ public class Util {
     private static Habitat habitat;
     @Inject 
     private ProcessEnvironment penv;
+    
    
     //stuff required for AppClient
     private CallbackHandler callbackHandler;
@@ -98,5 +108,49 @@ public class Util {
 
     public void setAppClientMsgSecConfigs(Object appClientMsgSecConfigs) {
         this.appClientMsgSecConfigs = appClientMsgSecConfigs;
+    }
+    
+    public static boolean isEmbeddedServer() {
+        List<String> servers = Server.Builder.getServerNames();
+        if (!servers.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static File writeConfigFileToTempDir(String fileName) throws IOException {
+        String userHome = System.getProperty("user.home");
+       
+        InputStream iStream = Util.class.getClassLoader().getResourceAsStream("config"+File.separator + fileName);
+      
+        String embeddedServerName = getCurrentEmbeddedServerName();
+        File tempDir = new File(userHome + File.separator + ".glassfishv3-"+embeddedServerName+File.separator + "config");
+        boolean mkDirSuccess = true;
+        if (!tempDir.exists()) {
+            mkDirSuccess = tempDir.mkdirs();
+        }
+        
+        File localFile = new File(tempDir.getAbsoluteFile()+File.separator + fileName);
+     
+        if (mkDirSuccess && !localFile.exists()) {
+            localFile.createNewFile();
+        }
+        FileOutputStream oStream = new FileOutputStream(localFile);
+
+        while (iStream.available() > 0) {
+            oStream.write(iStream.read());
+        }
+
+        oStream.close();
+        iStream.close();
+        return localFile;
+
+    }
+
+    public static String getCurrentEmbeddedServerName() {
+        List<String> embeddedServerNames = Server.Builder.getServerNames();
+        String embeddedServerName = (embeddedServerNames.get(0) == null) ? "embedded" : embeddedServerNames.get(0);
+        return embeddedServerName;
+
     }
 }

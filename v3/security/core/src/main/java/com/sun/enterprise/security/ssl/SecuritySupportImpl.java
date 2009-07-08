@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security.ssl;
 
+import com.sun.enterprise.security.common.Util;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import java.security.Provider;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
+import java.io.IOException;
 import javax.security.auth.callback.CallbackHandler;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -86,14 +88,29 @@ public class SecuritySupportImpl implements SecuritySupport {
     }
 
     protected void initJKS() {
+        String keyStoreFileName = null;
+        String trustStoreFileName = null;
+
+        if (Util.isEmbeddedServer()) {
+            try {
+                keyStoreFileName = Util.writeConfigFileToTempDir("keystore.jks").getAbsolutePath();
+                trustStoreFileName = Util.writeConfigFileToTempDir("cacerts.jks").getAbsolutePath();
+            } catch (IOException ex) {
+                _logger.log(Level.SEVERE, "Error obtaining keystore and truststore files for embedded server", ex);
+            }
+        } else {
+            keyStoreFileName = System.getProperty(keyStoreProp);
+            trustStoreFileName = System.getProperty(trustStoreProp);
+        }
+
         if (!initialized) {
             loadStores(
                     null, 
                     null, 
-                    System.getProperty(keyStoreProp), 
+                   keyStoreFileName, 
                     SSLUtils.getKeyStorePass(),
                     SSLUtils.getKeyStoreType(),
-                    System.getProperty(trustStoreProp), 
+                    trustStoreFileName, 
                     SSLUtils.getTrustStorePass(),
                     SSLUtils.getTrustStoreType());
             initialized = true;

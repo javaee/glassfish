@@ -41,6 +41,7 @@
 package com.sun.enterprise.security;
 
 import com.sun.enterprise.security.audit.AuditManager;
+import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.logging.LogDomains;
@@ -97,7 +98,20 @@ public class SecurityServicesUtil {
      * code moved from J2EEServer.run()
      */
     public void initSecureSeed() {
-        File secureSeedFile = new File(env.getConfigDirPath(),"secure.seed");
+        
+        File secureSeedFile = null;
+        if (Util.isEmbeddedServer()) {
+            try {
+                secureSeedFile = Util.writeConfigFileToTempDir("secure.seed");
+
+            } catch (IOException ex) {
+                String errmsg =
+                        "IOException while constructing embedded config file";
+                _logger.log(Level.WARNING, errmsg);
+            }
+        } else {
+            secureSeedFile = new File(env.getConfigDirPath(), "secure.seed");
+        }
 
         // read the secure random from the file
         long seed = readSecureSeed(secureSeedFile);

@@ -60,11 +60,11 @@
       </log-service>
       <security-service jacc="simple">
         <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm">
-          <property value="config/admin-keyfile" name="file" />
+          <property value="admin-keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />
         </auth-realm>
         <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="file">
-          <property value="config/keyfile" name="file" />
+          <property value="keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />
         </auth-realm>
         <auth-realm classname="com.sun.enterprise.security.auth.realm.certificate.CertificateRealm" name="certificate" />
