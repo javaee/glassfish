@@ -172,6 +172,24 @@ public class UtilHandlers {
         Object key = (Object) handlerCtx.getInputValue("Key");
         handlerCtx.setOutputValue("Value", (Object) map.get(key));        
     }
+
+    /**
+     * <p> Adds the given value to a <code>List</code></p>
+     * <p> Input value: "list" -- Type: <code>java.util.List</code>
+     * <p> Input value: "value" -- Type: <code>java.lang.Object</code>
+     * 
+     * @param handlerCtx The HandlerContext
+     */
+    @Handler(id="listAdd",
+    	input={
+	    @HandlerInput(name="list", type=List.class, required=true),
+            @HandlerInput(name="value", type=Object.class, required=true)
+        }
+    )
+    public static void listAdd(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+        list.add(handlerCtx.getInputValue("value"));
+    }
     
     
     /**
