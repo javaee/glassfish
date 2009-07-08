@@ -5,6 +5,7 @@
 package org.glassfish.api.amx;
 
 import javax.management.ObjectName;
+import javax.management.MBeanServerConnection;
 
 /**
  * Important MBean values in AMX.

@@ -134,7 +134,7 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     public Map<String, Object> getResourceAdapterConfigProps(@Param(name = "rarName") String rarName);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
-    @Description("List of administered object configuration proeprties")
+    @Description("List of administered object configuration properties")
     public Map<String, Object> getAdminObjectConfigProps(
             @Param(name = "rarName") String rarName,
             @Param(name = "adminObjectIntf") String adminObjectIntf);

@@ -33,26 +33,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.core.proxy;
+package org.glassfish.api.amx;
 
-
+import java.util.concurrent.CountDownLatch;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.api.amx.AMXValues;
-
 
 /**
 AMX must be "booted" before use.
  */
-@Taxonomy(stability = Stability.UNCOMMITTED)
 public final class AMXBooter
 {
     private AMXBooter()
     {
+    }
+
+    /** wait for the BootAMXMBean to appear; it always will load early in server startup */
+    private static final class BootAMXCallback extends MBeanListener.CallbackImpl
+    {
+        private final MBeanServerConnection mConn;
+
+        private final CountDownLatch mLatch = new CountDownLatch(1);
+
+        public BootAMXCallback(final MBeanServerConnection conn)
+        {
+            mConn = conn;
+        }
+
+        @Override
+        public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener)
+        {
+            super.mbeanRegistered(objectName, listener);
+            mLatch.countDown();
+        }
+
+        public void await()
+        {
+            try
+            {
+                mLatch.await(); // wait until BootAMXMBean is ready
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     /**
@@ -62,7 +88,28 @@ public final class AMXBooter
      */
     public static ObjectName bootAMX(final MBeanServerConnection conn)
     {
-        return org.glassfish.api.amx.AMXBooter.bootAMX(conn);
+        ObjectName domainRootObjectName = findDomainRoot(conn);
+
+        if (domainRootObjectName == null)
+        {
+            final BootAMXCallback callback = new BootAMXCallback(conn);
+            MBeanListener.listenForBootAMX(conn, callback);
+            // block until ready
+            callback.await();
+
+            // start AMX and wait for it to be ready
+            try
+            {
+                conn.invoke(BootAMXMBean.OBJECT_NAME, BootAMXMBean.BOOT_AMX_OPERATION_NAME, null, null);
+                MBeanListener.waitAMXReady(conn);
+            }
+            catch (final Exception e)
+            {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        return domainRootObjectName;
     }
 
     /**
@@ -106,4 +153,3 @@ public final class AMXBooter
 
 
 
- 

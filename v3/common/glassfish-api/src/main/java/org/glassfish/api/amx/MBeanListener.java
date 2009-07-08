@@ -6,6 +6,7 @@ package org.glassfish.api.amx;
 
 import java.util.Set;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 import javax.management.MBeanServerNotification;
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -28,7 +29,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
     /** mType and mName should be null if mObjectName is non-null, and vice versa */
     private final ObjectName mObjectName;
 
-    private final MBeanServer mMBeanServer;
+    private final MBeanServerConnection mMBeanServer;
 
     private final T mCallback;
 
@@ -47,7 +48,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         return mName;
     }
 
-    public MBeanServer getMBeanServer()
+    public MBeanServerConnection getMBeanServer()
     {
         return mMBeanServer;
     }
@@ -112,7 +113,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
      * @param callback
      */
     public MBeanListener(
-            final MBeanServer server,
+            final MBeanServerConnection server,
             final ObjectName objectName,
             final T callback)
     {
@@ -131,7 +132,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
      * @param callback
      */
     public MBeanListener(
-            final MBeanServer server,
+            final MBeanServerConnection server,
             final String type,
             final T callback)
     {
@@ -148,7 +149,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
      * @param callback
      */
     public MBeanListener(
-            final MBeanServer server,
+            final MBeanServerConnection server,
             final String type,
             final String name,
             final T callback)
@@ -165,12 +166,42 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         Listening starts automatically.
      */
     public static <T extends Callback> MBeanListener<T> listenForDomainRoot(
-        final MBeanServer server,
+        final MBeanServerConnection server,
         final T callback)
     {
         final MBeanListener<T> listener = new MBeanListener<T>( server, AMXValues.domainRoot(), callback);
-        listener.start();
+        listener.startListening();
         return listener;
+    }
+
+    private static final class WaitForDomainRootListener extends MBeanListener.CallbackImpl {
+        private final MBeanServerConnection mConn;
+        public WaitForDomainRootListener( final MBeanServerConnection conn ) {
+            mConn = conn;
+        }
+        @Override
+        public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener) {
+            super.mbeanRegistered(objectName,listener);
+            try
+            {
+                mConn.invoke( domainRoot(), "waitAMXReady", null, null );
+            }
+            catch( final Exception e )
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+        Wait until AMX is ready.
+        <p>
+        This will *not* cause AMX to load; it will block forever until AMX is ready. In other words,
+        don't call this method unless it's a convenient thread that can wait forever.
+     */
+    public static void waitAMXReady( final MBeanServerConnection server)
+    {
+        listenForDomainRoot( server, new WaitForDomainRootListener(server) );
     }
     
     /**
@@ -178,12 +209,24 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         Listening starts automatically.
      */
     public static <T extends Callback> MBeanListener<T> listenForBootAMX(
-        final MBeanServer server,
+        final MBeanServerConnection server,
         final T callback)
     {
         final MBeanListener<T> listener = new MBeanListener<T>( server, BootAMXMBean.OBJECT_NAME, callback);
-        listener.start();
+        listener.startListening();
         return listener;
+    }
+
+    private boolean isRegistered( final MBeanServerConnection conn, final ObjectName objectName )
+    {
+        try
+        {
+            return conn.isRegistered(objectName);
+        }
+        catch (final Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -191,7 +234,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
     will be synchronously made before returning.  It is also possible that the
     callback could happen twice for the same MBean.
      */
-    public void start()
+    public void startListening()
     {
         // race condition: must listen *before* looking for existing MBeans
         try
@@ -205,7 +248,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
 
         if ( mObjectName != null )
         {
-            if ( mMBeanServer.isRegistered(mObjectName) )
+            if ( isRegistered(mMBeanServer, mObjectName) )
             {
                 mCallback.mbeanRegistered(mObjectName, this);
             }
@@ -220,10 +263,17 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
             }
 
             final ObjectName pattern = AMXValues.newObjectName(AMXValues.amxJMXDomain(), props);
-            final Set<ObjectName> matched = mMBeanServer.queryNames(pattern, null);
-            for (final ObjectName objectName : matched)
+            try
             {
-                mCallback.mbeanRegistered(objectName, this);
+                final Set<ObjectName> matched = mMBeanServer.queryNames(pattern, null);
+                for (final ObjectName objectName : matched)
+                {
+                    mCallback.mbeanRegistered(objectName, this);
+                }
+            }
+            catch( final Exception e )
+            {
+                throw new RuntimeException(e);
             }
         }
     }

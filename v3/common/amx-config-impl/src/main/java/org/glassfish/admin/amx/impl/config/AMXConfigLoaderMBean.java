@@ -67,9 +67,9 @@ public interface AMXConfigLoaderMBean extends AMXSupport, MBeanRegistration, Not
         <p>
         <b>This method works in-process only, because in general clients will not have the
         requisite classes (and by-name won't work).
-     */
     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     public void registerConfigured( final Class<? extends ConfigBeanProxy> intf );
+     */
         
     /** return known @Configured classes, keyed by their element type */
     @ManagedAttribute
