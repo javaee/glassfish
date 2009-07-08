@@ -37,10 +37,13 @@
 package com.sun.enterprise.tools.upgrade.gui;
 
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
+import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
+import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.net.URL;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -54,7 +57,7 @@ import javax.swing.JOptionPane;
  *
  * @author Bobby Bissett
  */
-public class MainFrame extends javax.swing.JFrame {
+public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
 
     private static final Logger logger = LogService.getLogger();
     private StringManager stringManager =
@@ -300,4 +303,18 @@ public class MainFrame extends javax.swing.JFrame {
         nextButton.setEnabled(b);
     }
 
+    public boolean moveDirectory(File dir) {
+        String message = String.format(stringManager.getString(
+            "upgrade.gui.util.domainRenameOption", dir.getName()));
+        String title = stringManager.getString(
+            "upgrade.gui.util.domainNameConflict");
+        int option = JOptionPane.showConfirmDialog(this, message, title,
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (JOptionPane.OK_OPTION != option) {
+            return false;
+        }
+        UpgradeUtils.rename(dir);
+        return true;
+    }
 }
