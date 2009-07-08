@@ -18,6 +18,9 @@ public class WebTest {
         = new SimpleReporterAdapter("appserv-tests");
 
     private static String EXPECTED_RESPONSE = null;
+    private static final String EXPECTED_RESPONSE_LOCALHOST = 
+        "RemoteHost=localhost";
+
     static{
         try {
             EXPECTED_RESPONSE = "RemoteHost=" + InetAddress.getLocalHost().getHostName();
@@ -105,7 +108,7 @@ public class WebTest {
             }
         }
 
-        if (!lastLine.startsWith(EXPECTED_RESPONSE)) {
+        if (!lastLine.startsWith(EXPECTED_RESPONSE) && !lastLine.startsWith(EXPECTED_RESPONSE_LOCALHOST)) {
             throw new Exception("Wrong response. " + "Expected: " +
                     EXPECTED_RESPONSE + ", received: " + lastLine);
         }
