@@ -41,7 +41,7 @@ conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
     "name"          : "glassfish-generic-ra",
-    "version"       : conf.glassfish_version,
+    "version"       : "2.0-0.0",
     "attributes"    : {
                         "pkg.summary" : "GlassFish Generic RA",
                         "pkg.description" : "GlassFish Generic RA description placeholder. "+conf.glassfish_description_long,
