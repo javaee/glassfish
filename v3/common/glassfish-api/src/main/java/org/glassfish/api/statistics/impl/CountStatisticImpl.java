@@ -46,7 +46,7 @@ import java.lang.reflect.*;
 public class CountStatisticImpl extends StatisticImpl
     implements CountStatistic, InvocationHandler {
     
-    private AtomicLong count = new AtomicLong(Long.MIN_VALUE);
+    private AtomicLong count = new AtomicLong();
 
     private CountStatistic cs = (CountStatistic) Proxy.newProxyInstance(
             CountStatistic.class.getClassLoader(),
@@ -61,6 +61,10 @@ public class CountStatisticImpl extends StatisticImpl
     
     public CountStatisticImpl(String name, String unit, String desc) {
         super(name, unit, desc);
+    }
+
+    public CountStatisticImpl(String name, String desc) {
+        super(name, "count", desc);
     }
     
     public synchronized CountStatistic getStatistic() {
