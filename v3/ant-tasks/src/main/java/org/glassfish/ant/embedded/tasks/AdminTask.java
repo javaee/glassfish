@@ -41,6 +41,7 @@ import org.apache.tools.ant.BuildException;
 import org.glassfish.api.admin.CommandRunner;
 
 import org.glassfish.api.embedded.Server;
+import org.glassfish.api.ActionReport;
 
 import java.util.*;
 
@@ -48,8 +49,8 @@ public class AdminTask extends Task {
 
     String serverID = "test";
     String command; 
-    Properties properties;
-
+    CommandProperty commandProperty;
+    List<CommandProperty> commandProperties = new ArrayList<CommandProperty>();
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
@@ -59,16 +60,59 @@ public class AdminTask extends Task {
         this.command = command;
     }
 
+
+    public CommandProperty createCommandProperty() {
+        commandProperty = new CommandProperty();
+        commandProperties.add(commandProperty);
+        return commandProperty;
+    }
+  
+    public CommandProperty createCommandProperty(String name, String value) {
+        CommandProperty property = new CommandProperty();
+        property.setName(name);
+        return property;
+    }
+
     private Properties getCommandProperties() {
-        return null;
+        Properties props = new Properties();
+        for (CommandProperty property : commandProperties) {
+            props.setProperty(property.getName(), property.getValue());
+        }
+        return props;
     }
 
 
 
     public void execute() throws BuildException {
-        log("executing admin task");
+        log("executing admin task : " + command);
         Server server = new Server.Builder(serverID).build();
         CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
-        runner.doCommand(command, getCommandProperties(), null);
+        ActionReport report = server.getHabitat().getComponent(ActionReport.class);
+        runner.doCommand(command, getCommandProperties(), report);
+        log("admin task " + command + " executed");
     }
+
+
+    public class CommandProperty  {
+        String name, value;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+
+    }
+
 }
