@@ -66,6 +66,14 @@
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+
+            createMap(result=>$attribute{nameMap});
+            mapPut(map="$attribute{nameMap}", key="selected", value="false");
+            mapPut(map="$attribute{nameMap}", key="name", value="Name");
+            mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.name}");
+            listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
+            gui.log(message="***** newList = $attribute{newList}");
+            
             setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
         redirect(page="#{parentPage}?configName=#{configName}")

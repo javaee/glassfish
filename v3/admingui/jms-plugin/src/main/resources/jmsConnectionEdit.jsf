@@ -54,7 +54,6 @@
 
             setPageSessionAttribute(key="convertToFalseList" value={"FailAllConnections", "IsConnectionValidationRequired"});
 
-            //setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=jacc-provider,name=#{pageSession.Name}");
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.name}");
 
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");

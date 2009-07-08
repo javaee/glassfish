@@ -1,3 +1,4 @@
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,6 +34,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!-- resourceNode/jmsDestinationEdit.jsf -->
 
 <!initPage
     setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
@@ -42,37 +44,48 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.destinationResources.pageTitle}" >
 <!define name="content">
     <event>
-        <!beforeCreate
-            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
-            setPageSessionAttribute(key="childType" value="admin-object-resource");
-            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-            filterTable(table="#{requestScope.listOfRows}", attr="ResAdapter", value="jmsra")
+    <!beforeCreate
+        getRequestValue(key="name" value="#{pageSession.name}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jmsDestination.editPageTitle}")
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jmsDestination.editPageTitleHelp}")
 
-            setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.destResources}");
-            setPageSessionAttribute(key="createLink" value="/jms/jmsDestinationNew.jsf");
-            setPageSessionAttribute(key="editLink" value="/jms/jmsDestinationEdit.jsf");
-            setPageSessionAttribute(key="listPageLink" value="/jms/jmsDestinations.jsf");
-            //setPageSessionAttribute(key="targetLink" value="/resourceNode/jmsDestinationTargets.jsf");
-            setPageSessionAttribute(key="resourceType" value="adminObjectResource");
-            setPageSessionAttribute(key="hasPool" value="#{false}");
-            setPageSessionAttribute(key="hasResType" value="#{true}");
-            setPageSessionAttribute(key="viewKeyValue" value="jmsDestinationSummaryView");
-#include "/shared/viewSummaryDetail.inc"
-        />
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jmsDestination.newPageTitle}")
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jmsDestination.newPageTitleHelp}")
+
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsDestinationEdit.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsDestinations.jsf");
+
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources" );
+        setPageSessionAttribute(key="childType" value="admin-object-resource");
+        setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=admin-object-resource,jndi-name=#{pageSession.name}");
+
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{false}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+    />
     </event>
-
-#include "/shared/restart.inc"
-    <sun:head id="propertyhead" title="$resource{i18n.destinationResources.pageTitle}"  >
-        <sun:script url="/resource/js/adminjsf.js" />
-    </sun:head>
-
     <sun:form id="propertyForm">
  #include treeBreadcrumbs.inc
-#include "/shared/alertMsg.inc"
-        <sun:title id="propertyContentPage" title="$resource{i18n.destinationResources.pageTitle}" helpText="$resource{i18n.destinationResources.pageTitleHelp}"/>
-        "<br /><br />
-#include "/jms/shared/resourcesTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.jmsDestinations}" />
+ #include "resourceNode/resourcesTabs.inc"
+#include "/jms/jmsDestinationSheet.inc"
+#include "/shared/propertyTable.inc"
+#include "/shared/targetSectionForCreate.inc"
+        <sun:title id="propertyContentPage2">
+            <!facet pageButtonsBottom>
+                <sun:panelGroup id="bottomButtons">
+#include "/jms/jmsDestinationButtons.inc"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+        <sun:hidden id="helpKey" value="$resource{help.jmsDestinationEdit}" />
     </sun:form>
 </define>
 </composition>

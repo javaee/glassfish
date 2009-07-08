@@ -47,7 +47,7 @@
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.connectionFactory.targetPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.resource.targetPageTitleHelp}");
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}" >
             <sun:script url="../js/restart.js" />
