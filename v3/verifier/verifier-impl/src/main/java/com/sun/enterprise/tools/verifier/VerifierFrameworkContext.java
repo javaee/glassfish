@@ -376,10 +376,6 @@ public class VerifierFrameworkContext
         return resultManager;
     }
 
-    public void setResultManager(ResultManager resultManager) {
-        this.resultManager = resultManager;
-    }
-
     public boolean isPortabilityMode() {
         return isPortabilityMode;
     }
