@@ -60,6 +60,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
+import java.util.Collection;
 import java.util.ArrayList;
 
 /**
@@ -75,6 +76,9 @@ public class ListSubComponentsCommand implements AdminCommand {
 
     @Param(optional=true)
     private String appname = null;
+
+    @Param(optional=true)
+    private String type = null;
 
     @Inject
     public ApplicationRegistry appRegistry;
@@ -115,12 +119,21 @@ public class ListSubComponentsCommand implements AdminCommand {
         List<String> subComponents = new ArrayList<String>();    
 
         if (appname == null) {
-            subComponents = getAppLevelComponents(app);
+            subComponents = getAppLevelComponents(app, type);
         } else {
            subComponents = getModuleLevelComponents(
-               app.getModuleByUri(modulename));
+               app.getModuleByUri(modulename), type);
         }
         
+        // the type param can only have values "ejbs" and "servlets"
+        if (type != null)  {
+            if (!type.equals("servlets") && !type.equals("ejbs")) {
+                report.setMessage(localStrings.getLocalString("listsubcomponents.invalidtype", "The type option has invalid value {0}. It should have a value of servlets or ejbs.", type));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        }
+
         List<String> subModuleInfos = new ArrayList<String>();    
         if (!app.isVirtual()) {
             subModuleInfos = getSubModulesForEar(app);
@@ -137,6 +150,10 @@ public class ListSubComponentsCommand implements AdminCommand {
                         subModuleInfos.get(i));
                 }
             }
+        }
+
+        if (subComponents.size() == 0) {
+            part.setMessage(localStrings.getLocalString("listsubcomponents.no.elements.to.list", "Nothing to List."));
         }
 
         // now this is the normal output for the list-sub-components command
@@ -157,16 +174,36 @@ public class ListSubComponentsCommand implements AdminCommand {
         return moduleInfoList;
     }
 
-    private List<String> getAppLevelComponents(com.sun.enterprise.deployment.Application application) {
+    private List<String> getAppLevelComponents(com.sun.enterprise.deployment.Application application, String type) {
         List<String> subComponentList = new ArrayList<String>(); 
         if (application.isVirtual()) {
             // for standalone module, get servlets or ejbs
             BundleDescriptor bundleDescriptor = 
                 application.getStandaloneBundleDescriptor();
-            subComponentList = getModuleLevelComponents(bundleDescriptor);
+            subComponentList = getModuleLevelComponents(bundleDescriptor, type);
         } else {
             // for ear case, get modules
-            for (ModuleDescriptor module : application.getModules()) {
+            Collection<ModuleDescriptor<BundleDescriptor>> modules = 
+                new ArrayList<ModuleDescriptor<BundleDescriptor>>();
+            if (type == null) {
+                modules = application.getModules();
+            } else if (type.equals("servlets")) {
+                modules = application.getModuleDescriptorsByType(
+                    XModuleType.WAR);
+            } else if (type.equals("ejbs")) {    
+                modules = application.getModuleDescriptorsByType(
+                    XModuleType.EJB);
+                // ejb in war case
+                Collection<ModuleDescriptor<BundleDescriptor>> webModules = 
+                    application.getModuleDescriptorsByType(XModuleType.WAR);
+                for (ModuleDescriptor webModule : webModules) {
+                    if (webModule.getDescriptor().getExtensionsDescriptors(EjbBundleDescriptor.class).size() > 0) {
+                        modules.add(webModule);
+                    }
+                }
+            }
+ 
+            for (ModuleDescriptor module : modules) {
                 StringBuffer sb = new StringBuffer();    
                 sb.append(module.getArchiveUri()); 
                 sb.append(" <"); 
@@ -178,21 +215,38 @@ public class ListSubComponentsCommand implements AdminCommand {
         return subComponentList;
     }
 
-    private List<String> getModuleLevelComponents(BundleDescriptor bundle) {
+    private List<String> getModuleLevelComponents(BundleDescriptor bundle, 
+        String type) {
         List<String> moduleSubComponentList = new ArrayList<String>(); 
         if (bundle instanceof WebBundleDescriptor) {
             WebBundleDescriptor wbd = (WebBundleDescriptor)bundle;
+            // look at ejb in war case
+            Collection<EjbBundleDescriptor> ejbBundleDescs = 
+                wbd.getExtensionsDescriptors(EjbBundleDescriptor.class);
+            if (ejbBundleDescs.size() > 0) {
+                EjbBundleDescriptor ejbBundle = 
+                        ejbBundleDescs.iterator().next();
+                moduleSubComponentList.addAll(getModuleLevelComponents(
+                        ejbBundle, type));
+            }
+
+            if (type != null && type.equals("ejbs")) {    
+                return moduleSubComponentList;
+            }
             for (WebComponentDescriptor wcd : 
                     wbd.getWebComponentDescriptors()) {
                 StringBuffer sb = new StringBuffer();    
                 sb.append(wcd.getCanonicalName()); 
                 sb.append(" <"); 
-                String type = (wcd.isServlet() ? "Servlet" : "JSP");
-                sb.append(type);
+                String wcdType = (wcd.isServlet() ? "Servlet" : "JSP");
+                sb.append(wcdType);
                 sb.append(">"); 
                 moduleSubComponentList.add(sb.toString());
             }
         } else if (bundle instanceof EjbBundleDescriptor)  {
+            if (type != null && type.equals("servlets")) {    
+                return moduleSubComponentList;
+            }
             EjbBundleDescriptor ebd = (EjbBundleDescriptor)bundle;
             for (EjbDescriptor ejbDesc : ebd.getEjbs()) {
                 StringBuffer sb = new StringBuffer();    
