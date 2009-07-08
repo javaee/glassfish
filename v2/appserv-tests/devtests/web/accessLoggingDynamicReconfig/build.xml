@@ -42,7 +42,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="set" />
         <param name="operand.props"
-               value="${appserver.instance.name}.http-service.access-log-enabled=true"/>
+               value="${appserver.instance.name}.http-service.access-logging-enabled=true"/>
       </antcall>
     </target>
 
@@ -73,7 +73,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="set" />
         <param name="operand.props"
-               value="${appserver.instance.name}.http-service.access-log-enabled=false"/>
+               value="${appserver.instance.name}.http-service.access-logging-enabled=false"/>
       </antcall>
       <delete dir="${env.S1AS_HOME}/domains/domain1/logs/access"/>
     </target>
