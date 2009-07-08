@@ -46,7 +46,7 @@
 
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+            getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
         />
         <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
             <sun:checkbox id="select"
@@ -61,11 +61,11 @@
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colEnabled}" sort="name" rowHeader="$boolean{true}" id="col2">
-            <staticText id="enabled" value="#{td.value.Enabled}" />
+            //<staticText id="enabled" value="#{td.value.Enabled}" />
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colResourceType}" sort="name" rowHeader="$boolean{true}" id="col3">
-            <staticText id="resType" value="#{td.value.ResType}" url="#{pageSession.editLink}?name=#{td.value.Name}" />
+            <staticText id="resType" value="#{td.value.ConnectionDefinitionName}" />
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">

@@ -67,7 +67,7 @@
             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 
             if( $session{supportCluster}) {
-                getTargetsOptionsList(AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
+                //getTargetsOptionsList(AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
             }
         />
     </event>
@@ -87,7 +87,7 @@
             </sun:panelGroup>
         </facet>
     </sun:title>
-#include "/jms/poolProperties.inc"~
+#include "/jms/poolProperties.inc"
 #include "/shared/propertyTable.inc"
 #include "/shared/targetSectionForCreate.inc"
     <sun:title id="title2" >

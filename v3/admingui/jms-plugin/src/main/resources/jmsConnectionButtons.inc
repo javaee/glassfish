@@ -49,7 +49,9 @@
         }
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+            gui.log(message="***** tableRowGroup = $attribute{tableRowGroup}");
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+            gui.log(message="***** newList = $attribute{newList}");
             setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
         prepareSuccessfulMsg();
