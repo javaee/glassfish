@@ -52,6 +52,10 @@ public class HelloStateless implements HelloRemote {
 	SessionContext sc2 = (SessionContext)
 	    sc1.lookup("java:comp/env/foo");
 
+	Integer envEntry = (Integer)
+	    sc1.lookup("java:app/env/value1");
+	System.out.println("java:ap/env/value1 = " + envEntry);
+
 	return "hello, world!\n";
     }
 

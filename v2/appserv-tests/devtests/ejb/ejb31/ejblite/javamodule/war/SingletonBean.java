@@ -14,7 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 
 @Singleton
-@Startup
+// @@@ how to address init web jndi comp load dependency ? @Startup
 @LocalBean
 public class SingletonBean implements java.util.Observer {
   
