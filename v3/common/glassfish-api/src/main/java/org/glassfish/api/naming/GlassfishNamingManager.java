@@ -108,13 +108,20 @@ public interface GlassfishNamingManager {
 
     /**
      * This method enumerates the env properties, ejb and resource references
-     * etc for a J2EE component and binds them in the component's java:comp
+     * etc for a J2EE component and binds them in the applicable java:
      * namespace.
      */
-    public void bindToComponentNamespace(String appName,
+    public void bindToComponentNamespace(String appName, String moduleName,
                                          String componentId, Collection<? extends JNDIBinding> bindings)
             throws NamingException;
 
+
+    public void bindToModuleNamespace(String appName, String moduleName,
+                                      Collection<? extends JNDIBinding> bindings)
+            throws NamingException;
+
+    public void bindToAppNamespace(String appName, Collection<? extends JNDIBinding> bindings)
+            throws NamingException;
 
     /**
      * Remove an object from the naming service.
@@ -143,7 +150,17 @@ public interface GlassfishNamingManager {
     public void unpublishObject(Name name) throws NamingException;
 
 
-    public void unbindObjects(String componentId) throws NamingException;
+    /**
+     *
+     * Unbind component-level bindings
+     */
+    public void unbindComponentObjects(String componentId) throws NamingException;
+
+
+    /**
+     * Unbind app and module level bindings for the given app name.
+     */
+    public void unbindAppObjects(String appName) throws NamingException;
 
     /**
      * Recreate a context for java:comp/env or one of its sub-contexts given the

@@ -126,6 +126,7 @@ public class ComponentEnvManagerImpl
         return desc;
     }
 
+
     public String bindToComponentNamespace(JndiNameEnvironment env)
         throws NamingException {
 
@@ -133,21 +134,20 @@ public class ComponentEnvManagerImpl
 
         Collection<JNDIBinding> bindings = new ArrayList<JNDIBinding>();
 
-        // Add all java:comp dependencies for the specified environment
+        // Add all java:comp, java:module, and java:app dependencies for the specified environment
         addJNDIBindings(env, ScopeType.COMPONENT, bindings);
+        addJNDIBindings(env, ScopeType.MODULE, bindings);
+        addJNDIBindings(env, ScopeType.APP, bindings);
 
-        // Add all java:module dependencies in any environment in the same module
-        for(JndiNameEnvironment moduleEnv : getJndiNameEnvironmentsForModule(env)) {
-            addJNDIBindings(moduleEnv, ScopeType.MODULE, bindings);
+        if( env instanceof Application) {
+            namingManager.bindToAppNamespace(getApplicationName(env), bindings);
+        } else {
+            // Bind dependencies to the namespace for this component
+            namingManager.bindToComponentNamespace(getApplicationName(env), getModuleName(env),
+                    compEnvId, bindings);
+            compEnvId = getComponentEnvId(env);
+
         }
-
-        // Add all java:app dependencies in any environment in the same application
-        for(JndiNameEnvironment appEnv : getJndiNameEnvironmentsForApp(env)) {
-            addJNDIBindings(appEnv, ScopeType.APP, bindings);
-        }
-
-        // Bind dependencies to the namespace for this component
-        namingManager.bindToComponentNamespace(getApplicationName(env), compEnvId, bindings);
 
         // Publish any dependencies with java:global names defined by the current env
         // to the global namespace
@@ -158,7 +158,10 @@ public class ComponentEnvManagerImpl
             namingManager.publishObject(next.getName(), next.getValue(), true);
         }
 
-        this.register(compEnvId, env);
+        if( compEnvId != null ) {
+            this.register(compEnvId, env);
+        }
+
         return compEnvId;
     }
 
@@ -209,10 +212,6 @@ public class ComponentEnvManagerImpl
         //undeploy data-sources as they hold physical connections to database.
         undeployDataSourceDefinitions(env);
 
-        // Unbind anything in the component namespace
-        String compEnvId = getComponentEnvId(env);
-        namingManager.unbindObjects(compEnvId);
-
         // Unpublish any global entries exported by this environment
         Collection<JNDIBinding> globalBindings = new ArrayList<JNDIBinding>();
         addJNDIBindings(env, ScopeType.GLOBAL, globalBindings);
@@ -221,7 +220,15 @@ public class ComponentEnvManagerImpl
             namingManager.unpublishObject(next.getName());
         }
 
-        this.unregister(compEnvId);
+        if( env instanceof Application) {
+            namingManager.unbindAppObjects(getApplicationName(env));
+        } else {
+            // Unbind anything in the component namespace
+            String compEnvId = getComponentEnvId(env);
+            namingManager.unbindComponentObjects(compEnvId);
+            this.unregister(compEnvId);
+        }
+
     }
 
     private void undeployDataSourceDefinitions(JndiNameEnvironment env) {
@@ -587,143 +594,52 @@ public class ComponentEnvManagerImpl
 
     private String getApplicationName(JndiNameEnvironment env) {
         String appName = "";
-        String moduleName = "";
 
         if (env instanceof EjbDescriptor) {
             // EJB component
-	    EjbDescriptor ejbEnv = (EjbDescriptor) env;
-            EjbBundleDescriptor ejbBundle = ejbEnv.getEjbBundleDescriptor();
-	    appName = "ejb ["+
-                ejbEnv.getApplication().getRegistrationName();
-            moduleName = ejbEnv.getName();
-            if (moduleName == null || moduleName.equals("")) {
-                appName = appName+"]";
-            }
-            else {
-                appName = appName+":"+ejbEnv.getName()+"]";
-            }
+	        EjbDescriptor ejbEnv = (EjbDescriptor) env;
+            appName = ejbEnv.getApplication().getAppName();
         } else if (env instanceof WebBundleDescriptor) {
             WebBundleDescriptor webEnv = (WebBundleDescriptor) env;
-	    appName = "web module ["+
-                webEnv.getApplication().getRegistrationName();
-            moduleName = webEnv.getContextRoot();
-            if (moduleName == null || moduleName.equals("")) {
-                appName = appName+"]";
-            }
-            else {
-                appName = appName+":"+webEnv.getContextRoot()+"]";
-            }
+	        appName = webEnv.getApplication().getAppName();
         } else if (env instanceof ApplicationClientDescriptor) {
-            ApplicationClientDescriptor appEnv =
-		(ApplicationClientDescriptor) env;
-	    appName =  "client ["+appEnv.getName() +
-                ":" + appEnv.getMainClassName()+"]";
-        } 
+            ApplicationClientDescriptor appEnv = (ApplicationClientDescriptor) env;
+	        appName =  appEnv.getApplication().getAppName();
+        } else if ( env instanceof ManagedBeanDescriptor ) {
+            ManagedBeanDescriptor mb = (ManagedBeanDescriptor) env;
+            appName = mb.getBundle().getApplication().getAppName();
+        } else if ( env instanceof Application ) {
+            appName = ((Application)env).getAppName();
+        } else {
+            throw new IllegalArgumentException("IllegalJndiNameEnvironment : env");
+        }
 
         return appName;
     }
 
-    // TODO add AppClient container support for app and module levels
+    private String getModuleName(JndiNameEnvironment env) {
 
-    private Collection<JndiNameEnvironment> getJndiNameEnvironmentsForApp(JndiNameEnvironment env) {
+        String moduleName = null;
 
-        Collection<JndiNameEnvironment> envsForApp = new ArrayList<JndiNameEnvironment>();
-
-        Application appDesc = null;
-
-        if( env instanceof EjbDescriptor ) {
-
-            EjbBundleDescriptor ejbBundle = ((EjbDescriptor) env).getEjbBundleDescriptor();
-            ModuleDescriptor moduleDesc = ejbBundle.getModuleDescriptor();
-            if( !moduleDesc.isStandalone() ) {
-                appDesc = ejbBundle.getApplication();
-            }
-
-        } else if( env instanceof WebBundleDescriptor ) {
-
-            WebBundleDescriptor webBundle = (WebBundleDescriptor) env;
-            ModuleDescriptor moduleDesc = webBundle.getModuleDescriptor();
-            if( !moduleDesc.isStandalone() ) {
-                appDesc = webBundle.getApplication();
-            }
-        } else if( env instanceof ManagedBeanDescriptor ) {
-            BundleDescriptor bundle = ((ManagedBeanDescriptor)env).getBundle();
-            ModuleDescriptor moduleDesc = bundle.getModuleDescriptor();
-            if( !moduleDesc.isStandalone() ) {
-                appDesc = bundle.getApplication();
-            }
-        }
-
-        if( appDesc == null ) {
-            envsForApp = getJndiNameEnvironmentsForModule(env);
+        if (env instanceof EjbDescriptor) {
+            // EJB component
+            EjbDescriptor ejbEnv = (EjbDescriptor) env;
+            EjbBundleDescriptor ejbBundle = ejbEnv.getEjbBundleDescriptor();
+            moduleName = ejbBundle.getModuleDescriptor().getModuleName();
+        } else if (env instanceof WebBundleDescriptor) {
+            WebBundleDescriptor webEnv = (WebBundleDescriptor) env;
+            moduleName = webEnv.getModuleName();
+        } else if (env instanceof ApplicationClientDescriptor) {
+            ApplicationClientDescriptor appEnv = (ApplicationClientDescriptor) env;
+            moduleName =  appEnv.getModuleName();
+        } else if ( env instanceof ManagedBeanDescriptor ) {
+            ManagedBeanDescriptor mb = (ManagedBeanDescriptor) env;
+            moduleName = mb.getBundle().getModuleName();
         } else {
-            envsForApp.addAll(appDesc.getJndiNameEnvironments());
+            throw new IllegalArgumentException("IllegalJndiNameEnvironment : env");
         }
 
-        return envsForApp;
-    }
-
-    private Collection<JndiNameEnvironment> getJndiNameEnvironmentsForModule(JndiNameEnvironment env) {
-
-        // TODO Move the knowledge about which jndi name environments are part of a bundle to the
-        // bundle descriptor
-
-        Collection<JndiNameEnvironment> envsForModule = new ArrayList<JndiNameEnvironment>();
-
-        if( env instanceof EjbDescriptor ) {
-
-            EjbBundleDescriptor ejbBundle = ((EjbDescriptor) env).getEjbBundleDescriptor();
-
-            for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
-                envsForModule.add(ejbDescriptor);
-            }
-
-            ModuleDescriptor moduleDesc = ejbBundle.getModuleDescriptor();
-
-            if( moduleDesc.getModuleType() == XModuleType.WAR ) {
-
-                WebBundleDescriptor webBundle = (WebBundleDescriptor) moduleDesc.getDescriptor();
-                envsForModule.add(webBundle);
-
-            }
-
-            envsForModule.addAll( ((BundleDescriptor) ejbBundle.
-                    getModuleDescriptor().getDescriptor()).getManagedBeans() );
-            
-
-        } else if( env instanceof WebBundleDescriptor ) {
-
-            WebBundleDescriptor webBundle = (WebBundleDescriptor) env;
-            envsForModule.add(webBundle);
-
-            ModuleDescriptor moduleDesc = webBundle.getModuleDescriptor();
-
-            Collection<EjbBundleDescriptor> ejbBundles =
-                moduleDesc.getDescriptor().getExtensionsDescriptors(EjbBundleDescriptor.class);
-
-            if( !ejbBundles.isEmpty() ) {
-                EjbBundleDescriptor ejbBundle = ejbBundles.iterator().next();
-
-                for(EjbDescriptor ejb : ejbBundle.getEjbs()) {
-                    envsForModule.add(ejb);
-                }
-            }
-
-            envsForModule.addAll( webBundle.getManagedBeans() );
-
-        }  else if( env instanceof ManagedBeanDescriptor ) {
-
-            BundleDescriptor bundleDesc = ((ManagedBeanDescriptor)env).getBundle();
-            if( bundleDesc instanceof WebBundleDescriptor ) {
-                return getJndiNameEnvironmentsForModule((WebBundleDescriptor) bundleDesc);
-            } else if( bundleDesc instanceof EjbBundleDescriptor ) {
-                EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) bundleDesc;
-                return getJndiNameEnvironmentsForModule(ejbBundle.getEjbs().iterator().next());
-            }          
-
-        }
-
-        return envsForModule;
+        return moduleName;
 
     }
 

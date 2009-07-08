@@ -87,7 +87,10 @@ public final class  GlassfishNamingManagerImpl
 
     private NameParser nameParser = new SerialNameParser();
 
-    private Hashtable namespaces;
+    private Map componentNamespaces;
+    private Map<String, Map> appNamespaces;
+    private Map<AppModuleKey, Map> moduleNamespaces;
+    private Map<String, ComponentIdInfo> componentIdInfo;
 
 
     public GlassfishNamingManagerImpl() throws NamingException {
@@ -105,7 +108,10 @@ public final class  GlassfishNamingManagerImpl
     public GlassfishNamingManagerImpl(InitialContext ic)
             throws NamingException {
         initialContext = ic;
-        namespaces = new Hashtable();
+        componentNamespaces = new Hashtable();
+        appNamespaces = new HashMap<String, Map>();
+        moduleNamespaces = new HashMap<AppModuleKey, Map>();
+        componentIdInfo = new HashMap<String, ComponentIdInfo>();
 
         JavaURLContext.setNamingManager(this);
     }
@@ -312,16 +318,16 @@ public final class  GlassfishNamingManagerImpl
         return;
     }
 
-    private HashMap getComponentNameSpace(String componentId)
+    private Map getComponentNamespace(String componentId)
             throws NamingException {
         // Note: HashMap is not synchronized. The namespace is populated
         // at deployment time by a single thread, and then on there are
         // no structural modifications (i.e. no keys added/removed).
         // So the namespace doesnt need to be synchronized.
-        HashMap namespace = (HashMap) namespaces.get(componentId);
+        Map namespace = (Map) componentNamespaces.get(componentId);
         if (namespace == null) {
             namespace = new HashMap();
-            namespaces.put(componentId, namespace);
+            componentNamespaces.put(componentId, namespace);
 
             // put entries for java:, java:comp and java:comp/env
             JavaURLContext jc = new JavaURLContext("java:", null);
@@ -334,6 +340,32 @@ public final class  GlassfishNamingManagerImpl
             JavaURLContext jccEnv = new JavaURLContext("java:comp/env", null);
             namespace.put("java:comp/env", jccEnv);
             namespace.put("java:comp/env/", jccEnv);
+        }
+
+        return namespace;
+    }
+
+    private Map getModuleNamespace(AppModuleKey appModuleKey)
+            throws NamingException {
+
+         if( (appModuleKey.getAppName() == null) ||
+             (appModuleKey.getModuleName() == null) ) {
+             throw new NamingException("Invalid appModuleKey " + appModuleKey);
+         }
+
+        // Note: HashMap is not synchronized. The namespace is populated
+        // at deployment time by a single thread, and then on there are
+        // no structural modifications (i.e. no keys added/removed).
+        // So the namespace doesnt need to be synchronized.
+        Map namespace = moduleNamespaces.get(appModuleKey);
+        if (namespace == null) {
+            namespace = new Hashtable();
+            moduleNamespaces.put(appModuleKey, namespace);
+
+            // put entries for java:, java:comp and java:comp/env
+            JavaURLContext jc = new JavaURLContext("java:", null);
+            namespace.put("java:", jc);
+            namespace.put("java:/", jc);
 
             JavaURLContext jMod = new JavaURLContext("java:module", null);
             namespace.put("java:module", jMod);
@@ -342,13 +374,67 @@ public final class  GlassfishNamingManagerImpl
             namespace.put("java:module/env", jModEnv);
             namespace.put("java:module/env/", jModEnv);
 
-            JavaURLContext jApp = new JavaURLContext("java:app", null);
+        }
+
+        return namespace;
+    }
+
+     private Map getAppNamespace(String appName)
+            throws NamingException {
+
+         if( appName == null ) {
+             throw new NamingException("Null appName");
+         }
+
+        // Note: HashMap is not synchronized. The namespace is populated
+        // at deployment time by a single thread, and then on there are
+        // no structural modifications (i.e. no keys added/removed).
+        // So the namespace doesnt need to be synchronized.
+        Map namespace = appNamespaces.get(appName);
+        if (namespace == null) {
+            namespace = new Hashtable();
+            appNamespaces.put(appName, namespace);
+
+            // put entries for java:, java:comp and java:comp/env
+            JavaURLContext jc = new JavaURLContext("java:", null);
+            namespace.put("java:", jc);
+            namespace.put("java:/", jc);
+
+                 JavaURLContext jApp = new JavaURLContext("java:app", null);
             namespace.put("java:app", jApp);
             namespace.put("java:app/", jApp);
             JavaURLContext jAppEnv = new JavaURLContext("java:app/env", null);
             namespace.put("java:app/env", jAppEnv);
             namespace.put("java:app/env/", jAppEnv);
-                       
+
+        }
+
+        return namespace;
+    }
+
+
+    private Map getNamespace(String componentId, String logicalJndiName) throws NamingException {
+
+        ComponentIdInfo info = componentIdInfo.get(componentId);
+        
+        return (info != null) ?  getNamespace(info.appName, info.moduleName, componentId, logicalJndiName) :
+                getComponentNamespace(componentId);
+    }
+
+    private Map getNamespace(String appName, String moduleName,
+                             String componentId, String logicalJndiName) throws NamingException {
+
+        Map namespace = null;
+
+        if( logicalJndiName.startsWith("java:comp") ) {
+            namespace = getComponentNamespace(componentId);
+        } else if ( logicalJndiName.startsWith("java:module")) {
+            namespace = getModuleNamespace(new AppModuleKey(appName, moduleName));
+        } else if ( logicalJndiName.startsWith("java:app")) {
+            namespace = getAppNamespace(appName);
+        }  else {
+            // return component namespace
+            namespace = getComponentNamespace(componentId);
         }
 
         return namespace;
@@ -358,10 +444,9 @@ public final class  GlassfishNamingManagerImpl
      * This method binds them in the component's java:comp
      * namespace.
      */
-    public void bindToComponentNamespace(String appName,
-                                         String componentId, String logicalJndiName, Object value)
+    private void bindToNamespace(Map namespace, String logicalJndiName, Object value)
             throws NamingException {
-        HashMap namespace = getComponentNameSpace(componentId);
+
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE,
@@ -372,29 +457,92 @@ public final class  GlassfishNamingManagerImpl
         if (namespace.put(logicalJndiName, value) != null) {
             _logger.log(Level.WARNING,
                     "naming.alreadyexists" +
-                            "Reference name [{0}] already exists in {1}",
-                    new Object[]{logicalJndiName, appName});
+                            "Reference name [{0}] already exists for {1}",
+                    new Object[]{logicalJndiName, namespace.toString()});
         }
 
         bindIntermediateContexts(namespace, logicalJndiName);
     }
+
+
 
     /**
      * This method enumerates the env properties, ejb and resource references
      * etc for a J2EE component and binds them in the component's java:comp
      * namespace.
      */
-    public void bindToComponentNamespace(String appName,
+    public void bindToComponentNamespace(String appName, String moduleName,
                                          String componentId, Collection<? extends JNDIBinding> bindings)
             throws NamingException {
 
+        // These are null in rare cases, e.g. default web app.
+        if( (appName != null) && (moduleName != null) ) {
+
+            ComponentIdInfo info = new ComponentIdInfo();
+            info.appName = appName;
+            info.moduleName = moduleName;
+            info.componentId = componentId;
+
+            componentIdInfo.put(componentId, info);
+        }
+
         for (JNDIBinding binding : bindings) {
-            bindToComponentNamespace(appName, componentId,
-                    binding.getName(), binding.getValue());
+
+            String logicalJndiName = binding.getName();
+            Map namespace = null;
+            
+            if ( logicalJndiName.startsWith("java:comp")) {
+
+                namespace = getComponentNamespace(componentId);
+
+            } else if ( logicalJndiName.startsWith("java:module")) {
+
+                namespace = getModuleNamespace(new AppModuleKey(appName, moduleName));
+
+            } else if ( logicalJndiName.startsWith("java:app")) {
+
+                namespace = getAppNamespace(appName);
+            }
+
+            if( namespace != null ) {
+                bindToNamespace(namespace, binding.getName(), binding.getValue());
+            }
         }
     }
 
-    private void bindIntermediateContexts(HashMap namespace, String name)
+    public void bindToModuleNamespace(String appName, String moduleName,
+                                      Collection<? extends JNDIBinding> bindings)
+            throws NamingException {
+
+        for (JNDIBinding binding : bindings) {
+            String logicalJndiName = binding.getName();
+
+            if ( logicalJndiName.startsWith("java:module")) {
+                Map namespace = getModuleNamespace(new AppModuleKey(appName, moduleName));
+                bindToNamespace(namespace, binding.getName(), binding.getValue());
+            } else if ( logicalJndiName.startsWith("java:app")) {
+                Map namespace = getAppNamespace(appName);
+                bindToNamespace(namespace, binding.getName(), binding.getValue());
+            }
+        }
+
+    }
+
+    public void bindToAppNamespace(String appName, Collection<? extends JNDIBinding> bindings)
+            throws NamingException {
+
+          for (JNDIBinding binding : bindings) {
+            String logicalJndiName = binding.getName();
+
+              if ( logicalJndiName.startsWith("java:app")) {
+                    Map namespace = getAppNamespace(appName);
+                    bindToNamespace(namespace, binding.getName(), binding.getValue());
+              }
+          }
+
+    }
+
+    private void bindIntermediateContexts(Map namespace, String name)
             throws NamingException {
         // for each component of name, put an entry into namespace
         String partialName = null;
@@ -427,8 +575,22 @@ public final class  GlassfishNamingManagerImpl
      * This method enumerates the env properties, ejb and resource references
      * and unbinds them from the java:comp namespace.
      */
-    public void unbindObjects(String componentId) throws NamingException {
-        namespaces.remove(componentId); // remove local namespace cache
+    public void unbindComponentObjects(String componentId) throws NamingException {
+        componentNamespaces.remove(componentId); // remove local namespace cache
+        componentIdInfo.remove(componentId);
+    }
+
+    public void unbindAppObjects(String appName) throws NamingException {
+
+        appNamespaces.remove(appName);
+        Iterator moduleEntries = moduleNamespaces.entrySet().iterator();
+        while( moduleEntries.hasNext() ) {
+            Map.Entry entry = (Map.Entry) moduleEntries.next();
+
+            if( ((AppModuleKey) entry.getKey()).getAppName().equals(appName)) {
+                moduleEntries.remove();    
+            }
+        }
     }
 
 
@@ -490,7 +652,7 @@ public final class  GlassfishNamingManagerImpl
 
     private Object lookup(String componentId, String name, Context ctx) throws NamingException {
 
-        HashMap namespace = (HashMap) getComponentNameSpace(componentId);
+        Map namespace = getNamespace(componentId, name);
 
         Object obj = namespace.get(name);
 
@@ -520,7 +682,7 @@ public final class  GlassfishNamingManagerImpl
     private ArrayList listNames(String name) throws NamingException {
         // Get the component id and namespace to lookup
         String componentId = getComponentId();
-        HashMap namespace = (HashMap) namespaces.get(componentId);
+        Map namespace = getNamespace(componentId, name);
 
         Object obj = namespace.get(name);
 
@@ -578,6 +740,52 @@ public final class  GlassfishNamingManagerImpl
 
     private boolean isCOSNamingObj(Object obj) {
         return ((obj instanceof java.rmi.Remote) || (obj instanceof org.omg.CORBA.Object));
+    }
+
+
+    private static class AppModuleKey {
+
+        private String app;
+        private String module;
+
+        public AppModuleKey(String appName, String moduleName) {
+
+            app = appName;
+            module = moduleName;
+
+        }
+
+        public boolean equals(Object o) {
+            boolean equal = false;
+            if( (o != null) && (o instanceof AppModuleKey) ) {
+                AppModuleKey other = (AppModuleKey) o;
+                if( app.equals(other.app) && module.equals(other.module) ) {
+                    equal = true;
+                }
+            }
+            return equal;
+        }
+
+        public int hashCode() {
+            return app.hashCode();
+        }
+
+        public String getAppName() { return app; }
+        public String getModuleName() { return module; }
+
+        public String toString()
+            { return "appName = " + app + " , module = " + module; }
+    }
+
+    private static class ComponentIdInfo {
+
+        String appName;
+        String moduleName;
+        String componentId;    
+
+         public String toString()
+            { return "appName = " + appName + " , module = " + moduleName +
+                    " , componentId = " + componentId; }
     }
 
 }

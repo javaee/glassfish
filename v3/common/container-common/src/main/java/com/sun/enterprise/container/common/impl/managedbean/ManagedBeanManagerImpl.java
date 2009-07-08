@@ -113,13 +113,55 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
         
          if (event.is(Deployment.APPLICATION_PREPARED) ) {
              DeploymentContext dc =  Deployment.APPLICATION_PREPARED.getHook(event);
+
+
              loadManagedBeans(dc);
+
+             registerAppLevelDependencies(dc);
+
          } else if( event.is(Deployment.APPLICATION_UNLOADED) ) {
+             
              ApplicationInfo info =  Deployment.APPLICATION_UNLOADED.getHook(event);
+             
              unloadManagedBeans(info);
+
+             unregisterAppLevelDependencies(info);
+
          }
+    }
+
+    private void registerAppLevelDependencies(DeploymentContext dc) {
+
+        Application app = dc.getModuleMetaData(Application.class);
+
+        if( app == null ) {
+            return;
+        }
+
+        try {
+            compEnvManager.bindToComponentNamespace(app);
+        } catch(Exception e) {
+            throw new RuntimeException("Error binding app-level env dependencies " +
+                    app.getAppName(), e);
+        }
 
     }
+
+     private void unregisterAppLevelDependencies(ApplicationInfo appInfo) {
+
+           Application app = appInfo.getMetaData(Application.class);
+
+
+         if( app != null ) {
+            try {
+                compEnvManager.unbindFromComponentNamespace(app);
+            } catch(Exception e) {
+                _logger.log(Level.FINE, "Exception unbinding app objects", e);
+            }
+         }
+     }
+
+
     
     private void loadManagedBeans(DeploymentContext dc) {
 
@@ -142,7 +184,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                     // TODO Should move this to regular DOL processing stage
                     next.validate();
 
-                     Set<String> interceptorClasses = next.getAllInterceptorClasses();
+                    Set<String> interceptorClasses = next.getAllInterceptorClasses();
 
 
                     if( !interceptorClasses.isEmpty() || next.hasAroundInvokeMethod()) {
