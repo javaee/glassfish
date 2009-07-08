@@ -86,7 +86,7 @@
         </facet>
     </sun:title>
 #include "/jms/poolProperties.inc"
-#include "/shared/propertyTable.inc"
+#include "/shared/propertyDescTable.inc"
 #include "/shared/targetSectionForCreate.inc"
     <sun:title id="title2" >
         <!facet pageButtonsBottom>

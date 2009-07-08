@@ -75,29 +75,29 @@
     <sun:form id="propertyForm" >
 #include "/shared/alertMsg.inc"
     <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18n.connectionFactory.newPageTitle}" helpText="$resource{i18n.connectionFactory.newPageTitleHelp}">
-        <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
-            <!command
-                getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-            />
-        </sun:button>
-        <!facet pageButtonsTop>
-            <sun:panelGroup id="topButtons">
+        <sun:title id="propertyContentPage" title="$resource{i18n.connectionFactory.newPageTitle}" helpText="$resource{i18n.connectionFactory.newPageTitleHelp}">
+            <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
+                <!command
+                    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+                />
+            </sun:button>
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
 #include "/jms/jmsConnectionButtons.inc"
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
+                </sun:panelGroup>
+            </facet>
 #include "/jms/poolProperties.inc"
-#include "/shared/propertyTable.inc"
+#include "/shared/propertyDescTable.inc"
 #include "/shared/targetSectionForCreate.inc"
-    <sun:title id="title2" >
-        <!facet pageButtonsBottom>
-            <sun:panelGroup id="bottomButtons">
+        </sun:title>
+        <sun:title id="title2" >
+            <!facet pageButtonsBottom>
+                <sun:panelGroup id="bottomButtons">
 #include "/jms/jmsConnectionButtons.inc"
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
-    <sun:hidden id="helpKey" value="$resource{help.jmsConnectionNew}" />
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+        <sun:hidden id="helpKey" value="$resource{help.jmsConnectionNew}" />
     </sun:form>
 </define>
 </composition>
