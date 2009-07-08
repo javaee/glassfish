@@ -177,30 +177,32 @@ public class WebFilterHandler extends AbstractWebHandler {
             servletFilterMappingDesc.setName(filterName);
         }
 
-        String[] urlPatterns = webFilterAn.urlPatterns();
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            urlPatterns = webFilterAn.value();
-        }
-
-        boolean validUrlPatterns = false;
-        if (urlPatterns != null && urlPatterns.length > 0) {
-            validUrlPatterns = true;
-            for (String up : urlPatterns) {
-                if (up == null || up.length() == 0) {
-                    validUrlPatterns = false;
-                }
-                servletFilterMappingDesc.addURLPattern(up);
+        if (servletFilterMappingDesc.getURLPatterns().size() == 0) {
+            String[] urlPatterns = webFilterAn.urlPatterns();
+            if (urlPatterns == null || urlPatterns.length == 0) {
+                urlPatterns = webFilterAn.value();
             }
-        }
 
-        if (!validUrlPatterns) {
-            String urlPatternString =
-                (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+            boolean validUrlPatterns = false;
+            if (urlPatterns != null && urlPatterns.length > 0) {
+                validUrlPatterns = true;
+                for (String up : urlPatterns) {
+                    if (up == null || up.length() == 0) {
+                        validUrlPatterns = false;
+                    }
+                    servletFilterMappingDesc.addURLPattern(up);
+                }
+            }
 
-            throw new IllegalArgumentException(localStrings.getLocalString(
-                    "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
-                    "Invalid url patterns: {0}.",
-                    urlPatternString));
+            if (!validUrlPatterns) {
+                String urlPatternString =
+                    (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
+                        "Invalid url patterns: {0}.",
+                        urlPatternString));
+            }
         }
 
         if (servletFilterMappingDesc.getServletNames().size() == 0) {

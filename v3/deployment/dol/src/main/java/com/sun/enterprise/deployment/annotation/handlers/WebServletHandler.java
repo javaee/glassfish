@@ -157,31 +157,33 @@ public class WebServletHandler extends AbstractWebHandler {
         webCompDesc.setServlet(true);
         webCompDesc.setWebComponentImplementation(webCompClass.getName());
 
-        String[] urlPatterns = webServletAn.urlPatterns();
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            urlPatterns = webServletAn.value();
-        }
-
-        boolean validUrlPatterns = false;
-        if (urlPatterns != null && urlPatterns.length > 0) {
-            validUrlPatterns = true;
-            for (String up : urlPatterns) {
-                if (up == null || up.length() == 0) {
-                    validUrlPatterns = false;
-                    break;
-                }
-                webCompDesc.addUrlPattern(up);
+        if (webCompDesc.getUrlPatternsSet().size() == 0) {
+            String[] urlPatterns = webServletAn.urlPatterns();
+            if (urlPatterns == null || urlPatterns.length == 0) {
+                urlPatterns = webServletAn.value();
             }
-        }
 
-        if (!validUrlPatterns) {
-            String urlPatternString =
-                (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+            boolean validUrlPatterns = false;
+            if (urlPatterns != null && urlPatterns.length > 0) {
+                validUrlPatterns = true;
+                for (String up : urlPatterns) {
+                    if (up == null || up.length() == 0) {
+                        validUrlPatterns = false;
+                        break;
+                    }
+                    webCompDesc.addUrlPattern(up);
+                }
+            }
 
-            throw new IllegalArgumentException(localStrings.getLocalString(
-                    "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
-                    "Invalid url patterns for {0}: {1}.",
-                    new Object[] { webCompClass, urlPatternString }));
+            if (!validUrlPatterns) {
+                String urlPatternString =
+                    (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
+                        "Invalid url patterns for {0}: {1}.",
+                        new Object[] { webCompClass, urlPatternString }));
+            }
         }
 
         if (webCompDesc.getLoadOnStartUp() == null) {
