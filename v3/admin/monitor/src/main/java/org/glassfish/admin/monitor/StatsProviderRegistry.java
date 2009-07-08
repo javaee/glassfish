@@ -6,10 +6,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.gmbal.ManagedObjectManager;
+import org.glassfish.gmbal.ManagedObjectManagerFactory;
 
 public class StatsProviderRegistry {
     List<StatsProviderRegistryElement> regElements = new ArrayList();
@@ -80,17 +83,9 @@ public class StatsProviderRegistry {
         }
 
         //unregister the statsProvider from Gmbal
-        ManagedObjectManager mom = spre.getManagedObjectManager();
-        if (mom != null) {
-            //if (mom.getObjectName(statsProvider) != null) {
-                mom.unregister(statsProvider);
-                try {
-                    mom.close();
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            //}
-        }
+        //if (mbeanEnabled) {
+            unregisterGmbal(spre);
+        //}
 
         // Remove the entry of statsProviderRegistryElement from configToRegistryElementMap
         List<StatsProviderRegistryElement> spreList =
@@ -141,21 +136,9 @@ public class StatsProviderRegistry {
             }
 
             //Reregister the statsProvider in Gmbal
-            Object statsProvider = spre.getStatsProvider();
-            ManagedObjectManager mom = spre.getManagedObjectManager();
-            String mbeanName = spre.getMBeanName();
-            if (mom != null ) {
-                //Cannot create a root if mom already has one
-                //getObjectName cannot be called before a successful createRoot call
-                //if (mom.getObjectName(statsProvider) == null) {
-                    mom.stripPackagePrefix();
-                    if (mbeanName != null && !mbeanName.isEmpty()) {
-                        mom.createRoot(statsProvider, mbeanName);
-                    } else {
-                        mom.createRoot(statsProvider);
-                    }
-                //}
-            }
+            //if (mbeanEnabled) {
+                registerGmbal(spre);
+            //}
         }
     }
 
@@ -190,17 +173,70 @@ public class StatsProviderRegistry {
             }
 
             //unregister the statsProvider from Gmbal
-            Object statsProvider = spre.getStatsProvider();
-            ManagedObjectManager mom = spre.getManagedObjectManager();
-            if (mom != null) {
-                //if (mom.getObjectName(statsProvider) != null) {
-                    mom.unregister(statsProvider);
-                    try {
-                        mom.close();
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                //}
+            //if (mbeanEnabled) {
+                unregisterGmbal(spre);
+            //}
+        }
+    }
+
+    void registerGmbal(String configElement) {
+        List<StatsProviderRegistryElement> spreList = configToRegistryElementMap.get(configElement);
+        if (spreList == null)
+            return; // should throw an exception
+
+        for (StatsProviderRegistryElement spre : spreList) {
+            registerGmbal(spre);
+        }
+    }
+
+    void unregisterGmbal(String configElement) {
+        List<StatsProviderRegistryElement> spreList = configToRegistryElementMap.get(configElement);
+        if (spreList == null)
+            return; // should throw an exception
+
+        for (StatsProviderRegistryElement spre : spreList) {
+            unregisterGmbal(spre);
+        }
+    }
+
+    void registerGmbal(StatsProviderRegistryElement spre) {
+        //Reregister the statsProvider in Gmbal
+        Object statsProvider = spre.getStatsProvider();
+        ManagedObjectManager mom = spre.getManagedObjectManager();
+        if (mom == null) {
+            mom = ManagedObjectManagerFactory.createFederated(StatsProviderManagerDelegateImpl.MONITORING_SERVER);
+            spre.setManagedObjectManager(mom);
+            String mbeanName = spre.getMBeanName();
+            mom.stripPackagePrefix();
+            if (mbeanName != null && !mbeanName.isEmpty()) {
+                mom.createRoot(statsProvider, mbeanName);
+            } else {
+                mom.createRoot(statsProvider);
+            }
+        }
+    }
+
+    void unregisterGmbal(StatsProviderRegistryElement spre) {
+        //unregister the statsProvider from Gmbal
+        ManagedObjectManager mom = spre.getManagedObjectManager();
+        if (mom != null) {
+            mom.unregister(spre.getStatsProvider());
+            try {
+                mom.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            spre.setManagedObjectManager(null);
+        }
+    }
+
+    void unregisterAllGmbal() {
+        for (StatsProviderRegistryElement spre :  statsProviderToRegistryElementMap.values()) {
+            try {
+                spre.getManagedObjectManager().close();
+                spre.setManagedObjectManager(null);
+            } catch (IOException ex) {
+                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -259,6 +295,10 @@ public class StatsProviderRegistry {
 
         public ManagedObjectManager getManagedObjectManager() {
             return mom;
+        }
+
+        private void setManagedObjectManager(ManagedObjectManager mom) {
+            this.mom = mom;
         }
     }
 }

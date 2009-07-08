@@ -7,12 +7,10 @@ package org.glassfish.admin.monitor;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.ObjectName;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.beans.PropertyChangeEvent;
 import javax.management.ObjectName;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
@@ -21,17 +19,12 @@ import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.probe.provider.PluginPoint;
 import org.glassfish.probe.provider.StatsProviderManagerDelegate;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import org.glassfish.api.amx.AMXValues;
 
@@ -39,36 +32,27 @@ import org.glassfish.api.amx.AMXValues;
  *
  * @author Jennifer
  */
-@Service
 @Scoped(Singleton.class)
-public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDelegate,
-                                                PostConstruct, ConfigListener {
-
-    @Inject
+public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDelegate {
     protected ProbeClientMediator pcm;
-
-    @Inject(optional=true)
     ModuleMonitoringLevels config = null;
-
     private final MonitoringRuntimeDataRegistry mrdr;
     private final Domain domain;
 
     private final TreeNode serverNode;
     private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
-    private static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
+    static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
     private StatsProviderRegistry statsProviderRegistry;
 
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm,
-                        MonitoringRuntimeDataRegistry mrdr, Domain domain) {
+                        MonitoringRuntimeDataRegistry mrdr, Domain domain, ModuleMonitoringLevels config) {
         this.pcm = pcm;
         this.mrdr = mrdr;
         this.domain = domain;
+        this.config = config;
         //serverNode is special, construct that first if doesn't exist
         serverNode = constructServerPP();
         statsProviderRegistry = new StatsProviderRegistry(mrdr);
-    }
-
-    public void postConstruct() {
     }
 
     public void register(String configElement, PluginPoint pp,
@@ -116,26 +100,20 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
 
         /* gmbal registration */
         // For now create mom root using the statsProvider
-        ManagedObjectManager mom = null;
-        String mbeanName = subTreePath;
-        try {
-            // 1 mom per statsProvider
-            mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
-            if (mom != null) {
-                mom.stripPackagePrefix();
-                mom.createRoot(statsProvider, mbeanName);
-            }
-            //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
-            //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
-        } catch (Exception e) {
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "gmbal registration failed", e);
-        }
+        //if (config.getMbeanEnabled) {
+            ManagedObjectManager mom = registerGmbal(statsProvider, subTreePath);
+        //}
 
         /* config - TODO */
         //add configElement to monitoring level element if not already there - find out from Nandini
 
         //Make an entry to my own registry so I can manage the unregister, enable and disable
-        statsProviderRegistry.registerStatsProvider(configElement, parentNode.getCompletePathName(), childNodeNames, handles, statsProvider, mbeanName, mom);
+        statsProviderRegistry.registerStatsProvider(configElement, parentNode.getCompletePathName(), childNodeNames, handles, statsProvider, subTreePath, mom);
+
+        //If module monitoring level = OFF, disableStatsProvider for that configElement
+        if (!getEnabledValue(configElement)) {
+            statsProviderRegistry.disableStatsProvider(configElement);
+        }
     }
 
     public void unRegister(Object statsProvider) {
@@ -148,12 +126,34 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         
     }
 
-    public void unregisterAll() {
-        //try {
-            //mom.close();
-        //} catch (IOException ioe) {
-          //  ioe.printStackTrace();
-        //}
+    //public void unregisterAll() {
+    //    this.statsProviderRegistry.unregisterAll();
+    //}
+
+    StatsProviderRegistry getStatsProviderRegistry() {
+        return this.statsProviderRegistry;
+    }
+
+    private ManagedObjectManager registerGmbal(Object statsProvider, String mbeanName) {
+        ManagedObjectManager mom = null;
+        //String mbeanName = subTreePath;
+        try {
+            // 1 mom per statsProvider
+            mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
+            if (mom != null) {
+                mom.stripPackagePrefix();
+                if (mbeanName != null && !mbeanName.isEmpty()) {
+                    mom.createRoot(statsProvider, mbeanName);
+                } else {
+                    mom.createRoot(statsProvider);
+                }
+            }
+            //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
+            //DynamicMBean mbean = (DynamicMBean)mom.register(parent, obj);
+        } catch (Exception e) {
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "gmbal registration failed", e);
+        }
+        return mom;
     }
 
     private TreeNode createSubTreeNode(TreeNode parent, String child) {
@@ -203,25 +203,53 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         return srvrNode;
     }
 
-    public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-       for (PropertyChangeEvent event : propertyChangeEvents) {
-           if (event.getSource() instanceof ModuleMonitoringLevels) {
-                String propName = event.getPropertyName();
-                boolean enabled = getEnabledValue(event.getNewValue().toString());
-                if (enabled)
-                    statsProviderRegistry.enableStatsProvider(propName);
-                else
-                    statsProviderRegistry.disableStatsProvider(propName);
-}
-       }
-        return null;
-    }
-
-    private boolean getEnabledValue(String enabledStr) {
-        if ("OFF".equals(enabledStr)) {
-            return false;
+    // hard-code the module monitoring level attribute for now until the new monitoring config is available
+    private boolean getEnabledValue(String configElement) {
+        boolean enabled = false;
+        if (this.config != null) {
+            if (configElement.equals("connector-service")) {
+                if (!this.config.getConnectorService().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("ejb-container")) {
+                if (!this.config.getEjbContainer().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("http-service")) {
+                if (!this.config.getHttpService().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("jdbc-connection-pool")) {
+                if (!this.config.getJdbcConnectionPool().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("jms-service")) {
+                if (!this.config.getJmsService().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("jvm")) {
+                if (!this.config.getJvm().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("orb")) {
+                if (!this.config.getOrb().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("thread-pool")) {
+                if (!this.config.getThreadPool().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("transaction-service")) {
+                if (!this.config.getTransactionService().equals("OFF")) {
+                    enabled = true;
+                }
+            } else if (configElement.equals("web-container")) {
+                if (!this.config.getWebContainer().equals("OFF")) {
+                    enabled = true;
+                }
+            }
         }
-        return true;
+        return enabled;
     }
 
 }

@@ -5,12 +5,18 @@
 
 package org.glassfish.admin.monitor;
 
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.probe.provider.StatsProviderManagerDelegate;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.probe.provider.StatsProviderManager;
 import org.glassfish.api.Startup;
+//import org.glassfish.api.event.Events;
+//import org.glassfish.api.event.EventListener;
+//import org.glassfish.api.event.EventListener.Event;
+//import org.glassfish.api.event.EventTypes;
+//import org.glassfish.api.event.RestrictTo;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -19,6 +25,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleState;
@@ -40,7 +48,7 @@ import org.glassfish.flashlight.provider.ProbeProviderFactory;
  */
 @Service
 @Scoped(Singleton.class)
-public class MonitoringBootstrap implements Startup, PostConstruct, Init, ModuleLifecycleListener {
+public class MonitoringBootstrap implements Startup, PostConstruct, Init, ModuleLifecycleListener, ConfigListener {
 
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
@@ -52,6 +60,9 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
     protected ProbeProviderFactory probeProviderFactory;
     @Inject
     protected ProbeClientMediator pcm;
+    //@Inject Events events;
+    @Inject(optional=true)
+    ModuleMonitoringLevels config = null;
 
     Map<String,Module> map = Collections.synchronizedMap(new WeakHashMap<String,Module>());
 
@@ -59,10 +70,11 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
     private final String PROBE_PROVIDER_CLASS_NAMES = "probe-provider-class-names";
     private final String PROBE_PROVIDER_XML_FILE_NAMES = "probe-provider-xml-file-names";
     private final String DELIMITER = ",";
+    private StatsProviderManagerDelegateImpl spmd;
 
     public void postConstruct() {
         //Set the StatsProviderManagerDelegate
-        StatsProviderManagerDelegate spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain);
+        spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain, config);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
         //System.out.println("StatsProviderManagerDelegate is assigned ********************");
 
@@ -76,6 +88,8 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
                 moduleStarted(m);
             //}
         }
+
+        //events.register(this);
 
     }
 
@@ -182,5 +196,45 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
         if (debug) {
             System.out.println("MSR: " + str);
         }
+    }
+
+    /*public void event(Event event) {
+        if (event.name().equals(EventTypes.PREPARE_SHUTDOWN_NAME)) {
+            spmd.unregisterAll();
+        }
+    }*/
+
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
+       for (PropertyChangeEvent event : propertyChangeEvents) {
+           if (event.getSource() instanceof ModuleMonitoringLevels) {
+                String propName = event.getPropertyName();
+                boolean enabled = getEnabledValue(event.getNewValue().toString());
+                if (enabled) {
+                    spmd.getStatsProviderRegistry().enableStatsProvider(propName);
+                } else {
+                    spmd.getStatsProviderRegistry().disableStatsProvider(propName);
+                }
+           }
+           //For change in mbean-enabled attribute register/unregister gmbal for enabled config elements
+           //if (event.getSource() instanceof MbeanEnabled) {
+           //for (String configElement : config.getElements()) {
+                //if (!configElement.getValue().equals("OFF")) {
+                    //if (mbeanEnabled) {
+                        //spmd.getStatsProviderRegistry().registerGmbal(configElement);
+                    //} else {
+                        //spmd.getStatsProviderRegistry().unregisterGmbal(configElement);
+                    //}
+                //}
+           //}
+           //}
+       }
+       return null;
+    }
+
+    private boolean getEnabledValue(String enabledStr) {
+        if ("OFF".equals(enabledStr)) {
+            return false;
+        }
+        return true;
     }
 }
