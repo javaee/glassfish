@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.api.event.Events;
-import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventListener.Event;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.event.RestrictTo;
+//import org.glassfish.api.event.Events;
+//import org.glassfish.api.event.EventListener;
+//import org.glassfish.api.event.EventListener.Event;
+//import org.glassfish.api.event.EventTypes;
+//import org.glassfish.api.event.RestrictTo;
 import org.glassfish.probe.provider.PluginPoint;
 import org.glassfish.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.component.PostConstruct;
@@ -27,12 +27,12 @@ import org.glassfish.api.Startup;
  */
 @Service//(name="jvm")
 //@Scoped(Singleton.class)
-public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/ PostConstruct, EventListener {
+public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/ PostConstruct/*, EventListener */{
 
     //@Inject
     //Logger logger;
 
-    @Inject Events events;
+    //@Inject Events events;
 
     private JVMClassLoadingStatsProvider clStatsProvider = new JVMClassLoadingStatsProvider();
     private JVMCompilationStatsProvider compileStatsProvider = new JVMCompilationStatsProvider();
@@ -68,14 +68,14 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/operating-system", osStatsProvider);
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/runtime", runtimeStatsProvider);
 
-        events.register(this);
+        //events.register(this);
     }
 
     public Lifecycle getLifecycle() {
         return Startup.Lifecycle.SERVER;
     }
 
-    public void event(Event event) {
+    /*public void event(Event event) {
         if (event.name().equals(EventTypes.PREPARE_SHUTDOWN_NAME)) {
             StatsProviderManager.unregister(this.clStatsProvider);
             StatsProviderManager.unregister(this.compileStatsProvider);
@@ -86,7 +86,7 @@ public class JVMStatsProviderBootstrap implements Startup,/*TelemetryProvider,*/
                 StatsProviderManager.unregister(gc);
             }
         }
-    }
+    }*/
 
     /*public void onLevelChange(String newLevel) {
         boolean newLevelEnabledValue = getEnabledValue(newLevel);
