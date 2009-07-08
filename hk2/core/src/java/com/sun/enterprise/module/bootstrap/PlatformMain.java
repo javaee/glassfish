@@ -1,6 +1,9 @@
 package com.sun.enterprise.module.bootstrap;
 
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.File;
 
 /**
@@ -13,7 +16,7 @@ public abstract class PlatformMain {
 
     protected Logger  logger;
     protected File    root;
-    Object  context;
+    List<Object> contexts = new ArrayList<Object>();
 
     public void setLogger(Logger logger) {
         this.logger = logger;
@@ -24,16 +27,25 @@ public abstract class PlatformMain {
     }
 
     public void setContext(Object context) {
-        this.context = context;
+        contexts.add(context);
     }
 
     public <T> T getContext(Class<T> contextType) {
-        try {
-            return contextType.cast(context);
-        } catch(ClassCastException e) {
-            return null;
+        // first one is returned.
+        for (Object context : contexts) {
+            try {
+                return contextType.cast(context);
+            } catch(ClassCastException e) {
+            }
         }
-    }                                                                      
+        return null;
+    }
+
+    public List<Object> getContexts() {
+        List<Object> copy = new ArrayList<Object>();
+        copy.addAll(contexts);
+        return copy;
+    }
 
     /**
      * Returns the platform name associated with this main.
