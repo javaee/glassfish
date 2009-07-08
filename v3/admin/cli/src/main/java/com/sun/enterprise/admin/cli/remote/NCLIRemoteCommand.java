@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.admin.cli.remote;
 
 import com.sun.appserv.management.client.prefs.LoginInfo;
@@ -46,6 +47,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import com.sun.enterprise.admin.cli.Parser;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
 import java.util.Iterator;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,8 +74,18 @@ public class AsadminMain {
 
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
         command = args[0];
+        if (Boolean.parseBoolean(System.getenv("ASADMIN_NEW"))) {
+            exitCode = executeCommand(args);
+        } else {
+        // old way
         try {
-            exitCode = main.local(args);
+            try {
+                po = new ProgramOptions(new Environment());
+                exitCode = main.local(args);
+            } catch (CommandException ce) {
+                CLILogger.getInstance().printError(ce.getMessage());
+                exitCode = ERROR;
+            }
         }
         catch(InvalidCommandException e) {
             // Transform 'asadmin help remote-command' to 'asadmin remote-command --help'.
@@ -88,44 +98,83 @@ public class AsadminMain {
                 exitCode = main.remote(args);
             }
         }
+        }
 
-	switch (exitCode) {
-	case SUCCESS:
-	    // no need to tell people the obvious...
-            //CLILogger.getInstance().printDetailMessage(
-                //strings.get("CommandSuccessful", command));
-	    break;
+        switch (exitCode) {
+        case SUCCESS:
+            if (!po.isTerse())
+                CLILogger.getInstance().printDetailMessage(
+                    strings.get("CommandSuccessful", command));
+            break;
 
-	case ERROR:
+        case ERROR:
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
-	    break;
+            break;
 
-	case INVALID_COMMAND_ERROR:
+        case INVALID_COMMAND_ERROR:
             try {
                 CLIMain.displayClosestMatch(command, main.getRemoteCommands(),
-		    strings.get("ClosestMatchedLocalAndRemoteCommands"));
+                    strings.get("ClosestMatchedLocalAndRemoteCommands"));
             } catch (InvalidCommandException e) {
                 // not a big deal if we cannot help
             }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
-	    break;
+            break;
 
-	case CONNECTION_ERROR:
+        case CONNECTION_ERROR:
             try {
                 CLIMain.displayClosestMatch(command, null,
-		    strings.get("ClosestMatchedLocalCommands"));
+                    strings.get("ClosestMatchedLocalCommands"));
             } catch (InvalidCommandException e) {
                 CLILogger.getInstance().printMessage(
-			strings.get("InvalidRemoteCommand", command));
+                        strings.get("InvalidRemoteCommand", command));
             }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", command));
-	    break;
+            break;
         }
         writeCommandToDebugLog(args, exitCode);
         System.exit(exitCode);
+    }
+
+    public static int executeCommand(String[] argv) {
+        try {
+            if (argv.length == 0)
+                throw new CommandException("No Command");
+
+            Environment env = new Environment();
+
+            // if the first argument is an option, we're using the new form
+            if (argv[0].startsWith("-")) {
+                /*
+                 * Parse all the asadmin options, stopping at the first
+                 * non-option, which is the command name.
+                 */
+                Parser rcp = new Parser(argv, 0,
+                                ProgramOptions.getValidOptions(), false);
+                Map<String, String> params = rcp.getOptions();
+                po = new ProgramOptions(params, env);
+                List<String> operands = rcp.getOperands();
+                if (operands.size() == 0)
+                    throw new CommandException("No Command");
+                argv = operands.toArray(new String[0]);
+            } else
+                po = new ProgramOptions(env);
+            po.toEnvironment(env);
+            command = argv[0];
+            String[] args = new String[argv.length - 1];
+            System.arraycopy(argv, 1, args, 0, args.length);
+            CLICommand cmd = CLICommand.getCommand(command, po, env);
+            return cmd.execute(args);
+        } catch (CommandException ce) {
+            CLILogger.getInstance().printError(ce.getMessage());
+            return ERROR;
+        } catch (CommandValidationException cve) {
+            CLILogger.getInstance().printError(cve.getMessage());
+            return ERROR;
+        }
     }
 
     public int local(String[] args) throws InvalidCommandException{
@@ -158,22 +207,12 @@ public class AsadminMain {
     }
 
     public int remote(String[] args) {
-	NCLIRemoteCommand rc = null;
         try {
-	    if (System.getenv("ASADMIN_NEW") != null) {
-		rc = new NCLIRemoteCommand();
-		rc.parse(args);
-		command = rc.getCommandName();
-		rc.runCommand();
-	    } else {
-		CLIRemoteCommand orc = new CLIRemoteCommand(args);
-		orc.runCommand();
-	    }
+            CLIRemoteCommand orc = new CLIRemoteCommand(args);
+            orc.runCommand();
             return SUCCESS;
         }
         catch (Throwable ex) {
-	    if (rc != null)
-		command = rc.getCommandName();
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printMessage(ex.getMessage());
             if (ex.getCause() instanceof java.net.ConnectException) {
@@ -297,6 +336,7 @@ public class AsadminMain {
     private       static String className;
     private       static String command;
     private       static Map<String, String> systemProps;
+    private       static ProgramOptions po;
 
     static {
         systemProps = new ASenvPropertyReader().getProps();

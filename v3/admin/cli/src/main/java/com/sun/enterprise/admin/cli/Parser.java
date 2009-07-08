@@ -33,7 +33,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.admin.cli.remote;
+
+package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
@@ -64,7 +65,7 @@ public class Parser {
 
     /*
      * TODO:
-     *	option types shouldn't be string literals here
+     *  option types shouldn't be string literals here
      */
 
     /**
@@ -74,18 +75,18 @@ public class Parser {
      * @throws CommandValidationException if command name is invalid
      */
     public Parser(String[] args, int start,
-	    Set<ValidOption> options, boolean ignoreUnknown)
-	    throws CommandValidationException {
-	this.options = options;
-	this.ignoreUnknown = ignoreUnknown;
-	parseCommandLine(args, start);
+            Set<ValidOption> options, boolean ignoreUnknown)
+            throws CommandValidationException {
+        this.options = options;
+        this.ignoreUnknown = ignoreUnknown;
+        parseCommandLine(args, start);
     }
 
     /**
-     * Parse the command line arguments accordingly to CLIP.
+     * Parse the command line arguments according to CLIP.
      *
      * @param argv  command line arguments
-     * @throws CommandValidationException if command name is invalid
+     * @throws CommandValidationException if command line is invalid
      */
     private void parseCommandLine(final String[] argv, final int start)
         throws CommandValidationException {
@@ -93,11 +94,11 @@ public class Parser {
         for (int si = start; si < argv.length; si++) {
             String arg = argv[si];
             if (arg.equals("--")) {             // end of options
-		// if we're ignoring unknown options, we include this
-		// delimiter as an operand, it will be eliminated later
-		// when we process all remaining options
-		if (!ignoreUnknown)
-		    si++;
+                // if we're ignoring unknown options, we include this
+                // delimiter as an operand, it will be eliminated later
+                // when we process all remaining options
+                if (!ignoreUnknown)
+                    si++;
                 while (si < argv.length)
                     operands.add(argv[si++]);
                 break;
@@ -120,9 +121,9 @@ public class Parser {
             String value = null;
             if (arg.charAt(1) == '-') { // long option
                 int ns = 2;
-		boolean sawno = false;
+                boolean sawno = false;
                 if (arg.startsWith("--no-")) {
-		    sawno = true;
+                    sawno = true;
                     value = "false";
                     ns = 5;             // skip prefix
                 }
@@ -138,19 +139,19 @@ public class Parser {
                     value = arg.substring(ne + 1);
                 }
                 opt = lookupLongOption(name);
-		if (sawno && optionRequiresOperand(opt))
-		    throw new CommandValidationException(
-			"\"--no\" illegal with non-boolean option: " +
-			opt.getName());
+                if (sawno && optionRequiresOperand(opt))
+                    throw new CommandValidationException(
+                        "\"--no\" illegal with non-boolean option: " +
+                        opt.getName());
             } else {                            // short option
-		/*
+                /*
                  * possibilities are:
                  *      -f
                  *      -f value
                  *      -f=value
                  *      -fxyz   (multiple single letter boolean options
                  *              with no arguments)
-		 */
+                 */
                 if (arg.length() <= 2) { // one of the first two cases
                     opt = lookupShortOption(arg.charAt(1));
                     name = arg.substring(1);
@@ -189,19 +190,19 @@ public class Parser {
 
             // find option value, if needed
             if (value == null) {
-		// if no valid options were specified, we use the next argument
-		// as an option as long as it doesn't look like an option
-		if (options == null) {
-		    if (si + 1 < argv.length && !argv[si + 1].startsWith("-"))
-			value = argv[++si];
-		    else
-			opt.setType("BOOLEAN");	// fake it
-		} else if (optionRequiresOperand(opt)) {
-		    if (++si >= argv.length)
-			throw new CommandValidationException(
-			    "Missing value for option: " + name);
-		    value = argv[si];
-		}
+                // if no valid options were specified, we use the next argument
+                // as an option as long as it doesn't look like an option
+                if (options == null) {
+                    if (si + 1 < argv.length && !argv[si + 1].startsWith("-"))
+                        value = argv[++si];
+                    else
+                        opt.setType("BOOLEAN"); // fake it
+                } else if (optionRequiresOperand(opt)) {
+                    if (++si >= argv.length)
+                        throw new CommandValidationException(
+                            "Missing value for option: " + name);
+                    value = argv[si];
+                }
             }
             setOption(opt, value);
         }
@@ -236,11 +237,11 @@ public class Parser {
      * Get ValidOption for long option name.
      */
     private ValidOption lookupLongOption(String s) {
-	// XXX - for now, fake it if no options
-	if (options == null) {
-	    // no valid options specified so everything is valid
-	    return new ValidOption(s, "STRING", ValidOption.OPTIONAL, null);
-	}
+        // XXX - for now, fake it if no options
+        if (options == null) {
+            // no valid options specified so everything is valid
+            return new ValidOption(s, "STRING", ValidOption.OPTIONAL, null);
+        }
         for (ValidOption od : options) {
             if (od.getName().equals(s))
                 return od;
@@ -252,9 +253,9 @@ public class Parser {
      * Get ValidOption for short option name.
      */
     private ValidOption lookupShortOption(char c) {
-	// XXX - for now, fake it if no options
-	if (options == null)
-	    return null;
+        // XXX - for now, fake it if no options
+        if (options == null)
+            return null;
         String sc = Character.toString(c);
         for (ValidOption od : options) {
             if (od.getShortNames().contains(sc))
@@ -271,53 +272,58 @@ public class Parser {
     }
 
     /**
-     * Check whether the given value is valid for the option.
-     */
-    private static boolean nonNullValueValidFor(ValidOption po, String value) {
-        if (value == null)
-                return true;
-        // VERY basic validation only if given value is non-null
-        if (po == null)
-            throw new NullPointerException("null option name");
-        value = value.trim();
-
-        if (po.getType().equals("FILE")) {
-            File f = new File(value);
-            return f.isFile() || f.canRead();
-        }
-        if (po.getType().equals("BOOLEAN")) {
-            return value.toLowerCase(Locale.ENGLISH).equals("true") ||
-                value.toLowerCase(Locale.ENGLISH).equals("false");
-        }
-        // non-null value for any remaining option is valid
-        return true;
-    }
-
-    /**
      * Set the value for the option.
      */
     private void setOption(ValidOption opt, String value)
             throws CommandValidationException {
         String name = opt.getName();
-        if (!nonNullValueValidFor(opt, value)) {
-            // name exists, but value is invalid!
+        // VERY basic validation
+        if (opt == null)
+            throw new NullPointerException("null option name");
+        if (value != null)
+            value = value.trim();
+
+        if (opt.getType().equals("FILE")) {
+            File f = new File(value);
+            if (!(f.isFile() || f.canRead())) {
+                // get a real exception for why it's no good
+                InputStream is = null;
+                try {
+                    is = new FileInputStream(f);
+                } catch (IOException ioex) {
+                    throw new CommandValidationException(
+                        "Invalid file for option: --" + name +
+                        ": " + ioex);
+                } finally {
+                    if (is != null)
+                        try {
+                            is.close();
+                        } catch (IOException cex) { }
+                }
+                throw new CommandValidationException(
+                    "Invalid file for option: " + name + ", File: " + value);
+            }
+        } else if (opt.getType().equals("BOOLEAN")) {
+            if (value == null)
+                value = "true";
+            else if (!(value.toLowerCase(Locale.ENGLISH).equals("true") ||
+                    value.toLowerCase(Locale.ENGLISH).equals("false")))
+                throw new CommandValidationException(
+                    "Invalid boolean value for option: " + name +
+                    ", Value: " + value);
+        } else if (opt.getType().equals("PASSWORD"))
             throw new CommandValidationException(
-                "Invalid value for option: " + name + ", Value: " + value);
-        }
+                "Password not allowed on command line: " + opt.getName());
+
         if (true /* !Boolean.valueOf(opt.getRepeats().toLowerCase()) */) {
             // repeats not allowed
             if (optionsMap.containsKey(name)) {
                 throw new CommandValidationException(
-			"Repeats not allowed for option: " + name);
+                        "Repeats not allowed for option: " + name);
             }
             // XXX - repeat is going to replace previous value...
         }
 
-        if (opt.getType().equals("PASSWORD"))
-            throw new CommandValidationException(
-                "Password not allowed on command line: " + opt.getName());
-        if (opt.getType().equals("BOOLEAN") && value == null)
-            value = "true";
         optionsMap.put(name, value);
     }
 }
