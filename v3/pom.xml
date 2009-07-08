@@ -295,6 +295,9 @@
                 <module>sun-glassfish/installer</module>
                 <module>appclient</module>
                 <module>jbi/serviceengine/sun-javaee-engine</module>
+                <module>verifier/verifier-impl</module>
+                <module>verifier/verifier-scripts</module>
+                <module>verifier/verifier-jdk-extension-bundle</module>
             </modules>
        </profile>
 
@@ -339,6 +342,9 @@
                 <module>sun-glassfish/distributions/glassfish-ri</module>
                 <module>appclient</module>
                 <module>jbi/serviceengine/sun-javaee-engine</module>
+                <module>verifier/verifier-impl</module>
+                <module>verifier/verifier-scripts</module>
+                <module>verifier/verifier-jdk-extension-bundle</module>
             </modules>
         </profile>
     </profiles>
