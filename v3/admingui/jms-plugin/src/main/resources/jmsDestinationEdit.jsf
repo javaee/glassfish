@@ -34,7 +34,6 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- resourceNode/jmsDestinationEdit.jsf -->
 
 <!initPage
     setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");

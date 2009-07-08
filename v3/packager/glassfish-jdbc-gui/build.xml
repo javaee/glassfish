@@ -135,7 +135,6 @@ own identifying information: Portions Copyright [yyyy]
 	           <artifact groupID="com.sun.woodstock.dependlibs" artifactId="dataprovider" />
 		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf" />
 		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf-suntheme" />
-		   <artifact groupID="com.sun.jsftemplating" artifactId="jsftemplating-dynafaces" />
 	   </excludeArtifactsTransitively>
        </resolveAll>
 

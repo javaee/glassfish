@@ -71,6 +71,11 @@
           modules to be included in this bundle
         -->       
        <dependency>
+           <groupId>org.glassfish.admingui</groupId>
+           <artifactId>console-jms-plugin</artifactId>
+            <version>${project.version}</version>
+       </dependency>
+       <dependency>
             <groupId>org.glassfish.jms</groupId>
 	    <artifactId>jms-core</artifactId>
             <version>${project.version}</version>

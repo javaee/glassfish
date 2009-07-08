@@ -81,11 +81,12 @@
     <modules>
     	<module>dataprovider</module>
     	<module>plugin-service</module>
-	<module>common</module>
+        <module>common</module>
         <module>core</module>
         <module>community-theme</module>
         <module>web</module>
         <module>jdbc-gui</module>
+        <module>jms-plugin</module>
         <module>ejb</module>
         <module>ejb-lite</module>
         <module>corba</module>
@@ -131,11 +132,6 @@
             <artifactId>jsftemplating-dt</artifactId>
             <version>${jsftemplating.version}</version>
 	    <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jsftemplating</groupId>
-            <artifactId>jsftemplating-dynafaces</artifactId>
-            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>com.sun.faces</groupId>
