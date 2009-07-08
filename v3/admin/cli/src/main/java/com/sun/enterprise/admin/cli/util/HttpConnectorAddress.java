@@ -39,7 +39,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.KeyManagementException;
+
 import com.sun.enterprise.universal.GFBase64Encoder;
+
+import javax.net.ssl.*;
 
 public final class HttpConnectorAddress
 {
@@ -81,6 +87,7 @@ public final class HttpConnectorAddress
         this.path = path;
   }
 
+
     /**
 	 * Open a connection using the reciever and the given path
 	 * @param path the path to the required resource (path here is
@@ -99,13 +106,30 @@ public final class HttpConnectorAddress
 	 * resource
 	 */
     public URLConnection openConnection(String path) throws IOException {
+        configureSSL();
         if (path == null || path.trim().length() == 0)
             path = this.path;
         return this.openConnection(this.toURL(path));
     }
 
+    private void configureSSL() throws IOException {
+        if (secure) {
+            try {
+                SSLContext sc = SSLContext.getInstance("TLS");
+                TrustManager[] tms = {new AsadminTrustManager()};
+                sc.init(null, tms, new SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+                HttpsURLConnection.setDefaultHostnameVerifier(new BasicHostnameVerifier(this.host));
+            } catch (NoSuchAlgorithmException e) {
+                throw new IOException(e);
+            } catch (KeyManagementException ee) {
+                throw new IOException(ee);
+            }
+        }
+    }
 
-	/**
+
+    /**
 	 * get the protocol prefix to be used for a connection for the
 	 * receiver
 	 * @return the protocol prefix - one of <code>http</code> or
@@ -241,5 +265,18 @@ public final class HttpConnectorAddress
   
     private final String getBase64Encoded(String clearString) {
         return new GFBase64Encoder().encode(clearString.getBytes());
+    }
+
+    private static class BasicHostnameVerifier implements HostnameVerifier {
+        private final String host;
+        public BasicHostnameVerifier(String host) {
+            if (host == null)
+                throw new IllegalArgumentException("null host");
+            this.host = host;
+        }
+
+        public boolean verify(String s, SSLSession sslSession) {
+            return host.equals(s);
+        }
     }
 }

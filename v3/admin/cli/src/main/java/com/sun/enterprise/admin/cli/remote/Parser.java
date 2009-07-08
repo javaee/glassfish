@@ -84,7 +84,7 @@ public class Parser {
     /**
      * Parse the command line arguments accordingly to CLIP.
      *
-     * @param args  command line arguments
+     * @param argv  command line arguments
      * @throws CommandValidationException if command name is invalid
      */
     private void parseCommandLine(final String[] argv, final int start)
