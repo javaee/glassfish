@@ -27,7 +27,7 @@ public class SimpleServlet extends HttpServlet {
     }
 
     public String doTest(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        System.out.println("This is to test connector 1.5 "+
+        System.out.println("This is to test connector 1.6 "+
 	             "contracts.");
 
         response.setContentType("text/html");
@@ -41,6 +41,17 @@ public class SimpleServlet extends HttpServlet {
 	    int testCount = 1;
             out.println("Starting the test");
             out.flush();
+
+             testCount++;
+             if(testAdminObject()){
+                 out.println("TEST:PASS");
+                        System.out.println("Admin Object Resource - ResourceAdapterAssociation- " + testCount + " PASS");
+             }else{
+                 out.println("TEST:FAIL");
+                        System.out.println("Admin Object Resource - ResourceAdapterAssociation- " + testCount + " FAIL");
+             }
+
+
             while (!done(out)) {
 
                 notifyAndWait(out);
@@ -81,6 +92,14 @@ public class SimpleServlet extends HttpServlet {
 
         debug("EXITING... STATUS = " + res);
         return res;
+    }
+
+    private boolean testAdminObject() throws Exception {
+        Object o = (new InitialContext()).lookup("java:comp/env/ejb/messageChecker");
+        MessageCheckerHome home = (MessageCheckerHome)
+            PortableRemoteObject.narrow(o, MessageCheckerHome.class);
+        MessageChecker checker = home.create();
+        return checker.testAdminObjectResourceAdapterAssociation();
     }
 
     private boolean checkResults(int num, PrintWriter out) throws Exception {

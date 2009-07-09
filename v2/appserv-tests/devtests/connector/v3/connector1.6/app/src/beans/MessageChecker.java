@@ -12,4 +12,5 @@ public interface MessageChecker extends EJBLocalObject {
     boolean done() ;
     int expectedResults();
     void notifyAndWait() ;
+    boolean testAdminObjectResourceAdapterAssociation();
 }

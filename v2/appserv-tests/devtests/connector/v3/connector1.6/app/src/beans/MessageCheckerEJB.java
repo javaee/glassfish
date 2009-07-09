@@ -48,6 +48,24 @@ public class MessageCheckerEJB implements SessionBean {
         return Controls.done();
     }
 
+    public boolean testAdminObjectResourceAdapterAssociation(){
+    boolean pass= false;
+
+    try{
+       InitialContext ic = new InitialContext();
+       MyAdminObject mao = (MyAdminObject) ic.lookup("java:comp/env/eis/testAdmin");
+       if(mao.getResourceAdapter() != null){
+         System.out.println("mao.getRA() is *NOT* null");
+           pass = true;
+       }else {
+         System.out.println("mao.getRA() is null");
+       }
+    }catch(Exception e){
+	e.printStackTrace();
+    }
+      return pass;
+    }
+
     public int expectedResults() {
         return Controls.expectedResults();
     }

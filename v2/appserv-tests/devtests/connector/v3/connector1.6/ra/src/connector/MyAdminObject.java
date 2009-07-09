@@ -1,10 +1,13 @@
 
 package connector;
 
-public class MyAdminObject implements java.io.Serializable {
+import javax.resource.spi.*;
+
+public class MyAdminObject implements java.io.Serializable, ResourceAdapterAssociation {
 
     private String resetControl="NORESET";
     private Integer expectedResults;
+    private ResourceAdapter resourceAdapter;
 
     public void setResetControl (String value) {
         resetControl = value;
@@ -13,6 +16,16 @@ public class MyAdminObject implements java.io.Serializable {
     public String getResetControl () {
         return resetControl;
     }
+
+    public ResourceAdapter getResourceAdapter(){
+        return resourceAdapter;
+    }
+
+
+    public void setResourceAdapter(ResourceAdapter ra) throws javax.resource.ResourceException{
+        this.resourceAdapter = ra;
+    }
+
 
     public void setExpectedResults (Integer value) {
         expectedResults = value;
