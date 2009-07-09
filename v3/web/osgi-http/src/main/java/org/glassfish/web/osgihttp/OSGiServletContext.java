@@ -40,6 +40,7 @@ package org.glassfish.web.osgihttp;
 import org.osgi.service.http.HttpContext;
 
 import javax.servlet.*;
+import javax.servlet.descriptor.JspConfigDescriptor;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -319,4 +320,10 @@ public class OSGiServletContext implements ServletContext {
     {
         //TODO(Sahoo): Not Yet Implemented
     }
+
+    public JspConfigDescriptor getJspConfigDescriptor()
+    {
+        return null; //TODO(Sahoo): Not Yet Implemented
+    }
+
 }

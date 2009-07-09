@@ -70,6 +70,7 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 import javax.naming.directory.DirContext;
 import javax.servlet.*;
+import javax.servlet.descriptor.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.HandlesTypes;
 
@@ -2903,6 +2904,17 @@ public class StandardContext
             throw new IllegalArgumentException("Invalid listener type " +
                 t.getClass().getName());
         }
+    }
+
+
+    /**
+     * Gets the <code>&lt;jsp-config&gt;</code> related configuration
+     * that was aggregated over the <code>web.xml</code> and
+     * <code>web-fragment.xml</code> resources of the web application
+     * represented by this ServletContext.
+     */
+    public JspConfigDescriptor getJspConfigDescriptor() {
+        return null;  // TBD
     }
 
 

@@ -69,6 +69,7 @@ import javax.naming.Binding;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.servlet.*;
+import javax.servlet.descriptor.*;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.ContainerEvent;
@@ -1225,6 +1226,17 @@ public class ApplicationContext
      */
     public void addListener(Class <? extends EventListener> listenerClass) {
         context.addListener(listenerClass);
+    }
+
+
+    /**
+     * Gets the <code>&lt;jsp-config&gt;</code> related configuration
+     * that was aggregated from the <code>web.xml</code> and
+     * <code>web-fragment.xml</code> descriptor files of the web application
+     * represented by this ServletContext.
+     */
+    public JspConfigDescriptor getJspConfigDescriptor() {
+        return context.getJspConfigDescriptor();
     }
 
 
