@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.Properties;
 import javax.management.AttributeList;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
@@ -20,6 +21,7 @@ import javax.naming.InitialContext;
 
 import javax.management.j2ee.ManagementHome;
 import org.glassfish.admin.mejb.MEJB;
+//import com.sun.appserv.security.ProgrammaticLogin;
 
 /**
     Standalone MEJB test -- requires running server and disabling security on MEJB.
@@ -186,7 +188,7 @@ public class MEJBTest {
 		}
 	}
 
-
+/*
     public static void main(String[] args) {
         try {
            // final Properties env = new Properties();
@@ -214,6 +216,40 @@ public class MEJBTest {
             ex.printStackTrace();
         }
     }
+*/
+
+
+    public static void main(String[] args) {
+        try {
+            final Properties props = new Properties();
+            props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
+            props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
+            props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
+            final InitialContext initial = new InitialContext(props);
+            
+            //final String mejbName = MEJBUtility.MEJB_DEFAULT_NAME;
+            //final String mejbName = "java:global/MEJB/MEJBBean";
+            final String mejbName = "java:global/mejb/MEJBBean";
+            println("Looking up: " + mejbName);
+            final Object objref = initial.lookup(mejbName);
+           // println("Received from initial.lookup(): " + objref + " for " + mejbName);
+
+            final ManagementHome home = (ManagementHome)objref;
+            //println("ManagementHome: " + home + " for " + mejbName);
+            final MEJB mejb = (MEJB)home.create();
+            println("Got the MEJB");
+
+            new MEJBTest( mejb ).test();
+
+            mejb.remove();
+
+        } catch (Exception ex) {
+            System.err.println("Caught an unexpected exception!");
+            ex.printStackTrace();
+        }
+    }
+
+
 
     /*
      lic static void main(String[] args) {
