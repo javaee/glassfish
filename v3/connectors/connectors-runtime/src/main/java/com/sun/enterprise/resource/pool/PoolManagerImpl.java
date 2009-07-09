@@ -469,6 +469,31 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             listener.poolDestroyed(poolName);        
     }
 
+    public void killFreeConnectionsInPools() {
+           Iterator pools = poolTable.values().iterator();
+           logFine("Killing all free connections in pools");
+           while (pools.hasNext()) {
+               ResourcePool pool = (ResourcePool) pools.next();
+               if (pool != null) {
+                   String name = pool.getPoolName();
+                   try {
+                       if (name != null) {
+                           ResourcePool poolToKill = poolTable.get(name);
+                           if (poolToKill != null) {
+                               pool.emptyFreeConnectionsInPool();
+                           }
+                           if (_logger.isLoggable(Level.FINE)){
+                               _logger.fine("Now killing free connections in pool : " + name);
+                           }
+                       }
+                   } catch (Exception e) {
+                       _logger.fine("Error killing pool : " + name + " :: "
+                               + (e.getMessage() != null ? e.getMessage() : " "));
+                   }
+               }
+           }
+       }
+    
     public ResourceReferenceDescriptor getResourceReference(String jndiName) {
         Set descriptors = getConnectorRuntime().getResourceReferenceDescriptor();
 

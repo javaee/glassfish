@@ -114,6 +114,11 @@ public interface ConnectorRuntime extends ConnectorConstants{
                                         String raName) throws ConnectorRuntimeException;
 
     /**
+     * Shut down all pools and active resource-adapters
+     */
+    public void cleanUpResourcesAndShutdownAllActiveRAs();
+
+    /**
      * Shut down all active resource adapters
      */
     public void shutdownAllActiveResourceAdapters();

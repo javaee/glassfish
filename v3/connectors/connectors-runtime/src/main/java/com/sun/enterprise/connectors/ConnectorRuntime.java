@@ -746,6 +746,13 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
+    public void cleanUpResourcesAndShutdownAllActiveRAs(){
+        poolManager.killFreeConnectionsInPools();
+        resourceAdapterAdmService.stopAllActiveResourceAdapters();
+    }
+    /**
+     * {@inheritDoc}
+     */
     public void shutdownAllActiveResourceAdapters() {
         resourceAdapterAdmService.stopAllActiveResourceAdapters();
     }
