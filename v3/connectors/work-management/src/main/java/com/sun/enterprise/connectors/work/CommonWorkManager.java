@@ -153,7 +153,7 @@ public final class CommonWorkManager implements WorkManager /*implements Monitor
     }
 
     public void cleanUp(){
-        if (runtime.isServer()) {
+        if (runtime != null && runtime.isServer()) {
             deregisterFromMonitoringService();
         }
     }
