@@ -37,32 +37,14 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core.jws.servedcontent;
-
-import java.io.File;
+package org.glassfish.appclient.server.core.jws;
 
 /**
- * Represents static content that is fixed in location and content over
- * time.
  *
  * @author tjquinn
  */
-public class FixedContent implements StaticContent {
-
-    private final File file;
-
-    public FixedContent(final File file) {
-        this.file = file;
-    }
-
-    public File file() {
-        return file;
-    }
-
-    @Override
-    public String toString() {
-        return "FixedContent: " + file.getAbsolutePath();
-    }
-
+public class NamingConventions {
+    public static final String JWSAPPCLIENT_SYSTEM_PREFIX = "/___JWSappclient/___system";
+    public static final String JWSAPPCLIENT_APP_PREFIX = "/___JWSappclient/___app";
 
 }

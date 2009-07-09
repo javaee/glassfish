@@ -49,9 +49,10 @@ import java.util.Properties;
  * in the HTTP response back to the client).
  * <p>
  * Further, each DynamicContent object must return an "instance" which
- * represents the replacement of tokens in a template.  It is open to the
- * implementer whether the DynamicContent returns a newly-created Instance
- * each time or whether it caches some number of instances as an optimization.
+ * represents a version of the dynamic content at a given point in time.
+ * It is open to the implementer whether the DynamicContent returns a
+ * newly-created Instance each time or whether it caches some number of
+ * instances as an optimization.
  *
  * @author tjquinn
  */
@@ -61,11 +62,18 @@ public interface DynamicContent {
      * Retrieves an "instance" of this dynamic content, with placeholders
      * substituted using the provided properties.
      * @param tokenValues maps placeholder tokens to values
-     * @param createIfAbsent
-     * @return null if no matching instance exists and createIfAbsent is false; an Instance with replaced tokens otherwise
+     * @return matching Instance; null if no matching instance exists
      */
-    public Instance getInstance(Properties tokenValues, boolean createIfAbsent);
+    public Instance getExistingInstance(Properties tokenValues);
 
+    /**
+     * Retrieves an existing "instance" of this dynamic content, with placeholders
+     * substituted, creating a new one if none already exists.
+     * @param tokenValues maps placeholder tokens to values
+     * @return matching or newly-created Instance
+     */
+    
+    public Instance getOrCreateInstance(Properties tokenValues);
     /**
      * Retrieve the MIME type for this dynamic content.
      * @return
@@ -73,11 +81,22 @@ public interface DynamicContent {
     public String getMimeType();
 
 
-
+    /**
+     * Defines the contract for a given version of dynamic content at a single
+     * moment in time.
+     */
     public interface Instance {
 
+        /**
+         * Returns the text of the dynamic content instance.
+         * @return
+         */
         public String getText();
 
+        /**
+         * Returns the timestamp when the instance was created.
+         * @return
+         */
         public Date getTimestamp();
     }
 

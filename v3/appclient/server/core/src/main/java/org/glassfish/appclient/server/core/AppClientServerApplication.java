@@ -45,6 +45,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.appclient.server.core.jws.AppClientHTTPAdapter;
 import org.glassfish.appclient.server.core.jws.JavaWebStartState;
 import com.sun.enterprise.config.serverbeans.Applications;
@@ -63,8 +64,11 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.CachingDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
@@ -118,6 +122,7 @@ public class AppClientServerApplication implements
     private final ApplicationClientDescriptor acDesc;
     private final Application appDesc;
     private final com.sun.enterprise.config.serverbeans.Applications applications;
+    private final String deployedAppName;
 
     private AppClientHTTPAdapter clientAdapter;
 
@@ -140,6 +145,7 @@ public class AppClientServerApplication implements
         isJWSEnabledAtModule = isJWSEnabled(dc.getModuleProps());
         appDesc = acDesc.getApplication();
 
+        deployedAppName = dc.getCommandParameters(DeployCommandParameters.class).name();
         this.applications = applications;
     }
         
@@ -220,7 +226,10 @@ public class AppClientServerApplication implements
 
     private void startJWSServices() throws EndpointRegistrationException, IOException {
         if (clientAdapter == null) {
-            clientAdapter = initAdapter();
+            clientAdapter = initClientAdapter();
+            if ( ! appDesc.isVirtual()) {
+                updateEARAdapter();
+            }
         }
         requestDispatcher.registerEndpoint(clientContextRoot(), clientAdapter, this);
         logger.log(Level.INFO, "enterprise.deployment.appclient.jws.started",
@@ -245,30 +254,63 @@ public class AppClientServerApplication implements
         }
     }
 
-    private AppClientHTTPAdapter initAdapter() throws IOException {
-        final Map<String,StaticContent> staticContent = new HashMap<String,StaticContent>();
-        /*
-         * The following code is a temporary test hack which provides a
-         * single static file and a single dynamic content instance
-         */
-        staticContent.put(clientContextRoot() + "/VirtualFile", 
-                new FixedContent(new File("/Users/Tim/asgroup/sampleOutput.html")));
-
-        final Map<String,AppClientHTTPAdapter.DynamicContent> dynamicContent =
-                new HashMap<String,AppClientHTTPAdapter.DynamicContent>();
-        dynamicContent.put(clientContextRoot() + "/VirtualDyn.html", 
-                new AppClientHTTPAdapter.DynamicContent(
-                    "<html><body>This is running from app ${my.app} which was loaded at ${when}!</body></html>",
-                    new Date()));
-
-        Properties tokens = new Properties();
-        tokens.setProperty("my.app", clientContextRoot());
-        tokens.setProperty("when", new Date().toString());
+    private AppClientHTTPAdapter initClientAdapter() throws IOException {
+        final Map<String,StaticContent> staticContent = initClientStaticContent();
+        final Map<String,DynamicContent> dynamicContent =
+                initClientDynamicContent();
+        final Properties tokens = initTokens();
 
         return new AppClientHTTPAdapter(staticContent,
                 dynamicContent, tokens);
     }
 
+    private Map<String,StaticContent> initClientStaticContent() {
+        final Map<String,StaticContent> result = new HashMap<String,StaticContent>();
+        /*
+         * The following code is a temporary test hack which provides a
+         * single static file and a single dynamic content instance
+         */
+        result.put(clientContextRoot() + "/VirtualFile",
+                new FixedContent(new File("/Users/Tim/asgroup/sampleOutput.html")));
+
+        return result;
+    }
+
+    private Map<String,DynamicContent> initClientDynamicContent() {
+        final Map<String,DynamicContent> result = new HashMap<String,DynamicContent>();
+        /*
+         * The following code is a temporary test hack which provides a
+         * single static file and a single dynamic content instance
+         */
+        result.put(clientContextRoot() + "/VirtualDyn.html",
+                new CachingDynamicContentImpl(
+                    "<html><body>This request came from scheme ${request.scheme}" +
+                    " and host ${request.host} and path ${request.path} with " +
+                    "query string ${request.query.string}.<p>So there!</body></html>",
+                    "html"));
+
+        return result;
+    }
+
+    private Properties initTokens() {
+        /*
+         * The following code is a temporary test hack which provides a
+         * single static file and a single dynamic content instance
+         */
+        Properties tokens = new Properties();
+        tokens.setProperty("my.app", clientContextRoot());
+        tokens.setProperty("when", new Date().toString());
+        return tokens;
+    }
+
+    private void updateEARAdapter() throws IOException, EndpointRegistrationException {
+        for (FullAndPartURIs artifact : helper.earLevelDownloads()) {
+            final String uriString = artifact.getPart().toASCIIString();
+            deployer.addEARLevelContent(deployedAppName, uriString,
+                    new FixedContent(new File(artifact.getFull())));
+        }
+    }
+    
     /**
      * Returns if this client is enabled for Java Web Start access.
      * <p>

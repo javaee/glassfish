@@ -185,7 +185,7 @@ class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected Set<FullAndPartURIs> downloads() throws IOException {
+    protected Set<FullAndPartURIs> clientLevelDownloads() throws IOException {
         /*
          * Stand-alone client deployments involve these downloads:
          * 1. the original app client JAR,
@@ -199,6 +199,11 @@ class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
                 facadeServerURI(dc()),
                 facadeUserURI(dc())));
         return downloads;
+    }
+
+    @Override
+    protected Set<FullAndPartURIs> earLevelDownloads() throws IOException {
+        return Collections.EMPTY_SET;
     }
 
     @Override

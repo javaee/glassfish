@@ -339,7 +339,9 @@ abstract class AppClientDeployerHelper {
     }
 
     
-    protected abstract Set<DownloadableArtifacts.FullAndPartURIs> downloads() throws IOException;
+    protected abstract Set<DownloadableArtifacts.FullAndPartURIs> clientLevelDownloads() throws IOException;
+
+    protected abstract Set<DownloadableArtifacts.FullAndPartURIs> earLevelDownloads() throws IOException;
 
     static void copyStream(InputStream in, OutputStream out) throws IOException {
         byte[] buf = new byte[4096];

@@ -39,6 +39,8 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.module.Module;
 import java.io.IOException;
 import java.util.jar.Manifest;
+import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.appclient.server.core.jws.NamingConventions;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -56,6 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -165,7 +168,6 @@ public class AppClientDeployer
     /** Save the helper across phases in the deployment context's appProps */
     public static final String HELPER_KEY_NAME = "org.glassfish.appclient.server.core.helper";
 
-    public static final String JWSAPPCLIENT_SYSTEM_PREFIX = "/__JWSappclient/__system";
 
     @Inject
     protected ServerContext sc;
@@ -190,6 +192,10 @@ public class AppClientDeployer
 
     /** the class loader which knows about the org.glassfish.appclient.gf-client-module */
     private ClassLoader gfClientModuleClassLoader;
+
+
+    private final ConcurrentHashMap<String,RestrictedContentAdapter> earLevelAdapters = new
+            ConcurrentHashMap<String, RestrictedContentAdapter>();
 
     /*
      * Each app client server application will listen for config change
@@ -257,6 +263,21 @@ public class AppClientDeployer
         downloadInfo.clearArtifacts(params.name);
     }
 
+    synchronized void addEARLevelContent(
+            final String appName, final String uriString, final StaticContent content) throws EndpointRegistrationException, IOException {
+        RestrictedContentAdapter adapter = earLevelAdapters.get(appName);
+        if (adapter == null) {
+            adapter = new RestrictedContentAdapter();
+            earLevelAdapters.put(appName, adapter);
+            requestDispatcher.registerEndpoint(contextRootForEARAdapter(appName), adapter, null);
+        }
+        adapter.addContentIfAbsent(uriString, content);
+    }
+
+    private String contextRootForEARAdapter(final String appName) {
+        return NamingConventions.JWSAPPCLIENT_APP_PREFIX + "/" + appName;
+    }
+
     @Override
     protected void generateArtifacts(DeploymentContext dc) throws DeploymentException {
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
@@ -266,7 +287,8 @@ public class AppClientDeployer
             AppClientDeployerHelper helper = createAndSaveHelper(
                     dc, archivist, gfClientModuleClassLoader);
             helper.prepareJARs();
-            downloadInfo.addArtifacts(params.name(), helper.downloads());
+            downloadInfo.addArtifacts(params.name(), helper.earLevelDownloads());
+            downloadInfo.addArtifacts(params.name(), helper.clientLevelDownloads());
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
@@ -296,6 +318,10 @@ public class AppClientDeployer
         return acd.getModuleDescriptor().getArchiveUri();
     }
 
+    private static String generatedEARFacadeName(final String earName) {
+        return earName + "Client.jar";
+    }
+
     private void startSystemContentAdapter() {
 
         final Map<String,StaticContent> systemContent = new HashMap<String,StaticContent>();
@@ -315,7 +341,7 @@ public class AppClientDeployer
             }
 
             RestrictedContentAdapter systemAdapter = new RestrictedContentAdapter(systemContent);
-            requestDispatcher.registerEndpoint(JWSAPPCLIENT_SYSTEM_PREFIX,
+            requestDispatcher.registerEndpoint(NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
                     systemAdapter, null);
 
             if (logger.isLoggable(Level.FINE)) {
@@ -328,7 +354,7 @@ public class AppClientDeployer
     }
 
     private String systemPath(final URI systemFileURI) {
-        return JWSAPPCLIENT_SYSTEM_PREFIX + "/" + 
+        return NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX + "/" +
                 umbrellaRootURI.relativize(systemFileURI).getPath();
     }
 

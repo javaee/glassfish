@@ -45,11 +45,14 @@ import com.sun.grizzly.util.http.MimeType;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 
 /**
@@ -62,7 +65,12 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private final static String LAST_MODIFIED_HEADER_NAME = "Last-Modified";
     private final static String DATE_HEADER_NAME = "Date";
 
-    private Logger jwsLogger = LogDomains.getLogger(getClass(),
+    private static final String ARG_QUERY_PARAM_NAME = "arg";
+    private static final String PROP_QUERY_PARAM_NAME = "prop";
+    private static final String VMARG_QUERY_PARAM_NAME = "vmarg";
+    private final String lineSep = System.getProperty("line.separator");
+
+    private final Logger logger = LogDomains.getLogger(getClass(),
             LogDomains.ACC_LOGGER);
 
     private final Map<String,DynamicContent> dynamicContent;
@@ -86,13 +94,11 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      */
     @Override
     public void service(GrizzlyRequest gReq, GrizzlyResponse gResp) {
-        if ( ! serviceContent(gReq, gResp) ) {
-            final String uriString = gReq.getRequestURI();
-            if (dynamicContent.containsKey(uriString)) {
-                processDynamicContent(tokens, uriString, gReq, gResp);
-            } else {
-                respondNotFound(gResp);
-            }
+        final String uriString = gReq.getRequestURI();
+        if (dynamicContent.containsKey(uriString)) {
+            processDynamicContent(tokens, uriString, gReq, gResp);
+        } else if ( ! serviceContent(gReq, gResp) ) {
+            respondNotFound(gResp);
         }
     }
 
@@ -100,14 +106,11 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             final String uriString,
             final GrizzlyRequest gReq, final GrizzlyResponse gResp) {
         final DynamicContent dc = dynamicContent.get(uriString);
-        final String rawContent = dc.content();
+        final Properties allTokens = prepareRequestPlaceholders(tokens, gReq);
 
-        if (rawContent == null) {
-            gResp.getResponse().setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
+        final DynamicContent.Instance instance = dc.getOrCreateInstance(allTokens);
 
-        Date instanceTimestamp = dc.timestamp();
+        final Date instanceTimestamp = instance.getTimestamp();
         gResp.setDateHeader(LAST_MODIFIED_HEADER_NAME, instanceTimestamp.getTime());
         gResp.setDateHeader(DATE_HEADER_NAME, System.currentTimeMillis());
         gResp.setContentType(mimeType(uriString));
@@ -118,15 +121,80 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
          */
         final String methodType = gReq.getMethod();
         if (methodType.equalsIgnoreCase("GET")) {
-            final String processedContent = Util.replaceTokens(rawContent, tokens);
-            writeData(uriString, processedContent.toString(),
-                    gReq, gResp);
+            writeData(uriString, instance.getText(), gReq, gResp);
         }
+        finishResponse(gResp, HttpServletResponse.SC_OK);
+    }
+
+    /**
+     * Initializes a Properties object with the token names and values for
+     * substitution in the dynamic content template.
+     *
+     * @param the incoming request
+     * @return Properties object containing the token names and values
+     * @throws ServletException in case of an error preparing the placeholders
+     */
+    private Properties prepareRequestPlaceholders(
+            final Properties adapterTokens,
+            GrizzlyRequest request) {
+        final Properties answer = new Properties(adapterTokens);
+
+        answer.setProperty("request.scheme", request.getScheme());
+        answer.setProperty("request.host", request.getServerName());
+        answer.setProperty("request.port", Integer.toString(request.getServerPort()));
+
+        /*
+         *Treat query parameters with the name "arg" as command line arguments to the
+         *app client.
+         */
+
+        final String queryString = request.getQueryString();
+        final StringBuilder queryStringPropValue = new StringBuilder();
+        if (queryString != null && queryString.length() > 0) {
+            queryStringPropValue.append("?").append(queryString);
+        }
+        answer.setProperty("request.web.app.context.root",
+                NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX);
+        answer.setProperty("request.path", getPathInfo(request));
+        answer.setProperty("request.query.string", queryStringPropValue.toString());
+
+        processQueryParameters(queryString, answer);
+
+        return answer;
+    }
+
+    private String getPathInfo(final GrizzlyRequest gReq) {
+        return gReq.getRequestURI();
+    }
+
+    private void processQueryParameters(String queryString, final Properties answer) {
+        if (queryString == null) {
+            queryString = "";
+        }
+        String [] queryParams = null;
         try {
-            gResp.finishResponse();
-        } catch (IOException e) {
+            queryParams = URLDecoder.decode(queryString, "UTF-8").split("&");
+        } catch (UnsupportedEncodingException e) {
+            // This should never happen.  We'd better know about UTF-8!
             throw new RuntimeException(e);
         }
+
+        QueryParams arguments = new ArgQueryParams();
+        QueryParams properties = new PropQueryParams();
+        QueryParams vmArguments = new VMArgQueryParams();
+        QueryParams [] paramTypes = new QueryParams[] {arguments, properties, vmArguments};
+
+        for (String param : queryParams) {
+            for (QueryParams qpType : paramTypes) {
+                if (qpType.processParameter(param)) {
+                    break;
+                }
+            }
+        }
+
+        answer.setProperty("request.arguments", arguments.toString());
+        answer.setProperty("request.properties", properties.toString());
+        answer.setProperty("request.vmargs", vmArguments.toString());
     }
 
     /**
@@ -163,7 +231,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      * @return
      */
     private String mimeType(final String uri) {
-        int dot=uri.lastIndexOf(".");
+        final int dot=uri.lastIndexOf(".");
         if( dot > 0 ) {
             String ext=uri.substring(dot+1);
             String ct= MimeType.get(ext);
@@ -176,21 +244,120 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         return "";
     }
 
-    public static class DynamicContent {
-        private final String content;
-        private final Date timestamp;
+//    public static class DynamicContent {
+//        private final String content;
+//        private final Date timestamp;
+//
+//        public DynamicContent(final String content, final Date timestamp) {
+//            this.content = content;
+//            this.timestamp = timestamp;
+//        }
+//
+//        public String content() {
+//            return content;
+//        }
+//
+//        public Date timestamp() {
+//            return timestamp;
+//        }
+//    }
+    private abstract class QueryParams {
+        private String prefix;
 
-        public DynamicContent(final String content, final Date timestamp) {
-            this.content = content;
-            this.timestamp = timestamp;
+        protected QueryParams(String prefix) {
+            this.prefix = prefix;
         }
 
-        public String content() {
-            return content;
+        private boolean handles(String prefix) {
+            return prefix.equals(this.prefix);
         }
 
-        public Date timestamp() {
-            return timestamp;
+        protected abstract void processValue(String value);
+
+        public abstract String toString();
+
+        public boolean processParameter(String param) {
+            boolean result = false;
+            final int equalsSign = param.indexOf("=");
+            String value = "";
+            String prefix;
+            if (equalsSign != -1) {
+                prefix = param.substring(0, equalsSign);
+            } else {
+                prefix = param;
+            }
+            if (handles(prefix)) {
+                result = true;
+                if ((equalsSign + 1) < param.length()) {
+                    value = param.substring(equalsSign + 1);
+                }
+                processValue(value);
+            }
+            return result;
         }
     }
+
+    private class ArgQueryParams extends QueryParams {
+        private StringBuilder arguments = new StringBuilder();
+
+        public ArgQueryParams() {
+            super(ARG_QUERY_PARAM_NAME);
+        }
+
+        public void processValue(String value) {
+            if (value.length() == 0) {
+                value = "#missing#";
+            }
+            arguments.append("<argument>").append(value).append("</argument>").append(lineSep);
+        }
+
+        public String toString() {
+            return arguments.toString();
+        }
+    }
+
+    private class PropQueryParams extends QueryParams {
+        private StringBuilder properties = new StringBuilder();
+
+        public PropQueryParams() {
+            super(PROP_QUERY_PARAM_NAME);
+        }
+
+        public void processValue(String value) {
+            if (value.length() > 0) {
+                final int equalsSign = value.indexOf('=');
+                String propValue = "";
+                String propName;
+                if (equalsSign > 0) {
+                    propName = value.substring(0, equalsSign);
+                    if ((equalsSign + 1) < value.length()) {
+                        propValue = value.substring(equalsSign + 1);
+                    }
+                    properties.append("<property name=\"" + propName + "\" value=\"" + propValue + "\"/>").append(lineSep);
+                }
+            }
+        }
+
+        public String toString() {
+            return properties.toString();
+        }
+
+    }
+
+    private class VMArgQueryParams extends QueryParams {
+        private StringBuilder vmArgs = new StringBuilder();
+
+        public VMArgQueryParams() {
+            super(VMARG_QUERY_PARAM_NAME);
+        }
+
+        public void processValue(String value) {
+            vmArgs.append(value).append(" ");
+        }
+
+        public String toString() {
+            return vmArgs.length() > 0 ? " java-vm=args=\"" + vmArgs.toString() + "\"" : "";
+        }
+    }
+
 }

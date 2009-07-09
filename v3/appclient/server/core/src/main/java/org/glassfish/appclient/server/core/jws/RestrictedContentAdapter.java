@@ -45,6 +45,8 @@ import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
@@ -66,10 +68,12 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
     private volatile State state = State.RESUMED;
 
 
-    private final Map<String,StaticContent> content;
+    private final ConcurrentHashMap<String,StaticContent> content =
+            new ConcurrentHashMap<String,StaticContent>();
 
     public RestrictedContentAdapter(final Map<String,StaticContent> content) throws IOException {
-        this.content = content;
+        this();
+        this.content.putAll(content);
         /*
          * Preload the adapter's cache with the static content.  This helps
          * performance but is essential to the operation of the adapter.
@@ -83,7 +87,9 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         for (Map.Entry<String,StaticContent> sc : content.entrySet()) {
             cache.put(sc.getKey(), sc.getValue().file());
         }
+    }
 
+    public RestrictedContentAdapter() {
         /*
          * Turn off the default static resource handling.  We do our own from
          * our service method, rather than letting the StaticResourcesAdapter
@@ -102,6 +108,19 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         }
     }
 
+    public synchronized void addContentIfAbsent(final String uriString, final StaticContent newContent) throws IOException {
+        final StaticContent existingContent = content.get(uriString);
+        if (existingContent != null) {
+            if ( ! existingContent.equals(newContent)) {
+                logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.staticContentCollision",
+                        new Object[] {uriString, newContent.toString()});
+            }
+            return;
+        }
+        this.content.put(uriString, newContent);
+        this.cache.put(uriString, newContent.file());
+    }
+    
     protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) {
 
         /*

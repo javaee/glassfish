@@ -78,7 +78,8 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
      * closure of any library JARs from the EAR's lib directory or from the
      * app client's class path
      */
-    private final Set<FullAndPartURIs> downloads = new HashSet<FullAndPartURIs>();
+    private final Set<FullAndPartURIs> clientLevelDownloads = new HashSet<FullAndPartURIs>();
+    private final Set<FullAndPartURIs> earLevelDownloads = new HashSet<FullAndPartURIs>();
 
     /** recognizes expanded directory names for submodules */
     private static final Pattern submoduleURIPattern = Pattern.compile("(.*)_([wcrj]ar)$");
@@ -112,7 +113,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * Note that the EAR deployer will add the EAR-level facade as a download
          * for each of its submodule app clients.
          */
-        downloads.add(new DownloadableArtifacts.FullAndPartURIs(
+        clientLevelDownloads.add(new DownloadableArtifacts.FullAndPartURIs(
                 facadeServerURI(dc()),
                 facadeUserURI(dc())));
 
@@ -121,6 +122,10 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * reside in the user's download directory, that have already been
          * processed.  This allows us to avoid processing the same JAR or dir more
          * than once if more than one JAR depends on it.
+         *
+         * Note that all dependencies expressed in the client's manifest must
+         * resolve to JARs within the EAR, not within the client. So those
+         * dependent JARs will be "EAR-level" not client-level.
          */
         Set<URI> dependencyURIsProcessed = new HashSet<URI>();
 
@@ -128,7 +133,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         processDependencies(
                 earURI,
                 URI.create(appClientURIWithinEAR),
-                downloads,
+                earLevelDownloads,
                 dependencyURIsProcessed,
                 appClientURI);
 
@@ -157,7 +162,7 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                      * and any JARs or directories it depends on.
                      */
                     URI jarURI = URI.create("file:" + libJar.toURI().getRawSchemeSpecificPart());
-                    processDependencies(earURI, jarURI, downloads, dependencyURIsProcessed,
+                    processDependencies(earURI, jarURI, earLevelDownloads, dependencyURIsProcessed,
                             libJarURIForFacade);
                 }
             }
@@ -421,8 +426,13 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    protected Set<FullAndPartURIs> downloads() {
-        return downloads;
+    protected Set<FullAndPartURIs> earLevelDownloads() {
+        return earLevelDownloads;
+    }
+
+    @Override
+    protected Set<FullAndPartURIs> clientLevelDownloads() throws IOException {
+        return clientLevelDownloads;
     }
 
     @Override
