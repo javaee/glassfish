@@ -49,6 +49,7 @@
     <packaging>pom</packaging>
     <name>GlassFish Flashlight Module</name>  
     <modules>
+        <module>btrace</module>
         <module>agent</module>
         <module>extra-jdk-packages</module>
         <module>framework</module>

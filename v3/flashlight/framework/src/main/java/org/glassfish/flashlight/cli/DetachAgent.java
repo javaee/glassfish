@@ -49,12 +49,15 @@ import com.sun.tools.attach.VirtualMachine;
 /**
  * @author Sreenivas Munnangi
  */
-@Service(name="detach-agent")
-@I18n("detach.agent")
+@Service(name="disable-monitoring")
+@I18n("disable.monitoring")
 public class DetachAgent implements AdminCommand {
 
     @Param(primary=true)
     private String pid;
+
+    @Param(optional=true)
+    private String module;
 
     final private LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(DetachAgent.class);

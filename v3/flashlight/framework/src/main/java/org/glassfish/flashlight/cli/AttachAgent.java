@@ -48,16 +48,16 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.tools.attach.VirtualMachine;
-
 import org.glassfish.server.ServerEnvironmentImpl;
 import java.io.File;
+import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 
 /**
  * @author Sreenivas Munnangi
  */
-@Service(name="attach-agent")
+@Service(name="enable-monitoring")
 @Scoped(PerLookup.class)
-@I18n("attach.agent")
+@I18n("enable.monitoring")
 public class AttachAgent implements AdminCommand {
 
     @Inject
@@ -69,6 +69,12 @@ public class AttachAgent implements AdminCommand {
     @Param(optional=true)
     private String options;
 
+    @Param(optional=true)
+    private String module;
+
+    @Param(optional=true)
+    private String level;
+
     final private LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(AttachAgent.class);
 
@@ -77,7 +83,9 @@ public class AttachAgent implements AdminCommand {
         try {
             VirtualMachine vm = VirtualMachine.attach(pid);
             // attach agent
-            File dir = env.getLibPath();
+            //File dir = env.getLibPath();
+            String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
+            File dir = new File(ir, "lib/monitor");
             if (dir.isDirectory()) {
                 File agentJar = new File(dir, "btrace-agent.jar");
                 if (agentJar.isFile()) {
