@@ -184,7 +184,7 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         }
 
         public void setName(String value) throws PropertyVetoException {
-            this.name = name;
+            this.name = value;
         }
 
         public String getValue() {
