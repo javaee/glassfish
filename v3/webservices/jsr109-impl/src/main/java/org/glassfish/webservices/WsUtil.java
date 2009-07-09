@@ -35,6 +35,9 @@
  */
 package org.glassfish.webservices;
 
+import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
@@ -42,10 +45,9 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.VirtualServerInfo;
-import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.container.common.impl.util.InjectionManagerImpl;
+import com.sun.enterprise.config.serverbeans.Config;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -65,6 +67,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jvnet.hk2.component.Habitat;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
@@ -108,6 +111,19 @@ public class WsUtil {
         "schemaImportLocationParam";    
     public static final String SCHEMA_INCLUDE_LOCATION_PARAM_NAME = 
         "schemaIncludeLocationParam";    
+
+    private Config config = null;
+    private Habitat habitat = null;
+
+    private List<NetworkListener> networkListeners = null;
+
+    public WsUtil() {
+    }
+
+    public WsUtil(Config config, Habitat habitat) {
+        this.config = config;
+        this.habitat = habitat;
+    }
 
     // @@@ These are jaxrpc-implementation specific MessageContextProperties 
     // that should be added to jaxrpc spi
@@ -1433,9 +1449,52 @@ public class WsUtil {
     
     private WebServerInfo getWebServerInfoForDAS() {
         WebServerInfo wsi = new WebServerInfo();
-        //TODO BM fix me the port numbers and host should be actual info from WebserverInfo
-        wsi.setHttpVS(new VirtualServerInfo("http", "localhost", 8080));
-        wsi.setHttpsVS(new VirtualServerInfo("https", "localhost", 8081));
+
+        if(this.networkListeners == null) {
+            List<Integer> adminPorts = new ArrayList<Integer>();
+
+            for (org.glassfish.api.container.Adapter subAdapter :
+                    habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
+                if (subAdapter instanceof AdminAdapter) {
+                    AdminAdapter aa = (AdminAdapter) subAdapter;
+                    adminPorts.add(aa.getListenPort());
+                } else if (subAdapter instanceof AdminConsoleAdapter) {
+                    AdminConsoleAdapter aca = (AdminConsoleAdapter) subAdapter;
+                    adminPorts.add(aca.getListenPort());
+                }
+            }
+
+            for (NetworkListener nl : config.getNetworkConfig().getNetworkListeners().getNetworkListener()) {
+
+                if(!adminPorts.contains(Integer.valueOf(nl.getPort()))) { // get rid of admin ports
+                    if(networkListeners == null)
+                        networkListeners = new ArrayList<NetworkListener>();
+
+                    networkListeners.add(nl);
+                }
+            }
+        }
+
+        for(NetworkListener listener : networkListeners) {
+            String host = listener.getAddress();
+            if(listener.getAddress().equals("0.0.0.0"))
+                host = "localhost"; // ugly!
+            else {
+            // TODO - resolve to hostname; it should be optional and turned off
+            // by default
+            // try {
+            //     host = InetAddress.getByName(listener.getAddress()).getHostName();
+            // } catch (UnknownHostException ex) {
+            //     // silently ignore
+            // }
+            }
+
+            if(listener.findProtocol().getSecurityEnabled().equals("false"))
+                wsi.setHttpVS(new VirtualServerInfo("http", host, Integer.parseInt(listener.getPort())));
+            else if(listener.findProtocol().getSecurityEnabled().equals("true"))
+                wsi.setHttpsVS(new VirtualServerInfo("https", host, Integer.parseInt(listener.getPort())));
+        }
+
         return wsi;
     }
 

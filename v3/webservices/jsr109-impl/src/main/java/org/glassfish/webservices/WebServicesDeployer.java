@@ -24,31 +24,24 @@
 package org.glassfish.webservices;
 
 
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
-import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import com.sun.tools.ws.spi.WSToolsObjectFactory;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
-import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.container.RequestDispatcher;
-import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.DummyApplication;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -56,7 +49,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,8 +57,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,7 +80,10 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
     @Inject
     RequestDispatcher dispatcher;
 
+    @Inject(name="server-config")
+    Config config;
 
+    @Inject Habitat habitat;
 
    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
@@ -610,7 +603,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
         // Generate final wsdls for all web services and store them in
         // the application repository directory.
         for(Iterator<WebService> iter = webServices.iterator(); iter.hasNext(); ) {
-            WsUtil wsUtil = new WsUtil();
+            WsUtil wsUtil = new WsUtil(config, habitat);
             WebService next = iter.next();
 
             // Endpoint with HTTP bindings need not have WSDLs; In which case
@@ -701,7 +694,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
             // The protocol and port will be based on whether the endpoint
             // has a transport guarantee of INTEGRAL or CONFIDENTIAL.
             // If yes, https will be used.  Otherwise, http will be used.
-            WebServerInfo wsi = new WsUtil().getWebServerInfo();
+            WebServerInfo wsi = new WsUtil(config, habitat).getWebServerInfo();
             URL rootURL = wsi.getWebServerRootURL(nextEndpoint.isSecure());
 
             URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL);
@@ -709,10 +702,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
             logger.info(format(rb.getString("enterprise.deployment.endpoint.registration"),
 
-                          nextEndpoint.getEndpointName(), actualAddress.toString() ));
-
-           
-            
+            nextEndpoint.getEndpointName(), actualAddress.toString() ));
 
         }
 
