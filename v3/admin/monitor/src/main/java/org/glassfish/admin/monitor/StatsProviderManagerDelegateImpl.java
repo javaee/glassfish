@@ -208,45 +208,67 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         boolean enabled = false;
         if (this.config != null) {
             if (configElement.equals("connector-service")) {
-                if (!this.config.getConnectorService().equals("OFF")) {
+                if (this.config.getConnectorService().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("ejb-container")) {
-                if (!this.config.getEjbContainer().equals("OFF")) {
+                if (this.config.getEjbContainer().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("http-service")) {
-                if (!this.config.getHttpService().equals("OFF")) {
+                if (this.config.getHttpService().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("jdbc-connection-pool")) {
-                if (!this.config.getJdbcConnectionPool().equals("OFF")) {
+                if (this.config.getJdbcConnectionPool().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("jms-service")) {
-                if (!this.config.getJmsService().equals("OFF")) {
+                if (this.config.getJmsService().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("jvm")) {
-                if (!this.config.getJvm().equals("OFF")) {
+                if (this.config.getJvm().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("orb")) {
-                if (!this.config.getOrb().equals("OFF")) {
+                if (this.config.getOrb().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("thread-pool")) {
-                if (!this.config.getThreadPool().equals("OFF")) {
+                if (this.config.getThreadPool().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("transaction-service")) {
-                if (!this.config.getTransactionService().equals("OFF")) {
+                if (this.config.getTransactionService().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
             } else if (configElement.equals("web-container")) {
-                if (!this.config.getWebContainer().equals("OFF")) {
+                if (this.config.getWebContainer().equals("OFF")) {
+                    enabled = false;
+                } else {
                     enabled = true;
                 }
+            } else { // external modules turn always on for now
+                enabled = true;
             }
         }
         return enabled;
