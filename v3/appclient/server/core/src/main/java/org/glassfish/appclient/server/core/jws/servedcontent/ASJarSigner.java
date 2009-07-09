@@ -59,7 +59,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-//import sun.security.tools.JarSigner;
+import sun.security.tools.JarSigner;
 
 /**
  * Signs a specified JAR file.
@@ -180,7 +180,7 @@ public class ASJarSigner implements PostConstruct {
                 /*
                  *Run the jar signer.
                  */
-//                JarSigner.main(args);
+                JarSigner.main(args);
             } catch (Throwable t) {
                 /*
                  *In case of any problems, make sure there is no ill-formed signed
