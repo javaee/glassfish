@@ -47,12 +47,40 @@ public class AdminTask extends Task {
     // default value for installdir?
     String installDir, command, commandStr;
 
+    public AdminTask() {
+        setCommand("");
+    }
+
     public void setInstallDir(String installDir) {
         this.installDir = installDir;
     }
 
     public void setCommand(String command) {
         this.command = command;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void addCommandParameter(String name, String value) {
+        command += " --" + name + "=" + value;
+    }
+
+    public void addCommandOperand(String value) {
+        command += " " + value;
+    }
+
+    public void setUser(String user) {
+        addCommandParameter("user", user);
+    }
+
+	public void setPasswordFile(String passwordfile) {
+        addCommandParameter("passwordfile", passwordfile);
+    }
+
+	public void setHost(String host) {
+        addCommandParameter("host", host);
     }
 
     public String getInstallDir() {
@@ -66,7 +94,7 @@ public class AdminTask extends Task {
     }
 
 	public void execute() throws BuildException {
-        log ("Running command ");
+        log ("Running command " + command);
         String installDirectory = getInstallDir();
         if (installDirectory == null) {
             log("Install Directory of application server not known. Sepcify either the installDir attribute or the asinstall.dir property",
