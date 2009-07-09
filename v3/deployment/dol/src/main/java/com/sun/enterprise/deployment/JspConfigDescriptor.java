@@ -37,91 +37,81 @@
 package com.sun.enterprise.deployment;
 
 import java.util.*;
+import javax.servlet.descriptor.JspPropertyGroupDescriptor;
+import javax.servlet.descriptor.TaglibDescriptor;
 
 /**
  * This is a descriptor for the taglib config used in a web application.
  */
-public class JspConfigDescriptor extends Descriptor {
+public class JspConfigDescriptor extends Descriptor
+        implements javax.servlet.descriptor.JspConfigDescriptor {
 
-    private Set list = null;
-    private Vector<JspGroupDescriptor> jspGroups = null;
+    private Set<TaglibDescriptor> taglibs = null;
+    private Vector<JspPropertyGroupDescriptor> jspGroups = null;
 
     public void add(JspConfigDescriptor jspConfigDesc) {
-        if (jspConfigDesc.list != null) {
-            getTagLibSet().addAll(jspConfigDesc.list);
+        if (jspConfigDesc.taglibs != null) {
+            getTaglibs().addAll(jspConfigDesc.taglibs);
         }
 
         if (jspConfigDesc.jspGroups != null) {
-            getJspGroupSet().addAll(jspConfigDesc.jspGroups);
+            getJspPropertyGroups().addAll(jspConfigDesc.jspGroups);
         }
     }
 
     /**
      * return the set of tag lib elements
      */
-    public Set getTagLibSet() {
-        if (list == null) {
-            list = new HashSet();
+    public Set<TaglibDescriptor> getTaglibs() {
+        if (taglibs == null) {
+            taglibs = new HashSet<TaglibDescriptor>();
         }
-        return list;
-    }
-
-    /**
-     * return the enumeration of tag lib elements
-     */
-    public Enumeration getTagLibs() {
-        return (new Vector(this.getTagLibSet())).elements();
+        return taglibs;
     }
 
     /**
      * add a tag lib element to the set.
      */
     public void addTagLib(TagLibConfigurationDescriptor desc) {
-        getTagLibSet().add(desc);
+        getTaglibs().add(desc);
     }
 
     /**
      * remove a tag lib element from the set.
      */
     public void removeTagLib(TagLibConfigurationDescriptor desc) {
-        getTagLibSet().remove(desc);
+        getTaglibs().remove(desc);
     }
 
     /**
-     * return the set of jsp-group elements
+     * return Iterable over jsp-group elements
      */
-    public Collection<JspGroupDescriptor> getJspGroupSet() {
+    public Collection<JspPropertyGroupDescriptor> getJspPropertyGroups() {
         if (jspGroups == null) {
-            jspGroups = new Vector<JspGroupDescriptor>();
+            jspGroups = new Vector<JspPropertyGroupDescriptor>();
         }
         return jspGroups;
-    }
-
-    /**
-     * return the enumeration of jsp-group elements
-     */
-    public Enumeration<JspGroupDescriptor> getJspGroups() {
-        return (new Vector(getJspGroupSet())).elements();
     }
 
     /**
      * add a jsp group element to the set.
      */
     public void addJspGroup(JspGroupDescriptor desc) {
-        getJspGroupSet().add(desc);
+        getJspPropertyGroups().add(desc);
     }
 
     /**
      * remove a jsp group element from the set.
      */
     public void removeJspGroup(JspGroupDescriptor desc) {
-        getJspGroupSet().remove(desc);
+        getJspPropertyGroups().remove(desc);
     }
 
     /**
      * @return a string describing the values I hold
      */
     public void print(StringBuffer toStringBuffer) {
-        toStringBuffer.append("\nTagLibs : ").append(list).append(" jsp groups:").append(jspGroups);
+        toStringBuffer.append("\nTagLibs : ").append(taglibs).append(
+            " jsp groups:").append(jspGroups);
     }
 }

@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.SessionCookieConfig;
+import javax.servlet.descriptor.*;
 
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
@@ -293,23 +294,24 @@ public class TomcatDeploymentConfig {
                                jspProperties);
         webModule.setAttribute(Globals.WEB_XML_VERSION_CONTEXT_ATTRIBUTE,
                                wmd.getSpecVersion());
-                                      
+     
+        webModule.setJspConfigDescriptor(wmd.getJspConfigDescriptor());
+
+        // The following code can be removed once Jasper has been changed
+        // to obtain jsp-config related info by calling the new
+        // ServletContext#getJspConfigDescriptor
         JspConfigDescriptor jspConfig = wmd.getJspConfigDescriptor();
         if (jspConfig == null) {
             return;
         }
 
-        Enumeration<TagLibConfigurationDescriptor> taglibs
-            = jspConfig.getTagLibs();
-        if (taglibs != null) {
-            while (taglibs.hasMoreElements()) {
-                TagLibConfigurationDescriptor taglib = taglibs.nextElement();
-                webModule.addTaglib(taglib.getTagLibURI(),
-                                    taglib.getTagLibLocation()); 
-            }
+        for (TaglibDescriptor taglib : jspConfig.getTaglibs()) {
+            webModule.addTaglib(taglib.getTaglibURI(),
+                                taglib.getTaglibLocation()); 
         }
        
-        for (JspGroupDescriptor jspGroup : jspConfig.getJspGroupSet()) {
+        for (JspPropertyGroupDescriptor jspGroup :
+                jspConfig.getJspPropertyGroups()) {
 
             Vector urlPatterns = null;
             Vector includePreludes = null;
@@ -319,8 +321,9 @@ public class TomcatDeploymentConfig {
             String scriptingInvalid = jspGroup.isScriptingInvalid()?
                                           "true": "false";
             String elIgnored = jspGroup.isElIgnored()? "true": "false";
-            String isXml = (jspGroup.getIsXml()==null)? null:
-                               jspGroup.getIsXml().toString();
+            String isXml =
+                (((JspGroupDescriptor)jspGroup).getIsXml()==null)? null:
+                ((JspGroupDescriptor)jspGroup).getIsXml().toString();
             String trimSpaces = jspGroup.isTrimDirectiveWhitespaces()?
                                     "true": "false";
             String poundAllowed = jspGroup.isDeferredSyntaxAllowedAsLiteral()?
@@ -328,44 +331,34 @@ public class TomcatDeploymentConfig {
             String defaultContentType = jspGroup.getDefaultContentType();
             String buffer = jspGroup.getBuffer();
             String errorOnUndeclaredNamespace =
-                       jspGroup.isErrorOnUndeclaredNamespace()? "true": "false";
+                jspGroup.isErrorOnUndeclaredNamespace()? "true": "false";
            
             // url-pattern
-            Enumeration<String> e = jspGroup.getUrlPatterns();
-            if (e != null) {
-                while (e.hasMoreElements()) {
-                    if (urlPatterns == null) {
-                        urlPatterns = new Vector();
-                    }
-                    String urlPattern = e.nextElement();
-                    urlPatterns.addElement(urlPattern);
-                    webModule.addJspMapping(urlPattern);
+            for (String urlPattern : jspGroup.getUrlPatterns()) {
+                if (urlPatterns == null) {
+                    urlPatterns = new Vector();
                 }
+                urlPatterns.addElement(urlPattern);
+                webModule.addJspMapping(urlPattern);
             }
             if (urlPatterns == null || urlPatterns.size() == 0) {
                 continue;
             }
 
             // include-prelude
-            e = jspGroup.getIncludePreludes();
-            if (e != null) {
-                while (e.hasMoreElements()) {
-                    if (includePreludes == null) {
-                        includePreludes = new Vector();
-                    }
-                    includePreludes.addElement(e.nextElement());
+            for (String prelude : jspGroup.getIncludePreludes()) {
+                if (includePreludes == null) {
+                    includePreludes = new Vector();
                 }
+                includePreludes.addElement(prelude);
             }
 
             // include-coda
-            e = jspGroup.getIncludeCodas();
-            if (e != null) {
-                while (e.hasMoreElements()) {
-                    if (includeCodas == null) {
-                        includeCodas = new Vector();
-                    }
-                    includeCodas.addElement(e.nextElement());
+            for (String coda: jspGroup.getIncludeCodas()) {
+                if (includeCodas == null) {
+                    includeCodas = new Vector();
                 }
+                includeCodas.addElement(coda);
             }
 
             JspConfig.makeJspPropertyGroups(jspProperties,

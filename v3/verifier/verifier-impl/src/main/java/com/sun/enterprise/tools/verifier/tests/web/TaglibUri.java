@@ -36,6 +36,7 @@
 package com.sun.enterprise.tools.verifier.tests.web;
 
 import java.util.*;
+import javax.servlet.descriptor.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
@@ -60,19 +61,15 @@ public class TaglibUri extends Taglib implements WebCheck {
 	Result result = getInitializedResult();
 	ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
         boolean failed = false;
-        TagLibConfigurationDescriptor taglibDescriptor;
-        String taglibUri;
-        Enumeration taglibConfig = (new Vector()).elements();
+        Iterable<TaglibDescriptor> taglibs = null;
         if (descriptor.getJspConfigDescriptor() != null) {
-            taglibConfig = descriptor.getJspConfigDescriptor().getTagLibs();
+            taglibs = descriptor.getJspConfigDescriptor().getTaglibs();
         }
 
-
-        if (taglibConfig.hasMoreElements()){
-            while (taglibConfig.hasMoreElements()) {
+        if (taglibs != null){
+            for (TaglibDescriptor taglibDescriptor : taglibs) {
                 // test all the Tag lib descriptors.
-                taglibDescriptor = (TagLibConfigurationDescriptor) taglibConfig.nextElement();
-                taglibUri = taglibDescriptor.getTagLibURI();
+                String taglibUri = taglibDescriptor.getTaglibURI();
 		if (taglibUri.equals("")) {
 		    failed = true;
 		    result.addErrorDetails(smh.getLocalString

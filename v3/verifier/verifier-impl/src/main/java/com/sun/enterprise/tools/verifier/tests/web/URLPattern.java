@@ -38,6 +38,8 @@ package com.sun.enterprise.tools.verifier.tests.web;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import javax.servlet.descriptor.*;
+
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.JspConfigDescriptor;
 import com.sun.enterprise.deployment.JspGroupDescriptor;
@@ -127,11 +129,12 @@ public abstract class URLPattern extends WebTest implements WebCheck {
     //This method checks for url-patterns appearing in jsp-config element in an web-app.
     private void checkJspGroupProperties(WebBundleDescriptor descriptor, Result result, ComponentNameConstructor compName){
         JspConfigDescriptor jspC=descriptor.getJspConfigDescriptor();
-        if(jspC==null) return;
-        for(Iterator iter=jspC.getJspGroupSet().iterator();iter.hasNext();){
-            for(Iterator iter2=((JspGroupDescriptor)iter.next()).getUrlPatternsSet().iterator();
-                iter2.hasNext();
-                checkUrlPatternAndSetResult((String)iter2.next(), descriptor, result, compName));
+        if (jspC==null) return;
+        for (JspPropertyGroupDescriptor desc : jspC.getJspPropertyGroups()) {
+            for (String urlPattern : desc.getUrlPatterns()) {
+                checkUrlPatternAndSetResult(urlPattern, descriptor, result,
+                    compName);
+            }
         }
     }
 }

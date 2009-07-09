@@ -40,6 +40,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import javax.servlet.descriptor.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,19 +113,17 @@ public class TagLibFactory {
     public TagLibDescriptor[] getTagLibDescriptors(
             WebBundleDescriptor descriptor) {
         ArrayList<TagLibDescriptor> tmp = new ArrayList<TagLibDescriptor>();
-        Enumeration taglibConfig = null;
+        Iterable<TaglibDescriptor> taglibConfig = null;
 
         if (descriptor.getJspConfigDescriptor() != null) {
-            taglibConfig = descriptor.getJspConfigDescriptor().getTagLibs();
+            taglibConfig = descriptor.getJspConfigDescriptor().getTaglibs();
         } else {
             return null;
         }
         init();
-        while (taglibConfig.hasMoreElements()) {
+        for (TaglibDescriptor taglibDescriptor : taglibConfig) {
             // test all the Tag lib descriptors.
-            TagLibConfigurationDescriptor taglibDescriptor = (TagLibConfigurationDescriptor) taglibConfig.nextElement();
-
-            String taglibLocation = taglibDescriptor.getTagLibLocation();
+            String taglibLocation = taglibDescriptor.getTaglibLocation();
             Document d = null;
             try {
                 d = createDocument(taglibLocation, descriptor);

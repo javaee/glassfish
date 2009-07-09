@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment;
 
 import java.io.Serializable;
+import javax.servlet.descriptor.TaglibDescriptor;
 
 /** 
  * This descriptor represent the information about a tag library used in a 
@@ -44,7 +45,9 @@ import java.io.Serializable;
  * @author Danny Coward
  */
 
-public class TagLibConfigurationDescriptor implements Serializable {
+public class TagLibConfigurationDescriptor
+        implements Serializable, TaglibDescriptor {
+
     private String uri; 
     private String location;
     
@@ -82,7 +85,11 @@ public class TagLibConfigurationDescriptor implements Serializable {
 	}
 	return this.uri;
     }
-    
+
+    public String getTaglibURI() {
+        return getTagLibURI();
+    }
+
     /**
      * Describe the location of the tag library file.
      * @param the location of the tag library.
@@ -100,6 +107,10 @@ public class TagLibConfigurationDescriptor implements Serializable {
 	    this.location = "";
 	}
 	return this.location;
+    }
+
+    public String getTaglibLocation() {
+        return getTagLibLocation();
     }
     
     /** 

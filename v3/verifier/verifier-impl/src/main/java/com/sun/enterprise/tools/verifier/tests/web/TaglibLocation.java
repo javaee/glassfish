@@ -36,6 +36,7 @@
 package com.sun.enterprise.tools.verifier.tests.web;
 
 import java.util.*;
+import javax.servlet.descriptor.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
@@ -60,18 +61,16 @@ public class TaglibLocation extends Taglib implements WebCheck {
 	Result result = getInitializedResult();
 	ComponentNameConstructor compName = getVerifierContext().getComponentNameConstructor();
         boolean passed = true;
-        TagLibConfigurationDescriptor taglibDescriptor;
         String taglibLocation;  
-        Enumeration taglibConfig = (new Vector()).elements();
+        Iterable<TaglibDescriptor> taglibConfig = null;
         if (descriptor.getJspConfigDescriptor() != null) {
-            taglibConfig = descriptor.getJspConfigDescriptor().getTagLibs();
+            taglibConfig = descriptor.getJspConfigDescriptor().getTaglibs();
         }
 
-        if (taglibConfig.hasMoreElements()){
-            while (taglibConfig.hasMoreElements()) {           
+        if (taglibConfig != null) {
+            for (TaglibDescriptor taglibDescriptor : taglibConfig) {
                 // test all the Tag lib descriptors.
-                taglibDescriptor =  (TagLibConfigurationDescriptor) taglibConfig.nextElement();
-                taglibLocation = taglibDescriptor.getTagLibLocation();
+                taglibLocation = taglibDescriptor.getTaglibLocation();
                 if(passed == false)
                     check(descriptor, taglibLocation, result);
                 else

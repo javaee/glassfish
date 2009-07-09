@@ -129,8 +129,8 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
         localizedNode.writeLocalizedMap(myNode, TagNames.NAME, descriptor.getLocalizedDisplayNames());
         
         // url-pattern*
-        for (Enumeration urlPatterns = descriptor.getUrlPatterns(); urlPatterns.hasMoreElements();) {
-            appendTextChild(myNode, WebTagNames.URL_PATTERN, (String) urlPatterns.nextElement());
+        for (String urlPattern : descriptor.getUrlPatterns()) {
+            appendTextChild(myNode, WebTagNames.URL_PATTERN, urlPattern);
         }
         appendTextChild(myNode, WebTagNames.EL_IGNORED,
                Boolean.toString(descriptor.isElIgnored()));
@@ -143,12 +143,12 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
         appendTextChild(myNode, WebTagNames.IS_XML, isXmlString);
 
         // include-prelude*
-        for (Enumeration includePreludes = descriptor.getIncludePreludes(); includePreludes.hasMoreElements();) {
-            appendTextChild(myNode, WebTagNames.INCLUDE_PRELUDE, (String) includePreludes.nextElement());
+        for (String includePrelude : descriptor.getIncludePreludes()) {
+            appendTextChild(myNode, WebTagNames.INCLUDE_PRELUDE, includePrelude);
         }
         // include-coda*
-        for (Enumeration includeCodas = descriptor.getIncludeCodas(); includeCodas.hasMoreElements();) {
-            appendTextChild(myNode, WebTagNames.INCLUDE_CODA, (String) includeCodas.nextElement());
+        for (String includeCoda : descriptor.getIncludeCodas()) {
+            appendTextChild(myNode, WebTagNames.INCLUDE_CODA, includeCoda);
         }
         appendTextChild(myNode, WebTagNames.DEFERRED_SYNTAX_ALLOWED_AS_LITERAL,
                 Boolean.toString(descriptor.isDeferredSyntaxAllowedAsLiteral()));

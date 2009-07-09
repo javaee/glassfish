@@ -45,6 +45,7 @@ import com.sun.enterprise.deployment.xml.WebTagNames;
 import org.w3c.dom.Node;
 
 import java.util.Enumeration;
+import javax.servlet.descriptor.*;
 
 /**
  * This node represents the <jsp-config> element in a web application.
@@ -67,14 +68,14 @@ public class JspConfigNode extends DeploymentDescriptorNode {
     public Node writeDescriptor(Node parent, String nodeName, JspConfigDescriptor descriptor) {    
 	Node myNode = appendChild(parent, nodeName);
 	TagLibNode lNode = new TagLibNode();
-	for(Enumeration en = descriptor.getTagLibs(); en.hasMoreElements();) {
-	    lNode.writeDescriptor(myNode, WebTagNames.TAGLIB, 
-		(TagLibConfigurationDescriptor) en.nextElement());
+	for (TaglibDescriptor desc : descriptor.getTaglibs()) {
+            lNode.writeDescriptor(myNode, WebTagNames.TAGLIB, 
+                (TagLibConfigurationDescriptor) desc);
 	}
 	JspGroupNode jspGroup = new JspGroupNode();
-	for(Enumeration en = descriptor.getJspGroups(); en.hasMoreElements();) {
-	    jspGroup.writeDescriptor(myNode, WebTagNames.JSP_GROUP, 
-		(JspGroupDescriptor) en.nextElement());
+	for(JspPropertyGroupDescriptor desc : descriptor.getJspPropertyGroups()) {
+            jspGroup.writeDescriptor(myNode, WebTagNames.JSP_GROUP, 
+                (JspGroupDescriptor) desc);
 	}
 
         return myNode;

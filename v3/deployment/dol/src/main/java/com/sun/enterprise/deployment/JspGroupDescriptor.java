@@ -39,10 +39,12 @@ package com.sun.enterprise.deployment;
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.Vector;
+import javax.servlet.descriptor.JspPropertyGroupDescriptor;
 
 /**
  */
-public class JspGroupDescriptor extends Descriptor {
+public class JspGroupDescriptor extends Descriptor
+        implements JspPropertyGroupDescriptor {
     
     private boolean elIgnored = false;
     private boolean scriptingInvalid = false;
@@ -60,26 +62,18 @@ public class JspGroupDescriptor extends Descriptor {
     /**
      * Return the set of URL pattern aliases for this group.
      */
-    public Set getUrlPatternsSet() {
+    public Set<String> getUrlPatterns() {
         if (this.urlPatterns == null) {
-            this.urlPatterns = new OrderedSet();
+            this.urlPatterns = new OrderedSet<String>();
         }
         return this.urlPatterns;
     }
 
     /**
-     * Returns an enumeration of (String) URL pattern aliases for this 
-     * group.
-     */
-    public Enumeration getUrlPatterns() {
-        return (new Vector(this.getUrlPatternsSet())).elements();
-    }
-   
-    /**
      * Adds an alias to this jsp group.
      */
     public void addUrlPattern(String urlPattern) {
-        this.getUrlPatternsSet().add(urlPattern);
+        this.getUrlPatterns().add(urlPattern);
 
     }
    
@@ -87,33 +81,25 @@ public class JspGroupDescriptor extends Descriptor {
      * Removes a URL pattern from this jsp group.
      */
     public void removeUrlPattern(String urlPattern) {
-        this.getUrlPatternsSet().remove(urlPattern);
+        this.getUrlPatterns().remove(urlPattern);
 
     }
 
     /**
-     * Return the set of include prelude elements for this group.
+     * Return an Iterable over the include prelude elements for this group.
      */
-    public Set getIncludePreludeSet() {
+    public Set<String> getIncludePreludes() {
         if (this.includePreludes == null) {
-            this.includePreludes = new OrderedSet();
+            this.includePreludes = new OrderedSet<String>();
         }
         return this.includePreludes;
     }
 
     /**
-     * Returns an enumeration of include prelude patterns for this 
-     * group.
-     */
-    public Enumeration getIncludePreludes() {
-        return (new Vector(this.getIncludePreludeSet())).elements();
-    }
-   
-    /**
      * Adds an element
      */
     public void addIncludePrelude(String prelude) {
-        this.getIncludePreludeSet().add(prelude);
+        this.getIncludePreludes().add(prelude);
 
     }
    
@@ -121,33 +107,25 @@ public class JspGroupDescriptor extends Descriptor {
      * Removes an element 
      */
     public void removeIncludePrelude(String prelude) {
-        this.getIncludePreludeSet().remove(prelude);
+        this.getIncludePreludes().remove(prelude);
 
     }
 
     /**
-     * Return the set of include coda elements for this group.
+     * Return an Iterable over include coda elements for this group.
      */
-    public Set getIncludeCodaSet() {
+    public Set<String> getIncludeCodas() {
         if (this.includeCodas == null) {
-            this.includeCodas = new OrderedSet();
+            this.includeCodas = new OrderedSet<String>();
         }
         return this.includeCodas;
     }
 
     /**
-     * Returns an enumeration of include coda patterns for this 
-     * group.
-     */
-    public Enumeration getIncludeCodas() {
-        return (new Vector(this.getIncludeCodaSet())).elements();
-    }
-   
-    /**
      * Adds an element
      */
     public void addIncludeCoda(String coda) {
-        this.getIncludeCodaSet().add(coda);
+        this.getIncludeCodas().add(coda);
 
     }
    
@@ -155,7 +133,7 @@ public class JspGroupDescriptor extends Descriptor {
      * Removes an element 
      */
     public void removeIncludeCoda(String coda) {
-        this.getIncludeCodaSet().remove(coda);
+        this.getIncludeCodas().remove(coda);
 
     }
 
@@ -194,6 +172,10 @@ public class JspGroupDescriptor extends Descriptor {
     }
     
     public Boolean getIsXml() {
+        return isXml;
+    }
+
+    public boolean isXml() {
         return isXml;
     }
     
