@@ -53,7 +53,7 @@
                         <sun:property id="resAdapterProp"  rendered="#{edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}"  >
                             <sun:dropDown id="db"  rendered="#{edit}" selected="#{valueMap.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" >
                                 <!beforeCreate
-                                    getApplicationByType(type="connector" result="#{pageSession.connectorList}");
+                                    getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.connectorList}")
                                 />
                             </sun:dropDown>
                         </sun:property>

@@ -68,8 +68,13 @@
 #include "/shared/alertMsg.inc"
     
     <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18njdbc.connectorConnectionPool.propertyPageTitle}" helpText="$resource{i18njdbc.connectorConnectionPool.propertyPageTitleHelp}" >
+    <sun:title id="propertyContentPage" title="$resource{i18njdbc.connectorConnectionPool.propertyPageTitle}" helpText="$resource{i18njdbc.connectorConnectionPool.propertyPageTitleHelp}" >         
 #include "/shared/editPageButtons.inc"
+        <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" > 
+                        <!command
+                            flushConnectionPool(jndiName="#{pageSession.Name}");
+                        />
+        </sun:button>     
     </sun:title>
     "<br><br>
     
