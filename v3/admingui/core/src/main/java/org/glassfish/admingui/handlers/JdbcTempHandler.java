@@ -62,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 
 import com.sun.webui.jsf.component.Field;
 
@@ -73,30 +74,53 @@ public class JdbcTempHandler {
     }
     
             
-//        /**
-//         *	<p> This handler pings the  Jdbc Connection Pool
-//         */
-//        @Handler(id="pingJdbcConnectionPool",
-//            input={
-//                @HandlerInput(name="jndiName", type=String.class, required=true)})
-//        public static void pingJdbcConnectionPool(HandlerContext handlerCtx) {
-//
-//            String jndiName = (String) handlerCtx.getInputValue("jndiName");
-//            try {
-//
-//                SystemStatus ss = AMXRoot.getInstance().getDomainRoot().getSystemStatus();
-//                Map<String, Object> statusMap = ss.pingJDBCConnectionPool(jndiName);
-//                if ((Boolean) statusMap.get(SystemStatus.PING_SUCCEEDED_KEY)){
-//                    GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
-//                }else{
-//                    GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(SystemStatus.REASON_FAILED_KEY).toString() );
-//                }
-//
-//            }catch(Exception ex){
-//		GuiUtil.handleException(handlerCtx, ex);
-//            }
-//        }
-     
+        /**
+         *	<p> This handler pings the  Jdbc Connection Pool
+         */
+        @Handler(id="pingJdbcConnectionPool",
+            input={
+                @HandlerInput(name="jndiName", type=String.class, required=true)})
+        public static void pingConnectionPool(HandlerContext handlerCtx) {
+
+            String jndiName = (String) handlerCtx.getInputValue("jndiName");
+            try {
+
+                Map<String, Object> statusMap = V3AMX.getInstance().getConnectorRuntime().pingJDBCConnectionPool(jndiName);
+                 
+                if ((Boolean) statusMap.get(BOOLEAN_KEY)){
+                    GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
+                }else{
+                    GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(REASON_FAILED_KEY).toString() );
+               }
+
+            }catch(Exception ex){
+		GuiUtil.handleException(handlerCtx, ex);
+            }
+        }        
+    
+        /**
+         *	<p> This handler flushes the  Jdbc Connection Pool
+         */
+        @Handler(id="flushConnectionPool",
+            input={
+                @HandlerInput(name="jndiName", type=String.class, required=true)})
+        public static void flushConnectionPool(HandlerContext handlerCtx) {
+
+            String jndiName = (String) handlerCtx.getInputValue("jndiName");
+            try {
+
+                Map<String, Object> statusMap = V3AMX.getInstance().getConnectorRuntime().flushConnectionPool(jndiName);
+                 
+                if ((Boolean) statusMap.get(BOOLEAN_KEY)){
+                    GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.FlushSucceed"), null);
+                }else{
+                    GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(REASON_FAILED_KEY).toString() );
+               }
+
+            }catch(Exception ex){
+		GuiUtil.handleException(handlerCtx, ex);
+            }
+        }    
         
         /**
          *	<p> This handler gets the default values and resource type and puts them in session
@@ -206,6 +230,8 @@ public class JdbcTempHandler {
             tableField.setDisabled(true);
     }
     
+        public static final  String REASON_FAILED_KEY = "ReasonFailedKey";    
+        public static final  String BOOLEAN_KEY = "BooleanKey";
         static private final String PROPERTY_MAP_KEY = "PropertyMapKey"; 
         static private final String DATA_SOURCE = "javax.sql.DataSource";
 	static private final String XADATA_SOURCE = "javax.sql.XADataSource";
