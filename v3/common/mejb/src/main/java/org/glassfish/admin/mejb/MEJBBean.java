@@ -44,7 +44,7 @@ import javax.ejb.SessionContext;
 import javax.management.*;
 import javax.management.j2ee.ListenerRegistration;
 
-import org.glassfish.admin.amx.core.proxy.AMXBooter;
+import org.glassfish.api.amx.AMXBooter;
 
 /**
  * @ejbHome <{org.glassfish.admin.mejb.MEJBHome}>
@@ -61,7 +61,6 @@ public final class MEJBBean implements SessionBean
 
     public MEJBBean()
     {
-        debug( "MEJBBean.MEJBBean()");
     }
     
     public void setSessionContext(SessionContext context) {
@@ -79,6 +78,11 @@ public final class MEJBBean implements SessionBean
 
     public void ejbCreate() throws CreateException {
         final ObjectName domainRoot = AMXBooter.bootAMX(mbeanServer);
+        
+        if ( domainRoot == null )
+        {
+            throw new IllegalStateException( "Impossible: DomainRoot is null" );
+        }
         
         mDomain = domainRoot.getDomain();
     }
