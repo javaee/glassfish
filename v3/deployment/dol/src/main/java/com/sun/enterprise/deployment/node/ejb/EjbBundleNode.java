@@ -151,7 +151,7 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
 
     public void setElementValue(XMLElement element, String value) {
 
-        if (EjbTagNames.MODULE_NAME.equals(element.getQName())) {
+        if (TagNames.MODULE_NAME.equals(element.getQName())) {
             EjbBundleDescriptor bundleDesc = getDescriptor();
             // ejb-jar.xml <module-name> only applies if this is an ejb-jar
             if( bundleDesc.getModuleDescriptor().getDescriptor() instanceof EjbBundleDescriptor ) {
@@ -190,7 +190,6 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
         // no need to be synchronized for now
         Map table = super.getDispatchTable();
         table.put(EjbTagNames.EJB_CLIENT_JAR, "setEjbClientJarUri");
-        table.put(EjbTagNames.MODULE_NAME, "setModuleName");
         return table;
     }        
         
@@ -205,7 +204,7 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
         Node jarNode = super.writeDescriptor(parent, ejbDesc);
 
         if( ejbDesc.getModuleDescriptor().getDescriptor() instanceof EjbBundleDescriptor ) {
-            appendTextChild(jarNode, EjbTagNames.MODULE_NAME, ejbDesc.getModuleDescriptor().getModuleName());
+            appendTextChild(jarNode, TagNames.MODULE_NAME, ejbDesc.getModuleDescriptor().getModuleName());
         }
 
         Node entrepriseBeansNode = appendChild(jarNode, EjbTagNames.EJBS);

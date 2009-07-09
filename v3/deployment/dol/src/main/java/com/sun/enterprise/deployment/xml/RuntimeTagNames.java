@@ -93,7 +93,6 @@ public interface RuntimeTagNames extends TagNames {
     public static final String MAIL_FROM = "mail-from";
     public static final String MAIL_HOST = "mail-host";
     public static final String METHOD = "method";
-    public static final String MODULE_NAME = "module-name";
     public static final String NAME = "name";
     public static final String NAMESPACE_URI = "namespace-uri";
     public static final String OPERATION = "operation";

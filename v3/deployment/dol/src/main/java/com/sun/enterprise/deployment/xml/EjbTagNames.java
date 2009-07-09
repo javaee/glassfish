@@ -47,8 +47,6 @@ public interface EjbTagNames extends TagNames {
     public final static String SESSION_TYPE = "session-type";
     public final static String MESSAGE_DRIVEN = "message-driven";
 
-    public final static String MODULE_NAME = "module-name";
-    
     public final static String EJB_NAME = "ejb-name";
     public final static String HOME = "home";
     public final static String REMOTE = "remote";

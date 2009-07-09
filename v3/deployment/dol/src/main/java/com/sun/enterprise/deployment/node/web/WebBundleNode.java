@@ -100,6 +100,16 @@ public class WebBundleNode extends WebCommonNode<WebBundleDescriptor> {
         registerElementHandler(new XMLElement(WebTagNames.ABSOLUTE_ORDERING),
                AbsoluteOrderingNode.class, "setAbsoluteOrderingDescriptor");
     }
+
+    public void setElementValue(XMLElement element, String value) {
+        if (TagNames.MODULE_NAME.equals(element.getQName())) {
+            WebBundleDescriptor bundleDesc = getDescriptor();
+            bundleDesc.getModuleDescriptor().setModuleName(value);
+        } else {
+            super.setElementValue(element, value);
+        }
+    }
+
     
    /**
     * @return the descriptor instance to associate with this XMLNode
@@ -148,7 +158,10 @@ public class WebBundleNode extends WebCommonNode<WebBundleDescriptor> {
      */    
     public Node writeDescriptor(Node parent, 
         WebBundleDescriptor webBundleDesc) {
+
         Node jarNode = super.writeDescriptor(parent, webBundleDesc);
+        appendTextChild(jarNode, TagNames.MODULE_NAME, webBundleDesc.getModuleDescriptor().getModuleName());
+
         if (webBundleDesc.getAbsoluteOrderingDescriptor() != null) {
             AbsoluteOrderingNode absOrderingNode = new AbsoluteOrderingNode();
             absOrderingNode.writeDescriptor(jarNode, WebTagNames.ABSOLUTE_ORDERING,
