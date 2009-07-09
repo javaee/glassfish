@@ -113,10 +113,15 @@ public class JMSPing implements AdminCommand {
          }
         try{
             boolean value = pingConnectionPool(tmpJMSResource);
+            
             if(!value){
                  report.setMessage(localStrings.getLocalString("jms-ping.pingConnectionPoolFailed",
                          "Pinging to the JMS Host failed."));
                  report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            }else {
+                  report.setMessage(localStrings.getLocalString("jms-ping.pingConnectionPoolSuccess",
+                         "JMS-ping command executed successfully"));
+                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             }
         }catch (ResourceException e)
         {
