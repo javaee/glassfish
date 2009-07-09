@@ -77,6 +77,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.v3.admin.RestartDomainCommand;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import org.glassfish.api.admin.AdminCommand;
+import com.sun.enterprise.v3.admin.commands.JVMInformation;
+import org.glassfish.admin.amx.util.StringUtil;
 
 /**
 AMX RealmsMgr implementation.
@@ -295,6 +297,54 @@ public final class RuntimeImpl extends AMXImplBase
         {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getJVMReport(final String type)
+    {
+        final JVMInformation info = new JVMInformation(getMBeanServer());
+
+        final String NL = StringUtil.LS;
+        
+        String target = "das";
+        String result = "FAILED";
+        if ("summary".equals(type))
+        {
+            result = info.getSummary(target);
+        }
+        else if ("memory".equals(type))
+        {
+            result = info.getMemoryInformation(target);
+        }
+        else if ("thread".equals(type))
+        {
+            result = info.getThreadDump(target);
+        }
+        else if ("class".equals(type))
+        {
+            result = info.getClassInformation(target);
+        }
+        else if ("log".equals(type))
+        {
+            result = info.getLogInformation(target);
+        }
+        else if ("all".equals(type))
+        {
+            result = "SUMMARY" + NL + NL + getJVMReport("summary") + NL + NL +
+                     "MEMORY" + NL + NL + getJVMReport("memory") + NL + NL +
+                     "THREADS" + NL + NL + getJVMReport("thread") + NL + NL +
+                     "CLASSES" + NL + NL + getJVMReport("class") + NL + NL +
+                     "LOGGING" + NL + NL + getJVMReport("log");
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unsupported JVM report type: " + type);
+        }
+
+        if (result != null)
+        {
+            result = result.replace("%%%EOL%%%", NL);
+        }
+        return result;
     }
 
 }

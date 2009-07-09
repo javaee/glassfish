@@ -117,6 +117,12 @@ public interface Runtime extends AMXProxy, Utility, Singleton
     @ManagedAttribute
     @Description("Return the available JMXServiceURLs in no particular order")
     public String[] getJMXServiceURLs();
+    
+    
+    /** Which: all | summary | memory| class | thread  log */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Return a summary report of the specified type")
+    public String getJVMReport( @Param(name = "which")String which);
 }
 
 
