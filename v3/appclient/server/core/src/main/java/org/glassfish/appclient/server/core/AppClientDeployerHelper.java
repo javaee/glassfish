@@ -264,6 +264,16 @@ abstract class AppClientDeployerHelper {
 
     protected final void generateAppClientFacade() throws IOException, URISyntaxException {
         OutputJarArchive facadeArchive = new OutputJarArchive();
+        /*
+         * Make sure the directory subtree to contain the facade exists.  If the
+         * client URI within the EAR contains a directory then that directory
+         * probably does not exist in the generated dir for this app...not yet
+         * anyway...it is about to exist.
+         */
+        final File facadeFile = new File(facadeServerURI(dc));
+        if ( ! facadeFile.getParentFile().exists()) {
+            facadeFile.getParentFile().mkdirs();
+        }
         facadeArchive.create(facadeServerURI(dc));
         ReadableArchive source = dc.getSource();
         Manifest sourceManifest = source.getManifest();
