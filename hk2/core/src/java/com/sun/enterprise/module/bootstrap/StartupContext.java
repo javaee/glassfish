@@ -74,6 +74,7 @@ public class StartupContext {
  * This behavior is weird and caused issue #54 in Embedded
  */
     final File root;
+    final File userDir;
     final Properties args;
     final long timeZero;
     public final static String TIME_ZERO_NAME = "__time_zero";  //NO I18N
@@ -87,20 +88,35 @@ public class StartupContext {
 
     public StartupContext() {
         this.root = new File(System.getProperty("user.dir"));
+        this.userDir = root;
         this.timeZero = System.currentTimeMillis();
         args = new Properties();
     }
 
-    /** Creates a new instance of StartupContext */
     public StartupContext(File root, String[] args) {
+        this(root, null, args);
+    }
+    
+    /** Creates a new instance of StartupContext */
+    public StartupContext(File root, File userDir, String[] args) {
         this.root = absolutize(root);
+        if (userDir!=null) {
+            this.userDir = absolutize(userDir);
+        } else {
+            this.userDir = null;
+        }
         this.args = ArgumentManager.argsToMap(args);
         this.timeZero = System.currentTimeMillis();
     }
 
-    public StartupContext(File root, Properties args) {
+    public StartupContext(File root,  Properties args) {
+        this(root, null, args);
+    }
+
+    public StartupContext(File root, File userDir, Properties args) {
         this.root = root;
         this.args = args;
+        this.userDir = userDir;
         if (args.containsKey(TIME_ZERO_NAME)) {
             this.timeZero = Long.decode(args.getProperty(TIME_ZERO_NAME)).longValue();
         } else {
@@ -117,6 +133,16 @@ public class StartupContext {
      */
     public File getRootDirectory() {
         return root;
+    }
+
+    /**
+     * Get the "user" directory, which is a private contract between the
+     * main initialzation of the hk2 framework and the ModuleStartup inplementation.
+     *
+     * @return the user directory
+     */
+    public File getUserDirectory() {
+        return userDir;
     }
         
     public Properties getArguments() {
