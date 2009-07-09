@@ -159,15 +159,13 @@ public class AsadminMain {
                 List<String> operands = rcp.getOperands();
                 if (operands.size() == 0)
                     throw new CommandException("No Command");
-                argv = operands.toArray(new String[0]);
+                argv = operands.toArray(new String[operands.size()]);
             } else
                 po = new ProgramOptions(env);
             po.toEnvironment(env);
             command = argv[0];
-            String[] args = new String[argv.length - 1];
-            System.arraycopy(argv, 1, args, 0, args.length);
             CLICommand cmd = CLICommand.getCommand(command, po, env);
-            return cmd.execute(args);
+            return cmd.execute(argv);
         } catch (CommandException ce) {
             CLILogger.getInstance().printError(ce.getMessage());
             return ERROR;

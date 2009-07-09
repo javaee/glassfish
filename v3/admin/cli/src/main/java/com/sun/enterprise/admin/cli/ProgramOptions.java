@@ -187,11 +187,19 @@ public class ProgramOptions {
         } else
             secure = env.getBooleanOption("secure");
 
+        if (options.containsKey("user")) {
+            String value = options.get("user");
+            if (ok(value))
+                user = value;
+        } else
+            user = env.getStringOption("user");
+
         if (options.containsKey("passwordfile")) {
             String value = options.get("passwordfile");
             if (ok(value))
                 passwordFile = value;
-        }
+        } else
+            passwordFile = env.getStringOption("passwordfile");
     }
 
     private static boolean ok(String s) {
@@ -219,6 +227,7 @@ public class ProgramOptions {
         putEnv(env, "host");
         putEnv(env, "port");
         putEnv(env, "secure");
+        putEnv(env, "user");
         // XXX - "help"?
     }
 

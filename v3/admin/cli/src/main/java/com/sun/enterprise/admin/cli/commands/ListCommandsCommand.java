@@ -100,7 +100,7 @@ public class ListCommandsCommand extends RemoteCommand {
     @Override
     public int executeCommand() throws CommandException {
         // throw away all arguments and options for remote
-        args = new String[0];
+        argv = new String[] { argv[0] };
         options = new HashMap<String, String>();
         operands = Collections.emptyList();
  

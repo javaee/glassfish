@@ -36,52 +36,20 @@
 
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.cli.framework.CommandException;
 
 /**
- * A local command.  This is just a proxy for local commands implemented
- * by the old CLI framework.  This will be removed when we remove our
- * dependency on the old CLI framework and convert all the local commands
- * to use the new framework.
+ * A specialized CommandException that indicates an authentication failure.
  *
  * @author Bill Shannon
  */
-public class LocalCommand extends CLICommand {
-    private CLIMain cli;
+public class AuthenticationException extends CommandException {
 
-    public LocalCommand(String name, ProgramOptions po, Environment env) {
-        super(name, po, env);
-        cli = new CLIMain();
+    public AuthenticationException(String msg) {
+        super(msg);
     }
 
-    public int execute(String[] argv) throws CommandException {
-        try {
-            cli.invokeCommand(argv);
-            return SUCCESS;
-        } catch (CommandException ce) {
-            logger.printError(ce.getMessage());
-            return ERROR;
-        } catch (CommandValidationException cve) {
-            logger.printError(cve.getMessage());
-            return ERROR;
-        } catch (NoClassDefFoundError ncdfe) {
-            logger.printError(ncdfe.toString());
-            return ERROR;
-        } catch (InvalidCommandException ice) {
-            return INVALID_COMMAND_ERROR;
-        } catch (Throwable ex) {
-            logger.printExceptionStackTrace(ex);
-            logger.printError(ex.toString());
-            return ERROR;
-        }
-    }
-
-    protected void prepare() {
-        // never called because we override execute
-    }
-
-    protected int executeCommand() {
-        // never called because we override execute
-        return -1;
+    public AuthenticationException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }

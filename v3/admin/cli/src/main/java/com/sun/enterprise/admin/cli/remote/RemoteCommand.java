@@ -123,7 +123,7 @@ public class RemoteCommand extends CLICommand {
                  * removing them from the command line, and ignoring
                  * unknown options.
                  */
-                Parser rcp = new Parser(args, 0,
+                Parser rcp = new Parser(argv, 0,
                                 ProgramOptions.getValidOptions(), true);
                 Map<String, String> params = rcp.getOptions();
                 // program options may change
@@ -131,7 +131,7 @@ public class RemoteCommand extends CLICommand {
                 initializeLogger();
                 initializePasswords();
                 List<String> operands = rcp.getOperands();
-                args = operands.toArray(new String[operands.size()]);
+                argv = operands.toArray(new String[operands.size()]);
                 // warn about deprecated use of program options
                 if (params.size() > 0) {
                     // at least one program option specified after command name
@@ -168,7 +168,20 @@ public class RemoteCommand extends CLICommand {
             if (commandOpts == null)
                 // goes to server
              */
-            fetchCommandMetadata();
+	    try {
+		fetchCommandMetadata();
+	    } catch (AuthenticationException ex) {
+		/*
+		 * Failed to authenticate to server.
+		 * If we can update our authentication information
+		 * (e.g., by prompting the user for the username
+		 * and password), try again.
+		 */
+		if (updateAuthentication())
+		    fetchCommandMetadata();
+		else
+		    throw ex;
+	    }
             if (commandOpts == null)
                 throw new CommandException("Unknown command: " + name);
         } catch (CommandException cex) {
@@ -225,57 +238,76 @@ public class RemoteCommand extends CLICommand {
 
             // remove the last character, whether it was "?" or "&"
             uriString.setLength(uriString.length() - 1);
-            doHttpCommand(uriString.toString(), chooseRequestMethod(),
-                    new HttpCommand() {
-                public void doCommand(HttpURLConnection urlConnection)
-                        throws CommandException, IOException {
-
-                if (doUpload) {
-                    /*
-                     * If we are uploading anything then set the content-type
-                     * and add the uploaded part(s) to the payload.
-                     */
-                    urlConnection.setChunkedStreamingMode(0); // use default value
-                    urlConnection.setRequestProperty("Content-Type",
-                            outboundPayload.getContentType());
-                }
-                urlConnection.connect();
-                if (doUpload) {
-                    outboundPayload.writeTo(urlConnection.getOutputStream());
-                    outboundPayload = null; // no longer needed
-                }
-                InputStream in = urlConnection.getInputStream();
-
-                String responseContentType = urlConnection.getContentType();
-
-                Payload.Inbound inboundPayload =
-                    PayloadImpl.Inbound.newInstance(responseContentType, in);
- 
-                boolean isReportProcessed = false;
-                PayloadFilesManager downloadedFilesMgr =
-                        new PayloadFilesManager.Perm();
-                Iterator<Payload.Part> partIt = inboundPayload.parts();
-                while (partIt.hasNext()) {
-                    /*
-                     * The report will always come first among the parts of
-                     * the payload.  Be sure to process the report right away
-                     * so any following data parts will be accessible.
-                     */
-                    if (!isReportProcessed) {
-                        handleResponse(options, partIt.next().getInputStream(),
-                                urlConnection.getResponseCode(), userOut);
-                        isReportProcessed = true;
-                    } else {
-                        processDataPart(downloadedFilesMgr, partIt.next());
-                    }
-                }
-                }
-            });
+	    try {
+		executeRemoteCommand(uriString.toString());
+	    } catch (AuthenticationException ex) {
+		/*
+		 * Failed to authenticate to server.
+		 * If we can update our authentication information
+		 * (e.g., by prompting the user for the username
+		 * and password), try again.
+		 */
+		if (updateAuthentication())
+		    executeRemoteCommand(uriString.toString());
+		else
+		    throw ex;
+	    }
         } catch (IOException ioex) {
             // possibly an error caused while reading or writing a file?
             throw new CommandException("I/O Error", ioex);
         }
         return SUCCESS;
+    }
+
+    /**
+     * Actually execute the remote command.
+     */
+    private void executeRemoteCommand(String uri) throws CommandException {
+	doHttpCommand(uri, chooseRequestMethod(), new HttpCommand() {
+	    public void doCommand(HttpURLConnection urlConnection)
+		    throws CommandException, IOException {
+
+	    if (doUpload) {
+		/*
+		 * If we are uploading anything then set the content-type
+		 * and add the uploaded part(s) to the payload.
+		 */
+		urlConnection.setChunkedStreamingMode(0); // use default value
+		urlConnection.setRequestProperty("Content-Type",
+			outboundPayload.getContentType());
+	    }
+	    urlConnection.connect();
+	    if (doUpload) {
+		outboundPayload.writeTo(urlConnection.getOutputStream());
+		outboundPayload = null; // no longer needed
+	    }
+	    InputStream in = urlConnection.getInputStream();
+
+	    String responseContentType = urlConnection.getContentType();
+
+	    Payload.Inbound inboundPayload =
+		PayloadImpl.Inbound.newInstance(responseContentType, in);
+
+	    boolean isReportProcessed = false;
+	    PayloadFilesManager downloadedFilesMgr =
+		    new PayloadFilesManager.Perm();
+	    Iterator<Payload.Part> partIt = inboundPayload.parts();
+	    while (partIt.hasNext()) {
+		/*
+		 * The report will always come first among the parts of
+		 * the payload.  Be sure to process the report right away
+		 * so any following data parts will be accessible.
+		 */
+		if (!isReportProcessed) {
+		    handleResponse(options, partIt.next().getInputStream(),
+			    urlConnection.getResponseCode(), userOut);
+		    isReportProcessed = true;
+		} else {
+		    processDataPart(downloadedFilesMgr, partIt.next());
+		}
+	    }
+	    }
+	});
     }
 
     /**
@@ -315,6 +347,10 @@ public class RemoteCommand extends CLICommand {
             String msg = strings.get("ConnectException",
                     po.getHost(), po.getPort() + "");
             throw new CommandException(msg, ce);
+        } catch (UnknownHostException he) {
+            // bad host name
+            String msg = strings.get("UnknownHostException", po.getHost());
+            throw new CommandException(msg, he);
         } catch (SocketException se) {
             try {
                 boolean serverAppearsSecure =
@@ -336,6 +372,7 @@ public class RemoteCommand extends CLICommand {
                     int rc = urlConnection.getResponseCode();
                     if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
                         msg = strings.get("InvalidCredentials", po.getUser());
+			throw new AuthenticationException(msg);
                     } else {
                         msg = "Status: " + rc;
                     }
@@ -504,8 +541,7 @@ public class RemoteCommand extends CLICommand {
      * @return the options for the command
      * @throws CommandException if the server can't be contacted
      */
-    protected void fetchCommandMetadata()
-            throws CommandException {
+    protected void fetchCommandMetadata() throws CommandException {
 
         // XXX - there should be a "help" command, that returns XML output
         //StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
@@ -685,6 +721,29 @@ public class RemoteCommand extends CLICommand {
             if (opt.getName().equals(name))
                 return opt;
         return null;
+    }
+
+    /**
+     * If we're interactive, prompt for a new username and password.
+     * Return true if we're successful in collecting new information
+     * (and thus the caller should try the request again).
+     */
+    protected boolean updateAuthentication() {
+        Console cons;
+	if (po.isInteractive() && (cons = System.console()) != null) {
+            cons.printf("%s ", strings.get("AdminUserPrompt", po.getUser()));
+            String user = cons.readLine();
+            if (user == null)
+                return false;
+            String password = readPassword(strings.get("AdminPasswordPrompt"));
+            if (password == null)
+                return false;
+            if (user.length() > 0)      // if none entered, don't change
+                po.setUser(user);
+            po.setPassword(password);
+            return true;
+	}
+	return false;
     }
 
     private void initializeAuth() throws CommandException {

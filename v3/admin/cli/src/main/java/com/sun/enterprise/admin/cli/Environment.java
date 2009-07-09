@@ -39,15 +39,20 @@ package com.sun.enterprise.admin.cli;
 import java.util.*;
 
 /**
- * The environment variables for CLI commands.
+ * The environment variables for CLI commands.  An instance of this class
+ * is passed to each command to give it access to environment variables.
+ * Command implementations should access environment information from
+ * this class rather than using System.getenv.  In multimode, the export
+ * command may change environment variables in the instance of this class
+ * that is shared by all commands.
  *
  * @author Bill Shannon
  */
-public class Environment {
+public final class Environment {
 
     public static final String AS_ADMIN_ENV_PREFIX = "AS_ADMIN_";
 
-    private Map<String, String> env = new HashMap<String, String>();;
+    private Map<String, String> env = new HashMap<String, String>();
 
     /**
      * Initialize the enviroment with all relevant system environment entries.
@@ -129,6 +134,9 @@ public class Environment {
     /**
      * Convert an option name (e.g., "host")
      * to an environment variable name (e.g., AS_ADMIN_HOST).
+     *
+     * @param name the option name
+     * @return the environment variable name
      */
     private String optionToEnv(String name) {
         return AS_ADMIN_ENV_PREFIX +

@@ -56,7 +56,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * <p>
  * A command is executed with a list of arguments using the execute
  * method.  The implementation of the execute method in this class
- * saves the arguments in the protected args field, then calls the
+ * saves the arguments in the protected argv field, then calls the
  * following protected methods in order: prepare, parse, validate,
  * and executeCommand.  A subclass must implement the prepare method
  * to initialize the metadata that specified the valid options for
@@ -91,7 +91,7 @@ public abstract class CLICommand {
     protected String name;
     protected ProgramOptions po;
     protected Environment env;
-    protected String[] args;
+    protected String[] argv;
     protected Set<ValidOption> commandOpts;
     protected String operandType;
     protected int operandMin;
@@ -216,12 +216,13 @@ public abstract class CLICommand {
     /**
      * Execute this command with the given arguemnts.
      * The implementation in this class saves the passed arguments in
-     * the args field and calls the initializePasswords method.
+     * the argv field and calls the initializePasswords method.
      * Then it calls the prepare, parse, and validate methods, finally
      * returning the result of calling the executeCommand method.
+     * Note that argv[0] is the command name.
      */
-    public int execute(String[] args) throws CommandException {
-        this.args = args;
+    public int execute(String[] argv) throws CommandException {
+        this.argv = argv;
         initializePasswords();
         prepare();
         parse();
@@ -289,7 +290,7 @@ public abstract class CLICommand {
             operands = Collections.emptyList();
         } else {
             try {
-                Parser rcp = new Parser(args, 0, commandOpts, false);
+                Parser rcp = new Parser(argv, 1, commandOpts, false);
                 options = rcp.getOptions();
                 operands = rcp.getOperands();
             } catch (CommandValidationException ex) {
@@ -333,7 +334,7 @@ public abstract class CLICommand {
                 continue;       // passwords are handled later
             if (getParam(opt.getName()) == null) {
                 missingOption = true;
-                System.out.println(
+                logger.printMessage(
                         strings.get("missingOption", "--" + opt.getName()));
             }
         }

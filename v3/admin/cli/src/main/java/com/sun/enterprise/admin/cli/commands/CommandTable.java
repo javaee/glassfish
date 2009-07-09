@@ -40,6 +40,8 @@ import java.util.*;
 
 /**
  * A map of the known local commands.
+ * XXX - This is temporary until we have a new client side extensibility
+ * framework for commands, e.g., use of HK2 on the client.
  *
  * @author Bill Shannon
  */
@@ -53,11 +55,11 @@ public class CommandTable extends HashMap<String, Class> {
         put("change-admin-password",    ChangeAdminPasswordCommand.class);
         put("list-commands",            ListCommandsCommand.class);
         put("monitor",                  Object.class); // XXX - not yet impl
-        put("multimode",                Object.class); // XXX - not yet impl
+        put("multimode",                MultimodeCommand.class);
         put("restart-domain",           Object.class); // XXX - not yet impl
         put("start-domain",             Object.class); // XXX - not yet impl
         put("stop-domain",              Object.class); // XXX - not yet impl
-        put("version",                  Object.class); // XXX - not yet impl
+        put("version",                  VersionCommand.class);
         put("login",                    Object.class); // XXX - not yet impl
         put("create-domain",            Object.class); // XXX - not yet impl
         put("create-service",           Object.class); // XXX - not yet impl
