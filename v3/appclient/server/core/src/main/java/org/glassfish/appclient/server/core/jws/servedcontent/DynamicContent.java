@@ -56,7 +56,7 @@ import java.util.Properties;
  *
  * @author tjquinn
  */
-public interface DynamicContent {
+public interface DynamicContent extends Content {
 
     /**
      * Retrieves an "instance" of this dynamic content, with placeholders
@@ -79,7 +79,6 @@ public interface DynamicContent {
      * @return
      */
     public String getMimeType();
-
 
     /**
      * Defines the contract for a given version of dynamic content at a single

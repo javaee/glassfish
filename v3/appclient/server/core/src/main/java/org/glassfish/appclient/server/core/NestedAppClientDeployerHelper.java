@@ -440,6 +440,13 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         return classPathForFacade.toString();
     }
 
+    @Override
+    protected void addGroupFacadeToEARDownloads() {
+        final DownloadableArtifacts.FullAndPartURIs earFacadeDownload =
+                dc().getTransientAppMetaData("earFacadeDownload", DownloadableArtifacts.FullAndPartURIs.class);
+        earLevelDownloads.add(earFacadeDownload);
+    }
+
     private String appName(final DeploymentContext dc) {
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
         return params.name();

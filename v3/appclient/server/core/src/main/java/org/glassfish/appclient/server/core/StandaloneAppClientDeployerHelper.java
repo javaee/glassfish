@@ -211,6 +211,12 @@ class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
         return appClientUserURI(dc);
     }
 
+    @Override
+    protected void addGroupFacadeToEARDownloads() {
+        // no-op
+    }
+
+
 
     @Override
     protected String facadeClassPath() {

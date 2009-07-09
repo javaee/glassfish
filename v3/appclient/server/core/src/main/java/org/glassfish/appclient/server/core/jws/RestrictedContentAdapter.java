@@ -49,6 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.appclient.server.core.jws.servedcontent.Content;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 
 /**
@@ -67,12 +68,14 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 
     private volatile State state = State.RESUMED;
 
+    private final String contextRoot;
 
     private final ConcurrentHashMap<String,StaticContent> content =
             new ConcurrentHashMap<String,StaticContent>();
 
-    public RestrictedContentAdapter(final Map<String,StaticContent> content) throws IOException {
-        this();
+    public RestrictedContentAdapter(
+            final String contextRoot, final Map<String,StaticContent> content) throws IOException {
+        this(contextRoot);
         this.content.putAll(content);
         /*
          * Preload the adapter's cache with the static content.  This helps
@@ -89,12 +92,13 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         }
     }
 
-    public RestrictedContentAdapter() {
+    public RestrictedContentAdapter(final String contextRoot) {
         /*
          * Turn off the default static resource handling.  We do our own from
          * our service method, rather than letting the StaticResourcesAdapter
-         * have a try at each request first.
+         * (superclass) logic have a try at each request first.
          */
+        this.contextRoot = contextRoot;
         setHandleStaticResources(false);
 
         setUseSendFile(true);
@@ -108,19 +112,41 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         }
     }
 
-    public synchronized void addContentIfAbsent(final String uriString, final StaticContent newContent) throws IOException {
-        final StaticContent existingContent = content.get(uriString);
+    public String contextRoot() {
+        return contextRoot;
+    }
+    
+    public synchronized void addContentIfAbsent(final String relativeURIString,
+            final StaticContent newContent) throws IOException {
+        final StaticContent existingContent = content.get(relativeURIString);
         if (existingContent != null) {
             if ( ! existingContent.equals(newContent)) {
                 logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.staticContentCollision",
-                        new Object[] {uriString, newContent.toString()});
+                        new Object[] {relativeURIString, newContent.toString()});
             }
             return;
         }
-        this.content.put(uriString, newContent);
-        this.cache.put(uriString, newContent.file());
+        this.content.put(relativeURIString, newContent);
+        this.cache.put(contextRoot + "/" + relativeURIString, newContent.file());
     }
-    
+
+    public synchronized void addContentIfAbsent(
+            final Map<String,StaticContent> staticContent) throws IOException {
+        for (Map.Entry<String,StaticContent> entry : staticContent.entrySet()) {
+            addContentIfAbsent(entry.getKey(), entry.getValue());
+        }
+    }
+
+
+    protected String relativizeURIString(final String uriString) {
+        if ( ! uriString.startsWith(contextRoot + "/")) {
+            logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.uriOutsideContextRoot",
+                    new Object[] {uriString, contextRoot});
+            return null;
+        }
+        return uriString.substring(contextRoot.length() + 1);
+    }
+
     protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) {
 
         /*
@@ -128,11 +154,15 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
          * if the corresponding app client has been suspended.
          */
         if (state == State.SUSPENDED) {
-            gResp.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            finishErrorResponse(gResp, HttpServletResponse.SC_FORBIDDEN);
             return true;
         }
 
-        String uriString = gReq.getRequestURI();
+        String relativeURIString = relativizeURIString(gReq.getRequestURI());
+        if (relativeURIString == null) {
+            respondNotFound(gResp);
+            return true;
+        }
         /*
          * The Grizzly-managed cache could contain entries for non-existent
          * files that users request.  If the URI indicates it's a request for
@@ -145,18 +175,20 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
          * If the request is for a URI in neither the static nor dynamic
          * content this adapter should serve, then just return a 404.
          */
-        if (content.containsKey(uriString)) {
-            processContent(uriString, gReq, gResp);
+        final StaticContent sc = content.get(relativeURIString);
+        if (sc != null && sc.isAvailable()) {
+            processContent(relativeURIString, gReq, gResp);
             return true;
         } else {
-            return false;
+            finishErrorResponse(gResp, contentStateToResponseStatus(sc));
+            return true;
         }
     }
 
-    private void processContent(final String uriString,
+    private void processContent(final String relativeURIString,
             final GrizzlyRequest gReq, final GrizzlyResponse gResp) {
         try {
-            super.service(uriString, gReq.getRequest(), gResp.getResponse());
+            super.service(relativeURIString, gReq.getRequest(), gResp.getResponse());
             finishResponse(gResp, HttpServletResponse.SC_OK);
         } catch (Exception e) {
             gResp.getResponse().setErrorException(e);
@@ -164,6 +196,19 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         }
     }
 
+    protected int contentStateToResponseStatus(Content content) {
+        int status;
+        if (content == null) {
+            status = HttpServletResponse.SC_NOT_FOUND;
+        } else if (content.isAvailable()) {
+            status = HttpServletResponse.SC_OK;
+        } else {
+            status = (content.state() == Content.State.SUSPENDED
+                        ? HttpServletResponse.SC_FORBIDDEN
+                        : HttpServletResponse.SC_NOT_FOUND);
+        }
+        return status;
+    }
     
     public void suspend() {
         state = State.SUSPENDED;

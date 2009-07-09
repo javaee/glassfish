@@ -98,5 +98,10 @@
             <artifactId>appclient-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

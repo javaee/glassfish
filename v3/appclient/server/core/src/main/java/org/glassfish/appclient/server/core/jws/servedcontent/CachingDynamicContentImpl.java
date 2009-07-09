@@ -72,7 +72,7 @@ import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent.Inst
  *different set of arguments (for instance, one of the arguments could be a
  *timestamp that would change every time).
  */
-public class CachingDynamicContentImpl implements DynamicContent {
+public class CachingDynamicContentImpl extends Content.Adapter implements DynamicContent {
 
     /** maximum number of instances of content to keep for each template */
     private static final int DEFAULT_MAX_INSTANCES = 4;
@@ -201,4 +201,36 @@ public class CachingDynamicContentImpl implements DynamicContent {
     public String toString() {
         return super.toString() + ", template=" + template + ", MIME type=" + mimeType;// + ", most recent change in generated content=" + timestamp;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CachingDynamicContentImpl other = (CachingDynamicContentImpl) obj;
+        if ((this.template == null) ? (other.template != null) : !this.template.equals(other.template)) {
+            return false;
+        }
+        if ((this.mimeType == null) ? (other.mimeType != null) : !this.mimeType.equals(other.mimeType)) {
+            return false;
+        }
+        if (this.maxInstances != other.maxInstances) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + (this.template != null ? this.template.hashCode() : 0);
+        hash = 89 * hash + (this.mimeType != null ? this.mimeType.hashCode() : 0);
+        hash = 89 * hash + this.maxInstances;
+        return hash;
+    }
+
+    
 }

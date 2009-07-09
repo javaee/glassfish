@@ -77,10 +77,11 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private final Properties tokens;
 
     public AppClientHTTPAdapter(
+            final String contextRoot,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent,
             final Properties tokens) throws IOException {
-        super(staticContent);
+        super(contextRoot, staticContent);
         this.dynamicContent = dynamicContent;
         this.tokens = tokens;
     }
@@ -94,18 +95,47 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      */
     @Override
     public void service(GrizzlyRequest gReq, GrizzlyResponse gResp) {
-        final String uriString = gReq.getRequestURI();
-        if (dynamicContent.containsKey(uriString)) {
-            processDynamicContent(tokens, uriString, gReq, gResp);
+        final String relativeURIString =
+                relativizeURIString(gReq.getRequestURI());
+        if (relativeURIString == null) {
+            respondNotFound(gResp);
+        } else if (dynamicContent.containsKey(relativeURIString)) {
+            processDynamicContent(tokens, relativeURIString, gReq, gResp);
         } else if ( ! serviceContent(gReq, gResp) ) {
             respondNotFound(gResp);
         }
     }
 
+    public void addContentIfAbsent(final Map<String,StaticContent> staticAdditions,
+            final Map<String,DynamicContent> dynamicAdditions) throws IOException {
+        addContentIfAbsent(staticAdditions);
+        addDynamicContentIfAbsent(dynamicAdditions);
+    }
+
+    private void addDynamicContentIfAbsent(final Map<String,DynamicContent> additions) {
+        for (Map.Entry<String,DynamicContent> entry : additions.entrySet()) {
+            addContentIfAbsent(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void addContentIfAbsent(final String relativeURIString, final DynamicContent addition) {
+        if ( ! dynamicContent.containsKey(relativeURIString)) {
+            dynamicContent.put(relativeURIString, addition);
+        }
+    }
+
     private void processDynamicContent(final Properties tokens,
-            final String uriString,
+            final String relativeURIString,
             final GrizzlyRequest gReq, final GrizzlyResponse gResp) {
-        final DynamicContent dc = dynamicContent.get(uriString);
+        final DynamicContent dc = dynamicContent.get(relativeURIString);
+        if (dc == null) {
+            respondNotFound(gResp);
+            return;
+        }
+        if ( ! dc.isAvailable()) {
+            finishErrorResponse(gResp, contentStateToResponseStatus(dc));
+            return;
+        }
         final Properties allTokens = prepareRequestPlaceholders(tokens, gReq);
 
         final DynamicContent.Instance instance = dc.getOrCreateInstance(allTokens);
@@ -113,7 +143,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         final Date instanceTimestamp = instance.getTimestamp();
         gResp.setDateHeader(LAST_MODIFIED_HEADER_NAME, instanceTimestamp.getTime());
         gResp.setDateHeader(DATE_HEADER_NAME, System.currentTimeMillis());
-        gResp.setContentType(mimeType(uriString));
+        gResp.setContentType(mimeType(relativeURIString));
         gResp.setStatus(HttpServletResponse.SC_OK);
 
         /*
@@ -121,7 +151,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
          */
         final String methodType = gReq.getMethod();
         if (methodType.equalsIgnoreCase("GET")) {
-            writeData(uriString, instance.getText(), gReq, gResp);
+            writeData(instance.getText(), gResp);
         }
         finishResponse(gResp, HttpServletResponse.SC_OK);
     }
@@ -205,8 +235,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      * @param req
      * @param res
      */
-    private void writeData(final String uri, final String data,
-            final GrizzlyRequest req, final GrizzlyResponse res) {
+    private void writeData(final String data,
+            final GrizzlyResponse res) {
         try {
             res.setStatus(200);
 

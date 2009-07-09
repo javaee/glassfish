@@ -47,7 +47,7 @@ import java.io.File;
  *
  * @author tjquinn
  */
-public class FixedContent implements StaticContent {
+public class FixedContent extends Content.Adapter implements StaticContent {
 
     private final File file;
 
@@ -64,5 +64,28 @@ public class FixedContent implements StaticContent {
         return "FixedContent: " + file.getAbsolutePath();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final FixedContent other = (FixedContent) obj;
+        if (this.file != other.file && (this.file == null || !this.file.equals(other.file))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + (this.file != null ? this.file.hashCode() : 0);
+        return hash;
+    }
+
+    
 
 }

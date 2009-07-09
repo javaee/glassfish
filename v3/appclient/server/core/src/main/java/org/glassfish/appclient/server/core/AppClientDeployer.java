@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
@@ -69,7 +70,9 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.appclient.server.core.jws.AppClientHTTPAdapter;
 import org.glassfish.appclient.server.core.jws.RestrictedContentAdapter;
+import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -193,9 +196,11 @@ public class AppClientDeployer
     /** the class loader which knows about the org.glassfish.appclient.gf-client-module */
     private ClassLoader gfClientModuleClassLoader;
 
+    private final ConcurrentHashMap<String,Set<AppClientServerApplication>> contributingAppClients =
+            new ConcurrentHashMap<String,Set<AppClientServerApplication>>();
 
-    private final ConcurrentHashMap<String,RestrictedContentAdapter> earLevelAdapters = new
-            ConcurrentHashMap<String, RestrictedContentAdapter>();
+    private final ConcurrentHashMap<String,AppClientHTTPAdapter> httpAdapters = new
+            ConcurrentHashMap<String, AppClientHTTPAdapter>();
 
     /*
      * Each app client server application will listen for config change
@@ -239,6 +244,7 @@ public class AppClientDeployer
     @Override
     public AppClientServerApplication load(AppClientContainerStarter containerStarter, DeploymentContext dc) {
         AppClientDeployerHelper helper = savedHelper(dc);
+        helper.addGroupFacadeToEARDownloads();
         final AppClientServerApplication newACServerApp =
                 new AppClientServerApplication(dc, this, helper,
                 requestDispatcher, applications, logger);
@@ -263,19 +269,74 @@ public class AppClientDeployer
         downloadInfo.clearArtifacts(params.name);
     }
 
-    synchronized void addEARLevelContent(
-            final String appName, final String uriString, final StaticContent content) throws EndpointRegistrationException, IOException {
-        RestrictedContentAdapter adapter = earLevelAdapters.get(appName);
+    synchronized void addContentToHTTPAdapter(
+            final String appName, final AppClientServerApplication contributor, final Properties tokens,
+            final Map<String,StaticContent> staticContent,
+            final Map<String,DynamicContent> dynamicContent) throws EndpointRegistrationException, IOException {
+        AppClientHTTPAdapter adapter = httpAdapters.get(appName);
         if (adapter == null) {
-            adapter = new RestrictedContentAdapter();
-            earLevelAdapters.put(appName, adapter);
-            requestDispatcher.registerEndpoint(contextRootForEARAdapter(appName), adapter, null);
+            final String contextRoot = NamingConventions.contextRootForAppAdapter(appName);
+            addAdapter(appName, contextRoot, staticContent, dynamicContent, tokens);
+            addContributor(appName, contributor);
+        } else {
+            adapter.addContentIfAbsent(staticContent, dynamicContent);
         }
-        adapter.addContentIfAbsent(uriString, content);
     }
 
-    private String contextRootForEARAdapter(final String appName) {
-        return NamingConventions.JWSAPPCLIENT_APP_PREFIX + "/" + appName;
+    synchronized void addAdapter( 
+            final String appName, final String contextRoot,
+            final Map<String,StaticContent> staticContent, 
+            final Map<String,DynamicContent> dynamicContent,
+            final Properties tokens) throws IOException, EndpointRegistrationException {
+        
+        final AppClientHTTPAdapter adapter = new AppClientHTTPAdapter(
+                contextRoot, staticContent, dynamicContent, tokens);
+        httpAdapters.put(appName, adapter);
+        requestDispatcher.registerEndpoint(
+                contextRoot,
+                adapter,
+                null);
+    }
+
+    public String contextRootForAppAdapter(final String appName) {
+        final AppClientHTTPAdapter adapter = httpAdapters.get(appName);
+        if (adapter != null) {
+            return adapter.contextRoot();
+        } else {
+            return null;
+        }
+    }
+    synchronized void addContributor(
+            final String appName,
+            final AppClientServerApplication contributor) {
+        /*
+         * Record that the calling app client server app has contributed content
+         * to the Grizzly adapter.
+         */
+        Set<AppClientServerApplication> contributors = contributingAppClients.get(appName);
+        if (contributors == null) {
+            contributors = new HashSet<AppClientServerApplication>();
+            contributingAppClients.put(appName, contributors);
+        }
+        contributors.add(contributor);
+    }
+
+    synchronized void removeContributor(final String appName,
+            final AppClientServerApplication contributor) throws EndpointRegistrationException {
+        final Set<AppClientServerApplication> contributors = contributingAppClients.get(appName);
+        if (contributors == null) {
+            return;
+        }
+        contributors.remove(contributor);
+        if (contributors.isEmpty()) {
+            contributingAppClients.remove(appName);
+            removeAdapter(appName);
+        }
+    }
+
+    synchronized void removeAdapter(final String appName) throws EndpointRegistrationException {
+        httpAdapters.remove(appName);
+        requestDispatcher.unregisterEndpoint(NamingConventions.contextRootForAppAdapter(appName));
     }
 
     @Override
@@ -340,7 +401,8 @@ public class AppClientDeployer
                 systemContent.put(systemPath(uri), new FixedContent(new File(uri)));
             }
 
-            RestrictedContentAdapter systemAdapter = new RestrictedContentAdapter(systemContent);
+            RestrictedContentAdapter systemAdapter = new RestrictedContentAdapter(
+                    NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX);
             requestDispatcher.registerEndpoint(NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
                     systemAdapter, null);
 

@@ -51,7 +51,7 @@ import java.io.IOException;
  * 
  * @author tjquinn
  */
-public interface StaticContent {
+public interface StaticContent extends Content {
 
     /**
      * Returns a File object for the content.

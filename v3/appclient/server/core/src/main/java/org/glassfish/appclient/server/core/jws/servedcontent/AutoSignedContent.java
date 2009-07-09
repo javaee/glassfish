@@ -37,42 +37,60 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core.jws;
+package org.glassfish.appclient.server.core.jws.servedcontent;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
+ * Represents otherwise fixed content that must be automatically signed
+ * if it does not yet exist or if the underlying unsigned file has changed
+ * since the signed version was created.
  *
  * @author tjquinn
  */
-public class NamingConventions {
-    private static final String JWSAPPCLIENT_PREFIX = "/___JWSappclient";
+public class AutoSignedContent extends Content.Adapter implements StaticContent {
 
-    public static final String JWSAPPCLIENT_SYSTEM_PREFIX =
-            JWSAPPCLIENT_PREFIX + "/___system";
+    private final File unsignedFile;
+    private final File signedFile;
+    private final String alias;
 
-    private  static final String JWSAPPCLIENT_APP_PREFIX =
-            JWSAPPCLIENT_PREFIX + "/___app";
+    public AutoSignedContent(final File unsignedFile,
+            final File signedFile, 
+            final String alias) {
+        this.unsignedFile = unsignedFile;
+        this.signedFile = signedFile;
+        this.alias = alias;
+    }
 
-    private static final String JWSAPPCLIENT_DOMAIN_PREFIX =
-            JWSAPPCLIENT_PREFIX + "/___domain";
+    public File file() throws IOException {
+        if ( ! isSignedFileReady()) {
+            try {
+                createSignedFile();
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+        }
+        return signedFile;
+    }
 
-    public static String contextRootForAppAdapter(final String appName) {
+    private boolean isSignedFileReady() {
+        return signedFile.exists() &&
+                (signedFile.lastModified() >= unsignedFile.lastModified());
+    }
+
+    private void createSignedFile() throws Exception {
         /*
-         * No trailing slash for the context root to use for registering
-         * with Grizzly.
+         * The code that instantiated this auto-signed content decides where
+         * the signed file will reside.  It might not have wanted to create
+         * the containing directory ahead of time.
          */
-        return NamingConventions.JWSAPPCLIENT_APP_PREFIX + "/" + appName;
+        signedFile.getParentFile().mkdirs();
+        ASJarSigner.signJar(unsignedFile, signedFile, alias);
     }
 
-    public static String domainContentURIString(final String domainRelativeURIString) {
-        return JWSAPPCLIENT_DOMAIN_PREFIX + "/" + domainRelativeURIString;
+    @Override
+    public String toString() {
+        return "AutoSignedContent:" + signedFile.getAbsolutePath();
     }
-
-    public static String generatedEARFacadeName(final String earName) {
-        return generatedEARFacadePrefix(earName) + ".jar";
-    }
-
-    public static String generatedEARFacadePrefix(final String earName) {
-        return earName + "Client";
-    }
-
 }

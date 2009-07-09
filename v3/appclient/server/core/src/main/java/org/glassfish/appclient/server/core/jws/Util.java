@@ -57,7 +57,11 @@ public class Util {
         StringBuffer processedContent = new StringBuffer();
         Matcher m = TOKEN_SUBSTITUTION.matcher(rawContent);
         while (m.find()) {
-            m.appendReplacement(processedContent, tokens.getProperty(m.group(1)));
+            String replacement = tokens.getProperty(m.group(1));
+            if (replacement == null) {
+                replacement = "NULL!";
+            }
+            m.appendReplacement(processedContent, replacement);
         }
         m.appendTail(processedContent);
 

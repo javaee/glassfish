@@ -37,42 +37,58 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core.jws;
+package org.glassfish.appclient.server.core.jws.servedcontent;
 
 /**
  *
  * @author tjquinn
  */
-public class NamingConventions {
-    private static final String JWSAPPCLIENT_PREFIX = "/___JWSappclient";
+public interface Content {
 
-    public static final String JWSAPPCLIENT_SYSTEM_PREFIX =
-            JWSAPPCLIENT_PREFIX + "/___system";
-
-    private  static final String JWSAPPCLIENT_APP_PREFIX =
-            JWSAPPCLIENT_PREFIX + "/___app";
-
-    private static final String JWSAPPCLIENT_DOMAIN_PREFIX =
-            JWSAPPCLIENT_PREFIX + "/___domain";
-
-    public static String contextRootForAppAdapter(final String appName) {
-        /*
-         * No trailing slash for the context root to use for registering
-         * with Grizzly.
-         */
-        return NamingConventions.JWSAPPCLIENT_APP_PREFIX + "/" + appName;
+    public enum State {
+        AVAILABLE,
+        UNAVAILABLE,
+        SUSPENDED
     }
 
-    public static String domainContentURIString(final String domainRelativeURIString) {
-        return JWSAPPCLIENT_DOMAIN_PREFIX + "/" + domainRelativeURIString;
-    }
+    public State state();
 
-    public static String generatedEARFacadeName(final String earName) {
-        return generatedEARFacadePrefix(earName) + ".jar";
-    }
+    public boolean isAvailable();
 
-    public static String generatedEARFacadePrefix(final String earName) {
-        return earName + "Client";
-    }
+    public void suspend();
 
+    public void resume();
+
+    public void start();
+
+    public void stop();
+    
+    public class Adapter implements Content {
+
+        private State state = State.AVAILABLE;
+
+        public State state() {
+            return state;
+        }
+
+        public boolean isAvailable() {
+            return state == State.AVAILABLE;
+        }
+
+        public void suspend() {
+            state = State.SUSPENDED;
+        }
+
+        public void resume() {
+            state = State.AVAILABLE;
+        }
+
+        public void start() {
+            state = State.AVAILABLE;
+        }
+
+        public void stop() {
+            state = State.UNAVAILABLE;
+        }
+    }
 }

@@ -343,6 +343,8 @@ abstract class AppClientDeployerHelper {
 
     protected abstract Set<DownloadableArtifacts.FullAndPartURIs> earLevelDownloads() throws IOException;
 
+    protected abstract void addGroupFacadeToEARDownloads();
+    
     static void copyStream(InputStream in, OutputStream out) throws IOException {
         byte[] buf = new byte[4096];
         int len;
