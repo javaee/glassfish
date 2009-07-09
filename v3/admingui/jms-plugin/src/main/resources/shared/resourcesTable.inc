@@ -46,7 +46,7 @@
 
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
+            getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
         <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
             <sun:checkbox id="select"
@@ -60,12 +60,13 @@
             <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?name=#{td.value.Name}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colEnabled}" sort="name" rowHeader="$boolean{true}" id="col2">
-            //<staticText id="enabled" value="#{td.value.Enabled}" />
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="name" rowHeader="$boolean{true}" id="col2">
+            <staticText id="enabled" value="#{td.value.Enabled}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colResourceType}" sort="name" rowHeader="$boolean{true}" id="col3">
-            <staticText id="resType" value="#{td.value.ConnectionDefinitionName}" />
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colResType}" sort="name" rowHeader="$boolean{true}" id="col3">
+            <staticText id="connDefName" value="#{td.value.ConnectionDefinitionName}" rendered="#{isConnPage}" />
+            <staticText id="resType" value="#{td.value.ResType}" rendered="#{!isConnPage}" />
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">

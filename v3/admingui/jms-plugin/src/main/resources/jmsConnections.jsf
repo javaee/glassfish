@@ -42,6 +42,7 @@
 <!define name="content">
     <event>
         <!beforeCreate
+            setAttribute(key="isConnPage" value="#{true}");
             setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
             setPageSessionAttribute(key="childType" value="connector-connection-pool");
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
@@ -49,7 +50,9 @@
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.connectionFactories}");
             setPageSessionAttribute(key="editLink" value="/jms/jmsConnectionEdit.jsf");
             setPageSessionAttribute(key="createLink" value="/jms/jmsConnectionNew.jsf");
-            setPageSessionAttribute(key="listPageLink" value="/jms/jmsConnections.jsf");
+            setPageSessionAttribute(key="listLink" value="/jms/jmsConnections.jsf");
+            setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njms.resourcesTable.deleteConnMessage}");
+            
             setPageSessionAttribute(key="targetLink" value="/jms/jmsConnectionTargets.jsf");
             setPageSessionAttribute(key="resourceType" value="connectorResource");
             setPageSessionAttribute(key="isJmsConnectionFactory" value="#{true}");

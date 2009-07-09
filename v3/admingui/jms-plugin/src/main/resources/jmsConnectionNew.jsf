@@ -74,7 +74,7 @@
 #include "/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.connectionFactory.newPageTitle}" helpText="$resource{i18n.connectionFactory.newPageTitleHelp}">
-        <sun:button id="loadDefaults" style="margin-left: 8pt"   primary="#{false}" text="$resource{i18n_web.button.LoadDefaults}" >
+        <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
             <!command
                 getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
             />

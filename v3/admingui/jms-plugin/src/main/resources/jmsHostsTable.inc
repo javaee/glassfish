@@ -76,7 +76,7 @@
             <staticText id="stateCol" rendered="#{hasState}" value="#{td.value.state}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18n.vs.colHost}"  rendered="#{hasHost}"  rowHeader="$boolean{true}" id="col3">
+        <sun:tableColumn headerText="$resource{i18n.common.Host}"  rendered="#{hasHost}"  rowHeader="$boolean{true}" id="col3">
             <staticText id="hostCol" rendered="#{hasHost}" value="#{td.value.Host}" />
         </sun:tableColumn>
 

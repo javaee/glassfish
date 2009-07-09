@@ -61,36 +61,36 @@
 
         "<br /><br />
     </sun:propertySheetSection>
-    <sun:propertySheetSection id="poolPropertySheet" label="$resource{i18n.common.PoolSettings}">
-        <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.initPoolSize}" helpText="$resource{i18n.common.initPoolSizeHelp}">
+    <sun:propertySheetSection id="poolPropertySheet" label="$resource{i18njms.jmsConn.PoolSettings}">
+        <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.initPoolSize}" helpText="$resource{i18njms.jmsConn.initPoolSizeHelp}">
             <sun:textField id="ds" styleClass="required" columns="$int{10}" text="#{pageSession.valueMap['SteadyPoolSize']}" />
             <sun:staticText id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
-        <sun:property id="maxProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.maxPoolSize}" helpText="$resource{i18n.common.maxPoolSizeHelp}">
+        <sun:property id="maxProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.maxPoolSize}" helpText="$resource{i18njms.jmsConn.maxPoolSizeHelp}">
             <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxPoolSize']}" />
             <sun:staticText id="con" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
-        <sun:property id="resizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolResize}" helpText="$resource{i18n.common.poolResizeHelp}">
+        <sun:property id="resizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.poolResize}" helpText="$resource{i18njms.jmsConn.poolResizeHelp}">
             <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['PoolResizeQuantity']}" />
             <sun:staticText id="con" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
-        <sun:property id="idleProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.idleTimeout}" helpText="$resource{i18n.common.idleTimeoutHelp}">
+        <sun:property id="idleProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.idleTimeout}" helpText="$resource{i18njms.jmsConn.idleTimeoutHelp}">
             <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['IdleTimeoutInSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
-        <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.maxWait}" helpText="$resource{i18n.common.maxWaitHelp}">
+        <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.maxWait}" helpText="$resource{i18njms.jmsConn.maxWaitHelp}">
             <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MaxWaitTimeInMillis']}" />
             <sun:staticText id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
         </sun:property>
 
 
-        <sun:property id="failProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorConnectionPool.onFail}" helpText="$resource{i18n.connectorConnectionPool.onFailHelp}">
-            <sun:checkbox label="$resource{i18n.connectorConnectionPool.closeAll}" selected="#{pageSession.valueMap['FailAllConnections']}" selectedValue="true"/>
+        <sun:property id="failProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.onFail}" helpText="$resource{i18njms.jmsConn.onFailHelp}">
+            <sun:checkbox label="$resource{i18njms.jmsConn.closeAll}" selected="#{pageSession.valueMap['FailAllConnections']}" selectedValue="true"/>
         </sun:property>
-        <sun:property id="transprop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorConnectionPool.transSupport}" helpText="$resource{i18n.connectorConnectionPool.transSupportHelp}" >
+        <sun:property id="transprop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.transSupport}" helpText="$resource{i18njms.jmsConn.transSupportHelp}" >
             <sun:dropDown id="trans" selected="#{pageSession.valueMap['TransactionSupport']}" labels={"", "XATransaction", "LocalTransaction", "NoTransaction"} />
         </sun:property>
-        <sun:property id="conValidationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.conValidation}" helpText="$resource{i18n.connectorConnectionPool.conValidationHelp}">
+        <sun:property id="conValidationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsConn.conValidation}" helpText="$resource{i18njms.jmsConn.conValidationHelp}">
             <sun:checkbox label="$resource{i18n.common.Required}" selected="#{pageSession.valueMap['IsConnectionValidationRequired']}" selectedValue="true" />
         </sun:property>
 

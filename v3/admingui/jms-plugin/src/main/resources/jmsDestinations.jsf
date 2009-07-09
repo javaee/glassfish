@@ -43,6 +43,7 @@
 <!define name="content">
     <event>
         <!beforeCreate
+            setAttribute(key="isConnPage" value="#{false}");
             setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
             setPageSessionAttribute(key="childType" value="admin-object-resource");
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
@@ -51,7 +52,9 @@
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.destResources}");
             setPageSessionAttribute(key="createLink" value="/jms/jmsDestinationNew.jsf");
             setPageSessionAttribute(key="editLink" value="/jms/jmsDestinationEdit.jsf");
-            setPageSessionAttribute(key="listPageLink" value="/jms/jmsDestinations.jsf");
+            setPageSessionAttribute(key="listLink" value="/jms/jmsDestinations.jsf");
+            setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njms.resourcesTable.deleteDestMessage}");
+
             //setPageSessionAttribute(key="targetLink" value="/resourceNode/jmsDestinationTargets.jsf");
             setPageSessionAttribute(key="resourceType" value="adminObjectResource");
             setPageSessionAttribute(key="hasPool" value="#{false}");

@@ -49,13 +49,22 @@
             setAttribute(key="edit" value="#{true}");
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}");
 
-            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
+            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
             setPageSessionAttribute(key="childType" value="jms-service");
-            gui.log(message="#{pageSession.objectNameStr}", level="INFO");
-            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             setPageSessionAttribute(key="convertToFalseList" value={"ReconnectEnabled"});
-            getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service" type="jms-host" result="#{pageSession.jmsHostList}");
-        />   
+
+            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
+            gui.log(message="***** objectNameStr = #{pageSession.objectNameStr}");
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+            setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+            setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+            setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+
+            />
     </event>   
 <!-- TO DO: NEED TO ADD CHECK FOR PE OR EE IN ORDER TO POPULATE JMS HOST DROPDOWN  -->   
 <!-- TO DO: NEED TO ADD HANDLER FOR PING BUTTON ONCE MESSAGES ARE WORKING  -->  
@@ -77,7 +86,7 @@
                             </event>
                             // TODO: Figure what this needs to make it work. :(
                             <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Type}" helpText="$resource{i18n.jms.TypeHelp}">                           
-                               <sun:dropDown id="Type"  selected="#{pageSession.valueMap['Type']}" labels={"LOCAL" "REMOTE" "EMBEDDED"} >
+                               <sun:dropDown id="Type"  selected="#{pageSession.valueMap['Type']}" labels={"LOCAL" "REMOTE" "EMBEDDED"} values={"LOCAL" "REMOTE" "EMBEDDED"}>
                                </sun:dropDown>
                              </sun:property>                       
                             <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Timeout}" helpText="$resource{i18n.jms.TimeoutHelp}">                           

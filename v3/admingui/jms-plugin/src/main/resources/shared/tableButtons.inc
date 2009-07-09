@@ -10,7 +10,7 @@
             else {return false;} "
         >
             <!command
-                getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+                getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
                 setAttribute(key="selectedRows" value="${selectedRows}");
@@ -20,7 +20,7 @@
 
         <sun:button id="enableButton" text="$resource{i18n.button.Enable}" disabled="#{false}" primary="#{false}">
             <!command
-                getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+                getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 updateStatus(objectNameStr="#{pageSession.updateObjectNameStr}", selectedRows="${selectedRows}", enabled="true");
                 setAttribute(key="selectedRows" value="${selectedRows}");
@@ -30,7 +30,7 @@
 
         <sun:button id="disableButton" text="$resource{i18n.button.Disable}" disabled="#{false}" primary="#{false}">
             <!command
-                getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+                getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 updateStatus(objectNameStr="#{pageSession.updateObjectNameStr}", selectedRows="${selectedRows}", enabled="false");
                 setAttribute(key="selectedRows" value="${selectedRows}");
