@@ -101,7 +101,7 @@ public final class AMXBooter
             try
             {
                 conn.invoke(BootAMXMBean.OBJECT_NAME, BootAMXMBean.BOOT_AMX_OPERATION_NAME, null, null);
-                MBeanListener.waitAMXReady(conn);
+                domainRootObjectName = MBeanListener.waitAMXReady(conn);
             }
             catch (final Exception e)
             {

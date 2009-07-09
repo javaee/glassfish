@@ -11,6 +11,7 @@ import javax.management.MBeanServerNotification;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
+import java.util.concurrent.CountDownLatch;
 
 import static org.glassfish.api.amx.AMXValues.*;
 
@@ -174,11 +175,14 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         return listener;
     }
 
-    private static final class WaitForDomainRootListener extends MBeanListener.CallbackImpl {
+    private static final class WaitForDomainRootListenerCallback extends MBeanListener.CallbackImpl {
         private final MBeanServerConnection mConn;
-        public WaitForDomainRootListener( final MBeanServerConnection conn ) {
+        private final CountDownLatch mLatch = new CountDownLatch(1);
+
+        public WaitForDomainRootListenerCallback( final MBeanServerConnection conn ) {
             mConn = conn;
         }
+        
         @Override
         public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener) {
             super.mbeanRegistered(objectName,listener);
@@ -187,6 +191,19 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
                 mConn.invoke( domainRoot(), "waitAMXReady", null, null );
             }
             catch( final Exception e )
+            {
+                throw new RuntimeException(e);
+            }
+            mLatch.countDown();
+        }
+        
+        public void await()
+        {
+            try
+            {
+                mLatch.await(); // wait until BootAMXMBean is ready
+            }
+            catch (InterruptedException e)
             {
                 throw new RuntimeException(e);
             }
@@ -199,9 +216,12 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         This will *not* cause AMX to load; it will block forever until AMX is ready. In other words,
         don't call this method unless it's a convenient thread that can wait forever.
      */
-    public static void waitAMXReady( final MBeanServerConnection server)
+    public static ObjectName waitAMXReady( final MBeanServerConnection server)
     {
-        listenForDomainRoot( server, new WaitForDomainRootListener(server) );
+        final WaitForDomainRootListenerCallback callback = new WaitForDomainRootListenerCallback(server);
+        listenForDomainRoot( server, callback );
+        callback.await();
+        return callback.getRegistered();
     }
     
     /**
