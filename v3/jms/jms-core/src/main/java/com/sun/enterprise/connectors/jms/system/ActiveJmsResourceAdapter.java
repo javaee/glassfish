@@ -74,12 +74,13 @@ import java.util.logging.Logger;
 import java.security.PrivilegedActionException;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.ResourceAdapterInternalException;
-import javax.resource.spi.BootstrapContext;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SocketChannel;
+import javax.resource.spi.*;
+
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.grizzly.LazyServiceInitializer;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -89,6 +90,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Singleton;
+//import com.sun.messaging.jmq.util.service.PortMapperClientHandler;
 
 
 /**
@@ -102,10 +105,10 @@ import org.jvnet.hk2.component.Habitat;
  * @author Binod P.G, Sivakumar Thyagarajan
  */
 @Service
-@Scoped(PerLookup.class)
+@Scoped(Singleton.class)
 
 
-public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
+public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl implements LazyServiceInitializer {
 
     static Logger logger = LogDomains.getLogger(ActiveJmsResourceAdapter.class,LogDomains.RSR_LOGGER);
 
@@ -138,7 +141,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     private static final String ADMINPASSFILE="AdminPassFile";
     private static final String USERNAME="UserName";
     private static final String PASSWORD="Password";
-
+    private static final String MQ_PORTMAPPER_BIND = "doBind";//"imq.portmapper.bind";
     private static final String MASTERBROKER="MasterBroker";
 
     //JMX properties
@@ -191,9 +194,12 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     private static String ADRLIST_BEHAVIOUR  = "AddressListBehavior";
     private static String ADRLIST_ITERATIONS  = "AddressListIterations";
     private static final String MDBIDENTIFIER = "MdbName";
+    private static final String JMS_SERVICE = "mq-service";
 
     //MCF properties
     private static final String MCFADDRESSLIST = "MessageServiceAddressList";
+
+    private static final String XA_JOIN_ALLOWED= "imq.jmsra.isXAJoinAllowed";
 
     private StringManager sm =
         StringManager.getManager(ActiveJmsResourceAdapter.class);
@@ -320,10 +326,13 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
                         (new java.security.PrivilegedExceptionAction() {
                             public Object run() throws
                                     ResourceAdapterInternalException {
+                                //set the JMSRA system property to enable XA JOINS
+                                System.setProperty(XA_JOIN_ALLOWED, "true");
                                 resourceadapter_.start(bootStrapContextImpl);
                                 return null;
                             }
                         });
+                //setResourceAdapter(resourceadapter_);
             } else {
                 resourceadapter_.start(bootStrapContextImpl);
             }
@@ -1210,6 +1219,12 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
             RECONNECTATTEMPTS, val, val, "java.lang.Integer");
         setProperty(cd, envProp4);
 
+        val = "false";
+        EnvironmentProperty envProp5 = new EnvironmentProperty (
+            MQ_PORTMAPPER_BIND, val, val, "java.lang.Boolean");
+        setProperty(cd, envProp5);
+
+
     // The above properties will be set in ConnectorDescriptor and
     // will be bound in JNDI. This will be available to appclient
     // and standalone client.
@@ -1954,4 +1969,49 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     private ServerContext getServerContext(){
         return habitat.getComponent(ServerContext.class);
     }
+
+    //methods from LazyServiceIntializer
+     public String getServiceName(){
+         return JMS_SERVICE;
+     }
+
+    public boolean initializeService(){
+         try {
+             String module = ConnectorConstants.DEFAULT_JMS_ADAPTER;
+             String loc = ConnectorsUtil.getSystemModuleLocation(module);
+             ConnectorRuntime connectorRuntime = habitat.getComponent(ConnectorRuntime.class);
+             connectorRuntime.createActiveResourceAdapter(loc, module, null);
+             return true;
+               } catch (ConnectorRuntimeException e) {
+                   e.printStackTrace();
+                   //logger.log(Level.WARNING, "Failed to start JMS RA");
+                   e.printStackTrace();
+                return false;
+             }
+    }
+    
+    public void handleRequest(SelectableChannel selectableChannel){
+        SocketChannel socketChannel = null;
+        if (selectableChannel instanceof SocketChannel) {
+             socketChannel = (SocketChannel)selectableChannel;
+             //PortMapperClientHandler  handler = null;
+            try{
+                Class c = resourceadapter_.getClass();
+                Method m = c.getMethod("getPortMapperClientHandler", null);
+                //handler = (PortMapperClientHandler) m.invoke(resourceadapter_, null);
+                Object handler = m.invoke(resourceadapter_, null);
+                m = handler.getClass().getMethod("handleRequest", SocketChannel.class);
+                        //((PortMapperClientHandler)ra_).handleRequest(socketChannel);
+                m.invoke(handler, socketChannel);
+            }catch (Exception ex){
+                   throw new RuntimeException ("Error invoking PortMapperClientHandler.handleRequest. Cause - " + ex.getMessage(), ex);
+            }
+
+            //handler.handleRequest(socketChannel);
+
+        } else {
+                 throw new IllegalArgumentException("Invalid SelectableChannel provided. SelectableChannel is not an instance of SocketChannel");
+               }
+    }
+
 }
