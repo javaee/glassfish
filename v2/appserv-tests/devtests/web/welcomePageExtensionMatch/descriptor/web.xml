@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+ Use is subject to license terms.
+-->
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+  <servlet>
+    <servlet-name>test</servlet-name>
+    <servlet-class>TestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>test</servlet-name>
+    <url-pattern>*.test</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.test</welcome-file>
+  </welcome-file-list>
+</web-app>
