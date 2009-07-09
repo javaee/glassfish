@@ -218,6 +218,7 @@ public class ConfigToolsImpl extends AMXImplBase
         final Domain domain = getDomainRootProxy().getDomain().as(Domain.class);
         final Resources resources = domain.getResources();
         
+        // remove any existing test element
         final String NAME = "test";
         try
         {
@@ -228,6 +229,7 @@ public class ConfigToolsImpl extends AMXImplBase
             //e.printStackTrace();
         }
         
+        // create a new ConnectorConnectionPool with a SecurityMap containing a BackendPrincipal
         final Map<String,Object> params = new HashMap<String,Object>();
         params.put( "Name", NAME );
         params.put( "ResourceAdapterName", NAME );

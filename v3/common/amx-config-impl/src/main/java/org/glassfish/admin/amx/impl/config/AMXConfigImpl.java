@@ -357,8 +357,7 @@ public class AMXConfigImpl extends AMXImplBase
                 }
                 else if (value instanceof Map)
                 {
-                    //System.out.println( "toAttributeChanges: Map?!!!!!!!!!!!!!" );
-                    // sub-element
+                    // a value that's a Map indicates a sub-element
                     final Map<String, Object> m = TypeCast.checkMap(Map.class.cast(value), String.class, Object.class);
                     subs.put(xmlName, m);
                 }
@@ -383,7 +382,7 @@ public class AMXConfigImpl extends AMXImplBase
     {
         if (subs.keySet().size() != 0)
         {
-            cdebug("Sub-elements to create: " + CollectionUtil.toString(subs.keySet(), ", "));
+            //cdebug("Sub-elements to create: " + CollectionUtil.toString(subs.keySet(), ", "));
         }
 
         ConfigBean newConfigBean = null;
@@ -401,6 +400,8 @@ public class AMXConfigImpl extends AMXImplBase
         //----------------------
         //
         // Force a synchronous processing of the new ConfigBean into an AMX MBean
+        // It will be processed (guaranteed), but we should ensure that it's available
+        // prior to returning to the caller.
         //
         final AMXConfigLoader amxLoader = SingletonEnforcer.get(AMXConfigLoader.class);
         amxLoader.handleConfigBean(newConfigBean, true);
@@ -411,6 +412,9 @@ public class AMXConfigImpl extends AMXImplBase
         return objectName;
     }
 
+    /**
+        Create a child of the specified type.
+     */
     public ObjectName createChild(final String type, final Map<String, Object> params)
     {
         final Class<? extends ConfigBeanProxy> intf = getConfigBeanProxyClassForContainedType(type);
@@ -431,6 +435,10 @@ public class AMXConfigImpl extends AMXImplBase
         }
     }
 
+    /**
+        Convert parameters in an array to a Map.  Even entries are keys, odd entries are values
+        and values that are arrays are sub-maps.
+     */
     private static Map<String, Object> paramsToMap(final Object[] params)
     {
         final Map<String, Object> m = new HashMap<String, Object>();
@@ -469,20 +477,6 @@ public class AMXConfigImpl extends AMXImplBase
         return createChild(type, paramsToMap(params));
     }
 
-    /*
-    public ObjectName test()
-    {
-    final Object[] args = {
-    "name", "test1",
-    "idle-thread-timeout-seconds", "900",
-    "MAX-QUEUE-SIZE", "3",
-    "min-thread-pool-size", "10",
-    "min-thread-pool-size", "30",
-    "classname", "com.sun.grizzly.http.StatsThreadPool"
-    };
-    return createChild( "thread-pool", args );
-    }
-     */
     private ObjectName createChild(final Class<? extends ConfigBeanProxy> intf, final Map<String, Object> paramsIn)
             throws ClassNotFoundException, TransactionFailure
     {
@@ -550,6 +544,37 @@ public class AMXConfigImpl extends AMXImplBase
             recursiveCreate( item, sptRoot, configSupport, mSubs );
         }
         
+        /**
+            If the child is of a type matching an @Element that is a List<its type>, then
+            get that list and add it to it.
+         */
+        private void addToList(
+            final WriteableView parent,
+            final ConfigBeanProxy child )
+        {
+            final Class<? extends ConfigBeanProxy> parentClass = parent.getProxyType();
+            final Class<? extends ConfigBeanProxy> childClass  = Dom.unwrap(child).getProxyType();
+            final ConfigBeanJMXSupport  parentSpt = ConfigBeanJMXSupportRegistry.getInstance(parentClass);
+            
+            final ConfigBeanJMXSupport.ElementMethodInfo elementInfo = parentSpt.getElementMethodInfo(childClass);
+            //cdebug( "Found: " + elementInfo + " for " + childClass );
+            final ConfigBean parentBean = (ConfigBean)Dom.unwrap(parent.getProxy(parentClass));
+            if ( elementInfo != null && Collection.class.isAssignableFrom(elementInfo.method().getReturnType()) )
+            {
+                // get the Collection and add the child
+                final ConfigModel.Property modelProp = parentBean.model.findIgnoreCase( elementInfo.xmlName() );
+                final List  list = (List)parent.getter( modelProp, elementInfo.method().getGenericReturnType() );
+                //cdebug( "Adding child to list obtained via " + elementInfo.method().getName() + "(), " + childClass );
+                list.add( child );
+            }
+            else
+            {
+                //cdebug( "Child is a singleton, adding via setter " + elementInfo.method().getName() + "()" );
+                final ConfigModel.Property modelProp = parentBean.model.findIgnoreCase( elementInfo.xmlName() );
+                parent.setter( modelProp, child, childClass );
+            }
+        }
+        
         private void recursiveCreate(
             final WriteableView parent,
             final ConfigBeanJMXSupport sptRoot,
@@ -563,9 +588,10 @@ public class AMXConfigImpl extends AMXImplBase
                 final Class<? extends ConfigBeanProxy> clazz = ConfigBeanJMXSupportRegistry.getConfigBeanProxyClassFor(sptRoot, type);
                 
                 final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
+                addToList( parent, childProxy);
                 final ConfigBean child = (ConfigBean)Dom.unwrap(childProxy);
                 final WriteableView childW = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(childProxy)));
-                cdebug("Created sub-element of type: " + type + ", " + clazz);
+                //cdebug("Created sub-element of type: " + type + ", " + clazz);
                 
                 // set attributes on newly-created item
                 final Map<String, Object> attrs = subs.get(type);
@@ -577,7 +603,7 @@ public class AMXConfigImpl extends AMXImplBase
                     if ( attrValue instanceof Map )
                     {
                         // another child/sub-element of this new one
-                        cdebug("Found sub-element " + attrName + " for " + type + " with Map " + attrValue);
+                        //cdebug("Found sub-element " + attrName + " for " + type + " with Map " + attrValue);
                         moreSubs.put( attrName, Map.class.cast(attrValue) );
                         continue;
                     }
@@ -586,9 +612,9 @@ public class AMXConfigImpl extends AMXImplBase
                     //final WriteableView childW = (WriteableView)configSupport.getWriteableView( childProxy );
                     //final WriteableView childW = (WriteableView)child;
                     if ( modelProp == null ) throw new IllegalArgumentException( "Can't find ConfigModel.Property for attr " + attrName + " on " + type );
-                    cdebug( "setting attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
+                    //cdebug( "setting attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
                     childW.setter( modelProp, attrValue, String.class);
-                    cdebug( "set attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
+                    //cdebug( "set attribute \"" + attrName + "\" to \"" + attrValue + "\" on " + type );
                 }
 
                 if ( moreSubs.keySet().size() != 0 )

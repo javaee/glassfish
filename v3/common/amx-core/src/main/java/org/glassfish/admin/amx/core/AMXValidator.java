@@ -54,6 +54,8 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.InstanceNotFoundException;
+
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenType;
 import javax.management.remote.JMXServiceURL;
@@ -887,7 +889,18 @@ public final class AMXValidator
         }
 
     }
-
+    
+    private void unregisterNonCompliantMBean( final ObjectName objectName)
+    {
+        try {
+            mMBeanServer.unregisterMBean(objectName);
+            debug( "Unregistered non-compliant MBean " + objectName );
+        }
+        catch( final Exception ignore ) {
+            debug( "Unable to unregister non-compliant MBean " + objectName );
+        }
+    }
+    
     public ValidationResult validate(final ObjectName[] targets)
     {
         final long startMillis = System.currentTimeMillis();
@@ -898,20 +911,42 @@ public final class AMXValidator
         // list them in order
         for (final ObjectName objectName : targets)
         {
-            List<String> problems = null;
+            List<String> problems = new ArrayList<String>();
+            AMXProxy     amx = null;
             try
             {
-                // certain failures prevent even the proxy from being created
-                // that's a fatal error
-                final AMXProxy amx = mProxyFactory.getProxy(objectName);
-                problems = _validate(amx);
+                // certain failures prevent even the proxy from being created, a fatal error
+                amx = mProxyFactory.getProxy(objectName);
             }
             catch( final Exception e )
             {
-                final String msg = "Cannot create AMXProxy for MBean \"" + objectName + "\" -- MBean is  non-compliant, unregistering it.";
-                problems = new ArrayList<String>();
-                problems.add(msg);
-                try { mMBeanServer.unregisterMBean(objectName); } catch( final Exception ignore ) { /*ignore*/ }
+                if ( ExceptionUtil.getRootCause(e) instanceof InstanceNotFoundException )
+                {
+                    problems.add( "Instance not found: " + objectName );
+                }
+                else
+                {
+                    debug( "Unable to create AMXProxy for " + objectName );
+                    e.printStackTrace();
+                    
+                    final String msg = "Cannot create AMXProxy for MBean \"" + objectName + "\" -- MBean is  non-compliant, unregistering it.";
+                    problems.add(msg);
+                    
+                    unregisterNonCompliantMBean(objectName);
+                }
+            }
+            
+            if ( amx != null )
+            {
+                try
+                {
+                    problems = _validate(amx);
+                }
+                catch( final Exception e )
+                {
+                    problems = new ArrayList<String>();
+                    problems.add( "Validation failure for MBean " + objectName + ", " + e);
+                }
             }
 
             failures.result(objectName, problems);

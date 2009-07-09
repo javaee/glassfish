@@ -69,7 +69,7 @@ import org.glassfish.api.amx.AMXCreatorInfo;
 public class ConfigBeanJMXSupport {    
     private final Class<? extends ConfigBeanProxy> mIntf;
     private final List<AttributeMethodInfo> mAttrInfos = new ArrayList<AttributeMethodInfo>();
-    private final List<ElementMethodInfo> mElemenInfos = new ArrayList<ElementMethodInfo>();
+    private final List<ElementMethodInfo> mElementInfos = new ArrayList<ElementMethodInfo>();
     private final List<DuckTypedInfo> mDuckTypedInfos = new ArrayList<DuckTypedInfo>();
     private final NameHint mNameHint;
     private final MBeanInfo mMBeanInfo;
@@ -105,7 +105,7 @@ public class ConfigBeanJMXSupport {
         mIntf = intf;
         mKey = key;
 
-        findStuff(intf, mAttrInfos, mElemenInfos, mDuckTypedInfos);
+        findStuff(intf, mAttrInfos, mElementInfos, mDuckTypedInfos);
 
         mMBeanInfo = _getMBeanInfo();
         sanityCheckMBeanInfo();
@@ -144,7 +144,7 @@ public class ConfigBeanJMXSupport {
             buf.append(info.attrName() + "/" + info.xmlName() + DELIM);
         }
         buf.append(NL + "}" + NL + "Elements: {" + NL);
-        for (final ElementMethodInfo info : mElemenInfos) {
+        for (final ElementMethodInfo info : mElementInfos) {
             buf.append(info.attrName() + "/" + info.xmlName() + DELIM);
         }
 
@@ -236,7 +236,7 @@ public class ConfigBeanJMXSupport {
         for (final AttributeMethodInfo info : mAttrInfos) {
             attrsList.add(attributeToMBeanAttributeInfo(info));
         }
-        for (final ElementMethodInfo e : mElemenInfos) {
+        for (final ElementMethodInfo e : mElementInfos) {
             final MBeanAttributeInfo attrInfo = elementToMBeanAttributeInfo(e.method());
             if (attrInfo != null) {
                 attrsList.add(attrInfo);
@@ -302,7 +302,7 @@ public class ConfigBeanJMXSupport {
             }
         }
 
-        for (final ElementMethodInfo info : mElemenInfos) {
+        for (final ElementMethodInfo info : mElementInfos) {
             if (info.key()) {
                 return false;
             }
@@ -314,7 +314,7 @@ public class ConfigBeanJMXSupport {
     // if no elements, then it's a leaf
     // Tricky case FIXME:  what if there are List<String> elements.
     boolean isLeaf() {
-        return mElemenInfos.size() == 0;
+        return mElementInfos.size() == 0;
     }
 
     /** partial list (quick check) of legal remoteable types */
@@ -562,7 +562,7 @@ public class ConfigBeanJMXSupport {
             }
         }
 
-        for (final ElementMethodInfo info : mElemenInfos) {
+        for (final ElementMethodInfo info : mElementInfos) {
             if (info.required()) {
                 s.add(info.attrName());
             }
@@ -1014,7 +1014,7 @@ public class ConfigBeanJMXSupport {
     Get the child types, excluding String[] and anonymous.
      */
     public Set<Class<? extends ConfigBeanProxy>> childInterfaces() {
-        final Set<Class<? extends ConfigBeanProxy>>  intfs =  childInterfaces(mElemenInfos);
+        final Set<Class<? extends ConfigBeanProxy>>  intfs =  childInterfaces(mElementInfos);
         
         final AMXCreatorInfo creatorInfo = mIntf.getAnnotation(AMXCreatorInfo.class);
         if ( creatorInfo != null )
@@ -1026,6 +1026,49 @@ public class ConfigBeanJMXSupport {
         }
         return intfs;
     }
+    
+    private Class<?> internalReturnType(final Method method)
+    {
+        Class returnType = method.getReturnType();
+        
+        if ( Collection.class.isAssignableFrom(returnType) )
+        {
+            final Type genericReturnType = method.getGenericReturnType();
+            if (genericReturnType instanceof ParameterizedType) {
+                final ParameterizedType pt = (ParameterizedType) genericReturnType;
+                final Type[] argTypes = pt.getActualTypeArguments();
+                if (argTypes.length == 1) {
+                    final Type argType = argTypes[0];
+                    if ( argType instanceof Class )
+                    {
+                        returnType = (Class)argType;
+                    }
+                    else
+                    {
+                        throw new IllegalArgumentException();
+                    }
+                }
+            }
+        }
+
+        return returnType;
+    }
+    
+    /**
+        Find a matching ElementMethodInfo by class.
+     */
+    public ElementMethodInfo getElementMethodInfo( final Class<? extends ConfigBeanProxy>  intf) {
+        ElementMethodInfo match = null;
+        for( final ElementMethodInfo info : mElementInfos )
+        {
+            if ( internalReturnType(info.method()) == intf ) {
+                match = info;
+                break;
+            }
+        }
+        return match;
+    }
+
 
     public Map<String, Class<? extends ConfigBeanProxy>> childTypes() {
         final Map<String, Class<? extends ConfigBeanProxy>> types = new HashMap<String, Class<? extends ConfigBeanProxy>>();
