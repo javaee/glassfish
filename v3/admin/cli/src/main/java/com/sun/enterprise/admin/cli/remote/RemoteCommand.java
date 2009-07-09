@@ -58,6 +58,7 @@ import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.admin.Payload;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 /**
  * A remote command handled by the asadmin CLI.
@@ -604,8 +605,14 @@ public class RemoteCommand extends CLICommand {
                         ValidOption.OPTIONAL, "false"));
                 addedUploadOption = true;
             }
-        } catch (Exception ex) {
-            // ignore all for now
+        } catch (ParserConfigurationException pex) {
+            // ignore for now
+            return null;
+        } catch (SAXException sex) {
+            // ignore for now
+            return null;
+        } catch (IOException ioex) {
+            // ignore for now
             return null;
         }
         return valid;
