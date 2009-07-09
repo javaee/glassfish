@@ -41,9 +41,11 @@ import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import com.sun.enterprise.connectors.util.SetMethodAction;
+import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.logging.LogDomains;
 
 import java.io.Serializable;
 import java.security.AccessController;
@@ -51,7 +53,12 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.Reference;
+import javax.resource.spi.ResourceAdapterAssociation;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.ResourceException;
 
 /**
  * Resource infor for Connector administered objects
@@ -60,6 +67,8 @@ import javax.naming.Reference;
  */
 public class AdministeredObjectResource extends JavaEEResourceBase
         implements Serializable {
+
+    private static Logger _logger = LogDomains.getLogger(AdministeredObjectResource.class, LogDomains.RSR_LOGGER);
 
     private String resadapter_;
     private String adminObjectClass_;
@@ -163,6 +172,17 @@ public class AdministeredObjectResource extends JavaEEResourceBase
 
             AccessController.doPrivileged
                     (new SetMethodAction(adminObject, configProperties_));
+
+        // associate ResourceAdapter if the admin-object is RAA    
+        if(adminObject instanceof ResourceAdapterAssociation){
+            try {
+                ResourceAdapter ra = ConnectorRegistry.getInstance().
+                        getActiveResourceAdapter(resadapter_).getResourceAdapter();
+                ((ResourceAdapterAssociation) adminObject).setResourceAdapter(ra);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "rardeployment.assoc_failed", ex);
+            }
+        }
             return adminObject;
         } catch (PrivilegedActionException ex) {
             throw(PoolingException) (new PoolingException().initCause(ex));
