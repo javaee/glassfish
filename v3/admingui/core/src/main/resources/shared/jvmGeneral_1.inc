@@ -55,7 +55,7 @@
             setPageSessionAttribute(key="skipAttrsList", value={"EnvClasspathIgnored" "ServerClasspath" "SystemClasspath" "ClasspathPrefix" "ClasspathSuffix" "NativeLibraryPathPrefix" "NativeLibraryPathSuffix"});
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
-            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
             setPageSessionAttribute(key="showCancelButton" value="#{false}" );
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
              setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
