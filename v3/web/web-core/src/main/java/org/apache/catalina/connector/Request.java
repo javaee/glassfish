@@ -3578,9 +3578,8 @@ public class Request
      */
     protected void parseSessionId() {
 
-        CharChunk uriBB = coyoteRequest.decodedURI().getCharChunk();
+        ByteChunk uriBB = coyoteRequest.decodedURI().getByteChunk();
         int semicolon = uriBB.indexOf(match, 0, match.length(), 0);
-
         if (semicolon > 0) {
 
             // Parse session ID, and extract it from the decoded request URI
