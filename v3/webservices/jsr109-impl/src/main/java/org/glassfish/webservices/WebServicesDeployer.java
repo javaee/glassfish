@@ -72,7 +72,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
 
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
-    private ResourceBundle rb = logger.getResourceBundle()   ;
+    private ResourceBundle rb = logger.getResourceBundle();
 
     @Inject
     ServerEnvironment env;
@@ -709,7 +709,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
     }
 
     private String format(String key, String ... values){
-        return MessageFormat.format(key,values);
+        return MessageFormat.format(key, (Object [])values);
     }
 
 
@@ -723,14 +723,14 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
         
     }
 
-     public void clean(DeploymentContext context) {
+    public void clean(DeploymentContext context) {
        
     }
 
 
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
 
-        return new WebServicesApplication(context,env,dispatcher);
+        return new WebServicesApplication(context, env, dispatcher, config, habitat);
 
     }
 
@@ -743,10 +743,6 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
         else
             return false;
     }
-
-
-
-
 }
 
    

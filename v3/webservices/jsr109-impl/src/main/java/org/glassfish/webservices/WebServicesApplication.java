@@ -1,5 +1,8 @@
 package org.glassfish.webservices;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -19,6 +22,7 @@ import java.util.logging.Logger;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -44,13 +48,21 @@ public class WebServicesApplication implements ApplicationContainer {
 
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
+    private ResourceBundle rb = logger.getResourceBundle();
 
-    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString ){
+    private Config config = null;
+
+    private Habitat habitat = null;
+
+
+    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Config config, Habitat habitat){
         this.deploymentCtx = context;
         this.dispatcher = dispatcherString;
         this.serverEnvironment = env;
         this.contextRoots = getContextRoots();
         this.adapter = (com.sun.grizzly.tcp.Adapter) new EjbWSAdapter();
+        this.config = config;
+        this.habitat = habitat;
     }
     public Object getDescriptor() {
         return null;
@@ -66,19 +78,17 @@ public class WebServicesApplication implements ApplicationContainer {
                 while(iter.hasNext()) {
                     contextRoot = iter.next();
                     dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
-                    //TODO BM add an equivalent of  WebservicesDeployers message here
-                   // logger.info(format(rb.getString("enterprise.deployment.endpoint.registration"),
 
-                     //                         nextEndpoint.getEndpointName(), actualAddress.toString() ));
-
-                    logger.info("Registering ejb endpoint" + contextRoot);
+                    logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
+                      app.getAppName(),
+                      //                                                                 vvvvv TODO
+                      new WsUtil(config, habitat).getWebServerInfo().getWebServerRootURL(false).toString() + contextRoot)
+                    );
                 }
             }
         } catch (EndpointRegistrationException e) {
             logger.log(Level.SEVERE,  "Error in registering the endpoint",e);
-
         }
-
         return true;
     }
 
@@ -140,4 +150,9 @@ public class WebServicesApplication implements ApplicationContainer {
         } else
            return false;
     }
+
+    private String format(String key, String ... values){
+        return MessageFormat.format(key, (Object[]) values);
+    }
+
 }
