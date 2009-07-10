@@ -198,6 +198,7 @@ public class EarDeployer implements Deployer, PostConstruct {
 
         try {
             generateAndRecordEARFacade(
+                    context,
                     application.getRegistrationName(),
                     context.getScratchDir("xml"),
                     generatedEARFacadeName(application.getRegistrationName()), appClientGroupListSB.toString());
@@ -223,11 +224,17 @@ public class EarDeployer implements Deployer, PostConstruct {
         return appClientFacadePath;
     }
 
-    private String generatedEARFacadeName(final String earName) {
-        return earName + "Client.jar";
+    public static String generatedEARFacadeName(final String earName) {
+        return generatedEARFacadePrefix(earName) + ".jar";
     }
 
-    private void generateAndRecordEARFacade(final String earName,
+    public static String generatedEARFacadePrefix(final String earName) {
+        return earName + "Client";
+    }
+
+    private void generateAndRecordEARFacade(
+            final DeploymentContext dc,
+            final String earName,
             final File appScratchDir,
             final String facadeFileName,
             final String appClientGroupList) throws IOException {
@@ -264,9 +271,12 @@ public class EarDeployer implements Deployer, PostConstruct {
 
         Set<DownloadableArtifacts.FullAndPartURIs> downloads =
                     new HashSet<DownloadableArtifacts.FullAndPartURIs>();
-        downloads.add(new DownloadableArtifacts.FullAndPartURIs(generatedJar.toURI(), facadeFileName));
+        DownloadableArtifacts.FullAndPartURIs download =
+                new DownloadableArtifacts.FullAndPartURIs(
+                    generatedJar.toURI(), facadeFileName);
+        downloads.add(download);
         artifacts.addArtifacts(earName, downloads);
-
+        dc.addTransientAppMetaData("earFacadeDownload", download);
     }
 
     protected InputStream openByteCodeStream(final String resourceName) throws IOException {
