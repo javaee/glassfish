@@ -46,6 +46,7 @@ public class WebTest {
     public void doTest() {     
         try { 
             invokeJsp();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -65,14 +66,11 @@ public class WebTest {
         System.out.println("Response Content-Type: " + contentType);
         if (contentType != null) {
             int index = contentType.indexOf("charset=" + REQUEST_CHARSET);
-            if (index != -1) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                stat.addStatus("Missing or invalid response charset",
-                               stat.FAIL);
+            if (index == -1) {
+                throw new Exception("Missing or invalid response charset");
             }
         } else {
-            stat.addStatus("Missing Content-Type response header", stat.FAIL);
+            throw new Exception("Missing Content-Type response header");
         }
     }
 }
