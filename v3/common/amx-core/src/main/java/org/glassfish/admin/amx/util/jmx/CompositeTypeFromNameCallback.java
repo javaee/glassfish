@@ -37,13 +37,13 @@ package org.glassfish.admin.amx.util.jmx;
 
 import javax.management.openmbean.OpenType;
 
-
 /**
-    In some cases, such as null values, a CompositeType cannot be 
-    determined.  This callback is invoked to get a CompositeType
-    given a name.
+In some cases, such as null values, a CompositeType cannot be 
+determined.  This callback is invoked to get a CompositeType
+given a name.
  */
 public interface CompositeTypeFromNameCallback
 {
-    public OpenType getOpenTypeFromName( String name );
+    public OpenType getOpenTypeFromName(String name);
+
 }

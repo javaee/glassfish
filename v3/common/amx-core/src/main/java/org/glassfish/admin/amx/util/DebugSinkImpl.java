@@ -37,30 +37,27 @@ package org.glassfish.admin.amx.util;
 
 import java.io.PrintStream;
 
-
 /**
  */
 public final class DebugSinkImpl implements DebugSink
 {
-    private final PrintStream   mPrintStream;
-    
-        public
-    DebugSinkImpl( final PrintStream out )
+    private final PrintStream mPrintStream;
+
+    public DebugSinkImpl(final PrintStream out)
     {
-        mPrintStream    = out;
+        mPrintStream = out;
     }
-    
-	    public void
-	print( final Object o  )
-	{
-	    mPrintStream.print( "" + o );
-	}
-	
-	    public void
-	println( Object o )
-	{
-	    mPrintStream.println( "" + o );
-	}
+
+    public void print(final Object o)
+    {
+        mPrintStream.print("" + o);
+    }
+
+    public void println(Object o)
+    {
+        mPrintStream.println("" + o);
+    }
+
 }
 
 

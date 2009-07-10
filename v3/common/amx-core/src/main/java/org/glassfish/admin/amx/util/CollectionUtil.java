@@ -43,122 +43,111 @@ import java.util.Collection;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
 
 /**
-	Various helper utilities for Collections.
+Various helper utilities for Collections.
  */
 public final class CollectionUtil
 {
-		private
-	CollectionUtil( )
-	{
-		// disallow instantiation
-	}
-	
-        
-        public static <T> void 
-    addAll( Collection<T> c, T[] items )
+    private CollectionUtil()
     {
-        for( final T item : items )
+        // disallow instantiation
+    }
+
+    public static <T> void addAll(Collection<T> c, T[] items)
+    {
+        for (final T item : items)
         {
-            c.add( item );
+            c.add(item);
         }
     }
 
-
-	/**
-		@return a String
-	 */
-		public static <T> String
-	toString(
-		final Collection<T> c,
-		final String	 delim )
-	{
-	    final String[]  strings   = toStringArray( c );
-	    //Arrays.sort( strings );
-	    
-		return StringUtil.toString( delim, (Object[])strings );
-	}
     /**
-		@return String[]
-	 */
-		public static <T> String[]
-	toStringArray( final Collection<T>	c )
-	{
-		final String[]	strings	= new String[ c.size() ];
-		
-		int	i = 0;
-		for( final Object o : c )
-		{
-			strings[ i ]	= SmartStringifier.toString( o );
-			++i;
-		}
-		
-		return( strings );
-	}
-    
-    	public static <T> List<String>
-	toStringList( final Collection<T>	c )
-	{
-		final String[]	strings	= toStringArray(c);
-        
-		final List<String>	list	= new ArrayList<String>();
-		for( final String s : strings )
-		{
-			list.add( s );
-		}
-        return list;
-	}
+    @return a String
+     */
+    public static <T> String toString(
+            final Collection<T> c,
+            final String delim)
+    {
+        final String[] strings = toStringArray(c);
+        //Arrays.sort( strings );
 
-	
-		public static <T> T
-	getSingleton( final Collection<T> s )
-	{
-		if ( s.size() != 1 )
-		{
-			throw new IllegalArgumentException();
-		}
-		return( s.iterator().next() );
-	}
-	
-	/**
-		Add all items in an array to a set.
-	 */
-		public static <T> void
-	addArray(
-		final Collection<T>	c,
-		final T[]		array )
-	{
-		for( int i = 0; i < array.length; ++i )
-		{
-			c.add( array[ i ] );
-		}
-	}
-	
-	/**
-		@param c	the Collection
-		@param elementClass	 the type of the element, must be non-primitive
-		@return array of <elementClass>[] elements
-	 */
-		public static <T> T[]
-	toArray(
-		final Collection<? extends T> 	c,
-		final Class<T>      	elementClass )
-	{
-	    final T[]  items  = ArrayUtil.newArray( elementClass, c.size() );
-	    
-		c.toArray( items );
-		
-		return items;
-	}
-	
-	
-	/**
-	    @return true if all elements are String, and there is at least one element
-	 */
-	    public static boolean
-	isAllStrings( final Collection<?> c )
-	{
-	    return IteratorUtil.getUniformClass( c.iterator() ) == String.class;
-	}
+        return StringUtil.toString(delim, (Object[]) strings);
+    }
+
+    /**
+    @return String[]
+     */
+    public static <T> String[] toStringArray(final Collection<T> c)
+    {
+        final String[] strings = new String[c.size()];
+
+        int i = 0;
+        for (final Object o : c)
+        {
+            strings[i] = SmartStringifier.toString(o);
+            ++i;
+        }
+
+        return (strings);
+    }
+
+    public static <T> List<String> toStringList(final Collection<T> c)
+    {
+        final String[] strings = toStringArray(c);
+
+        final List<String> list = new ArrayList<String>();
+        for (final String s : strings)
+        {
+            list.add(s);
+        }
+        return list;
+    }
+
+    public static <T> T getSingleton(final Collection<T> s)
+    {
+        if (s.size() != 1)
+        {
+            throw new IllegalArgumentException();
+        }
+        return (s.iterator().next());
+    }
+
+    /**
+    Add all items in an array to a set.
+     */
+    public static <T> void addArray(
+            final Collection<T> c,
+            final T[] array)
+    {
+        for (int i = 0; i < array.length; ++i)
+        {
+            c.add(array[i]);
+        }
+    }
+
+    /**
+    @param c	the Collection
+    @param elementClass	 the type of the element, must be non-primitive
+    @return array of <elementClass>[] elements
+     */
+    public static <T> T[] toArray(
+            final Collection<? extends T> c,
+            final Class<T> elementClass)
+    {
+        final T[] items = ArrayUtil.newArray(elementClass, c.size());
+
+        c.toArray(items);
+
+        return items;
+    }
+
+    /**
+    @return true if all elements are String, and there is at least one element
+     */
+    public static boolean isAllStrings(final Collection<?> c)
+    {
+        return IteratorUtil.getUniformClass(c.iterator()) == String.class;
+    }
+
 }
 
 

@@ -36,40 +36,39 @@
 package org.glassfish.admin.amx.util;
 
 /**
-	Useful for printing elapsed timings out. Example:
-	
-	<code>
-	final PrintMillis	timer	= new PrintMillis();
-	...
-	timer.println( "start" );
-	...
-	timer.println( "middle" );
-	...
-	...
-	timer.println( "end" );
-	</code>
+Useful for printing elapsed timings out. Example:
+
+<code>
+final PrintMillis	timer	= new PrintMillis();
+...
+timer.println( "start" );
+...
+timer.println( "middle" );
+...
+...
+timer.println( "end" );
+</code>
  */
 public class PrintMillis
 {
-	private long	mLast	= System.currentTimeMillis();
-	
-		public
-	PrintMillis()
-	{
-		mLast	= System.currentTimeMillis();
-	}
-	
-	/**
-		Print out the milliseconds that have elapsed since the last call.
-	 */
-		public void
-	println( String msg )
-	{
-		final long	elapsed	= System.currentTimeMillis() - mLast;
-		
-		// this printing to System.out is BY DESIGN, so leave it.
-		System.out.println( (msg == null ? "" : msg) + ": " + elapsed );
-		
-		mLast	= System.currentTimeMillis();
-	}
+    private long mLast = System.currentTimeMillis();
+
+    public PrintMillis()
+    {
+        mLast = System.currentTimeMillis();
+    }
+
+    /**
+    Print out the milliseconds that have elapsed since the last call.
+     */
+    public void println(String msg)
+    {
+        final long elapsed = System.currentTimeMillis() - mLast;
+
+        // this printing to System.out is BY DESIGN, so leave it.
+        System.out.println((msg == null ? "" : msg) + ": " + elapsed);
+
+        mLast = System.currentTimeMillis();
+    }
+
 }

@@ -35,49 +35,44 @@
  */
 package org.glassfish.admin.amx.util;
 
-
 /**
-    Central registry of timing values. Not intended for threaded use.
+Central registry of timing values. Not intended for threaded use.
  */
 public final class TimingDelta
 {
-    private long  mLastNanos;
-    
-        public
-    TimingDelta()
+    private long mLastNanos;
+
+    public TimingDelta()
     {
-        mLastNanos    = System.nanoTime();
+        mLastNanos = System.nanoTime();
     }
-    
+
     /**
-        @deprecated use elapsedNanos
+    @deprecated use elapsedNanos
      */
-        public long
-    elapsed()
+    public long elapsed()
     {
-       return elapsedNanos();
+        return elapsedNanos();
     }
-    
-        public long
-    elapsedNanos()
+
+    public long elapsedNanos()
     {
         final long now = System.nanoTime();
         final long elapsed = now - mLastNanos;
-        mLastNanos  = now;
+        mLastNanos = now;
         return elapsed;
     }
-    
-        public long
-    elapsedMicros()
+
+    public long elapsedMicros()
     {
         return elapsed() / 1000;
     }
-    
-        public long
-    elapsedMillis()
+
+    public long elapsedMillis()
     {
         return elapsed() / (1000 * 1000);
     }
+
 }
 
 

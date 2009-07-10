@@ -38,28 +38,25 @@ package org.glassfish.admin.amx.util.jmx.stringifier;
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
 public class ModelMBeanOperationInfoStringifier
-	extends MBeanOperationInfoStringifier implements Stringifier 
+        extends MBeanOperationInfoStringifier implements Stringifier
 {
-	public static final ModelMBeanOperationInfoStringifier
-	    DEFAULT	= new ModelMBeanOperationInfoStringifier();
-	
-		public
-	ModelMBeanOperationInfoStringifier()
-	{
-		super( );
-	}
-	
-		public
-	ModelMBeanOperationInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		// should we add anything over and above MBeanOperationInfo?
-		
-		return( super.stringify( o ) );
-	}
+    public static final ModelMBeanOperationInfoStringifier DEFAULT = new ModelMBeanOperationInfoStringifier();
+
+    public ModelMBeanOperationInfoStringifier()
+    {
+        super();
+    }
+
+    public ModelMBeanOperationInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        // should we add anything over and above MBeanOperationInfo?
+
+        return (super.stringify(o));
+    }
+
 }

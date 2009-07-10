@@ -38,122 +38,113 @@ package org.glassfish.admin.amx.util;
 import org.glassfish.admin.amx.util.Output;
 import org.glassfish.admin.amx.util.StringUtil;
 
-
 /**
-	Convenient wrapper around {@link AMXDebug}.
-    Can be made non-final if necessary; declared as 'final' until needed.
-    Note that the "-DAMX-DEBUG=true" must be set in order to see any output.
+Convenient wrapper around {@link AMXDebug}.
+Can be made non-final if necessary; declared as 'final' until needed.
+Note that the "-DAMX-DEBUG=true" must be set in order to see any output.
  */
 public final class AMXDebugHelper
 {
-    private final Output        mOutput;
-    private final String        mName;
-    volatile boolean            mEchoToStdOut;
-    
-        public
-    AMXDebugHelper( final String name )
+    private final Output mOutput;
+
+    private final String mName;
+
+    volatile boolean mEchoToStdOut;
+
+    public AMXDebugHelper(final String name)
     {
-        mOutput  = AMXDebug.getInstance().getOutput( name );
-        mName   = name;
-        
-        mEchoToStdOut   = false;
+        mOutput = AMXDebug.getInstance().getOutput(name);
+        mName = name;
+
+        mEchoToStdOut = false;
     }
-    
-        public
-    AMXDebugHelper( )
+
+    public AMXDebugHelper()
     {
-        this( "debug" );
+        this("debug");
     }
-    
-        public boolean
-    getEchoToStdOut( final boolean echo )
+
+    public boolean getEchoToStdOut(final boolean echo)
     {
         return mEchoToStdOut;
     }
-    
-        public void
-    setEchoToStdOut( final boolean echo )
+
+    public void setEchoToStdOut(final boolean echo)
     {
-        mEchoToStdOut   = echo;
+        mEchoToStdOut = echo;
     }
-  
-        public boolean
-    getDebug()
+
+    public boolean getDebug()
     {
-        return AMXDebug.getInstance().getDebug( mName );
+        return AMXDebug.getInstance().getDebug(mName);
     }
-        public void
-    setDebug( final boolean debug )
+
+    public void setDebug(final boolean debug)
     {
-        AMXDebug.getInstance().setDebug( mName, debug );
+        AMXDebug.getInstance().setDebug(mName, debug);
     }
-      
-        private void
-    printlnWithTime( final String s )
+
+    private void printlnWithTime(final String s)
     {
-         final long now  = System.currentTimeMillis();
-         final String msg   = now + ": " + s;
-         
-         mOutput.println( msg );
-         if ( mEchoToStdOut )
-         {
-            System.out.println( msg );
-         }
-    }
-    
-        public void
-    println( final Object o )
-    {
-        if ( getDebug() )
+        final long now = System.currentTimeMillis();
+        final String msg = now + ": " + s;
+
+        mOutput.println(msg);
+        if (mEchoToStdOut)
         {
-            printlnWithTime( "" + StringUtil.toString(o) );
+            System.out.println(msg);
         }
     }
-    
-        public void
-    println()
+
+    public void println(final Object o)
     {
-        println( "" );
-    }
-    
-      
-    /**
-        This form is preferred for multiple arguments so that String concatenation
-        can be avoided when no message will actually be output. For example, use:
-        <pre>println( a, b, c)</pre>
-        instead of:
-        <pre>println( a + b + c )</pre>
-     */
-        public void
-    println( final Object... items )
-    {
-        if ( getDebug() && items != null )
+        if (getDebug())
         {
-            String msg  = null;
-            
-            if ( items.length == 1 )
+            printlnWithTime("" + StringUtil.toString(o));
+        }
+    }
+
+    public void println()
+    {
+        println("");
+    }
+
+    /**
+    This form is preferred for multiple arguments so that String concatenation
+    can be avoided when no message will actually be output. For example, use:
+    <pre>println( a, b, c)</pre>
+    instead of:
+    <pre>println( a + b + c )</pre>
+     */
+    public void println(final Object... items)
+    {
+        if (getDebug() && items != null)
+        {
+            String msg = null;
+
+            if (items.length == 1)
             {
-                msg = StringUtil.toString( items[0] );
+                msg = StringUtil.toString(items[0]);
             }
             else
             {
-                msg = StringUtil.toString( "", items );
+                msg = StringUtil.toString("", items);
             }
-            printlnWithTime( msg );
+            printlnWithTime(msg);
         }
     }
-    
-        public void
-    dumpStack( final String msg )
+
+    public void dumpStack(final String msg)
     {
-        if ( getDebug() )
+        if (getDebug())
         {
             println();
-            println( "STACK DUMP FOLLOWS: " + msg);
-            println( StringUtil.toString( new Exception( "not a real exception" ) ) );
+            println("STACK DUMP FOLLOWS: " + msg);
+            println(StringUtil.toString(new Exception("not a real exception")));
             println();
         }
     }
+
 }
 
 

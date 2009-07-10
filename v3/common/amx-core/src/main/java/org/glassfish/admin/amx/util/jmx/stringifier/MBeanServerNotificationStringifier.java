@@ -40,35 +40,33 @@ import org.glassfish.admin.amx.util.stringifier.Stringifier;
 import javax.management.MBeanServerNotification;
 
 public class MBeanServerNotificationStringifier
-				extends NotificationStringifier implements Stringifier
+        extends NotificationStringifier implements Stringifier
 {
-	public static final MBeanServerNotificationStringifier	DEFAULT	=
-			new MBeanServerNotificationStringifier();
-	
-		public
-	MBeanServerNotificationStringifier( )
-	{
-		super();
-	}
-	
-		public
-	MBeanServerNotificationStringifier( Options options )
-	{
-		super( options );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final MBeanServerNotification	notif	= (MBeanServerNotification)o;
-		
-		final StringBuffer	b	= super._stringify( notif );
-		append( b, "" );
-		
-		append( b, "registered MBean: " + notif.getMBeanName() );
-		
-		return( b.toString() );
-	}
+    public static final MBeanServerNotificationStringifier DEFAULT =
+            new MBeanServerNotificationStringifier();
+
+    public MBeanServerNotificationStringifier()
+    {
+        super();
+    }
+
+    public MBeanServerNotificationStringifier(Options options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        final MBeanServerNotification notif = (MBeanServerNotification) o;
+
+        final StringBuffer b = super._stringify(notif);
+        append(b, "");
+
+        append(b, "registered MBean: " + notif.getMBeanName());
+
+        return (b.toString());
+    }
+
 }
 
 

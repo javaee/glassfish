@@ -33,38 +33,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/jmx/stringifier/MBeanFeatureInfoStringifierOptions.java,v 1.2 2007/05/05 05:31:05 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:05 $
- */
- 
 package org.glassfish.admin.amx.util.jmx.stringifier;
 
-	
 public final class MBeanFeatureInfoStringifierOptions
 {
-	public boolean	mIncludeDescription;
-	public String	mArrayDelimiter;
-	public boolean	mPretty;
-	
-	public static final MBeanFeatureInfoStringifierOptions	DEFAULT = new MBeanFeatureInfoStringifierOptions();
-	
-	
-		public
-	MBeanFeatureInfoStringifierOptions()
-	{
-		this( true, "," );
-	}
-	
-	
-		public
-	MBeanFeatureInfoStringifierOptions( boolean includeDescription, String arrayDelimiter )
-	{
-		mPretty	= true;
-		
-		mIncludeDescription	= includeDescription;
-		mArrayDelimiter		= arrayDelimiter;
-	}
+    public boolean mIncludeDescription;
+
+    public String mArrayDelimiter;
+
+    public boolean mPretty;
+
+    public static final MBeanFeatureInfoStringifierOptions DEFAULT = new MBeanFeatureInfoStringifierOptions();
+
+    public MBeanFeatureInfoStringifierOptions()
+    {
+        this(true, ",");
+    }
+
+    public MBeanFeatureInfoStringifierOptions(boolean includeDescription, String arrayDelimiter)
+    {
+        mPretty = true;
+
+        mIncludeDescription = includeDescription;
+        mArrayDelimiter = arrayDelimiter;
+    }
+
 }

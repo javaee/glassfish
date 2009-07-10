@@ -40,38 +40,36 @@ import org.glassfish.admin.amx.util.stringifier.Stringifier;
 import javax.management.monitor.MonitorNotification;
 
 public class MonitorNotificationStringifier
-				extends NotificationStringifier implements Stringifier
+        extends NotificationStringifier implements Stringifier
 {
-	public static final MonitorNotificationStringifier	DEFAULT	=
-			new MonitorNotificationStringifier();
-	
-		public
-	MonitorNotificationStringifier( )
-	{
-		super();
-	}
-	
-		public
-	MonitorNotificationStringifier( Options options )
-	{
-		super( options );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final MonitorNotification	notif	= (MonitorNotification)o;
-		
-		final StringBuffer	b	= super._stringify( notif );
-		append( b, "" );
-		
-		append( b, "Observed object: " + notif.getObservedObject() );
-		append( b, "Observed attribute: " + notif.getObservedAttribute() );
-		append( b, "Trigger: " + notif.getTrigger() );
-		append( b, "Gauge: " + notif.getDerivedGauge() );
-		
-		return( b.toString() );
-	}
+    public static final MonitorNotificationStringifier DEFAULT =
+            new MonitorNotificationStringifier();
+
+    public MonitorNotificationStringifier()
+    {
+        super();
+    }
+
+    public MonitorNotificationStringifier(Options options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        final MonitorNotification notif = (MonitorNotification) o;
+
+        final StringBuffer b = super._stringify(notif);
+        append(b, "");
+
+        append(b, "Observed object: " + notif.getObservedObject());
+        append(b, "Observed attribute: " + notif.getObservedAttribute());
+        append(b, "Trigger: " + notif.getTrigger());
+        append(b, "Gauge: " + notif.getDerivedGauge());
+
+        return (b.toString());
+    }
+
 }
 
 

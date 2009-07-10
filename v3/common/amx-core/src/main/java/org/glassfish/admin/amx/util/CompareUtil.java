@@ -36,44 +36,41 @@
 package org.glassfish.admin.amx.util;
 
 /**
-	Provides a variety of useful utilities for comparing objects.
+Provides a variety of useful utilities for comparing objects.
  */
- 
 public final class CompareUtil
 {
-		private
-	CompareUtil( )
-	{
-		// disallow instantiation
-	}
-	
-	
-		public static boolean
-	objectsEqual( Object o1, Object o2 )
-	{
-		boolean	equal	= o1 == o2;
-		
-		if ( ! equal )
-		{
-			if ( o1 == null )
-			{
-				// o1 is null, but o2 is not
-				equal	= false;
-			}
-			else
-			{
-				equal	= o1.equals( o2 );
-				if ( ! equal )
-				{
-					if ( ClassUtil.objectIsArray( o1 ) )
-					{
-						equal	= ArrayUtil.arraysEqual( o1, o2 );
-					}
-				}
-			}
-		}
-		
-		return( equal );
-	}
+    private CompareUtil()
+    {
+        // disallow instantiation
+    }
+
+    public static boolean objectsEqual(Object o1, Object o2)
+    {
+        boolean equal = o1 == o2;
+
+        if (!equal)
+        {
+            if (o1 == null)
+            {
+                // o1 is null, but o2 is not
+                equal = false;
+            }
+            else
+            {
+                equal = o1.equals(o2);
+                if (!equal)
+                {
+                    if (ClassUtil.objectIsArray(o1))
+                    {
+                        equal = ArrayUtil.arraysEqual(o1, o2);
+                    }
+                }
+            }
+        }
+
+        return (equal);
+    }
+
 }
 

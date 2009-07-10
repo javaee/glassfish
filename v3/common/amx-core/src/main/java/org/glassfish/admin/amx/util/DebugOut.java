@@ -39,23 +39,25 @@ package org.glassfish.admin.amx.util;
  */
 public interface DebugOut extends DebugSink
 {
-	/**
-		Return true if debugging is on.
-	 */
-	public boolean		getDebug();
-	
-	/**
-		Return the arbitrary identifier for this instance.
-	 */
-	public String		getID();
-	
-	/**
-	    If getDebug() returns true, output the arguments
-	 */
-	public void     debug( final Object... args );
-	
-	public void debugMethod( final String methodName,  final Object... args );
-	public void debugMethod( final String methodName, final String msg, final Object... args );
+    /**
+    Return true if debugging is on.
+     */
+    public boolean getDebug();
+
+    /**
+    Return the arbitrary identifier for this instance.
+     */
+    public String getID();
+
+    /**
+    If getDebug() returns true, output the arguments
+     */
+    public void debug(final Object... args);
+
+    public void debugMethod(final String methodName, final Object... args);
+
+    public void debugMethod(final String methodName, final String msg, final Object... args);
+
 }
 
 

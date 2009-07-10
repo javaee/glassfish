@@ -39,37 +39,33 @@ import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
 import javax.management.MBeanConstructorInfo;
 
-
 public class MBeanConstructorInfoStringifier extends MBeanFeatureInfoStringifier implements Stringifier
 {
-	public static final MBeanConstructorInfoStringifier	DEFAULT	=
-	    new MBeanConstructorInfoStringifier();
+    public static final MBeanConstructorInfoStringifier DEFAULT =
+            new MBeanConstructorInfoStringifier();
 
+    public MBeanConstructorInfoStringifier()
+    {
+        super();
+    }
 
-		public
-	MBeanConstructorInfoStringifier()
-	{
-		super( );
-	}
-	
-		public
-	MBeanConstructorInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final MBeanConstructorInfo	constructor	= (MBeanConstructorInfo)o;
-		
-		final String	name	= constructor.getName();
-		final int		lastDot	= 	name.lastIndexOf( "." );
-		final String	abbreviatedName	= name.substring( lastDot + 1, name.length() );
-		
-		final String params	= "(" +
-			ParamsToString( constructor.getSignature(), mOptions ) + ")";
-		
-		return( abbreviatedName + params );
-	}
+    public MBeanConstructorInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        final MBeanConstructorInfo constructor = (MBeanConstructorInfo) o;
+
+        final String name = constructor.getName();
+        final int lastDot = name.lastIndexOf(".");
+        final String abbreviatedName = name.substring(lastDot + 1, name.length());
+
+        final String params = "(" +
+                              ParamsToString(constructor.getSignature(), mOptions) + ")";
+
+        return (abbreviatedName + params);
+    }
+
 }

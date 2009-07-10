@@ -42,69 +42,70 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
-	The API that should be used to output from a Cmd running within the framework.
+The API that should be used to output from a Cmd running within the framework.
  */
 public final class FileUtils
 {
-	private	FileUtils()	{}
-	
-	
-		public static String
-	fileToString( final File src )
-		throws FileNotFoundException, IOException
-	{
-	    return fileToString( src, 32 * 1024 );
-	}
-	
-		public static String
-	fileToString( final File src, final int readBufferSize )
-		throws FileNotFoundException, IOException
-	{
-		final FileReader	in	= new FileReader( src );
+    private FileUtils()
+    {
+    }
 
-		final long  length  = src.length();
-		if ( length > 1024 * 1024 * 1024 )
-		{
-		    throw new IllegalArgumentException();
-		}
-		
-		final char[]	readBuffer	= new char[ readBufferSize ];
-		
-		final StringBuilder	result	= new StringBuilder( (int)length );
-		try
-		{
-			while ( true )
-			{
-				final int numRead	= in.read( readBuffer, 0, readBufferSize );
-				if ( numRead < 0 )
-					break;
-				
-				result.append( readBuffer, 0, numRead );
-			}
-		}
-		finally
-		{
-			in.close();
-		}
-		
-		return( result.toString() );
-	}
-	
-		public static void
-	stringToFile( final String s, final File dest )
-		throws IOException
-	{
-		final FileWriter	out	= new FileWriter( dest );
-		
-		try
-		{
-			out.write( s );
-		}
-		finally
-		{
-			out.close();
-		}
-	}
+    public static String fileToString(final File src)
+            throws FileNotFoundException, IOException
+    {
+        return fileToString(src, 32 * 1024);
+    }
+
+    public static String fileToString(final File src, final int readBufferSize)
+            throws FileNotFoundException, IOException
+    {
+        final FileReader in = new FileReader(src);
+
+        final long length = src.length();
+        if (length > 1024 * 1024 * 1024)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        final char[] readBuffer = new char[readBufferSize];
+
+        final StringBuilder result = new StringBuilder((int) length);
+        try
+        {
+            while (true)
+            {
+                final int numRead = in.read(readBuffer, 0, readBufferSize);
+                if (numRead < 0)
+                {
+                    break;
+                }
+
+                result.append(readBuffer, 0, numRead);
+            }
+        }
+        finally
+        {
+            in.close();
+        }
+
+        return (result.toString());
+    }
+
+    public static void stringToFile(final String s, final File dest)
+            throws IOException
+    {
+        final FileWriter out = new FileWriter(dest);
+
+        try
+        {
+            out.write(s);
+        }
+        finally
+        {
+            out.close();
+        }
+    }
+
 };
 
 

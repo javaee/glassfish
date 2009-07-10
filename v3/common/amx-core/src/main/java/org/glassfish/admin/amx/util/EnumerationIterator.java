@@ -38,35 +38,31 @@ package org.glassfish.admin.amx.util;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-
 /**
-	Implements the Iterator interface over an Enumeration
+Implements the Iterator interface over an Enumeration
  */
 public final class EnumerationIterator implements Iterator
 {
-	private final Enumeration	mEnum;
-	
-		public
-	EnumerationIterator( Enumeration enumIn )
-	{
-		mEnum	= enumIn;
-	}
-	
-		public boolean
-	hasNext()
-	{
-		return( mEnum.hasMoreElements() );
-	}
-	
-		public Object
-	next()
-	{
-		return( mEnum.nextElement() );
-	}
-	
-		public void
-	remove()
-	{
-		throw new UnsupportedOperationException( "" );
-	}
+    private final Enumeration mEnum;
+
+    public EnumerationIterator(Enumeration enumIn)
+    {
+        mEnum = enumIn;
+    }
+
+    public boolean hasNext()
+    {
+        return (mEnum.hasMoreElements());
+    }
+
+    public Object next()
+    {
+        return (mEnum.nextElement());
+    }
+
+    public void remove()
+    {
+        throw new UnsupportedOperationException("");
+    }
+
 }

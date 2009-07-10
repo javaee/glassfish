@@ -36,49 +36,42 @@
 package org.glassfish.admin.amx.util;
 
 /**
-	Directs output to the "bit bucket".
+Directs output to the "bit bucket".
  */
 public final class OutputIgnore implements Output
 {
-	public final static OutputIgnore	INSTANCE	= new OutputIgnore();
-	
-		private
-	OutputIgnore( )
-	{
-		// no need for more than one, ever
-	}
-	
-		public void
-	print( Object o )
-	{
-	}
-	
-		public void
-	println( Object o )
-	{
-	}
-	
-		public void
-	printError( Object o )
-	{
-	}
-	
-		public boolean
-	getDebug()
-	{
-		return( false );
-	}
-	
-		public void
-	printDebug( Object o )
-	{
-	}
-	
-	
-		public void
-	close( )
-	{
-	}
+    public final static OutputIgnore INSTANCE = new OutputIgnore();
+
+    private OutputIgnore()
+    {
+        // no need for more than one, ever
+    }
+
+    public void print(Object o)
+    {
+    }
+
+    public void println(Object o)
+    {
+    }
+
+    public void printError(Object o)
+    {
+    }
+
+    public boolean getDebug()
+    {
+        return (false);
+    }
+
+    public void printDebug(Object o)
+    {
+    }
+
+    public void close()
+    {
+    }
+
 };
 
 

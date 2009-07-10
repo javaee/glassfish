@@ -40,64 +40,59 @@ import javax.management.Notification;
 import javax.management.ObjectName;
 
 /**
-	Base class for building AMX Notifications.
+Base class for building AMX Notifications.
  */
 public class AttributeChangeNotificationBuilder extends NotificationBuilder
 {
-		public
-	AttributeChangeNotificationBuilder(
-		final ObjectName	source )
-	{
-		super( AttributeChangeNotification.ATTRIBUTE_CHANGE, source );
-	}
+    public AttributeChangeNotificationBuilder(
+            final ObjectName source)
+    {
+        super(AttributeChangeNotification.ATTRIBUTE_CHANGE, source);
+    }
 
-		public final Notification
-	buildNew()
-	{
-		throw new IllegalArgumentException();
-	}
-	
-		public final Notification
-	buildNew(
-		final String	key,
-		final Object	value )
-	{
-		throw new IllegalArgumentException();
-	}
-	
-		public final AttributeChangeNotification
-	buildAttributeChange(
-		final String	msg,
-		final String	attributeName,
-		final String	attributeType,
-		final Object	oldValue,
-		final Object	newValue )
-	{
-        return buildAttributeChange( msg, attributeName, attributeType, now(), oldValue, newValue );
-	}
-    
-    
-		public final AttributeChangeNotification
-	buildAttributeChange(
-		final String	msg,
-		final String	attributeName,
-		final String	attributeType,
-        final long      when,
-		final Object	oldValue,
-		final Object	newValue )
-	{
-		final AttributeChangeNotification notif	= new AttributeChangeNotification(
-			getSource(),
-			nextSequenceNumber(),
-			when,
-			msg,
-			attributeName,
-			attributeType,
-			oldValue,
-			newValue );
-		
-		return( notif );
-	}
+    public final Notification buildNew()
+    {
+        throw new IllegalArgumentException();
+    }
+
+    public final Notification buildNew(
+            final String key,
+            final Object value)
+    {
+        throw new IllegalArgumentException();
+    }
+
+    public final AttributeChangeNotification buildAttributeChange(
+            final String msg,
+            final String attributeName,
+            final String attributeType,
+            final Object oldValue,
+            final Object newValue)
+    {
+        return buildAttributeChange(msg, attributeName, attributeType, now(), oldValue, newValue);
+    }
+
+    public final AttributeChangeNotification buildAttributeChange(
+            final String msg,
+            final String attributeName,
+            final String attributeType,
+            final long when,
+            final Object oldValue,
+            final Object newValue)
+    {
+        final AttributeChangeNotification notif = new AttributeChangeNotification(
+                getSource(),
+                nextSequenceNumber(),
+                when,
+                msg,
+                attributeName,
+                attributeType,
+                oldValue,
+                newValue);
+
+        return (notif);
+    }
+
 }
 
 

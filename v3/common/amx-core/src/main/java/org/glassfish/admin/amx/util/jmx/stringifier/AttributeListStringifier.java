@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/jmx/stringifier/AttributeListStringifier.java,v 1.2 2007/05/05 05:31:04 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:04 $
- */
- 
 package org.glassfish.admin.amx.util.jmx.stringifier;
 
 import org.glassfish.admin.amx.util.stringifier.IteratorStringifier;
@@ -50,28 +43,27 @@ import java.util.Iterator;
 
 public final class AttributeListStringifier implements Stringifier
 {
-	final String	mDelim;
-	
-	public final static AttributeListStringifier	DEFAULT	= new AttributeListStringifier();
-	
-		public
-	AttributeListStringifier()
-	{
-		this( "\n" );
-	}
-	
-		public
-	AttributeListStringifier( String delim )
-	{
-		mDelim	= delim;
-		
-	}
-		public String
-	stringify( Object o )
-	{
-		final AttributeList	attrList	= (AttributeList)o;
-		final Iterator	iter	= attrList.iterator();
-		
-		return( IteratorStringifier.stringify( iter, mDelim ) );
-	}
+    final String mDelim;
+
+    public final static AttributeListStringifier DEFAULT = new AttributeListStringifier();
+
+    public AttributeListStringifier()
+    {
+        this("\n");
+    }
+
+    public AttributeListStringifier(String delim)
+    {
+        mDelim = delim;
+
+    }
+
+    public String stringify(Object o)
+    {
+        final AttributeList attrList = (AttributeList) o;
+        final Iterator iter = attrList.iterator();
+
+        return (IteratorStringifier.stringify(iter, mDelim));
+    }
+
 }

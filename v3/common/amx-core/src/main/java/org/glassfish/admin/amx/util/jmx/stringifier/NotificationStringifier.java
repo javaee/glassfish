@@ -45,111 +45,109 @@ import java.util.Date;
 
 public class NotificationStringifier implements Stringifier
 {
-	public static final NotificationStringifier	DEFAULT	= new NotificationStringifier();
-	
-	protected Options	mOptions;
-	
-	public final static class Options
-	{
-		// don't make 'final' fields; allow changes after instantiation
-		public boolean	mIncludeObjectName;
-		public boolean	mIncludeTimeStamp;
-		public boolean	mIncludeType;
-		public boolean	mIncludeSequenceNumber;
-		public boolean	mIncludeUserData;
-		public String	mDelim;
-		
-			public
-		Options()
-		{
-			mIncludeObjectName		= true;
-			mIncludeTimeStamp		= true;
-			mIncludeType			= true;
-			mIncludeSequenceNumber	= true;
-			mIncludeUserData		= false;
-			mDelim	= ", ";
-		}
-		
-	}
-	
-	
-		public
-	NotificationStringifier( )
-	{
-		mOptions	= new Options();
-	}
-	
-		public
-	NotificationStringifier( Options options )
-	{
-		mOptions	= options;
-	}
-		
-		protected void
-	append( StringBuffer b, Object o)
-	{
-		if ( b.length() != 0 )
-		{
-			b.append( mOptions.mDelim );
-		}
-		
-		b.append( SmartStringifier.toString( o ) );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final Notification	notif	= (Notification)o;
-		
-		return( _stringify( notif ).toString() );
-	}
-	
-		public static String
-	toString( Object o )
-	{
-		return( DEFAULT.stringify( o ) );
-	}
-	
-		protected StringBuffer
-	_stringify( Notification notif )
-	{
-		final StringBuffer	b	= new StringBuffer();
-		
-		if ( mOptions.mIncludeSequenceNumber )
-		{
-			append( b, "#" + notif.getSequenceNumber() );
-		}
+    public static final NotificationStringifier DEFAULT = new NotificationStringifier();
 
-		if ( mOptions.mIncludeTimeStamp )
-		{
-			append( b, new Date( notif.getTimeStamp() ) );
-		}
+    protected Options mOptions;
 
-		if ( mOptions.mIncludeObjectName )
-		{
-			append( b, StringUtil.quote( notif.getSource() ) );
-		}
+    public final static class Options
+    {
+        // don't make 'final' fields; allow changes after instantiation
+        public boolean mIncludeObjectName;
 
-		if ( mOptions.mIncludeType )
-		{
-			append( b, notif.getType() );
-		}
+        public boolean mIncludeTimeStamp;
 
-		if ( mOptions.mIncludeUserData )
-		{
-			append( b, StringUtil.quote( notif.getUserData() ) );
-		}
-		
-		if ( notif instanceof MBeanServerNotification )
-		{
-			// this should really be done in a MBeanServerNotificationStringifier!
-			final MBeanServerNotification	n	= (MBeanServerNotification)notif;
-			
-			append( b, StringUtil.quote( n.getMBeanName() ) );
-		}
-		
-		return( b );
-	}
+        public boolean mIncludeType;
+
+        public boolean mIncludeSequenceNumber;
+
+        public boolean mIncludeUserData;
+
+        public String mDelim;
+
+        public Options()
+        {
+            mIncludeObjectName = true;
+            mIncludeTimeStamp = true;
+            mIncludeType = true;
+            mIncludeSequenceNumber = true;
+            mIncludeUserData = false;
+            mDelim = ", ";
+        }
+
+    }
+
+    public NotificationStringifier()
+    {
+        mOptions = new Options();
+    }
+
+    public NotificationStringifier(Options options)
+    {
+        mOptions = options;
+    }
+
+    protected void append(StringBuffer b, Object o)
+    {
+        if (b.length() != 0)
+        {
+            b.append(mOptions.mDelim);
+        }
+
+        b.append(SmartStringifier.toString(o));
+    }
+
+    public String stringify(Object o)
+    {
+        final Notification notif = (Notification) o;
+
+        return (_stringify(notif).toString());
+    }
+
+    public static String toString(Object o)
+    {
+        return (DEFAULT.stringify(o));
+    }
+
+    protected StringBuffer _stringify(Notification notif)
+    {
+        final StringBuffer b = new StringBuffer();
+
+        if (mOptions.mIncludeSequenceNumber)
+        {
+            append(b, "#" + notif.getSequenceNumber());
+        }
+
+        if (mOptions.mIncludeTimeStamp)
+        {
+            append(b, new Date(notif.getTimeStamp()));
+        }
+
+        if (mOptions.mIncludeObjectName)
+        {
+            append(b, StringUtil.quote(notif.getSource()));
+        }
+
+        if (mOptions.mIncludeType)
+        {
+            append(b, notif.getType());
+        }
+
+        if (mOptions.mIncludeUserData)
+        {
+            append(b, StringUtil.quote(notif.getUserData()));
+        }
+
+        if (notif instanceof MBeanServerNotification)
+        {
+            // this should really be done in a MBeanServerNotificationStringifier!
+            final MBeanServerNotification n = (MBeanServerNotification) notif;
+
+            append(b, StringUtil.quote(n.getMBeanName()));
+        }
+
+        return (b);
+    }
+
 }
 
 

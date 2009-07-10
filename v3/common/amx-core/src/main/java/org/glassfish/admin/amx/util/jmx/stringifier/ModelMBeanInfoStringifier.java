@@ -35,67 +35,58 @@
  */
 package org.glassfish.admin.amx.util.jmx.stringifier;
 
-
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
-
 public class ModelMBeanInfoStringifier extends MBeanInfoStringifier implements Stringifier
 {
-	public static final ModelMBeanInfoStringifier	DEFAULT	= new ModelMBeanInfoStringifier();
-	
-		public
-	ModelMBeanInfoStringifier()
-	{
-		super();
-	}
-	
-		public
-	ModelMBeanInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
-	
-		private String
-	stringifyArray( Object [] a, Stringifier stringifier)
-	{
-		String	temp	= "";
-		
-		if ( a.length != 0 )
-		{
-			temp	= "\n" + ArrayStringifier.stringify( a, "\n", stringifier);
-		}
-		return( temp );
-	}
-	
-		
-	// subclass may override
-		MBeanAttributeInfoStringifier
-	getMBeanAttributeInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		return( new ModelMBeanAttributeInfoStringifier(options) );
-	}
-	
-	// subclass may override
-		MBeanOperationInfoStringifier
-	getMBeanOperationInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		return( new ModelMBeanOperationInfoStringifier(options) );
-	}
-	
-	// subclass may override
-		MBeanConstructorInfoStringifier
-	getMBeanConstructorInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		return( new ModelMBeanConstructorInfoStringifier(options) );
-	}
-	
-	// subclass may override
-		MBeanNotificationInfoStringifier
-	getMBeanNotificationInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		return( new ModelMBeanNotificationInfoStringifier(options) );
-	}
+    public static final ModelMBeanInfoStringifier DEFAULT = new ModelMBeanInfoStringifier();
+
+    public ModelMBeanInfoStringifier()
+    {
+        super();
+    }
+
+    public ModelMBeanInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
+    private String stringifyArray(Object[] a, Stringifier stringifier)
+    {
+        String temp = "";
+
+        if (a.length != 0)
+        {
+            temp = "\n" + ArrayStringifier.stringify(a, "\n", stringifier);
+        }
+        return (temp);
+    }
+
+    // subclass may override
+    MBeanAttributeInfoStringifier getMBeanAttributeInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        return (new ModelMBeanAttributeInfoStringifier(options));
+    }
+
+    // subclass may override
+    MBeanOperationInfoStringifier getMBeanOperationInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        return (new ModelMBeanOperationInfoStringifier(options));
+    }
+
+    // subclass may override
+    MBeanConstructorInfoStringifier getMBeanConstructorInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        return (new ModelMBeanConstructorInfoStringifier(options));
+    }
+
+    // subclass may override
+    MBeanNotificationInfoStringifier getMBeanNotificationInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        return (new ModelMBeanNotificationInfoStringifier(options));
+    }
+
 }
 
 

@@ -51,8 +51,8 @@ Generate an MBean ".java" file.
  */
 public class MBeanInterfaceGenerator
 {
-
     boolean mEmitComments;
+
     Map<String, Integer> mCounts;
 
     public MBeanInterfaceGenerator()
@@ -61,11 +61,17 @@ public class MBeanInterfaceGenerator
         mEmitComments = true;
     }
     //private final static String INDENT = "\t";
+
     private final static String INDENT = "    ";
+
     private final static String NEWLINE = "\n";
+
     private final static String PARAM_DELIM = ", ";
+
     public final static String FINAL_PREFIX = "final ";
+
     public final static int IMPORT_THRESHOLD = 1;
+
     private static final String BRACKETS = "[]";
 
     static String stripBrackets(String name)
@@ -154,11 +160,11 @@ public class MBeanInterfaceGenerator
         return (counts);
     }
 
-    private String getImportBlock(Map<String,Integer> counts)
+    private String getImportBlock(Map<String, Integer> counts)
     {
         final StringBuffer buf = new StringBuffer();
 
-        for( final String key : counts.keySet() )
+        for (final String key : counts.keySet())
         {
             final Integer count = counts.get(key);
 
@@ -209,7 +215,7 @@ public class MBeanInterfaceGenerator
 
         if (mEmitComments)
         {
-            buf.append(getInterfaceComment(info) + NEWLINE );
+            buf.append(getInterfaceComment(info) + NEWLINE);
         }
         String interfaceName = getClassname(info);
         buf.append("public interface " + interfaceName + " \n{\n");
@@ -250,7 +256,7 @@ public class MBeanInterfaceGenerator
                 buf.append(prefix + lines[i] + NEWLINE);
             }
 
-            if ( buf.length() != 0 )
+            if (buf.length() != 0)
             {
                 buf.setLength(buf.length() - 1);
             }
@@ -266,7 +272,7 @@ public class MBeanInterfaceGenerator
 
     protected String makeJavadocComment(String contents)
     {
-        if ( contents == null || contents.length() == 0 )
+        if (contents == null || contents.length() == 0)
         {
             return "";
         }
@@ -313,8 +319,9 @@ public class MBeanInterfaceGenerator
         }
         return comment;
     }
-    
-    protected String attributeNameToJavaName(final String attrName ) {
+
+    protected String attributeNameToJavaName(final String attrName)
+    {
         return attrName;
     }
 
@@ -411,14 +418,17 @@ public class MBeanInterfaceGenerator
 
     protected boolean isBoilerplateDescription(final String description)
     {
-        if ( description == null ) return true;
-        
+        if (description == null)
+        {
+            return true;
+        }
+
         final String trimmed = description.trim();
         return trimmed.length() == 0 ||
-                trimmed.indexOf("Attribute exposed for management") >= 0 ||
-                trimmed.indexOf("Operation exposed for management") >= 0 ||
-                trimmed.indexOf("No Description was available") >= 0 ||
-                trimmed.equals("n/a") ;
+               trimmed.indexOf("Attribute exposed for management") >= 0 ||
+               trimmed.indexOf("Operation exposed for management") >= 0 ||
+               trimmed.indexOf("No Description was available") >= 0 ||
+               trimmed.equals("n/a");
     }
 
     public String[] getParamNames(MBeanOperationInfo info)
@@ -444,8 +454,8 @@ public class MBeanInterfaceGenerator
         }
 
         final String nameComment = getAttributeNameComment(info.getName(), actualName);
-        
-        String result = description + NEWLINE + toString( info.getDescriptor() );
+
+        String result = description + NEWLINE + toString(info.getDescriptor());
 
         if (nameComment.length() != 0)
         {
@@ -461,47 +471,46 @@ public class MBeanInterfaceGenerator
     {
         return "";
     }
-        
-    private static String nvp( final String name, final Object value )
+
+    private static String nvp(final String name, final Object value)
     {
         return name + " = " + SmartStringifier.DEFAULT.stringify(value);
     }
-    
-    public static String toString( final Descriptor d )
+
+    public static String toString(final Descriptor d)
     {
         final String NL = NEWLINE;
         final StringBuffer buf = new StringBuffer();
-        if ( d != null && d.getFieldNames().length != 0 )
+        if (d != null && d.getFieldNames().length != 0)
         {
             //buf.append( idt(indent) + "Descriptor  = " + NL );
-            for( final String fieldName : d.getFieldNames() )
+            for (final String fieldName : d.getFieldNames())
             {
-                buf.append( nvp( fieldName, d.getFieldValue(fieldName)) + NL );
+                buf.append(nvp(fieldName, d.getFieldValue(fieldName)) + NL);
             }
-            buf.append( NL );
+            buf.append(NL);
         }
         else
         {
             //buf.append( idt(indent) + "Descriptor = n/a" + NL );
         }
-        
+
         return buf.toString();
     }
-
 
     public String getOperationComment(MBeanOperationInfo info, final String[] paramNames)
     {
         final String description = info.getDescription();
 
         final StringBuffer buf = new StringBuffer();
-        
-        if ( description != null )
+
+        if (description != null)
         {
-            buf.append( description + NEWLINE );
+            buf.append(description + NEWLINE);
         }
-        
+
         final Descriptor desc = info.getDescriptor();
-        buf.append( toString(desc) );
+        buf.append(toString(desc));
 
         final MBeanParameterInfo[] signature = info.getSignature();
         for (int i = 0; i < paramNames.length; ++i)
@@ -522,14 +531,14 @@ public class MBeanInterfaceGenerator
 
     public String getHeaderComment(final MBeanInfo info)
     {
-        return makeJavadocComment( "" );
+        return makeJavadocComment("");
     }
 
     public String getInterfaceComment(final MBeanInfo info)
     {
         final String comment =
-            "Implementing class: " + info.getClassName() + NEWLINE +
-             toString(info.getDescriptor() );
+                "Implementing class: " + info.getClassName() + NEWLINE +
+                toString(info.getDescriptor());
 
         return (makeJavadocComment(comment));
     }
@@ -538,15 +547,15 @@ public class MBeanInterfaceGenerator
     {
         return ("mbeans.generated");
     }
-    private static int sCounter = 0;
 
+    private static int sCounter = 0;
 
     public String getClassname(final MBeanInfo info)
     {
         String name = info.getClassName();
         name = name.replace(".", "_");
         name = name.replace("$", "_");
-        
+
         return name + "_Proxy";
     }
 
@@ -554,6 +563,7 @@ public class MBeanInterfaceGenerator
     {
         return ("");
     }
+
 }
 
 

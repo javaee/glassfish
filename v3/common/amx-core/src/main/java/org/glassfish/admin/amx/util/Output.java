@@ -35,46 +35,44 @@
  */
 package org.glassfish.admin.amx.util;
 
-
 /**
-	The API that should be used to output from a Cmd running within the framework.
+The API that should be used to output from a Cmd running within the framework.
  */
 public interface Output extends DebugSink
 {
-	/**
-		Output a message without a newline.
-		
-		@param o	the Object to output
-	 */
-	public void	print( Object o );
-	
-	/**
-		Output a message with a newline.
-		
-		@param o	the Object to output
-	 */
-	public void	println( Object o );
-	
-	/**
-		Output a message to error output
-		
-		@param o	the Object to output
-	 */
-	public void	printError( Object o );
-	
-	
-	/**
-		Output a debug error message if getDebug() is currently true.
-		
-		@param o	the Object to output
-	 */
-	public void	printDebug( Object o );
-	
-	
-	/**
-		Done with it, can be destroyed.
-	 */
-	public void close();
+    /**
+    Output a message without a newline.
+
+    @param o	the Object to output
+     */
+    public void print(Object o);
+
+    /**
+    Output a message with a newline.
+
+    @param o	the Object to output
+     */
+    public void println(Object o);
+
+    /**
+    Output a message to error output
+
+    @param o	the Object to output
+     */
+    public void printError(Object o);
+
+    /**
+    Output a debug error message if getDebug() is currently true.
+
+    @param o	the Object to output
+     */
+    public void printDebug(Object o);
+
+    /**
+    Done with it, can be destroyed.
+     */
+    public void close();
+
 };
 
 

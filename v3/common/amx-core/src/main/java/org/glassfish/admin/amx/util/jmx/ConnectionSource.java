@@ -40,37 +40,38 @@ import javax.management.remote.JMXConnector;
 import java.io.IOException;
 
 /**
-	A source of an MBeanServerConnection.
+A source of an MBeanServerConnection.
  */
 public interface ConnectionSource
 {
-	/**
-		Return a valid MBeanServerConnection, making a new connection if necessary, or
-		returning an existing one if still valid.  Some implementations may choose
-		to not allow creation of a new connection (when 'forceNew' is specified).
-		<p>
-		Should not be called frequently, as the check for validity will make a remote
-		call.
-		<p>
-		An implementation may choose to ignore the 'forceNew' parameter and always
-		return the same connection.
-		
-		@param forceNew		creates a new connection instead of reusing an existing one
-		@return the connection, or null if a new one is not possible
-	 */
-	public MBeanServerConnection	getMBeanServerConnection( boolean forceNew )
-										throws IOException;
-	
-	/**
-		@return existing connection, valid or not, may be null
-	 */
-	public MBeanServerConnection	getExistingMBeanServerConnection();
-	
-	/**
-		@return a JMXConnector or null if not appropriate
-	 */
-	public JMXConnector		getJMXConnector( boolean forceNew )
-								throws IOException;
+    /**
+    Return a valid MBeanServerConnection, making a new connection if necessary, or
+    returning an existing one if still valid.  Some implementations may choose
+    to not allow creation of a new connection (when 'forceNew' is specified).
+    <p>
+    Should not be called frequently, as the check for validity will make a remote
+    call.
+    <p>
+    An implementation may choose to ignore the 'forceNew' parameter and always
+    return the same connection.
+
+    @param forceNew		creates a new connection instead of reusing an existing one
+    @return the connection, or null if a new one is not possible
+     */
+    public MBeanServerConnection getMBeanServerConnection(boolean forceNew)
+            throws IOException;
+
+    /**
+    @return existing connection, valid or not, may be null
+     */
+    public MBeanServerConnection getExistingMBeanServerConnection();
+
+    /**
+    @return a JMXConnector or null if not appropriate
+     */
+    public JMXConnector getJMXConnector(boolean forceNew)
+            throws IOException;
+
 }
 
 

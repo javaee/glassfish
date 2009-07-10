@@ -39,27 +39,28 @@ import javax.management.Attribute;
 
 public final class AttributeComparator implements java.util.Comparator<Attribute>
 {
-	public static final AttributeComparator	INSTANCE	= new AttributeComparator();
-	
-	private	AttributeComparator()	{}
-	
-		public int
-	compare( Attribute attr1, Attribute attr2 )
-	{
-		int	result	= attr1.getName().compareTo( attr2.getName() );
-		if ( result == 0 )
-		{
-			result	= attr1.getValue().toString().compareTo( attr2.getValue().toString() );
-		}
-		
-		return( result );
-	}
-	
-		public boolean
-	equals( Object other )
-	{
-		return( other instanceof AttributeComparator );
-	}
+    public static final AttributeComparator INSTANCE = new AttributeComparator();
+
+    private AttributeComparator()
+    {
+    }
+
+    public int compare(Attribute attr1, Attribute attr2)
+    {
+        int result = attr1.getName().compareTo(attr2.getName());
+        if (result == 0)
+        {
+            result = attr1.getValue().toString().compareTo(attr2.getValue().toString());
+        }
+
+        return (result);
+    }
+
+    public boolean equals(Object other)
+    {
+        return (other instanceof AttributeComparator);
+    }
+
 }
 
 

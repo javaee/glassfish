@@ -39,47 +39,42 @@ import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import java.io.IOException;
 
-
 /**
-	A ConnectionSource which wraps an already created MBeanServerConnection
+A ConnectionSource which wraps an already created MBeanServerConnection
  */
 public final class MBeanServerConnectionConnectionSource implements ConnectionSource
 {
-	protected MBeanServerConnection		mConn;
-	
-	/**
-		Create a new instance for the specified MBeanServerConnection
-	 */
-		public
-	MBeanServerConnectionConnectionSource( final MBeanServerConnection conn )
-	{
-		mConn	= conn;
-	}
-	
-		public MBeanServerConnection
-	getMBeanServerConnection( boolean forceNew )
-		throws IOException
-	{
-		if ( mConn == null )
-		{
-			throw new IOException();
-		}
+    protected MBeanServerConnection mConn;
 
-		return( mConn );
-	}
-	
-		public MBeanServerConnection
-	getExistingMBeanServerConnection( )
-	{
-		return( mConn );
-	}
-	
-	
-		public JMXConnector
-	getJMXConnector( boolean forceNew )
-		throws IOException
-	{
-		// we can't supply one...
-		return( null );
-	}
+    /**
+    Create a new instance for the specified MBeanServerConnection
+     */
+    public MBeanServerConnectionConnectionSource(final MBeanServerConnection conn)
+    {
+        mConn = conn;
+    }
+
+    public MBeanServerConnection getMBeanServerConnection(boolean forceNew)
+            throws IOException
+    {
+        if (mConn == null)
+        {
+            throw new IOException();
+        }
+
+        return (mConn);
+    }
+
+    public MBeanServerConnection getExistingMBeanServerConnection()
+    {
+        return (mConn);
+    }
+
+    public JMXConnector getJMXConnector(boolean forceNew)
+            throws IOException
+    {
+        // we can't supply one...
+        return (null);
+    }
+
 }

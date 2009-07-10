@@ -41,96 +41,92 @@ import java.util.List;
 
 public final class IteratorUtil
 {
-		private
-	IteratorUtil( )
-	{
-		// disallow instantiation
-	}
-	
-	
-		public static <T> Object[]
-	toArray( final Iterator<T>	iter)
-	{
-		final List<T> list	= new ArrayList<T>();
-		
-		while ( iter.hasNext() )
-		{
-			final T	elem	= iter.next();
-			list.add( elem );
-		}
-		
-		final Object[]	result	= new Object[ list.size() ];
-		list.toArray( result );
-		
-		return( ArrayConversion.specializeArray( result ) );
-	}
-	
-    /**
-        @param iter 
-        @return the Class of the elements, or null if all null or different
-     */
-		public static Class
-	getUniformClass( final Iterator<?> iter)
-	{
-		Class	theClass	= null;
-		
-        Object next;
-		if ( iter.hasNext() )
-		{
-            next   = iter.next();
-			theClass	= (next == null) ? null : next.getClass();
-		}
+    private IteratorUtil()
+    {
+        // disallow instantiation
+    }
 
-		while ( iter.hasNext() )
-		{
-            next    = iter.next();
-            
-			if ( next != null && next.getClass() != theClass )
-			{
-				theClass	= null;
-				break;
-			}
-		}
-		
-		return( theClass );
-	}
-	
+    public static <T> Object[] toArray(final Iterator<T> iter)
+    {
+        final List<T> list = new ArrayList<T>();
+
+        while (iter.hasNext())
+        {
+            final T elem = iter.next();
+            list.add(elem);
+        }
+
+        final Object[] result = new Object[list.size()];
+        list.toArray(result);
+
+        return (ArrayConversion.specializeArray(result));
+    }
+
     /**
-        @param iter 
-        @param theClass
-        @param exactMatch  if true, then subclasses are considered to be different
-        @return true if all items are of the same class
+    @param iter
+    @return the Class of the elements, or null if all null or different
      */
-		public static <T> boolean
-	isUniformClass(
-		final Iterator<?>	iter,
-		final Class<T>      theClass,
-		final boolean       exactMatch )
-	{
-		boolean	isUniform	= true;
-		
-		while ( iter.hasNext() )
-		{
+    public static Class getUniformClass(final Iterator<?> iter)
+    {
+        Class theClass = null;
+
+        Object next;
+        if (iter.hasNext())
+        {
+            next = iter.next();
+            theClass = (next == null) ? null : next.getClass();
+        }
+
+        while (iter.hasNext())
+        {
+            next = iter.next();
+
+            if (next != null && next.getClass() != theClass)
+            {
+                theClass = null;
+                break;
+            }
+        }
+
+        return (theClass);
+    }
+
+    /**
+    @param iter
+    @param theClass
+    @param exactMatch  if true, then subclasses are considered to be different
+    @return true if all items are of the same class
+     */
+    public static <T> boolean isUniformClass(
+            final Iterator<?> iter,
+            final Class<T> theClass,
+            final boolean exactMatch)
+    {
+        boolean isUniform = true;
+
+        while (iter.hasNext())
+        {
             Object next = iter.next();
-			final Class	nextClass	= (next == null) ? null : next.getClass();
-			
-			if ( nextClass != theClass && nextClass != null )
-			{
-				if ( exactMatch )
-				{
-					isUniform	= false;
-					break;
-				}
-				
-				if ( ! theClass.isAssignableFrom( nextClass ) )
-				{
-					isUniform	= false;
-					break;
-				}
-			}
-		}
-		
-		return( isUniform );
-	}
+            final Class nextClass = (next == null) ? null : next.getClass();
+
+            if (nextClass != theClass && nextClass != null)
+            {
+                if (exactMatch)
+                {
+                    isUniform = false;
+                    break;
+                }
+
+                if (!theClass.isAssignableFrom(nextClass))
+                {
+                    isUniform = false;
+                    break;
+                }
+            }
+        }
+
+        return (isUniform);
+    }
+
 }
 

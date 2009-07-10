@@ -45,45 +45,43 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
 public class TabularDataStringifier implements Stringifier
 {
-	public static final TabularDataStringifier	DEFAULT	= new TabularDataStringifier();
-	
-		public
-	TabularDataStringifier( )
-	{
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final StringBuffer	buf	= new StringBuffer();
-		buf.append( "Tabular data:\n" );
-		
-		final TabularData	data	= (TabularData)o;
-		final TabularType	type	= data.getTabularType();
-		
-		final List		indexNames	= type.getIndexNames();
-		final Set		rowKeys		= data.keySet();
-		final Iterator	rowIter	= rowKeys.iterator();
-		int				rowIndex	= 0;
-		while ( rowIter.hasNext() )
-		{
-			final Object[]		key		= (Object[])rowIter.next();
-			final CompositeData	item	= data.get( key );
-			
-			final String	s	= SmartStringifier.toString( item );
-			
-			// emit the row index followed by the row
-			buf.append( "[" + rowIndex + "] " );
-			buf.append( s + "\n" );
-			
-			++rowIndex;
-		}
-		
-		return( buf.toString() );
-	}
+    public static final TabularDataStringifier DEFAULT = new TabularDataStringifier();
+
+    public TabularDataStringifier()
+    {
+    }
+
+    public String stringify(Object o)
+    {
+        final StringBuffer buf = new StringBuffer();
+        buf.append("Tabular data:\n");
+
+        final TabularData data = (TabularData) o;
+        final TabularType type = data.getTabularType();
+
+        final List indexNames = type.getIndexNames();
+        final Set rowKeys = data.keySet();
+        final Iterator rowIter = rowKeys.iterator();
+        int rowIndex = 0;
+        while (rowIter.hasNext())
+        {
+            final Object[] key = (Object[]) rowIter.next();
+            final CompositeData item = data.get(key);
+
+            final String s = SmartStringifier.toString(item);
+
+            // emit the row index followed by the row
+            buf.append("[" + rowIndex + "] ");
+            buf.append(s + "\n");
+
+            ++rowIndex;
+        }
+
+        return (buf.toString());
+    }
+
 }
 
 

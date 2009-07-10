@@ -41,31 +41,32 @@ import org.glassfish.admin.amx.util.jmx.stringifier.MBeanFeatureInfoStringifierO
 import javax.management.MBeanAttributeInfo;
 
 /**
-	Caution: this Comparator may be inconsistent with equals() because it ignores the description.
+Caution: this Comparator may be inconsistent with equals() because it ignores the description.
  */
 public final class MBeanAttributeInfoComparator implements java.util.Comparator<MBeanAttributeInfo>
 {
-	private static final MBeanAttributeInfoStringifier		ATTRIBUTE_INFO_STRINGIFIER	=
-		new MBeanAttributeInfoStringifier( new MBeanFeatureInfoStringifierOptions( false, ",") );
-	
-	public static final MBeanAttributeInfoComparator		INSTANCE	= new MBeanAttributeInfoComparator();
-	
-	private	MBeanAttributeInfoComparator()	{}
-	
-		public int
-	compare( final MBeanAttributeInfo o1, final MBeanAttributeInfo o2 )
-	{
-		final String	s1	= ATTRIBUTE_INFO_STRINGIFIER.stringify( o1 );
-		final String	s2	= ATTRIBUTE_INFO_STRINGIFIER.stringify( o2 );
-		
-		return( s1.compareTo( s2 ) );
-	}
-	
-		public boolean
-	equals( Object other )
-	{
-		return( other instanceof MBeanAttributeInfoComparator );
-	}
+    private static final MBeanAttributeInfoStringifier ATTRIBUTE_INFO_STRINGIFIER =
+            new MBeanAttributeInfoStringifier(new MBeanFeatureInfoStringifierOptions(false, ","));
+
+    public static final MBeanAttributeInfoComparator INSTANCE = new MBeanAttributeInfoComparator();
+
+    private MBeanAttributeInfoComparator()
+    {
+    }
+
+    public int compare(final MBeanAttributeInfo o1, final MBeanAttributeInfo o2)
+    {
+        final String s1 = ATTRIBUTE_INFO_STRINGIFIER.stringify(o1);
+        final String s2 = ATTRIBUTE_INFO_STRINGIFIER.stringify(o2);
+
+        return (s1.compareTo(s2));
+    }
+
+    public boolean equals(Object other)
+    {
+        return (other instanceof MBeanAttributeInfoComparator);
+    }
+
 }
 	
 	

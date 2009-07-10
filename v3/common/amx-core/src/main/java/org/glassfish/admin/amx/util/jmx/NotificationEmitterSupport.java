@@ -56,402 +56,395 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
-
 /**
-	Features:
-	<ul>
-	<li>Maintains information on all NotificationListeners so that queries can
-	be made on the number of listeners, and the number of listeners of each type</li>
-	<li>optionally sends all Notifications asynchronously via a separate Thread</li>
-	</ul>
-    <p>
-    For async use, a shared sender thread is used for all Notifications.
+Features:
+<ul>
+<li>Maintains information on all NotificationListeners so that queries can
+be made on the number of listeners, and the number of listeners of each type</li>
+<li>optionally sends all Notifications asynchronously via a separate Thread</li>
+</ul>
+<p>
+For async use, a shared sender thread is used for all Notifications.
  */
 public final class NotificationEmitterSupport
-    extends NotificationBroadcasterSupport
+        extends NotificationBroadcasterSupport
 {
-	private final boolean                   mAsyncDelivery;
-	private static volatile SenderThread	sSenderThread = null;
-	private final Map<String,Integer>   mListenerTypeCounts;
-	private final NotificationListenerTracking   mListeners;
-	
-	
-		public
-	NotificationEmitterSupport(
-		final boolean	asyncDelivery)
-	{
-		mAsyncDelivery	= asyncDelivery;
-		
-		mListenerTypeCounts = Collections.synchronizedMap( new HashMap<String,Integer>() );
-		
-		mListeners = new NotificationListenerTracking( true );
-	}
-    	
-		public void
-	cleanup()
-	{
+    private final boolean mAsyncDelivery;
+
+    private static volatile SenderThread sSenderThread = null;
+
+    private final Map<String, Integer> mListenerTypeCounts;
+
+    private final NotificationListenerTracking mListeners;
+
+    public NotificationEmitterSupport(
+            final boolean asyncDelivery)
+    {
+        mAsyncDelivery = asyncDelivery;
+
+        mListenerTypeCounts = Collections.synchronizedMap(new HashMap<String, Integer>());
+
+        mListeners = new NotificationListenerTracking(true);
+    }
+
+    public void cleanup()
+    {
         // NO-OP with the shared SenderThread
-        
         /*
-		if ( mSenderThread != null )
-		{
-			mSenderThread.quit();
-			mSenderThread	= null;
-		}
-        */
-	}
-	
-	/**
-		Synchronously (on current thread), ensure that all Notifications
-		have been delivered.
-	 */
-		public void
-	sendAll( )
-	{
+        if ( mSenderThread != null )
+        {
+        mSenderThread.quit();
+        mSenderThread	= null;
+        }
+         */
+    }
+
+    /**
+    Synchronously (on current thread), ensure that all Notifications
+    have been delivered.
+     */
+    public void sendAll()
+    {
         // they will all be sent as fast as the sender thread can go, but the caller wants
         // them all sent before return
-        
-        if ( sSenderThread != null )
-        {
-            sSenderThread.waitSentAll( this );
-        }
-	}
-	
-		public int
-	getListenerCount()
-	{
-		return( mListeners.getListenerCount() );
-	}
-	
-		public int
-	getNotificationTypeListenerCount( final String type )
-	{
-	    final Integer   count   = mListenerTypeCounts.get( type );
-	    
-	    int resultCount = 0;
-	    
-	    if ( count == null )
-	    {
-	        final Integer allCount  = mListenerTypeCounts.get( WILDCARD_TYPE );
-	        if ( allCount != null )
-	        {
-	            resultCount = allCount;
-	        }
-	        else
-	        {
-	            // no wildcards are in use
-	        }
-	    }
-	    
-		return( resultCount );
-	}
-	
-	
-	private static final String[]   NO_TYPES  = new String[0];
-	private static final String     WILDCARD_TYPE  = "***";
-	private static final String[]   ALL_TYPES  = new String[] { WILDCARD_TYPE };
-	
-	private static final String[]   ATTRIBUTE_CHANGE_TYPES  = new String[]
-	{
-	    AttributeChangeNotification.ATTRIBUTE_CHANGE
-	};
-	
-	private static final String[]   MBEAN_SERVER_NOTIFICATION_TYPES  = new String[]
-	{
-	    MBeanServerNotification.REGISTRATION_NOTIFICATION,
-	    MBeanServerNotification.UNREGISTRATION_NOTIFICATION,
-	};
-	
-	
-	private final Integer   COUNT_1 = new Integer( 1 );
-	
-	    private void
-	incrementListenerCountForType( final String type )
-	{
-	    synchronized( mListenerTypeCounts )
-	    {
-	        final Integer count   = mListenerTypeCounts.get( type );
-	        
-	        final Integer newCount  = (count == null ) ?
-	                                    COUNT_1 : new Integer( count.intValue() + 1 );
-	        
-	        mListenerTypeCounts.put( type, newCount );
-	    }
-	}
-	
-	   private void
-	decrementListenerCountForType( final String type )
-	{
-	    synchronized( mListenerTypeCounts )
-	    {
-	        final Integer count   = mListenerTypeCounts.get( type );
-	        if ( count == null )
-	        {
-	            throw new IllegalArgumentException( type );
-	        }
-	        
-	        final int   oldValue    = count.intValue();
-	        if ( oldValue == 1 )
-	        {
-	            mListenerTypeCounts.remove( type );
-	        }
-	        else
-	        {
-	            mListenerTypeCounts.put( type, new Integer( oldValue - 1 ) );
-	        }
-	    }
-	}
-	
-	
-	    private String[]
-	getTypes(
-		final NotificationFilter filter )
-	{
-	    String[]    types   = NO_TYPES;
-	    
-	    if ( filter instanceof NotificationFilterSupport )
-	    {
-	        final NotificationFilterSupport fs  = (NotificationFilterSupport)filter;
-	        
-	        types   = ListUtil.toStringArray( fs.getEnabledTypes() );
-	    }
-	    else if ( filter instanceof AttributeChangeNotificationFilter )
-	    {
-	        types   = ATTRIBUTE_CHANGE_TYPES;
-	    }
-	    else if ( filter instanceof MBeanServerNotificationFilter )
-	    {
-	        types   = MBEAN_SERVER_NOTIFICATION_TYPES;
-	    }
-	    else
-	    {
-	        // no filter, or non-standard one, have to assume all types
-	        types   = ALL_TYPES;
-	    }
-	    
-	    return types;
-	}
-	
-	    private void
-	addFilterTypeCounts( final NotificationFilter filter )
-	{
-	    String[]  types  = getTypes( filter );
-    	    
-	    for( String type : types )
-	    {
-	        incrementListenerCountForType( type );
-	    }
-	}
-	
-	    private void
-	removeFilterTypeCounts( final NotificationFilter filter )
-	{
-    	final String[]  types   = getTypes( filter );
-    	    
-	    for( String type : types )
-	    {
-	        decrementListenerCountForType( type );
-	    }
-	}
-	
-	    private void
-	removeFilterTypeCounts( final List<NotificationListenerInfo> infos )
-	{
-	    for( NotificationListenerInfo info : infos )
-	    {
-	        removeFilterTypeCounts( info.getFilter() );
-	    }
-	}
-	
-		public void
-	addNotificationListener(
-		final NotificationListener listener,
-		final NotificationFilter filter,
-		final Object handback)
-	{
-		super.addNotificationListener( listener, filter, handback );
-		
-		mListeners.addNotificationListener( listener, filter, handback );
-		addFilterTypeCounts( filter );
-	}
-	
-		public void
-	removeNotificationListener(final NotificationListener listener)
-		throws ListenerNotFoundException
-	{
-		super.removeNotificationListener( listener );
-		
-		final List<NotificationListenerInfo>    infos =
-		    mListeners.removeNotificationListener( listener );
-		removeFilterTypeCounts( infos );
-	}
-	
-		public void
-	removeNotificationListener(
-		final NotificationListener	listener,
-		final NotificationFilter	filter,
-		final Object				handback)
-		throws ListenerNotFoundException
-	{
-		super.removeNotificationListener( listener, filter, handback );
-		
-		mListeners.removeNotificationListener( listener );
-		if ( filter != null )
-		{
-		    removeFilterTypeCounts( filter );
-		}
-		
-	}
-	
-		protected void
-	internalSendNotification( final Notification notif )
-	{
-		super.sendNotification( notif );
-	}
 
-	/**
-		Send the Notification.  If created with async=true,
-		then this routine returns immediately and the Notification is sent
-		on a separate Thread.
-	 */
-		public synchronized void
-	sendNotification( final Notification notif )
-	{
-		if ( getListenerCount() != 0 )
-		{
-            final SenderThread senderThread = getSenderThread(mAsyncDelivery);
-			if ( senderThread!= null )
-			{
-				senderThread.enqueue( notif, this );
-			}
-			else
-			{
-				internalSendNotification( notif );
-			}
-		}
-	}
-    
-    
-	
-    private static Object SenderThreadLock = new Object();
-		private static SenderThread
-	getSenderThread( final boolean asyncDelivery )
-	{
-        // sSenderThread MUST be 'volatile' for this to be thread-safe
-        if ( sSenderThread != null ) { return sSenderThread; }
-        
-        synchronized( SenderThreadLock )
+        if (sSenderThread != null)
         {
-            if ( sSenderThread == null )
+            sSenderThread.waitSentAll(this);
+        }
+    }
+
+    public int getListenerCount()
+    {
+        return (mListeners.getListenerCount());
+    }
+
+    public int getNotificationTypeListenerCount(final String type)
+    {
+        final Integer count = mListenerTypeCounts.get(type);
+
+        int resultCount = 0;
+
+        if (count == null)
+        {
+            final Integer allCount = mListenerTypeCounts.get(WILDCARD_TYPE);
+            if (allCount != null)
             {
-                sSenderThread	= asyncDelivery ? new SenderThread() : null;
-                if ( sSenderThread != null )
+                resultCount = allCount;
+            }
+            else
+            {
+                // no wildcards are in use
+            }
+        }
+
+        return (resultCount);
+    }
+
+    private static final String[] NO_TYPES = new String[0];
+
+    private static final String WILDCARD_TYPE = "***";
+
+    private static final String[] ALL_TYPES = new String[]
+    {
+        WILDCARD_TYPE
+    };
+
+    private static final String[] ATTRIBUTE_CHANGE_TYPES = new String[]
+    {
+        AttributeChangeNotification.ATTRIBUTE_CHANGE
+    };
+
+    private static final String[] MBEAN_SERVER_NOTIFICATION_TYPES = new String[]
+    {
+        MBeanServerNotification.REGISTRATION_NOTIFICATION,
+        MBeanServerNotification.UNREGISTRATION_NOTIFICATION,
+    };
+
+    private final Integer COUNT_1 = new Integer(1);
+
+    private void incrementListenerCountForType(final String type)
+    {
+        synchronized (mListenerTypeCounts)
+        {
+            final Integer count = mListenerTypeCounts.get(type);
+
+            final Integer newCount = (count == null) ? COUNT_1 : new Integer(count.intValue() + 1);
+
+            mListenerTypeCounts.put(type, newCount);
+        }
+    }
+
+    private void decrementListenerCountForType(final String type)
+    {
+        synchronized (mListenerTypeCounts)
+        {
+            final Integer count = mListenerTypeCounts.get(type);
+            if (count == null)
+            {
+                throw new IllegalArgumentException(type);
+            }
+
+            final int oldValue = count.intValue();
+            if (oldValue == 1)
+            {
+                mListenerTypeCounts.remove(type);
+            }
+            else
+            {
+                mListenerTypeCounts.put(type, new Integer(oldValue - 1));
+            }
+        }
+    }
+
+    private String[] getTypes(
+            final NotificationFilter filter)
+    {
+        String[] types = NO_TYPES;
+
+        if (filter instanceof NotificationFilterSupport)
+        {
+            final NotificationFilterSupport fs = (NotificationFilterSupport) filter;
+
+            types = ListUtil.toStringArray(fs.getEnabledTypes());
+        }
+        else if (filter instanceof AttributeChangeNotificationFilter)
+        {
+            types = ATTRIBUTE_CHANGE_TYPES;
+        }
+        else if (filter instanceof MBeanServerNotificationFilter)
+        {
+            types = MBEAN_SERVER_NOTIFICATION_TYPES;
+        }
+        else
+        {
+            // no filter, or non-standard one, have to assume all types
+            types = ALL_TYPES;
+        }
+
+        return types;
+    }
+
+    private void addFilterTypeCounts(final NotificationFilter filter)
+    {
+        String[] types = getTypes(filter);
+
+        for (String type : types)
+        {
+            incrementListenerCountForType(type);
+        }
+    }
+
+    private void removeFilterTypeCounts(final NotificationFilter filter)
+    {
+        final String[] types = getTypes(filter);
+
+        for (String type : types)
+        {
+            decrementListenerCountForType(type);
+        }
+    }
+
+    private void removeFilterTypeCounts(final List<NotificationListenerInfo> infos)
+    {
+        for (NotificationListenerInfo info : infos)
+        {
+            removeFilterTypeCounts(info.getFilter());
+        }
+    }
+
+    public void addNotificationListener(
+            final NotificationListener listener,
+            final NotificationFilter filter,
+            final Object handback)
+    {
+        super.addNotificationListener(listener, filter, handback);
+
+        mListeners.addNotificationListener(listener, filter, handback);
+        addFilterTypeCounts(filter);
+    }
+
+    public void removeNotificationListener(final NotificationListener listener)
+            throws ListenerNotFoundException
+    {
+        super.removeNotificationListener(listener);
+
+        final List<NotificationListenerInfo> infos =
+                mListeners.removeNotificationListener(listener);
+        removeFilterTypeCounts(infos);
+    }
+
+    public void removeNotificationListener(
+            final NotificationListener listener,
+            final NotificationFilter filter,
+            final Object handback)
+            throws ListenerNotFoundException
+    {
+        super.removeNotificationListener(listener, filter, handback);
+
+        mListeners.removeNotificationListener(listener);
+        if (filter != null)
+        {
+            removeFilterTypeCounts(filter);
+        }
+
+    }
+
+    protected void internalSendNotification(final Notification notif)
+    {
+        super.sendNotification(notif);
+    }
+
+    /**
+    Send the Notification.  If created with async=true,
+    then this routine returns immediately and the Notification is sent
+    on a separate Thread.
+     */
+    public synchronized void sendNotification(final Notification notif)
+    {
+        if (getListenerCount() != 0)
+        {
+            final SenderThread senderThread = getSenderThread(mAsyncDelivery);
+            if (senderThread != null)
+            {
+                senderThread.enqueue(notif, this);
+            }
+            else
+            {
+                internalSendNotification(notif);
+            }
+        }
+    }
+
+    private static Object SenderThreadLock = new Object();
+
+    private static SenderThread getSenderThread(final boolean asyncDelivery)
+    {
+        // sSenderThread MUST be 'volatile' for this to be thread-safe
+        if (sSenderThread != null)
+        {
+            return sSenderThread;
+        }
+
+        synchronized (SenderThreadLock)
+        {
+            if (sSenderThread == null)
+            {
+                sSenderThread = asyncDelivery ? new SenderThread() : null;
+                if (sSenderThread != null)
                 {
                     sSenderThread.start();
                 }
             }
         }
-		
-		return( sSenderThread );
-	}
 
-	
-	private static final class SenderThread extends Thread
-	{
-		private volatile boolean	mQuit;
-		private final LinkedBlockingQueue<QueueItem>	mPendingNotifications;
-		
-        private final class QueueItem 
+        return (sSenderThread);
+    }
+
+    private static final class SenderThread extends Thread
+    {
+        private volatile boolean mQuit;
+
+        private final LinkedBlockingQueue<QueueItem> mPendingNotifications;
+
+        private final class QueueItem
         {
-            private final Notification               mNotif;
+            private final Notification mNotif;
+
             private final NotificationEmitterSupport mSender;
-            
-            public QueueItem( final Notification notif, final NotificationEmitterSupport sender )
+
+            public QueueItem(final Notification notif, final NotificationEmitterSupport sender)
             {
-                mNotif  = notif;
+                mNotif = notif;
                 mSender = sender;
             }
+
         }
-        
-			public
-		SenderThread()
-		{
+
+        public SenderThread()
+        {
             setDaemon(true);
-			mQuit	= false;
-			mPendingNotifications = new LinkedBlockingQueue<QueueItem>();
-		}
-		
-			public void
-		quit()
-		{
-			mQuit	= true;
+            mQuit = false;
+            mPendingNotifications = new LinkedBlockingQueue<QueueItem>();
+        }
+
+        public void quit()
+        {
+            mQuit = true;
             this.interrupt();
-		}
-		
-			private void
-		enqueue(
-            final Notification notif,
-            final NotificationEmitterSupport sender )
-		{
-			mPendingNotifications.add( new QueueItem( notif, sender) );
-		}
-        
+        }
+
+        private void enqueue(
+                final Notification notif,
+                final NotificationEmitterSupport sender)
+        {
+            mPendingNotifications.add(new QueueItem(notif, sender));
+        }
+
         /**
-            A fake Notification to used for waitSentAll()
+        A fake Notification to used for waitSentAll()
          */
         static final class CountDownLatchNofication extends Notification
         {
             private static final long serialVersionUID = 0xDEADBEEF; // never serialized
-            
+
             final CountDownLatch mLatch = new CountDownLatch(1);
-            CountDownLatchNofication( final Object source)
+
+            CountDownLatchNofication(final Object source)
             {
-                super( "CountDownLatchNofication", source, 0 );
+                super("CountDownLatchNofication", source, 0);
+            }
+
+        }
+
+        /**
+        Ensure that all existing items have been sent.
+        Check the queue for empty does not work; we need to see that thread has
+        not only emptied the queue, but grabbed the next item.
+         */
+        public void waitSentAll(final NotificationEmitterSupport sender)
+        {
+            final CountDownLatchNofication notif = new CountDownLatchNofication(this);
+            enqueue(notif, sender);
+            try
+            {
+                notif.mLatch.await();
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
             }
         }
-        
-        /**
-            Ensure that all existing items have been sent.
-            Check the queue for empty does not work; we need to see that thread has
-            not only emptied the queue, but grabbed the next item.
-         */
-            public void
-        waitSentAll( final NotificationEmitterSupport sender )
+
+        public void run()
         {
-            final CountDownLatchNofication notif =  new CountDownLatchNofication(this);
-            enqueue( notif, sender );
-            try { notif.mLatch.await(); } catch( InterruptedException e) { e.printStackTrace(); }
-        }
-     		
-			public void
-		run()
-		{
-			while ( ! mQuit )
-			{
+            while (!mQuit)
+            {
                 try
                 {
-                    final QueueItem    item = mPendingNotifications.take();
+                    final QueueItem item = mPendingNotifications.take();
                     final Notification notif = item.mNotif;
-                    
-                    if ( notif instanceof CountDownLatchNofication )
+
+                    if (notif instanceof CountDownLatchNofication)
                     {
                         // internal mechanism, see waitEmpty()
-                        ((CountDownLatchNofication)notif).mLatch.countDown();
+                        ((CountDownLatchNofication) notif).mLatch.countDown();
                     }
                     else
                     {
-                        item.mSender.internalSendNotification( notif );
+                        item.mSender.internalSendNotification(notif);
                     }
                 }
-                catch( InterruptedException e )
+                catch (InterruptedException e)
                 {
                     // what does this mean if interrupted other than by quit() ?
                     // Presumably we're supposed to stop working
                     mQuit = true;
                 }
-			}
-		}
-	}
+            }
+        }
+
+    }
 }
 
 

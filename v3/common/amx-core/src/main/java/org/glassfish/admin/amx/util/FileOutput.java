@@ -40,106 +40,102 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 /**
-	Directs output to a file. Lazy initialization; the file
-	is not actually opened until output is sent.
+Directs output to a file. Lazy initialization; the file
+is not actually opened until output is sent.
  */
 public final class FileOutput implements Output
 {
     private PrintStream mOut;
-    private final File  mFile;
-    private final boolean  mAppend;
-    
-		public
-	FileOutput( final File f )
-	{
-	    this( f, false );
-	}
-	
-		public
-	FileOutput( final File f, boolean append )
-	{
-	    mOut    = null;
-	    mFile   = f;
-	    mAppend = append;
-	}
-	
-	    private void
-	lazyInit()
-	{
-	    if ( mOut == null ) synchronized( this )
-	    {
-    	    if ( mOut == null )
-    	    {
-    	        try
-    	        {
-                    if ( (! mAppend) && mFile.exists() )
+
+    private final File mFile;
+
+    private final boolean mAppend;
+
+    public FileOutput(final File f)
+    {
+        this(f, false);
+    }
+
+    public FileOutput(final File f, boolean append)
+    {
+        mOut = null;
+        mFile = f;
+        mAppend = append;
+    }
+
+    private void lazyInit()
+    {
+        if (mOut == null)
+        {
+            synchronized (this)
+            {
+                if (mOut == null)
+                {
+                    try
                     {
-                        mFile.delete();
+                        if ((!mAppend) && mFile.exists())
+                        {
+                            mFile.delete();
+                        }
+
+                        mOut = new PrintStream(new FileOutputStream(mFile, mAppend));
                     }
-                
-    	            mOut    = new PrintStream( new FileOutputStream( mFile, mAppend) );
-    	        }
-    	        catch( Exception e )
-    	        {
-    	            // don't use System.out/err; possible infinite recursion
-    	            throw new RuntimeException( "Can't create file: " + mFile +
-    	                ", exception = " + e );
-    	        }
-    	    }
-    	}
-	}
-	
-		public void
-	print( final Object o )
-	{
-	    lazyInit();
-	    mOut.print( o.toString() );
-	}
-	
-		public void
-	println( Object o )
-	{
-	    lazyInit();
-	    mOut.println( o.toString() );
-	}
-	
-		public void
-	printError( final Object o )
-	{
-	    lazyInit();
-	    println( "ERROR: " + o );
-	}
-	
-		public boolean
-	getDebug()
-	{
-	    lazyInit();
-		return( false );
-	}
-	
-		public void
-	printDebug( final Object o )
-	{
-	    lazyInit();
-	    println( "DEBUG: " + o );
-	}
-	
-	
-		public void
-	close( )
-	{
-	    if ( mOut != null )
-	    {
-    	    try
-    	    {
-    	        mOut.close();
-    	    }
-    	    finally
-    	    {
-    	        mOut    = null;
-    	    }
-	    }
-	}
+                    catch (Exception e)
+                    {
+                        // don't use System.out/err; possible infinite recursion
+                        throw new RuntimeException("Can't create file: " + mFile +
+                                                   ", exception = " + e);
+                    }
+                }
+            }
+        }
+    }
+
+    public void print(final Object o)
+    {
+        lazyInit();
+        mOut.print(o.toString());
+    }
+
+    public void println(Object o)
+    {
+        lazyInit();
+        mOut.println(o.toString());
+    }
+
+    public void printError(final Object o)
+    {
+        lazyInit();
+        println("ERROR: " + o);
+    }
+
+    public boolean getDebug()
+    {
+        lazyInit();
+        return (false);
+    }
+
+    public void printDebug(final Object o)
+    {
+        lazyInit();
+        println("DEBUG: " + o);
+    }
+
+    public void close()
+    {
+        if (mOut != null)
+        {
+            try
+            {
+                mOut.close();
+            }
+            finally
+            {
+                mOut = null;
+            }
+        }
+    }
+
 };
 
 

@@ -33,53 +33,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/jmx/stringifier/MBeanAttributeInfoStringifier.java,v 1.2 2007/05/05 05:31:04 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:04 $
- */
- 
 package org.glassfish.admin.amx.util.jmx.stringifier;
 
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
 import javax.management.MBeanAttributeInfo;
 
-
 public class MBeanAttributeInfoStringifier extends MBeanFeatureInfoStringifier implements Stringifier
 {
-	public final static MBeanAttributeInfoStringifier	DEFAULT	=
-					new MBeanAttributeInfoStringifier();
-	
-		public
-	MBeanAttributeInfoStringifier()
-	{
-		super();
-	}
-	
-		public
-	MBeanAttributeInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		MBeanAttributeInfo	attr	= (MBeanAttributeInfo)o;
-		String	result	= attr.getName() + ":";
-		if ( attr.isReadable() )
-			result	= result + "r";
-		if ( attr.isWritable() )
-			result	= result + "w";
-		result	= result + mOptions.mArrayDelimiter + getPresentationTypeString( attr.getType() );
-		
-		if ( mOptions.mIncludeDescription )
-		{
-			result	= result + ",\"" + attr.getDescription() + "\"";
-		}
-		
-		return( result );
-	}
+    public final static MBeanAttributeInfoStringifier DEFAULT =
+            new MBeanAttributeInfoStringifier();
+
+    public MBeanAttributeInfoStringifier()
+    {
+        super();
+    }
+
+    public MBeanAttributeInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        MBeanAttributeInfo attr = (MBeanAttributeInfo) o;
+        String result = attr.getName() + ":";
+        if (attr.isReadable())
+        {
+            result = result + "r";
+        }
+        if (attr.isWritable())
+        {
+            result = result + "w";
+        }
+        result = result + mOptions.mArrayDelimiter + getPresentationTypeString(attr.getType());
+
+        if (mOptions.mIncludeDescription)
+        {
+            result = result + ",\"" + attr.getDescription() + "\"";
+        }
+
+        return (result);
+    }
+
 }

@@ -33,14 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/jmx/stringifier/MBeanNotificationInfoStringifier.java,v 1.2 2007/05/05 05:31:05 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:05 $
- */
- 
-
 package org.glassfish.admin.amx.util.jmx.stringifier;
 
 import org.glassfish.admin.amx.util.stringifier.ArrayStringifier;
@@ -49,38 +41,36 @@ import org.glassfish.admin.amx.util.stringifier.Stringifier;
 import javax.management.MBeanNotificationInfo;
 
 public class MBeanNotificationInfoStringifier
-	extends MBeanFeatureInfoStringifier implements Stringifier
+        extends MBeanFeatureInfoStringifier implements Stringifier
 {
-	public final static MBeanNotificationInfoStringifier	DEFAULT	= new MBeanNotificationInfoStringifier();
+    public final static MBeanNotificationInfoStringifier DEFAULT = new MBeanNotificationInfoStringifier();
 
-		public
-	MBeanNotificationInfoStringifier()
-	{
-		super( );
-	}
-	
-		public
-	MBeanNotificationInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final MBeanNotificationInfo	notif	= (MBeanNotificationInfo)o;
-		
-		String	result	= notif.getName() + ":";
-		
-		final String []	notifTypes	= notif.getNotifTypes();
-		result	= result + ArrayStringifier.stringify( notifTypes, mOptions.mArrayDelimiter );
-		
-		if ( mOptions.mIncludeDescription )
-		{
-			result	= result + ",\"" + notif.getDescription() + "\"";
-		}
-				
-		
-		return( result );
-	}
+    public MBeanNotificationInfoStringifier()
+    {
+        super();
+    }
+
+    public MBeanNotificationInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        final MBeanNotificationInfo notif = (MBeanNotificationInfo) o;
+
+        String result = notif.getName() + ":";
+
+        final String[] notifTypes = notif.getNotifTypes();
+        result = result + ArrayStringifier.stringify(notifTypes, mOptions.mArrayDelimiter);
+
+        if (mOptions.mIncludeDescription)
+        {
+            result = result + ",\"" + notif.getDescription() + "\"";
+        }
+
+
+        return (result);
+    }
+
 }

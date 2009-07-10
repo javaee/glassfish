@@ -40,42 +40,39 @@ import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
 import javax.management.AttributeChangeNotification;
 
-
 public class AttributeChangeNotificationStringifier
-				extends NotificationStringifier implements Stringifier
+        extends NotificationStringifier implements Stringifier
 {
-	public static final AttributeChangeNotificationStringifier	DEFAULT	=
-			new AttributeChangeNotificationStringifier();
-	
-		public
-	AttributeChangeNotificationStringifier( )
-	{
-		super();
-	}
-	
-		public
-	AttributeChangeNotificationStringifier( Options options )
-	{
-		super( options );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final AttributeChangeNotification	notif	= (AttributeChangeNotification)o;
-		
-		final StringBuffer	b	= super._stringify( notif );
-		append( b, "" );
-		
-		final String	attrName	= notif.getAttributeName();
-		final String	oldValue	= SmartStringifier.toString( notif.getOldValue() );
-		final String	newValue	= SmartStringifier.toString( notif.getNewValue() );
-		
-		final String msg	= attrName + ": " + oldValue + " => " + newValue;
-		b.append( msg );
-		
-		return( b.toString() );
-	}
+    public static final AttributeChangeNotificationStringifier DEFAULT =
+            new AttributeChangeNotificationStringifier();
+
+    public AttributeChangeNotificationStringifier()
+    {
+        super();
+    }
+
+    public AttributeChangeNotificationStringifier(Options options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        final AttributeChangeNotification notif = (AttributeChangeNotification) o;
+
+        final StringBuffer b = super._stringify(notif);
+        append(b, "");
+
+        final String attrName = notif.getAttributeName();
+        final String oldValue = SmartStringifier.toString(notif.getOldValue());
+        final String newValue = SmartStringifier.toString(notif.getNewValue());
+
+        final String msg = attrName + ": " + oldValue + " => " + newValue;
+        b.append(msg);
+
+        return (b.toString());
+    }
+
 }
 
 

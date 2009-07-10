@@ -40,76 +40,78 @@ import org.glassfish.admin.amx.util.stringifier.Stringifier;
 import javax.management.MBeanOperationInfo;
 
 public class MBeanOperationInfoStringifier
-	extends MBeanFeatureInfoStringifier implements Stringifier 
+        extends MBeanFeatureInfoStringifier implements Stringifier
 {
-	public static final MBeanOperationInfoStringifier	DEFAULT	= new MBeanOperationInfoStringifier();
-	
-		public
-	MBeanOperationInfoStringifier()
-	{
-		super( );
-	}
-	
-		public
-	MBeanOperationInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
-	
-		public static String
-	getImpact( MBeanOperationInfo info )
-	{
-		String	impactStr	= null;
-		
-		switch( info.getImpact() )
-		{
-			default:								impactStr	= "unknown";	break;
-			case MBeanOperationInfo.INFO:			impactStr	= "info";		break;
-			case MBeanOperationInfo.ACTION:			impactStr	= "action";		break;
-			case MBeanOperationInfo.ACTION_INFO:	impactStr	= "action-info";break;
-		}
-		
-		return( impactStr );
-	}
-	
-		public static String
-	getSignature( MBeanOperationInfo info )
-	{
-		return( getSignature( info, MBeanFeatureInfoStringifierOptions.DEFAULT ) );
-	}
-	
-		public static String
-	getSignature( MBeanOperationInfo info, MBeanFeatureInfoStringifierOptions options )
-	{
-		return( ParamsToString( info.getSignature(), options ) );
-	}
-	
-		public static String
-	getDescription( MBeanOperationInfo info )
-	{
-		return( sOperationDelimiter + "\"" + info.getDescription() + "\"" );
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		assert( o != null );
-		final MBeanOperationInfo	op	= (MBeanOperationInfo)o;
-		
-		String	result	= getPresentationTypeString( op.getReturnType() ) + " " + op.getName() + "(";
-		
-		// create the signature string
-		result	= result + getSignature( op, mOptions ) + ")";
-					
-		String impactStr	= getImpact( op );
-		
-		result	= result + sOperationDelimiter + "impact=" +impactStr;
-			
-		if ( mOptions.mIncludeDescription )
-		{
-			result	= result + getDescription( op );
-		}
-		
-		return( result );
-	}
+    public static final MBeanOperationInfoStringifier DEFAULT = new MBeanOperationInfoStringifier();
+
+    public MBeanOperationInfoStringifier()
+    {
+        super();
+    }
+
+    public MBeanOperationInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
+    public static String getImpact(MBeanOperationInfo info)
+    {
+        String impactStr = null;
+
+        switch (info.getImpact())
+        {
+            default:
+                impactStr = "unknown";
+                break;
+            case MBeanOperationInfo.INFO:
+                impactStr = "info";
+                break;
+            case MBeanOperationInfo.ACTION:
+                impactStr = "action";
+                break;
+            case MBeanOperationInfo.ACTION_INFO:
+                impactStr = "action-info";
+                break;
+        }
+
+        return (impactStr);
+    }
+
+    public static String getSignature(MBeanOperationInfo info)
+    {
+        return (getSignature(info, MBeanFeatureInfoStringifierOptions.DEFAULT));
+    }
+
+    public static String getSignature(MBeanOperationInfo info, MBeanFeatureInfoStringifierOptions options)
+    {
+        return (ParamsToString(info.getSignature(), options));
+    }
+
+    public static String getDescription(MBeanOperationInfo info)
+    {
+        return (sOperationDelimiter + "\"" + info.getDescription() + "\"");
+    }
+
+    public String stringify(Object o)
+    {
+        assert (o != null);
+        final MBeanOperationInfo op = (MBeanOperationInfo) o;
+
+        String result = getPresentationTypeString(op.getReturnType()) + " " + op.getName() + "(";
+
+        // create the signature string
+        result = result + getSignature(op, mOptions) + ")";
+
+        String impactStr = getImpact(op);
+
+        result = result + sOperationDelimiter + "impact=" + impactStr;
+
+        if (mOptions.mIncludeDescription)
+        {
+            result = result + getDescription(op);
+        }
+
+        return (result);
+    }
+
 }

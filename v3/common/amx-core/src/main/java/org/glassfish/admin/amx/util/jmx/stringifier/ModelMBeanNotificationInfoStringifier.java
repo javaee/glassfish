@@ -33,33 +33,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
 /*
  * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/jmx/stringifier/ModelMBeanNotificationInfoStringifier.java,v 1.2 2007/05/05 05:31:05 tcfujii Exp $
  * $Revision: 1.2 $
  * $Date: 2007/05/05 05:31:05 $
  */
- 
-
 package org.glassfish.admin.amx.util.jmx.stringifier;
 
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
-
 public final class ModelMBeanNotificationInfoStringifier
-	extends MBeanNotificationInfoStringifier implements Stringifier
+        extends MBeanNotificationInfoStringifier implements Stringifier
 {
-	public final static MBeanNotificationInfoStringifier	DEFAULT	= new MBeanNotificationInfoStringifier();
+    public final static MBeanNotificationInfoStringifier DEFAULT = new MBeanNotificationInfoStringifier();
 
-		public
-	ModelMBeanNotificationInfoStringifier()
-	{
-		super( );
-	}
-	
-		public
-	ModelMBeanNotificationInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
+    public ModelMBeanNotificationInfoStringifier()
+    {
+        super();
+    }
+
+    public ModelMBeanNotificationInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
 }

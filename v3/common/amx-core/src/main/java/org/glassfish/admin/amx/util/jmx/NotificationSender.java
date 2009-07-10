@@ -35,14 +35,14 @@
  */
 package org.glassfish.admin.amx.util.jmx;
 
-
 import javax.management.Notification;
 
 /**
  */
 public interface NotificationSender
 {
-	public void	sendNotification( final Notification notif );
+    public void sendNotification(final Notification notif);
+
 }
 
 

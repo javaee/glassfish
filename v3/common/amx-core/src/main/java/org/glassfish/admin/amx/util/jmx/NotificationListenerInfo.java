@@ -38,28 +38,40 @@ package org.glassfish.admin.amx.util.jmx;
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 
-
 /**
-    A immutable 3-tuple for tracking this stuff
+A immutable 3-tuple for tracking this stuff
  */
 public class NotificationListenerInfo
 {
     private final NotificationListener mListener;
-    private final NotificationFilter   mFilter;
-    private final Object               mHandback;
-    
+
+    private final NotificationFilter mFilter;
+
+    private final Object mHandback;
+
     public NotificationListenerInfo(
-        NotificationListener listener,
-        NotificationFilter   filter,
-        Object               handback )
+            NotificationListener listener,
+            NotificationFilter filter,
+            Object handback)
     {
-        mListener   = listener;
-        mFilter     = filter;
-        mHandback   = handback;
+        mListener = listener;
+        mFilter = filter;
+        mHandback = handback;
     }
-    
-    public NotificationListener getListener()   { return mListener; }
-    public NotificationFilter   getFilter()     { return mFilter; }
-    public Object               getHandback()   { return mHandback; }
+
+    public NotificationListener getListener()
+    {
+        return mListener;
+    }
+
+    public NotificationFilter getFilter()
+    {
+        return mFilter;
+    }
+
+    public Object getHandback()
+    {
+        return mHandback;
+    }
 
 }

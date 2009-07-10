@@ -35,16 +35,16 @@
  */
 package org.glassfish.admin.amx.util;
 
-
 /**
-	Reads a line, outputting an optional prompt first.
+Reads a line, outputting an optional prompt first.
  */
 public interface LineReader
 {
-	/**
-		Reads a line, outputting an optional prompt first.  If the prompt is null
-		then no prompt is printed.
-	 */
-	public String	readLine( String prompt ) throws java.io.IOException;
+    /**
+    Reads a line, outputting an optional prompt first.  If the prompt is null
+    then no prompt is printed.
+     */
+    public String readLine(String prompt) throws java.io.IOException;
+
 }
 

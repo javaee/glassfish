@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.util.jmx;
 
 import org.glassfish.admin.amx.util.jmx.stringifier.MBeanFeatureInfoStringifierOptions;
@@ -41,51 +40,49 @@ import org.glassfish.admin.amx.util.jmx.stringifier.MBeanOperationInfoStringifie
 
 import javax.management.MBeanOperationInfo;
 
-
 /**
-	Caution: this Comparator may be inconsistent with equals() because it ignores the description.
+Caution: this Comparator may be inconsistent with equals() because it ignores the description.
  */
 public final class MBeanOperationInfoComparator
-    implements java.util.Comparator<MBeanOperationInfo>
+        implements java.util.Comparator<MBeanOperationInfo>
 {
-	private static final MBeanOperationInfoStringifier		OPERATION_INFO_STRINGIFIER	=
-		new MBeanOperationInfoStringifier( new MBeanFeatureInfoStringifierOptions( false, ",") );
-		
-		
-	public static final MBeanOperationInfoComparator
-	    INSTANCE	= new MBeanOperationInfoComparator();
-	
-	private	MBeanOperationInfoComparator()	{}
-	
-		public int
-	compare( final MBeanOperationInfo info1, final MBeanOperationInfo info2 )
-	{
-		final MBeanOperationInfoStringifier	sf	= OPERATION_INFO_STRINGIFIER;
-		
-		// we just want to sort based on name and signature; there can't be two operations with the
-		// same name and same signature, so as long as we include the name and signature the
-		// sorting will always be consistent.
-		int	c	= info1.getName().compareTo( info2.getName() );
-		if ( c == 0 )
-		{
-			// names the same, subsort on signature, first by number of params
-			c	= info1.getSignature().length - info2.getSignature().length;
-			if ( c == 0 )
-			{
-				// names the same, subsort on signature, first by number of params
-				c	= sf.getSignature( info1 ).compareTo( sf.getSignature( info2 ) );
-			}
-			
-		}
-		
-		return( c );
-	}
-	
-		public boolean
-	equals( Object other )
-	{
-		return( other instanceof MBeanOperationInfoComparator );
-	}
+    private static final MBeanOperationInfoStringifier OPERATION_INFO_STRINGIFIER =
+            new MBeanOperationInfoStringifier(new MBeanFeatureInfoStringifierOptions(false, ","));
+
+    public static final MBeanOperationInfoComparator INSTANCE = new MBeanOperationInfoComparator();
+
+    private MBeanOperationInfoComparator()
+    {
+    }
+
+    public int compare(final MBeanOperationInfo info1, final MBeanOperationInfo info2)
+    {
+        final MBeanOperationInfoStringifier sf = OPERATION_INFO_STRINGIFIER;
+
+        // we just want to sort based on name and signature; there can't be two operations with the
+        // same name and same signature, so as long as we include the name and signature the
+        // sorting will always be consistent.
+        int c = info1.getName().compareTo(info2.getName());
+        if (c == 0)
+        {
+            // names the same, subsort on signature, first by number of params
+            c = info1.getSignature().length - info2.getSignature().length;
+            if (c == 0)
+            {
+                // names the same, subsort on signature, first by number of params
+                c = sf.getSignature(info1).compareTo(sf.getSignature(info2));
+            }
+
+        }
+
+        return (c);
+    }
+
+    public boolean equals(Object other)
+    {
+        return (other instanceof MBeanOperationInfoComparator);
+    }
+
 }
 
 

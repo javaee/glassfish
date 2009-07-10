@@ -35,25 +35,22 @@
  */
 package org.glassfish.admin.amx.util.jmx.stringifier;
 
-
 import org.glassfish.admin.amx.util.stringifier.Stringifier;
 
 public class ModelMBeanConstructorInfoStringifier
-	extends MBeanConstructorInfoStringifier implements Stringifier
+        extends MBeanConstructorInfoStringifier implements Stringifier
 {
-	public static final MBeanConstructorInfoStringifier	DEFAULT	=
-	    new MBeanConstructorInfoStringifier();
+    public static final MBeanConstructorInfoStringifier DEFAULT =
+            new MBeanConstructorInfoStringifier();
 
+    public ModelMBeanConstructorInfoStringifier()
+    {
+        super();
+    }
 
-		public
-	ModelMBeanConstructorInfoStringifier()
-	{
-		super( );
-	}
-	
-		public
-	ModelMBeanConstructorInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
+    public ModelMBeanConstructorInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
 }

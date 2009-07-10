@@ -43,38 +43,36 @@ import javax.management.openmbean.CompositeType;
 import java.util.Iterator;
 import java.util.Set;
 
-
 public class CompositeDataStringifier implements Stringifier
 {
-	public static final CompositeDataStringifier	DEFAULT	= new CompositeDataStringifier();
-	
-		public
-	CompositeDataStringifier( )
-	{
-	}
-	
-		public String
-	stringify( Object o )
-	{
-		final StringBuffer	buf	= new StringBuffer();
-		buf.append( "Composite data:\n" );
-		
-		final CompositeData	data	= (CompositeData)o;
-		final CompositeType	type	= data.getCompositeType();
-		
-		final Set		keySet	= type.keySet();
-		final Iterator	iter	= keySet.iterator();
-		while ( iter.hasNext() )
-		{
-			final String	key	= (String)iter.next();
-			final Object	item	= data.get( key );
-			
-			final String	s	= SmartStringifier.toString( item );
-			buf.append( key + "=" + s + "\n" );
-		}
-		
-		return( buf.toString() );
-	}
+    public static final CompositeDataStringifier DEFAULT = new CompositeDataStringifier();
+
+    public CompositeDataStringifier()
+    {
+    }
+
+    public String stringify(Object o)
+    {
+        final StringBuffer buf = new StringBuffer();
+        buf.append("Composite data:\n");
+
+        final CompositeData data = (CompositeData) o;
+        final CompositeType type = data.getCompositeType();
+
+        final Set keySet = type.keySet();
+        final Iterator iter = keySet.iterator();
+        while (iter.hasNext())
+        {
+            final String key = (String) iter.next();
+            final Object item = data.get(key);
+
+            final String s = SmartStringifier.toString(item);
+            buf.append(key + "=" + s + "\n");
+        }
+
+        return (buf.toString());
+    }
+
 }
 
 

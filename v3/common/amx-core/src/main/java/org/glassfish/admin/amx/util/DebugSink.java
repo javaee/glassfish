@@ -39,19 +39,20 @@ package org.glassfish.admin.amx.util;
  */
 public interface DebugSink
 {
-	/**
-		Output a message without a newline.
-		
-		@param o	the Object to output
-	 */
-	public void	print( Object o );
-	
-	/**
-		Output a message with a newline.
-		
-		@param o	the Object to output
-	 */
-	public void	println( Object o );
+    /**
+    Output a message without a newline.
+
+    @param o	the Object to output
+     */
+    public void print(Object o);
+
+    /**
+    Output a message with a newline.
+
+    @param o	the Object to output
+     */
+    public void println(Object o);
+
 }
 
 

@@ -39,20 +39,30 @@ package org.glassfish.admin.amx.util;
  */
 public interface DebugState
 {
-	/**
-		Convenience class when a simple implement is desired.
-	 */
-	public static final class Impl implements DebugState
-	{
-		private final boolean	mStatus;
-		public Impl( boolean status ) { mStatus	= status; }
-		public boolean	getDebug()	{ return( mStatus ); }
-	}
-	
-	/**
-		Return true if debugging is on.
-	 */
-	public boolean		getDebug();
+    /**
+    Convenience class when a simple implement is desired.
+     */
+    public static final class Impl implements DebugState
+    {
+        private final boolean mStatus;
+
+        public Impl(boolean status)
+        {
+            mStatus = status;
+        }
+
+        public boolean getDebug()
+        {
+            return (mStatus);
+        }
+
+    }
+
+    /**
+    Return true if debugging is on.
+     */
+    public boolean getDebug();
+
 }
 
 

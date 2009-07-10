@@ -39,50 +39,44 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
-
 /**
-	A ConnectionSource for in-process access where the MBeanServer is actually
-	known and where later access to it may be desired.
+A ConnectionSource for in-process access where the MBeanServer is actually
+known and where later access to it may be desired.
  */
 public final class MBeanServerConnectionSource implements ConnectionSource
 {
-	protected MBeanServer		mServer;
-	
-	/**
-		Create a new instance for the specified MBeanServer
-	 */
-		public
-	MBeanServerConnectionSource( final MBeanServer server )
-	{
-		mServer	= server;
-	}
-	
-	/**
-		Return the internal MBeanServer 
-	 */
-		public MBeanServer
-	getMBeanServer( )
-	{
-		return( mServer );
-	}
-	
-		public MBeanServerConnection
-	getExistingMBeanServerConnection( )
-	{
-		return( getMBeanServer() );
-	}
-	
-		public MBeanServerConnection
-	getMBeanServerConnection( boolean forceNew )
-	{
-		return( getExistingMBeanServerConnection() );
-	}
-	
-	
-		public JMXConnector
-	getJMXConnector( boolean forceNew )
-	{
-		// we can't supply one...
-		return( null );
-	}
+    protected MBeanServer mServer;
+
+    /**
+    Create a new instance for the specified MBeanServer
+     */
+    public MBeanServerConnectionSource(final MBeanServer server)
+    {
+        mServer = server;
+    }
+
+    /**
+    Return the internal MBeanServer
+     */
+    public MBeanServer getMBeanServer()
+    {
+        return (mServer);
+    }
+
+    public MBeanServerConnection getExistingMBeanServerConnection()
+    {
+        return (getMBeanServer());
+    }
+
+    public MBeanServerConnection getMBeanServerConnection(boolean forceNew)
+    {
+        return (getExistingMBeanServerConnection());
+    }
+
+    public JMXConnector getJMXConnector(boolean forceNew)
+    {
+        // we can't supply one...
+        return (null);
+    }
+
 }

@@ -40,29 +40,26 @@ import org.glassfish.admin.amx.util.stringifier.Stringifier;
 import javax.management.MBeanParameterInfo;
 
 public final class MBeanParameterInfoStringifier
-	extends MBeanFeatureInfoStringifier implements Stringifier 
+        extends MBeanFeatureInfoStringifier implements Stringifier
 {
-	public static final MBeanParameterInfoStringifier	DEFAULT	=
-					new MBeanParameterInfoStringifier();
-	
-		public
-	MBeanParameterInfoStringifier()
-	{
-		super( );
-	}
-	
-		public
-	MBeanParameterInfoStringifier( MBeanFeatureInfoStringifierOptions options )
-	{
-		super( options );
-	}
-	
+    public static final MBeanParameterInfoStringifier DEFAULT =
+            new MBeanParameterInfoStringifier();
 
-		public String
-	stringify( Object o )
-	{
-		final MBeanParameterInfo	info	= (MBeanParameterInfo)o;
-		
-		return( getPresentationTypeString( info.getType() ) );
-	}
+    public MBeanParameterInfoStringifier()
+    {
+        super();
+    }
+
+    public MBeanParameterInfoStringifier(MBeanFeatureInfoStringifierOptions options)
+    {
+        super(options);
+    }
+
+    public String stringify(Object o)
+    {
+        final MBeanParameterInfo info = (MBeanParameterInfo) o;
+
+        return (getPresentationTypeString(info.getType()));
+    }
+
 }
