@@ -48,8 +48,9 @@ package com.sun.enterprise.jbi.serviceengine.bridge;
 
 import com.sun.enterprise.jbi.serviceengine.ServiceEngineException;
 import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineEndpoint;
-//import org.glassfish.webservices.EjbRuntimeEndpointInfo;
-//import org.glassfish.webservices.WebServiceEjbEndpointRegistry;
+import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineRuntimeHelper;
+import org.glassfish.webservices.EjbRuntimeEndpointInfo;
+import org.glassfish.webservices.WebServiceEjbEndpointRegistry;
 
 
 /**
@@ -76,18 +77,15 @@ public class JAXRPCRuntimeEndpointHelper {
     
     private static Object populateEjbRuntimeInfo(
             ServiceEngineEndpoint endpt) throws ServiceEngineException {
- /*       try {
-            WebServiceEjbEndpointRegistry registry =
-                    WebServiceEjbEndpointRegistry.getRegistry();
+        try {
+            WebServiceEjbEndpointRegistry registry = ServiceEngineRuntimeHelper.getRuntime().getWebServiceEjbEndpointRegistry();
             
             EjbRuntimeEndpointInfo ejbRtEndptInfo =
                     registry.getEjbWebServiceEndpoint(endpt.getURI(), "POST", null);
-            
-            
+                        
             return ejbRtEndptInfo;
         } catch(Exception e) {
             throw new ServiceEngineException(e.getMessage());
         }
-   */
-    return null;}
+   }
 }

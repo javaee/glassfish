@@ -39,9 +39,10 @@ import com.sun.enterprise.jbi.serviceengine.ServiceEngineException;
 import com.sun.enterprise.jbi.serviceengine.bridge.transport.JBIAdapter;
 import com.sun.enterprise.jbi.serviceengine.core.EndpointRegistry;
 import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineEndpoint;
+import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineRuntimeHelper;
 import org.glassfish.webservices.JAXWSAdapterRegistry;
-//import org.glassfish.webservices.EjbRuntimeEndpointInfo;
-//import org.glassfish.webservices.WebServiceEjbEndpointRegistry;
+import org.glassfish.webservices.EjbRuntimeEndpointInfo;
+import org.glassfish.webservices.WebServiceEjbEndpointRegistry;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.SDDocument;
@@ -86,14 +87,13 @@ public class JBIAdapterBuilder {
             MessageExchange me) {
         try {
             
-//            EjbRuntimeEndpointInfo ejbEndPtInfo=null;
+            EjbRuntimeEndpointInfo ejbEndPtInfo=null;
             if(endpt.isImplementedByEJB()) {
-  /*
-                ejbEndPtInfo = WebServiceEjbEndpointRegistry.
-                        getRegistry().getEjbWebServiceEndpoint(endpt.getURI(), "POST", null);
+                WebServiceEjbEndpointRegistry registry = ServiceEngineRuntimeHelper.getRuntime().getWebServiceEjbEndpointRegistry();
+                ejbEndPtInfo = registry.getEjbWebServiceEndpoint(endpt.getURI(), "POST", null);
                 Adapter adapter = (Adapter) ejbEndPtInfo.prepareInvocation(true);
                 endpt.setWsep(adapter.getEndpoint());
-    */        }else {
+            }else {
                 
                 String url = endpt.getURI();
                 String contextRoot = endpt.getContextRoot();
@@ -115,7 +115,7 @@ public class JBIAdapterBuilder {
                     }
                 }
             }
-            return new JBIAdapter(endpt.getWsep(), endpt, me, endpt.getClassLoader()/*, ejbEndPtInfo*/);
+            return new JBIAdapter(endpt.getWsep(), endpt, me, endpt.getClassLoader(), ejbEndPtInfo);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE,"Exception in creating JBIAdapter:"+e.getMessage(), e);

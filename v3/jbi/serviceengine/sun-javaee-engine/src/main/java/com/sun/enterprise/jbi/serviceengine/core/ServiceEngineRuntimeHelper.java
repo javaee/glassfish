@@ -46,6 +46,7 @@ import org.jvnet.hk2.component.Singleton;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.jbi.serviceengine.bridge.EndpointInfoCollector;
+import org.glassfish.webservices.WebServiceEjbEndpointRegistry;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -71,6 +72,8 @@ public class ServiceEngineRuntimeHelper implements ContractProvider {
     private InvocationManager inv;
     @Inject
     private EndpointInfoCollector endpointInfoCollector;
+    @Inject
+    private WebServiceEjbEndpointRegistry webServiceEjbEndpointRegistry;
 
     public static ServiceEngineRuntimeHelper getRuntime() {
         if (_runtime == null) {
@@ -110,5 +113,9 @@ public class ServiceEngineRuntimeHelper implements ContractProvider {
 
     public EndpointInfoCollector getEndpointInfoCollector() {
         return endpointInfoCollector;
+    }
+
+    public WebServiceEjbEndpointRegistry getWebServiceEjbEndpointRegistry() {
+        return webServiceEjbEndpointRegistry;
     }
 }

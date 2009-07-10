@@ -47,6 +47,7 @@ import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.jbi.messaging.MessageExchange;
+import org.glassfish.webservices.EjbRuntimeEndpointInfo;
 
 /**
  * Adapter class that invokes the Endpoint. It uses an inner class to handle
@@ -59,7 +60,7 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
     private final Logger logger = LogDomains.getLogger(JBIAdapter.class, LogDomains.SERVER_LOGGER);
     private NMRServerConnection con;
     private ClassLoader classLoader;
-//    private EjbRuntimeEndpointInfo ejbEndPtInfo;
+    private EjbRuntimeEndpointInfo ejbEndPtInfo;
     
     /**
      * Creates an {@link com.sun.xml.ws.api.server.Adapter} that delivers
@@ -69,11 +70,11 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
                       ServiceEngineEndpoint endpt, 
                       MessageExchange me,
                       ClassLoader classLoader
-                     /* ,EjbRuntimeEndpointInfo ejbEndPtInfo*/) {
+                      ,EjbRuntimeEndpointInfo ejbEndPtInfo) {
         super(endpoint);
         con = new NMRServerConnection(me, endpt);
         this.classLoader = classLoader;
-        //this.ejbEndPtInfo = ejbEndPtInfo;
+        this.ejbEndPtInfo = ejbEndPtInfo;
     }
     
     protected WSToolkit createToolkit() {
@@ -103,9 +104,9 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
      * returning the response back to NMR. 
      * For non-EJB cases ejbEndPtInfo will be null. */
     private void postInvoke() {
-       /* if(ejbEndPtInfo!=null)
+        if(ejbEndPtInfo!=null)
             ejbEndPtInfo.releaseImplementor();
-        */
+        
     }
     
     final class WSToolkit extends Adapter.Toolkit implements TransportBackChannel {
