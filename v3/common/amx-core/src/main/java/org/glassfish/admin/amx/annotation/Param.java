@@ -30,7 +30,7 @@
  * either the CDDL, the GPL Version 2 or to extend the choice of license to
  * its licensees as provided above.  However, if you add GPL Version 2 code
  * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
+ * only if the new code is made subject to such option by the copyrightP
  * holder.
  */
 package org.glassfish.admin.amx.annotation;
@@ -38,12 +38,15 @@ package org.glassfish.admin.amx.annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import static java.lang.annotation.ElementType.*;
+
 
 /**
-   @author Lloyd Chambers
+ * Annotates the paramete rof a method.
  */
 @Retention(RetentionPolicy.RUNTIME)
-// target of anything
+@Target({PARAMETER, LOCAL_VARIABLE, FIELD})
 @Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 @Documented
 public @interface Param {
