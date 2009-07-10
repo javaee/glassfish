@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+<!ENTITY jaxwsTools SYSTEM "./../../config/jaxwstools.xml">
+<!ENTITY jbiproperties SYSTEM "./../../config/common.properties">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="web-client" default="all" basedir=".">
+
+    &commonBuild;
+    &jaxwsTools;
+    &jbiproperties;
+    &testproperties;
+
+    <target name="all" depends="clean, setup, runtest, undeploy"/>
+
+    <target name="clean">
+      <antcall target="clean-common"/>
+    </target>
+
+    <target name="setup" depends="assemble-web, deploy-app,assemble-client,deploy-client,deploy-dummy-app"/>
+
+    <target name="compile" >
+      <antcall target="compile-common">
+        <param name="src" value="endpoint"/>
+      </antcall>
+    </target>
+
+    <target name="assemble-web" depends="compile">
+      <antcall target="pkg-war">
+        <param name="war.classes" value="${build.classes.dir}"/>
+        <param name="war.file" value="${assemble.dir}/${appname}.war"/>
+       </antcall>
+    </target>
+
+    <target name="deploy-app">
+      <property name="app.war" value="${assemble.dir}/${appname}.war"/>
+      <echo message="Deploying ${appname}.war from ${assemble.dir}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="deploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${app.war}"/>
+      </exec>
+    </target>
+
+    <target name="assemble-client" >
+      <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
+      <mkdir dir="${assemble.dir}"/>
+      <echo message="wsimport -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/jsr208-integration-web-client/webservice/CalculatorService?WSDL" />
+      <antcall target="wsimport">
+        <param name="wsimport.args"
+               value="-keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/jsr208-integration-web-client/webservice/CalculatorService?WSDL"/>
+    </antcall>
+      <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
+	    classpath="${env.S1AS_HOME}/modules/javax.servlet.jar:${env.S1AS_HOME}/modules/javax.ejb.jar:${env.S1AS_HOME}/modules/javax.transaction.jar"
+            includes="webclient/**"/>
+      <copy file="./client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
+      <copy file="./client-sun-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/sun-web.xml"/>
+      <copy file="./client-jbi.xml" tofile="${build.classes.dir}/webclient/META-INF/jbi.xml"/>
+      <jar destfile="${assemble.dir}/wsclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
+    </target>
+
+    <target name="deploy-client">
+      <mkdir dir="./temp"/>
+      <copy file="${assemble.dir}/wsclient.war" todir="./temp"/>
+      <antcall target="deploy-jbi-component-su">
+        <param name="jbi-su-dir" value="${jbi-client-su-dir}"/>
+        <param name="jbi-su-assembly" value="${jbi-client-su-assembly}"/>
+      </antcall>
+    </target>
+
+    <target name="deploy-dummy-app">
+      <antcall target="deploy-jbi-component-su">
+        <param name="jbi-su-dir" value="${jbi-dummy-su-dir}"/>
+	<param name="jbi-component-su" value="${jbi-dummy-su}"/>
+        <param name="jbi-su-assembly" value="${jbi-dummy-su-assembly}"/>
+      </antcall>
+    </target>
+
+    <target name="undeploy" >
+        <antcall target="undeploy-app"/>
+        <antcall target="undeploy-jbi-client"/>
+        <antcall target="undeploy-dummy-app"/>
+    </target>
+
+    <target name="undeploy-app">
+      <exec executable="${ASADMIN}">
+        <arg line="undeploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${appname}"/>
+      </exec>
+    </target>
+
+    <target name="undeploy-jbi-client">
+      <antcall target="undeploy-jbi-component-su">
+        <param name="jbi-su-assembly" value="${jbi-client-su-assembly}"/>
+      </antcall>
+    </target>
+
+    <target name="undeploy-dummy-app">
+      <antcall target="undeploy-jbi-component-su">
+        <param name="jbi-su-assembly" value="${jbi-dummy-su-assembly}"/>
+      </antcall>
+    </target>    
+
+    <target name="runtest" >
+      <mkdir dir="${build.classes.dir}/client"/>
+      <javac srcdir="." destdir="${build.classes.dir}/client" 
+            classpath="${env.APS_HOME}/jbi/lib/reporter.jar" 
+            includes="client/**"/>
+      <unjar src="${env.APS_HOME}/jbi/lib/reporter.jar" dest="${build.classes.dir}/client"/>
+      <java classname="client.TestClient">
+        <classpath>
+          <pathelement path="${build.classes.dir}/client"/>
+        </classpath>
+        <arg value="http://${http.host}:${http.port}/wsclient/webclient/RequestProcessor"/>
+      </java>
+    </target>
+
+</project>
+

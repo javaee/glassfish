@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:ns0="http://example.web.service/Calculator" version="1.0">
+    <services binding-component="false">
+        <consumes endpoint-name="CalculatorPort" interface-name="ns0:Calculator" service-name="ns0:CalculatorService"/>
+    </services>
+</jbi>
