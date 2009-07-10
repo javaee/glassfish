@@ -167,7 +167,8 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         return CollectionUtil.toArray(items, ObjectName.class);
     }
     
-    public ObjectName[] getGlobalSingletonTypes()
+    
+    public ObjectName[] getGlobalSingletons()
     {
         final ObjectName[] all = queryAll();
         final List<ObjectName> globalSingletons = new ArrayList<ObjectName>();
@@ -183,6 +184,19 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         }
         
         return CollectionUtil.toArray(globalSingletons, ObjectName.class);
+    }
+    
+    public ObjectName getGlobalSingleton( final String type)
+    {
+        final ObjectName[] gs = getGlobalSingletons();
+        for( final ObjectName objectName : gs )
+        {
+            if ( Util.getTypeProp(objectName).equals(type) )
+            {
+                return objectName;
+            }
+        }
+        return null;
     }
 }
 

@@ -127,11 +127,15 @@ public interface Query extends AMXProxy, Utility, Singleton
     public Set<AMXProxy> queryAll();
 
 
-    /** Validate MBeans: specific ObjectNames and/or patterns. */
     @Description("Return  all MBeans that are global singletons")
     @ManagedAttribute()
-    public ObjectName[] getGlobalSingletonTypes();
+    public ObjectName[] getGlobalSingletons();
+    
+    @Description("Return the global singleton of the specified type, or null if not found")
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public AMXProxy getGlobalSingleton( @Param(name="type") String type);
 }
+
 
 
 
