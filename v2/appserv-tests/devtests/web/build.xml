@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="429"/>
+    <property name="TOTAL_EXPECTED" value="430"/>
 
     &commonSetup;
     &commonBuild;
@@ -171,6 +171,7 @@
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
         <ant dir="securityConstraintWildcardMapping" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializerAddRestrictedServletContextListener" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClassName" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClass" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByInstance" target="all"/>
