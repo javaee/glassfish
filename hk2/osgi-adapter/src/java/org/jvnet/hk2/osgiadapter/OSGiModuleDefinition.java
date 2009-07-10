@@ -72,7 +72,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     private String bundleName;
     private URI location;
     private String version;
-    transient Manifest manifest = null;
+    private Manifest manifest;
     private String lifecyclePolicyClassName;
     private ModuleMetadata metadata = new ModuleMetadata();
 
@@ -87,7 +87,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         * manifest info. For now, just use the standard URI.
         */
         this.location = location;
-        Manifest manifest = jarFile.getManifest();
+        manifest = jarFile.getManifest();
         Attributes mainAttr = manifest.getMainAttributes();
         bundleName = manifest.getMainAttributes().getValue(Constants.BUNDLE_NAME);
 
@@ -192,14 +192,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         return lifecyclePolicyClassName;
     }
 
-    public synchronized Manifest getManifest() {
-        if (manifest==null) {
-            try {
-                manifest = new JarFile(new File(location)).getManifest();
-            } catch (IOException e) {
-                manifest = null;
-            }
-        }
+    public Manifest getManifest() {
         return manifest;
     }
 
