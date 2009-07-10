@@ -75,6 +75,21 @@
            </plugins>
        </build>
 -->
+   <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                           <probe-provider-class-names>org.glassfish.webservices.monitoring.Deployment109ProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <developers>
         <developer>
