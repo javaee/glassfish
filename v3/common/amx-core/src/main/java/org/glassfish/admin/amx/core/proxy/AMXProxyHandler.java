@@ -1020,6 +1020,11 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     {
         return getDescriptorField(info, DESC_IS_SINGLETON, Boolean.FALSE);
     }
+    
+    public static boolean globalSingleton(final MBeanInfo info)
+    {
+        return getDescriptorField(info, DESC_IS_GLOBAL_SINGLETON, Boolean.FALSE);
+    }
 
     protected <T> T getDescriptorField(final String name, final T defaultValue)
     {
@@ -1029,6 +1034,11 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     public boolean singleton()
     {
         return getDescriptorField(DESC_IS_SINGLETON, Boolean.FALSE);
+    }
+
+    public boolean globalSingleton()
+    {
+        return getDescriptorField(DESC_IS_GLOBAL_SINGLETON, Boolean.FALSE);
     }
 
     public String group()

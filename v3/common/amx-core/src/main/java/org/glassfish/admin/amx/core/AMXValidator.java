@@ -688,7 +688,7 @@ public final class AMXValidator
 
             validateRemote();
         }
-
+        
         // Descriptor fields must be remotable
         void validateRemote()
         {
@@ -747,7 +747,7 @@ public final class AMXValidator
 
     }
 
-    private static List<String> validateMetadata(final AMXProxy proxy)
+    private List<String> validateMetadata(final AMXProxy proxy)
     {
         final List<String> problems = new ArrayList<String>();
 
@@ -795,6 +795,31 @@ public final class AMXValidator
         for (final MBeanNotificationInfo notifInfo : mbeanInfo.getNotifications())
         {
             new MetadataValidator(notifInfo.getDescriptor(), problems);
+        }
+
+        if ( proxy.extra().globalSingleton() )
+        {
+            final ObjectName objectName = proxy.objectName();
+            //debug( "Global singleton type = " + Util.getTypeProp(objectName) );
+            // don't use Query MBean, it might not exist
+            final ObjectName pattern = Util.newObjectNamePattern( objectName.getDomain(), Util.makeTypeProp(Util.getTypeProp(objectName)) );
+            try
+            {
+                final long start = System.currentTimeMillis();
+                final Set<ObjectName>  instances = mMBeanServer.queryNames( pattern, null);
+                final long elapsed = System.currentTimeMillis() - start;
+                //debug( "Query time: " + elapsed);
+                if ( instances.size() > 1 )
+                {
+                    problems.add( "Global singleton " + objectName +
+                        " conflicts with other MBeans of the same type: " +
+                        CollectionUtil.toString(instances, ", "));
+                }
+            }
+            catch( final Exception e )
+            {
+                throw new RuntimeException(e);
+            }
         }
 
         return problems;

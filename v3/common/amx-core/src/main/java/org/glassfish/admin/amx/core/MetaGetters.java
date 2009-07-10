@@ -73,6 +73,9 @@ public interface MetaGetters
     /** From Descriptor: true if this MBean is a singleton (1 instance within its parent scope) */
     public boolean singleton();
     
+    /** From Descriptor: true if this MBean is a global singleton (1 instance within entire domain) */
+    public boolean globalSingleton();
+    
     /** From Descriptor: Get the *potential* sub types this MBean expects to have */
     public String[]  subTypes();
     
