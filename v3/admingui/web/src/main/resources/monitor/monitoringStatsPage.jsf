@@ -1,0 +1,301 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<!-- jdbc/jdbcConnectionPools.jsf -->
+
+<!initPage
+    setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings")
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks")
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{web.monitoring}" >
+<!define name="content">
+#include "/shared/restart.inc"        
+            <sun:form id="propertyForm">
+#include "/shared/treeBreadcrumbs.inc"
+#include "/appServer/serverInstTabs.inc"   
+#include "/shared/alertMsg.inc"
+                 <sun:title id="propertyContentPage" title="$resource{web.monitoring}"
+                 helpText="$resource{web.monitoring.webContainer.PageHelp}"/>
+		 "<br /><br />
+            <sun:propertySheet id="propertySheet">
+                    <sun:propertySheetSection id="viewPropertySection">
+            <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
+                
+                <sun:dropDown id="Application" label="$resource{i18n.common.Application}:" selected="#{appVal}" submitForm="#{true}" immediate="#{true}" labels="$pageSession{apps}" >
+                    <!beforeCreate
+                     getProxyNamesByType(type="WebRequestStatsProvider" result="#{pageSession.apps}");
+                     
+                    />
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="appVal" value="#{click.selected}");
+                        setAttribute(key="appList" value="#{appList}");                        
+                        setAttribute(key="vsVal" value="#{vsVal}");
+                        setAttribute(key="vsList" value="#{vsList}");
+                        setAttribute(key="gcVal" value="#{gcVal}");
+                        setAttribute(key="gcList" value="#{gcList}");     
+                        navigate(page="monitor/monitoringStatsPage.jsf");
+                    />
+                </sun:dropDown>
+                "&nbsp;&nbsp;&nbsp;
+                <sun:dropDown id="Component" label="$resource{web.monitoring.VirtualServer}:" selected="#{vsVal}" submitForm="#{true}" immediate="#{true}" labels="$pageSession{vsList}" >
+                    <!beforeCreate
+                     getProxyNamesByType(type="HttpServiceStatsProvider" result="#{pageSession.vsList}");
+                     
+                    />
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="vsVal" value="#{click.selected}");
+                        setAttribute(key="vsList" value="#{vsList}");
+                        setAttribute(key="appVal" value="#{appVal}");
+                        setAttribute(key="appList" value="#{appList}");
+                        setAttribute(key="gcVal" value="#{gcVal}");
+                        setAttribute(key="gcList" value="#{gcList}");                        
+                        navigate(page="monitor/monitoringStatsPage.jsf");
+                    />
+                </sun:dropDown>
+                "<br><br>
+                <sun:dropDown id="gcDD" label="$resource{web.monitoring.jvm.garbageCollectors}:" selected="#{gcVal}" submitForm="#{true}" immediate="#{true}" labels="$pageSession{gcList}" >
+                    <!beforeCreate
+                     getProxyNamesByType(type="JVMGCStatsProvider" result="#{pageSession.gcList}");
+                     
+                    />
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="gcVal" value="#{click.selected}");
+                        setAttribute(key="gcList" value="#{gcList}");
+                        setAttribute(key="vsVal" value="#{vsVal}");
+                        setAttribute(key="vsList" value="#{vsList}");
+                        setAttribute(key="appVal" value="#{appVal}");
+                        setAttribute(key="appList" value="#{appList}");
+                        navigate(page="monitor/monitoringStatsPage.jsf");
+                    />
+                </sun:dropDown>
+            </sun:property>
+       </sun:propertySheetSection>
+                </sun:propertySheet>                  
+<!-- Table .... -->
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring}"  >
+         <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{tableId});
+        />
+
+    <sun:tableRowGroup id="servlets" data={"$attribute{servletList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="WebRequestStatsProvider" name="#{appVal}", result=>$attribute{servletList});
+        
+         />        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2" emptyDataMsg="There is NO Data Available">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>
+    
+    <sun:tableRowGroup id="session" data={"$attribute{sessionList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="SessionStatsProvider" name="#{appVal}", result=>$attribute{sessionList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="requestStats" data={"$attribute{requestStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="WebRequestStatsProvider" name="#{appVal}", result=>$attribute{requestStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jspStats" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="WebRequestStatsProvider" name="#{appVal}", result=>$attribute{jspStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jvmMemStats" data={"$attribute{jvmMemStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.memoryJvm}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JVMMemoryStatsProvider" name="jvm/memory", result=>$attribute{jvmMemStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>    
+    <sun:tableRowGroup id="osStats" data={"$attribute{osStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.operatingSystemJvm}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JVMOSStatsProvider" name="jvm/operating-system", result=>$attribute{osStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>    
+    <sun:tableRowGroup id="clStats" data={"$attribute{clStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.classLoadingJvm}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JVMClassLoadingStatsProvider" name="jvm/class-loading-system", result=>$attribute{clStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>    
+    <sun:tableRowGroup id="gcStats" data={"$attribute{gcStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.garbageCollectorsJvm}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JVMGCStatsProvider" name="#{gcVal}", result=>$attribute{gcStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>    
+    <sun:tableRowGroup id="comStats" data={"$attribute{comStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.compilationJvm}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JVMCompilationStatsProvider" name="jvm/compilation-system",  result=>$attribute{comStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>    
+    <sun:tableRowGroup id="runtimeStats" data={"$attribute{runtimeStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.runtimeJvm}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="JVMRuntimeStatsProvider" name="jvm/runtime", result=>$attribute{runtimeStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>    
+    <sun:tableRowGroup id="httpServiceStats" data={"$attribute{httpServiceStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsHttp}" 
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="HttpServiceStatsProvider" name="#{vsVal}", result=>$attribute{httpServiceStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>         
+        <sun:tableRowGroup id="txnServiceStats" data={"$attribute{txnServiceStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.transaction}" 
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="TransactionServiceStatsProvider" name="transaction-service", result=>$attribute{txnServiceStatsList});
+        
+         />  
+                        
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+            <staticText id="col1Name" value="#{td.value.Name}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+            <staticText  id="col2Value" value="#{td.value.Value}" />
+        </sun:tableColumn>
+        "<br/>
+    </sun:tableRowGroup>    
+</sun:table>
+	<sun:hidden id="helpKey" value="$resource{help_web.monitoringService}" />
+            </sun:form>
+#include "/shared/changeButtonsJS.inc"        
+</define>
+</composition>
