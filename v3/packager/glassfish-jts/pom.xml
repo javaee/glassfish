@@ -187,18 +187,6 @@
        </dependency> 
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-web-gui</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-jdbc-gui</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>	
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-ejb-lite</artifactId>
            <version>${project.version}</version>
 	   <type>zip</type>
