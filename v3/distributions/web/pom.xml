@@ -160,6 +160,22 @@
             <type>zip</type>
         </dependency>     
 
+        <!-- admin web container ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-web-gui</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <!-- admin jdbc ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc-gui</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
         <!-- javadb package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
