@@ -103,12 +103,15 @@ public class Ejb3MessageDispatcher implements EjbMessageDispatcher {
     private void handlePost(HttpServletRequest req,
                             HttpServletResponse resp,
                             EjbRuntimeEndpointInfo endpointInfo)
-        throws IOException    {        
+        throws IOException    {
+        AdapterInvocationInfo adapterInfo = null;
+        ServletAdapter adapter;
         try {            
             try {
-                ServletAdapter adapter = 
-                        (ServletAdapter) endpointInfo.prepareInvocation(true);
-                
+
+                 adapterInfo =
+                        (AdapterInvocationInfo) endpointInfo.prepareInvocation(true);
+                adapter = adapterInfo.getAdapter();
                 if (adapter != null) {                    
                     adapter.handle(null, req, resp);
                 } else {
@@ -120,7 +123,7 @@ public class Ejb3MessageDispatcher implements EjbMessageDispatcher {
                 // during getImplementor(), since some of the
                 // preInvoke steps might have occurred.  It's ok
                 // if implementor is null.
-                endpointInfo.releaseImplementor();
+                endpointInfo.releaseImplementor(adapterInfo.getInv());
             }    
         } catch (Throwable e) {
             String errorMessage = "invocation error on ejb endpoint " +
@@ -137,10 +140,13 @@ public class Ejb3MessageDispatcher implements EjbMessageDispatcher {
                            ServletContext ctxt,
                            EjbRuntimeEndpointInfo endpointInfo)
                             throws IOException    {
+        AdapterInvocationInfo adapterInfo = null;
+        ServletAdapter adapter;
         try {
-            ServletAdapter adapter = 
-                    (ServletAdapter) endpointInfo.prepareInvocation(false);
-            if (adapter != null) {                    
+             adapterInfo =
+                        (AdapterInvocationInfo) endpointInfo.prepareInvocation(true);
+            adapter = adapterInfo.getAdapter();
+            if (adapter != null) {
                 adapter.publishWSDL(ctxt, req, resp);
             } else {
                 String message = "Invalid wsdl request " +  req.getRequestURL();

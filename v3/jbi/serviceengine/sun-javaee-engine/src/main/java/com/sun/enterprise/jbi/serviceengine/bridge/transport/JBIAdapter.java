@@ -104,8 +104,8 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
      * returning the response back to NMR. 
      * For non-EJB cases ejbEndPtInfo will be null. */
     private void postInvoke() {
-        if(ejbEndPtInfo!=null)
-            ejbEndPtInfo.releaseImplementor();
+        //if(ejbEndPtInfo!=null)
+         //   ejbEndPtInfo.releaseImplementor();
         
     }
     

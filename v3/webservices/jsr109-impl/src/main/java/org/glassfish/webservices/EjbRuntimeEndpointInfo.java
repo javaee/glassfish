@@ -60,6 +60,7 @@ import java.util.logging.Level;
 import java.io.File;
 
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.admin.ServerEnvironment;
 
 
@@ -83,7 +84,7 @@ public class EjbRuntimeEndpointInfo {
 
     protected final Object webServiceEndpointServant;
 
-    private ComponentInvocation inv;
+
 
     // the variables below are access in non-thread-safe ways
     private ServletAdapter adapter = null;
@@ -121,7 +122,8 @@ public class EjbRuntimeEndpointInfo {
 
     public Object prepareInvocation(boolean doPreInvoke)
         throws Exception {
-
+        ComponentInvocation inv;
+        AdapterInvocationInfo adapterInvInfo = new AdapterInvocationInfo();
         // For proper injection of handlers, we have to configure handler
         // after invManager.preInvoke but the Invocation.contextData has to be set
         // before invManager.preInvoke. So the steps of configuring jaxws handlers and
@@ -178,7 +180,9 @@ public class EjbRuntimeEndpointInfo {
         }
 
         if(doPreInvoke) {
-              inv =  container.startInvocation();
+            inv =  container.startInvocation();
+            adapterInvInfo.setInv(inv);
+
         }
 
         // Now process handlers and init jaxws RI
@@ -260,11 +264,11 @@ public class EjbRuntimeEndpointInfo {
                             endpoint.getProtocolBinding(), binding);
 
                         // Create the jaxws2.1 invoker and use this
-                        Invoker inv = new InstanceResolverImpl(clazz).createInvoker();
+                        Invoker invoker = new InstanceResolverImpl(clazz).createInvoker();
                         WSEndpoint wsep = WSEndpoint.create(
                                 clazz, // The endpoint class
                                 false, // we do not want JAXWS to process @HandlerChain
-                                new EjbInvokerImpl(clazz, inv, webServiceEndpointServant, wsCtxt), // the invoker
+                                new EjbInvokerImpl(clazz, invoker, webServiceEndpointServant, wsCtxt), // the invoker
                                 endpoint.getServiceName(), // the service QName
                                 endpoint.getWsdlPort(), // the port
                                 container,
@@ -294,7 +298,8 @@ public class EjbRuntimeEndpointInfo {
                 }
             }
         }
-        return adapter;
+        adapterInvInfo.setAdapter(adapter);
+        return adapterInvInfo;
     }
 
    /**
@@ -302,23 +307,34 @@ public class EjbRuntimeEndpointInfo {
      * as well as the handlers injection 
      */
     public void initRuntimeInfo(ServletAdapterList list) throws Exception {
+       AdapterInvocationInfo aInfo =null;
         try { 
             this.adapterList = list;
-            prepareInvocation(true); 
-        } finally { 
+            aInfo = (AdapterInvocationInfo)prepareInvocation(true);
+        } finally {
+           // InvocationManager invManager =getInvocationManager();
             //invManager.postInvoke(invManager.getCurrentInvocation());
-            releaseImplementor();
+            releaseImplementor(aInfo.getInv())       ;
         } 
          
     } 
-     
+
+
+    public InvocationManager getInvocationManager (){
+        WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+        return wscImpl.getInvocationManager();
+    }
+
     /**
      * Called after attempt to handle message.  This is coded defensively
      * so we attempt to clean up no matter how much progress we made in
      * getImplementor.  One important thing is to complete the invocation
      * manager preInvoke().
      */
-    public void releaseImplementor() {
+    public void releaseImplementor(ComponentInvocation inv) {
+
+        /*InvocationManager invManager = getInvocationManager();
+        ComponentInvocation inv = invManager.getCurrentInvocation();*/
         container.endInvocation(inv);
 
     }
@@ -334,4 +350,6 @@ public class EjbRuntimeEndpointInfo {
         return container;
     }
 
+
+   
 }

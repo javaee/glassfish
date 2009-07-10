@@ -45,14 +45,18 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Method;
 
 import java.util.Map;
+import java.util.logging.Logger;
+
 import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.InvocationInfo;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.ejb.api.EjbEndpointFacade;
 import com.sun.ejb.Container;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 
 /** 
  * This is a proxy invocation handler for web service ejb invocations.
@@ -73,8 +77,7 @@ public final class WebServiceInvocationHandler extends EJBLocalRemoteObject
     private boolean hasHandlers_;
     private Map invocationInfoMap_;
 
-    protected static final LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(WebServiceInvocationHandler.class);
+    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
     public WebServiceInvocationHandler(Class ejbClass, 
                                        WebServiceEndpoint endpoint,
@@ -190,6 +193,9 @@ public final class WebServiceInvocationHandler extends EJBLocalRemoteObject
         } catch(Throwable c) {
             inv.exception = c;
         } finally {
+            /*if (container instanceof EjbEndpointFacade){
+                ((EjbEndpointFacade)container).endInvocation(inv);
+            }*/
             if( inv.ejb != null ) {
                 // Do post invoke tx processing so that a commit failure
                 // will be visible to web service client.

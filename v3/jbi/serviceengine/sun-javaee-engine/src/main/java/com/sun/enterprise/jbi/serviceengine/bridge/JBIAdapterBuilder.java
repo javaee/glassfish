@@ -48,7 +48,9 @@ import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.DocumentAddressResolver;
 import javax.jbi.messaging.MessageExchange;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 
+import org.glassfish.webservices.AdapterInvocationInfo;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -86,13 +88,16 @@ public class JBIAdapterBuilder {
     private JBIAdapter createWSAdapter(ServiceEngineEndpoint endpt,
             MessageExchange me) {
         try {
-            
+            AdapterInvocationInfo adapterInfo = null;
+            ServletAdapter sadapter;
             EjbRuntimeEndpointInfo ejbEndPtInfo=null;
             if(endpt.isImplementedByEJB()) {
                 WebServiceEjbEndpointRegistry registry = ServiceEngineRuntimeHelper.getRuntime().getWebServiceEjbEndpointRegistry();
                 ejbEndPtInfo = registry.getEjbWebServiceEndpoint(endpt.getURI(), "POST", null);
-                Adapter adapter = (Adapter) ejbEndPtInfo.prepareInvocation(true);
-                endpt.setWsep(adapter.getEndpoint());
+                 adapterInfo =
+                        (AdapterInvocationInfo) ejbEndPtInfo.prepareInvocation(true);
+                sadapter = adapterInfo.getAdapter();
+                endpt.setWsep(sadapter.getEndpoint());
             }else {
                 
                 String url = endpt.getURI();
