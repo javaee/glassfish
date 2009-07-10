@@ -113,6 +113,11 @@
             <artifactId>deployment-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>verifier</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
    </dependencies>
 </project>

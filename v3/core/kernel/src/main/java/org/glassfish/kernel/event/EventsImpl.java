@@ -9,6 +9,7 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventListener.Event;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.glassfish.deployment.common.DeploymentException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -76,7 +77,15 @@ public class EventsImpl implements Events {
                     }
                 });
             } else {
-                listener.event(event);
+                try {
+                    listener.event(event);
+                } catch (DeploymentException de) {
+                    // when synchronous listener throws DeploymentException
+                    // we re-throw the exception to abort the deployment
+                    throw de;
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "Exception while dispatching an event", e);
+                }
             }
         }
     }

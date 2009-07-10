@@ -45,11 +45,13 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -59,6 +61,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +72,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.Payload;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 
 
@@ -79,7 +86,7 @@ import org.glassfish.deployment.common.DownloadableArtifacts;
 @Service(name="deploy")
 @I18n("deploy.command")
 @Scoped(PerLookup.class)
-public class DeployCommand extends DeployCommandParameters implements AdminCommand {
+public class DeployCommand extends DeployCommandParameters implements AdminCommand, EventListener, PostConstruct {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
 
@@ -90,6 +97,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     @Inject
     ServerEnvironmentImpl env;
+
+    @Inject
+    Habitat habitat;
 
     @Inject
     CommandRunner commandRunner;
@@ -109,11 +119,18 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     @Inject
     DownloadableArtifacts downloadableArtifacts;
 
+    @Inject
+    Events events;
+
     private PayloadFilesManager.Temp payloadFilesMgr = null;
     private List<File> payloadFiles = null;
 
     public DeployCommand() {
         origin = Origin.deploy;
+    }
+
+    public void postConstruct() {
+        events.register(this);
     }
 
     /**
@@ -442,6 +459,47 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     target, name);
             }
 
+        }
+    }
+
+    public void event(Event event) {
+        if (event.is(Deployment.APPLICATION_PREPARED)) {
+            DeploymentContext context = (DeploymentContext)event.hook();
+            if (verify) {
+                if (!isVerifierInstalled()) {
+                    context.getLogger().warning("Verifier is not installed yet. Install verifier module.");
+                } else {
+                    invokeVerifier(context);
+                }
+            }
+        }
+    }
+
+    private void invokeVerifier(DeploymentContext context) 
+        throws DeploymentException {
+        try {
+            com.sun.enterprise.tools.verifier.Verifier verifier = 
+                habitat.getComponent(com.sun.enterprise.tools.verifier.Verifier.class);
+            com.sun.enterprise.tools.verifier.VerifierFrameworkContext verifierFrameworkContext = new com.sun.enterprise.tools.verifier.VerifierFrameworkContext();
+            verifierFrameworkContext.setArchive(context.getSource());
+            verifierFrameworkContext.setApplication(context.getModuleMetaData(com.sun.enterprise.deployment.Application.class));
+            verifierFrameworkContext.setJarFileName(context.getSourceDir().getAbsolutePath());
+            verifier.init(verifierFrameworkContext);
+            verifier.verify();
+        } catch (Exception e) {
+            DeploymentException de = new DeploymentException(e);
+            de.initCause(e);
+            throw de;
+        }
+    }
+
+    private boolean isVerifierInstalled() {
+        try {
+            Class.forName("com.sun.enterprise.tools.verifier.Verifier");
+            return true;
+        } catch (ClassNotFoundException cnfe) {
+            cnfe.printStackTrace();
+            return false;
         }
     }
 }

@@ -60,7 +60,7 @@ public class DeploymentException extends RuntimeException
 	public DeploymentException(Throwable t) 
 	{
             // we cannot just invoke the super(throwable) constructor because
-            // the IASDeploymentException travels between processes and needs
+            // the DeploymentException travels between processes and needs
             // to be serializable as well as all sub or chained exception.
             // Therefore, I use the setStackTrace to chain instead of initCause
             super(t.getMessage());
@@ -69,7 +69,7 @@ public class DeploymentException extends RuntimeException
 	public DeploymentException(String s, Throwable t) 
 	{
             // we cannot just invoke the super(throwable) constructor because
-            // the IASDeploymentException travels between processes and needs
+            // the DeploymentException travels between processes and needs
             // to be serializable as well as all sub or chained exception.
             // Therefore, I use the setStackTrace to chain instead of initCause            
 	    super(s + " -- " + t.getMessage());
