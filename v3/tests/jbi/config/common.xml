@@ -13,6 +13,7 @@
   <mkdir dir="${src}"/>
   <javac srcdir="${src}"
     destdir="${build.classes.dir}"
+    classpath="${env.APS_HOME}/jbi/lib/reporter.jar:${env.S1AS_HOME}/modules/javax.ejb.jar:${env.S1AS_HOME}/modules/javax.servlet.jar"
     debug="on"
     failonerror="true"/>
 </target>
@@ -56,7 +57,7 @@
 
     <target name="autodeploy-service-assembly">
       <copy file="${assemble.dir}/${jbi-su-assembly}.jar" todir="${deploy.dir}"/>
-      <sleep seconds="5"/>
+      <sleep seconds="7"/>
     </target>
 
     <target name="deploy-service-assembly">
@@ -82,7 +83,7 @@
 
     <target name="autoundeploy-service-assembly">
 	<delete file="${deploy.dir}/${jbi-su-assembly}.jar"/>
-	<sleep seconds="5"/>
+	<sleep seconds="6"/>
     </target>
 
     <target name="undeploy-service-assembly">
@@ -115,3 +116,39 @@
       </ant>
     </target>
 -->
+
+<!-- ================================================================ -->
+<!-- Target to create the user in file realm the AppServ  -->
+<!-- ================================================================ -->
+<target name="create-user-common">
+<property name="user.password.file" value="asadminuserpassword.txt"/>
+<echo file="${user.password.file}" append="false">
+AS_ADMIN_USERPASSWORD=${password}
+AS_ADMIN_PASSWORD=${admin.password}
+AS_ADMIN_ADMINPASSWORD=${admin.password}
+AS_ADMIN_MASTERPASSWORD=${master.password}
+</echo>
+  <exec executable="${ASADMIN}">
+    <arg line="create-file-user"/>
+    <arg line="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
+    <arg line="--groups ${groups}"/>
+    <arg line="--authrealmname ${authrealmname}"/>
+    <arg line="${user}"/>
+  </exec>
+  <delete file="${user.password.file}" failonerror="false"/>
+</target>
+
+
+<!-- ================================================================ -->
+<!-- Target to delete the user in file realm the AppServ  -->
+<!-- ================================================================ -->
+<target name="delete-user-common">
+<echo message="Deleting user ${user} in file realm" level="verbose"/>
+<exec executable="${ASADMIN}">
+  <arg line="delete-file-user"/>
+  <arg line="${as.props}"/>
+  <arg line="--authrealmname ${authrealmname}"/>
+  <arg line="${user}"/>
+</exec>
+</target>
+
