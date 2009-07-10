@@ -100,6 +100,24 @@ public class Habitat {
      */
 
     /**
+     * Removes all imhabitants for a particular type
+     *
+     * @param type of the compoment
+     */
+    public void removeAllByType(Class<?> type) {
+
+        String name = type.getName();
+
+        // remove all existing inhabitant.
+        synchronized(byType.get(name)) {
+            for (Inhabitant existing : byType.get(name)) {
+                existing.release();
+            }
+            byType.get(name).clear();
+        }
+    }
+
+    /**
      * Adds a new inhabitant.
      *
      * <p>
