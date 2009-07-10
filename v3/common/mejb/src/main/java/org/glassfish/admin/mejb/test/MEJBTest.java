@@ -89,10 +89,6 @@ public class MEJBTest {
         final String defaultDomain = mejb.getDefaultDomain();
         println("MEJB default domain = " + defaultDomain + ", MBeanCount = " + mejb.getMBeanCount() );
         
-        final ListenerRegistration reg = mejb.getListenerRegistry();
-        println( "Got ListenerRegistration: " + reg );
-        final NotificationListener listener = new NotifListener();
-        
         final String domain = AMXValues.amxJMXDomain();
         final ObjectName pattern = newObjectName( domain + ":*" );
         final Set<ObjectName> items = mejb.queryNames( pattern, null);
@@ -109,6 +105,10 @@ public class MEJBTest {
         println( "Listener are not supported, skipping." );
         /*
         println( "Adding listeners to every MBean..." );
+        
+        final ListenerRegistration reg = mejb.getListenerRegistry();
+        println( "Got ListenerRegistration: " + reg );
+        final NotificationListener listener = new NotifListener();
         for( final ObjectName objectName : items )
         {
             if ( mejb.isRegistered(objectName) )
