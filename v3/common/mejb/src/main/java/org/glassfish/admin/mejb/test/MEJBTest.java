@@ -50,6 +50,7 @@ public class MEJBTest {
         {
             e.printStackTrace();
         }
+        println( "DONE with MEJB test." );
     }
     
     
@@ -105,15 +106,25 @@ public class MEJBTest {
         }
         
         // add listeners to all
+        println( "Listener are not supported, skipping." );
+        /*
+        println( "Adding listeners to every MBean..." );
         for( final ObjectName objectName : items )
         {
             if ( mejb.isRegistered(objectName) )
             {
                 final NotificationFilter filter = null;
                 final Object handback = null;
-                reg.addNotificationListener( objectName, listener, filter, handback );
+                try {
+                    reg.addNotificationListener( objectName, listener, filter, handback );
+                }
+                catch( final Exception e )
+                {
+                    e.printStackTrace();
+                }
             }
         }
+        */
     }
     
     
@@ -243,12 +254,15 @@ public class MEJBTest {
 
             new MEJBTest( mejb ).test();
 
+            println( "Calling mejb.remove()" );
             mejb.remove();
 
         } catch (Exception ex) {
             System.err.println("Caught an unexpected exception!");
             ex.printStackTrace();
         }
+        println( "Exiting main() forcibly" );
+        System.exit( -1 );
     }
 
 
