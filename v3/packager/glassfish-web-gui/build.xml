@@ -19,11 +19,11 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish ejb timer package creation" default="create.package" basedir=".">
+<project name="glassfish web container admin gui package creation" default="create.package" basedir=".">
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-<property name="package.name" value="glassfish-ejb"/> 
+ <property name="package.name" value="glassfish-web-gui"/> 
 
         
 	<graphDef id="all-modules" tolerateBrokenPOMs="true">
@@ -45,14 +45,7 @@ own identifying information: Portions Copyright [yyyy]
 						<subtract>
 						<subtract>
 						<subtract>
-							<subtract>
-							<subtract>
-							<subtract>
-							<subtract>
-							<subtract>
-							<subtract>
-							<subtract>
-						
+						<subtract>
 				    <fullGraph/>
 			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
 	                                 <scope level="compile,runtime"/>
@@ -126,36 +119,20 @@ own identifying information: Portions Copyright [yyyy]
 			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-gui">	
 	                                 <scope level="compile,runtime"/>
 				     </subGraph>
-			     </subtract>
-			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web-gui">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jdbc-gui">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-ejb-lite">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common-full">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			      <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jts">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jms">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
 			 </subtract>
 		</scope>					 
        </graphDef>
 
        
-       <stage-module-jars graphid="all-modules" />
+      <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" stripVersion="true">
+           <graphRef refid="all-modules"/>
+	       <excludeArtifactsTransitively>
+	           <artifact groupID="com.sun.woodstock.dependlibs" artifactId="dataprovider" />
+		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf" />
+		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf-suntheme" />
+	   </excludeArtifactsTransitively>
+       </resolveAll>
+
        <stage-distribution-fragments graphid="all-modules" />
 
   
@@ -163,7 +140,9 @@ own identifying information: Portions Copyright [yyyy]
 	       <antcall target="pack.compression" />
        </if>
 
-       <antcall target="create-zip-artifact"/>  	
+       <antcall target="create-zip-artifact"/> 
+
+
    </target>
 </project>
 

@@ -82,6 +82,8 @@
 	<!--module>glassfish-jdbc-management</module-->
 	<module>glassfish-jdbc</module>
 	<module>glassfish-gui</module>
+	<module>glassfish-web-gui</module>
+	<module>glassfish-jdbc-gui</module>
 	<module>glassfish-ejb-lite</module>
 	<module>glassfish-common-full</module>
 	<module>glassfish-jts</module>

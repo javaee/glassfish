@@ -43,13 +43,13 @@
         <artifactId>packages</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>glassfish-cmp</artifactId>
-    <name>Glassfish CMP Package</name>
+    <artifactId>glassfish-web-gui</artifactId>
+    <name>Glassfish Web Container Admin GUI Package</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish CMP package</description>
+    <description>This pom describes how to assemble the GlassFish Web Container Admin GUI  package</description>
 
     <build>
-        <plugins>
+	<plugins>
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
@@ -70,16 +70,13 @@
         <!--
           modules to be included in this bundle
         -->       
-        <dependency>
-           <groupId>org.glassfish.persistence.cmp</groupId>
-           <artifactId>cmp-all</artifactId>
-	   <version>${project.version}</version>
-	   <type>pom</type>
+ 
+     	<dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-web-plugin</artifactId>
+            <version>${project.version}</version>
         </dependency>
-	
-
-
-    	<!-- now, listing package dependencies so that their content
+        <!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
         <dependency>        
            <groupId>org.glassfish.packager</groupId>
@@ -186,48 +183,6 @@
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-gui</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency> 
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-web-gui</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-jdbc-gui</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>	
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-ejb-lite</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency> 
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-common-full</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency> 
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-jts</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency> 
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-jms</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-ejb</artifactId>
            <version>${project.version}</version>
 	   <type>zip</type>
        </dependency>
