@@ -40,6 +40,7 @@ import javax.management.MBeanOperationInfo;
 import java.util.Set;
 
 
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.Param;
@@ -125,6 +126,11 @@ public interface Query extends AMXProxy, Utility, Singleton
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     public Set<AMXProxy> queryAll();
 
+
+    /** Validate MBeans: specific ObjectNames and/or patterns. */
+    @Description("Return  all MBeans that are global singletons")
+    @ManagedAttribute()
+    public ObjectName[] getGlobalSingletonTypes();
 }
 
 

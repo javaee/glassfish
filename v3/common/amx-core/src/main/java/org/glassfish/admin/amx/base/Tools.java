@@ -118,7 +118,6 @@ public interface Tools extends AMXProxy, Utility, Singleton
     public String validate(
             @Param(name = "mbeans")
             final ObjectName[] mbeans);
-
 }
 
 

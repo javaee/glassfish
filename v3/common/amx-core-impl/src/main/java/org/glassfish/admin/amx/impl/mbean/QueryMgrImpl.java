@@ -46,8 +46,13 @@ import org.glassfish.admin.amx.util.CollectionUtil;
 
 import javax.management.ObjectName;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import javax.management.MBeanInfo;
+import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
+import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
 /**
  */
@@ -161,7 +166,24 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
     {
         return CollectionUtil.toArray(items, ObjectName.class);
     }
-
+    
+    public ObjectName[] getGlobalSingletonTypes()
+    {
+        final ObjectName[] all = queryAll();
+        final List<ObjectName> globalSingletons = new ArrayList<ObjectName>();
+        
+        final ProxyFactory proxyFactory = getProxyFactory();
+        for( final ObjectName candidate : all )
+        {
+            final MBeanInfo mbeanInfo = proxyFactory.getMBeanInfo(candidate);
+            if ( AMXProxyHandler.globalSingleton(mbeanInfo) )
+            {
+                globalSingletons.add(candidate);
+            }
+        }
+        
+        return CollectionUtil.toArray(globalSingletons, ObjectName.class);
+    }
 }
 
 
