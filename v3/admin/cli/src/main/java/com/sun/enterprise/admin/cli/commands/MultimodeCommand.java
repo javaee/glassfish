@@ -60,9 +60,9 @@ public class MultimodeCommand extends CLICommand {
 
     /**
      */
-    public MultimodeCommand(String name, ProgramOptions po,
+    public MultimodeCommand(String name, ProgramOptions programOpts,
             Environment env) {
-        super(name, po, env);
+        super(name, programOpts, env);
     }
 
     /**
@@ -93,7 +93,7 @@ public class MultimodeCommand extends CLICommand {
         if (options.containsKey("printprompt"))
             printPrompt = Boolean.parseBoolean(options.get("printprompt"));
         else
-            printPrompt = po.isInteractive();
+            printPrompt = programOpts.isInteractive();
         encoding = options.get("encoding");
         if (options.containsKey("file"))
             file = new File(options.get("file"));
@@ -159,7 +159,8 @@ public class MultimodeCommand extends CLICommand {
 
             String command = argv[0];
             try {
-                CLICommand cmd = CLICommand.getCommand(command, po, env);
+                CLICommand cmd =
+                    CLICommand.getCommand(command, programOpts, env);
                 rc = cmd.execute(argv);
             } catch (CommandException ce) {
                 logger.printError(ce.getMessage());
@@ -169,7 +170,7 @@ public class MultimodeCommand extends CLICommand {
             // XXX - this duplicates code in AsadminMain, refactor it
             switch (rc) {
             case SUCCESS:
-                if (!po.isTerse())
+                if (!programOpts.isTerse())
                     logger.printDetailMessage(
                         strings.get("CommandSuccessful", command));
                 break;

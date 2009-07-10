@@ -89,7 +89,7 @@ public abstract class CLICommand {
     protected static final CLILogger logger = CLILogger.getInstance();
 
     protected String name;
-    protected ProgramOptions po;
+    protected ProgramOptions programOpts;
     protected Environment env;
     protected String[] argv;
     protected Set<ValidOption> commandOpts;
@@ -114,27 +114,27 @@ public abstract class CLICommand {
     /**
      * Get a CLICommand object representing the named command.
      */
-    public static CLICommand getCommand(String name, ProgramOptions po,
+    public static CLICommand getCommand(String name, ProgramOptions programOpts,
             Environment env) throws CommandException {
 
         // first, check if it's a known unsupported command
         checkUnsupportedLegacyCommand(name);
 
         // next, try to load out own implementation of the command
-        CLICommand cmd = getCommandClass(name, po, env);
+        CLICommand cmd = getCommandClass(name, programOpts, env);
         if (cmd != null)
             return cmd;
 
         // see if it's a local command
         try {
             if (cliDescriptorsReader.getCommand(name) != null)
-                return new LocalCommand(name, po, env);
+                return new LocalCommand(name, programOpts, env);
         } catch (CommandValidationException ex) {
             // ignore it
         }
 
         // nope, must be a remote command
-        return new RemoteCommand(name, po, env);
+        return new RemoteCommand(name, programOpts, env);
 
     }
 
@@ -143,8 +143,8 @@ public abstract class CLICommand {
      * the command name to a class name.
      * XXX - this is just temporary
      */
-    private static CLICommand getCommandClass(String name, ProgramOptions po,
-            Environment env) {
+    private static CLICommand getCommandClass(String name,
+	    ProgramOptions programOpts, Environment env) {
         try {
             Class cls = localCommands.get(name);
             if (cls == null)    // XXX - to allow experimenting with new cmds
@@ -154,7 +154,7 @@ public abstract class CLICommand {
                                 ProgramOptions.class,
                                 Environment.class
                             });
-            return (CLICommand)cons.newInstance(name, po, env);
+            return (CLICommand)cons.newInstance(name, programOpts, env);
         } catch (Exception ex) {
             logger.printDebugMessage("Failed to load command class: " + ex);
             return null;
@@ -186,9 +186,10 @@ public abstract class CLICommand {
      * and environment information into corresponding protected fields.
      * Finally, this constructor calls the initializeLogger method.
      */
-    protected CLICommand(String name, ProgramOptions po, Environment env) {
+    protected CLICommand(String name, ProgramOptions programOpts,
+	    Environment env) {
         this.name = name;
-        this.po = po;
+        this.programOpts = programOpts;
         this.env = env;
         initializeLogger();
     }
@@ -236,11 +237,11 @@ public abstract class CLICommand {
     // XXX - this won't work in multimode, each cmd needs own logger
     // XXX - echo should be handled by AsadminMain and Multimode
     protected void initializeLogger() {
-        if (po.isTerse())
+        if (programOpts.isTerse())
             logger.setOutputLevel(java.util.logging.Level.INFO);
         else
             logger.setOutputLevel(java.util.logging.Level.FINE);
-        if (po.isEcho())
+        if (programOpts.isEcho())
             logger.printMessage(toString());
         else if (logger.isDebug())
             logger.printDebugMessage(toString());
@@ -253,7 +254,7 @@ public abstract class CLICommand {
      */
     protected void initializePasswords() throws CommandException {
         passwords = new HashMap<String, String>();
-        String pwfile = po.getPasswordFile();
+        String pwfile = programOpts.getPasswordFile();
 
         if (ok(pwfile)) {
             passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
@@ -262,7 +263,7 @@ public abstract class CLICommand {
             String password = passwords.get(
                     Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD");
             if (ok(password))
-                po.setPassword(password);
+                programOpts.setPassword(password);
         }
     }
 
@@ -284,7 +285,7 @@ public abstract class CLICommand {
          * metadata and we throw away all the other options and
          * fake everything else.
          */
-        if (po.isHelp()) {
+        if (programOpts.isHelp()) {
             options = new HashMap<String, String>();
             options.put("help", "true");
             operands = Collections.emptyList();
@@ -405,7 +406,7 @@ public abstract class CLICommand {
     protected String getPassword(String passwordName)
             throws CommandValidationException {
 
-        if (!po.isInteractive())
+        if (!programOpts.isInteractive())
             return null;
 
         final String newprompt = strings.get("NewPasswordPrompt", passwordName);

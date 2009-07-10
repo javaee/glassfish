@@ -49,8 +49,9 @@ import com.sun.enterprise.cli.framework.*;
 public class LocalCommand extends CLICommand {
     private CLIMain cli;
 
-    public LocalCommand(String name, ProgramOptions po, Environment env) {
-        super(name, po, env);
+    public LocalCommand(String name, ProgramOptions programOpts,
+	    Environment env) {
+        super(name, programOpts, env);
         cli = new CLIMain();
     }
 

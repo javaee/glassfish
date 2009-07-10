@@ -60,9 +60,9 @@ public class ListCommandsCommand extends RemoteCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListCommandsCommand.class);
 
-    public ListCommandsCommand(String name, ProgramOptions po,
+    public ListCommandsCommand(String name, ProgramOptions programOpts,
             Environment env) throws CommandException {
-        super(name, po, env);
+        super(name, programOpts, env);
     }
 
     @Override

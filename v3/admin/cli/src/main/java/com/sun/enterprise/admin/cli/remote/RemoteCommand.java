@@ -116,7 +116,7 @@ public class RemoteCommand extends CLICommand {
     @Override
     protected void prepare() throws CommandException {
         try {
-            if (!po.isOptionsSet()) {
+            if (!programOpts.isOptionsSet()) {
                 /*
                  * asadmin options and command options are intermixed.
                  * Parse the entire command line for asadmin options,
@@ -127,7 +127,7 @@ public class RemoteCommand extends CLICommand {
                                 ProgramOptions.getValidOptions(), true);
                 Map<String, String> params = rcp.getOptions();
                 // program options may change
-                po = new ProgramOptions(params, env);
+                programOpts = new ProgramOptions(params, env);
                 initializeLogger();
                 initializePasswords();
                 List<String> operands = rcp.getOperands();
@@ -150,7 +150,7 @@ public class RemoteCommand extends CLICommand {
              * metadata and we throw away all the other options and
              * fake everything else.
              */
-            if (po.isHelp()) {
+            if (programOpts.isHelp()) {
                 commandOpts = new HashSet<ValidOption>();
                 ValidOption opt = new ValidOption("help", "BOOLEAN",
                         ValidOption.OPTIONAL, "false");
@@ -324,13 +324,15 @@ public class RemoteCommand extends CLICommand {
         HttpURLConnection urlConnection = null;
         try {
             HttpConnectorAddress url = new HttpConnectorAddress(
-                                po.getHost(), po.getPort(), po.isSecure());
+                            programOpts.getHost(), programOpts.getPort(),
+                            programOpts.isSecure());
             logger.printDebugMessage("URI: " + uriString.toString());
             logger.printDebugMessage("URL: " + url.toString());
             logger.printDebugMessage("URL: " +
                     url.toURL(uriString.toString()).toString());
             url.setAuthenticationInfo(
-                new AuthenticationInfo(po.getUser(), po.getPassword()));
+                new AuthenticationInfo(programOpts.getUser(),
+                                        programOpts.getPassword()));
 
             urlConnection = (HttpURLConnection)
                     url.openConnection(uriString.toString());
@@ -345,19 +347,20 @@ public class RemoteCommand extends CLICommand {
             // this really means nobody was listening on the remote server
             // note: ConnectException extends IOException and tells us more!
             String msg = strings.get("ConnectException",
-                    po.getHost(), po.getPort() + "");
+                    programOpts.getHost(), programOpts.getPort() + "");
             throw new CommandException(msg, ce);
         } catch (UnknownHostException he) {
             // bad host name
-            String msg = strings.get("UnknownHostException", po.getHost());
+            String msg = strings.get("UnknownHostException",
+                                        programOpts.getHost());
             throw new CommandException(msg, he);
         } catch (SocketException se) {
             try {
-                boolean serverAppearsSecure =
-                        NetUtils.isSecurePort(po.getHost(), po.getPort());
-                if (serverAppearsSecure != po.isSecure()) {
+                boolean serverAppearsSecure = NetUtils.isSecurePort(
+                                programOpts.getHost(), programOpts.getPort());
+                if (serverAppearsSecure != programOpts.isSecure()) {
                     String msg = strings.get("ServerMaybeSecure",
-                            po.getHost(), po.getPort() + "");
+                            programOpts.getHost(), programOpts.getPort() + "");
                     logger.printError(msg);
                     throw new CommandException(se);
                 }
@@ -371,7 +374,8 @@ public class RemoteCommand extends CLICommand {
                 try {
                     int rc = urlConnection.getResponseCode();
                     if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
-                        msg = strings.get("InvalidCredentials", po.getUser());
+                        msg = strings.get("InvalidCredentials",
+                                            programOpts.getUser());
 			throw new AuthenticationException(msg);
                     } else {
                         msg = "Status: " + rc;
@@ -730,8 +734,9 @@ public class RemoteCommand extends CLICommand {
      */
     protected boolean updateAuthentication() {
         Console cons;
-	if (po.isInteractive() && (cons = System.console()) != null) {
-            cons.printf("%s ", strings.get("AdminUserPrompt", po.getUser()));
+	if (programOpts.isInteractive() && (cons = System.console()) != null) {
+            cons.printf("%s ",
+                strings.get("AdminUserPrompt", programOpts.getUser()));
             String user = cons.readLine();
             if (user == null)
                 return false;
@@ -739,8 +744,8 @@ public class RemoteCommand extends CLICommand {
             if (password == null)
                 return false;
             if (user.length() > 0)      // if none entered, don't change
-                po.setUser(user);
-            po.setPassword(password);
+                programOpts.setUser(user);
+            programOpts.setPassword(password);
             return true;
 	}
 	return false;
@@ -751,7 +756,7 @@ public class RemoteCommand extends CLICommand {
         
         try {
             LoginInfoStore store = LoginInfoStoreFactory.getDefaultStore();
-            li = store.read(po.getHost(), po.getPort());
+            li = store.read(programOpts.getHost(), programOpts.getPort());
         } catch (StoreException se) {
             logger.printDebugMessage(
                     "Login info could not be read from ~/.asadminpass file");
@@ -759,16 +764,16 @@ public class RemoteCommand extends CLICommand {
 
         // initialize user name
 
-        if (po.getUser() == null && li != null) {
+        if (programOpts.getUser() == null && li != null) {
             // not on command line and in .asadminpass
-            po.setUser(li.getUser());
+            programOpts.setUser(li.getUser());
         }
 
         // initialize password
 
         // this is for asadmin-login command's special processing.        
         // XXX - does this work?
-        String password = po.getPassword();
+        String password = programOpts.getPassword();
         /*
         if (options.get("password") != null) {
             password = options.get("password");
@@ -782,6 +787,6 @@ public class RemoteCommand extends CLICommand {
             // not in passwordfile and in .asadminpass
             password = li.getPassword();
         }                
-        po.setPassword(password);
+        programOpts.setPassword(password);
     }
 }

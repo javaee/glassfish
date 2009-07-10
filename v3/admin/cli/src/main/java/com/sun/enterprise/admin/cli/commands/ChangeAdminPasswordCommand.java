@@ -61,9 +61,9 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
     /**
      * Constructor.
      */
-    public ChangeAdminPasswordCommand(String name, ProgramOptions po,
+    public ChangeAdminPasswordCommand(String name, ProgramOptions programOpts,
             Environment env) throws CommandException {
-        super(name, po, env);
+        super(name, programOpts, env);
     }
 
     @Override
@@ -85,13 +85,13 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
      */
     @Override
     protected void validate() throws CommandException {
-        if (po.isHelp())
+        if (programOpts.isHelp())
             return;
 
         // first, prompt for the passwords
         try {
             String password = getPasswords();
-            po.setPassword(password);
+            programOpts.setPassword(password);
         } catch (CommandValidationException cve) {
             throw new CommandException(cve);
         }
@@ -110,7 +110,7 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
         operandType = "STRING";
         operandMin = operandMax = 1;
         operands = new ArrayList<String>();
-        operands.add(po.getUser());
+        operands.add(programOpts.getUser());
         options.put(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
                 passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD"));
         options.put(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",

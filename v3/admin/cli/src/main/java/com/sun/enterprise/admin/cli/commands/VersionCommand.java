@@ -37,14 +37,12 @@
 package com.sun.enterprise.admin.cli.commands;
 
 import java.util.*;
-import java.util.logging.*;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.ValidOption;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
 
 /**
  * A local version command.
@@ -62,9 +60,9 @@ public class VersionCommand extends RemoteCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VersionCommand.class);
 
-    public VersionCommand(String name, ProgramOptions po,
+    public VersionCommand(String name, ProgramOptions programOpts,
             Environment env) throws CommandException {
-        super(name, po, env);
+        super(name, programOpts, env);
     }
 
     @Override
@@ -100,8 +98,8 @@ public class VersionCommand extends RemoteCommand {
     }
 
     private void printRemoteException(Exception e) {
-        String host = po.getHost();
-        String port = po.getPort() + "";
+        String host = programOpts.getHost();
+        String port = programOpts.getPort() + "";
         String msg = strings.get("remote.version.failed", host, port);
         logger.printMessage(msg);
         logger.printDebugMessage(e.getMessage());        
