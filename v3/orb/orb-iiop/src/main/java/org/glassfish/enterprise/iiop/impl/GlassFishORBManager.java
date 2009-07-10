@@ -90,7 +90,7 @@ public final class GlassFishORBManager {
     private static final String PEORB_CONFIG_CLASS =
             "org.glassfish.enterprise.iiop.impl.PEORBConfigurator";
     private static final String IIOP_SSL_SOCKET_FACTORY_CLASS =
-            "com.sun.enterprise.iiop.IIOPSSLSocketFactory";
+            "org.glassfish.enterprise.iiop.impl.IIOPSSLSocketFactory";
     private static final String RMI_UTIL_CLASS =
             "com.sun.corba.ee.impl.javax.rmi.CORBA.Util";
     private static final String RMI_STUB_CLASS =
@@ -392,11 +392,9 @@ public final class GlassFishORBManager {
 
         // TODO orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
 
-        /** TODO enable this
-         
         orbInitProperties.put(SUN_ORB_SOCKET_FACTORY_CLASS_PROPERTY,
                 IIOP_SSL_SOCKET_FACTORY_CLASS);
-
+        /** TODO enable this
 
         // ClientGroupManager.
         // Registers itself as
@@ -407,15 +405,15 @@ public final class GlassFishORBManager {
                 ORBConstants.USER_CONFIGURATOR_PREFIX
                         + "com.sun.corba.ee.impl.folb.ClientGroupManager",
                 "dummy");
-
+         
 
         // This configurator registers the CSIv2SSLTaggedComponentHandler
         orbInitProperties.setProperty(
                 ORBConstants.USER_CONFIGURATOR_PREFIX
                         + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),
+        */
 
-
-
+        /** TODO enable this
         if (ASORBUtilities.isGMSAvailableAndClusterHeartbeatEnabled()) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, "GMS available and enabled - doing EE initialization");
@@ -470,7 +468,7 @@ public final class GlassFishORBManager {
             // TODO We'll handle FOLB later but just do RFM_PROPERTY init
             //
             orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
-            // setFOLBProperties(orbInitProperties);
+            setFOLBProperties(orbInitProperties);
 
             // Standard OMG Properties.
             orbInitProperties.put(ORBConstants.ORB_SERVER_ID_PROPERTY,

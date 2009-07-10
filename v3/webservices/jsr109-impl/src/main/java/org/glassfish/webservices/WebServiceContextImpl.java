@@ -84,13 +84,10 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
     
     public Principal getUserPrincipal() {
         // This could be an EJB endpoint; check the threadlocal variable
-
-        /**  TODO BM check about this part with Security
-        WebPrincipal p = (WebPrincipal) principal.get();
+        Principal p = (Principal) principal.get();
         if (p != null) {
             return p;
         }
-         */
         // This is a servlet endpoint
         return this.jaxwsContextDelegate.getUserPrincipal();
     }

@@ -94,7 +94,8 @@ import org.jvnet.hk2.component.Habitat;
 /** 
  * This is the class that manages the CSIV2 tagged component information
  * in the IORs.
- *
+ * Note: For supporting FLOB in a cluster/EE mode we need to register the CSIV2TaggedComponentHandlerImpl
+ * with the GlassFishORBManager.
  * @author Vivek Nagar
  * @author Harpreet Singh
  * @author Ken Cavanaugh

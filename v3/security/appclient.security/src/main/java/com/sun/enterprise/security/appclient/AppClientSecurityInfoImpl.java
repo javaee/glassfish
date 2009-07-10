@@ -59,7 +59,7 @@ import org.glassfish.appclient.client.acc.config.Ssl;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-
+import org.glassfish.enterprise.iiop.api.IIOPSSLUtil;
 /**
  *
  * @author Kumar
@@ -89,6 +89,8 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
     private SecurityServicesUtil secServUtil; 
     @Inject
     private Util util;
+    @Inject
+    private IIOPSSLUtil appClientSSLUtil;
     
     
     public void initializeSecurity(
@@ -210,6 +212,7 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
 	    //XXX do not use NSS in this release
 	    //CertDb   certDB  = security.getCertDb();
 	    sslUtils.setAppclientSsl(convert(ssl));	
+            this.appClientSSLUtil.setAppClientSSL(ssl);
 	} catch (Exception ex) {
 
         }

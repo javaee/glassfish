@@ -35,21 +35,42 @@
  */
 package org.glassfish.enterprise.iiop.impl;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.security.SecureRandom;
-import java.text.MessageFormat;
+import com.sun.corba.ee.impl.orbutil.ORBUtility;
+import com.sun.corba.ee.pept.transport.Acceptor;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-
 import com.sun.corba.ee.spi.orb.ORB;
+import com.sun.corba.ee.spi.orbutil.ORBConstants;
+import com.sun.corba.ee.spi.transport.ORBSocketFactory;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.CipherInfo;
+import org.glassfish.enterprise.iiop.api.IIOPSSLUtil;
 
 
 /**
@@ -58,7 +79,7 @@ import org.glassfish.security.common.CipherInfo;
  * @author Vivek Nagar
  * @author Shing Wai Chan
  */
-public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable */
+public class IIOPSSLSocketFactory  implements ORBSocketFactory, Serializable 
 { 
     private static Logger _logger = null;
     static{
@@ -76,7 +97,7 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
 
     private static final int BACKLOG = 50;
 
-    private static SecureRandom sr = null; // TODO J2EEServer.secureRandom;
+    //private static SecureRandom sr = null;
 
     /* this is stored for the Server side of SSL Connections.
      * Note: There will be only a port per iiop listener and a corresponding
@@ -99,73 +120,90 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
      * Constructs an <code>IIOPSSLSocketFactory</code>
      */
     public IIOPSSLSocketFactory() {
-        /**
         try {
-            if (Switch.getSwitch().getContainerType() == Switch.EJBWEB_CONTAINER) {
-                ConfigContext configContext =
-                    ApplicationServer.getServerContext().getConfigContext();
-                IiopService iiopBean = ServerBeansFactory.getIiopServiceBean(configContext);
-
-                IiopListener[] iiopListeners = iiopBean.getIiopListener();
-                int listenersLength = (iiopListeners != null) ? iiopListeners.length : 0;
-                for (int i = 0; i < listenersLength; i++) {
-                    Ssl ssl = iiopListeners[i].getSsl();
+            
+            ProcessEnvironment penv = null;
+            ProcessType processType = null;
+            boolean notServerOrACC =  Globals.getDefaultHabitat() == null ? true : false;
+            if (!notServerOrACC) {
+                penv = Globals.get(ProcessEnvironment.class);
+                processType = penv.getProcessType();
+            }
+            //if (Switch.getSwitch().getContainerType() == Switch.EJBWEB_CONTAINER) {
+            if((processType != null) && (processType == ProcessType.Server)) {
+                //this is the EJB container
+                IiopService iiopBean = Globals.getDefaultHabitat().getComponent(IiopService.class);
+                List<IiopListener> iiopListeners = iiopBean.getIiopListener();
+                for (IiopListener listener : iiopListeners) {
+                    Ssl ssl = listener.getSsl(); 
                     SSLInfo sslInfo = null;
-                    if (iiopListeners[i].isSecurityEnabled()) {
+                    boolean securityEnabled = Boolean.valueOf(listener.getSecurityEnabled());
+                   
+                    if (securityEnabled) {
                         if (ssl != null) {
+                            boolean ssl2Enabled = Boolean.valueOf(ssl.getSsl2Enabled());
+                            boolean tlsEnabled = Boolean.valueOf(ssl.getTlsEnabled());
+                            boolean ssl3Enabled = Boolean.valueOf(ssl.getSsl3Enabled());
                             sslInfo = init(ssl.getCertNickname(),
-                                ssl.isSsl2Enabled(), ssl.getSsl2Ciphers(),
-                                ssl.isSsl3Enabled(), ssl.getSsl3TlsCiphers(),
-                                ssl.isTlsEnabled());
+                                    ssl2Enabled, ssl.getSsl2Ciphers(),
+                                    ssl3Enabled, ssl.getSsl3TlsCiphers(),
+                                    tlsEnabled);
                         } else {
                             sslInfo = getDefaultSslInfo();
                         }
                         portToSSLInfo.put(
-                            new Integer(iiopListeners[i].getPort()), sslInfo);
+                            new Integer(listener.getPort()), sslInfo);
                     }
                 }
 
                 if (iiopBean.getSslClientConfig() != null &&
-                        iiopBean.getSslClientConfig().isEnabled()) {
+                        /*iiopBean.getSslClientConfig().isEnabled()*/
+                        iiopBean.getSslClientConfig().getSsl() != null) {
                     Ssl outboundSsl = iiopBean.getSslClientConfig().getSsl();
                     if (outboundSsl != null) {
+                        boolean ssl2Enabled = Boolean.valueOf(outboundSsl.getSsl2Enabled());
+                        boolean ssl3Enabled = Boolean.valueOf(outboundSsl.getSsl3Enabled());
+                        boolean tlsEnabled = Boolean.valueOf(outboundSsl.getTlsEnabled());
                         clientSslInfo = init(outboundSsl.getCertNickname(),
-                            outboundSsl.isSsl2Enabled(),
+                            ssl2Enabled,
                             outboundSsl.getSsl2Ciphers(),
-                            outboundSsl.isSsl3Enabled(),
+                            ssl3Enabled,
                             outboundSsl.getSsl3TlsCiphers(),
-                            outboundSsl.isTlsEnabled());
+                            tlsEnabled);
                     }
                 }
                 if (clientSslInfo == null) {
                     clientSslInfo = getDefaultSslInfo();
                 }
             } else {
-                com.sun.enterprise.config.clientbeans.Ssl clientSsl =
-                        SSLUtils.getAppclientSsl();
-                if (clientSsl != null) {
-                    clientSslInfo = init(clientSsl.getCertNickname(),
-                        clientSsl.isSsl2Enabled(), clientSsl.getSsl2Ciphers(),
-                        clientSsl.isSsl3Enabled(), clientSsl.getSsl3TlsCiphers(),
-                        clientSsl.isTlsEnabled());
-                } else { // include case keystore, truststore jvm option
+                if ((processType != null) && (processType == ProcessType.ACC)) {
+                    IIOPSSLUtil sslUtil = Globals.getDefaultHabitat().getComponent(IIOPSSLUtil.class);
+                    org.glassfish.appclient.client.acc.config.Ssl clientSsl =
+                            (org.glassfish.appclient.client.acc.config.Ssl) sslUtil.getAppClientSSL();
+                    if (clientSsl != null) {
+                        clientSslInfo = init(clientSsl.getCertNickname(),
+                                clientSsl.isSsl2Enabled(), clientSsl.getSsl2Ciphers(),
+                                clientSsl.isSsl3Enabled(), clientSsl.getSsl3TlsCiphers(),
+                                clientSsl.isTlsEnabled());
+                    } else { // include case keystore, truststore jvm option
+
+                        clientSslInfo = getDefaultSslInfo();
+                    }
+                } else {
                     clientSslInfo = getDefaultSslInfo();
-                } 
+                }
             }
         } catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.init_exception",e);
-            throw new IllegalStateException(e.toString());
+            throw new IllegalStateException(e);
         }
-
-         **/
     }
-
+  
     /**
      * Return a default SSLInfo object.
      */
     private SSLInfo getDefaultSslInfo() throws Exception {
-       /** return init(null, false, null, true, null, true);    **/
-    return null;
+       return init(null, false, null, true, null, true);
     }
 
     /**
@@ -179,7 +217,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
             boolean ssl3Enabled, String ssl3TlsCiphers,
             boolean tlsEnabled) throws Exception {
 
-        /*
         String protocol;
         if (tlsEnabled) {
             protocol = TLS;
@@ -204,31 +241,16 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
         }
 
         SSLContext ctx = SSLContext.getInstance(protocol);
-
-        if (alias != null && !SSLUtils.isTokenKeyAlias(alias)) {
-            throw new IllegalStateException(getFormatMessage(
-                    "iiop.cannot_find_keyalias", new Object[] { alias }));
+        if (Globals.getDefaultHabitat() != null) {
+            IIOPSSLUtil sslUtil = Globals.getDefaultHabitat().getComponent(IIOPSSLUtil.class);
+            KeyManager[] mgrs = sslUtil.getKeyManagers(alias);
+            ctx.init(mgrs, sslUtil.getTrustManagers(), sslUtil.getInitializedSecureRandom());
+        } else {
+            //do nothing
+            //ctx.init(mgrs, sslUtil.getTrustManagers(), sslUtil.getInitializedSecureRandom());
         }
-            
-        KeyManager[] mgrs = SSLUtils.getKeyManagers();
-        if (alias != null && mgrs != null && mgrs.length > 0) {
-            KeyManager[] newMgrs = new KeyManager[mgrs.length];
-            for (int i = 0; i < mgrs.length; i++) {
-                if (_logger.isLoggable(Level.FINE)) {
-                    StringBuffer msg = new StringBuffer("Setting J2EEKeyManager for ");
-                    msg.append(" alias : "+alias);
-                    _logger.log(Level.FINE, msg.toString());
-                }
-                newMgrs[i] = new J2EEKeyManager((X509KeyManager)mgrs[i], alias);
-            }
-            mgrs = newMgrs;
-        }
-        ctx.init(mgrs, SSLUtils.getTrustManagers(), sr);
 
         return new SSLInfo(ctx, ssl3TlsCipherArr, ssl2CipherArr);
-
-        */
-        return null;
     }
 
     //----- implements com.sun.corba.ee.spi.transport.ORBSocketFactory -----
@@ -248,8 +270,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
      */
     public ServerSocket createServerSocket(String type,
             InetSocketAddress inetSocketAddress) throws IOException {
-
-        /*
 
 	if (_logger.isLoggable(Level.FINE)) {
 	    _logger.log(Level.FINE, "Creating server socket for type =" + type
@@ -274,8 +294,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
 	    return serverSocket;
 
 	}
-	*/
-        return null;
     }
 
     /**
@@ -287,8 +305,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
      */
     public Socket createSocket(String type, InetSocketAddress inetSocketAddress)
             throws IOException {
-
-        /*
 
 	try {
 	    String host = inetSocketAddress.getHostName();
@@ -326,17 +342,17 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
     }
 
     public void setAcceptedSocketOptions(Acceptor acceptor,
-            ServerSocket serverSocket, Socket socket) throws SocketException {
-
+            ServerSocket serverSocket, Socket socket)  {
 	if (_logger.isLoggable(Level.FINE)) {
 	    _logger.log(Level.FINE, "setAcceptedSocketOptions: " + acceptor
                     + " " + serverSocket + " " + socket);
 	}
         // Disable Nagle's algorithm (i.e., always send immediately).
+        try {
         socket.setTcpNoDelay(true);
-
-        */
-        return null;
+        } catch (SocketException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     //----- END implements com.sun.corba.ee.spi.transport.ORBSocketFactory -----
@@ -347,8 +363,7 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
      */
     private ServerSocket createSSLServerSocket(String type,
             InetSocketAddress inetSocketAddress) throws IOException {
-        /*
-
+        
         if (inetSocketAddress == null) {
             throw new IOException(getFormatMessage(
                 "iiop.invalid_sslserverport",
@@ -408,8 +423,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
 	    _logger.log(Level.FINE,"Created server socket:" + ss);
 	}
 	return ss;
-	    */
-        return null;
     }
 
     /**
@@ -420,10 +433,7 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
      */
     private Socket createSSLSocket(String host, int port)
         throws IOException {
-        	SSLSocket socket = null;
-        /*
-            
-
+        SSLSocket socket = null;    
 	SSLSocketFactory factory = null;
         try{
             // get socketfactory+sanity check
@@ -456,8 +466,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
             e2.initCause(e);
             throw e2;
         }
-
-        */
         return socket;
     }
 
@@ -476,7 +484,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
     private String[] getEnabledCipherSuites(String cipherSuiteStr,
             boolean ssl2Enabled, boolean ssl3Enabled, boolean tlsEnabled) {
         String[] cipherArr = null;
-        /*
         if (cipherSuiteStr != null && cipherSuiteStr.length() > 0) {
             ArrayList cipherList = new ArrayList();
             StringTokenizer tokens = new StringTokenizer(cipherSuiteStr, ",");
@@ -514,7 +521,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
             cipherArr = (String[])cipherList.toArray(
                     new String[cipherList.size()]);
         }
-        */
         return cipherArr;
     }
 
@@ -526,8 +532,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
      */
     private String[] mergeCiphers(String[] enableCiphers,
             String[] ssl3TlsCiphers, String[] ssl2Ciphers) {
-
-        /*
 
         if (ssl3TlsCiphers == null && ssl2Ciphers == null) {
             return null;
@@ -577,8 +581,6 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
         }
 
         return (String[])cList.toArray(new String[cList.size()]);
-        */
-        return null;
     }
 
     /**
@@ -590,12 +592,9 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
      */
     private boolean isValidProtocolCipher(CipherInfo cipherInfo,
             boolean ssl2Enabled, boolean ssl3Enabled, boolean tlsEnabled) {
-        /*
         return (tlsEnabled && cipherInfo.isTLS() ||
                 ssl3Enabled && cipherInfo.isSSL3() ||
                 ssl2Enabled && cipherInfo.isSSL2());
-                */
-        return false;
     }
 
     /**

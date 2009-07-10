@@ -171,8 +171,8 @@ public class PEDomainsManager extends RepositoryManager
             createIndexFile(domainConfig);
             createDefaultWebXml(domainConfig);
             createLoginConf(domainConfig);
-            //createWssServerConfig(domainConfig);
-            //createWssServerConfigOld(domainConfig);
+            createWssServerConfig(domainConfig);
+            createWssServerConfigOld(domainConfig);
             createSSLCertificateDatabase(domainConfig, masterPassword);                                     
             changeMasterPasswordInMasterPasswordFile(domainConfig, masterPassword, 
                 saveMasterPassword(domainConfig));

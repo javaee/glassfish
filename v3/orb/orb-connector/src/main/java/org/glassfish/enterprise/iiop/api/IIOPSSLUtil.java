@@ -33,74 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.security.common;
 
-import java.security.Principal;
+package org.glassfish.enterprise.iiop.api;
+
+import java.security.SecureRandom;
+import org.jvnet.hk2.annotations.Contract;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
 
 /**
- * This class implements the principal interface.
- *
- * @author Harish Prabandham
+ * This class tries to avoid the need for orb-iiop to 
+ * depend on some security modules for getting SSL related info
+ * @author Kumar
  */
-public class PrincipalImpl implements Principal, java.io.Serializable {
-
-    /**
-     * @serial
-     */
-    private String name;
-
-     /**
-     * Construct a principal from a string user name.
-     * @param user The string form of the principal name.
-     */
-    public PrincipalImpl(String user) {
-	this.name = user;
-    }
-
-    /**
-     * This function returns true if the object passed matches 
-     * the principal represented in this implementation
-     * @param another the Principal to compare with.
-     * @return true if the Principal passed is the same as that 
-     * encapsulated in this object, false otherwise
-     */
-    public boolean equals(Object another) {
-        // XXX for bug 4889642: if groupA and userA have
-        // the same name, then groupA.equals(userA) return false
-        // BUT userA.equals(groupA) return "true"
-        if (another instanceof Group) {
-            return false;
-        } else if (another instanceof PrincipalImpl) {
-	    Principal p = (Principal) another;
-	    return getName().equals(p.getName());
-	} else
-	    return false;
-    }
+@Contract
+public interface IIOPSSLUtil {
+    public Object getAppClientSSL();
+    public void setAppClientSSL(Object ssl);
+    public KeyManager[] getKeyManagers(String certNickname);
+    public TrustManager[] getTrustManagers();
+    public SecureRandom getInitializedSecureRandom();
     
-    /**
-     * Prints a stringified version of the principal.
-     * @return A java.lang.String object returned by the method getName()
-     */
-    @Override
-    public String toString() {
-	return getName();
-    }
-
-    /**
-     * Returns the hashcode for this Principal object
-     * @return a hashcode for the principal.
-     */
-    @Override
-    public int hashCode() {
-	return name.hashCode();
-    }
-
-    /**
-     * Gets the name of the Principal as a java.lang.String
-     * @return the name of the principal.
-     */
-    public String getName() {
-	return name;
-    }
-
 }
