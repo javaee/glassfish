@@ -71,9 +71,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.management.Descriptor;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
-import org.glassfish.admin.amx.client.AppserverConnectionSource;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import static org.glassfish.api.amx.AMXValues.*;
+
+import org.glassfish.api.amx.AMXBooter;
+
 
 /**
 	Factory for {@link AMXProxy} proxies.

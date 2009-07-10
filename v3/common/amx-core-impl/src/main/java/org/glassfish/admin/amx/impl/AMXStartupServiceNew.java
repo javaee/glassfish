@@ -24,7 +24,7 @@ package org.glassfish.admin.amx.impl;
 
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-import org.glassfish.admin.amx.core.proxy.AMXBooter;
+import org.glassfish.api.amx.AMXBooter;
 
 import org.glassfish.admin.amx.util.TimingDelta;
 import org.glassfish.admin.amx.util.FeatureAvailability;

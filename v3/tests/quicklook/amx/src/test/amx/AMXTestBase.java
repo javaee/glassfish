@@ -60,7 +60,7 @@ import java.io.IOException;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.core.proxy.AMXBooter;
+import org.glassfish.api.amx.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.util.TimingDelta;
 

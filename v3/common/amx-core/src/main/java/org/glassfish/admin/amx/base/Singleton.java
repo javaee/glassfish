@@ -40,7 +40,7 @@ import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
-	A marker interface which indicates that this MBean is one-of-a-kind *within its scope*.
+A marker interface which indicates that this MBean is one-of-a-kind *within its scope*.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public interface Singleton extends AMXProxy

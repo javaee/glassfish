@@ -28,7 +28,7 @@ import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.core.proxy.AMXBooter;
+import org.glassfish.api.amx.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
 import org.glassfish.admin.amx.intf.config.Application;

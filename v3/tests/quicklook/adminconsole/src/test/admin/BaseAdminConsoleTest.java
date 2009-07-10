@@ -44,7 +44,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Parameters;
 
-import org.glassfish.admin.amx.core.proxy.AMXBooter;
+import org.glassfish.api.amx.AMXBooter;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.admin.amx.base.DomainRoot;
 import java.io.File;
