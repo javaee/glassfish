@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import javax.management.Attribute;
+import java.util.Iterator;
 
 import com.sun.jsftemplating.annotation.Handler;  
 import com.sun.jsftemplating.annotation.HandlerInput; 
@@ -51,6 +52,8 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.HashSet;
 import java.util.Set;
 import javax.management.ObjectName;
+
+
 import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -230,6 +233,7 @@ public class ProxyHandlers {
     }
 
 
+    
     @Handler(id="getDefaultProxyAttrs",
     input={
         @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
@@ -437,6 +441,35 @@ public class ProxyHandlers {
         }
     }
     
+    /*
+     * This handler returns a list of names by type of mbean.
+     * Useful for creating dropdowns or listBox
+     */
+    @Handler(id="getProxyNamesByType",
+    input={
+        @HandlerInput(name="type",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="result",        type=List.class)})
+
+        public static void getProxyNamesByType(HandlerContext handlerCtx) {
+        try{
+            String type = (String) handlerCtx.getInputValue("type");
+            List result = new ArrayList();
+            Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
+            Set data = (Set) query.queryType(type);
+            Iterator iter = data.iterator();
+            while (iter.hasNext()) {
+                Map attr = ((AMXProxy) iter.next()).attributesMap();
+                result.add(attr.get("Name"));
+            }
+            handlerCtx.setOutputValue("result", result);
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }    
+    
+ 
+  
     @Handler(id="getApplicationByType",
     input={
         @HandlerInput(name="type",   type=String.class, required=true)},
