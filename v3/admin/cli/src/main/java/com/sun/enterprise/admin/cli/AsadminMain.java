@@ -53,8 +53,9 @@ import java.util.*;
  */
 public class AsadminMain {
     public static void main(String[] args) {
-        if(CLIConstants.debugMode) {
-            System.setProperty(CLIConstants.WALL_CLOCK_START_PROP, "" + System.currentTimeMillis());
+        if (CLIConstants.debugMode) {
+            System.setProperty(CLIConstants.WALL_CLOCK_START_PROP,
+                "" + System.currentTimeMillis());
             CLILogger.getInstance().printDebugMessage("CLASSPATH= " +
                     System.getProperty("java.class.path") +
                     "\nCommands: " + Arrays.toString(args));
@@ -63,13 +64,12 @@ public class AsadminMain {
         AsadminMain main = new AsadminMain();
         int exitCode;
 
-        if(args.length <= 0) {
-             String msg = strings.get("AsadminUsageMessage");
-             System.out.println(msg);
-             System.exit(0);
-        }
+        if (args.length <= 0)
+             args = new String[] { "multimode" };
+
         copyOfArgs = new String[args.length];
-        classPath = SmartFile.sanitizePaths(System.getProperty("java.class.path"));
+        classPath =
+            SmartFile.sanitizePaths(System.getProperty("java.class.path"));
         className = main.getClass().getName();
 
         System.arraycopy(args, 0, copyOfArgs, 0, args.length);
@@ -141,13 +141,10 @@ public class AsadminMain {
 
     public static int executeCommand(String[] argv) {
         try {
-            if (argv.length == 0)
-                throw new CommandException("No Command");
-
             Environment env = new Environment();
 
             // if the first argument is an option, we're using the new form
-            if (argv[0].startsWith("-")) {
+            if (argv.length > 0 && argv[0].startsWith("-")) {
                 /*
                  * Parse all the asadmin options, stopping at the first
                  * non-option, which is the command name.
@@ -157,12 +154,12 @@ public class AsadminMain {
                 Map<String, String> params = rcp.getOptions();
                 po = new ProgramOptions(params, env);
                 List<String> operands = rcp.getOperands();
-                if (operands.size() == 0)
-                    throw new CommandException("No Command");
                 argv = operands.toArray(new String[operands.size()]);
             } else
                 po = new ProgramOptions(env);
             po.toEnvironment(env);
+            if (argv.length == 0)
+                argv = new String[] { "multimode" };
             command = argv[0];
             CLICommand cmd = CLICommand.getCommand(command, po, env);
             return cmd.execute(argv);
@@ -259,7 +256,7 @@ public class AsadminMain {
         }
     }
 
-    private static void writeCommandToDebugLog(String[] args, int exit) {
+    public static void writeCommandToDebugLog(String[] args, int exit) {
         File log = getDebugLogfile();
 
         if(log == null)

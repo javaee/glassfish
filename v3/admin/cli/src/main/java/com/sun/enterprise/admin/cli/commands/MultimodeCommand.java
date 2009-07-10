@@ -207,8 +207,7 @@ public class MultimodeCommand extends CLICommand {
                     strings.get("CommandUnSuccessful", command));
                 break;
             }
-            // XXX - going to need this from AsadminMain too
-            //writeCommandToDebugLog(argv, exitCode);
+            AsadminMain.writeCommandToDebugLog(argv, rc);
         }
         if (printPrompt)
             System.out.println();
