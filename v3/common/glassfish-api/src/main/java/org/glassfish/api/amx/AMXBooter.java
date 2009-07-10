@@ -52,9 +52,6 @@ public final class AMXBooter
     private static final class BootAMXCallback extends MBeanListener.CallbackImpl
     {
         private final MBeanServerConnection mConn;
-
-        private final CountDownLatch mLatch = new CountDownLatch(1);
-
         public BootAMXCallback(final MBeanServerConnection conn)
         {
             mConn = conn;
@@ -66,19 +63,6 @@ public final class AMXBooter
             super.mbeanRegistered(objectName, listener);
             mLatch.countDown();
         }
-
-        public void await()
-        {
-            try
-            {
-                mLatch.await(); // wait until BootAMXMBean is ready
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-
     }
 
     /**

@@ -83,6 +83,24 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         public ObjectName getRegistered()   { return mRegistered; }
         public ObjectName getUnregistered() { return mUnregistered; }
         
+        protected final CountDownLatch mLatch = new CountDownLatch(1);
+        
+        /** Optional: wait for the CountDownLatch to fire
+            If used, the subclass should countDown() the latch when the 
+            appropriate event happens
+        */
+        public void await()
+        {
+            try
+            {
+                mLatch.await(); // wait until BootAMXMBean is ready
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+
         public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener)
         {
             mRegistered = objectName;
@@ -177,7 +195,6 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
 
     private static final class WaitForDomainRootListenerCallback extends MBeanListener.CallbackImpl {
         private final MBeanServerConnection mConn;
-        private final CountDownLatch mLatch = new CountDownLatch(1);
 
         public WaitForDomainRootListenerCallback( final MBeanServerConnection conn ) {
             mConn = conn;
@@ -195,18 +212,6 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
                 throw new RuntimeException(e);
             }
             mLatch.countDown();
-        }
-        
-        public void await()
-        {
-            try
-            {
-                mLatch.await(); // wait until BootAMXMBean is ready
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
         }
     }
 
