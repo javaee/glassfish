@@ -60,7 +60,7 @@
                 priority="20" 
                 parentId="serverInstTabs" 
                 content="monitor/monitoringTab.jsf" />
-        <integration-point
+        <!-- <integration-point
                 id="monitor_web" 
                 type="org.glassfish.admingui:serverInstTab" 
                 priority="20" 
@@ -77,5 +77,5 @@
                 type="org.glassfish.admingui:serverInstTab" 
                 priority="40" 
                 parentId="monitoring" 
-                content="monitor/jvmTab.jsf" />
+                content="monitor/jvmTab.jsf" />-->
 </console-config>
