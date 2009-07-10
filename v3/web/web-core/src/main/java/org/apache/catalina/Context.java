@@ -481,21 +481,6 @@ public interface Context extends Container {
 
 
     /**
-     * Adds the Listener with the given class name to the set of Listeners
-     * configured for this application.
-     *
-     * @param listener the fully qualified class name of the Listener
-     * @param isRestricted true if the web application represented by
-     * this Context declares an absolute ordering of its web
-     * fragment JAR files without the use of <code>others</code>, and the
-     * given listener is declared in the Tag Library Descriptor
-     * (TLD) resource of a web fragment JAR file that is excluded from
-     * the absolute ordering
-     */
-    void addApplicationListener(String listener, boolean isRestricted);
-
-
-    /**
      * Add a new application parameter for this application.
      *
      * @param parameter The new application parameter

@@ -58,12 +58,26 @@
 package org.apache.catalina.startup;
 
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.*;
@@ -123,6 +137,7 @@ public final class TldConfig  {
      */
     private Context context = null;
 
+
     /**
      * The string resources for this package.
      */
@@ -141,8 +156,6 @@ public final class TldConfig  {
      */
     private boolean isCurrentTldLocal = false;
 
-    private boolean isCurrentTldRestricted = false;
-
     /**
      * The URI of the TLD currently being scanned
      */
@@ -158,13 +171,14 @@ public final class TldConfig  {
      */
     private boolean tldNamespaceAware = false;
 
+    
     private boolean rescan=true;
     
-    private List<TldListener> listeners = new ArrayList<TldListener>();
+    private ArrayList listeners=new ArrayList();
 
     // START GlassFish 747
     private HashMap<String, String[]> tldUriToLocationMap =
-        new HashMap<String, String[]>();
+            new HashMap<String, String[]>();
     private String currentTldResourcePath;
     private String currentTldJarFile;
     private String currentTldJarEntryName;
@@ -273,7 +287,7 @@ public final class TldConfig  {
                 || (!isCurrentTldLocal
                     && (!systemTldUrisJsf.contains(currentTldUri)
                         || !useMyFaces))) {
-            listeners.add(new TldListener(s, isCurrentTldRestricted));
+            listeners.add(s);
         }
     }
 
@@ -303,6 +317,12 @@ public final class TldConfig  {
             tldUriToLocationMap.put(currentTldUri, currentTldLocation);
         }
         // END GlassFish 747
+    }
+
+    public String[] getTldListeners() {
+        String result[] = new String[listeners.size()];
+        listeners.toArray(result);
+        return result;
     }
 
 
@@ -396,15 +416,17 @@ public final class TldConfig  {
             }
         }
 
-        if( tldCache!= null ) {
+        String list[] = getTldListeners();
+
+        if (tldCache!= null) {
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Saving tld cache: " + tldCache + " " +
-                         listeners.size());
+                         list.length);
             }
             try {
                 FileOutputStream out=new FileOutputStream(tldCache);
                 ObjectOutputStream oos=new ObjectOutputStream( out );
-                oos.writeObject(listeners);
+                oos.writeObject( list );
                 oos.close();
             } catch( IOException ex ) {
                 ex.printStackTrace();
@@ -412,17 +434,14 @@ public final class TldConfig  {
         }
 
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Adding tld listeners:" + listeners.size());
+            log.fine("Adding tld listeners:" + list.length);
         }
-        Iterator<TldListener> iter = listeners.iterator();
-        while (iter.hasNext()) {
-            TldListener listener = iter.next();
-            context.addApplicationListener(listener.getClassName(),
-                                           listener.isRestricted());
+        for (int i=0; list!=null && i<list.length; i++) {
+            context.addApplicationListener(list[i]);
         }
 
-        long t2=System.currentTimeMillis();
-        if( context instanceof StandardContext ) {
+        long t2 = System.currentTimeMillis();
+        if (context instanceof StandardContext) {
             ((StandardContext)context).setTldScanTime(t2-t1);
         }
 
@@ -503,20 +522,16 @@ public final class TldConfig  {
     private void processCache(File tldCache ) throws Exception {
         FileInputStream in=new FileInputStream(tldCache);
         ObjectInputStream ois=new ObjectInputStream( in );
-        List<TldListener> listeners = (List<TldListener>) ois.readObject();
+        String list[]=(String [])ois.readObject();
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Reusing tldCache " + tldCache + " " + listeners.size());
+            log.fine("Reusing tldCache " + tldCache + " " + list.length);
         }
-        Iterator<TldListener> iter = listeners.iterator();
-        while (iter.hasNext()) {
+        for( int i=0; list!=null && i<list.length; i++ ) {
             // Load the listener class. Failure to do so is an indication
             // that the cache has become stale, in which case it must be
             // ignored. See GlassFish Issue 2653.
-            TldListener listener = iter.next();
-            context.getLoader().getClassLoader().loadClass(
-                listener.getClassName());
-            context.addApplicationListener(listener.getClassName(),
-                                           listener.isRestricted());
+            context.getLoader().getClassLoader().loadClass(list[i]);
+            context.addApplicationListener(list[i]);
         }
         ois.close();
     }
@@ -575,16 +590,9 @@ public final class TldConfig  {
                 currentTldJarFile = jarPath;
                 currentTldJarEntryName = name;
                 // END GlassFish 747
-                boolean isRestricted = false;
-                if (isLocal) {
-                    isRestricted =
-                        context.isFragmentMissingFromAbsoluteOrdering(
-                            file.getName());
-                }
                 try {
-                    tldScanStream(
-                        new InputSource(jarFile.getInputStream(entry)),
-                        isLocal, isRestricted);
+                    tldScanStream(new InputSource(jarFile.getInputStream(entry)),
+                                  isLocal);
                 } catch (Exception e) {
                     log.log(Level.SEVERE,
                             sm.getString("contextConfig.tldEntryException",
@@ -617,7 +625,7 @@ public final class TldConfig  {
                 name = entry;
                 tldScanStream(new InputSource(
                         jarFile.getInputStream(jarFile.getEntry(entry))),
-                        false, false);
+                        false);
             }
         } catch (Exception e) {
             log.log(Level.SEVERE,
@@ -647,11 +655,10 @@ public final class TldConfig  {
      */
     private void tldScanStream(InputSource resourceStream)
             throws Exception {
-        tldScanStream(resourceStream, false, false);
+        tldScanStream(resourceStream, false);
     }
 
-    private void tldScanStream(InputSource resourceStream, boolean isLocal,
-                               boolean isRestricted)
+    private void tldScanStream(InputSource resourceStream, boolean isLocal)
             throws Exception {
 
         if (tldDigester == null){
@@ -662,11 +669,9 @@ public final class TldConfig  {
             try {
                 tldDigester.push(this);
                 isCurrentTldLocal = isLocal;
-                isCurrentTldRestricted = isRestricted;
                 tldDigester.parse(resourceStream);
             } finally {
                 isCurrentTldLocal = false;
-                isCurrentTldRestricted = false;
                 currentTldUri = null;
                 // START GlassFish 747
                 currentTldJarFile = null;
@@ -709,7 +714,7 @@ public final class TldConfig  {
         // END GlassFish 747
 
         try {
-            tldScanStream(inputSource, true, false);
+            tldScanStream(inputSource, true);
         } catch (Exception e) {
              throw new ServletException
                  (sm.getString("contextConfig.tldFileException", resourcePath,
@@ -867,25 +872,6 @@ public final class TldConfig  {
         }            
 
         return jarPathMap;
-    }
-}
-
-class TldListener implements Serializable {
-
-    private String className;
-    private boolean isRestricted;
-
-    public TldListener(String className, boolean isRestricted) {
-        this.className = className;
-        this.isRestricted = isRestricted;        
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public boolean isRestricted() {
-        return isRestricted;
     }
 }
 
