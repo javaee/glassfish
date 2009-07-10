@@ -40,9 +40,6 @@ import org.glassfish.admin.amx.core.AMXProxy;
 
 import org.glassfish.admin.amx.util.AMXDebugHelper;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.admin.amx.util.jmx.ConnectionSource;
-import org.glassfish.admin.amx.util.jmx.MBeanServerConnectionConnectionSource;
-import org.glassfish.admin.amx.util.jmx.MBeanServerConnectionSource;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.StringUtil;
 
@@ -83,10 +80,10 @@ import org.glassfish.api.amx.AMXBooter;
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public final class ProxyFactory implements NotificationListener
 {
-	private final ConnectionSource	mConnectionSource;
-	private final ObjectName		mDomainRootObjectName;
-	private final DomainRoot		mDomainRoot;
-	private final String			mMBeanServerID;
+	private final MBeanServerConnection	mMBeanServerConnection;
+	private final String			    mMBeanServerID;
+	private final ObjectName		    mDomainRootObjectName;
+	private final DomainRoot		    mDomainRoot;
     
     /**
         For immutable MBeanInfo, we want to pay the cost once and only once of a trip to the server.
@@ -119,18 +116,15 @@ public final class ProxyFactory implements NotificationListener
     }
 	
 		private
-	ProxyFactory( final ConnectionSource connSource )
+	ProxyFactory( final MBeanServerConnection conn )
 	{
         mDebug.setEchoToStdOut( true );
-        
-		assert( connSource != null );
+		assert( conn != null );
 		
-		mConnectionSource	= connSource;
+		mMBeanServerConnection	= conn;
 		
 		try
 		{
-			final MBeanServerConnection	conn	= getMBeanServerConnection();
-			
 			mMBeanServerID		= JMXUtil.getMBeanServerID( conn );
 				
 			mDomainRootObjectName = AMXBooter.findDomainRoot(conn);
@@ -145,34 +139,16 @@ public final class ProxyFactory implements NotificationListener
 			// but the http connector does not support listeners
 			try
 			{
-				final MBeanServerNotificationFilter	filter	=
-					new MBeanServerNotificationFilter();
+				final MBeanServerNotificationFilter	filter	= new MBeanServerNotificationFilter();
 				filter.enableAllObjectNames();
 				filter.disableAllTypes();
 				filter.enableType( MBeanServerNotification.UNREGISTRATION_NOTIFICATION );
-				
 				JMXUtil.listenToMBeanServerDelegate( conn, this, filter, null );
 			}
 			catch( Exception e )
 			{
 				warning( "ProxyFactory: connection does not support notifications: ",
-                    mMBeanServerID, connSource);
-			}
-			
-			// same idea as above, this time we want to listen to connection died
-			// plus there may not be a JMXConnector involved
-			final JMXConnector	connector	= connSource.getJMXConnector( false );
-			if ( connector != null )
-			{
-				try
-				{
-					connector.addConnectionNotificationListener( this, null, null );
-				}
-				catch( Exception e )
-				{
-					warning("addConnectionNotificationListener failed: ",
-                        mMBeanServerID, connSource, e);
-				}
+                    mMBeanServerID, conn);
 			}
 		}
 		catch( Exception e )
@@ -326,16 +302,7 @@ public final class ProxyFactory implements NotificationListener
 		return( mDomainRoot );
 	}
 	
-	
-	/**
-		@return the ConnectionSource used by this factory
-	 */
-		public ConnectionSource
-	getConnectionSource()
-	{
-		return( mConnectionSource );
-	}
-	
+		
 	/**
 		@return the JMX MBeanServerID for the MBeanServer in which MBeans reside.
 	 */
@@ -354,7 +321,7 @@ public final class ProxyFactory implements NotificationListener
 		public static ProxyFactory
 	getInstance( final MBeanServer server )
 	{
-		return( getInstance( new MBeanServerConnectionSource( server ), true ) );
+		return getInstance( server, true );
 	}
 	
 	/**
@@ -364,17 +331,9 @@ public final class ProxyFactory implements NotificationListener
 		public static ProxyFactory
 	getInstance( final MBeanServerConnection conn )
 	{
-		return( getInstance( new MBeanServerConnectionConnectionSource( conn ), true ) );
+		return getInstance( conn, true );
 	}
 	
-	/**
-		Calls getInstance( connSource, true ).
-	 */
-		public static ProxyFactory
-	getInstance( final ConnectionSource conn )
-	{	
-		return( getInstance( conn, true ) );
-	}
 	
 	/**
 		Get an instance.  If 'useMBeanServerID' is false, and
@@ -388,26 +347,18 @@ public final class ProxyFactory implements NotificationListener
 	 */
 		public static synchronized ProxyFactory
 	getInstance(
-		final ConnectionSource	connSource,
-		final boolean			useMBeanServerID )
+		final MBeanServerConnection	conn,
+		final boolean			    useMBeanServerID )
 	{
-		ProxyFactory	instance	= findInstance( connSource );
+		ProxyFactory	instance	= findInstance( conn );
 		
 		if ( instance == null )
 		{
 			try
 			{
-				// match based on the MBeanServerConnection; different
-				// ConnectionSource instances could wrap the same connection
-				final MBeanServerConnection	conn =
-					connSource.getMBeanServerConnection( false );
-				
-				instance	= findInstance( conn );
-				
 				// if not found, match based on MBeanServerID as requested, or if this
 				// is an in-process MBeanServer
-				if ( instance == null &&
-					( useMBeanServerID  || connSource instanceof MBeanServerConnectionSource ) )
+				if ( useMBeanServerID )
 				{
 					final String	id	= JMXUtil.getMBeanServerID( conn );
 					instance	= findInstanceByID( id );
@@ -416,11 +367,9 @@ public final class ProxyFactory implements NotificationListener
 				if ( instance == null )
 				{
                     //debug( "Creating new ProxyFactory for ConnectionSource / conn", connSource, conn );
-					instance	= new ProxyFactory( connSource );
+					instance	= new ProxyFactory( conn );
 					INSTANCES.put( conn, instance );
 				}
-                
-                // ensure that AMX is booted and ready to go.
 			}
 			catch( Exception e )
 			{
@@ -430,15 +379,6 @@ public final class ProxyFactory implements NotificationListener
 		}
 		
 		return( instance );
-	}
-	
-	/**
-		@return ProxyFactory corresponding to the ConnectionSource
-	 */
-		public static synchronized ProxyFactory
-	findInstance( final ConnectionSource conn )
-	{
-		return( INSTANCES.get( conn ) );
 	}
 	
 	/**
@@ -452,7 +392,7 @@ public final class ProxyFactory implements NotificationListener
 		final Collection<ProxyFactory> values	= INSTANCES.values();
 		for( final ProxyFactory factory : values )
 		{
-			if ( factory.getConnectionSource().getExistingMBeanServerConnection( ) == conn )
+			if ( factory.getMBeanServerConnection() == conn )
 			{
 				instance	= factory;
 				break;
@@ -523,9 +463,8 @@ public final class ProxyFactory implements NotificationListener
 	 */
 		protected MBeanServerConnection
 	getMBeanServerConnection()
-		throws IOException
 	{
-		return( getConnectionSource().getMBeanServerConnection( false ) );
+		return mMBeanServerConnection;
 	}
     
 	/**
