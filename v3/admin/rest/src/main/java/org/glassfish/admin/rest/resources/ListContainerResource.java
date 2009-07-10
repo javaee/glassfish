@@ -22,9 +22,12 @@ public class ListContainerResource extends TemplateListOfResource<Container> {
 	public ContainerResource getContainerResource(@PathParam("Name") String id) {
 		ContainerResource resource = resourceContext.getResource(ContainerResource.class);
 		for (Container c: entity){
+        /*
+        no name exists, code must accommodate the type eg /jruby-container
 			if(c.getName().equals(id)){
 				resource.setEntity(c);
 			}
+        */
 		}
 		return resource;
 	}

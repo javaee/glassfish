@@ -11,5 +11,5 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
  * @author Jerome Dochez
  */
 @Configured
-public interface Container extends ConfigBeanProxy, Named {
+public interface Container extends ConfigBeanProxy {
 }
