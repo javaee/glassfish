@@ -672,11 +672,15 @@ public class Application extends BundleDescriptor
     }
 
     /**
-     * Sets the EE app name
-     * @param appName the EE app name of this application
+     * Sets the archive name using the archive-name element defined 
+     * in sun-application.xml
+     * @param archiveName archiveName to calculate default EE6 app-name
      */
     public void setArchiveName(String archiveName) {
         this.archiveName = archiveName;
+        if (appName == null && archiveName != null) {
+            appName = DeploymentUtils.getDefaultEEName(archiveName);
+        }
     }
 
     /**

@@ -15,8 +15,6 @@ import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import com.sun.enterprise.deployment.util.ApplicationVisitor;
-import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -39,9 +37,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
     @Inject
     ArchivistFactory archivistFactory;
-
-    @Inject(name="application_deploy", optional=true)
-    protected ApplicationVisitor deploymentVisitor=null;
 
     @Inject
     protected ApplicationFactory applicationFactory;
@@ -111,7 +106,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             } catch(SAXParseException e) {
                 throw new IOException(e);
             }
-            application.setRegistrationName(name);
         }
         if (application==null) {
             try {
@@ -123,18 +117,12 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             }
         }
 
-        validateApplication(application, dc);
-
+        application.setRegistrationName(name);
 
         // for standalone module, make module name the same as app name
         if (application.isVirtual()) {
             application.getModules().iterator().next().setModuleName(
                 application.getAppName());
-        }
-
-        // this may not be the best location for this but it will suffice.
-        if (deploymentVisitor!=null) {
-            deploymentVisitor.accept(application);
         }
 
         // write out xml files if needed
@@ -156,24 +144,22 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
     }
 
     private void setAppName(Application application, DeploymentContext dc, String name) {
-        // if the app-name is not defined in the application.xml or it's
+        // if the app-name is not defined in the 
+        // application.xml/sun-application.xml or it's
         // a standalone module, use the default name
         if (application.getAppName() == null) {
-            if (application.getArchiveName() != null) {
-                String appName = DeploymentUtils.getDefaultEEName(
-                    application.getArchiveName());
-                application.setAppName(appName);
-            } else {
-                String defaultEE6AppName =
-                    dc.getAppProps().getProperty("default-EE6-app-name");
-                if (defaultEE6AppName != null) {
-                    application.setAppName(defaultEE6AppName);
-                }  else {
-                    application.setAppName(name);
-                }
+            // This is needed as for the scenario where the user specifies
+            // --name option explicitly, the EE6 app name might be different
+            // from the application's registration name and we need a way
+            // to retrieve the EE6 app name for server restart code path
+            String defaultEE6AppName =
+                dc.getAppProps().getProperty("default-EE6-app-name");
+            if (defaultEE6AppName != null) {
+                application.setAppName(defaultEE6AppName);
+            }  else {
+                application.setAppName(name);
             }
         }
-
     }
 
 
@@ -206,12 +192,4 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             applicationArchivist.copyExtraElements(archive, archive2);
         }
     }
-
-    protected void validateApplication(Application app, DeploymentContext dc) {
-        if (app != null) {
-            app.setClassLoader(dc.getClassLoader());
-            app.visit((ApplicationVisitor) new ApplicationValidator());
-        }
-    }
-
 }

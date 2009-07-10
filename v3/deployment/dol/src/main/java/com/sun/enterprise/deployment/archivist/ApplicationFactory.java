@@ -29,6 +29,8 @@ import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.ApplicationVisitor;
+import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ContractProvider;
@@ -166,7 +168,11 @@ public class ApplicationFactory implements ContractProvider {
         }
 
         // validate
-        //archivist.validate(null);
+        if (application != null) {
+            application.setClassLoader(archivist.getClassLoader());
+            application.visit((ApplicationVisitor) new ApplicationValidator());
+        }
+
         return application;
 
     }

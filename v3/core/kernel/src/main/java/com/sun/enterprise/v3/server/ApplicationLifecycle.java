@@ -927,7 +927,12 @@ public class ApplicationLifecycle implements Deployment {
             archiveHandler = getArchiveHandler(source);
         }
 
-        // add the default EE6 name to the property list
+        // add the default EE6 name to the property list to store this 
+        // info in domain.xml
+        // this is needed as for the scenario where the user specifies 
+        // --name option explicitly, the EE6 app name will be different
+        // from the application's registration name and we need a way
+        // to retrieve the EE6 app name for server restart code path
         context.getAppProps().put("default-EE6-app-name", 
             archiveHandler.getDefaultApplicationName(source, context));
 

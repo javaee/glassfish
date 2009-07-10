@@ -1466,6 +1466,15 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     }
 
     /**
+     * Gets the classloader for this archivist
+     *
+     * @return classLoader
+     */
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    /**
      * Turn on or off the XML Validation for all standard deployment
      * descriptors loading
      *
