@@ -58,6 +58,6 @@ public class LazyAssociatableConnectionManagerImpl extends ConnectionManagerImpl
     }
 
     public void inactiveConnectionClosed(Object connection, ManagedConnectionFactory mcf) {
-        //TODO V3
+        //do nothing as application server does not keep track of dissociated connection's connection handles
     }
 }
