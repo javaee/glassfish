@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import com.sun.enterprise.module.bootstrap.PlatformMain;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -163,43 +164,67 @@ public class Server {
         loggerEnabled = builder.loggerEnabled;
         verbose = builder.verbose;
         loggerFile = builder.loggerFile;
-        final PlatformMain embedded = getMain();
-        if (embedded==null) {
-            throw new RuntimeException("Embedded startup not found");
-        }
-        EmbeddedFileSystem fs;
-        if (builder.fileSystem==null) {
-            // there is no instance root directory, let's create one.
-            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-            try {
-                File f = File.createTempFile("gfembed", "tmp", new File(System.getProperty("user.dir")));
-                f.delete();
-                fsBuilder.setInstanceRoot(new File(f.getParent(), f.getName()));
-                fsBuilder.setAutoDelete(true);
-            } catch (IOException e) {
 
+        EmbeddedFileSystem fs;
+        File instanceRoot=null;
+
+        if (builder.fileSystem==null || builder.fileSystem.instanceRoot==null) {
+            File f = null;
+            try {
+                f = File.createTempFile("gfembed", "tmp", new File(System.getProperty("user.dir")));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            f.delete();
+            instanceRoot = new File(f.getParent(), f.getName());
+            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
+
+            // not pretty, revisit when more time is available.
+            if (builder.fileSystem!=null) {
+                fsBuilder.setInstallRoot(builder.fileSystem.installRoot);
+                fsBuilder.setConfigurationFile(builder.fileSystem.configFile);
+            }
+
+            fsBuilder.setInstanceRoot(instanceRoot);
+            fsBuilder.setAutoDelete(true);
             fs = fsBuilder.build();
         } else {
             fs = builder.fileSystem;
         }
+
         if (!fs.instanceRoot.exists()) {
             fs.instanceRoot.mkdirs();
             // todo : dochez : temporary fix for docroot
             File f = new File(fs.instanceRoot, "docroot");
             f.mkdirs();
         }
-        embedded.setContext(new StartupContext(fs.instanceRoot, new String[0]));
+        
+        fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
+
+        final PlatformMain embedded = getMain();
+        if (embedded==null) {
+            throw new RuntimeException("Embedded startup not found, classpath is probably incomplete");
+        }
+
+        if (fs.installRoot==null) {
+            embedded.setContext(new StartupContext(fs.instanceRoot, fs.instanceRoot, new String[0]));
+            System.setProperty("com.sun.aas.installRoot", fs.instanceRoot.getAbsolutePath());
+        } else {
+            embedded.setContext(new StartupContext(fs.installRoot, fs.instanceRoot, new String[0]));
+            System.setProperty("com.sun.aas.installRoot", fs.installRoot.getAbsolutePath());            
+        }
+        System.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
+
+
         embedded.setContext(this);
+        embedded.setLogger(Logger.getAnonymousLogger());
         try {
             embedded.start(new String[0]);
         } catch(Exception e) {
             e.printStackTrace();
         }
+
         habitat = embedded.getStartedService(Habitat.class);
-
-
-        fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
         habitat.add(fileSystem);
 
 
@@ -353,9 +378,17 @@ public class Server {
     }
 
     private PlatformMain getMain() {
+
+        String platformName;
+        if (fileSystem.get().installRoot!=null && fileSystem.get().instanceRoot.exists()) {
+            platformName = "Static";
+        } else {
+            platformName = "Embedded";
+        }
+
         ServiceLoader<PlatformMain> mains = ServiceLoader.load(PlatformMain.class, Server.class.getClassLoader());
         for (PlatformMain main : mains) {
-            if (main.getName().equals("Embedded")) {
+            if (platformName.equals(main.getName())) {
                 return main;
             }
         }

@@ -40,6 +40,7 @@ package com.sun.enterprise.v3.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,6 +69,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.Inhabitants;
 
 /**
  * Main class for Glassfish v3 startup
@@ -187,7 +189,11 @@ public class AppServerStartup implements ModuleStartup {
         if (inh!=null) {
             habitat.remove(inh);
         }
-        habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
+
+        // remove all existing inhabitant to n
+        habitat.removeAllByType(ProcessEnvironment.class);
+
+        habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(ProcessEnvironment.class, new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
 
         // run the init services
         for (Inhabitant<? extends Init> init : habitat.getInhabitants(Init.class)) {

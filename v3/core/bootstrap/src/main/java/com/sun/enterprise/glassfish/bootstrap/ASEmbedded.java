@@ -104,7 +104,11 @@ public class ASEmbedded extends AbstractMain {
         try {
             main.launch(registry, startupContext);
         } catch (BootException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            if (logger!=null) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            } else {
+                Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
+            }
         }              
     }
 

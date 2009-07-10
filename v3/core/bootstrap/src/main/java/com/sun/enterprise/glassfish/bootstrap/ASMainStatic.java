@@ -41,11 +41,13 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.PlatformMain;
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.single.SingleModulesRegistry;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.Holder;
+import com.sun.hk2.component.InhabitantsParserDecorator;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +58,10 @@ import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
+import java.util.ServiceLoader;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitants;
 import org.kohsuke.MetaInfServices;
 
 /**
@@ -68,6 +72,7 @@ import org.kohsuke.MetaInfServices;
 public class ASMainStatic extends AbstractMain {
 
     private File out;
+    private Habitat habitat;
     
     protected String getPreferedCacheDir() {
         return "static-cache/gf/";
@@ -75,6 +80,15 @@ public class ASMainStatic extends AbstractMain {
 
     public String getName() {
         return ASMain.Platform.Static.toString();
+    }
+
+
+    @Override
+    public <T> T getStartedService(Class<T> serviceType) {
+        if (habitat !=null)
+            return habitat.getComponent(serviceType);
+        else
+            return null;
     }
 
     @Override
@@ -85,12 +99,13 @@ public class ASMainStatic extends AbstractMain {
     public void run(final Logger logger, String... args) throws Exception {
 
         super.run(logger, args);
-        final File modulesDir = findBootstrapFile().getParentFile();
 
-        final StartupContext startupContext = new StartupContext(modulesDir, args);
-        File domainDir = helper.getDomainRoot(startupContext);
-        helper.verifyAndSetDomainRoot(domainDir);
-
+        StartupContext sc = getContext(StartupContext.class);
+        if (sc==null) {
+            sc = new StartupContext(findBootstrapFile().getParentFile(), args);
+        }
+        final File modulesDir = new File(sc.getRootDirectory() , "modules");
+        final StartupContext startupContext = sc;
 
         setSystemProperties();
 
@@ -103,7 +118,7 @@ public class ASMainStatic extends AbstractMain {
         // set up the cache.
         final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), getPreferedCacheDir()):new File(domainDir, getPreferedCacheDir());
         out = new File(cacheDir, "glassfish.jar");
-        final long lastModified = getLastModified(bootstrapFile.getParentFile(), 0);
+        final long lastModified = getLastModified(modulesDir, 0);
         Thread cacheThread = null;
         if (isCacheOutdated(lastModified, cacheDir)) {
             logger.info("Cache not present, will revert to less efficient algorithm");
@@ -117,7 +132,7 @@ public class ASMainStatic extends AbstractMain {
                 }
             });
             try {
-                singleClassLoader = createTmpClassLoader(bootstrapFile.getParentFile());
+                singleClassLoader = createTmpClassLoader(modulesDir);
             } catch (Exception e) {
                 throw new BootException(e);
             }
@@ -137,71 +152,41 @@ public class ASMainStatic extends AbstractMain {
         final Module[] proxyMod = new Module[1];
 
         // ANONYMOUS CLASS HERE!!
-        final ModulesRegistryImpl modulesRegistry = new ModulesRegistryImpl(null) {
-            public Module find(Class clazz) {
-                Module m = super.find(clazz);
-                if (m == null)
-                    return proxyMod[0];
-                return m;
-            }
-
-            @Override
-            public Collection<Module> getModules(String moduleName) {
-                // I could not care less about the modules names
-                return getModules();
-            }
-
-            @Override
-            public Collection<Module> getModules() {
-                ArrayList<Module> list = new ArrayList<Module>();
-                list.add(proxyMod[0]);
-                return list;
-            }
-
-            @Override
-            public Module makeModuleFor(String name, String version) throws ResolveError {
-                return proxyMod[0];
-            }
-
-            @Override
-            public void parseInhabitants(Module module, String name, InhabitantsParser inhabitantsParser)
-                throws IOException {
-
-                Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-                    public ClassLoader get() {
-                        return proxyMod[0].getClassLoader();
-                    }
-                };
-
-                for (ModuleMetadata.InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
-                    inhabitantsParser.parse(d.createScanner(),holder);
-                }            
-        };
-        
+        final ModulesRegistryImpl modulesRegistry = new SingleModulesRegistry(singleClassLoader);
         modulesRegistry.setParentClassLoader(singleClassLoader);
-
-        ModuleDefinition moduleDef = null;
-        try {
-            moduleDef = new ProxyModuleDefinition(singleClassLoader);
-        } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Cannot load single module from cache", e);
-            throw new BootException(e);
-        }
-        proxyMod[0] = new ProxyModule(modulesRegistry, moduleDef, singleClassLoader);
-        modulesRegistry.add(moduleDef);
+        final ClassLoader cl = singleClassLoader;
 
         Thread launcherThread = new Thread(new Runnable(){
             public void run() {
                 Main main = new Main() {
                     protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
                         Habitat habitat = registry.newHabitat();
-                        habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
+
+                        for (Object c : getContexts()) {
+                            habitat.add(Inhabitants.create(c));
+                        }
                         // the root registry must be added as other components sometimes inject it
                         habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
                         habitat.add(new ExistingSingletonInhabitant(Logger.class, logger));
                         registry.createHabitat("default", createInhabitantsParser(habitat));
+
+                        ASMainStatic.this.habitat = habitat;
                         return habitat;
-                    }      
+                    }
+
+                    @Override
+                    protected InhabitantsParser createInhabitantsParser(Habitat habitat) {
+                        InhabitantsParser parser = super.createInhabitantsParser(habitat);
+
+
+                        ServiceLoader<InhabitantsParserDecorator> decorators = ServiceLoader.load(InhabitantsParserDecorator.class, cl);
+                        for (InhabitantsParserDecorator decorator : decorators) {
+                            //if (decorator.getName().equalsIgnoreCase(getName()))
+                                decorator.decorate(parser);
+                        }
+
+                        return parser;
+                    }
                 };
                 try {
                     main.launch(modulesRegistry, startupContext);

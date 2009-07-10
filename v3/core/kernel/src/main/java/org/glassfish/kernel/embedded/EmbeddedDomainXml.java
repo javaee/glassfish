@@ -25,8 +25,8 @@ public class EmbeddedDomainXml extends GFDomainXml {
 
     @Override
     protected URL getDomainXml(ServerEnvironmentImpl env) throws IOException {
-        if (server.fileSystem!=null) {
-            return server.fileSystem.get().configFile.toURI().toURL();
+        if (fileSystem!=null) {
+            return fileSystem.configFile.toURI().toURL();
         }
         return getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
     }

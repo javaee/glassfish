@@ -2,6 +2,7 @@ package org.glassfish.tests.kernel.embedded;
 
 import org.junit.Test;
 import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.LifecycleException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,8 +15,21 @@ public class EmbeddedTest {
 
     @Test
     public void test() {
-
-        Server server = new Server.Builder("build").build();
-        server.createPort(8080);
+        Server server = null;
+        try {
+            server = new Server.Builder("build").build();
+            server.createPort(8080);
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (server!=null) {
+                try {
+                    server.stop();
+                } catch (LifecycleException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        }
     }
 }

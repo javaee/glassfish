@@ -52,9 +52,15 @@ public abstract class AbstractMain extends PlatformMain {
 
     protected void run(Logger logger, String... args) throws Exception {
         this.logger = logger;
-        domainDir = helper.getDomainRoot(new StartupContext(bootstrapFile, args));
-        helper.verifyAndSetDomainRoot(domainDir);
-        
+        StartupContext sc = getContext(StartupContext.class);
+        if (sc!=null) {
+            domainDir = sc.getUserDirectory();
+        }
+        if (domainDir==null) {
+            domainDir = helper.getDomainRoot(new StartupContext(bootstrapFile, args));
+            helper.verifyAndSetDomainRoot(domainDir);
+        }
+
         File cacheProfileDir = new File(domainDir, getPreferedCacheDir());
         setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
     }

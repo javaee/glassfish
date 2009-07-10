@@ -47,6 +47,9 @@ import com.sun.enterprise.v3.server.GFDomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
 import org.kohsuke.MetaInfServices;
 
+import java.net.URLClassLoader;
+import java.net.URL;
+
 /**
  * Kernel's decoration for embedded environment.
  *
