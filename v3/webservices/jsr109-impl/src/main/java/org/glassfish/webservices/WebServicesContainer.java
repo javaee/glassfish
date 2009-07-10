@@ -26,7 +26,11 @@ package org.glassfish.webservices;
 
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
+import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.webservices.monitoring.Deployment109StatsProvider;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebDeployer;
 
@@ -35,10 +39,27 @@ import com.sun.enterprise.web.WebDeployer;
  *
  */
 @Service(name="org.glassfish.webservices.WebServicesContainer")
-public class WebServicesContainer implements Container {
+public class WebServicesContainer implements Container, PostConstruct {
 
     public String getName() {
         return "webservices";
+    }
+
+    public void postConstruct() {
+        StatsProviderManager.register(
+            "WebServiceContainer",
+            PluginPoint.SERVER,
+            "Web Services",
+            new Deployment109StatsProvider());
+
+//        For sun-jaxws.xml style of deployment
+//        Enable once it is integrated
+//
+//        StatsProviderManager.register(
+//            "WebServiceContainer",
+//            PluginPoint.SERVER,
+//            "webservice",
+//            new RIDeploymentStatsProvider());
     }
 
    

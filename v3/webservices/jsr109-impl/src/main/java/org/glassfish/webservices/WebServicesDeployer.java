@@ -39,6 +39,7 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -704,6 +705,13 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
 
             nextEndpoint.getEndpointName(), actualAddress.toString() ));
 
+            new Deployment109ProbeProvider().deploy(nextEndpoint.getEndpointName(),
+                    actualAddress.toString(),
+                    nextEndpoint.getServiceName().getLocalPart(),
+                    "",
+                    nextEndpoint.getServiceName().getNamespaceURI(),
+                    nextEndpoint.getServletImplClass(),
+                    actualAddress.toString()+"?wsdl");
         }
 
     }
