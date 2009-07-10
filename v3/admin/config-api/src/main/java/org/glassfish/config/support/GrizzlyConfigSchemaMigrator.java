@@ -280,7 +280,6 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             ConfigSupport.apply(new SingleConfigCode<Http>() {
                 @Override
                 public Object run(Http http) {
-                    http.setRequestBodyBufferSizeBytes(pool.getReceiveBufferSizeInBytes());
                     http.setSendBufferSizeBytes(pool.getSendBufferSizeInBytes());
                     return null;
                 }

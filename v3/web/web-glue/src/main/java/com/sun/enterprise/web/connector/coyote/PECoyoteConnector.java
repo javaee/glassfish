@@ -1136,9 +1136,6 @@ public class PECoyoteConnector extends Connector {
     }
 
     public void configHttpProperties(Http http, Transport transport, Ssl ssl) {
-        if (http.getRequestBodyBufferSizeBytes() != null) {
-            setBufferSize(Integer.parseInt(http.getRequestBodyBufferSizeBytes()));
-        }
         if (http.getMaxConnections() != null) {
             setMaxKeepAliveRequests(Integer.parseInt(http.getMaxConnections()));
         }
