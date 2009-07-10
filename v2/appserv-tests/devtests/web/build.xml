@@ -232,7 +232,9 @@
         <ant dir="servlet-3.0/webFragment" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
         <ant dir="servlet-3.0/absoluteOrderingWebFragments" target="all"/>
+<!-- XXX temporarily commented out, see IT 8565
         <ant dir="servlet-3.0/restrictedServletContextListenerFromExcludedFragment" target="all"/>
+-->
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
