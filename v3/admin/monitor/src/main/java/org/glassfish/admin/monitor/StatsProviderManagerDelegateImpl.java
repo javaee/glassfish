@@ -86,7 +86,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
             }
         }
         //register the statsProvider with Flashlight
-        Collection<ProbeClientMethodHandle> handles = null;
+        Collection<ProbeClientMethodHandle> handles = new ArrayList();
         try {
             //System.out.println("****** Registering the StatsProvider (" + statsProvider.getClass().getName() + ") with flashlight");
             handles = pcm.registerListener(statsProvider);
