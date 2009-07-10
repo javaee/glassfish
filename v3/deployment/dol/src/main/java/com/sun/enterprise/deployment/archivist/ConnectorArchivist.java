@@ -38,13 +38,13 @@ package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.annotation.introspection.ResourceAdapterAnnotationScanner;
+import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.util.ConnectorAnnotationDetector;
 import com.sun.enterprise.deployment.io.ConnectorDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ConnectorRuntimeDDFile;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -111,6 +111,25 @@ public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
     @Override
     protected boolean postHandles(ReadableArchive abstractArchive)
             throws IOException {
+        /*
+         * Connectors can be defined via annotations only within RARs. The
+         * Archivist's handles method will invoke this postHandles only if
+         * the archive is a directory; if it were truly a JAR file then it
+         * would have a file type of .rar, the ArchivistFactory.getArchivist
+         * method would already have chosen to provide a ConnectorArchivist.
+         * So the fact that control reaches here means either that this is
+         * a directory or it's a non-.rar archive file.  So we need to run the anno
+         * detector only if the archive is a directory.
+         *
+         * (This is particularly helpful in the case of an app client being
+         * run in the ACC, because the archive is a JAR file, not an
+         * expanded directory.  We know that no connectors will be defined
+         * in a file with type .jar so there's no need to scan the archive's
+         * classes looking for the relevant annos.)
+         */
+        if (abstractArchive instanceof InputJarArchive) {
+            return false;
+        }
         ConnectorAnnotationDetector detector =
                     new ConnectorAnnotationDetector(new ResourceAdapterAnnotationScanner());
         return detector.hasAnnotationInArchive(abstractArchive);
