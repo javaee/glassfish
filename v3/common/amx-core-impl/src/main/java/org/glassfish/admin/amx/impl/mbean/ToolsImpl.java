@@ -41,10 +41,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.List;
 import java.util.HashSet;
+import java.util.Map;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.base.Tools;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMXValidator;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.SetUtil;
@@ -56,25 +58,34 @@ public class ToolsImpl extends AMXImplBase // implements Tools
 {
     private static final String NL = StringUtil.NEWLINE();
 
-    public ToolsImpl(final ObjectName parent) {
+    public ToolsImpl(final ObjectName parent)
+    {
         super(parent, Tools.class);
     }
 
-    private static ObjectName newObjectName(final String s) {
-        try {
+    private static ObjectName newObjectName(final String s)
+    {
+        try
+        {
             return new ObjectName(s);
-        } catch (final Exception e) {
+        }
+        catch (final Exception e)
+        {
         }
         return null;
     }
+
     static private final String WILD_SUFFIX = ",*";
+
     static private final String WILD_ALL = "*";
 
-    public String getInfo() {
+    public String getInfo()
+    {
         return info("*");
     }
 
-    public String infoPP(final String parentPath, final boolean recursive) {
+    public String infoPP(final String parentPath, final boolean recursive)
+    {
         final Pathnames paths = getDomainRootProxy().getPathnames();
 
         final ObjectName[] objectNames = paths.listObjectNames(parentPath, recursive);
@@ -82,51 +93,56 @@ public class ToolsImpl extends AMXImplBase // implements Tools
         return info(s);
     }
 
-    public String infoType(final String type) {
+    public String infoType(final String type)
+    {
         return info("*:type=" + type + WILD_SUFFIX);
     }
 
-    public String infoPath(final String path) {
+    public String infoPath(final String path)
+    {
         final ObjectName objectName = getDomainRootProxy().getPathnames().resolvePath(path);
 
         Collection<ObjectName> c = objectName == null ? new ArrayList<ObjectName>() : Collections.singleton(objectName);
         return info(c);
     }
 
-    public String java(final ObjectName objectName) {
+    public String java(final ObjectName objectName)
+    {
         final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(objectName);
-        
+
         final MBeanInterfaceGenerator gen = new MBeanInterfaceGenerator();
-        final String out = gen.generate( mbeanInfo, true);
-        
+        final String out = gen.generate(mbeanInfo, true);
+
         return out;
     }
-    
+
     public String info(final Collection<ObjectName> objectNames)
     {
         final Set<String> alreadyDone = new HashSet<String>();
-        
+
         final StringBuffer buf = new StringBuffer();
 
-        if (objectNames.size() != 0) {
+        if (objectNames.size() != 0)
+        {
             final String NL = StringUtil.NEWLINE();
-            for (final ObjectName objectName : objectNames) {
+            for (final ObjectName objectName : objectNames)
+            {
                 final MBeanInfo mbeanInfo = getProxyFactory().getMBeanInfo(objectName);
-                
+
                 // Don't generate info if we've seen that type/class combination already
                 final String type = Util.getTypeProp(objectName);
                 final String classname = mbeanInfo.getClassName();
-                if ( alreadyDone.contains( type ) && alreadyDone.contains( classname ) )
+                if (alreadyDone.contains(type) && alreadyDone.contains(classname))
                 {
                     continue;
                 }
-                alreadyDone.add( type );
-                alreadyDone.add( classname );
+                alreadyDone.add(type);
+                alreadyDone.add(classname);
 
                 buf.append("MBeanInfo for " + objectName + NL);
                 //buf.append(JMXUtil.toString(mbeanInfo) + NL + NL );
-                
-                buf.append( java(objectName) );
+
+                buf.append(java(objectName));
                 buf.append(NL + NL + NL + NL);
             }
         }
@@ -136,37 +152,44 @@ public class ToolsImpl extends AMXImplBase // implements Tools
         return buf.toString();
     }
 
-    public String info(final String searchStringIn) {
+    public String info(final String searchStringIn)
+    {
         final String domain = getObjectName().getDomain();
 
         ObjectName pattern = newObjectName(searchStringIn);
-        if (pattern == null && (searchStringIn.length() == 0 || searchStringIn.equals(WILD_ALL))) {
+        if (pattern == null && (searchStringIn.length() == 0 || searchStringIn.equals(WILD_ALL)))
+        {
             pattern = newObjectName("*:*");
         }
 
-        if (pattern == null) {
+        if (pattern == null)
+        {
             String temp = searchStringIn;
 
             final boolean hasProps = temp.indexOf("=") > 0;
             final boolean hasDomain = temp.indexOf(":") >= 0;
             final boolean isPattern = temp.endsWith(WILD_SUFFIX);
 
-            if (!(hasProps || hasDomain || isPattern)) {
+            if (!(hasProps || hasDomain || isPattern))
+            {
                 // try it as a type
                 pattern = newObjectName("*:type=" + temp + WILD_SUFFIX);
 
                 // if no luck try it as a j2eeType
-                if (pattern == null) {
+                if (pattern == null)
+                {
                     pattern = newObjectName("*:j2eeType=" + temp + WILD_SUFFIX);
                 }
 
                 // if no luck try it as a name
-                if (pattern == null) {
+                if (pattern == null)
+                {
                     pattern = newObjectName("*:name=" + temp + WILD_SUFFIX);
                 }
             }
 
-            if (pattern == null) {
+            if (pattern == null)
+            {
                 return "No MBeans found for: " + searchStringIn;
             }
         }
@@ -175,15 +198,16 @@ public class ToolsImpl extends AMXImplBase // implements Tools
 
         return info(objectNames);
     }
-    
-    public String validate(final ObjectName[]  targets) {
+
+    public String validate(final ObjectName[] targets)
+    {
         final Set<ObjectName> all = new HashSet<ObjectName>();
-        
-        for( final ObjectName objectName : targets )
+
+        for (final ObjectName objectName : targets)
         {
-            if ( objectName.isPattern() )
+            if (objectName.isPattern())
             {
-                final Set<ObjectName> found = getMBeanServer().queryNames( objectName, null );
+                final Set<ObjectName> found = getMBeanServer().queryNames(objectName, null);
                 all.addAll(found);
             }
             else
@@ -191,24 +215,132 @@ public class ToolsImpl extends AMXImplBase // implements Tools
                 all.add(objectName);
             }
         }
-        
-        final ObjectName[] allArray = CollectionUtil.toArray( all, ObjectName.class );
-        
-        final AMXValidator validator = new AMXValidator( getMBeanServer() );
-        final AMXValidator.ValidationResult result = validator.validate( allArray );
-        
+
+        final ObjectName[] allArray = CollectionUtil.toArray(all, ObjectName.class);
+
+        final AMXValidator validator = new AMXValidator(getMBeanServer());
+        final AMXValidator.ValidationResult result = validator.validate(allArray);
+
         return result.toString();
     }
-    
-    public String validate(final ObjectName objectName) {
-        return validate( new ObjectName[] { objectName } );
+
+    public String validate(final ObjectName objectName)
+    {
+        return validate(new ObjectName[]
+                {
+                    objectName
+                });
     }
 
-    public String validate() {
-        final List<ObjectName> all = Util.toObjectNames( getDomainRootProxy().getQueryMgr().queryAll() );
-        
-        return validate( CollectionUtil.toArray(all, ObjectName.class) );
+    public String validate()
+    {
+        final List<ObjectName> all = Util.toObjectNames(getDomainRootProxy().getQueryMgr().queryAll());
+
+        return validate(CollectionUtil.toArray(all, ObjectName.class));
     }
+
+    private static String descriptionFor(final AMXProxy proxy)
+    {
+        String desc = proxy.type();
+        final String name = proxy.nameProp();
+        if ( name != null)
+        {
+            desc = desc + "=" + name;
+        }
+        
+        return desc;
+    }
+
+    private static List<String> indentAll(final List<String> lines)
+    {
+        final List<String> linesIndented = new ArrayList<String>();
+        final String INDENT = "   ";
+        for (final String line : lines)
+        {
+            linesIndented.add(INDENT + line);
+        }
+        return linesIndented;
+    }
+
+    private static String toString(final List<String> lines)
+    {
+        final StringBuilder buf = new StringBuilder();
+        for (final String line : lines)
+        {
+            buf.append(line);
+            buf.append(StringUtil.LS);
+        }
+        return buf.toString();
+    }
+
+    private static final class ParentChildren
+    {
+        final AMXProxy mParent;
+
+        final List<ParentChildren> mChildren;
+
+        public ParentChildren(final AMXProxy parent, final List<ParentChildren> children)
+        {
+            mParent = parent;
+            mChildren = children;
+        }
+
+        public AMXProxy parent()
+        {
+            return mParent;
+        }
+
+        public List<ParentChildren> children()
+        {
+            return mChildren;
+        }
+
+        public List<String> toLines(final boolean details)
+        {
+            final List<String> lines = new ArrayList<String>();
+
+            lines.add(descriptionFor(mParent));
+
+            for (final ParentChildren child : mChildren)
+            {
+                final List<String> moreLines = indentAll( child.toLines(details) );
+                lines.addAll(moreLines);
+            }
+            return lines;
+        }
+    }
+
+    private ParentChildren hierarchy(final AMXProxy top)
+    {
+        // make a list of all children, grouping by type
+        final List<AMXProxy> children = new ArrayList<AMXProxy>();
+        final Map<String, Map<String, AMXProxy>> childrenMaps = top.childrenMaps();
+        for (final Map<String, AMXProxy> childrenOfType : childrenMaps.values())
+        {
+            for (final AMXProxy amx : childrenOfType.values())
+            {
+                children.add(amx);
+            }
+        }
+
+        final List<ParentChildren> pcList = new ArrayList<ParentChildren>();
+        for (final AMXProxy child : children)
+        {
+            final ParentChildren pc = hierarchy(child);
+            pcList.add(pc);
+        }
+
+        return new ParentChildren(top, pcList);
+    }
+
+    public String getHierarchy()
+    {
+        final ParentChildren pc = hierarchy(getDomainRootProxy());
+        final List<String> lines = pc.toLines(true);
+        
+        return toString(lines);
+    }
+
 }
 
 

@@ -118,6 +118,11 @@ public interface Tools extends AMXProxy, Utility, Singleton
     public String validate(
             @Param(name = "mbeans")
             final ObjectName[] mbeans);
+
+    @Description("Dump the hierarchy of AMX MBeans by recursive descent")
+    @ManagedAttribute
+    public String getHierarchy();
+    
 }
 
 
