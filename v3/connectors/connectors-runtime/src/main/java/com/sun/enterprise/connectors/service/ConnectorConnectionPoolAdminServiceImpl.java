@@ -68,7 +68,7 @@ import com.sun.enterprise.connectors.util.SecurityMapUtils;
 import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.resource.listener.UnpooledConnectionEventListener;
 import com.sun.enterprise.resource.pool.PoolManager;
@@ -682,7 +682,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         Set mcfConfigProperties = cdi.getMCFConfigProperties();
         Iterator mcfConfPropsIter = mcfConfigProperties.iterator();
         while (mcfConfPropsIter.hasNext()) {
-            EnvironmentProperty envProp = (EnvironmentProperty) mcfConfPropsIter.next();
+            ConnectorConfigProperty  envProp = (ConnectorConfigProperty ) mcfConfPropsIter.next();
 
             if (envProp.getName().toUpperCase().equals(prop)) {
                 result = envProp.getValue();

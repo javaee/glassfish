@@ -38,8 +38,9 @@ package com.sun.enterprise.connectors.jms.system;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.*;
 import com.sun.appserv.server.util.Version;
@@ -360,7 +361,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         String brokerType = null;
 
         for (Iterator iter = mergedProps.iterator(); iter.hasNext();) {
-            EnvironmentProperty element = (EnvironmentProperty) iter.next();
+            ConnectorConfigProperty  element = (ConnectorConfigProperty) iter.next();
             if (element.getName().equals(ActiveJmsResourceAdapter.BROKERTYPE)) {
                      brokerType = element.getValue();
             }
@@ -378,7 +379,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 		|| brokerType.equals(ActiveJmsResourceAdapter.DIRECT))
         {
 		for (Iterator iter = mergedProps.iterator(); iter.hasNext();) {
-                EnvironmentProperty element = (EnvironmentProperty) iter.next();
+                ConnectorConfigProperty  element = (ConnectorConfigProperty ) iter.next();
                 if (element.getName().equals(ActiveJmsResourceAdapter.CONNECTION_URL)) {
                     iter.remove();
                 }
@@ -422,7 +423,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                 ConnectorDescriptor cd = getDescriptor();
                 //Set HARequired as true - irrespective of whether it is REMOTE or
                 //LOCAL
-                EnvironmentProperty envProp1 = new EnvironmentProperty (
+                ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty  (
                                             HAREQUIRED , "true","HA Required",
                                            "java.lang.String");
                 setProperty(cd, envProp1);
@@ -437,7 +438,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                     } else {
                         //LOCAL/EMBEDDED instances in a cluster.
                         String clusterName = getMQClusterName();
-                        EnvironmentProperty envProp2 = new EnvironmentProperty (
+                        ConnectorConfigProperty  envProp2 = new ConnectorConfigProperty  (
                                     CLUSTERID , clusterName,"Cluster Id",
                                     "java.lang.String");
                         setProperty(cd, envProp2);
@@ -445,13 +446,13 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                         if(brokerInstanceName == null) {
                             brokerInstanceName = getBrokerInstanceName(jmsService);
                         }
-                        EnvironmentProperty envProp3 = new EnvironmentProperty (
+                        ConnectorConfigProperty  envProp3 = new ConnectorConfigProperty  (
                                     BROKERID , brokerInstanceName,"Broker Id",
                                     "java.lang.String");
                         setProperty(cd, envProp3);
 
 
-                        EnvironmentProperty envProp4 = new EnvironmentProperty (
+                        ConnectorConfigProperty  envProp4 = new ConnectorConfigProperty  (
                                         DBTYPE , DBTYPE_HADB,"DBType",
                                         "java.lang.String");
                         setProperty(cd, envProp4);
@@ -467,14 +468,14 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                          * and AS HA is enabled for JMS then both these must be
                          * set to true.
                          //todo
-                        EnvironmentProperty envProp5 = new EnvironmentProperty (
+                        ConnectorConfigProperty  envProp5 = new ConnectorConfigProperty  (
                                         BROKERENABLEHA , "true",
                                         "BrokerEnableHA flag","java.lang.Boolean");
                         setProperty(cd, envProp5);
 
                         String nodeAgentHostName = getNodeAgentHostName();
                         if (nodeAgentHostName != null)  {
-                                EnvironmentProperty envProp6 = new EnvironmentProperty (
+                                ConnectorConfigProperty  envProp6 = new ConnectorConfigProperty  (
                                                 BROKERBINDADDRESS , nodeAgentHostName,
                                                 "Broker Bind Address","java.lang.String");
                                 setProperty(cd, envProp6);
@@ -768,54 +769,54 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             //BrokerArgs, BrokerHomeDir, BrokerVarDir, BrokerStartTimeout
             //adminUserName, adminPassword
             ConnectorDescriptor cd = getDescriptor();
-            EnvironmentProperty envProp1 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty  (
                     BROKERTYPE, brokerType, "Broker Type", "java.lang.String");
             setProperty(cd, envProp1);
-            EnvironmentProperty envProp2 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp2 = new ConnectorConfigProperty  (
                     BROKERINSTANCENAME, brokerInstanceName ,
                     "Broker Instance Name", "java.lang.String");
             setProperty(cd, envProp2);
-            EnvironmentProperty envProp3 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp3 = new ConnectorConfigProperty  (
                     BROKERPORT , brokerPort ,
                     "Broker Port", "java.lang.String");
             setProperty(cd, envProp3);
-            EnvironmentProperty envProp4 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp4 = new ConnectorConfigProperty  (
                     BROKERARGS , brokerArgs ,
                     "Broker Args", "java.lang.String");
             setProperty(cd, envProp4);
-            EnvironmentProperty envProp5 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp5 = new ConnectorConfigProperty  (
                     BROKERHOMEDIR , brokerHomeDir ,
                     "Broker Home Dir", "java.lang.String");
             setProperty(cd, envProp5);
-            EnvironmentProperty envProp14 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp14 = new ConnectorConfigProperty  (
                     BROKERLIBDIR , brokerLibDir ,
                     "Broker Lib Dir", "java.lang.String");
             setProperty(cd, envProp14);
-            EnvironmentProperty envProp6 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp6 = new ConnectorConfigProperty  (
                     BROKERJAVADIR , java_home ,
                     "Broker Java Dir", "java.lang.String");
                     setProperty(cd, envProp6);
-            EnvironmentProperty envProp7 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp7 = new ConnectorConfigProperty  (
                     BROKERVARDIR , brokerVarDir ,
                     "Broker Var Dir", "java.lang.String");
             setProperty(cd, envProp7);
-            EnvironmentProperty envProp8 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp8 = new ConnectorConfigProperty  (
                     BROKERSTARTTIMEOUT , "" + brokerTimeOut ,
                     "Broker Start Timeout", "java.lang.String");
             setProperty(cd, envProp8);
-            EnvironmentProperty envProp9 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp9 = new ConnectorConfigProperty  (
                     ADMINUSERNAME , adminUserName,
                     "Broker admin username", "java.lang.String");
             setProperty(cd, envProp9);
-            EnvironmentProperty envProp10 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp10 = new ConnectorConfigProperty  (
                     ADMINPASSWORD , adminPassword ,
                     "Broker admin password", "java.lang.String");
             setProperty(cd, envProp10);
-            EnvironmentProperty envProp11 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp11 = new ConnectorConfigProperty  (
                     USERNAME , username,
                     "Broker username", "java.lang.String");
             setProperty(cd, envProp11);
-            EnvironmentProperty envProp12 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp12 = new ConnectorConfigProperty  (
                     PASSWORD , password,
                     "Broker password", "java.lang.String");
             setProperty(cd, envProp12);
@@ -827,7 +828,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                 //startup of the broker.
                 String adminPassFilePath = getAdminPassFilePath(adminPassword);
                 if (adminPassFilePath != null) {
-                    EnvironmentProperty envProp13 = new EnvironmentProperty (
+                    ConnectorConfigProperty  envProp13 = new ConnectorConfigProperty  (
                             ADMINPASSFILE , adminPassFilePath ,
                             "Broker admin password", "java.lang.String");
                     setProperty(cd, envProp13);
@@ -1026,10 +1027,10 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             JmsService jmsService = ServerBeansFactory.
                 getConfigBean(ctx).getJmsService();    */
                 String val = getGroupName();
-                EnvironmentProperty envProp = new EnvironmentProperty
+                ConnectorConfigProperty  envProp = new ConnectorConfigProperty
                     (GROUPNAME, val, "Group Name", "java.lang.String");
                 setProperty(cd, envProp);
-                EnvironmentProperty envProp1 = new EnvironmentProperty
+                ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty
                   (CLUSTERCONTAINER, "false", "Cluster container flag",
                     "java.lang.Boolean");
                 setProperty(cd, envProp1);
@@ -1045,7 +1046,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                      return;
         } else {
                 String masterbrkr = getMasterBroker();
-                    EnvironmentProperty envProp2 = new EnvironmentProperty
+                    ConnectorConfigProperty  envProp2 = new ConnectorConfigProperty
                         (MASTERBROKER,masterbrkr , "Master  Broker",
                     "java.lang.String");
                     setProperty(cd, envProp2);
@@ -1069,14 +1070,14 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     private void setAppClientRABeanProperties() throws ConnectorRuntimeException {
         logFine("In Appclient container!!!");
         ConnectorDescriptor cd = super.getDescriptor();
-        EnvironmentProperty envProp1 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty  (
                         BROKERTYPE, REMOTE, "Broker Type", "java.lang.String");
                 setProperty(cd, envProp1);
 
-        EnvironmentProperty envProp2 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp2 = new ConnectorConfigProperty  (
             GROUPNAME, "", "Group Name", "java.lang.String");
         cd.removeConfigProperty(envProp2);
-        EnvironmentProperty envProp3 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp3 = new ConnectorConfigProperty  (
             CLUSTERCONTAINER, "false", "Cluster flag", "java.lang.Boolean");
         setProperty(cd, envProp3);
     }
@@ -1205,22 +1206,22 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         raUtil.setMdbContainerProperties();
 
         String val = ""+MdbContainerProps.getReconnectEnabled();
-        EnvironmentProperty envProp2 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp2 = new ConnectorConfigProperty  (
             RECONNECTENABLED, val, val, "java.lang.Boolean");
         setProperty(cd, envProp2);
 
         val = ""+MdbContainerProps.getReconnectDelay();
-        EnvironmentProperty envProp3 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp3 = new ConnectorConfigProperty  (
             RECONNECTINTERVAL, val, val, "java.lang.Integer");
         setProperty(cd, envProp3);
 
         val = ""+MdbContainerProps.getReconnectMaxRetries();
-        EnvironmentProperty envProp4 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp4 = new ConnectorConfigProperty  (
             RECONNECTATTEMPTS, val, val, "java.lang.Integer");
         setProperty(cd, envProp4);
 
         val = "false";
-        EnvironmentProperty envProp5 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp5 = new ConnectorConfigProperty  (
             MQ_PORTMAPPER_BIND, val, val, "java.lang.Boolean");
         setProperty(cd, envProp5);
 
@@ -1252,7 +1253,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         String val = urlList.toString();
         if (val != null) {
             logger.info("JMS Service Connection URL is :" + val);
-            EnvironmentProperty envProp1 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty  (
                CONNECTION_URL, val, val, "java.lang.String");
             setProperty(cd, envProp1);
         }
@@ -1268,35 +1269,35 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         setConnectionURL(service, urlList);
 
         String val = ""+jmsraUtil.getReconnectEnabled();
-        EnvironmentProperty envProp2 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp2 = new ConnectorConfigProperty  (
             RECONNECTENABLED, val, val, "java.lang.Boolean");
         setProperty(cd, envProp2);
 
         //convert to milliseconds
         int newval = (new Integer(jmsraUtil.getReconnectInterval())).intValue() * 1000;
         val = "" + newval;
-        EnvironmentProperty envProp3 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp3 = new ConnectorConfigProperty  (
             RECONNECTINTERVAL, val, val, "java.lang.Integer");
         setProperty(cd, envProp3);
 
         val = ""+jmsraUtil.getReconnectAttempts();
-        EnvironmentProperty envProp4 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp4 = new ConnectorConfigProperty  (
             RECONNECTATTEMPTS, val, val, "java.lang.Integer");
         setProperty(cd, envProp4);
 
         val = ""+jmsraUtil.getAddressListBehaviour();
-        EnvironmentProperty envProp5 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp5 = new ConnectorConfigProperty  (
             ADRLIST_BEHAVIOUR, val, val, "java.lang.String");
         setProperty(cd, envProp5);
 
         val = ""+jmsraUtil.getAddressListIterations();
-        EnvironmentProperty envProp6 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp6 = new ConnectorConfigProperty  (
             ADRLIST_ITERATIONS, val, val, "java.lang.Integer");
         setProperty(cd, envProp6);
 
         boolean useExternal = shouldUseExternalRmiRegistry(jmsraUtil);
         val = (new Boolean(useExternal)).toString();
-        EnvironmentProperty envProp7 = new EnvironmentProperty (
+        ConnectorConfigProperty  envProp7 = new ConnectorConfigProperty  (
             USEEXTERNALRMIREGISTRY, val, val, "java.lang.Boolean");
         setProperty(cd, envProp7);
 
@@ -1317,7 +1318,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
         val = configuredRmiRegistryPort;
         if (val != null) {
-            EnvironmentProperty envProp8 = new EnvironmentProperty (
+            ConnectorConfigProperty  envProp8 = new ConnectorConfigProperty  (
                 RMIREGISTRYPORT, val, val, "java.lang.Integer");
             setProperty(cd, envProp8);
             logger.log(Level.FINE, "RMI registry port set as "+ val);
@@ -1446,7 +1447,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         }
     }
 
-    private void setProperty(ConnectorDescriptor cd, EnvironmentProperty envProp){
+    private void setProperty(ConnectorDescriptor cd, ConnectorConfigProperty  envProp){
         cd.removeConfigProperty(envProp);
         cd.addConfigProperty(envProp);
     }
@@ -1486,7 +1487,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
            Set s = cpr.getConnectorDescriptorInfo().getMCFConfigProperties();
             Iterator tmpit = s.iterator();
             while (tmpit.hasNext()) {
-                EnvironmentProperty prop = (EnvironmentProperty) tmpit.next();
+                ConnectorConfigProperty  prop = (ConnectorConfigProperty ) tmpit.next();
                 String propName = prop.getName();
                 if (propName.equalsIgnoreCase("imqAddressList") || propName.equalsIgnoreCase("Addresslist")) {
             addlist = prop.getValue();
@@ -1507,7 +1508,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                     createManagedConnectionFactory(cpr, loader);
                 Iterator it = s.iterator();
                 while (it.hasNext()) {
-                    EnvironmentProperty prop = (EnvironmentProperty) it.next();
+                    ConnectorConfigProperty  prop = (ConnectorConfigProperty ) it.next();
                     String propName = prop.getName();
          String propValue = prop.getValue();
                  if (propName.startsWith("imq") && propValue != "") {
@@ -1529,7 +1530,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
            }
         }
               }
-              EnvironmentProperty addressProp3 = new EnvironmentProperty (                                    ADDRESSLIST, brokerurl,"Address List",
+              ConnectorConfigProperty  addressProp3 = new ConnectorConfigProperty  (                                    ADDRESSLIST, brokerurl,"Address List",
                             "java.lang.String");
           HashSet addressProp = new HashSet();
         addressProp.add(addressProp3);
@@ -1582,7 +1583,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             Set s = cpr.getConnectorDescriptorInfo().getMCFConfigProperties();
             Iterator it = s.iterator();
             while (it.hasNext()) {
-                EnvironmentProperty prop = (EnvironmentProperty) it.next();
+                ConnectorConfigProperty  prop = (ConnectorConfigProperty ) it.next();
                 String propName = prop.getName();
 
                 // If the property has started with imq, then it should go to
@@ -1613,9 +1614,9 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                 Object[] array = configProperties.toArray();
                 for (int i =0; i < array.length; i++)
                 {
-                      if (array[i] instanceof EnvironmentProperty)
+                      if (array[i] instanceof ConnectorConfigProperty )
                       {
-                          EnvironmentProperty property = (EnvironmentProperty) array[i];
+                          ConnectorConfigProperty  property = (ConnectorConfigProperty ) array[i];
                           if (ActiveJmsResourceAdapter.ADDRESSLIST.equals(property.getName())){
                               if (property.getValue() == null || "".equals(property.getValue()) || "localhost".equals(property.getValue())){
                                   logger.log(Level.FINE,"raraddresslist.default.value", property.getValue());

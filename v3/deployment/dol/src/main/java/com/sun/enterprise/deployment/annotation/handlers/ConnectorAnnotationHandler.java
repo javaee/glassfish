@@ -143,12 +143,6 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
                 desc.setLicenseDescriptor(ld);
             }
 
-            //TODO V3 care should be taken that only one annotation sets it
-            //TODO V3 so that the "XXXSet" logic is not made void
-            if (!desc.isSpecVersionSet() && !connector.specVersion().equals("")) {
-                desc.setSpecVersion(connector.specVersion());
-            }
-
             OutboundResourceAdapter ora = getOutbound(desc);
 
             //if (desc.getAuthMechanisms().size() == 0) {

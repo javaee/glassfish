@@ -83,7 +83,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
       
     //connector1.5 begin
     private String  resourceAdapterClass = "";
-    private EnvironmentProperty configProperty = null;
+    private ConnectorConfigProperty configProperty = null;
     private OutboundResourceAdapter outboundRA = null;
     private InboundResourceAdapter  inboundRA = null;
     private Set adminObjects;
@@ -382,21 +382,21 @@ public class ConnectorDescriptor extends BundleDescriptor {
         resourceAdapterClass = raClass;
     }
     
-    /** Set of EnvironmentProperty 
+    /** Set of ConnectorConfigProperty 
      */
     public Set getConfigProperties() {
         return configProperties;
     }
-         
+
     /** add a configProperty to the set
      */
-    public void addConfigProperty(EnvironmentProperty configProperty) {
+    public void addConfigProperty(ConnectorConfigProperty configProperty) {
 	this.configProperties.add(configProperty);
     }
 
     /** remove a configProperty from the set
      */ 
-    public void removeConfigProperty(EnvironmentProperty configProperty) {
+    public void removeConfigProperty(ConnectorConfigProperty configProperty) {
 	configProperties.remove(configProperty);
     }
 
@@ -437,7 +437,27 @@ public class ConnectorDescriptor extends BundleDescriptor {
      * set admin object
      */
     public void addAdminObject(AdminObject admin) {
-        adminObjects.add(admin);
+        boolean duplicate = false; //hasAdminObject(admin.getAdminObjectInterface(), admin.getAdminObjectClass(), adminObjects);
+        if(!duplicate){
+            adminObjects.add(admin);
+        }else{
+            throw new IllegalStateException("Cannot add duplicate admin object with interface " +
+                    "[ "+admin.getAdminObjectInterface()+" ], class [ " +admin.getAdminObjectClass() +" ]");
+        }
+    }
+
+    private boolean hasAdminObject(String intfClass, String implClass, Set adminObjects) {
+        boolean found = false;
+        Iterator adminObjectsIterator = adminObjects.iterator();
+        while(adminObjectsIterator.hasNext()){
+            AdminObject ao = (AdminObject)adminObjectsIterator.next();
+            if(ao.getAdminObjectClass().equals(implClass) &&
+                    ao.getAdminObjectInterface().equals(intfClass)){
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 
     public void removeAdminObject(AdminObject admin) {
@@ -494,15 +514,6 @@ public class ConnectorDescriptor extends BundleDescriptor {
         this.vendorName = vendorName;
     }
 
-
-    //TODO V3 setting spec version not recommended ?
-    /**
-     * set value for specVersion
-     */
-    public void setSpecVersion(String specVersion) {
-        super.setSpecVersion(specVersion);
-        this.specVersionSet = true;
-    }
 
     /** get eisType
     */
@@ -796,10 +807,13 @@ public class ConnectorDescriptor extends BundleDescriptor {
         buf.append("\n------------");
         for (Iterator i = props.iterator(); i.hasNext();)
         {
-            EnvironmentProperty config = (EnvironmentProperty) i.next();
+            ConnectorConfigProperty config = (ConnectorConfigProperty) i.next();
             buf.append("[Name : " + config.getName() + "], ");
             buf.append("[Value: " + config.getValue() + "], ");
             buf.append("[Type : " + config.getType() + "]");
+            buf.append("[Confidential : " + config.isConfidential() + "]");
+            buf.append("[Ignore : " + config.isIgnore() + "]");
+            buf.append("[SupportsDynamicUpdates : " + config.isSupportsDynamicUpdates() + "]");
         }
         buf.append("\n------------");
         return buf;

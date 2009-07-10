@@ -129,14 +129,14 @@ public class ConnectorDDTransformUtils {
         }
 
         for (Property property : props) {
-            EnvironmentProperty ep = new EnvironmentProperty(
+            ConnectorConfigProperty  ep = new ConnectorConfigProperty (
                     property.getName(), property.getValue(), null);
             if (defaultMCFProps.contains(ep)) {
                 //get the environment property in the mergedset
                 Iterator iter = defaultMCFProps.iterator();
                 while (iter.hasNext()) {
-                    EnvironmentProperty envProp =
-                            (EnvironmentProperty) iter.next();
+                    ConnectorConfigProperty  envProp =
+                            (ConnectorConfigProperty ) iter.next();
                     //and if they are equal, set ep's type to envProp's type
 
                     //This set is important because envProp has the ra.xml

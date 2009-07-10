@@ -89,8 +89,8 @@ public class ConnectorConfigParserUtils {
             String name = null;
             String value = null;
             for (int i = 0; i < ddProps.length; i++) {
-                name = ((EnvironmentProperty)ddProps[i]).getName();
-                value =((EnvironmentProperty)ddProps[i]).getValue();
+                name = ((ConnectorConfigProperty )ddProps[i]).getName();
+                value =((ConnectorConfigProperty )ddProps[i]).getValue();
                 mergedVals.setProperty(name,value);
             }
         }
@@ -125,8 +125,8 @@ public class ConnectorConfigParserUtils {
             String name = null;
             String value = null;
             for (int i = 0; i < ddProps.length; i++) {
-                name = ((EnvironmentProperty)ddProps[i]).getName();
-                value = ((EnvironmentProperty)ddProps[i]).getType();
+                name = ((ConnectorConfigProperty )ddProps[i]).getName();
+                value = ((ConnectorConfigProperty )ddProps[i]).getType();
                 mergedVals.setProperty(name,value);
             }
         }
@@ -282,7 +282,7 @@ public class ConnectorConfigParserUtils {
             name = method.getName().substring(length);
         }
         for(int i=0; name != null && ddProps != null && i<ddProps.length;++i) {
-            ddPropName = ((EnvironmentProperty)ddProps[i]).getName(); 
+            ddPropName = ((ConnectorConfigProperty )ddProps[i]).getName();
             if(name.equalsIgnoreCase(ddPropName) == true) {
                 return true;
             }

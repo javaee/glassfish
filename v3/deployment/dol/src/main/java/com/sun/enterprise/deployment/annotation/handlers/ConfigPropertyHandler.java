@@ -46,9 +46,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import org.glassfish.apf.*;
 import org.jvnet.hk2.annotations.Service;
@@ -77,8 +75,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
 
             String defaultValue = configProperty.defaultValue();
             String description = configProperty.description();
-            //TODO V3 handle ignore ?
             boolean ignore = configProperty.ignore();
+            boolean supportsDynamicUpdates = configProperty.supportsDynamicUpdates();
+            boolean confidential = configProperty.confidential();
+            
             Class type = configProperty.type();
 
             if (element.getElementType().equals(ElementType.METHOD)) {
@@ -110,17 +110,9 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     }
                 }
 
-                EnvironmentProperty ep = new EnvironmentProperty();
-                //use description if specified
-                if (!description.equals("")) {
-                    ep.setDescription(description);
-                }
-                //use default value if specified
-                if (!defaultValue.equals("")) {
-                    ep.setValue(defaultValue);
-                }
-                ep.setType(type.getName());
-                ep.setName(m.getName().substring(3));
+                ConnectorConfigProperty ep = getConfigProperty(defaultValue, description, ignore,
+                        supportsDynamicUpdates, confidential, type, m.getName().substring(3));
+
 
                 Class c = m.getDeclaringClass();
                 handleConfigPropertyAnnotation(element, desc, ep, c);
@@ -134,25 +126,15 @@ public class ConfigPropertyHandler extends AbstractHandler {
                 } else {
                     //check compatibility between annotation type and return-type
                     if (!returnType.isAssignableFrom(type)) {
-                        return getFailureResult(element, "annotation type [" + type + "] and return-type [" + returnType + "] " +
+                        return getFailureResult(element, "annotation type [" + type + "] " +
+                                "and return-type [" + returnType + "] " +
                                 "are not assignment compatible", true);
                     }
                 }
 
-                EnvironmentProperty ep = new EnvironmentProperty();
-                //use description if specified
-                if (!description.equals("")) {
-                    ep.setDescription(description);
-                }
-
-                if (!defaultValue.equals("")) {
-                    ep.setValue(defaultValue);
-                }else{
-                    //TODO V3 need to get the defaultValue from the field if its not specified via annotation
-                }
-
-                ep.setType(type.getName());
-                ep.setName(f.getName());
+                //TODO V3 need to get the defaultValue from the field if its not specified via annotation
+                ConnectorConfigProperty ep = getConfigProperty(defaultValue,description, ignore,
+                        supportsDynamicUpdates, confidential,  type, f.getName());
 
                 handleConfigPropertyAnnotation(element, desc, ep, c);
 
@@ -164,8 +146,36 @@ public class ConfigPropertyHandler extends AbstractHandler {
         return getDefaultProcessedResult();
     }
 
+    private ConnectorConfigProperty getConfigProperty(String defaultValue, String description, boolean ignore,
+                                                      boolean supportsDynamicUpdates, boolean confidential,
+                                                      Class type, String propertyName) {
+        ConnectorConfigProperty ep = new ConnectorConfigProperty();
+        //use description if specified
+        if (!description.equals("")) {
+            ep.setDescription(description);
+        }
+        //use default value if specified
+        if (!defaultValue.equals("")) {
+            ep.setValue(defaultValue);
+        }
+        ep.setType(type.getName());
+
+        ep.setName(propertyName);
+
+        if (!ep.isSetIgnoreCalled()) {
+            ep.setIgnore(ignore);
+        }
+        if (!ep.isSetConfidentialCalled()) {
+            ep.setConfidential(confidential);
+        }
+        if (!ep.isSupportsDynamicUpdates()) {
+            ep.setSupportsDynamicUpdates(supportsDynamicUpdates);
+        }
+        return ep;
+    }
+
     private void handleConfigPropertyAnnotation(AnnotationInfo element,
-                                                ConnectorDescriptor desc, EnvironmentProperty ep, Class c) {
+                                                ConnectorDescriptor desc, ConnectorConfigProperty ep, Class c) {
         if (ResourceAdapter.class.isAssignableFrom(c)
                 || c.getAnnotation(Connector.class) != null) {
             processConnector(desc, ep);
@@ -183,7 +193,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
     }
 
     private void handleConfigPropertyForAdministeredObject(AnnotationInfo element,
-                                                           ConnectorDescriptor desc, EnvironmentProperty ep, Class c) {
+                                                           ConnectorDescriptor desc, ConnectorConfigProperty ep, Class c) {
 
         if (c.getAnnotation(AdministeredObject.class) != null) {
             AdministeredObject ao = (AdministeredObject) c.getAnnotation(AdministeredObject.class);
@@ -206,7 +216,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
     }
 
     private void processActivation(AnnotationInfo element, ConnectorDescriptor desc,
-                                   EnvironmentProperty ep, Class c) {
+                                   ConnectorConfigProperty ep, Class c) {
         if (desc.getInBoundDefined()) {
             //TODO V3 above check is not needed if we are sure that "@Activation" is handled already
             InboundResourceAdapter ira = desc.getInboundResourceAdapter();
@@ -240,7 +250,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
     }
 
     private void processConnectionDefinition(AnnotationInfo element, ConnectorDescriptor desc,
-                                             EnvironmentProperty ep, Class c) {
+                                             ConnectorConfigProperty ep, Class c) {
         //3) TODO V3 how do we make sure that @Connector annotation for this MCF is already processed ?
         //TODO V3 should we handle @connectionDefinitions also ?
 
@@ -282,7 +292,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
         }
     }
 
-    private void processConnector(ConnectorDescriptor desc, EnvironmentProperty ep) {
+    private void processConnector(ConnectorDescriptor desc, ConnectorConfigProperty ep) {
         //handle the annotation specified on a ResourceAdapter JavaBean
         /* TODO V3
          1) how do we make sure that this ResourceAdapter JavaBean is the one that is
@@ -296,10 +306,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
         }
     }
 
-    private boolean isConfigDefined(Set configProperties, EnvironmentProperty ep) {
+    private boolean isConfigDefined(Set configProperties, ConnectorConfigProperty ep) {
         boolean result = false;
         for (Object o : configProperties) {
-            EnvironmentProperty ddEnvProperty = (EnvironmentProperty) o;
+            ConnectorConfigProperty ddEnvProperty = (ConnectorConfigProperty) o;
             if (ddEnvProperty.getName().equals(ep.getName())) {
                 result = true;
                 break;

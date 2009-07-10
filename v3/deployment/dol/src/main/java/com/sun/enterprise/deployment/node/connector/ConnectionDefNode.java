@@ -42,10 +42,7 @@
 
 package com.sun.enterprise.deployment.node.connector;
 
-import com.sun.enterprise.deployment.ConnectionDefDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.OutboundResourceAdapter;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
@@ -108,9 +105,9 @@ public class ConnectionDefNode extends DeploymentDescriptorNode {
      * @param descriptor the new descriptor
      */
     public void addDescriptor(Object obj) {
-	if (obj instanceof EnvironmentProperty) {
-	    descriptor.addConfigProperty((EnvironmentProperty)obj);
-	}
+        if (obj instanceof ConnectorConfigProperty) {
+            descriptor.addConfigProperty((ConnectorConfigProperty)obj);
+        }
     }
     
     /**

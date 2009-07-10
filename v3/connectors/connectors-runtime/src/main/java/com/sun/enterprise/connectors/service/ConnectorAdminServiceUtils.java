@@ -40,8 +40,8 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.ResourcePrincipal;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -88,8 +88,8 @@ public class ConnectorAdminServiceUtils implements ConnectorConstants {
         String userName = "";
         String password = "";
         while (mcfConfPropsIter.hasNext()) {
-            EnvironmentProperty prop =
-                    (EnvironmentProperty) mcfConfPropsIter.next();
+            ConnectorConfigProperty  prop =
+                    (ConnectorConfigProperty) mcfConfPropsIter.next();
 
             if (prop.getName().toUpperCase().equals("USERNAME") ||
                     prop.getName().toUpperCase().equals("USER")) {

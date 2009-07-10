@@ -37,7 +37,7 @@
 package com.sun.enterprise.resource.beans;
 
 import com.sun.enterprise.deployment.AdminObject;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import com.sun.enterprise.connectors.util.SetMethodAction;
@@ -128,14 +128,14 @@ public class AdministeredObjectResource extends JavaEEResourceBase
     /*
      * Add a configProperty to the set
      */
-    public void addConfigProperty(EnvironmentProperty configProperty) {
+    public void addConfigProperty(ConnectorConfigProperty  configProperty) {
         this.configProperties_.add(configProperty);
     }
 
     /**
      * Add a configProperty to the set
      */
-    public void removeConfigProperty(EnvironmentProperty configProperty) {
+    public void removeConfigProperty(ConnectorConfigProperty  configProperty) {
         this.configProperties_.remove(configProperty);
     }
 

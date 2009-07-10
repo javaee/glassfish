@@ -131,8 +131,8 @@ public class DescriptorFactory {
 	register(new XMLElement(ConnectorTagNames.AUTH_MECHANISM), AuthMechanism.class);
 	register(new XMLElement(ConnectorTagNames.SECURITY_PERMISSION), SecurityPermission.class);
 	register(new XMLElement(ConnectorTagNames.LICENSE), LicenseDescriptor.class);
-	register(new XMLElement(ConnectorTagNames.CONFIG_PROPERTY), EnvironmentProperty.class);
-	register(new XMLElement(ConnectorTagNames.REQUIRED_CONFIG_PROP), EnvironmentProperty.class);
+	register(new XMLElement(ConnectorTagNames.CONFIG_PROPERTY), ConnectorConfigProperty.class);
+	register(new XMLElement(ConnectorTagNames.REQUIRED_CONFIG_PROP), ConnectorConfigProperty.class);
 	register(new XMLElement(ConnectorTagNames.MSG_LISTENER), MessageListener.class);
 	register(new XMLElement(ConnectorTagNames.ACTIVATION_SPEC),MessageListener.class);
 	register(new XMLElement(ConnectorTagNames.ADMIN_OBJECT), AdminObject.class);

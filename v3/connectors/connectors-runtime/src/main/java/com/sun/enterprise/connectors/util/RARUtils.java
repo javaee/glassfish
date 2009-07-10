@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;

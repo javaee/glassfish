@@ -37,7 +37,7 @@
 package com.sun.enterprise.connectors;
 
 import com.sun.enterprise.connectors.util.ConnectionPoolReconfigHelper.ReconfigAction;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -61,16 +61,16 @@ public final class ConnectorDescriptorInfo implements Serializable {
     protected String connectionFactoryInterface_;
     protected String connectionClass_;
     protected String connectionInterface_;
-    protected Set<EnvironmentProperty> mcfConfigProperties_;
-    protected Set<EnvironmentProperty> resourceAdapterConfigProperties_;
+    protected Set<ConnectorConfigProperty> mcfConfigProperties_;
+    protected Set<ConnectorConfigProperty > resourceAdapterConfigProperties_;
 
     /**
      * Default constructor
      */
     public ConnectorDescriptorInfo() {
 
-        mcfConfigProperties_ = new HashSet<EnvironmentProperty>();
-        resourceAdapterConfigProperties_ = new HashSet<EnvironmentProperty>();
+        mcfConfigProperties_ = new HashSet<ConnectorConfigProperty >();
+        resourceAdapterConfigProperties_ = new HashSet<ConnectorConfigProperty >();
     }
 
     /**
@@ -105,16 +105,16 @@ public final class ConnectorDescriptorInfo implements Serializable {
      */
 
     public ConnectorDescriptorInfo(
-            EnvironmentProperty[] mcfConfigProperties,
-            EnvironmentProperty[] resourceAdapterConfigProperties) {
+            ConnectorConfigProperty [] mcfConfigProperties,
+            ConnectorConfigProperty [] resourceAdapterConfigProperties) {
         this();
         if (mcfConfigProperties != null) {
-            for (EnvironmentProperty mcfConfigProperty : mcfConfigProperties) {
+            for (ConnectorConfigProperty  mcfConfigProperty : mcfConfigProperties) {
                 mcfConfigProperties_.add(mcfConfigProperty);
             }
 
             if (resourceAdapterConfigProperties != null) {
-                for (EnvironmentProperty mcfConfigProperty : mcfConfigProperties) {
+                for (ConnectorConfigProperty  mcfConfigProperty : mcfConfigProperties) {
                     resourceAdapterConfigProperties_.add(mcfConfigProperty);
                 }
             }
@@ -127,7 +127,7 @@ public final class ConnectorDescriptorInfo implements Serializable {
      *
      * @param configProperty Config property to be added.
      */
-    public void addMCFConfigProperty(EnvironmentProperty configProperty) {
+    public void addMCFConfigProperty(ConnectorConfigProperty  configProperty) {
         if (configProperty != null) {
             mcfConfigProperties_.add(configProperty);
         }
@@ -139,7 +139,7 @@ public final class ConnectorDescriptorInfo implements Serializable {
      *
      * @param configProperty Config property to be removed.
      */
-    public void removeMCFConfigProperty(EnvironmentProperty configProperty) {
+    public void removeMCFConfigProperty(ConnectorConfigProperty  configProperty) {
         if (configProperty != null) {
             mcfConfigProperties_.remove(configProperty);
         }
@@ -160,7 +160,7 @@ public final class ConnectorDescriptorInfo implements Serializable {
      * @param configProperties Array of MCF config properties
      */
 
-    public void setMCFConfigProperties(EnvironmentProperty[] configProperties) {
+    public void setMCFConfigProperties(ConnectorConfigProperty [] configProperties) {
         if (configProperties != null) {
             for (int i = 0; i < configProperties.length; ++i) {
                 mcfConfigProperties_.add(configProperties[i]);
@@ -185,7 +185,7 @@ public final class ConnectorDescriptorInfo implements Serializable {
      * @param configProperty Config property to be added.
      */
 
-    public void addResourceAdapterConfigProperty(EnvironmentProperty configProperty) {
+    public void addResourceAdapterConfigProperty(ConnectorConfigProperty  configProperty) {
         if (configProperty != null) {
             resourceAdapterConfigProperties_.add(configProperty);
         }
@@ -197,7 +197,7 @@ public final class ConnectorDescriptorInfo implements Serializable {
      *
      * @param configProperty Config property to be removed.
      */
-    public void removeResourceAdapterConfigProperty(EnvironmentProperty configProperty) {
+    public void removeResourceAdapterConfigProperty(ConnectorConfigProperty  configProperty) {
         if (configProperty != null) {
             resourceAdapterConfigProperties_.remove(configProperty);
         }
@@ -219,9 +219,9 @@ public final class ConnectorDescriptorInfo implements Serializable {
      */
 
     public void setResourceAdapterConfigProperties(
-            EnvironmentProperty[] configProperties) {
+            ConnectorConfigProperty [] configProperties) {
         if (configProperties != null) {
-            for (EnvironmentProperty configProperty : configProperties) {
+            for (ConnectorConfigProperty  configProperty : configProperties) {
                 resourceAdapterConfigProperties_.add(configProperty);
             }
         }
@@ -438,14 +438,14 @@ public final class ConnectorDescriptorInfo implements Serializable {
         boolean same = false;
 
         for (Object mcfConfigProp : mcfConfigProps) {
-            EnvironmentProperty prop = (EnvironmentProperty) mcfConfigProp;
+            ConnectorConfigProperty  prop = (ConnectorConfigProperty ) mcfConfigProp;
             //see if this property is in our list of excludes
             if (excluded.contains(prop.getName())) {
                 //_logger.finest("mcfProp ignored : " + prop.getName() );
                 continue;
             }
 
-            for (EnvironmentProperty property : mcfConfigProperties_) {
+            for (ConnectorConfigProperty  property : mcfConfigProperties_) {
                 if (isEnvPropEqual(prop, property)) {
                     //we have a match
                     same = true;
@@ -465,15 +465,15 @@ public final class ConnectorDescriptorInfo implements Serializable {
     }
 
     /**
-     * The EnvironmentProperty::equals method only checks for name equality
+     * The ConnectorConfigProperty ::equals method only checks for name equality
      * So we need to write a custom equals
      *
      * @param e1 property
      * @param e2 property
      * @return boolean - equality result
      */
-    private boolean isEnvPropEqual(EnvironmentProperty e1,
-                                   EnvironmentProperty e2) {
+    private boolean isEnvPropEqual(ConnectorConfigProperty  e1,
+                                   ConnectorConfigProperty  e2) {
         if (e1 != null && e2 != null &&
                 e1.getName() != null && e2.getName() != null &&
                 e1.getName().equals(e2.getName())) {

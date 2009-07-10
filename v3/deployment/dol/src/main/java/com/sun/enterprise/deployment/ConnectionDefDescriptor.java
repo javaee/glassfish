@@ -80,7 +80,7 @@ public class ConnectionDefDescriptor extends Descriptor
     }
 
     /** 
-     * Set of EnvironmentProperty 
+     * Set of ConnectorConfigProperty
      */
     public Set getConfigProperties() 
     {
@@ -90,7 +90,7 @@ public class ConnectionDefDescriptor extends Descriptor
     /** 
      * Add a configProperty to the set
      */
-    public void addConfigProperty(EnvironmentProperty configProperty) 
+    public void addConfigProperty(ConnectorConfigProperty configProperty)
     {
 	configProperties.add(configProperty);
     }
@@ -98,7 +98,7 @@ public class ConnectionDefDescriptor extends Descriptor
     /** 
      * Add a configProperty to the set
      */ 
-    public void removeConfigProperty(EnvironmentProperty configProperty) 
+    public void removeConfigProperty(ConnectorConfigProperty configProperty)
     {
 	configProperties.remove(configProperty);
     }

@@ -46,8 +46,8 @@ import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.AdminObject;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.resource.beans.AdministeredObjectResource;
 import com.sun.logging.LogDomains;
@@ -300,7 +300,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             StringBuffer b = new StringBuffer();
 
             for (Iterator iter = mergedProps.iterator(); iter.hasNext();) {
-                EnvironmentProperty element = (EnvironmentProperty) iter.next();
+                ConnectorConfigProperty element = (ConnectorConfigProperty ) iter.next();
                 b.append("\nName: " + element.getName()
                         + " Value: " + element.getValue());
             }
@@ -349,11 +349,11 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         //Add default config properties to aor
         //Override them if same config properties are provided by the user
         for (int i = 0; i < envProps.length; i++) {
-            EnvironmentProperty envProp = (EnvironmentProperty) envProps[i];
+            ConnectorConfigProperty  envProp = (ConnectorConfigProperty ) envProps[i];
             String name = envProp.getName();
             String userValue = (String) props.remove(name);
             if (userValue != null)
-                aor.addConfigProperty(new EnvironmentProperty(
+                aor.addConfigProperty(new ConnectorConfigProperty (
                         name, userValue, userValue, envProp.getType()));
             else
                 aor.addConfigProperty(envProp);
@@ -365,7 +365,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             String name = (String) iter.next();
             String userValue = props.getProperty(name);
             if (userValue != null)
-                aor.addConfigProperty(new EnvironmentProperty(
+                aor.addConfigProperty(new ConnectorConfigProperty (
                         name, userValue, userValue));
 
         }

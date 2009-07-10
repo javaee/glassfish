@@ -53,7 +53,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.connectors.jms.inflow.MdbContainerProps;
 import com.sun.enterprise.connectors.jms.system.MQAddressList;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.enterprise.server.Constants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.zip.ZipFile;
@@ -330,7 +330,7 @@ public class JmsRaUtil {
         Object[] envProps = cd.getConfigProperties().toArray();
 
         for (int i = 0; i < envProps.length; i++) {
-            EnvironmentProperty envProp = (EnvironmentProperty) envProps[i];
+            ConnectorConfigProperty  envProp = (ConnectorConfigProperty ) envProps[i];
             String name = envProp.getName();
         if (!name.equals("ConnectionURL")) {
             continue;
@@ -338,7 +338,7 @@ public class JmsRaUtil {
             String userValue = getUrl();
             if (userValue != null) {
                 cd.removeConfigProperty(envProp);
-                cd.addConfigProperty(new EnvironmentProperty(
+                cd.addConfigProperty(new ConnectorConfigProperty (
                               name, userValue, userValue, envProp.getType()));
             }
 

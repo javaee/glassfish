@@ -127,8 +127,8 @@ public class OutBoundRANode extends DeploymentDescriptorNode {
 		DOLUtils.getDefaultLogger().finer("The AuthMechanism object already exists in the Descriptor");
 	} else if (obj instanceof ConnectionDefDescriptor) {
 	    descriptor.addConnectionDefDescriptor((ConnectionDefDescriptor)obj);
-	} else if (obj instanceof EnvironmentProperty) {
-	    descriptor.addConfigProperty((EnvironmentProperty)obj);
+	} else if (obj instanceof ConnectorConfigProperty) {
+	    descriptor.addConfigProperty((ConnectorConfigProperty)obj);
 	} else if (obj instanceof SecurityPermission) {
             // security-permission element is a direct sub element of 
             // resourceadapter, so set the value in ConnectorDescriptor

@@ -44,7 +44,6 @@ import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 
-import javax.resource.ResourceException;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Level;

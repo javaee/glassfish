@@ -63,7 +63,7 @@ import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -173,67 +173,67 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
     /**
      * Pull out the MCF configuration properties and return them as an array
-     * of EnvironmentProperty
+     * of ConnectorConfigProperty
      *
      * @param adminPool   - The JdbcConnectionPool to pull out properties from
      * @param conConnPool - ConnectorConnectionPool which will be used by Resource Pool
      * @param connDesc    - The ConnectorDescriptor for this JDBC RA
-     * @return EnvironmentProperty[] array of MCF Config properties specified
+     * @return ConnectorConfigProperty [] array of MCF Config properties specified
      *         in this JDBC RA
      */
-    private EnvironmentProperty[] getMCFConfigProperties(
+    private ConnectorConfigProperty [] getMCFConfigProperties(
             JdbcConnectionPool adminPool,
             ConnectorConnectionPool conConnPool, ConnectorDescriptor connDesc) {
 
         ArrayList propList = new ArrayList();
 
-        propList.add(new EnvironmentProperty("ClassName",
+        propList.add(new ConnectorConfigProperty ("ClassName",
                 adminPool.getDatasourceClassname() == null ? "" :
                         adminPool.getDatasourceClassname(),
                 "The datasource class name",
                 "java.lang.String"));
 
 
-        propList.add(new EnvironmentProperty("ConnectionValidationRequired",
+        propList.add(new ConnectorConfigProperty ("ConnectionValidationRequired",
                 adminPool.getIsConnectionValidationRequired() + "",
                 "Is connection validation required",
                 "java.lang.String"));
 
-        propList.add(new EnvironmentProperty("ValidationMethod",
+        propList.add(new ConnectorConfigProperty ("ValidationMethod",
                 adminPool.getConnectionValidationMethod() == null ? "" :
                         adminPool.getConnectionValidationMethod(),
                 "How the connection is validated",
                 "java.lang.String"));
 
-        propList.add(new EnvironmentProperty("ValidationTableName",
+        propList.add(new ConnectorConfigProperty ("ValidationTableName",
                 adminPool.getValidationTableName() == null ?
                         "" : adminPool.getValidationTableName(),
                 "Validation Table name",
                 "java.lang.String"));
 
-        propList.add(new EnvironmentProperty("TransactionIsolation",
+        propList.add(new ConnectorConfigProperty ("TransactionIsolation",
                 adminPool.getTransactionIsolationLevel() == null ? "" :
                         adminPool.getTransactionIsolationLevel(),
                 "Transaction Isolatin Level",
                 "java.lang.String"));
 
-        propList.add(new EnvironmentProperty("GuaranteeIsolationLevel",
+        propList.add(new ConnectorConfigProperty ("GuaranteeIsolationLevel",
                 adminPool.getIsIsolationLevelGuaranteed() + "",
                 "Transaction Isolation Guarantee",
                 "java.lang.String"));
 
-        propList.add(new EnvironmentProperty("StatementWrapping",
+        propList.add(new ConnectorConfigProperty ("StatementWrapping",
                 adminPool.getWrapJdbcObjects() + "",
                 "Statement Wrapping",
                 "java.lang.String"));
 
 
-        propList.add(new EnvironmentProperty("StatementTimeout",
+        propList.add(new ConnectorConfigProperty ("StatementTimeout",
                 adminPool.getStatementTimeoutInSeconds() + "",
                 "Statement Timeout",
                 "java.lang.String"));
 
-        propList.add(new EnvironmentProperty("StatementCacheSize",
+        propList.add(new ConnectorConfigProperty ("StatementCacheSize",
                 adminPool.getStatementCacheSize() + "",
                 "Statement Cache Size",
                 "java.lang.String"));
@@ -261,7 +261,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             Map mcfConPropKeys = new HashMap();
             Iterator mcfConfigPropsIter = mcfConfigProps.iterator();
             while (mcfConfigPropsIter.hasNext()) {
-                String key = ((EnvironmentProperty) mcfConfigPropsIter.next()).
+                String key = ((ConnectorConfigProperty ) mcfConfigPropsIter.next()).
                         getName();
                 mcfConPropKeys.put(key.toUpperCase(), key);
             }
@@ -305,17 +305,17 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 } else if ("USERNAME".equals(name.toUpperCase()) ||
                         "USER".equals(name.toUpperCase())) {
 
-                    propList.add(new EnvironmentProperty("User",
+                    propList.add(new ConnectorConfigProperty ("User",
                             rp.getValue(), "user name", "java.lang.String"));
 
                 } else if ("PASSWORD".equals(name.toUpperCase())) {
 
-                    propList.add(new EnvironmentProperty("Password",
+                    propList.add(new ConnectorConfigProperty ("Password",
                             rp.getValue(), "Password", "java.lang.String"));
 
                 } else if ("JDBC30DATASOURCE".equals(name.toUpperCase())) {
 
-                    propList.add(new EnvironmentProperty("JDBC30DataSource",
+                    propList.add(new ConnectorConfigProperty ("JDBC30DataSource",
                             rp.getValue(), "JDBC30DataSource", "java.lang.String"));
 
                 } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(name.toUpperCase())) {
@@ -325,12 +325,12 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     
                 } else if ("STATEMENT-CACHE-TYPE".equals(name.toUpperCase())) {
                     
-                    propList.add(new EnvironmentProperty("StatementCacheType",
+                    propList.add(new ConnectorConfigProperty ("StatementCacheType",
                             rp.getValue(), "StatementCacheType", "java.lang.String"));
                 }
                 else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
 
-                    propList.add(new EnvironmentProperty(
+                    propList.add(new ConnectorConfigProperty (
                             (String) mcfConPropKeys.get(name.toUpperCase()),
                             rp.getValue() == null ? "" : rp.getValue(),
                             "Some property",
@@ -342,7 +342,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             }
 
             if (!driverProperties.equals("")) {
-                propList.add(new EnvironmentProperty("DriverProperties",
+                propList.add(new ConnectorConfigProperty ("DriverProperties",
                         driverProperties,
                         "some proprietarty properties",
                         "java.lang.String"));
@@ -350,18 +350,18 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         }
 
 
-        propList.add(new EnvironmentProperty("Delimiter",
+        propList.add(new ConnectorConfigProperty ("Delimiter",
                 "#", "delim", "java.lang.String"));
 
-        propList.add(new EnvironmentProperty("EscapeCharacter",
+        propList.add(new ConnectorConfigProperty ("EscapeCharacter",
                 "\\", "escapeCharacter", "java.lang.String"));
 
         //create an array of EnvironmentProperties from above list
-        EnvironmentProperty[] eProps = new EnvironmentProperty[propList.size()];
+        ConnectorConfigProperty [] eProps = new ConnectorConfigProperty [propList.size()];
         ListIterator propListIter = propList.listIterator();
 
         for (int i = 0; propListIter.hasNext(); i++) {
-            eProps[i] = (EnvironmentProperty) propListIter.next();
+            eProps[i] = (ConnectorConfigProperty) propListIter.next();
         }
 
         return eProps;

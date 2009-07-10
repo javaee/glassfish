@@ -56,6 +56,9 @@ public interface ConnectorTagNames extends TagNames {
     public static String CONFIG_PROPERTY_NAME = "config-property-name";
     public static String CONFIG_PROPERTY_TYPE = "config-property-type";
     public static String CONFIG_PROPERTY_VALUE = "config-property-value";
+    public static String CONFIG_PROPERTY_IGNORE = "config-property-ignore";
+    public static String CONFIG_PROPERTY_SUPPORTS_DYNAMIC_UPDATES = "config-property-supports-dynamic-updates";
+    public static String CONFIG_PROPERTY_CONFIDENTIAL = "config-property-confidential";
     public static String EIS_TYPE = "eis-type";
     public static String MANAGED_CONNECTION_FACTORY = 
         "managedconnectionfactory-class";

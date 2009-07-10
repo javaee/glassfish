@@ -36,10 +36,7 @@
 
 package com.sun.enterprise.deployment.node.connector;
 
-import com.sun.enterprise.deployment.AdminObject;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
@@ -92,9 +89,9 @@ public class AdminObjectNode extends DeploymentDescriptorNode {
      * @param descriptor the new descriptor
      */
     public void addDescriptor(Object obj) {
-	if (obj instanceof EnvironmentProperty) {
-	    adminObject.addConfigProperty((EnvironmentProperty)obj);
-	}
+        if (obj instanceof ConnectorConfigProperty) {
+            adminObject.addConfigProperty((ConnectorConfigProperty)obj);
+        }
     }
 
     /**

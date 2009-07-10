@@ -53,7 +53,7 @@ import java.util.Map;
  */
 public class ConfigPropertyNode extends DeploymentDescriptorNode {
 
-    private EnvironmentProperty config = null;
+    private ConnectorConfigProperty config = null;
 
    /**
      * all sub-implementation of this class can use a dispatch table to map xml element to
@@ -66,6 +66,9 @@ public class ConfigPropertyNode extends DeploymentDescriptorNode {
         table.put(ConnectorTagNames.CONFIG_PROPERTY_NAME, "setName");
         table.put(ConnectorTagNames.CONFIG_PROPERTY_VALUE, "setValue");
         table.put(ConnectorTagNames.CONFIG_PROPERTY_TYPE, "setType");        
+        table.put(ConnectorTagNames.CONFIG_PROPERTY_SUPPORTS_DYNAMIC_UPDATES, "setSupportsDynamicUpdates");        
+        table.put(ConnectorTagNames.CONFIG_PROPERTY_IGNORE, "setIgnore");
+        table.put(ConnectorTagNames.CONFIG_PROPERTY_CONFIDENTIAL, "setConfidential");
         return table;
     }    
 
@@ -74,7 +77,7 @@ public class ConfigPropertyNode extends DeploymentDescriptorNode {
     */    
     public Object getDescriptor() {
         if (config == null) {
-            config = (EnvironmentProperty) DescriptorFactory.getDescriptor(getXMLPath());
+            config = (ConnectorConfigProperty) DescriptorFactory.getDescriptor(getXMLPath());
         } 
         return config;
     } 
@@ -106,12 +109,17 @@ public class ConfigPropertyNode extends DeploymentDescriptorNode {
 	}
 	//config property info
 	for (;configProps.hasNext();) {
-	    EnvironmentProperty config = (EnvironmentProperty) configProps.next();
+	    ConnectorConfigProperty config = (ConnectorConfigProperty) configProps.next();
 	    Node configNode = appendChild(parent, ConnectorTagNames.CONFIG_PROPERTY);
 	    writeLocalizedDescriptions(configNode, config);  
 	    appendTextChild(configNode, ConnectorTagNames.CONFIG_PROPERTY_NAME, config.getName());  
 	    appendTextChild(configNode, ConnectorTagNames.CONFIG_PROPERTY_TYPE, config.getType());  
 	    appendTextChild(configNode, ConnectorTagNames.CONFIG_PROPERTY_VALUE, config.getValue());  
+	    appendTextChild(configNode, ConnectorTagNames.CONFIG_PROPERTY_CONFIDENTIAL,
+                String.valueOf(config.isConfidential()));
+	    appendTextChild(configNode, ConnectorTagNames.CONFIG_PROPERTY_IGNORE, String.valueOf(config.isIgnore()));
+	    appendTextChild(configNode, ConnectorTagNames.CONFIG_PROPERTY_SUPPORTS_DYNAMIC_UPDATES,
+                String.valueOf(config.isSupportsDynamicUpdates()));
 	}
 	return parent;
     }

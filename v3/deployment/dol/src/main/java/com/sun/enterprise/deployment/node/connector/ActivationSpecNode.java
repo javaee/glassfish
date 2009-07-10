@@ -37,8 +37,8 @@
 package com.sun.enterprise.deployment.node.connector;
 
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.MessageListener;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.ConnectorTagNames;
@@ -92,8 +92,8 @@ public class ActivationSpecNode extends DeploymentDescriptorNode {
      * @param descriptor the new descriptor
      */
     public void addDescriptor(Object obj) {
-	if (obj instanceof EnvironmentProperty) {
-	    msgListener.addConfigProperty((EnvironmentProperty)obj);
+	if (obj instanceof ConnectorConfigProperty) {
+	    msgListener.addConfigProperty((ConnectorConfigProperty)obj);
 	}
     }
 

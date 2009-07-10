@@ -64,7 +64,7 @@ import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
@@ -390,7 +390,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                         connectionDefName);
         Set configProps = cdd.getConfigProperties();
         for (Iterator iter = configProps.iterator(); iter.hasNext();) {
-            EnvironmentProperty envProp = (EnvironmentProperty) iter.next();
+            ConnectorConfigProperty  envProp = (ConnectorConfigProperty ) iter.next();
             String prop = envProp.getName().toUpperCase();
 
             if ("USER".equals(prop) || "USERNAME".equals(prop)) {

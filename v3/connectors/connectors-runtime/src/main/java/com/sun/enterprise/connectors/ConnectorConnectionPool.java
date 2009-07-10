@@ -37,7 +37,7 @@
 package com.sun.enterprise.connectors;
 
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 
 import java.io.Serializable;
 
@@ -721,7 +721,7 @@ public class ConnectorConnectionPool implements Serializable {
                 sb.append(connectorDescriptorInfo_.getConnectionDefinitionName());
                 sb.append("\nMCF Config properties-> ");
                 for (Object o : connectorDescriptorInfo_.getMCFConfigProperties()) {
-                    EnvironmentProperty ep = (EnvironmentProperty) o;
+                    ConnectorConfigProperty  ep = (ConnectorConfigProperty) o;
                     sb.append(ep.getName());
                     sb.append(":");
                     sb.append(("password".equalsIgnoreCase(ep.getName()) ?

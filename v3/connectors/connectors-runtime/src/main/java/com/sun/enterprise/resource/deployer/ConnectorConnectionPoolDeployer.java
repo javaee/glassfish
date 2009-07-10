@@ -53,7 +53,7 @@ import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.util.SecurityMapUtils;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -412,7 +412,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
 
         for (int i = 0; i < defaultProps.length; i++) {
             if (rarName.trim().equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)) {
-                EnvironmentProperty ep1 = (EnvironmentProperty) defaultProps[i];
+                ConnectorConfigProperty ep1 = (ConnectorConfigProperty) defaultProps[i];
                 if (ep1.getName().equals("AddressList") && ep1.getValue().equals("localhost")) {
                     continue;
                 }
@@ -422,7 +422,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
 
         for (Property property : props) {
             if (property != null) {
-                EnvironmentProperty ep = new EnvironmentProperty(
+                ConnectorConfigProperty ep = new ConnectorConfigProperty(
                         property.getName(), property.getValue(), null);
                 if (defaultMCFProps.contains(ep)) {
                     mergedSet.remove(ep);
