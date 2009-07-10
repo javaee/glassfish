@@ -727,6 +727,11 @@ public class StandardContext
     // <jsp-config> related info aggregated from web.xml and web-fragment.xml
     private JspConfigDescriptor jspConfigDesc;
 
+    // ServletContextListeners may be registered (via
+    // ServletContext#addListener) only within the scope of
+    // ServletContainerInitializer#onStartup
+    private boolean isAllowedToRegisterServletContextListener = false;
+
 
     // ----------------------------------------------------- Context Properties
 
@@ -2888,6 +2893,11 @@ public class StandardContext
                              "addListener", getName()));
         }
 
+        if (!isAllowedToRegisterServletContextListener &&
+                t instanceof ServletContextListener) {
+            throw new IllegalArgumentException("Not allowed to register " + 
+                "ServletContextListener");
+        }
         boolean added = false;
         if (t instanceof ServletContextAttributeListener ||
                 t instanceof ServletRequestAttributeListener ||
@@ -2896,7 +2906,8 @@ public class StandardContext
             eventListeners.add(t);
             added = true;
         }
-        if (t instanceof HttpSessionListener) {
+        if (t instanceof HttpSessionListener ||      
+                t instanceof ServletContextListener) {
             lifecycleListeners.add(t);
             if (!added) {
                 added = true;
@@ -2906,6 +2917,20 @@ public class StandardContext
         if (!added) {
             throw new IllegalArgumentException("Invalid listener type " +
                 t.getClass().getName());
+        }
+    }
+
+
+    /**
+     * Adds a listener of the given class type to this ServletContext.
+     */
+    public void addListener(Class <? extends EventListener> listenerClass) {
+        try {
+            addListener(listenerClass.newInstance());
+        } catch (Throwable t) {
+            throw new IllegalArgumentException(
+                "Unable to instantiate listener of type " +
+                listenerClass.getName(), t); 
         }
     }
 
@@ -2923,20 +2948,6 @@ public class StandardContext
      */
     public JspConfigDescriptor getJspConfigDescriptor() {
         return jspConfigDesc;
-    }
-
-
-    /**
-     * Adds a listener of the given class type to this ServletContext.
-     */
-    public void addListener(Class <? extends EventListener> listenerClass) {
-        try {
-            addListener(listenerClass.newInstance());
-        } catch (Throwable t) {
-            throw new IllegalArgumentException(
-                "Unable to instantiate listener of type " +
-                listenerClass.getName(), t); 
-        }
     }
 
 
@@ -5854,26 +5865,36 @@ public class StandardContext
 
     private boolean callServletContainerInitializers() {
 
-        // Get a list of ServletContainerInitializers present, if any, in this app's lib;
-        // If list is still null, it means we did not find any ServletContainerInitializers;
-        // return immediately
+        // Get a list of ServletContainerInitializers present, if any,
+        // in this app's lib. If list is still null, it means we did not
+        // find any ServletContainerInitializers, so return immediately
         Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList =
                 ServletContainerInitializerUtil.getInitializerList(
                         servletContainerInitializerInterestList, getLoader().getClassLoader());
         if(initializerList == null)
             return true;
-        //We have the list of initializers and the classes that satisfy the condition
-        //Time to call the initializers
+        // We have the list of initializers and the classes that satisfy
+        // the condition. Time to call the initializers
         ServletContext ctxt = this.getServletContext();
-        for(Class<? extends ServletContainerInitializer> initializer : initializerList.keySet()) {
+        // Allow registration of ServletContextListeners, but only within
+        // the scope of ServletContainerInitializer#onStartup
+        isAllowedToRegisterServletContextListener = true;
+        for (Class<? extends ServletContainerInitializer> initializer :
+                initializerList.keySet()) {
             try {
-                ServletContainerInitializer iniInstance = initializer.newInstance();
+                ServletContainerInitializer iniInstance =
+                    initializer.newInstance();
                 iniInstance.onStartup(initializerList.get(initializer), ctxt);
-            } catch (Exception iex) {
-                log.warning(sm.getString("standardContext.pluggability.CNFWarning", initializer.getCanonicalName()));
+            } catch (Throwable t) {
+                log.log(Level.WARNING, 
+                    sm.getString(
+                        "standardContext.pluggability.CNFWarning",
+                        initializer.getCanonicalName()),
+                    t);
                 continue;
             }
         }
+        isAllowedToRegisterServletContextListener = false;
         return true;
     }
 
