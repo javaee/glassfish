@@ -37,6 +37,7 @@ import org.glassfish.admin.amx.base.Realms;
 import org.glassfish.admin.amx.base.Runtime;
 import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.base.SystemStatus;
+import org.glassfish.admin.amx.logging.Logging;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.impl.config.AMXExtStartupServiceMBean;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
@@ -106,7 +107,12 @@ public final class AMXExtStartupService
             AMXImplBase mbean;
             final MBeanServer s = mMBeanServer;
             final ObjectName parent = getDomainRootProxy().getExt().objectName();
+            final ObjectName lParent = getDomainRootProxy().objectName();
             final ObjectNameBuilder names = new ObjectNameBuilder(s, parent);
+            
+            final ObjectName loggingObjectName = ObjectNameBuilder.buildChildObjectName( s, lParent, Logging.class );
+            mbean = new LoggingImpl(lParent, "server");
+            registerChild(mbean, loggingObjectName);
 
             child = names.buildChildObjectName(SystemStatus.class);
             mbean = new SystemStatusImpl(parent);
