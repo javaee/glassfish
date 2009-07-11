@@ -40,8 +40,8 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
-                updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.entries}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
-                mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")            
+                updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
+                mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
                 if(#{pageSession.hasRadioButtons}){
                     forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
                         setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
@@ -74,8 +74,8 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                 <!command
-                    updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.entries}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
-                    mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")            
+                    updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
+                    mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"

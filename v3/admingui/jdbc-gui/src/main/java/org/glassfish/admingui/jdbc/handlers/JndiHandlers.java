@@ -59,6 +59,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.glassfish.admingui.common.util.V3AMX;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 
 public class JndiHandlers {
@@ -92,6 +93,26 @@ public class JndiHandlers {
         
     }    
     
+    @Handler(id="getFactoryClass",
+    input={
+        @HandlerInput(name="resType", type=String.class)},
+    output={
+        @HandlerOutput(name="result",        type=String.class)})
+    public static void getFactoryClass(HandlerContext handlerCtx) {
+        String resType = (String) handlerCtx.getInputValue("resType");
+        String fc = "";
+        try {
+            if (!GuiUtil.isEmpty(resType)) {
+                Map<String, Object> entries = (Map) V3AMX.getInstance().getConnectorRuntime().attributesMap().get("BuiltInCustomResources");
+                Map emap = (Map) entries.get(MAP_KEY);
+                fc = (String) emap.get(resType);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        handlerCtx.setOutputValue("result", fc);
+    }    
+    
    
     @Handler(id="getJndiResourceAttrForEdit",
     input={
@@ -116,7 +137,7 @@ public class JndiHandlers {
 
         } else {
             //Custom realm class
-            handlerCtx.setOutputValue("classnameOption", "input");
+           handlerCtx.setOutputValue("classnameOption", "input");
             attrMap.put("predefinedClassname", Boolean.FALSE);
             attrMap.put("classnameInput", resType);
 

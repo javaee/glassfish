@@ -38,7 +38,6 @@
     <script type="text/javascript">
 
  function initClassname(option) {
-    
     var selectedOption = getSelectedValueFromForm(document.forms['form1'], 'classnameOption');
     enableClassnameFields(option);   
     if (option == 'input'){ 
@@ -51,8 +50,7 @@
  function enableClassnameFields(opt){
     if(opt == 'input') {
 	enableComponent('#{classnameTextId}', 'text');  
-        enableComponent('#{factoryClassTextId}', 'text');  
-	getTextElement('#{classnameTextId}').focus();  
+	getTextElement('#{classnameTextId}').focus(); 
 	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', true); 
         showDisplay('none'); 
         document.getElementById('form1:option').value='input'; 
@@ -60,7 +58,6 @@
         //We need to set a timeout to delay the call to getTextElement inside disable component.
         //otherwise getTextElement will always return null, causing JS error.
 	window.setTimeout("disableComponent('#{classnameTextId}', 'text')", 1); 
-        disableComponent('#{factoryClassTextId}', 'text');  
 	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', false); 
         showDisplay(''); 
         document.getElementById('form1:option').value='predefine'; 

@@ -44,18 +44,40 @@
         </sun:property>   
 
         <sun:property id="jndiTextProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" helpText="$resource{i18n.common.jndiNameHelp}" >
-            <sun:textField id="jnditext" styleClass="required"  text="#{pageSession.valueMap['JndiName']}" required="#{true}"/>
+            <sun:textField id="jnditext" styleClass="required"  text="#{pageSession.valueMap['JndiName']}" required="#{true}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{jndiNameId});
+                />
+            </sun:textField>
         </sun:property> 
 
         <sun:property id="cp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jndiResource.resTypeHelp}<br /><br />">                           
                 <sun:radioButton id="optA"  name="classnameOption" selected="#{classnameOption}" selectedValue="predefine" 
                     onClick="enableClassnameFields('predefine'); "
                 />                              
-                <sun:dropDown id="Classname"  labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{pageSession.entries}" 
+                <sun:dropDown id="Classname" labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{pageSession.valueMap['ResType']}" 
                     disabled="#{!attrMap.predefinedClassname}" 
-                    onChange=" showDisplay(''); ">
+                    submitForm="#{true}" immediate="#{true}"  >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameDropdownId});
+                    />
+                    <!command
+                                    setAttribute(key="click" value="$this{component}");
+                                    setAttribute(key="resChosen" value="#{click.selected}")
+                                    setAttribute(key="name" value="#{pageSession.Name}")
+                                    getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
+                                    getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{jndiName});
+                                    getUIComponent(clientId="#{objectTypeId}", component=>$attribute{obTypeComponent});
+                                    getUIComponentProperty(component="$attribute{obTypeComponent}", name="submittedValue", value=>$attribute{objectType});
+                                    getUIComponent(clientId="#{descId}", component=>$attribute{descComponent});
+                                    getUIComponentProperty(component="$attribute{descComponent}", name="submittedValue", value=>$attribute{desc});
+                                    getUIComponent(clientId="#{statusId}", component=>$attribute{statusComponent});
+                                    getUIComponentProperty(component="$attribute{statusComponent}", name="submittedValue", value=>$attribute{status});
+                                    getUIComponent(clientId="#{jndiLookupId}", component=>$attribute{jndiLookupComponent});
+                                    getUIComponentProperty(component="$attribute{jndiLookupComponent}", name="submittedValue", value=>$attribute{jndiLookup});                                  
+                                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                   
+                                    navigate(page="#{selfPage}");
                     />
                 </sun:dropDown>
                 "<br /><br />
@@ -75,26 +97,40 @@
 
 
          <sun:property id="factoryClassProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jndiResource.factoryClass}" helpText="$resource{i18njdbc.jndiResource.factoryClassHelp}">
-            <sun:textField id="factoryClass" columns="$int{55}" text="#{pageSession.valueMap['FactoryClass']}" > 
+            <sun:textField id="factoryClass" styleClass="required"  columns="$int{55}" text="#{pageSession.valueMap['FactoryClass']}" required="#{true}" > 
                 <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{factoryClassTextId});
                     />
              </sun:textField>
         </sun:property>
         <sun:property id="jndiLookupProp"  rendered="#{showJndiLookup}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jndiResource.jndiLookup}" helpText="$resource{i18njdbc.jndiResource.jndiLookupHelp}" >
-            <sun:textField id="jndiLookup" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['JNDILookupName']}" required="#{true}" />      
+            <sun:textField id="jndiLookup" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['JndiLookupName']}" required="#{true}" >      
+                <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{jndiLookupId});
+                    />
+             </sun:textField>
         </sun:property>
         <sun:property id="objectTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}" >
-            <sun:dropDown id="ObjectType" selected="#{pageSession.valueMap['ObjectType']}" labels={ "$resource{i18njdbc.connectors.User}" "$resource{i18njdbc.connectors.systemAll}" "$resource{i18njdbc.connectors.systemAdmin}" "$resource{i18njdbc.connectors.systemInstance}" } values={ "user" "system-all" "system-admin" "system-instance" } >
-           
+            <sun:dropDown id="ObjectType" selected="#{pageSession.valueMap['ObjectType']}" labels={ "$resource{i18njdbc.connectors.User}"  "$resource{i18njdbc.connectors.systemAdmin}" } values={ "user" "system-admin" } >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{objectTypeId});
+                />
            </sun:dropDown>
         </sun:property>   
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >helpText="$resource{i18n.jdbc.descHelp}">
-            <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
+            <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['Description']}" >      
+            <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{descId});
+            />
+            </sun:textField>
         </sun:property>
 
         <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />  
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" >  
+            <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{statusId});
+            />
+            </sun:checkbox>
        </sun:property>
         "<br /><br />
     </sun:propertySheetSection>
