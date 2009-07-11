@@ -39,6 +39,7 @@ import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.*;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.api.amx.AMXMBeanMetadata;
+import java.util.Map;
 
 /**
 	Supports accessing logging information in multiple ways.  The following are supported:
@@ -69,7 +70,7 @@ public interface Logging
     public void setModuleLogLevel(
         @Param(name="moduleName") String moduleName,
         @Param(name="level") String level );
-    
+
    /**
    		Gets the log level of the Logger for the specified module, which may or may not
    		be the same as that found in the configuration.
@@ -83,12 +84,22 @@ public interface Logging
     public String getModuleLogLevel( @Param(name="moduleName") String moduleName );
     
     /**
+       		Gets the log level of the Logger for the specified module, which may or may not
+       		be the same as that found in the configuration.
+    		<b>This capability is subject to removal, due to the confusion
+    		caused by configuration settings not matching</b>.
+       		
+     */
+//     @ManagedOperation(impact=MBeanOperationInfo.INFO)
+//     public Map<String, String> getModuleLoggers( );
+
+    /**
         This method may be used to verify that your Logging listener is working
         correctly.
         @param level the log level of the log message.
         @param message  the message to be placed in Notif.getMessage()
      */
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public void testEmitLogMessage(
          @Param(name="level") final String level,
          @Param(name="message") final String message );
