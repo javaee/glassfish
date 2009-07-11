@@ -61,6 +61,7 @@ import java.util.HashMap;
 import org.glassfish.admingui.common.util.V3AMX;
 
 import org.glassfish.admin.amx.intf.config.Config;
+import org.glassfish.admin.amx.logging.Logging;
 import org.glassfish.admingui.common.util.GuiUtil;
 
 
@@ -81,23 +82,21 @@ public class LoggingHandlers {
 
         String configName = (String) handlerCtx.getInputValue("configName");
         List result = new ArrayList();
-        Config config = V3AMX.getInstance().getConfigs().childrenMap(Config.class).get(configName);
         //Map<String, String> loggerLevels = config.getLoggingProperties();
-        Map<String, String> loggerLevels = new HashMap();
-        loggerLevels.put("org.abc.level", "INFO");
-        loggerLevels.put("org.def.level", "WARNING");
-        loggerLevels.put("org.sss.level", "SEVERE");
-        loggerLevels.put("org.abfffc", "INFO");
-        loggerLevels.put("org.abasdc.level", "SEVERE");
+        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
+
+        Map<String, String> loggerLevels = logging.getLoggingProperties();
+        
         for(String oneLogger:  loggerLevels.keySet()){
-            if (oneLogger.endsWith(".level")){
+            if (oneLogger.endsWith(".level")&& !oneLogger.equals(".level") ){
                 Map oneRow = new HashMap();
-                oneRow.put("loggerName", oneLogger);
+                oneRow.put("loggerName", oneLogger.substring(0,oneLogger.lastIndexOf(".level")));
                 oneRow.put("level", loggerLevels.get(oneLogger));
                 oneRow.put("selected", false);
                 result.add(oneRow);
             }
         }
+ 
 //        Collections.sort(result);
         handlerCtx.setOutputValue("loggerList",  result);
      }
@@ -138,8 +137,8 @@ public class LoggingHandlers {
         for(Map<String,String> oneRow : allRows){
             props.put(oneRow.get("loggerName"), oneRow.get("level"));
         }
-        Config config = V3AMX.getInstance().getConfigs().childrenMap(Config.class).get(configName);
-        //config.updateProperties(props);
+        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
+        logging.setModuleLogLevel("","SEVERE");
      }
 
 
