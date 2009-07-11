@@ -237,15 +237,24 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         finishErrorResponse(gResp, HttpServletResponse.SC_NOT_FOUND);
     }
 
-    protected void finishErrorResponse(final GrizzlyResponse gResp, final int status) {
+    protected void finishSuccessResponse(final GrizzlyResponse gResp, final int status) {
+        finishResponse(gResp, status, false);
+    }
+
+    private void finishResponse(final GrizzlyResponse gResp, final int status,
+            final boolean treatAsError) {
         gResp.setStatus(status);
         try {
-            if (commitErrorResponse) {
+            if (treatAsError && commitErrorResponse) {
                 customizedErrorPage(gResp.getRequest().getRequest(), gResp.getResponse());
             }
             gResp.finishResponse();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected void finishErrorResponse(final GrizzlyResponse gResp, final int status) {
+        finishResponse(gResp, status, true);
     }
 }

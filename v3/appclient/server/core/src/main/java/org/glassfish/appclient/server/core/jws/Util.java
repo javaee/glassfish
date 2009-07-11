@@ -48,23 +48,63 @@ import java.util.regex.Pattern;
  * @author tjquinn
  */
 public class Util {
-
+    /**
+     * pattern is: "${" followed by all chars excluding "}" followed by "}",
+     * capturing into group 1 all chars between the "${" and the "}"
+     */
     private static final Pattern TOKEN_SUBSTITUTION = Pattern.compile("\\$\\{([^\\}]*)\\}");
 
 
-    public static String replaceTokens(final String rawContent,
-            final Properties tokens) {
-        StringBuffer processedContent = new StringBuffer();
-        Matcher m = TOKEN_SUBSTITUTION.matcher(rawContent);
-        while (m.find()) {
-            String replacement = tokens.getProperty(m.group(1));
-            if (replacement == null) {
-                replacement = "NULL!";
-            }
-            m.appendReplacement(processedContent, replacement);
-        }
-        m.appendTail(processedContent);
+    /**
+     * Searches for placeholders of the form ${token-name} in the input String, retrieves
+     * the property with name token-name from the Properties object, and (if
+     * found) replaces the token in the input string with the property value.
+     * @param s String possibly containing tokens
+     * @param values Properties object containing name/value pairs for substitution
+     * @return the original string with tokens substituted using their values
+     * from the Properties object
+     */
+    public static String replaceTokens(String s, Properties values) {
+        Matcher m = TOKEN_SUBSTITUTION.matcher(s);
 
-        return processedContent.toString();
-    }
-}
+        StringBuffer sb = new StringBuffer();
+        /*
+         * For each match, retrieve group 1 - the token - and use its value from
+         * the Properties object (if found there) to replace the token with the
+         * value.
+         */
+        while (m.find()) {
+            String propertyName = m.group(1);
+            String propertyValue = values.getProperty(propertyName);
+
+            /*
+             * Substitute only if the properties object contained a setting
+             * for the placeholder we found.
+             */
+            if (propertyValue != null) {
+                /*
+                 * The next line quotes any $ signs in the replacement string
+                 * so they are not interpreted as meta-characters by the regular expression
+                 * processor's appendReplacement.  The replaceAll replaces all occurrences
+                 * of $ with \$.  The extra slashes are needed to quote the backslash
+                 * for the Java language processor and then again for the regex
+                 * processor (!).
+                 */
+                String adjustedPropertyValue = propertyValue.replaceAll("\\$", "\\\\\\$");
+                String x = s.substring(m.start(),m.end());
+                try {
+                    m.appendReplacement(sb, adjustedPropertyValue);
+                } catch (IllegalArgumentException iae) {
+                    System.err.println("**** appendReplacement failed: segment is " + x + "; original replacement was " + propertyValue + " and adj. replacement is " + adjustedPropertyValue + "; exc follows");
+                    throw iae;
+                }
+            }
+        }
+        /*
+         * There are no more matches, so append whatever remains of the matcher's input
+         * string to the output.
+         */
+        m.appendTail(sb);
+
+        return sb.toString();
+    }}

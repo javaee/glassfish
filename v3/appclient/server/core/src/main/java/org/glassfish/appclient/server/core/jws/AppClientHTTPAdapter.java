@@ -64,6 +64,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     private final static String LAST_MODIFIED_HEADER_NAME = "Last-Modified";
     private final static String DATE_HEADER_NAME = "Date";
+    private final static String IF_MODIFIED_SINCE = "If-Modified-Since";
+    private final static String IF_UNMODIFIED_SINCE = "If-Unmodified-Since";
 
     private static final String ARG_QUERY_PARAM_NAME = "arg";
     private static final String PROP_QUERY_PARAM_NAME = "prop";
@@ -136,24 +138,54 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             finishErrorResponse(gResp, contentStateToResponseStatus(dc));
             return;
         }
+
+        /*
+         * Assign values for all the properties which we must compute
+         * at request time, such as the scheme, host, port, and
+         * items from the query string.  This merges the request-time
+         * tokens with those that were known when this adapter was created.
+         */
         final Properties allTokens = prepareRequestPlaceholders(tokens, gReq);
 
+        /*
+         * Create an instance of the dynamic content using the dynamic
+         * content's template and the just-prepared properties.
+         */
         final DynamicContent.Instance instance = dc.getOrCreateInstance(allTokens);
 
         final Date instanceTimestamp = instance.getTimestamp();
+
+        if (returnIfClientCacheIsCurrent(gReq,
+                instanceTimestamp.getTime())) {
+            return;
+        }
+
         gResp.setDateHeader(LAST_MODIFIED_HEADER_NAME, instanceTimestamp.getTime());
         gResp.setDateHeader(DATE_HEADER_NAME, System.currentTimeMillis());
         gResp.setContentType(mimeType(relativeURIString));
         gResp.setStatus(HttpServletResponse.SC_OK);
 
         /*
-         *Only for GET should the response actually contain the content.
+         * Only for GET should the response actually contain the content.
+         * Java Web Start uses HEAD to find out when the target was last
+         * modified to see if it should ask for the entire target.
          */
         final String methodType = gReq.getMethod();
         if (methodType.equalsIgnoreCase("GET")) {
             writeData(instance.getText(), gResp);
         }
         finishResponse(gResp, HttpServletResponse.SC_OK);
+    }
+
+    private boolean returnIfClientCacheIsCurrent(final GrizzlyRequest gReq,
+            final long instanceTimestamp) {
+        final long ifModifiedSinceTime = gReq.getDateHeader(IF_MODIFIED_SINCE);
+        boolean result;
+        if (result = (ifModifiedSinceTime != -1) &&
+            (ifModifiedSinceTime > instanceTimestamp)) {
+            finishSuccessResponse(gReq.getResponse(), HttpServletResponse.SC_NOT_MODIFIED);
+        }
+        return result;
     }
 
     /**
@@ -172,6 +204,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         answer.setProperty("request.scheme", request.getScheme());
         answer.setProperty("request.host", request.getServerName());
         answer.setProperty("request.port", Integer.toString(request.getServerPort()));
+        answer.setProperty("request.adapter.context.root", contextRoot());
 
         /*
          *Treat query parameters with the name "arg" as command line arguments to the
@@ -183,9 +216,6 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         if (queryString != null && queryString.length() > 0) {
             queryStringPropValue.append("?").append(queryString);
         }
-        answer.setProperty("request.web.app.context.root",
-                NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX);
-        answer.setProperty("request.path", getPathInfo(request));
         answer.setProperty("request.query.string", queryStringPropValue.toString());
 
         processQueryParameters(queryString, answer);

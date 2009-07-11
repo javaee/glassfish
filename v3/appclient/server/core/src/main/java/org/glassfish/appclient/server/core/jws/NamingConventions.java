@@ -55,6 +55,8 @@ public class NamingConventions {
     private static final String JWSAPPCLIENT_DOMAIN_PREFIX =
             JWSAPPCLIENT_PREFIX + "/___domain";
 
+    public static final String DYN_PREFIX = "___dyn";
+
     public static String contextRootForAppAdapter(final String appName) {
         /*
          * No trailing slash for the context root to use for registering
@@ -73,6 +75,19 @@ public class NamingConventions {
 
     public static String generatedEARFacadePrefix(final String earName) {
         return earName + "Client";
+    }
+
+    public static String anchorSubpathForNestedClient(final String clientName) {
+        /*
+         * We need to add the trailing slash here because we don't want to
+         * put it in the template.  Otherwise we'd have an extra slash
+         * where we don't want one when we're launching a stand-alone client.
+         */
+        return clientName + "Client/";
+    }
+
+    public static String systemJNLPURI() {
+        return DYN_PREFIX + "/___system.jnlp";
     }
 
 }
