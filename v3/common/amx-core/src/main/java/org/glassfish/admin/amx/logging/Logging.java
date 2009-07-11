@@ -90,8 +90,9 @@ public interface Logging
     		caused by configuration settings not matching</b>.
        		
      */
-//     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-//     public Map<String, String> getModuleLoggers( );
+     @ManagedOperation(impact=MBeanOperationInfo.INFO)
+     @Description( "Gets all the logging properties" )
+     public Map<String, String> getLoggingProperties( );
 
     /**
         This method may be used to verify that your Logging listener is working
