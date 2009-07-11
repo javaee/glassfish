@@ -171,11 +171,6 @@ public class DomainRootImpl extends AMXImplBase
         mbean = new QueryMgrImpl(self);
         registerChild(mbean, childObjectName);
 
-        final String serverName = "server";
-        childObjectName = objectNames.buildChildObjectName(Logging.class);
-        mbean = new LoggingImpl(self, serverName);
-        registerChild(mbean, childObjectName);
-
         childObjectName = objectNames.buildChildObjectName(Tools.class);
         mbean = new ToolsImpl(self);
         registerChild(mbean, childObjectName);
