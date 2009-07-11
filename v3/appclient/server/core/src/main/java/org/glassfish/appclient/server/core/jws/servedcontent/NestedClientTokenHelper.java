@@ -39,58 +39,28 @@
 
 package org.glassfish.appclient.server.core.jws.servedcontent;
 
-import java.io.File;
-import java.io.IOException;
+import org.glassfish.appclient.server.core.AppClientDeployerHelper;
+import org.glassfish.appclient.server.core.jws.NamingConventions;
 
 /**
- * Represents otherwise fixed content that must be automatically signed
- * if it does not yet exist or if the underlying unsigned file has changed
- * since the signed version was created.
  *
  * @author tjquinn
  */
-public class AutoSignedContent extends Content.Adapter implements StaticContent {
+public class NestedClientTokenHelper extends TokenHelper {
 
-    private final File unsignedFile;
-    private final File signedFile;
-    private final String userProvidedAlias;
-
-    public AutoSignedContent(final File unsignedFile,
-            final File signedFile, 
-            final String userProvidedAlias) {
-        this.unsignedFile = unsignedFile;
-        this.signedFile = signedFile;
-        this.userProvidedAlias = userProvidedAlias;
+    public NestedClientTokenHelper(AppClientDeployerHelper dHelper) {
+        super(dHelper);
     }
 
-    public File file() throws IOException {
-        if ( ! isSignedFileReady()) {
-            try {
-                createSignedFile();
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-        }
-        return signedFile;
-    }
 
-    private boolean isSignedFileReady() {
-        return signedFile.exists() &&
-                (signedFile.lastModified() >= unsignedFile.lastModified());
-    }
-
-    private void createSignedFile() throws Exception {
-        /*
-         * The code that instantiated this auto-signed content decides where
-         * the signed file will reside.  It might not have wanted to create
-         * the containing directory ahead of time.
-         */
-        signedFile.getParentFile().mkdirs();
-        ASJarSigner.signJar(unsignedFile, signedFile, userProvidedAlias);
+    @Override
+    public String appLibraryExtension() {
+        return "<!-- TBD <extension ... for EAR library refcs/> -->";
     }
 
     @Override
-    public String toString() {
-        return "AutoSignedContent:" + signedFile.getAbsolutePath();
+    protected String anchorSubpath() {
+        return NamingConventions.anchorSubpathForNestedClient(
+                dHelper().clientName());
     }
 }

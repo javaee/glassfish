@@ -51,6 +51,7 @@ import java.util.jar.Manifest;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -66,7 +67,7 @@ import org.glassfish.internal.deployment.ExtendedDeploymentContext;
  *
  * @author tjquinn
  */
-class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
+public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
 
     StandaloneAppClientDeployerHelper(final DeploymentContext dc, 
             final ApplicationClientDescriptor bundleDesc,
@@ -99,6 +100,15 @@ class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
         copyOriginalAppClientJAR(dc());
     }
 
+
+    @Override
+    public FixedContent fixedContentWithinEAR(String uriString) {
+        /*
+         * There can be no fixed content within the EAR for a stand-alone
+         * app client.
+         */
+        return null;
+    }
 
     /**
      * Returns the file name and type of the facade.

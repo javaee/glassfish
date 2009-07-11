@@ -1,0 +1,154 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ * 
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
+package org.glassfish.appclient.server.core.jws.servedcontent;
+
+import java.util.Properties;
+import org.glassfish.appclient.server.core.AppClientDeployerHelper;
+import org.glassfish.appclient.server.core.StandaloneAppClientDeployerHelper;
+import org.glassfish.appclient.server.core.jws.NamingConventions;
+
+/**
+ *
+ * @author tjquinn
+ */
+public abstract class TokenHelper {
+
+    private static final String AGENT_JAR = "gf-client.jar";
+    private static final String DYN_PREFIX = "___dyn/";
+
+    private Properties tokens;
+    protected final AppClientDeployerHelper dHelper;
+
+    public static TokenHelper newInstance(final AppClientDeployerHelper dHelper) {
+        TokenHelper tHelper;
+        if (dHelper instanceof StandaloneAppClientDeployerHelper) {
+            tHelper = new StandAloneClientTokenHelper(dHelper);
+        } else {
+            tHelper = new NestedClientTokenHelper(dHelper);
+        }
+        tHelper.tokens = tHelper.buildTokens();
+        return tHelper;
+    }
+
+    public Properties tokens() {
+        return tokens;
+    }
+
+    public Object setProperty(final String propName, final String propValue) {
+        return tokens.setProperty(propName, propValue);
+    }
+
+    protected TokenHelper(final AppClientDeployerHelper dHelper) {
+        this.dHelper = dHelper;
+    }
+
+    public String appCodebasePath() {
+        return NamingConventions.contextRootForAppAdapter(dHelper.appName());
+    }
+
+    public String systemContextRoot() {
+        return NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX;
+    }
+
+    public String agentJar() {
+        return AGENT_JAR;
+    }
+
+    public String systemJNLP() {
+        return NamingConventions.systemJNLPURI();
+    }
+
+    public abstract String appLibraryExtension();
+
+    /**
+     * Returns the relative path from the app's context root to its
+     * anchor.  For example, for a stand-alone client the anchor is
+     * the same place as the context root; that is where its facade and
+     * client JAR reside.  For a nested app client, the
+     * anchor is the subdirectory ${clientName}Client.
+     * 
+     * @return
+     */
+    protected abstract String anchorSubpath();
+
+    public String mainJNLP() {
+        return dyn() + anchorSubpath() + "___main.jnlp";
+    }
+
+    public String clientJNLP() {
+        return dyn() + anchorSubpath() + "___client.jnlp";
+    }
+
+    public String clientFacadeJNLP() {
+        return dyn() + anchorSubpath() + "___clientFacade.jnlp";
+    }
+
+    public String dyn() {
+        return DYN_PREFIX;
+    }
+
+    protected AppClientDeployerHelper dHelper() {
+        return dHelper;
+    }
+
+    public String clientFacadeJARPath() {
+        return anchorSubpath() + dHelper.clientName();
+    }
+
+    private Properties buildTokens() {
+        final Properties t = new Properties();
+
+        t.setProperty("app.codebase.path", appCodebasePath());
+        t.setProperty("main.jnlp.path", mainJNLP());
+        t.setProperty("system.context.root", systemContextRoot());
+        t.setProperty("agent.jar", agentJar());
+        t.setProperty("system.jnlp", systemJNLP());
+//        t.setProperty("client.facade.jnlp.path", clientFacadeJNLP());
+        t.setProperty("client.jnlp.path", clientJNLP());
+        t.setProperty("app.library.extension", appLibraryExtension());
+        t.setProperty("anchor.subpath", anchorSubpath());
+        t.setProperty("dyn", dyn());
+
+        t.setProperty("client.facade.jar.path", clientFacadeJARPath());
+
+        return t;
+
+    }
+}

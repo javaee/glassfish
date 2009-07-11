@@ -38,9 +38,11 @@ package org.glassfish.appclient.server.core;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.module.Module;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.jar.Manifest;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.appclient.server.core.jws.NamingConventions;
+import org.glassfish.appclient.server.core.jws.Util;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -71,8 +73,8 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.appclient.server.core.jws.AppClientHTTPAdapter;
-import org.glassfish.appclient.server.core.jws.RestrictedContentAdapter;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -171,6 +173,11 @@ public class AppClientDeployer
     /** Save the helper across phases in the deployment context's appProps */
     public static final String HELPER_KEY_NAME = "org.glassfish.appclient.server.core.helper";
 
+    private static final String LINE_SEP = System.getProperty("line.separator");
+
+    private static final List<String> DO_NOT_SERVE_LIST =
+            Arrays.asList("glassfish/modules/jaxb-osgi.jar");
+
 
     @Inject
     protected ServerContext sc;
@@ -195,6 +202,8 @@ public class AppClientDeployer
 
     /** the class loader which knows about the org.glassfish.appclient.gf-client-module */
     private ClassLoader gfClientModuleClassLoader;
+
+    private AppClientHTTPAdapter systemAdapter = null;
 
     private final ConcurrentHashMap<String,Set<AppClientServerApplication>> contributingAppClients =
             new ConcurrentHashMap<String,Set<AppClientServerApplication>>();
@@ -232,8 +241,6 @@ public class AppClientDeployer
         }
         installRootURI = serverContext.getInstallRoot().toURI();
         umbrellaRootURI = new File(installRootURI).getParentFile().toURI();
-
-        startSystemContentAdapter();
     }
 
     @Override
@@ -288,7 +295,10 @@ public class AppClientDeployer
             final Map<String,StaticContent> staticContent, 
             final Map<String,DynamicContent> dynamicContent,
             final Properties tokens) throws IOException, EndpointRegistrationException {
-        
+
+        if (systemAdapter == null) {
+            systemAdapter = startSystemContentAdapter();
+        }
         final AppClientHTTPAdapter adapter = new AppClientHTTPAdapter(
                 contextRoot, staticContent, dynamicContent, tokens);
         httpAdapters.put(appName, adapter);
@@ -383,41 +393,101 @@ public class AppClientDeployer
         return earName + "Client.jar";
     }
 
-    private void startSystemContentAdapter() {
+    private AppClientHTTPAdapter startSystemContentAdapter() {
 
-        final Map<String,StaticContent> systemContent = new HashMap<String,StaticContent>();
 
         try {
-            File gfClientJAR = new File(
-                    new File(installRootURI.getRawPath(), "modules"),
-                    "gf-client.jar");
+            final List<String> systemJARRelativeURIs = new ArrayList<String>();
 
-            final String classPathExpr = getGFClientModuleClassPath(gfClientJAR);
-            final URI gfClientJARURI = gfClientJAR.toURI();
+            final Map<String,StaticContent> staticSystemContent =
+                    initStaticContent(systemJARRelativeURIs);
 
-            systemContent.put(systemPath(gfClientJARURI), new FixedContent(new File(gfClientJARURI)));
-            for (String classPathElement : classPathExpr.split(" ")) {
-                final URI uri = gfClientJARURI.resolve(classPathElement);
-                systemContent.put(systemPath(uri), new FixedContent(new File(uri)));
-            }
+            final Map<String,DynamicContent> dynamicSystemContent =
+                    initDynamicContent(systemJARRelativeURIs);
 
-            RestrictedContentAdapter systemAdapter = new RestrictedContentAdapter(
-                    NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX);
-            requestDispatcher.registerEndpoint(NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
-                    systemAdapter, null);
+            AppClientHTTPAdapter sysAdapter = new AppClientHTTPAdapter(
+                    NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
+                    staticSystemContent, 
+                    dynamicSystemContent,
+                    new Properties());
+
+            requestDispatcher.registerEndpoint(
+                    NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
+                    sysAdapter,
+                    null);
 
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Registered system content adapter serving " + systemAdapter);
+                logger.fine("Registered system content adapter serving " + sysAdapter);
             }
+            return sysAdapter;
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "enterprise.deployment.appclient.jws.errStartSystemAdapter", e);
+            return null;
         }
     }
 
+    private Map<String,StaticContent> initStaticContent(final List<String> systemJARRelativeURIs) throws IOException {
+        Map<String,StaticContent> result = new HashMap<String,StaticContent>();
+        File gfClientJAR = new File(
+            new File(installRootURI.getRawPath(), "modules"),
+            "gf-client.jar");
+
+        final String classPathExpr = getGFClientModuleClassPath(gfClientJAR);
+        final URI gfClientJARURI = gfClientJAR.toURI();
+
+        result.put(systemPath(gfClientJARURI), new FixedContent(new File(gfClientJARURI)));
+        for (String classPathElement : classPathExpr.split(" ")) {
+            final URI uri = gfClientJARURI.resolve(classPathElement);
+            final String systemPath = systemPath(uri);
+            /*
+             * There may be elements in the class path which do not exist
+             * on some platforms.  So make sure the file exists before we offer
+             * to serve it.
+             */
+            final File candidateFile = new File(uri);
+            final String relativeSystemPath = relativeSystemPath(uri);
+            if (candidateFile.exists() && ( ! DO_NOT_SERVE_LIST.contains(relativeSystemPath))) {
+                result.put(systemPath, new FixedContent(new File(uri)));
+                systemJARRelativeURIs.add(relativeSystemPath(uri));
+            }
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("The Java Web Start system-level adapter will serve the following fixed content:"
+                    + result.toString());
+        }
+        return result;
+    }
+
+    private Map<String,DynamicContent> initDynamicContent(final List<String> systemJARRelativeURIs) throws IOException {
+        final Map<String,DynamicContent> result = new HashMap<String,DynamicContent>();
+        final String template = AppClientServerApplication.textFromURL(
+                "/org/glassfish/appclient/server/core/jws/templates/systemJarsDocumentTemplate.jnlp");
+        final StringBuilder sb = new StringBuilder();
+        for (String relativeURIString : systemJARRelativeURIs) {
+            sb.append("<jar href=\"" + relativeURIString + "\"/>").append(LINE_SEP);
+        }
+        
+        final Properties p = new Properties();
+        p.setProperty("system.jars", sb.toString());
+        final String replacedText = Util.replaceTokens(template, p);
+        result.put(NamingConventions.systemJNLPURI(),
+                new SimpleDynamicContentImpl(replacedText, "jnlp"));
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("The Java Web Start system-level adapter will serve the following dynamic content: "
+                    + result.toString());
+        }
+        return result;
+    }
+
     private String systemPath(final URI systemFileURI) {
-        return NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX + "/" +
-                umbrellaRootURI.relativize(systemFileURI).getPath();
+        return //NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX + "/" +
+                relativeSystemPath(systemFileURI);
+    }
+
+    private String relativeSystemPath(final URI systemFileURI) {
+        return umbrellaRootURI.relativize(systemFileURI).getPath();
     }
 
 

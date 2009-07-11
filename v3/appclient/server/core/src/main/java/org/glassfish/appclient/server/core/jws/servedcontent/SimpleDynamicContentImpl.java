@@ -39,58 +39,44 @@
 
 package org.glassfish.appclient.server.core.jws.servedcontent;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.Properties;
+import org.glassfish.appclient.server.core.jws.Util;
 
 /**
- * Represents otherwise fixed content that must be automatically signed
- * if it does not yet exist or if the underlying unsigned file has changed
- * since the signed version was created.
  *
- * @author tjquinn
+ * @author Tim
  */
-public class AutoSignedContent extends Content.Adapter implements StaticContent {
+public class SimpleDynamicContentImpl extends Content.Adapter implements DynamicContent {
 
-    private final File unsignedFile;
-    private final File signedFile;
-    private final String userProvidedAlias;
+    private final String template;
+    private final String mimeType;
 
-    public AutoSignedContent(final File unsignedFile,
-            final File signedFile, 
-            final String userProvidedAlias) {
-        this.unsignedFile = unsignedFile;
-        this.signedFile = signedFile;
-        this.userProvidedAlias = userProvidedAlias;
+    private Instance instance = null;
+
+    public SimpleDynamicContentImpl(final String template, final String mimeType) {
+        this.template = template;
+        this.mimeType = mimeType;
     }
 
-    public File file() throws IOException {
-        if ( ! isSignedFileReady()) {
-            try {
-                createSignedFile();
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
+    public Instance getExistingInstance(Properties tokenValues) {
+        return getOrCreateInstance(tokenValues, false);
+    }
+
+    public Instance getOrCreateInstance(Properties tokenValues) {
+        return getOrCreateInstance(tokenValues, true);
+    }
+
+    private Instance getOrCreateInstance(final Properties tokenValues,
+            final boolean createIfAbsent) {
+        if (instance == null && createIfAbsent) {
+            instance = new DynamicContent.InstanceAdapter(
+                    Util.replaceTokens(template, tokenValues));
         }
-        return signedFile;
+        return instance;
     }
 
-    private boolean isSignedFileReady() {
-        return signedFile.exists() &&
-                (signedFile.lastModified() >= unsignedFile.lastModified());
+    public String getMimeType() {
+        return mimeType;
     }
 
-    private void createSignedFile() throws Exception {
-        /*
-         * The code that instantiated this auto-signed content decides where
-         * the signed file will reside.  It might not have wanted to create
-         * the containing directory ahead of time.
-         */
-        signedFile.getParentFile().mkdirs();
-        ASJarSigner.signJar(unsignedFile, signedFile, userProvidedAlias);
-    }
-
-    @Override
-    public String toString() {
-        return "AutoSignedContent:" + signedFile.getAbsolutePath();
-    }
 }

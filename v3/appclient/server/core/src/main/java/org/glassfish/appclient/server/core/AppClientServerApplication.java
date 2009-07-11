@@ -41,6 +41,7 @@ package org.glassfish.appclient.server.core;
 
 import com.sun.enterprise.deployment.Application;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import org.glassfish.api.admin.config.Property;
@@ -49,11 +50,13 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.appclient.server.core.jws.JavaWebStartState;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,7 +74,9 @@ import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.CachingDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.Content;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
@@ -101,6 +106,31 @@ public class AppClientServerApplication implements
     
     private final AppClientDeployerHelper helper;
 
+    private static final String JNLP_MIME_TYPE = "application/x-java-jnlp-file";
+    private static final String HTML_MIME_TYPE = "text/html";
+    private static final String XML_MIME_TYPE = "application/xml";
+
+    private static final String DOC_TEMPLATE_PREFIX = "/org/glassfish/appclient/server/core/jws/templates/";
+//    private static final String DOC_TEMPLATE_PREFIX = "jws/templates/";
+    private static final String MAIN_DOCUMENT_TEMPLATE = 
+            DOC_TEMPLATE_PREFIX + "appclientMainDocumentTemplate.jnlp";
+    private static final String CLIENT_DOCUMENT_TEMPLATE =
+            DOC_TEMPLATE_PREFIX + "appclientClientDocumentTemplate.jnlp";
+    
+        //, "appclientClientDocumentTemplate.jnlp"
+        //, "appclientClientFacadeDocumentTemplate.jnlp"
+
+    private static final String MAIN_IMAGE_XML_PROPERTY_NAME =
+            "appclient.main.information.images";
+    private static final String APP_LIBRARY_EXTENSION_PROPERTY_NAME = "app.library.extension";
+    private static final String APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME =
+            "appclient.main.class.arguments";
+    private static final String CLIENT_FACADE_JAR_PATH_PROPERTY_NAME =
+            "client.facade.jar.path";
+    private static final String CLIENT_JAR_PATH_PROPERTY_NAME =
+            "client.jar.path";
+    
+
     /**
      * records if the app client is eligible for Java Web Start support, as
      * defined in the developer-provided sun-application-client.xml descriptor
@@ -127,6 +157,7 @@ public class AppClientServerApplication implements
     private final Application appDesc;
     private final com.sun.enterprise.config.serverbeans.Applications applications;
     private final String deployedAppName;
+    private final TokenHelper tHelper;
 
     private Set<Content> myContent = null;
 
@@ -139,7 +170,8 @@ public class AppClientServerApplication implements
         this.dc = dc;
         this.deployer = deployer;
         this.helper = helper;
-        this.logger = logger;
+        this.logger = LogDomains.getLogger(AppClientServerApplication.class,
+                LogDomains.ACC_LOGGER);
         this.requestDispatcher = requestDispatcher;
 
         acDesc = helper.appClientDesc();
@@ -151,6 +183,8 @@ public class AppClientServerApplication implements
 
         deployedAppName = dc.getCommandParameters(DeployCommandParameters.class).name();
         this.applications = applications;
+        tHelper = TokenHelper.newInstance(helper);
+
     }
         
 
@@ -234,6 +268,13 @@ public class AppClientServerApplication implements
         }
         deployer.addContributor(deployedAppName, this);
 
+        /*
+         * Currently, we implement the ability to disable or enable app clients
+         * within an EAR by marking the associated content as disabled or
+         * enabled, which the Grizzly adapter looks at before responding to
+         * a request for that bit of content.  So mark all the content as
+         * started.
+         */
         for (Content c : myContent) {
             c.start();
         }
@@ -243,9 +284,14 @@ public class AppClientServerApplication implements
     }
 
     private void stopJWSServices() throws EndpointRegistrationException {
+        /*
+         * Mark all this client's content as stopped so the Grizzly adapter
+         * will not serve it.
+         */
         for (Content c : myContent) {
             c.stop();
         }
+
         deployer.removeContributor(deployedAppName, this);
         logger.log(Level.INFO, "enterprise.deployment.appclient.jws.stopped",
                 moduleExpression());
@@ -265,76 +311,187 @@ public class AppClientServerApplication implements
 
     private void addClientContentToHTTPAdapter() throws EndpointRegistrationException, IOException {
 
-        final Map<String,StaticContent> staticContent = initClientStaticContent();
-        final Properties tokens = initTokens();
+
+        /*
+         * NOTE - Be sure to initialize the static content first.  That method
+         * assigns some properties that can appear as placeholders in the
+         * dynamic content.
+         */
+        final Map<String,StaticContent> staticContent =
+                initClientStaticContent();
+
         final Map<String,DynamicContent> dynamicContent =
-                initClientDynamicContent(tokens);
+                initClientDynamicContent();
 
         myContent = new HashSet<Content>(staticContent.values());
         myContent.addAll(dynamicContent.values());
 
-        deployer.addContentToHTTPAdapter(deployedAppName, this, tokens,
+        deployer.addContentToHTTPAdapter(deployedAppName, this, tHelper.tokens(),
                 staticContent, dynamicContent);
     }
 
-    private Map<String,StaticContent> initClientStaticContent() throws IOException, EndpointRegistrationException {
+    private Map<String,StaticContent> initClientStaticContent() 
+            throws IOException, EndpointRegistrationException {
         final Map<String,StaticContent> result = new HashMap<String,StaticContent>();
-//        /*
-//         * The following code is a temporary test hack which provides a
-//         * single static file and a single dynamic content instance
-//         */
-//        result.put(clientContextRoot() + "/VirtualFile",
-//                new FixedContent(new File("/Users/Tim/asgroup/sampleOutput.html")));
 
         /*
          * The client-level adapter's static content is the app client JAR and
          * the app client facade.
          */
-        final StaticContent acJarContent = new FixedContent(
-                new File(helper.appClientServerURI(dc)));
-        result.put(helper.appClientUserURI(dc).toASCIIString(), acJarContent);
+        createAndAddStaticContent(result, helper.appClientServerURI(dc),
+                helper.appClientUserURI(dc),
+                CLIENT_JAR_PATH_PROPERTY_NAME);
+//        final StaticContent acJarContent = new FixedContent(
+//                new File(helper.appClientServerURI(dc)));
+//        result.put(helper.appClientUserURI(dc).toASCIIString(), acJarContent);
 
-        final StaticContent acJarFacadeContent = new FixedContent(
-                new File(helper.facadeServerURI(dc)));
-        result.put(helper.facadeUserURI(dc).toASCIIString(), acJarFacadeContent);
+        createAndAddStaticContent(result, helper.facadeServerURI(dc),
+                helper.facadeUserURI(dc),
+                CLIENT_FACADE_JAR_PATH_PROPERTY_NAME);
 
+        
+        /*
+         * The developer might have used the sun-application-client.xml
+         * java-web-start-support/vendor setting to communicate icon and/or
+         * splash screen images URIs.
+         */
+        prepareImageInfo(result, tHelper.tokens());
+
+        /*
+         * Make sure that all the EAR-level JARs that this client refers to
+         * are represented as content as well.  This could result in a JAR
+         * referenced from multiple clients being added more than once, but
+         * these library JARs are recorded in a set so each appears at most once.
+         */
         for (FullAndPartURIs artifact : helper.earLevelDownloads()) {
             final String uriString = artifact.getPart().toASCIIString();
             result.put(uriString, new FixedContent(new File(artifact.getFull())));
         }
+
+        // TODO: needs to be expanded to handle signed library JARS, perhap signed by different certs
+        tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, "");
         return result;
     }
+    
+    private void createAndAddStaticContent(final Map<String,StaticContent> content,
+            final URI uriToFile, 
+            final URI uriForLookup,
+            final String tokenName) {
+        
+        final StaticContent acJarContent = new FixedContent(
+                new File(uriToFile));
+        final String uriStringForLookup = uriForLookup.toASCIIString();
+        content.put(uriStringForLookup, acJarContent);
+        tHelper.setProperty(tokenName, uriStringForLookup);
+    }
 
-    private Map<String,DynamicContent> initClientDynamicContent(
-            final Properties tokens) {
+    private Map<String,DynamicContent> initClientDynamicContent() throws IOException {
 
 
         final Map<String,DynamicContent> result = new HashMap<String,DynamicContent>();
-        /*
-         * The following code is a temporary test hack which provides a
-         * single  dynamic content instance.
-         */
-        final String body = "<html><body>This request came from scheme ${request.scheme}" +
-                    " and host ${request.host} and path ${request.path} with " +
-                    "query string ${request.query.string}.<p>So there!</body></html>";
-        final String uriString = clientContextRoot() + "/VirtualDyn.html";
-        result.put(uriString,
-                new CachingDynamicContentImpl(
-                    Util.replaceTokens(body, tokens),
-                    "html"));
 
+        // TODO: needs to be expanded to pass any args we need to pass to the ACC (maybe all via agent args?)
+        tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "<argument> *** CHANGE THIS *** </argument>");
+
+        createAndAddDynamicContent(result, tHelper.mainJNLP(), MAIN_DOCUMENT_TEMPLATE);
+        createAndAddDynamicContent(result, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
+
+
+        // more templates and jnlps to come
+        
         return result;
     }
 
-    private Properties initTokens() {
+    private void createAndAddDynamicContent(final Map<String,DynamicContent> content,
+            final String uriStringForContent, final String uriStringForTemplate) throws IOException {
+        final String processedTemplate = Util.replaceTokens(
+                textFromURL(uriStringForTemplate), tHelper.tokens());
+        content.put(uriStringForContent, newDynamicContent(processedTemplate,
+                JNLP_MIME_TYPE));
+        logger.fine("Adding dyn content " + uriStringForContent + System.getProperty("line.separator") +
+                processedTemplate);
+
+
+    }
+
+    public static String textFromURL(final String templateURLString) throws IOException {
+        final InputStream is = AppClientServerApplication.class.getResourceAsStream(templateURLString);
+        if (is == null) {
+            throw new FileNotFoundException(templateURLString);
+        }
+        StringBuilder sb = new StringBuilder();
+        InputStreamReader reader = new InputStreamReader(is);
+        char[] buffer = new char[1024];
+        int charsRead;
+        try {
+            while ((charsRead = reader.read(buffer)) != -1) {
+                sb.append(buffer, 0, charsRead);
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            throw new IOException(templateURLString, e);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ignore) {
+                throw new IOException("Error closing template stream after error", ignore);
+            }
+        }
+
+    }
+
+    private static DynamicContent newDynamicContent(final String template,
+            final String mimeType) {
+        return new SimpleDynamicContentImpl(template, mimeType);
+    }
+
+    /**
+     * Returns XML which specifies the icon image, the splash screen image, neither, or
+     * both, depending on the contents of the <vendor> text in the descriptor.
+     *
+     * @return XML specifying one or both images; empty if the developer encoded
+     * no image information in the <vendor> element of the sun-application-client.xml
+     * descriptor
+     */
+    private void prepareImageInfo(final Map<String,StaticContent> staticContent,
+            final Properties tokens) {
+        StringBuilder result = new StringBuilder();
+        final VendorInfo vendorInfo = getVendorInfo();
+        String imageURI = vendorInfo.getImageURI();
+        if (imageURI.length() > 0) {
+            result.append("<icon href=\"" + imageURI + "\"/>");
+            addImageContent(imageURI, staticContent);
+        }
+        String splashImageURI = vendorInfo.getSplashImageURI();
+        if (splashImageURI.length() > 0) {
+            result.append("<icon kind=\"splash\" href=\"" + splashImageURI + "\"/>");
+            addImageContent(splashImageURI, staticContent);
+        }
+        if (result.length() == 0) {
+            result.append("<!-- No image information specified in sun-application-client.xml -->");
+        }
+        tokens.setProperty(MAIN_IMAGE_XML_PROPERTY_NAME, result.toString());
+    }
+
+    private void addImageContent(final String imageURI,
+            final Map<String,StaticContent> staticContent) {
+        StaticContent sc = helper.fixedContentWithinEAR(imageURI);
         /*
-         * The following code is a temporary test hack which provides a
-         * single static file and a single dynamic content instance
+         * The user might specify an image within a stand-alone client's
+         * vendor setting in the sun-application-client.xml, which we cannot
+         * support.  Add the content only if it's not null.
          */
-        Properties tokens = new Properties();
-        tokens.setProperty("my.app", clientContextRoot());
-        tokens.setProperty("when", new Date().toString());
-        return tokens;
+        if (sc != null) {
+            staticContent.put(imageURI, sc);
+        }
+    }
+
+    private String ensureLeadingSlash(String s) {
+        if ( ! s.startsWith("/")) {
+            return "/" + s;
+        } else {
+            return s;
+        }
     }
 
     /**
@@ -491,4 +648,43 @@ public class AppClientServerApplication implements
     private String developerSpecifiedContextRoot() {
         return acDesc.getJavaWebStartAccessDescriptor().getContextRoot();
     }
-}
+
+    private VendorInfo getVendorInfo() {
+        VendorInfo vendorInfo = new VendorInfo(acDesc.getJavaWebStartAccessDescriptor().getVendor());
+        return vendorInfo;
+    }
+
+    private static class VendorInfo {
+        private String vendorStringFromDescriptor;
+        private String vendor = "";
+        private String imageURIString = "";
+        private String splashImageURIString = "";
+
+        private VendorInfo(String vendorStringFromDescriptor) {
+            this.vendorStringFromDescriptor = vendorStringFromDescriptor != null ?
+                vendorStringFromDescriptor : "";
+            String [] parts = this.vendorStringFromDescriptor.split("::");
+            if (parts.length == 1) {
+                vendor = parts[0];
+            } else if (parts.length == 2) {
+                imageURIString = parts[0];
+                vendor = parts[0];
+            } else if (parts.length == 3) {
+                imageURIString = parts[0];
+                splashImageURIString = parts[1];
+                vendor = parts[2];
+            }
+        }
+
+        private String getVendor() {
+            return vendor;
+        }
+
+        private String getImageURI() {
+            return imageURIString;
+        }
+
+        private String getSplashImageURI() {
+            return splashImageURIString;
+        }
+    }}

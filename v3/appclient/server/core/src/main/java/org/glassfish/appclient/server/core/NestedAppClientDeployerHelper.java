@@ -59,10 +59,11 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 
-class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
+public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
     private Set<FullAndPartURIs> libraryAndClassPathJARs = new HashSet<FullAndPartURIs>();
 
@@ -93,6 +94,12 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         earURI = dc.getSource().getParentArchive().getURI();
         processDependencies();
     }
+
+    @Override
+    public FixedContent fixedContentWithinEAR(String uriString) {
+        return new FixedContent(new File(earDirUserURI(dc()).resolve(uriString)));
+    }
+
 
     private void processDependencies() throws IOException {
 

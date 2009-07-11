@@ -55,6 +55,7 @@ import java.util.jar.Manifest;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 
 /**
@@ -68,13 +69,15 @@ import org.glassfish.deployment.common.DownloadableArtifacts;
  *
  * @author tjquinn
  */
-abstract class AppClientDeployerHelper {
+public abstract class AppClientDeployerHelper {
 
     private final static String PERSISTENCE_XML_PATH = "META-INF/persistence.xml";
 
     private final DeploymentContext dc;
     private final ApplicationClientDescriptor appClientDesc;
     protected final AppClientArchivist archivist;
+    private final String appName;
+    private final String clientName;
 
     private final ClassLoader gfClientModuleClassLoader;
     /**
@@ -105,6 +108,8 @@ abstract class AppClientDeployerHelper {
         this.appClientDesc = bundleDesc;
         this.archivist = archivist;
         this.gfClientModuleClassLoader = gfClientModuleClassLoader;
+        this.appName = appClientDesc.getApplication().getRegistrationName();
+        this.clientName = appClientDesc.getModuleDescriptor().getArchiveUri();
     }
 
     /**
@@ -188,6 +193,23 @@ abstract class AppClientDeployerHelper {
         return appClientDesc;
     }
 
+    public String appName() {
+        return appName;
+    }
+
+    public String clientName() {
+        return clientName;
+    }
+    
+    /**
+     * Returns a FixedContent object for the file, within the EAR, at the
+     * specified relative location.
+     * 
+     * @param uriString relative path within the EAR
+     * @return FixedContent object for the file
+     */
+    public abstract FixedContent fixedContentWithinEAR(String uriString);
+    
     /**
      * If the specified URI is for an expanded submodule, makes a copy of
      * the submodule as a JAR and returns the URI for the copy.
@@ -348,7 +370,6 @@ abstract class AppClientDeployerHelper {
         return is;
     }
 
-    
     protected abstract Set<DownloadableArtifacts.FullAndPartURIs> clientLevelDownloads() throws IOException;
 
     protected abstract Set<DownloadableArtifacts.FullAndPartURIs> earLevelDownloads() throws IOException;

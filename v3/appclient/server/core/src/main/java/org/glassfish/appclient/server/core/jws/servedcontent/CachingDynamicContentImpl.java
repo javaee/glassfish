@@ -150,8 +150,7 @@ public class CachingDynamicContentImpl extends Content.Adapter implements Dynami
         synchronized (instances) {
             for (Instance i : instances) {
                 if (i.getText().equals(textWithPlaceholdersReplaced)) {
-                    result = i;
-                    break;
+                    return i;
                 }
             }
             
