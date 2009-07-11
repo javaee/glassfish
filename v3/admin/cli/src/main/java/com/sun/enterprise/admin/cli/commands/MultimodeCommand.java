@@ -153,15 +153,21 @@ public class MultimodeCommand extends CLICommand {
             }
             if ((line = reader.readLine()) == null)
                 break;
-            String[] argv = getArgs(line);
-            if (argv.length == 0)
+            String[] args = getArgs(line);
+            if (args.length == 0)
                 continue;
 
-            String command = argv[0];
+            String command = args[0];
+
+	    // handle built-in exit and quit commands
+	    // XXX - care about their arguments?
+	    if (command.equals("exit") || command.equals("quit"))
+		break;
+
             try {
                 CLICommand cmd =
                     CLICommand.getCommand(command, programOpts, env);
-                rc = cmd.execute(argv);
+                rc = cmd.execute(args);
             } catch (CommandException ce) {
                 logger.printError(ce.getMessage());
                 rc = ERROR;
@@ -208,7 +214,7 @@ public class MultimodeCommand extends CLICommand {
                     strings.get("CommandUnSuccessful", command));
                 break;
             }
-            AsadminMain.writeCommandToDebugLog(argv, rc);
+            AsadminMain.writeCommandToDebugLog(args, rc);
         }
         if (printPrompt)
             System.out.println();

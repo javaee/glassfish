@@ -47,19 +47,16 @@ public class CLIConstants {
     public static final String  DEFAULT_HOSTNAME                = "localhost";
     public static final String  EOL                             = System.getProperty("line.separator");
 
-    ////////////////////////////////////////////////////////////////////////////
-    ///////       pkg-private                   /////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-
-    static final String         RESTART_FLAG                    = "AS_RESTART"; // sent in as a System Property for restarts
-    static final long           WAIT_FOR_DAS_TIME_MS            = 90000;
-    static final int            RESTART_EXIT_VALUE              = 10;
-    static final String         WALL_CLOCK_START_PROP           = "WALL_CLOCK_START";
-    static final boolean        debugMode;
-    static final String         CLI_RECORD_ALL_COMMANDS_PROP    = "AS_LOGFILE";
+    // sent in as a System Property for restarts
+    public static final String  RESTART_FLAG                    = "AS_RESTART";
+    public static final long    WAIT_FOR_DAS_TIME_MS            = 90000;
+    public static final int     RESTART_EXIT_VALUE              = 10;
+    public static final String  WALL_CLOCK_START_PROP           = "WALL_CLOCK_START";
+    public static final boolean debugMode;
+    public static final String  CLI_RECORD_ALL_COMMANDS_PROP    = "AS_LOGFILE";
 
     ////////////////////////////////////////////////////////////////////////////
-    ///////       private                   /////////////////////////////////////
+    ///////       private                   ////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
     private static final String CLI_DEBUG_MODE_PROP             = "AS_DEBUG";

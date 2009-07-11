@@ -72,6 +72,15 @@ public class ProgramOptions {
     private boolean                         help = false;
 
     /*
+     * Information passed in from AsadminMain and used by start-domain.
+     * XXX - this is somewhat of a kludge but this seems the best place
+     * to put it for now
+     */
+    private String[]                        programArguments;
+    private String                          classPath;
+    private String                          className;
+
+    /*
      * Define the meta-options known by the asadmin command.
      */
     static {
@@ -382,5 +391,47 @@ public class ProgramOptions {
      */
     public boolean isOptionsSet() {
         return options != emptyOptions;
+    }
+
+    /**
+     * @return the programArguments
+     */
+    public String[] getProgramArguments() {
+        return programArguments;
+    }
+
+    /**
+     * @param programArguments the programArguments to set
+     */
+    public void setProgramArguments(String[] programArguments) {
+        this.programArguments = programArguments;
+    }
+
+    /**
+     * @return the classPath
+     */
+    public String getClassPath() {
+        return classPath;
+    }
+
+    /**
+     * @param classPath the classPath to set
+     */
+    public void setClassPath(String classPath) {
+        this.classPath = classPath;
+    }
+
+    /**
+     * @return the className
+     */
+    public String getClassName() {
+        return className;
+    }
+
+    /**
+     * @param className the className to set
+     */
+    public void setClassName(String className) {
+        this.className = className;
     }
 }

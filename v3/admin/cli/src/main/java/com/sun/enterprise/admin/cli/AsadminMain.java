@@ -68,11 +68,11 @@ public class AsadminMain {
              args = new String[] { "multimode" };
 
         copyOfArgs = new String[args.length];
+        System.arraycopy(args, 0, copyOfArgs, 0, args.length);
         classPath =
             SmartFile.sanitizePaths(System.getProperty("java.class.path"));
         className = main.getClass().getName();
 
-        System.arraycopy(args, 0, copyOfArgs, 0, args.length);
         command = args[0];
         if (Boolean.parseBoolean(System.getenv("ASADMIN_NEW"))) {
             exitCode = executeCommand(args);
@@ -158,6 +158,9 @@ public class AsadminMain {
             } else
                 po = new ProgramOptions(env);
             po.toEnvironment(env);
+            po.setProgramArguments(copyOfArgs);
+            po.setClassPath(classPath);
+            po.setClassName(className);
             if (argv.length == 0)
                 argv = new String[] { "multimode" };
             command = argv[0];
