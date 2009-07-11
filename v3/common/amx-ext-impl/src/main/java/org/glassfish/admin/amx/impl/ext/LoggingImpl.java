@@ -203,9 +203,6 @@ public final class LoggingImpl extends AMXImplBase
         }
     }
 
-    public String getLoggerLevel( final String module) {
-        return getModuleLogLevel(module);
-    }
         public String
     getModuleLogLevel( final String module)
     {
@@ -219,7 +216,7 @@ public final class LoggingImpl extends AMXImplBase
     }
 
         public Map<String,String>
-    getModuleLoggers( )
+    getLoggingProperties( )
     {
         try {
             Map<String, String> props = loggingConfig.getLoggingProperties();
