@@ -86,8 +86,9 @@ public class BtraceClientGenerator {
         //System.out.println("Generating for: " + generatedClassName);
 
         String generatedClassName = clientClazz.getName();
-        generatedClassName = "BTrace_" + clientID + "_"
-        	+ generatedClassName.replace('.', '/');
+        generatedClassName += "_BTrace_" + clientID + "_";
+        generatedClassName = "com.sun.btrace.flashlight." + generatedClassName;
+        generatedClassName = generatedClassName.replace('.', '/');
 
         int cwFlags = ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS;
         ClassWriter cw = new ClassWriter(cwFlags);
@@ -100,22 +101,27 @@ public class BtraceClientGenerator {
         Type probeType = Type.getType(FlashlightProbe.class);
         int methodCounter = 0;
         for (FlashlightProbe probe : probesRequiringTransformation) {
-        	//System.out.println("Generating method[" + methodCounter + "] => " + probe);
+        	//System.out.println("BTraceGen: Generating method[" + methodCounter + "] => " + probe);
+            String typeDesc = "void ";
             String methodDesc = "void __"
             	+ probe.getProviderJavaMethodName() + "__"
             	+ clientID + "_" + methodCounter + "_";
             methodDesc += "(";
+            typeDesc += "(";
             String delim = "";
             for (Class paramType : probe.getParamTypes()) {
                 methodDesc += delim + paramType.getName();
+                typeDesc += delim + paramType.getName();
                 delim = ", ";
             }
             methodDesc += ")";
+            typeDesc += ")";
             Method m = Method.getMethod(methodDesc);
             GeneratorAdapter gen = new GeneratorAdapter(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, m, null, null, cw);
             av = gen.visitAnnotation("Lcom/sun/btrace/annotations/OnMethod;", true);
             av.visit("clazz", "" + probe.getProviderClazz().getName());
             av.visit("method", probe.getProviderJavaMethodName());
+            av.visit("type", typeDesc);
             av.visitEnd();
 
             gen.push(probe.getId());
@@ -128,6 +134,7 @@ public class BtraceClientGenerator {
             gen.endMethod();
             
             methodCounter++;
+            //System.out.println("**** Generated BTraceGen method: " + methodCounter);
         }
 
 
@@ -136,15 +143,14 @@ public class BtraceClientGenerator {
         cw.visitEnd();
 
         byte[] classData = cw.toByteArray();
-        /*
-        System.out.println("**** Generated BTRACE Client " + generatedClassName);
+        //System.out.println("**** Generated BTRACE Client " + generatedClassName);
         try {
         	int index = generatedClassName.lastIndexOf('/');
             String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
                                 File.separator + "lib" + File.separator;
 
             String fileName = rootPath + generatedClassName.substring(index+1) + ".class";
-            System.out.println("***ClassFile: " + fileName);
+            //System.out.println("***ClassFile: " + fileName);
             File file = new File(fileName);
 
             FileOutputStream fos = new FileOutputStream(file);
@@ -154,7 +160,6 @@ public class BtraceClientGenerator {
         } catch (Exception ex) {
            ex.printStackTrace();
         }
-        */
         return classData;
     }
 

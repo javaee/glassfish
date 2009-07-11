@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.lang.reflect.Method;
 
 /*
 import com.sun.tools.attach.spi.AttachProvider;
@@ -171,13 +172,15 @@ public class FlashlightProbeClientMediator
         Collection<FlashlightProbe> probesRequiringClassTransformation =
         		new ArrayList<FlashlightProbe>();
         
+        //System.out.println("*** clientID: " + clientID + "; clazz: " + clientClz);
         for (java.lang.reflect.Method clientMethod : clientClz.getDeclaredMethods()) {
             ProbeListener probeAnn = clientMethod.getAnnotation(ProbeListener.class);
+            //System.out.println("\t*** clientID: " + clientID + "; " + clientMethod.getName()  + " ==> " + probeAnn);
 
             if (probeAnn != null) {
                 String probeStr = probeAnn.value();
-                //System.out.println("**FlashlightProcbeCM: " + probeStr);
                 FlashlightProbe probe = ProbeRegistry.createInstance().getProbe(probeStr);
+                //System.out.println("**FlashlightProcbeCM: " + probeStr + " ==> " + probe);
 
                 if (probe == null) {
                     throw new RuntimeException("Invalid probe desc: " + probeStr);
@@ -191,6 +194,7 @@ public class FlashlightProbeClientMediator
                 boolean targetClassNeedsTransformation = probe.addInvoker(invoker);
                 if (targetClassNeedsTransformation) {
                 	probesRequiringClassTransformation.add(probe);
+                	//System.out.println("ADDED Method for transformation: " + probe);
                 } else {
                 	//System.out.println("Some other client method has already taken care of: " + probe);
                 }
@@ -199,10 +203,43 @@ public class FlashlightProbeClientMediator
             }
         }
         
-        BtraceClientGenerator.generateBtraceClientClassData(clientID,
-        		probesRequiringClassTransformation, clientClz);
+        if ((probesRequiringClassTransformation != null) && 
+            (probesRequiringClassTransformation.size() > 0)) {
+
+            byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID,
+        		    probesRequiringClassTransformation, clientClz);
+
+            // submit to btrace agent
+            // todo: check for the existence of agent before submitting the code
+            // todo: agent does not throw exceptions which need to be fixed with btrace
+
+            if (bArr != null) {
+                submit2BTrace(bArr);
+            }
+        }
 
         return pcms;
+    }
+
+    private void submit2BTrace(byte [] bArr) {
+        //System.out.println("MSR:FlashlightProbeClientMediator:submit2BTrace: before calling Main.handleFlashLightClient ...");
+        try {
+            ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
+            Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
+            Class[] params = new Class[1];
+            params[0] = (new byte[0]).getClass();
+            Method mthd = agentMainClass.getMethod("handleFlashLightClient", params);
+            mthd.invoke(null, bArr);
+        } catch (java.lang.ClassNotFoundException cnfe) {
+            //todo: handle exception
+        } catch (java.lang.NoSuchMethodException nme) {
+            //todo: handle exception
+        } catch (java.lang.IllegalAccessException iae) {
+            //todo: handle exception
+        } catch (java.lang.reflect.InvocationTargetException ite) {
+            //todo: handle exception
+        }
+        //System.out.println("MSR:FlashlightProbeClientMediator:submit2BTrace: after calling Main.handleFlashLightClient ...");
     }
 
 }
