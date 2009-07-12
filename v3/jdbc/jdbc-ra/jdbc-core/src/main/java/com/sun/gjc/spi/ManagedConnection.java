@@ -64,6 +64,7 @@ import com.sun.gjc.spi.base.*;
 import com.sun.gjc.spi.base.CacheObjectKey;
 import com.sun.gjc.spi.base.datastructure.Cache;
 import com.sun.gjc.spi.base.datastructure.CacheFactory;
+import com.sun.gjc.util.SQLTraceDelegator;
 
 /**
  * <code>ManagedConnection</code> implementation for Generic JDBC Connector.
@@ -117,6 +118,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     private String cacheType;
     private boolean statementCaching;
 
+    private SQLTraceDelegator sqlTraceDelegator;
+    
     protected final static Logger _logger;
 
     static {
@@ -149,7 +152,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      */
     public ManagedConnection(PooledConnection pooledConn, java.sql.Connection sqlConn,
                              PasswordCredential passwdCred, javax.resource.spi.ManagedConnectionFactory mcf,
-                             int statementCacheSize, String statementCacheType)
+                             int statementCacheSize, String statementCacheType,
+                             SQLTraceDelegator delegator)
             throws ResourceException {
         if (pooledConn == null && sqlConn == null) {
 
@@ -165,6 +169,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         pc = pooledConn;
         connectionHandles = new Hashtable();
         passwdCredential = passwdCred;
+        sqlTraceDelegator = delegator;
 
         this.mcf = mcf;
         if (passwdCredential != null &&
@@ -362,7 +367,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         ManagedConnectionFactory spiMCF = (ManagedConnectionFactory) mcf;
         resetConnectionProperties(spiMCF);
         myLogicalConnection = spiMCF.getJdbcObjectsFactory().getConnection(
-                actualConnection, this, cxReqInfo, spiMCF.isStatementWrappingEnabled());
+                actualConnection, this, cxReqInfo, spiMCF.isStatementWrappingEnabled(),
+                sqlTraceDelegator);
 
         incrementCount();
         isClean = false;
@@ -809,7 +815,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     private void logFine(String logMessage){
         _logger.log(Level.FINE, logMessage);
     }
-
+    
     public PreparedStatement prepareCachedStatement(
             ConnectionWrapper conWrapper, String sql, int resultSetType, 
             int resultSetConcurrency) throws SQLException {

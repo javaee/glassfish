@@ -769,6 +769,28 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *              {@link String }
      */
     void setWrapJdbcObjects(String value) throws PropertyVetoException;
+    
+    /**
+     * Gets the value of the SqlTraceListeners property.
+     *
+     * Comma separated list of SQL trace listener implementations to be used to 
+     * trace the SQL statements executed by the applications. The default 
+     * logger used by the system logs the SQL statements based on a set of 
+     * values stored in SQLTraceRecord object.
+     * 
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getSqlTraceListeners();
+
+    /**
+     * Sets the value of the sqltracelisteners property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setSqlTraceListeners(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.

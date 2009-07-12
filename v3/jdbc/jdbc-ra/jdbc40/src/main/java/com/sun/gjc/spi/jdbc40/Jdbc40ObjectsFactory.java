@@ -39,6 +39,7 @@ package com.sun.gjc.spi.jdbc40;
 import com.sun.gjc.spi.JdbcObjectsFactory;
 import com.sun.gjc.spi.base.ConnectionHolder;
 
+import com.sun.gjc.util.SQLTraceDelegator;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
@@ -69,13 +70,21 @@ public class Jdbc40ObjectsFactory extends JdbcObjectsFactory {
     public ConnectionHolder getConnection(Connection conObject,
                                           com.sun.gjc.spi.ManagedConnection mcObject,
                                           javax.resource.spi.ConnectionRequestInfo criObject,
-                                          boolean statementWrapping) {
+                                          boolean statementWrapping,
+                                          SQLTraceDelegator sqlTraceDelegator) {
         ConnectionHolder connection = null;
         if (!initJDBC30Connection) {
             detectJDBC30Connection(conObject, mcObject);
         }
         if (statementWrapping) {
-            connection = new ConnectionWrapper40(conObject, mcObject, criObject, jdbc30Connection);
+            if (sqlTraceDelegator != null) {
+                Class connIntf[] = new Class[]{java.sql.Connection.class};
+                Connection proxiedConn = getProxiedConnection(conObject, connIntf, sqlTraceDelegator);
+                connection = new ProfiledConnectionWrapper40(proxiedConn, mcObject,
+                        criObject, jdbc30Connection, sqlTraceDelegator);
+            } else {
+                connection = new ConnectionWrapper40(conObject, mcObject, criObject, jdbc30Connection);
+            }
         } else {
             connection = new ConnectionHolder40(conObject, mcObject, criObject, jdbc30Connection);
         }
@@ -130,5 +139,5 @@ public class Jdbc40ObjectsFactory extends JdbcObjectsFactory {
                 initJDBC30Connection = true;
             }
         }
-    }
+    }    
 }

@@ -38,12 +38,17 @@ package com.sun.gjc.spi;
 
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.base.ConnectionHolder;
+import com.sun.gjc.util.SQLTraceDelegator;
 import com.sun.logging.LogDomains;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.jdbc.SQLTraceRecord;
 
 
 /**
@@ -101,7 +106,41 @@ public abstract class JdbcObjectsFactory implements Serializable {
     public abstract ConnectionHolder getConnection(Connection conObject,
                                                    ManagedConnection mcObject,
                                                    javax.resource.spi.ConnectionRequestInfo criObject,
-                                                   boolean statementWrapping);
+                                                   boolean statementWrapping,
+                                                   SQLTraceDelegator sqlTraceDelegator);
 
+    protected Connection getProxiedConnection(final Object conObject, Class[] connIntf,
+            final SQLTraceDelegator sqlTraceDelegator) {
+        Connection proxiedConn = null;
+        try {
+
+            proxiedConn = (Connection) getProxyObject(conObject, connIntf, sqlTraceDelegator);
+        } catch (Exception ex) {
+            _logger.log(Level.SEVERE, "jdbc.jdbc_proxied_connection_get_exception", ex.getMessage());
+        }
+        return proxiedConn;
+    }
+    
+    protected <T> T getProxyObject(final Object actualObject, Class<T>[] ifaces, 
+            final SQLTraceDelegator sqlTraceDelegator) throws Exception {
+        
+        T result;
+        InvocationHandler ih = new InvocationHandler() {
+
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                SQLTraceRecord record = new SQLTraceRecord();
+                record.setMethodName(method.getName());
+                record.setParams(args);
+                record.setClassName(actualObject.getClass().getName());
+                record.setThreadName(Thread.currentThread().getName());
+                record.setThreadID(Thread.currentThread().getId());
+                record.setTimeStamp(System.currentTimeMillis());
+                sqlTraceDelegator.sqlTrace(record);
+                return method.invoke(actualObject, args);
+            }
+        };
+        result = (T) Proxy.newProxyInstance(actualObject.getClass().getClassLoader(), ifaces, ih);        
+        return result;
+    }    
 
 }

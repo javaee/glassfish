@@ -244,6 +244,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Statement Cache Size",
                 "java.lang.String"));
         
+        propList.add(new ConnectorConfigProperty("SqlTraceListeners",
+                adminPool.getSqlTraceListeners() + "",
+                "Sql Trace Listeners",
+                "java.lang.String"));
+        
         //dump user defined poperties into the list
         Set connDefDescSet = connDesc.getOutboundResourceAdapter().
                 getConnectionDefs();

@@ -689,5 +689,13 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         public void setName(String value) throws PropertyVetoException {
             //do nothing
         }
+
+        public String getSqlTraceListeners() {
+            return null;
+        }
+
+        public void setSqlTraceListeners(String value) throws PropertyVetoException {
+            //do nothing
+        }
     }
 }

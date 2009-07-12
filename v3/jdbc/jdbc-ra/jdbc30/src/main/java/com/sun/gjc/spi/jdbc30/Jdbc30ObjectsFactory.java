@@ -39,6 +39,7 @@ package com.sun.gjc.spi.jdbc30;
 import com.sun.gjc.spi.JdbcObjectsFactory;
 import com.sun.gjc.spi.base.ConnectionHolder;
 
+import com.sun.gjc.util.SQLTraceDelegator;
 import java.sql.Connection;
 
 /**
@@ -59,11 +60,19 @@ public class Jdbc30ObjectsFactory extends JdbcObjectsFactory {
     public ConnectionHolder getConnection(Connection conObject,
                                           com.sun.gjc.spi.ManagedConnection mcObject,
                                           javax.resource.spi.ConnectionRequestInfo criObject,
-                                          boolean statementWrapping) {
+                                          boolean statementWrapping,
+                                          SQLTraceDelegator sqlTraceDelegator) {
         ConnectionHolder connection = null;
 
         if (statementWrapping) {
-            connection = new ConnectionWrapper30(conObject, mcObject, criObject);
+            if (sqlTraceDelegator != null) {
+                Class connIntf[] = new Class[]{java.sql.Connection.class};
+                Connection proxiedConn = getProxiedConnection(conObject, connIntf, sqlTraceDelegator);
+                connection = new ProfiledConnectionWrapper30(proxiedConn, mcObject,
+                        criObject, sqlTraceDelegator);
+            } else {
+                connection = new ConnectionWrapper30(conObject, mcObject, criObject);
+            }
         } else {
             connection = new ConnectionHolder30(conObject, mcObject, criObject);
         }

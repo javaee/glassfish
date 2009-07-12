@@ -39,9 +39,12 @@ package com.sun.gjc.spi;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.common.DataSourceSpec;
+import com.sun.gjc.util.SQLTraceDelegator;
 import com.sun.gjc.util.SecurityUtils;
 import com.sun.logging.LogDomains;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.security.PasswordCredential;
@@ -50,9 +53,11 @@ import java.sql.Connection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.jdbc.ConnectionValidation;
+import org.glassfish.api.jdbc.SQLTraceListener;
 
 /**
  * <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -76,6 +81,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     protected boolean statementWrapping;
 
     private JdbcObjectsFactory jdbcObjectsFactory = JdbcObjectsFactory.getInstance();
+    protected SQLTraceDelegator sqlTraceDelegator;
 
     static {
         _logger = LogDomains.getLogger(ManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
@@ -514,6 +520,64 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         }
     }
 
+    private void detectSqlTraceListeners() {
+        //Check for sql-trace-listeners attribute.
+        String sqlTraceListeners = getSqlTraceListeners();
+        String delimiter = ",";
+        
+        if(sqlTraceListeners != null && !sqlTraceListeners.equals("null")) {
+            sqlTraceDelegator = new SQLTraceDelegator();
+            StringTokenizer st = new StringTokenizer(sqlTraceListeners, delimiter);
+            while (st.hasMoreTokens()) {
+                String sqlTraceListener = st.nextToken().trim();            
+                if(!sqlTraceListener.equals("")) {
+                    Class listenerClass = null;
+                    SQLTraceListener listener = null;
+                    Constructor[] constructors = null;
+                    Class[] parameterTypes = null;                    
+                    Object[] initargs = null;
+                    //Load the listener class 
+                    try {
+                        listenerClass = Thread.currentThread().getContextClassLoader().loadClass(sqlTraceListener);
+                    } catch (ClassNotFoundException ex) {
+                        _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_cnfe", listenerClass.getName());
+                    }
+                    Class intf[] = listenerClass.getInterfaces();
+                    for (int i = 0; i < intf.length; i++) {
+                        Class interfaceName = intf[i];
+                        if (interfaceName.getName().equals("org.glassfish.api.jdbc.SQLTraceListener")) {
+
+                            try {
+
+                                constructors = listenerClass.getConstructors();
+                                for (Constructor constructor : constructors) {
+                                    parameterTypes = constructor.getParameterTypes();
+                                    //For now only the no argument constructors are allowed.
+                                    //TODO should this be documented?
+                                    if (parameterTypes != null && parameterTypes.length == 0) {
+                                        listener = (SQLTraceListener) constructor.newInstance(initargs);
+                                    }
+                                }
+                            } catch (InstantiationException ex) {
+                                _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_exception", ex.getMessage());
+                            } catch (IllegalAccessException ex) {
+                                _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_exception", ex.getMessage());
+                            } catch (IllegalArgumentException ex) {
+                                _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_exception", ex.getMessage());
+                            } catch (InvocationTargetException ex) {
+                                _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_exception", ex.getMessage());
+                            } catch (SecurityException ex) {
+                                _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_exception", ex.getMessage());
+                            }
+                            sqlTraceDelegator.registerSQLTraceListener(listener);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     /**
      * Gets the integer equivalent of the string specifying
      * the transaction isolation.
@@ -932,7 +996,18 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     public String getStatementTimeout() {
         return spec.getDetail(DataSourceSpec.STATEMENTTIMEOUT);
     }
+    
+    public String getSqlTraceListeners() {
+        return spec.getDetail(DataSourceSpec.SQLTRACELISTENERS);
+    }
 
+    public void setSqlTraceListeners(String sqlTraceListeners) {
+        if(sqlTraceListeners != null) {
+            spec.setDetail(DataSourceSpec.SQLTRACELISTENERS, sqlTraceListeners);
+            detectSqlTraceListeners();
+        }
+    }
+    
     /**
      * Sets the description.
      *
@@ -1065,7 +1140,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                                                            Connection sqlCon, PasswordCredential passCred,
                                                            ManagedConnectionFactory mcf) throws ResourceException {
         return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf, 
-                statementCacheSize, statementCacheType);
+                statementCacheSize, statementCacheType, sqlTraceDelegator);
     }
 
     /**
