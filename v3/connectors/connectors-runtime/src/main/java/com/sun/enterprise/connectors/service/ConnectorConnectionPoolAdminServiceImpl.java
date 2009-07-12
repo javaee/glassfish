@@ -412,10 +412,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @return Map<String, Object> String represents property name
      *         and Object is the defaultValue that is a primitive type or String
      */
-    public static Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
+    public static Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName, String resType) {
         return ConnectionDefinitionUtils
                 .getConnectionDefinitionPropertiesAndDefaults(
-                        connectionDefinitionClassName);
+                        connectionDefinitionClassName, resType);
     }
 
     /**

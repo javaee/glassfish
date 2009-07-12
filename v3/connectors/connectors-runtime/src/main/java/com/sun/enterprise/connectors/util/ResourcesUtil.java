@@ -184,6 +184,14 @@ public class ResourcesUtil {
                 return ConnectorConstants.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME;
             }
         }
+        
+        //check if its DM
+        if("java.sql.Driver".equals(pool.getResType())) {
+            if(java.sql.Driver.class.isAssignableFrom(dsClass)) {
+                return ConnectorConstants.JDBCDRIVER_RA_NAME;
+            }
+        }
+        
         //default to __ds
         return dsRAName;
     }

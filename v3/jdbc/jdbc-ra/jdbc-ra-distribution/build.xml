@@ -46,40 +46,6 @@
 
     <target name="assemble">
 
-        <!-- build JDBC RAR of type javax.sql.XADataSource -->
-        <!-- TODO V3 handle XA later
-                <copy file="${src.dir}/com/sun/gjc/spi/xml/ra-xa.xml"
-                      tofile="${component.lib.home}/ra.xml" overwrite="yes">
-                </copy>
-                <jar jarfile="${component.lib.home}/__xa_jdbc_ra.rar"
-                     basedir="${component.lib.home}" excludes="**/*">
-                    <manifest>
-                        <attribute name="Specification-Title" value="JDBC Specification"/>
-                        <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
-                        <attribute name="Specification-Version" value="3.0, 4.0"/>
-                        <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
-                        <attribute name="Implementation-Version" value="9.1"/>
-                        <attribute name="Implementation-Title" value="Sun Java System Application Server"/>
-                    </manifest>
-                    <metainf dir="${component.lib.home}">
-                        <include name="ra.xml"/>
-                    </metainf>
-                </jar>
-                <echo message="Assembling __xa rar"/>
-
-                <jar jarfile="${component.lib.home}/__xa_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
-                    includes ="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, com/sun/appserv/jdbc/**/*, **/*.properties">
-                    <exclude name="com/sun/gjc/spi/DSManagedConnectionFactory.class"/>
-                    <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
-                    <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
-                </jar>
-
-                <jar jarfile="${component.lib.home}/__xa_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
-                    <include  name="__xa_jdbc_ra.jar" />
-                </jar>
-        -->
-
-
         <!-- build JDBC RAR of type javax.sql.DataSource -->
         <copy file="xml/ra-ds.xml"
               tofile="${component.lib.home}/ra.xml" overwrite="yes">
@@ -91,8 +57,8 @@
                 <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Specification-Version" value="3.0, 4.0"/>
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
-                <attribute name="Implementation-Version" value="9.1"/>
-                <attribute name="Implementation-Title" value="Sun Java System Application Server"/>
+                <attribute name="Implementation-Version" value="V3"/>
+                <attribute name="Implementation-Title" value="GlassFish"/>
             </manifest>
             <metainf dir="${component.lib.home}">
                 <include name="ra.xml"/>
@@ -122,8 +88,8 @@
                 <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Specification-Version" value="3.0, 4.0"/>
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
-                <attribute name="Implementation-Version" value="9.1"/>
-                <attribute name="Implementation-Title" value="Sun Java System Application Server"/>
+                <attribute name="Implementation-Version" value="V3"/>
+                <attribute name="Implementation-Title" value="GlassFish"/>
             </manifest>
             <metainf dir="${component.lib.home}">
                 <include name="ra.xml"/>
@@ -156,8 +122,8 @@
                 <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Specification-Version" value="3.0, 4.0"/>
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
-                <attribute name="Implementation-Version" value="9.1"/>
-                <attribute name="Implementation-Title" value="Sun Java System Application Server"/>
+                <attribute name="Implementation-Version" value="V3"/>
+                <attribute name="Implementation-Title" value="GlassFish"/>
             </manifest>
             <metainf dir="${component.lib.home}">
                 <include name="ra.xml"/>
@@ -178,6 +144,36 @@
             <include name="__xa_jdbc_ra.jar"/>
         </jar>
 
+        <!-- build JDBC RAR of type java.sql.Driver -->
+        <copy file="xml/ra-dm.xml"
+              tofile="${component.lib.home}/ra.xml" overwrite="yes">
+        </copy>
+        <jar jarfile="${component.lib.home}/__dm_jdbc_ra.rar"
+             basedir="${component.lib.home}" excludes="**/*">
+            <manifest>
+                <attribute name="Specification-Title" value="JDBC Specification"/>
+                <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
+                <attribute name="Specification-Version" value="3.0, 4.0"/>
+                <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
+                <attribute name="Implementation-Version" value="V3"/>
+                <attribute name="Implementation-Title" value="GlassFish"/>
+            </manifest>
+            <metainf dir="${component.lib.home}">
+                <include name="ra.xml"/>
+            </metainf>
+        </jar>
+
+        <jar jarfile="${component.lib.home}/__dm_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
+		includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
+            <exclude name="com/sun/gjc/spi/DSManagedConnectionFactory.class"/>
+            <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
+            <exclude name="com/sun/gjc/spi/XAManagedConnectionFactory.class"/>
+        </jar>
+            <echo message="Assembling __dm rar"/>
+        <jar jarfile="${component.lib.home}/__dm_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
+            <include name="__dm_jdbc_ra.jar"/>
+        </jar>
+
 	<echo message="Assembling templates jar"/>
 
 	<jar jarfile="${component.lib.home}/templates.jar" update="true" basedir="${component.classes.dir}/templates"
@@ -189,6 +185,7 @@
 	<unjar src="${component.lib.home}/__xa_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__xa_jdbc_ra"/>
 	<unjar src="${component.lib.home}/__ds_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__ds_jdbc_ra"/>
 	<unjar src="${component.lib.home}/__cp_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__cp_jdbc_ra"/>
+	<unjar src="${component.lib.home}/__dm_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__dm_jdbc_ra"/>
 	<unjar src="${component.lib.home}/templates.jar" dest="${component.classes.dir}"/>
 
         <zip basedir="${component.classes.dir}" file="${component.target.dir}/jdbc-ra.zip"/>

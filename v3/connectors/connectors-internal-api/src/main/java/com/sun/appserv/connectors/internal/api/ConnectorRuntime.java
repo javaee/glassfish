@@ -283,7 +283,8 @@ public interface ConnectorRuntime extends ConnectorConstants{
       * @return Map<String, Object> String represents property name
       * and Object is the defaultValue that is a primitive type or String
       */
-    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName);
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName, 
+            String resType);
 
     /**
      * Provides the list of built in custom resources by

@@ -84,6 +84,7 @@ public interface ConnectorConstants {
 
     public static final String DEFAULT_JMS_ADAPTER = "jmsra";
 
+    public static final String JDBCDRIVER_RA_NAME = "__dm_jdbc_ra";
     
     /**
      * List of system resource adapter names 
@@ -95,6 +96,7 @@ public interface ConnectorConstants {
                 JDBCDATASOURCE_RA_NAME,
                 JDBCCONNECTIONPOOLDATASOURCE_RA_NAME,
                 JDBCXA_RA_NAME,
+                JDBCDRIVER_RA_NAME,
                 DEFAULT_JMS_ADAPTER
             ));
     

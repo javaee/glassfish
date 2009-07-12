@@ -104,7 +104,7 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
      *                                        some method.
      */
     public Object constructDataSourceObject() throws ResourceException {
-        driverProperties = parseDriverProperties(spec);
+        driverProperties = parseDriverProperties(spec, true);
         Object dataSourceObject = getDataSourceObject();
         Method[] methods = dataSourceObject.getClass().getMethods();
         for (int i = 0; i < methods.length; i++) {
@@ -180,7 +180,8 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
      * @throws ResourceException If delimiter is not provided and property string
      *                           is not null.
      */
-    private Hashtable parseDriverProperties(DataSourceSpec spec) throws ResourceException {
+    public Hashtable parseDriverProperties(DataSourceSpec spec, boolean returnUpperCase) 
+            throws ResourceException {
         String delim = spec.getDetail(DataSourceSpec.DELIMITER);
         String escape = spec.getDetail(DataSourceSpec.ESCAPECHARACTER);
         String prop = spec.getDetail(DataSourceSpec.DRIVERPROPERTIES);
@@ -194,7 +195,7 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
             String msg = sm.getString("dsob.escape_char_not_specified");
             throw new ResourceException(msg);
         }
-        return parseDriverProperties(prop,escape, delim);
+        return parseDriverProperties(prop,escape, delim, returnUpperCase);
     }
 
     /**
@@ -204,7 +205,8 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
      * @param delimiter delimiter
      * @return Hashtable
      */
-    public Hashtable parseDriverProperties(String values, String escape, String delimiter){
+    public Hashtable parseDriverProperties(String values, String escape, 
+            String delimiter, boolean returnUpperCase){
         Hashtable result = new Hashtable();
         String parsedValue = "";
         String name = "";
@@ -221,7 +223,11 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
                     parsedValue = "";
                     values = values.substring(2);
                 }else{
-                    name = parsedValue.toUpperCase();
+                    if(returnUpperCase) {
+                        name = parsedValue.toUpperCase();
+                    } else {
+                        name = parsedValue;
+                    }
                     parsedValue = "";
                     values = values.substring(1);
                 }

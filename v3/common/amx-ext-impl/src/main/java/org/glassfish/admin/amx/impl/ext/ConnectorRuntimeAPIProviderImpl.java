@@ -73,15 +73,15 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         }
     }
 
-    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(final String datasourceClassName)
-    {
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(final String datasourceClassName,
+            final String resType) {
         final Map<String, Object> result = new HashMap<String, Object>();
 
         // get connector runtime
         try
         {
             final Map<String, Object> connProps = getConnectorRuntime().
-                    getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
+                    getConnectionDefinitionPropertiesAndDefaults(datasourceClassName, resType);
             result.put(ConnectorRuntimeAPIProvider.PROPERTY_MAP_KEY, connProps);
         }
         catch (ComponentException e)

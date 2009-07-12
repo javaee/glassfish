@@ -165,7 +165,8 @@ public class ConnectionDefinitionUtils {
 	 * @return Map<String, Object> String represents property name
          * and Object is the defaultValue that is a primitive type or String
 	 */
-    public static Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
+    public static Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName, 
+            String resType) {
         Set s= getConnectionDefinitionProperties(connectionDefinitionClassName);
 	TreeMap hm= new TreeMap();
         Class connectionDefinitionClass;
@@ -200,7 +201,11 @@ public class ConnectionDefinitionUtils {
             handleException(e, connectionDefinitionClassName);
             //since the specified connectionDefinitionClassName is not found, 
             //return the standard JDBC properties
-            addDefaultJDBCProperties(hm);
+            if(resType != null && resType.equals("java.sql.Driver")) {
+                addDefaultJDBCDriverProperties(hm);
+            } else {
+                addDefaultJDBCProperties(hm);
+            }
         } catch (InstantiationException e) {
             handleException(e, connectionDefinitionClassName);
         } catch (IllegalAccessException e) {
@@ -215,6 +220,15 @@ public class ConnectionDefinitionUtils {
     String[] defaultProperties = {
              "databaseName", "serverName", "portNumber", "networkProtocol",
              "user", "password", "roleName", "datasourceName" };
+
+        //assuming that the provided map is not null
+        for(int i=0; i<defaultProperties.length; i++){
+            map.put(defaultProperties[i],null);
+        }
+    }
+
+    private static void addDefaultJDBCDriverProperties(Map map){
+        String[] defaultProperties = {"URL", "user", "password"};
 
         //assuming that the provided map is not null
         for(int i=0; i<defaultProperties.length; i++){
@@ -240,7 +254,7 @@ public class ConnectionDefinitionUtils {
         Map m=
             ConnectionDefinitionUtils
                 .getConnectionDefinitionPropertiesAndDefaults(
-                "sun.jdbc.odbc.ee.DataSource");
+                "sun.jdbc.odbc.ee.DataSource", "javax.sql.DataSource");
 
         for (Iterator iter= m.keySet().iterator(); iter.hasNext();) {
             String element= (String) iter.next();

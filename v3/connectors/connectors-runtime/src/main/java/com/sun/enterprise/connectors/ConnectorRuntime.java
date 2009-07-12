@@ -439,9 +439,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return Map<String, Object> String represents property name
      *         and Object is the defaultValue that is a primitive type or String.
      */
-    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName, String resType) {
         return ccPoolAdmService.getConnectionDefinitionPropertiesAndDefaults(
-                connectionDefinitionClassName);
+                connectionDefinitionClassName, resType);
     }
 
     /**

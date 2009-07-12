@@ -109,7 +109,8 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Returns the connection definition properties and their default values of a datasource class")
     public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(
-            @Param(name = "datasourceClassName") String datasourceClassName);
+            @Param(name = "datasourceClassName") String datasourceClassName,
+            @Param(name = "resType") String resType);
 
     @ManagedAttribute
     @Description("List of built in custom resource factory classes")
@@ -192,7 +193,7 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("Get Jdbc driver implementation class names")
-    public Map<String, Object> getJdbcDriverClassNames(@Param(name = "dbVendor") String dbVendor,
+    public Map<String, Object> getJdbcDriverClassNames(@Param(name = "dbVendor") String dbVendor, 
                                                        @Param(name = "resType") String resType);
 
     /**

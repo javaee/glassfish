@@ -36,6 +36,7 @@
 
 package com.sun.gjc.spi;
 
+import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.common.DataSourceSpec;
 import com.sun.gjc.util.SecurityUtils;
 import com.sun.logging.LogDomains;
@@ -44,9 +45,12 @@ import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.security.PasswordCredential;
 import java.sql.DriverManager;
+import java.util.Hashtable;
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,7 +91,9 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
     public javax.resource.spi.ManagedConnection createManagedConnection(javax.security.auth.Subject subject,
                                                                         ConnectionRequestInfo cxRequestInfo) throws ResourceException {
         logFine("In createManagedConnection");
-
+        if (dsObjBuilder == null) {
+            dsObjBuilder = new DataSourceObjectBuilder(spec);
+        }
         PasswordCredential pc = SecurityUtils.getPasswordCredential(this, subject, cxRequestInfo);
 
         try {
@@ -99,7 +105,27 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
 
         java.sql.Connection dsConn = null;
 
-        Properties driverProps = getPropertiesObj();
+        Properties driverProps = new Properties();
+        //Will return a set of properties that would have setURL and <url> as objects
+        //Get a set of normal case properties
+        Hashtable properties = dsObjBuilder.parseDriverProperties(spec, false);
+        Set<String> keys = (Set<String>)properties.keySet();
+        for( String key : keys ) {
+            String value = null;
+            Vector values = (Vector) properties.get(key);
+            if(!values.isEmpty() && values.size() == 1) {
+                value = (String) values.firstElement();
+            } else if(values.size() > 1) {
+                logFine("More than one value for key : " + key);
+            }
+            String prop = getParsedKey(key);
+            driverProps.put(prop, value);
+            if(prop.equalsIgnoreCase("URL")) {
+                if(spec.getDetail(DataSourceSpec.URL) == null) {
+                    setConnectionURL(value);
+                }
+            }
+        }
 
         try {
             if (cxRequestInfo != null) {
@@ -125,6 +151,42 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
     }
 
     /**
+     * Parses the key and removes the "set" string at the beginning of the 
+     * property.
+     * @param key
+     * @return
+     */
+    private String getParsedKey(String key) throws ResourceException {
+        String parsedKey = null;
+        int indexOfSet = -1;
+        try {
+            indexOfSet = key.indexOf("set");
+        } catch (NullPointerException npe) {
+            if (debug) {
+                _logger.log(Level.FINE, "jdbc.exc_caught_ign", npe.getMessage());
+            }
+
+        }
+        if (indexOfSet == 0) {
+            //Find the key String
+
+            try {
+                parsedKey = key.substring(indexOfSet + 3, key.length()).trim();
+            } catch (IndexOutOfBoundsException iobe) {
+                if (debug) {
+                    _logger.log(Level.FINE, "jdbc.exc_caught_ign", iobe.getMessage());
+                }
+            }
+            if (parsedKey.equals("")) {
+                throw new ResourceException("Invalid driver properties string - " +
+                        "Key cannot be an empty string");
+            }
+        }
+        return parsedKey;
+        
+    }
+
+    /**
      * This method checks if the properties object is null or not.
      * If the properties object is null, it creates a new Properties
      * object and inserts the default "user" and "password" key value
@@ -134,6 +196,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
      * @return props    <code>Properties</code> object conatining properties for getting a connection
      * @throws ResourceException if the driver properties string and delimiter are not proper
      */
+    //TODO remove unused method
     private Properties getPropertiesObj() throws ResourceException {
         if (props != null) {
             return props;
@@ -248,6 +311,14 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         }
     }
 
+    public void setURL(String url) {
+        spec.setDetail(DataSourceSpec.URL, url);
+    }
+    
+    public String getURL() {
+        return spec.getDetail(DataSourceSpec.URL);
+    }
+    
     /**
      * Sets the connection url.
      *
