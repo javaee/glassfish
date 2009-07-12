@@ -40,6 +40,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.*;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.Startup;
@@ -100,7 +101,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                 BindableResource bindableResource = (BindableResource)resource;
                 resourcesBinder.deployResource(bindableResource.getJndiName(), resource);
             } else if (resource instanceof ResourcePool) {
-                //TODO V3 handle other resources later (con-pools)
+                // ignore, as they are loaded lazily
             } else{
                 // only other resource left is RAC
                 try{
@@ -111,9 +112,11 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                 }
             }
         }
-        //TODO V3 will there be a chance of double listener registrationf or a resource ?
-        //TODO V3 eg: allresources added during startup, resources of a particular
-        //TODO V3 connector during connector startup / redeploy ?
+        /* TODO V3 
+            will there be a chance of double listener registrationf or a resource ?
+            eg: allresources added during startup, resources of a particular
+            connector during connector startup / redeploy ?
+        */
         addListenerToResources(resources);
     }
 
@@ -123,18 +126,23 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
 
 
     /**
-     * The component is about to be removed from commission
+     * Do cleanup of system-resource-adapter, resources, pools 
      */
     public void preDestroy() {
-        //TODO V3 : Admin need to make sure that poolnames are unique. As of V2 they are not unique.
-        Collection<Resource> resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
-        
-        //TODO V3 : even in case when there is no resource used by an application (no RAR was started),
-        //TODO V3 not undeploying resources other than jdbc, connector pool/resource ?
-        undeployResources(resources);
-        ConnectorRuntime cr = getConnectorRuntime();
-        if (cr!=null) {
-            cr.shutdownAllActiveResourceAdapters();
+
+        if (isConnectorRuntimeInitialized()) {
+            Collection<Resource> resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
+
+            undeployResources(resources);
+            ConnectorRuntime cr = getConnectorRuntime();
+            if (cr != null) {
+                // clean up will take care of any system RA resources, pools
+                // (including pools via datasource-definition)
+                cr.cleanUpResourcesAndShutdownAllActiveRAs();
+            }
+        } else {
+            logger.finest("ConnectorRuntime not initialized, hence skipping " +
+                    "resource-adapters shutdown, resources, pools cleanup");
         }
         removeListenerFromResources();
         removeListenerFromResourceRefs();
@@ -159,11 +167,8 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
     public void undeployResources(Collection<Resource> resources){
         for(Resource resource : resources){
             try{
-                //TODO V3 no need to check bindableResource ? (similar to deployResources())
-                //TODO V3 handle Resource-Adapter-Config ?
                 getResourceDeployer(resource).undeployResource(resource);
             }catch(Exception e){
-                //TODO V3 can't Resource (config bean) have name ?
                 Object[] params = {ConnectorsUtil.getResourceName(resource), e};
                 logger.log(Level.WARNING, "resources.resource-manager.undeploy-resource-failed", params);
             }finally{
@@ -180,7 +185,21 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         return ConfigSupport.sortAndDispatch(events, new PropertyChangeHandler(events), logger);
     }
-    
+
+    /**
+     * Check whether connector-runtime is initialized.
+     * @return boolean representing connector-runtime initialization status.
+     */
+    public boolean isConnectorRuntimeInitialized() {
+        Collection<Inhabitant<? extends ConnectorRuntime>> inhabitants =
+                connectorRuntimeHabitat.getInhabitants(ConnectorRuntime.class);
+        for(Inhabitant inhabitant : inhabitants){
+            // there will be only one implementation of connector-runtime
+            return inhabitant.isInstantiated();
+        }
+        return true; // to be safe
+    }
+
     class PropertyChangeHandler implements Changed {
         
         PropertyChangeEvent[] events;
@@ -286,7 +305,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
             if (instance instanceof BindableResource) {
                 resourcesBinder.deployResource(((BindableResource) instance).getJndiName(), (Resource) instance);
             } else if (instance instanceof ResourcePool) {
-                //TODO V3 handle - ccp, jdbc-cp
+                //ignore - as pools are handled lazily
             } else if (instance instanceof Resource) {
                 //only resource type left is RAC
                 try {
