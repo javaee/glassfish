@@ -44,6 +44,7 @@ import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.common_impl.Jar;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.InhabitantsFile;
+import com.sun.hk2.component.Holder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
@@ -72,7 +73,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     private String bundleName;
     private URI location;
     private String version;
-    private Manifest manifest;
+    private transient Manifest manifest=null;
     private String lifecyclePolicyClassName;
     private ModuleMetadata metadata = new ModuleMetadata();
 
@@ -80,14 +81,14 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         this(Jar.create(jar), jar.toURI());
     }
 
-    public OSGiModuleDefinition(Jar jarFile, URI location) throws IOException {
+    public OSGiModuleDefinition(final Jar jarFile, URI location) throws IOException {
         /*
         * When we support reading metadata from external manifest.mf file,
         * we can create a custom URI and the URL handler can merge the
         * manifest info. For now, just use the standard URI.
         */
         this.location = location;
-        manifest = jarFile.getManifest();
+        Manifest manifest = jarFile.getManifest();
         Attributes mainAttr = manifest.getMainAttributes();
         bundleName = manifest.getMainAttributes().getValue(Constants.BUNDLE_NAME);
 
@@ -192,9 +193,24 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         return lifecyclePolicyClassName;
     }
 
-    public Manifest getManifest() {
+    public synchronized Manifest getManifest() {
+        if (manifest==null) {
+            try {
+                // not sure this is what Sahoo wanted to fix with previous checkin, will
+                // need to be revisited asap.
+                if (location.toString().startsWith("reference:")) {
+                    manifest = new JarFile(new File(
+                            location.toString().substring("reference:".length()))).getManifest();   
+                } else {
+                    manifest = new JarFile(new File(location)).getManifest();
+                }
+            } catch (IOException e) {
+                manifest = null;
+            }
+        }
         return manifest;
     }
+
 
     public ModuleMetadata getMetadata() {
         return metadata;
