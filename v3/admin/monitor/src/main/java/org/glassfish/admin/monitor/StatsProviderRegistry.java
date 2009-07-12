@@ -20,6 +20,7 @@ public class StatsProviderRegistry {
                         configToRegistryElementMap = new HashMap();
     private Map<Object, StatsProviderRegistryElement>
                         statsProviderToRegistryElementMap = new HashMap();
+    private Map<String, Boolean> configEnabledMap = new HashMap();
     private MonitoringRuntimeDataRegistry mrdr;
 
     public StatsProviderRegistry(MonitoringRuntimeDataRegistry mrdr) {
@@ -137,7 +138,9 @@ public class StatsProviderRegistry {
 
             //Reregister the statsProvider in Gmbal
             //if (mbeanEnabled) {
-                registerGmbal(spre);
+            if (StatsProviderManagerDelegateImpl.isAMXReady()) {
+                    registerGmbal(spre);
+            }
             //}
         }
     }
@@ -241,7 +244,19 @@ public class StatsProviderRegistry {
         }
     }
 
-    private class StatsProviderRegistryElement {
+    boolean getConfigEnabled(String configElement) {
+        return configEnabledMap.get(configElement).booleanValue();
+    }
+
+    void setConfigEnabled(String configElement, boolean enabled) {
+        configEnabledMap.put(configElement, Boolean.valueOf(enabled));
+    }
+
+    Collection<StatsProviderRegistryElement> getSpreList() {
+        return statsProviderToRegistryElementMap.values();
+    }
+
+    class StatsProviderRegistryElement {
         String configStr;
         String parentTreeNodePath;
         List<String> childTreeNodeNames;
@@ -297,7 +312,7 @@ public class StatsProviderRegistry {
             return mom;
         }
 
-        private void setManagedObjectManager(ManagedObjectManager mom) {
+        void setManagedObjectManager(ManagedObjectManager mom) {
             this.mom = mom;
         }
     }

@@ -12,6 +12,7 @@ import org.glassfish.probe.provider.StatsProviderManagerDelegate;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.probe.provider.StatsProviderManager;
 import org.glassfish.api.Startup;
+import org.glassfish.api.amx.MBeanListener;
 //import org.glassfish.api.event.Events;
 //import org.glassfish.api.event.EventListener;
 //import org.glassfish.api.event.EventListener.Event;
@@ -34,6 +35,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleLifecycleListener;
 
+import java.lang.management.ManagementFactory;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.util.Map;
@@ -91,6 +93,8 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
 
         //events.register(this);
 
+        // Register listener for AMX DomainRoot loaded
+        MBeanListener.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
     }
 
     public Lifecycle getLifecycle() {
@@ -209,10 +213,14 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
            if (event.getSource() instanceof ModuleMonitoringLevels) {
                 String propName = event.getPropertyName();
                 boolean enabled = getEnabledValue(event.getNewValue().toString());
-                if (enabled) {
-                    spmd.getStatsProviderRegistry().enableStatsProvider(propName);
-                } else {
-                    spmd.getStatsProviderRegistry().disableStatsProvider(propName);
+                StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
+                if (spr != null) {
+                    spr.setConfigEnabled(propName, enabled);
+                    if (enabled) {
+                        spr.enableStatsProvider(propName);
+                    } else {
+                        spr.disableStatsProvider(propName);
+                    }
                 }
            }
            //For change in mbean-enabled attribute register/unregister gmbal for enabled config elements

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.management.ObjectName;
+import org.glassfish.api.amx.MBeanListener;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.gmbal.ManagedObjectManager;
@@ -33,7 +34,7 @@ import org.glassfish.api.amx.AMXValues;
  * @author Jennifer
  */
 @Scoped(Singleton.class)
-public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDelegate {
+public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl implements StatsProviderManagerDelegate {
     protected ProbeClientMediator pcm;
     ModuleMonitoringLevels config = null;
     private final MonitoringRuntimeDataRegistry mrdr;
@@ -42,6 +43,7 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
     private final TreeNode serverNode;
     private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
     static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
+    private static boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
 
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm,
@@ -103,22 +105,32 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
 
 
         //If module monitoring level = OFF, disableStatsProvider for that configElement
-        //If module monitoring level = ON, register with gmbal, and add mom to registry
+        //If module monitoring level = ON and AMX DomainRoot is loaded, register with gmbal, and add mom to registry
         if (getEnabledValue(configElement)) {
             /* gmbal registration */
             //Create mom root using the statsProvider
             //if (config.getMbeanEnabled) {
+            if (AMXReady) {
                 ManagedObjectManager mom = registerGmbal(statsProvider, subTreePath);
                 //Make an entry to my own registry so I can manage the unregister, enable and disable
                 statsProviderRegistry.registerStatsProvider(configElement, 
                         parentNode.getCompletePathName(), childNodeNames,
                         handles, statsProvider, subTreePath, mom);
+            } else {
+                statsProviderRegistry.registerStatsProvider(configElement,
+                        parentNode.getCompletePathName(), childNodeNames,
+                        handles, statsProvider, subTreePath, null);
+            }
+            // Keep track of enabled flag for configElement.  Used later for register gmbal when AMXReady.
+            statsProviderRegistry.setConfigEnabled(configElement, true);
             //}
         } else {
             //Make an entry to my own registry so I can manage the unregister, enable and disable
             statsProviderRegistry.registerStatsProvider(configElement,
                     parentNode.getCompletePathName(), childNodeNames,
                     handles, statsProvider, subTreePath, null);
+            // Keep track of enabled flag for configElement.  Used later for register gmbal when AMXReady.
+            statsProviderRegistry.setConfigEnabled(configElement, false);
             statsProviderRegistry.disableStatsProvider(configElement);
         }
     }
@@ -133,9 +145,25 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
         
     }
 
-    //public void unregisterAll() {
-    //    this.statsProviderRegistry.unregisterAll();
-    //}
+    //Called when AMX DomainRoot is loaded (when jconsole or gui is started)
+    //Register statsProviders with gmbal whose configElement is enabled
+    //Save mom in the spre.  Used in unregister with gmbal later for config change to OFF or undeploy
+    //Set AMXReady flag to true
+    @Override
+    public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener) {
+        super.mbeanRegistered(objectName, listener);
+        AMXReady = true;
+        for (StatsProviderRegistry.StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
+            if (statsProviderRegistry.getConfigEnabled(spre.getConfigStr())) {
+                ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
+                spre.setManagedObjectManager(mom);
+            }
+        }
+    }
+
+    public static boolean isAMXReady() {
+        return AMXReady;
+    }
 
     StatsProviderRegistry getStatsProviderRegistry() {
         return this.statsProviderRegistry;
