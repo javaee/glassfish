@@ -67,15 +67,11 @@
 
     <properties>
         <classpath.file>${project.build.directory}/tmp/classpath.txt</classpath.file>
-        <mq.dir.path>../../mq</mq.dir.path>
-        <mq.lib>${mq.dir.path}/lib</mq.lib>
-        <jmsra.apps.dir>../lib/install/applications/jmsra</jmsra.apps.dir>
-        <mq.classpath.additions>${mq.lib}/imq.jar ${mq.lib}/imqadmin.jar ${mq.lib}/imqutil.jar ${mq.lib}/fscontext.jar ${mq.lib} ${jmsra.apps.dir}/imqjmsra.jar</mq.classpath.additions>
-
-        <ds-jdbcra.classpath.additions>../lib/install/applications/__ds_jdbc_ra/__ds_jdbc_ra.jar</ds-jdbcra.classpath.additions>
-        <cp-jdbcra.classpath.additions>../lib/install/applications/__cp_jdbc_ra/__cp_jdbc_ra.jar</cp-jdbcra.classpath.additions>
-        <xa-jdbcra.classpath.additions>../lib/install/applications/__xa_jdbc_ra/__xa_jdbc_ra.jar</xa-jdbcra.classpath.additions>
-        <derby.jar.classpath.additions>../../javadb/lib/derby.jar ../../javadb/lib/derbyclient.jar ../../javadb/lib/derbynet.jar ../../javadb/lib/derbytools.jar ../../javadb/lib/derbyrun.jar</derby.jar.classpath.additions>
+        <!--
+            Property settings used for adding parts to the Class-Path used to
+            be defined here.  They are now in the fixup.xml file instead so
+            the pom is less changeable.
+        -->
     </properties>
     <developers>
       <developer>
@@ -169,7 +165,6 @@ this or the downstream JARs and so attempts to find things fail.
                               <property name="output.file" value="${project.build.finalName}.jar"/>
                               <property name="output.dir" value="${project.build.directory}"/>
                               <property name="stage.dir" value="${project.build.directory}/stage"/>
-                                <property name="classpath.additions" value="${mq.classpath.additions} ${ds-jdbcra.classpath.additions} ${cp-jdbcra.classpath.additions} ${xa-jdbcra.classpath.additions} ${derby.jar.classpath.additions}"/>
                               <property name="classpath.file" value="${classpath.file}"/>
                               <ant antfile="${basedir}/fixup.xml"/>
                           </tasks>

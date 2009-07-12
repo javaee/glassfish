@@ -46,7 +46,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
@@ -57,13 +56,15 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.security.auth.callback.CallbackHandler;
-import javax.transaction.SystemException;
+import javax.swing.SwingUtilities;
 import javax.transaction.TransactionManager;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -356,7 +357,7 @@ public class AppClientContainer {
         if (referencedPUs != null) {
 
             ProviderContainerContractInfoImpl pcci = new ProviderContainerContractInfoImpl(
-                    (URLClassLoader) getClassLoader(), inst, client.getAnchorDir(), connectorRuntime);
+                    (ACCClassLoader) getClassLoader(), inst, client.getAnchorDir(), connectorRuntime);
             for (PersistenceUnitDescriptor puDesc : referencedPUs) {
                 PersistenceUnitLoader pul = new PersistenceUnitLoader(puDesc, pcci);
                 desc.addEntityManagerFactory(puDesc.getName(), pul.getEMF());
@@ -364,6 +365,8 @@ public class AppClientContainer {
 
             cleanup.setEMFs(pcci.emfs());
         }
+
+        cleanup.setConnectorRuntime(connectorRuntime);
 
         prepareURLStreamHandling();
 
@@ -398,8 +401,46 @@ public class AppClientContainer {
         }
         mainMethod.invoke(null, params);
         state = State.STARTED;
+
+        cleanupWhenSafe();
     }
 
+    private boolean isEDTRunning() {
+        Map<Thread,StackTraceElement[]> threads = Thread.getAllStackTraces();
+        logger.fine("Checking for EDT thread...");
+        for (Map.Entry<Thread,StackTraceElement[]> entry : threads.entrySet()) {
+            logger.fine("  " + entry.getKey().toString());
+            StackTraceElement[] frames = entry.getValue();
+            if (frames.length > 0) {
+                StackTraceElement last = frames[frames.length - 1];
+                if (last.getClassName().equals("java.awt.EventDispatchThread") &&
+                    last.getMethodName().equals("run")) {
+                    logger.fine("Thread " + entry.getKey().toString() + " seems to be the EDT");
+                    return true;
+                }
+            }
+            logger.fine("Did not recognize any thread as the EDT");
+        }
+        return false;
+    }
+
+    private void cleanupWhenSafe() {
+        if (isEDTRunning()) {
+            final AtomicReference<Thread> edt = new AtomicReference<Thread>();
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        edt.set(Thread.currentThread());
+                    }
+                });
+                edt.get().join();
+            } catch (Exception e) {
+
+            }
+        }
+        stop();
+    }
+    
     private void dumpLoaderURLs() {
         final String sep = System.getProperty("line.separator");
         final ClassLoader ldr = Thread.currentThread().getContextClassLoader();
@@ -759,6 +800,7 @@ public class AppClientContainer {
         private Thread cleanupThread = null;
         private Collection<EntityManagerFactory> emfs = null;
         private final Habitat habitat;
+        private ConnectorRuntime connectorRuntime;
 
         static Cleanup arrangeForShutdownCleanup(final Logger logger,
                 final Habitat habitat) {
@@ -784,6 +826,10 @@ public class AppClientContainer {
 
         void setEMFs(Collection<EntityManagerFactory> emfs) {
             this.emfs = emfs;
+        }
+
+        void setConnectorRuntime(ConnectorRuntime connectorRuntime) {
+            this.connectorRuntime = connectorRuntime;
         }
 
         void enable() {
@@ -818,67 +864,92 @@ public class AppClientContainer {
              * the shutdown hook at that time would trigger an exception.
              */
             cleanUp();
+            logger.fine("Clean-up complete");
         }
 
         void cleanUp() {
             if( !cleanedUp ) {
-                try {
-                    cleanupEMFs();
-                    cleanupInfo();
-                    cleanupInjection();
-                    cleanupServiceReferences();
-                    cleanupTransactions();
-                }
-                catch(Throwable t) {
-                }
-                finally {
-                    cleanedUp = true;
-                }
+                cleanupEMFs();
+                cleanupInfo();
+                cleanupInjection();
+                cleanupServiceReferences();
+                cleanupTransactions();
+                cleanupConnectorRuntime();
+
+                cleanedUp = true;
             } // End if -- cleanup required
         }
         
         private void cleanupEMFs() {
-            if (emfs != null) {
-                for (EntityManagerFactory emf : emfs) {
-                    emf.close();
+            try {
+                if (emfs != null) {
+                    for (EntityManagerFactory emf : emfs) {
+                        emf.close();
+                    }
+                    emfs.clear();
+                    emfs = null;
                 }
-                emfs.clear();
-                emfs = null;
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "cleanupEMFs", t);
             }
         }
 
-        private void cleanupInfo() throws IOException {
-            if ( appClientInfo != null ) {
-                appClientInfo.close();
+        private void cleanupInfo() {
+            try {
+                if ( appClientInfo != null ) {
+                    appClientInfo.close();
+                }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "cleanupInfo", t);
             }
         }
 
-        private void cleanupInjection() throws InjectionException {
-            if ( injectionMgr != null) {
-                // inject the pre-destroy methods before shutting down
-                injectionMgr.invokeClassPreDestroy(cls, appClient);
-                injectionMgr = null;
+        private void cleanupInjection() {
+            try {
+                if ( injectionMgr != null) {
+                    // inject the pre-destroy methods before shutting down
+                    injectionMgr.invokeClassPreDestroy(cls, appClient);
+                    injectionMgr = null;
+                }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "cleanupInjection", t);
             }
 
         }
 
         private void cleanupServiceReferences() {
-            if(appClient != null && appClient.getServiceReferenceDescriptors() != null) {
-                // Cleanup client pipe line, if there were service references
-                for (Object desc: appClient.getServiceReferenceDescriptors()) {
-                     ClientPipeCloser.getInstance()
-                        .cleanupClientPipe((ServiceReferenceDescriptor)desc);
+            try {
+                if(appClient != null && appClient.getServiceReferenceDescriptors() != null) {
+                    // Cleanup client pipe line, if there were service references
+                    for (Object desc: appClient.getServiceReferenceDescriptors()) {
+                         ClientPipeCloser.getInstance()
+                            .cleanupClientPipe((ServiceReferenceDescriptor)desc);
+                    }
                 }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "cleanupServiceReferences", t);
             }
         }
 
-        private void cleanupTransactions()
-                throws IllegalStateException, SecurityException, SystemException {
-            Inhabitant<TransactionManager> inhabitant =
-                    habitat.getInhabitantByType(TransactionManager.class);
-            if (inhabitant.isInstantiated()) {
-                TransactionManager txmgr = inhabitant.get();
-                txmgr.rollback();
+        private void cleanupTransactions() {
+            try {
+                Inhabitant<TransactionManager> inhabitant =
+                        habitat.getInhabitantByType(TransactionManager.class);
+                if (inhabitant != null && inhabitant.isInstantiated()) {
+                    TransactionManager txmgr = inhabitant.get();
+                    txmgr.rollback();
+                }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "cleanupTransactions", t);
+            }
+
+        }
+
+        private void cleanupConnectorRuntime() {
+            try {
+                connectorRuntime.cleanUpResourcesAndShutdownAllActiveRAs();
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "cleanupConnectorRuntime", t);
             }
         }
     }

@@ -37,44 +37,32 @@
  * holder.
  */
 
-package org.glassfish.appclient.client.acc.agent;
+package org.glassfish.appclient.client;
 
-import java.lang.instrument.Instrumentation;
 import java.util.logging.Logger;
-import org.glassfish.appclient.client.AppClientFacade;
 import org.glassfish.appclient.client.acc.UserError;
 
 /**
- * Agent which prepares the ACC before the VM launches the selected main program.
- * <p>
- * This agent gathers processes agent arguments, supplied either by the
- * appclient script or the end-user (when entering a java command directly),
- * and processes those arguments.  The primary purpose is to:
- * <ol>
- * <li>identify the main class that the Java launcher has decided to start,
- * <li>create and initialize a new app client container instance, asking the
- * ACC to load and inject the indicated main class in the process <b>if and only if</b>
- * the main class is not the AppClientCommand class.
- * </ol>
- * Then the agent is done.  The java launcher and the VM see to it that the main class's
- * main method is invoked.
  *
  * @author tjquinn
  */
-public class AppClientContainerAgent {
+public class JWSAppClientContainerMain {
 
-    private static Logger logger = Logger.getLogger(AppClientContainerAgent.class.getName());
+    private static Logger logger = Logger.getLogger(JWSAppClientContainerMain.class.getName());
 
-    public static void premain(String agentArgsText, Instrumentation inst) {
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+
         try {
             final long now = System.currentTimeMillis();
 
-            /*
-             * The agent prepares the ACC but does not launch the client.
-             */
-            AppClientFacade.prepareACC(agentArgsText,inst);
-    
-            logger.fine("AppClientContainerAgent finished after " + (System.currentTimeMillis() - now) + " ms");
+            final String agentArgsText = System.getProperty("agent.args");
+
+            AppClientFacade.prepareACC(agentArgsText, null);
+
+            logger.fine("JWSAppClientContainer finished after " + (System.currentTimeMillis() - now) + " ms");
 
         } catch (UserError ue) {
             ue.displayAndExit();

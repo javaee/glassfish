@@ -39,9 +39,18 @@
 
 package org.glassfish.appclient.client.acc;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -51,11 +60,20 @@ public class ACCClassLoader extends URLClassLoader {
 
     private static ACCClassLoader instance = null;
 
-    public static ACCClassLoader newInstance(ClassLoader parent) {
+    private ACCClassLoader shadow = null;
+
+    private boolean shouldTransform = false;
+
+    private final List<ClassFileTransformer> transformers =
+            Collections.synchronizedList(
+                new ArrayList<ClassFileTransformer>());
+
+    public static ACCClassLoader newInstance(ClassLoader parent,
+            final boolean shouldTransform) {
         if (instance != null) {
             throw new IllegalStateException("already set");
         }
-        instance = new ACCClassLoader(parent);
+        instance = new ACCClassLoader(parent, shouldTransform);
         return instance;
     }
 
@@ -63,8 +81,9 @@ public class ACCClassLoader extends URLClassLoader {
         return instance;
     }
     
-    public ACCClassLoader(ClassLoader parent) {
+    public ACCClassLoader(ClassLoader parent, final boolean shouldTransform) {
         super(new URL[0], parent);
+        this.shouldTransform = shouldTransform;
     }
 
     public ACCClassLoader(URL[] urls) {
@@ -79,7 +98,70 @@ public class ACCClassLoader extends URLClassLoader {
         super(urls, parent, factory);
     }
 
-    public void appendURL(final URL url) {
+    public synchronized void appendURL(final URL url) {
         addURL(url);
+        if (shadow != null) {
+            shadow.addURL(url);
+        }
+    }
+
+    public void addTransformer(final ClassFileTransformer xf) {
+        transformers.add(xf);
+    }
+
+    synchronized ACCClassLoader shadow() {
+        if (shadow == null) {
+            shadow = new ACCClassLoader( getURLs(), getParent());
+        }
+        return shadow;
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        if ( ! shouldTransform) {
+            return super.findClass(name);
+        }
+        final ACCClassLoader s = shadow();
+        final Class<?> c = s.findClassUnshadowed(name);
+        final ProtectionDomain pd = c.getProtectionDomain();
+        byte[] bytecode = readByteCode(name);
+
+        for (ClassFileTransformer xf : transformers) {
+            try {
+                bytecode = xf.transform(this, name, null, pd, bytecode);
+            } catch (IllegalClassFormatException ex) {
+                throw new ClassNotFoundException(name, ex);
+            }
+        }
+        return defineClass(name, bytecode, 0, bytecode.length, pd);
+    }
+
+    private Class<?> findClassUnshadowed(String name) throws ClassNotFoundException {
+        return super.findClass(name);
+    }
+
+    private byte[] readByteCode(final String className) throws ClassNotFoundException {
+        final String resourceName = className.replace('.', '/') + ".class";
+        InputStream is = getResourceAsStream(resourceName);
+        if (is == null) {
+            throw new ClassNotFoundException(className);
+        }
+        try {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final byte[] buffer = new byte[8196];
+            int bytesRead;
+            while ( (bytesRead = is.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+            return baos.toByteArray();
+        } catch (IOException e) {
+            throw new ClassNotFoundException(className, e);
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                throw new ClassNotFoundException(className, e);
+            }
+        }
     }
 }

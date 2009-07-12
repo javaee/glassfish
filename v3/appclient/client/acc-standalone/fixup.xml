@@ -20,6 +20,16 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="glassfish v3, app client library fix-up" default="fixup.library" basedir=".">
+    <property name="mq.dir.path" value="../../mq"/>
+    <property name="mq.lib" value="${mq.dir.path}/lib"/>
+    <property name="jmsra.apps.dir" value="../lib/install/applications/jmsra"/>
+    <property name="mq.classpath.additions" value="${mq.lib}/imq.jar ${mq.lib}/imqadmin.jar ${mq.lib}/imqutil.jar ${mq.lib}/fscontext.jar ${jmsra.apps.dir}/imqjmsra.jar"/>
+
+    <property name="ds-jdbcra.classpath.additions" value="../lib/install/applications/__ds_jdbc_ra/__ds_jdbc_ra.jar"/>
+    <property name="cp-jdbcra.classpath.additions" value="../lib/install/applications/__cp_jdbc_ra/__cp_jdbc_ra.jar"/>
+    <property name="xa-jdbcra.classpath.additions" value="../lib/install/applications/__xa_jdbc_ra/__xa_jdbc_ra.jar"/>
+    <property name="derby.jar.classpath.additions" value="../../javadb/lib/derby.jar ../../javadb/lib/derbyclient.jar ../../javadb/lib/derbynet.jar ../../javadb/lib/derbytools.jar ../../javadb/lib/derbyrun.jar"/>
+    <property name="classpath.additions" value="${mq.classpath.additions} ${ds-jdbcra.classpath.additions} ${cp-jdbcra.classpath.additions} ${xa-jdbcra.classpath.additions} ${derby.jar.classpath.additions}"/>
     <target name="fixup.library">
         <unzip src="${output.dir}/${output.file}" dest="${stage.dir}">
             <patternset>

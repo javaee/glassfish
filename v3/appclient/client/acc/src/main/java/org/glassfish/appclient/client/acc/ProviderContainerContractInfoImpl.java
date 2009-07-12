@@ -66,7 +66,7 @@ import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
  */
 public class ProviderContainerContractInfoImpl implements ProviderContainerContractInfo {
 
-    private final URLClassLoader classLoader;
+    private final ACCClassLoader classLoader;
     private final Instrumentation inst;
     private final String applicationLocation;
     private final ConnectorRuntime connectorRuntime;
@@ -85,7 +85,7 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
      * @param inst VM's instrumentation object
      */
     public ProviderContainerContractInfoImpl(
-            final URLClassLoader classLoader,
+            final ACCClassLoader classLoader,
             final Instrumentation inst,
             final String applicationLocation,
             final ConnectorRuntime connectorRuntime) {
@@ -104,7 +104,12 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
     }
 
     public void addTransformer(ClassTransformer transformer) {
-        inst.addTransformer(new TransformerWrapper(transformer, classLoader));
+        final TransformerWrapper tw = new TransformerWrapper(transformer, classLoader);
+        if (inst != null) {
+            inst.addTransformer(tw);
+        } else {
+            classLoader.addTransformer(tw);
+        }
     }
 
     public String getApplicationLocation() {

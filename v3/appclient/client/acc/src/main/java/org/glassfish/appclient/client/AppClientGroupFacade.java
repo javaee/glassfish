@@ -39,7 +39,7 @@
 
 package org.glassfish.appclient.client;
 
-import org.glassfish.appclient.client.acc.AppClientContainer;
+import org.glassfish.appclient.client.acc.UserError;
 
 /**
  *
@@ -47,24 +47,26 @@ import org.glassfish.appclient.client.acc.AppClientContainer;
  */
 public class AppClientGroupFacade {
 
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        AppClientContainer acc = AppClientFacadeInfo.getACC();
-        if (acc == null) {
-            acc = prepareACC();
-        }
-        try {
-            acc.launch(args);
+       try {
+            if (AppClientFacade.acc() == null) {
+                /*
+                 * The facade JAR has been run directly, not via the appclient
+                 * script and not via Java Web Start.  So we have no agent
+                 * arguments and no instrumentation for registering transformations.
+                 */
+                AppClientFacade.prepareACC(null, null);
+            }
+            AppClientFacade.launch(args);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);
+        } catch (UserError ue) {
+            ue.displayAndExit();
         }
-    }
-
-    private static AppClientContainer prepareACC() {
-        // XXX Implement this to support java -jar launching.
-        return null;
     }
 }
