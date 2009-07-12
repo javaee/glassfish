@@ -73,7 +73,7 @@
 </sun:title>
 
 <!-- Table .... -->
-<sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.log.LoggerLevelTableTitle}"
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring.MonitorLevelTableTitle}"
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
             selectMultipleButton="$boolean{true}"
