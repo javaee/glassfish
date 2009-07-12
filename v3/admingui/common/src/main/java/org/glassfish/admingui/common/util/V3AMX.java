@@ -88,6 +88,7 @@ public class V3AMX {
             }
             AMXBooter.bootAMX(mbs);
             DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRootProxy();
+            domainRoot.waitAMXReady();
             v3amx = new V3AMX( domainRoot, mbs);
 	}
         return v3amx;
