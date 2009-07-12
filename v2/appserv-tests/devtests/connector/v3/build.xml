@@ -236,6 +236,9 @@
         <echo message="@@## built-in-custom-resources ##@@"/>
         <ant dir="built-in-custom-resources" target="${connector-target}"/>
 
+        <echo message="@@## datasource-definition##@@"/>
+        <ant dir="datasource-definition" target="${connector-target}"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
