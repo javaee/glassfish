@@ -89,8 +89,9 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final DeploymentContext dc,
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
-            final ClassLoader gfClientModuleClassLoader) throws IOException {
-        super(dc, bundleDesc, archivist, gfClientModuleClassLoader);
+            final ClassLoader gfClientModuleClassLoader,
+            final String defaultAlias) throws IOException {
+        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, defaultAlias);
         earURI = dc.getSource().getParentArchive().getURI();
         processDependencies();
     }

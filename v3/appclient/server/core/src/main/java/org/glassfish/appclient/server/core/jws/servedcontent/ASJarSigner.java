@@ -36,6 +36,7 @@
 
 package org.glassfish.appclient.server.core.jws.servedcontent;
 
+import com.sun.enterprise.security.ssl.SecuritySupportImpl;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -50,6 +51,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.Permission;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -90,20 +92,21 @@ public class ASJarSigner implements PostConstruct {
 //    private final String userAlias; // = System.getProperty(USER_SPECIFIED_ALIAS_PROPERTYNAME);
     
     private static final StringManager localStrings = StringManager.getManager(ASJarSigner.class);
-    
-    @Inject
+
+    // TODO: SecuritySupportImpl does not properly init as a @Service; just create one for now
+//    @Inject
     private static SecuritySupport securitySupport;
 
-    /** info used for signing, saved after being looked up during the first request */
-    private SigningInfo signingInfo = null;
+
 
     private Logger logger;
 
-    /** the existing, unsigned JAR file */
-    private File unsignedJar;
-    
-    /** the signed JAR file, to be created */
-    private File signedJar;
+    public void postConstruct() {
+        logger =
+            LogDomains.getLogger(ASJarSigner.class,
+            LogDomains.CORE_LOGGER);
+        securitySupport  = new SecuritySupportImpl();
+    }
 
     /**
      *Creates a signed jar from the specified unsigned jar.
@@ -112,41 +115,13 @@ public class ASJarSigner implements PostConstruct {
      *@return the elapsed time to sign the JAR (in milliseconds)
      *@throws Exception getting the keystores from SSLUtils fails
      */
-    public static long signJar(File unsignedJar, File signedJar,
-            String userAlias) throws Exception {
-//        /*
-//         *Make sure the signing information has been initialized.
-//         */
-//        synchronized(ASJarSigner.class) {
-//            if (signingInfo == null) {
-//                signingInfo = createSigningInfo(userAlias);
-//            }
-//        }
-        ASJarSigner signer = new ASJarSigner(unsignedJar, signedJar, userAlias);
-        return signer.sign();
-    }
-    
-    public void postConstruct() {
-        logger =
-            LogDomains.getLogger(ASJarSigner.class,
-            LogDomains.CORE_LOGGER);
-    }
+    public long signJar(final File unsignedJar, final File signedJar,
+        String alias) throws Exception {
 
-    /**
-     * Creates a new instance of ASJarSigner
-     */
-    private ASJarSigner(File unsignedJar, File signedJar, String userAlias) throws Exception {
-        this.unsignedJar = unsignedJar;
-        this.signedJar = signedJar;
-        signingInfo = createSigningInfo(userAlias);
-    }
-    
-    /**
-     *Signs the jar file using the current signing info.
-     *@return elapsed milliseconds it took to sign the JAR
-     *@throws Exception SSLUtils.getKeyStores() cannot do so
-     */
-    private long sign() throws Exception {
+        if (alias == null) {
+            alias = DEFAULT_ALIAS_VALUE;
+        }
+        final SigningInfo signingInfo = createSigningInfo(alias);
         long startTime = System.currentTimeMillis();
         
         /*
@@ -166,7 +141,7 @@ public class ASJarSigner implements PostConstruct {
          *Make sure to change the security manager and use the JarSigner
          *class only one thread at a time.
          */
-        synchronized(ASJarSigner.class) {
+        synchronized(this) {
             
             /*
              *Save the current security manager; restored later.
@@ -192,7 +167,8 @@ public class ASJarSigner implements PostConstruct {
                  *The jar signer will have written some information to System.out
                  *and/or System.err.  Refer the user to those earlier messages.
                  */
-                throw new Exception(localStrings.getString("jws.sign.errorSigning", signedJar.getAbsolutePath()), t);
+                throw new Exception(localStrings.getString("jws.sign.errorSigning", 
+                        signedJar.getAbsolutePath(), signingInfo.getAlias()), t);
             } finally {
                 /*
                  *Restore the saved security manager.
@@ -268,7 +244,8 @@ public class ASJarSigner implements PostConstruct {
                         userAlias, 
                         keystorePWs[keystoreSlot], 
                         ks,
-                        tokenNames[keystoreSlot]));
+                        tokenNames[keystoreSlot],
+                        logger));
             }
             
             if (ks.containsAlias(DEFAULT_ALIAS_VALUE)) {
@@ -276,7 +253,8 @@ public class ASJarSigner implements PostConstruct {
                         DEFAULT_ALIAS_VALUE, 
                         keystorePWs[keystoreSlot], 
                         ks, 
-                        tokenNames[keystoreSlot]));
+                        tokenNames[keystoreSlot],
+                        logger));
             }
             keystoreSlot++;
         }
@@ -290,7 +268,7 @@ public class ASJarSigner implements PostConstruct {
                 userAlias,
                 signingInfoForUserAlias,
                 signingInfoForDefaultAlias);
-        logger.fine(localStrings.getString("jws.sign.signingInfo", result.toString()));
+        logger.fine("Selected signing info " + result.toString());
         
         return result;
     }
@@ -317,8 +295,7 @@ public class ASJarSigner implements PostConstruct {
         
         if (userAlias != null) {
             if (signingInfoForUserAlias.size() == 0) {
-                logger.log(Level.WARNING, 
-                        localStrings.getString("jws.sign.userAliasAbsent", userAlias));
+                logger.log(Level.WARNING, "jws.sign.userAliasAbsent", userAlias);
                 signingInfoOfInterest = signingInfoForDefaultAlias;
                 aliasOfInterest = DEFAULT_ALIAS_VALUE;
             } else {
@@ -353,8 +330,8 @@ public class ASJarSigner implements PostConstruct {
                 }
                 sb.append(si);
             }
-            logger.log(Level.WARNING, 
-                    localStrings.getString("jws.sign.aliasFoundMult", aliasOfInterest, sb.toString()));
+            logger.log(Level.WARNING, "jws.sign.aliasFoundMult", 
+                    new Object[] {aliasOfInterest, sb.toString()});
         }
 
         /*
@@ -381,6 +358,7 @@ public class ASJarSigner implements PostConstruct {
         private String password;
         private PrivateKey key;
         private String token;
+        private Logger logger;
         
         /**
          *Factory method that returns a new instance of the correct subtype 
@@ -392,20 +370,23 @@ public class ASJarSigner implements PostConstruct {
          *@return new instance of a SigningInfo subclass
          */
         static SigningInfo newInstance(String alias, String password,
-                KeyStore keystore, String token) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+                KeyStore keystore, String token, Logger logger)
+                    throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
             if (keystore.getType().equalsIgnoreCase(JKS_KEYSTORE_TYPE_VALUE)) {
-                return new JKSSigningInfo(alias, password, keystore, token);
+                return new JKSSigningInfo(alias, password, keystore, token, logger);
             } else {
-                return new PKCS11SigningInfo(alias, password, keystore, token);
+                return new PKCS11SigningInfo(alias, password, keystore, token, logger);
             }
         }
 
         public SigningInfo(String alias, String password, 
-                KeyStore keystore, String token) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+                KeyStore keystore, String token, Logger logger)
+                    throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
             this.keystore = keystore;
             this.alias = alias;
             this.password = password;
             this.token = token;
+            this.logger = logger;
             key = validateKey();
         }
         
@@ -419,7 +400,9 @@ public class ASJarSigner implements PostConstruct {
             if (tempKey instanceof PrivateKey) {
                 return (PrivateKey) tempKey;
             } else {
-                throw new IllegalArgumentException(localStrings.getString("jws.sign.keyNotPrivate", alias));
+                final String msg = MessageFormat.format(
+                        logger.getResourceBundle().getString("jws.sign.keyNotPrivate"), alias);
+                throw new IllegalArgumentException(msg);
             }
         }
         
@@ -530,8 +513,8 @@ public class ASJarSigner implements PostConstruct {
             }
             
             public JKSSigningInfo(String alias, String password, 
-                    KeyStore keystore, String token) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-                super(alias, password, keystore, token);
+                    KeyStore keystore, String token, Logger logger) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+                super(alias, password, keystore, token, logger);
             }
             
             protected void addKeyStoreTypeSpecificArgs(Collection<String> args) {
@@ -553,8 +536,8 @@ public class ASJarSigner implements PostConstruct {
             private static final String PKCS11_KEYSTORE_OPTION_VALUE = "NONE";
 
             public PKCS11SigningInfo(String alias, String password, 
-                    KeyStore keystore, String token) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-                super(alias, password, keystore, token);
+                    KeyStore keystore, String token, Logger logger) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+                super(alias, password, keystore, token, logger);
             }
             
             protected void addKeyStoreTypeSpecificArgs(Collection<String> args) {

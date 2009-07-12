@@ -72,8 +72,9 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     StandaloneAppClientDeployerHelper(final DeploymentContext dc, 
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
-            final ClassLoader gfClientModuleClassLoader) throws IOException {
-        super(dc, bundleDesc, archivist, gfClientModuleClassLoader);
+            final ClassLoader gfClientModuleClassLoader,
+            final String defaultAlias) throws IOException {
+        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, defaultAlias);
     }
 
     /**

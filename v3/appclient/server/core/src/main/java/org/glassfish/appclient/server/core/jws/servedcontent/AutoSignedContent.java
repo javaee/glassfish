@@ -54,13 +54,16 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
     private final File unsignedFile;
     private final File signedFile;
     private final String userProvidedAlias;
+    private final ASJarSigner jarSigner;
 
     public AutoSignedContent(final File unsignedFile,
             final File signedFile, 
-            final String userProvidedAlias) {
+            final String userProvidedAlias,
+            final ASJarSigner jarSigner) {
         this.unsignedFile = unsignedFile;
         this.signedFile = signedFile;
         this.userProvidedAlias = userProvidedAlias;
+        this.jarSigner = jarSigner;
     }
 
     public File file() throws IOException {
@@ -86,11 +89,41 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
          * the containing directory ahead of time.
          */
         signedFile.getParentFile().mkdirs();
-        ASJarSigner.signJar(unsignedFile, signedFile, userProvidedAlias);
+        jarSigner.signJar(unsignedFile, signedFile, userProvidedAlias);
     }
 
     @Override
     public String toString() {
         return "AutoSignedContent:" + signedFile.getAbsolutePath();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AutoSignedContent other = (AutoSignedContent) obj;
+        if (this.unsignedFile != other.unsignedFile && (this.unsignedFile == null || !this.unsignedFile.equals(other.unsignedFile))) {
+            return false;
+        }
+        if (this.signedFile != other.signedFile && (this.signedFile == null || !this.signedFile.equals(other.signedFile))) {
+            return false;
+        }
+        if ((this.userProvidedAlias == null) ? (other.userProvidedAlias != null) : !this.userProvidedAlias.equals(other.userProvidedAlias)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + (this.unsignedFile != null ? this.unsignedFile.hashCode() : 0);
+        hash = 83 * hash + (this.signedFile != null ? this.signedFile.hashCode() : 0);
+        hash = 83 * hash + (this.userProvidedAlias != null ? this.userProvidedAlias.hashCode() : 0);
+        return hash;
     }
 }

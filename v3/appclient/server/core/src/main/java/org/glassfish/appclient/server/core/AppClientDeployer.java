@@ -66,6 +66,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.internal.api.ServerContext;
@@ -73,6 +74,8 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.appclient.server.core.jws.AppClientHTTPAdapter;
+import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
+import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
@@ -178,9 +181,14 @@ public class AppClientDeployer
     private static final List<String> DO_NOT_SERVE_LIST =
             Arrays.asList("glassfish/modules/jaxb-osgi.jar");
 
+    private static final String JWS_SIGNED_SYSTEM_JARS_ROOT = "java-web-start/___system";
 
-    @Inject
-    protected ServerContext sc;
+    /**
+     * maps "(aliasName)/(systemJarRelativePath)" to AutoSignedContent for
+     * the system JAR as signed by the cert linked to the alias
+     */
+    private final Map<String,AutoSignedContent> appLevelSignedSystemContent =
+            new HashMap<String,AutoSignedContent>();
 
     @Inject
     protected Domain domain;
@@ -200,6 +208,12 @@ public class AppClientDeployer
     @Inject
     private RequestDispatcher requestDispatcher;
 
+    @Inject
+    private ASJarSigner jarSigner;
+
+    @Inject
+    private ServerEnvironment serverEnv;
+
     /** the class loader which knows about the org.glassfish.appclient.gf-client-module */
     private ClassLoader gfClientModuleClassLoader;
 
@@ -210,6 +224,8 @@ public class AppClientDeployer
 
     private final ConcurrentHashMap<String,AppClientHTTPAdapter> httpAdapters = new
             ConcurrentHashMap<String, AppClientHTTPAdapter>();
+
+    private static final String DEFAULT_ALIAS = "s1as";
 
     /*
      * Each app client server application will listen for config change
@@ -226,6 +242,8 @@ public class AppClientDeployer
 
     private URI installRootURI;
     private URI umbrellaRootURI;
+    private File umbrellaRoot;
+    private File domainLevelSignedJARsRoot;
 
     public AppClientDeployer() {
     }
@@ -240,7 +258,9 @@ public class AppClientDeployer
             gfClientModuleClassLoader = module.getClassLoader();
         }
         installRootURI = serverContext.getInstallRoot().toURI();
-        umbrellaRootURI = new File(installRootURI).getParentFile().toURI();
+        umbrellaRoot = new File(installRootURI).getParentFile();
+        umbrellaRootURI = umbrellaRoot.toURI();
+        domainLevelSignedJARsRoot = new File(serverEnv.getDomainRoot(), JWS_SIGNED_SYSTEM_JARS_ROOT);
     }
 
     @Override
@@ -254,7 +274,7 @@ public class AppClientDeployer
         helper.addGroupFacadeToEARDownloads();
         final AppClientServerApplication newACServerApp =
                 new AppClientServerApplication(dc, this, helper,
-                requestDispatcher, applications, logger);
+                requestDispatcher, applications, jarSigner, logger);
         appClientApps.add(newACServerApp);
         return newACServerApp;
     }
@@ -306,6 +326,33 @@ public class AppClientDeployer
                 contextRoot,
                 adapter,
                 null);
+    }
+
+    public synchronized AutoSignedContent appLevelSignedSystemContent(
+            final String relativePathToSystemJar,
+            final String alias) {
+        /*
+         * The key to the map is also the subpath to the file within the
+         * domain's repository which holds signed system JARs.
+         */
+        final String key = keyToAppLevelSignedSystemContentMap(relativePathToSystemJar, alias);
+        AutoSignedContent result = appLevelSignedSystemContent.get(key);
+        if (result == null) {
+            final File unsignedFile = new File(umbrellaRoot, relativePathToSystemJar);
+            final File signedFile = new File(domainLevelSignedJARsRoot, key);
+            result = new AutoSignedContent(unsignedFile, signedFile, alias, jarSigner);
+        }
+        return result;
+    }
+
+    private String keyToAppLevelSignedSystemContentMap(
+            final String relativePathToSystemJar,
+            final String alias) {
+        return alias + "/" + relativePathToSystemJar;
+    }
+
+    private String defaultSigningAlias() {
+        return DEFAULT_ALIAS;
     }
 
     public String contextRootForAppAdapter(final String appName) {
@@ -368,7 +415,11 @@ public class AppClientDeployer
     private AppClientDeployerHelper createAndSaveHelper(final DeploymentContext dc,
             final AppClientArchivist archivist, final ClassLoader clientModuleLoader) throws IOException {
         final AppClientDeployerHelper h =
-            AppClientDeployerHelper.newInstance(dc, archivist, clientModuleLoader);
+            AppClientDeployerHelper.newInstance(
+                dc,
+                archivist,
+                clientModuleLoader,
+                defaultSigningAlias());
         dc.addTransientAppMetaData(HELPER_KEY_NAME + moduleURI(dc), h.proxy());
         return h;
     }
@@ -428,6 +479,20 @@ public class AppClientDeployer
     }
 
     private Map<String,StaticContent> initStaticContent(final List<String> systemJARRelativeURIs) throws IOException {
+        /*
+         * This method builds the static content for the "system" Grizzly
+         * adapter which serves files from the installation, as opposed to
+         * files from the domain or files from a specific app.
+         *
+         * Note that at least part of every deployed app will be signed, if not
+         * by the developer before deployment then by the server during
+         * deployment.  The certificates used for this signing could vary from
+         * one domain to another, and even from one application to another if
+         * the deployer so chooses.  So in this method we do NOT create
+         * static content entries for the gf-client.jar and gf-client-module.jar
+         * files.  Instead those are handled by the AppClientServerApplication
+         * logic.
+         */
         Map<String,StaticContent> result = new HashMap<String,StaticContent>();
         File gfClientJAR = new File(
             new File(installRootURI.getRawPath(), "modules"),

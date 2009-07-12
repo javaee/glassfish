@@ -56,11 +56,21 @@
     </security>
 
     <resources>
+        
         <java version="1.6+" 
-            java-vm-args="-javaagent=${request.scheme}://${request.host}:${request.port}${system.context.root}/${agent.jar}=${agent.args} ${request.vmargs}" />
-
+            java-vm-args="-javaagent=${gf-client.jar}=mode=jws,${agent.args} ${request.vmargs}" />
+        
         <!-- In v3, run the client facade as the main JAR. -->
         <jar href="${client.facade.jar.path}" main="true"/>
+
+        <!--
+            These next JARs will have been signed using the
+            deployer-specified alias, if specified, or the default domain alias.
+            Note that we do not sign these once for each app but reuse ones
+            signed with the same alias.
+        -->
+        <jar href="${gf-client.jar}"/>
+        <jar href="${gf-client-module.jar}"/>
 
         <!--
             Refer to extension JNLP documents which list other resources - JARs and JNLPs.

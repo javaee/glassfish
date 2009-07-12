@@ -72,6 +72,10 @@ import org.glassfish.deployment.common.DownloadableArtifacts;
 public abstract class AppClientDeployerHelper {
 
     private final static String PERSISTENCE_XML_PATH = "META-INF/persistence.xml";
+    private final static String SIGNING_ALIAS_PROPERTY_NAME = "jar-signing-alias";
+
+    // TODO: instead of this constant we should use a security method to get the current default value
+    private final static String TEMP_DEFAULT_ALIAS = "s1as";
 
     private final DeploymentContext dc;
     private final ApplicationClientDescriptor appClientDesc;
@@ -80,6 +84,9 @@ public abstract class AppClientDeployerHelper {
     private final String clientName;
 
     private final ClassLoader gfClientModuleClassLoader;
+
+    private final String defaultSigningAlias;
+    private final String signingAlias;
     /**
      * Returns the correct concrete implementation of Helper.
      * @param dc the DeploymentContext for this deployment
@@ -89,20 +96,32 @@ public abstract class AppClientDeployerHelper {
     static AppClientDeployerHelper newInstance(
             final DeploymentContext dc,
             final AppClientArchivist archivist,
-            final ClassLoader gfClientModuleLoader) throws IOException {
+            final ClassLoader gfClientModuleLoader,
+            final String defaultAlias) throws IOException {
         ApplicationClientDescriptor bundleDesc = dc.getModuleMetaData(ApplicationClientDescriptor.class);
         Application application = bundleDesc.getApplication();
         boolean insideEar = ! application.isVirtual();
 
-        return (insideEar ? new NestedAppClientDeployerHelper(dc, bundleDesc, archivist, gfClientModuleLoader)
-                          : new StandaloneAppClientDeployerHelper(dc, bundleDesc, archivist, gfClientModuleLoader));
+        return (insideEar ? new NestedAppClientDeployerHelper(
+                                    dc,
+                                    bundleDesc,
+                                    archivist,
+                                    gfClientModuleLoader,
+                                    defaultAlias)
+                          : new StandaloneAppClientDeployerHelper(
+                                    dc,
+                                    bundleDesc,
+                                    archivist,
+                                    gfClientModuleLoader,
+                                    defaultAlias));
     }
 
     protected AppClientDeployerHelper(
             final DeploymentContext dc,
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
-            final ClassLoader gfClientModuleClassLoader) throws IOException {
+            final ClassLoader gfClientModuleClassLoader,
+            final String defaultSigningAlias) throws IOException {
         super();
         this.dc = dc;
         this.appClientDesc = bundleDesc;
@@ -110,6 +129,9 @@ public abstract class AppClientDeployerHelper {
         this.gfClientModuleClassLoader = gfClientModuleClassLoader;
         this.appName = appClientDesc.getApplication().getRegistrationName();
         this.clientName = appClientDesc.getModuleDescriptor().getArchiveUri();
+
+        this.defaultSigningAlias = defaultSigningAlias;
+        signingAlias = chooseAlias();
     }
 
     /**
@@ -233,6 +255,20 @@ public abstract class AppClientDeployerHelper {
         ClientJarMakerUtils.copyArchive(source, target, Collections.EMPTY_SET);
         target.close();
         return new File(target.getURI());
+    }
+
+    private String chooseAlias() {
+        final String userSpecifiedAlias;
+        return ((userSpecifiedAlias = extractUserProvidedAlias()) != null)
+                ? userSpecifiedAlias : defaultSigningAlias;
+    }
+
+    private String extractUserProvidedAlias() {
+        return dc.getAppProps().getProperty(SIGNING_ALIAS_PROPERTY_NAME);
+    }
+
+    public String signingAlias() {
+        return signingAlias;
     }
 
     private URI expandedDirURI(final URI submoduleURI) {

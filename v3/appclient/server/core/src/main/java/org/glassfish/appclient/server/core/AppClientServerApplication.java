@@ -57,6 +57,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -70,8 +71,9 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.jws.Util;
+import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
+import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
-import org.glassfish.appclient.server.core.jws.servedcontent.CachingDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.Content;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
@@ -150,6 +152,40 @@ public class AppClientServerApplication implements
 
     private final static String JAVA_WEB_START_ENABLED_PROPERTY_NAME = "" +
             "java-web-start-enabled";
+
+    private final static String GLASSFISH_DIRECTORY_PREFIX = "glassfish/";
+
+    private static class SignedSystemContentFromApp {
+        private final String tokenName;
+        private final String relativePath;
+
+        private SignedSystemContentFromApp(String tokenName, String relativePath) {
+            this.tokenName = tokenName;
+            this.relativePath = relativePath;
+        }
+
+        String getRelativePath() {
+            return relativePath;
+        }
+
+        String getTokenName() {
+            return tokenName;
+        }
+
+        URI getRelativePathURI() {
+            return URI.create(relativePath);
+        }
+    }
+
+    private final static List<SignedSystemContentFromApp> SIGNED_SYSTEM_CONTENT_SERVED_AT_APP_LEVEL =
+            Arrays.asList(
+                new SignedSystemContentFromApp(
+                    "gf-client.jar",
+                    GLASSFISH_DIRECTORY_PREFIX + "modules/gf-client.jar"),
+                new SignedSystemContentFromApp(
+                    "gf-client-module.jar", 
+                    GLASSFISH_DIRECTORY_PREFIX + "modules/gf-client-module.jar")
+                    );
     
     private final RequestDispatcher requestDispatcher;
 
@@ -158,6 +194,7 @@ public class AppClientServerApplication implements
     private final com.sun.enterprise.config.serverbeans.Applications applications;
     private final String deployedAppName;
     private final TokenHelper tHelper;
+    private final ASJarSigner jarSigner;
 
     private Set<Content> myContent = null;
 
@@ -166,6 +203,7 @@ public class AppClientServerApplication implements
             final AppClientDeployerHelper helper,
             final RequestDispatcher requestDispatcher,
             final Applications applications,
+            final ASJarSigner jarSigner,
             final Logger logger) {
         this.dc = dc;
         this.deployer = deployer;
@@ -184,6 +222,7 @@ public class AppClientServerApplication implements
         deployedAppName = dc.getCommandParameters(DeployCommandParameters.class).name();
         this.applications = applications;
         tHelper = TokenHelper.newInstance(helper);
+        this.jarSigner = jarSigner;
 
     }
         
@@ -345,10 +384,25 @@ public class AppClientServerApplication implements
 //                new File(helper.appClientServerURI(dc)));
 //        result.put(helper.appClientUserURI(dc).toASCIIString(), acJarContent);
 
-        createAndAddStaticContent(result, helper.facadeServerURI(dc),
+        createAndAddSignedStaticContentFromGeneratedFile(result, helper.facadeServerURI(dc),
                 helper.facadeUserURI(dc),
                 CLIENT_FACADE_JAR_PATH_PROPERTY_NAME);
 
+        /*
+         * Make sure that there are versions of gf-client.jar and gf-client-module.jar
+         * that are signed by the same cert used to sign the facade JAR for
+         * this app.  That's because the user might have chosen to sign using
+         * a particular alias so the end-users will accept JARs signed by
+         * the corresponding cert.  (Java Web Start will prompt them to do this
+         * during the download of signed JARs.)
+         *
+         * Note that the following logic makes sure that such signed versions
+         * exist.  If multiple apps use the same cert to sign JARs, then the
+         * multiple instances of AutoSignedContent class for the same signed
+         * JAR will point to and reuse the same signed JAR, rather than
+         * re-sign it each time an app needed it is started.
+         */
+        addSignedSystemContent(result);
         
         /*
          * The developer might have used the sun-application-client.xml
@@ -372,19 +426,80 @@ public class AppClientServerApplication implements
         tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, "");
         return result;
     }
-    
+
+    private void addSignedSystemContent(
+            final Map<String,StaticContent> content) {
+        for (SignedSystemContentFromApp signedContentFromApp : SIGNED_SYSTEM_CONTENT_SERVED_AT_APP_LEVEL) {
+            final AutoSignedContent signedContent =
+                    deployer.appLevelSignedSystemContent(
+                        signedContentFromApp.getRelativePath(),
+                        helper.signingAlias());
+            recordStaticContent(content, signedContent, 
+                    signedContentFromApp.getRelativePathURI(),
+                    signedContentFromApp.getTokenName());
+        }
+    }
+
     private void createAndAddStaticContent(final Map<String,StaticContent> content,
             final URI uriToFile, 
             final URI uriForLookup,
             final String tokenName) {
         
-        final StaticContent acJarContent = new FixedContent(
+        final StaticContent jarContent = new FixedContent(
                 new File(uriToFile));
-        final String uriStringForLookup = uriForLookup.toASCIIString();
-        content.put(uriStringForLookup, acJarContent);
-        tHelper.setProperty(tokenName, uriStringForLookup);
+        recordStaticContent(content, jarContent, uriForLookup, tokenName);
     }
 
+    private void createAndAddSignedStaticContentFromGeneratedFile(final Map<String,StaticContent> content,
+            final URI uriToFile,
+            final URI uriForLookup,
+            final String tokenName) {
+
+        final File unsignedFile = new File(uriToFile);
+        final File signedFile = signedFileForGeneratedAppFile(unsignedFile);
+        signedFile.getParentFile().mkdirs();
+        final StaticContent signedJarContent = new AutoSignedContent(
+                unsignedFile, 
+                signedFile,
+                helper.signingAlias(),
+                jarSigner);
+        recordStaticContent(content, signedJarContent, uriForLookup, tokenName);
+    }
+
+    private void recordStaticContent(final Map<String,StaticContent> content,
+            final StaticContent newContent,
+            final URI uriForLookup,
+            final String tokenName) {
+
+        final String uriStringForLookup = uriForLookup.toASCIIString();
+        recordStaticContent(content, newContent, uriStringForLookup);
+        tHelper.setProperty(tokenName, uriForLookup.toASCIIString());
+    }
+
+    private void recordStaticContent(final Map<String,StaticContent> content,
+            final StaticContent newContent,
+            final String uriStringForLookup) {
+        content.put(uriStringForLookup, newContent);
+    }
+
+    private File signedFileForGeneratedAppFile(final File unsignedFile) {
+        /*
+         * Signed files at the app level go in 
+         *
+         * generated/xml/(appName)/signed/(path-within-app-of-unsigned-file)
+         * 
+         * and when we're signing a generated file we just use its URI
+         * relative to the app's scratch directory to compute the URI relative
+         * to generated/xml/(appName)/signed where the signed file should reside.
+         */
+        final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
+        rootForSignedFilesInApp.mkdir();
+        final URI unsignedFileURIRelativeToXMLDir = dc.getScratchDir("xml").toURI().
+                relativize(unsignedFile.toURI());
+        final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(unsignedFileURIRelativeToXMLDir);
+        return new File(signedFileURI);
+    }
+    
     private Map<String,DynamicContent> initClientDynamicContent() throws IOException {
 
 
