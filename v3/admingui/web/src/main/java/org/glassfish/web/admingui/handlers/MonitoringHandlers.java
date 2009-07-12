@@ -37,6 +37,7 @@
 package org.glassfish.web.admingui.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -50,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.management.Attribute;
+import javax.management.ObjectName;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -59,6 +62,8 @@ import javax.management.openmbean.CompositeType;
 
 import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
 
 /**
  *
@@ -66,6 +71,36 @@ import org.glassfish.admin.amx.core.AMXProxy;
  */
 public class MonitoringHandlers {
     
+
+    @Handler(id = "getMonitorLevels",
+    input = {
+        @HandlerInput(name = "objectName", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "monitorCompList", type = List.class)
+    })
+    public static void getMonitorLevels(HandlerContext handlerCtx) {
+        String objectName = (String) handlerCtx.getInputValue("objectName");
+        List result = new ArrayList();
+        try {
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectName));
+            AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) amx);
+            final Map<String, Object> attrs = helper.simpleAttributesMap();
+            for (String oneMonComp : attrs.keySet()) {
+                //if (oneMonComp.endsWith(".level")){
+                if ((!oneMonComp.equals("Parent")) && (!oneMonComp.equals("Children")) && (!oneMonComp.equals("Name"))) {
+                    Map oneRow = new HashMap();
+                    oneRow.put("monCompName", oneMonComp);
+                    oneRow.put("level", attrs.get(oneMonComp));
+                    oneRow.put("selected", false);
+                    result.add(oneRow);
+                //}
+                }
+            }
+        } catch (Exception ex) {
+        }
+        handlerCtx.setOutputValue("monitorCompList", result);
+    }
+       
     
   /*
      * This handler returns a list of statistical data for type and name of component.
@@ -125,4 +160,30 @@ public class MonitoringHandlers {
         }
     }    
     
+    @Handler(id = "updateMonitorLevels",
+    input = {
+        @HandlerInput(name = "allRows", type = List.class, required = true),
+        @HandlerInput(name = "objectName", type = String.class)})
+    public static void updateMonitorLevels(HandlerContext handlerCtx) {
+        String objectNameStr = (String) handlerCtx.getInputValue("objectName");
+        List<Map<String,String>> allRows = (List<Map<String,String>>) handlerCtx.getInputValue("allRows");
+        for(Map<String,String> oneRow : allRows){
+             V3AMX.setAttribute(objectNameStr, new Attribute(oneRow.get("monCompName"), oneRow.get("level")));
+        }
+     }    
+    
+    @Handler(id = "getValidMonitorLevels",
+    output = {
+        @HandlerOutput(name = "monitorLevelList", type = List.class)
+    })
+    public static void getValidMonitorLevels(HandlerContext handlerCtx) {
+        handlerCtx.setOutputValue("monitorLevelList",  levels);
+     }
+    
+    final private static List<String> levels= new ArrayList();
+    static{
+        levels.add("OFF");
+        levels.add("LOW");
+        levels.add("HIGH");
+    }
 }
