@@ -98,6 +98,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 import com.sun.enterprise.connectors.util.ConnectorTimerProxy;
+import com.sun.enterprise.connectors.util.ConnectorJavaBeanValidator;
 
 
 /**
@@ -169,6 +170,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ProcessEnvironment processEnvironment;
+
+    @Inject
+    private ConnectorJavaBeanValidator connectorBeanValidator;
 
     /**
      * Returns the ConnectorRuntime instance.
@@ -1125,5 +1129,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public Set<String> getJdbcDriverClassNames(String dbVendor, String resType) {
         Set<String> emptySet = new HashSet();
         return emptySet;
+    }
+
+    /**
+     * returns the bean validator that can be used to validate various connector bean artifacts
+     * (ResourceAdapter, ManagedConnetionFactory, AdministeredObject, ActivationSpec)
+     * @return ConnectorBeanValidator
+     */
+    public ConnectorJavaBeanValidator getConnectorBeanValidator(){
+        return connectorBeanValidator;    
     }
 }

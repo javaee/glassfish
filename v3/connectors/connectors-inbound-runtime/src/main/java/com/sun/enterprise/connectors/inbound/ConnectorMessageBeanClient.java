@@ -176,6 +176,11 @@ public final class ConnectorMessageBeanClient
                 ActivationSpec activationSpec = getActivationSpec(aira, activationSpecClassName);
                 activationSpec.setResourceAdapter(ra);
 
+                //at this stage, activation-spec is created, config properties merged with ejb-descriptor.
+                //validate activation-spec now
+                ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+                runtime.getConnectorBeanValidator().validateJavaBean(activationSpec);
+
                 aira.validateActivationSpec(activationSpec);
 
                 myState = BLOCKED;

@@ -83,7 +83,7 @@ public class AdministeredObjectFactory implements ObjectFactory {
         //If call fom application client, start resource adapter lazily.
         //todo: Similar code in ConnectorObjectFactory - to refactor.
 
-        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+        ConnectorRuntime runtime = ConnectorNamingUtils.getRuntime();
         if (runtime.getEnvironment() == ConnectorRuntime.CLIENT) {
             ConnectorDescriptor connectorDescriptor = null;
             try {

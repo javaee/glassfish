@@ -161,45 +161,9 @@ public class ConnectorObjectFactory implements ObjectFactory {
     }
 
     private ConnectorRuntime getRuntime() {
-        try {
-            if (runtime == null) {
-                runtime = ConnectorRuntime.getRuntime();
-            }
-        } catch (Exception e) {
-            // Assuming that connector runtime is always available in SERVER and APPCLIENT mode and
-            // hence this is CLIENT mode
-            _logger.log(Level.FINEST, "unable to get Connector Runtime due to the following exception, " +
-                    "trying client mode", e);
-            runtime = getHabitat().getComponent(ConnectorRuntime.class);
+        if (runtime == null) {
+            runtime = ConnectorNamingUtils.getRuntime();
         }
         return runtime;
-    }
-
-/*
-    private ConnectorRuntime getRuntimeForClientMode() {
-        //if it is not possible to provide runtime, it is neither server nor appclient environment.
-        Habitat h = getHabitat();
-        return h.getComponent(ConnectorRuntime.class);
-    }
-
-    private ConnectorRuntime getRuntimeForClientMode() {
-        Server.Builder builder = new Server.Builder("se");
-        Server server = builder.build();
-        Habitat habitat = server.getHabitat();
-        ConnectorRuntime runtime = habitat.getComponent(ConnectorRuntime.class);
-        return runtime;
-    }
-*/
-
-    private Habitat getHabitat() {
-        Habitat habitat = null;
-        ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-        habitat = registry.createHabitat("default");
-
-        StartupContext startupContext = new StartupContext();
-        habitat.add(new ExistingSingletonInhabitant(startupContext));
-
-        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
-        return habitat;
     }
 }

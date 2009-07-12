@@ -41,10 +41,12 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.SetMethodAction;
+import com.sun.enterprise.connectors.util.ConnectorJavaBeanValidator;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.ConnectorConfigProperty;
@@ -71,6 +73,9 @@ import java.util.logging.Logger;
 @Service
 @Scoped(PerLookup.class)
 public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
+
+    @Inject
+    private ConnectorJavaBeanValidator beanValidator;
 
     protected ResourceAdapter resourceadapter_; //runtime instance
 
@@ -106,6 +111,11 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         if (resourceadapter_ != null) {
             try {
                 loadRAConfiguration();
+
+                // now the RA bean would have been fully configured (taking into account, resource-adapter-config),
+                // validate the RA bean now.
+                beanValidator.validateJavaBean(ra);
+
                 ConnectorRegistry registry = ConnectorRegistry.getInstance();
                 String poolId = null;
                 ResourceAdapterConfig raConfig = registry.getResourceAdapterConfig(moduleName_);
@@ -115,8 +125,6 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
                 this.bootStrapContextImpl = new BootstrapContextImpl(poolId, moduleName_);
 
                 startResourceAdapter(bootStrapContextImpl);
-
-                //TODO V3 setup monitoring
 
             } catch (ResourceAdapterInternalException ex) {
                 _logger.log(Level.SEVERE, "rardeployment.start_failed", ex);

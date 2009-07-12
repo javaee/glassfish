@@ -39,9 +39,12 @@ package com.sun.enterprise.resource.beans;
 import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
+import com.sun.enterprise.resource.naming.ConnectorNamingUtils;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import com.sun.enterprise.connectors.util.SetMethodAction;
+import com.sun.enterprise.connectors.util.ConnectorJavaBeanValidator;
 import com.sun.enterprise.connectors.ConnectorRegistry;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
@@ -183,6 +186,14 @@ public class AdministeredObjectResource extends JavaEEResourceBase
                 _logger.log(Level.SEVERE, "rardeployment.assoc_failed", ex);
             }
         }
+
+            // At this stage, administered object is instantiated, config properties applied
+            // validate administered object
+
+            //ConnectorRuntime should be available in CLIENT mode now as admin-object-factory would have bootstapped
+            //connector-runtime.
+            ConnectorRuntime.getRuntime().getConnectorBeanValidator().validateJavaBean(adminObject);
+
             return adminObject;
         } catch (PrivilegedActionException ex) {
             throw(PoolingException) (new PoolingException().initCause(ex));
