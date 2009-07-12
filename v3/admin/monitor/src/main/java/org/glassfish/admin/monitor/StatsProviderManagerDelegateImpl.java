@@ -98,20 +98,27 @@ public class StatsProviderManagerDelegateImpl implements StatsProviderManagerDel
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "flashlight registration failed", e);
         }
 
-        /* gmbal registration */
-        // For now create mom root using the statsProvider
-        //if (config.getMbeanEnabled) {
-            ManagedObjectManager mom = registerGmbal(statsProvider, subTreePath);
-        //}
-
         /* config - TODO */
         //add configElement to monitoring level element if not already there - find out from Nandini
 
-        //Make an entry to my own registry so I can manage the unregister, enable and disable
-        statsProviderRegistry.registerStatsProvider(configElement, parentNode.getCompletePathName(), childNodeNames, handles, statsProvider, subTreePath, mom);
 
         //If module monitoring level = OFF, disableStatsProvider for that configElement
-        if (!getEnabledValue(configElement)) {
+        //If module monitoring level = ON, register with gmbal, and add mom to registry
+        if (getEnabledValue(configElement)) {
+            /* gmbal registration */
+            //Create mom root using the statsProvider
+            //if (config.getMbeanEnabled) {
+                ManagedObjectManager mom = registerGmbal(statsProvider, subTreePath);
+                //Make an entry to my own registry so I can manage the unregister, enable and disable
+                statsProviderRegistry.registerStatsProvider(configElement, 
+                        parentNode.getCompletePathName(), childNodeNames,
+                        handles, statsProvider, subTreePath, mom);
+            //}
+        } else {
+            //Make an entry to my own registry so I can manage the unregister, enable and disable
+            statsProviderRegistry.registerStatsProvider(configElement,
+                    parentNode.getCompletePathName(), childNodeNames,
+                    handles, statsProvider, subTreePath, null);
             statsProviderRegistry.disableStatsProvider(configElement);
         }
     }
