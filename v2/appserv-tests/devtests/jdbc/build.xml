@@ -69,6 +69,7 @@
 	<ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
+	<ant dir="dmmcf" target="all"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -112,6 +113,7 @@
         <ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
+	<ant dir="dmmcf" target="all"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -287,6 +289,12 @@
 	<record name="pooling.output" action="start"/>
 	<ant dir="pooling" target="all"/>
 	<record name="pooling.output" action="stop"/>
+    </target>
+
+    <target name="dmmcf">
+	<record name="dmmcf.output" action="start"/>
+	<ant dir="dmmcf" target="all"/>
+	<record name="dmmcf.output" action="stop"/>
     </target>
 
     <target name="usage">
