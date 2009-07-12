@@ -55,19 +55,7 @@
             <sun:form id="form1">
 #include "/shared/alertMsg.inc"
 <sun:title id="title" title="$resource{i18n.log.LogLevelsPageTitle}"  helpText="$resource{i18n.log.LogLevelsPageTitleHelp}">
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton"  text="$resource{i18n.button.Save}" >
-                <!command
-                    getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
-                    updateLoggerLevels(allRows="#{requestScope.allRows}")
-                    prepareSuccessfulMsg();
-                    redirect(page="#{request.contextPath}/configuration/loggerLevels.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
+#include "/configuration/loggerLevelsButtons.jsf"
 </sun:title>
 
 <!-- Table .... -->
@@ -123,6 +111,10 @@
         "<br/>
     </sun:tableRowGroup>
 </sun:table>
+
+<sun:title id="title2" >
+#include "/configuration/loggerLevelsButtons.jsf"
+</sun:title>
 
     	<sun:hidden id="helpKey" value="$resource{help.loggerLevels}" />
 </sun:form>
