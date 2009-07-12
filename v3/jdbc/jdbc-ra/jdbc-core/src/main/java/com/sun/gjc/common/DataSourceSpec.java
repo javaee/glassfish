@@ -88,6 +88,8 @@ public class DataSourceSpec implements java.io.Serializable {
     public static final int ESCAPECHARACTER = 33;
     public static final int STATEMENTCACHESIZE = 34;
     public static final int STATEMENTCACHETYPE = 35;
+    public static final int VALIDATIONCLASSNAME = 36;
+    public static final int CUSTOMVALIDATION = 37;
 
     private ConcurrentHashMap<Integer, String> details = new ConcurrentHashMap<Integer, String>();
 

@@ -211,6 +211,12 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Validation Table name",
                 "java.lang.String"));
 
+        propList.add(new ConnectorConfigProperty("ValidationClassName",
+                adminPool.getValidationClassname() == null ?
+                        "" : adminPool.getValidationClassname(),
+                "Validation Class name",
+                "java.lang.String"));
+
         propList.add(new ConnectorConfigProperty ("TransactionIsolation",
                 adminPool.getTransactionIsolationLevel() == null ? "" :
                         adminPool.getTransactionIsolationLevel(),
@@ -327,7 +333,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     
                     propList.add(new ConnectorConfigProperty ("StatementCacheType",
                             rp.getValue(), "StatementCacheType", "java.lang.String"));
-                }
+                } 
                 else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
 
                     propList.add(new ConnectorConfigProperty (
@@ -607,6 +613,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         excludes.add("ValidationMethod");
         excludes.add("StatementWrapping");
         excludes.add("StatementTimeout");
+        excludes.add("ValidationClassName");
 
 
         try {

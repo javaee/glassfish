@@ -205,4 +205,13 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     @Description("Ping Connection Pool and return status")
     public Map<String, Object> pingJDBCConnectionPool(final String poolName);
 
+    /**
+     * Obtain connection validation class names.
+     * @param poolName
+     * @return Set of connection validation class names for custom validation.
+     */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description("Get connection validation class names for custom validation")
+    public Map<String, Object> getValidationClassNames( final String dbVendor );   
+
 }

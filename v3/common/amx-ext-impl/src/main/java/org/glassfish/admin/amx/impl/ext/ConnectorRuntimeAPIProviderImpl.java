@@ -473,4 +473,25 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         return result;
     }
 
+    /**
+     * Obtain connection validation class names.
+     * @param poolName
+     */
+    public Map<String, Object> getValidationClassNames(final String dbVendor) {
+        final Map<String, Object> result = new HashMap<String, Object>();
+
+        try {
+            final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
+            final Set<String> valClassNames = connRuntime.getValidationClassNames(dbVendor);
+            result.put(ConnectorRuntimeAPIProvider.SET_KEY, valClassNames);
+        } catch (ComponentException e) {
+            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        } catch (Exception e) {
+            result.put(ConnectorRuntimeAPIProvider.SET_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        return result;
+    }
+
 }

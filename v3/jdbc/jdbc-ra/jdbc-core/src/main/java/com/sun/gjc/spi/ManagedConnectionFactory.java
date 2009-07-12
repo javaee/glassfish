@@ -52,6 +52,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.jdbc.ConnectionValidation;
 
 /**
  * <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -288,7 +289,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
          */
         java.sql.Connection con = mc.getActualConnection();
 
-        if (validationMethod.equals("auto-commit")) {
+        if(validationMethod.equals("custom-validation")) {
+            isValidByCustomValidation(con, spec.getDetail(DataSourceSpec.VALIDATIONCLASSNAME));
+        } else if (validationMethod.equals("auto-commit")) {
             isValidByAutoCommit(con);
         } else if (validationMethod.equals("meta-data")) {
             isValidByMetaData(con);
@@ -296,6 +299,35 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             isValidByTableQuery(con, spec.getDetail(DataSourceSpec.VALIDATIONTABLENAME));
         } else {
             throw new ResourceException("The validation method is not proper");
+        }
+    }
+    
+    /**
+     * Checks if a <code>java.sql.Connection</code> is valid or not
+     * by doing a custom validation using the validation class name specified.
+     *
+     * @param con <code>java.sql.Connection</code> to be validated
+     * @throws ResourceException if the connection is not valid
+     */    
+    protected void isValidByCustomValidation(java.sql.Connection con, 
+            String validationClassName) throws ResourceException {
+        boolean isValid = false;
+        if (con == null) {
+            throw new ResourceException("The connection is not valid as "
+                    + "the connection is null");
+        }
+        
+        try {
+            Class validationClass = Thread.currentThread().getContextClassLoader().loadClass(validationClassName);
+            ConnectionValidation valClass = (ConnectionValidation) validationClass.newInstance();
+            isValid = valClass.isConnectionValid(con);
+            if(!isValid) {
+                _logger.log(Level.INFO, "jdbc.exc_custom_validation", validationClassName);
+                throw new ResourceException("Custom validation detected invalid connection");
+            }
+        } catch (Exception e) {
+            _logger.log(Level.INFO, "jdbc.exc_custom_validation", validationClassName);
+            throw new ResourceException(e);
         }
     }
 
@@ -662,6 +694,42 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      */
     public String getValidationTableName() {
         return spec.getDetail(DataSourceSpec.VALIDATIONTABLENAME);
+    }
+
+    /**
+     * Sets the validation class name checked for during validation
+     *
+     * @param table <code>String</code>
+     */
+    public void setValidationClassName(String className) {
+        try {
+            Class validationClass = Thread.currentThread().getContextClassLoader().loadClass(className);
+            boolean isAssignable = ConnectionValidation.class.isAssignableFrom(validationClass);
+            if (isAssignable) {
+                spec.setDetail(DataSourceSpec.VALIDATIONCLASSNAME, className);
+            } else {
+                //Validation Failed
+                _logger.log(Level.SEVERE, "jdbc.set_custom_validation_class_name_failure", className);
+                throw new ResourceException("The Custom validation class name is" +
+                        "not valid as it does not implement " +
+                        ConnectionValidation.class.getName());
+            }
+        } catch (ResourceException ex) {
+            _logger.log(Level.SEVERE, "jdbc.set_custom_validation_class_name_failure",
+                    ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            _logger.log(Level.SEVERE, "jdbc.set_custom_validation_class_name_failure",
+                    ex.getMessage());
+        }
+    }
+
+    /**
+     * Returns the validation class name checked for during validation
+     *
+     * @return table
+     */
+    public String getValidationClassName() {
+        return spec.getDetail(DataSourceSpec.VALIDATIONCLASSNAME);
     }
 
     /**

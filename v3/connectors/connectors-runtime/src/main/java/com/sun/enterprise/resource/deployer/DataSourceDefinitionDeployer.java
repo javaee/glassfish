@@ -434,6 +434,14 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
             //do nothing
         }
 
+	public String getValidationClassname() {
+	    return null;
+	}
+
+	public void setValidationClassname(String value) throws PropertyVetoException {
+  	    //do nothing
+	}
+
         public String getFailAllConnections() {
             return String.valueOf("false");
         }

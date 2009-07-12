@@ -73,6 +73,26 @@ public class JdbcAdminServiceImpl extends ConnectorService {
     }
 
     /**
+     * Get Validation class names list for the database vendor that the jdbc 
+     * connection pool refers to. This is used for custom connection validation.
+     * @param dbVendor
+     * @return all validation class names.
+     */        
+    public Set<String> getValidationClassNames(String dbVendor) {
+        SortedSet classNames = new TreeSet();
+        if(dbVendor.equalsIgnoreCase("DERBY")) {
+            classNames.add("org.glassfish.api.jdbc.validation.DerbyConnectionValidation");
+        } else if(dbVendor.equalsIgnoreCase("MYSQL")) {
+            classNames.add("org.glassfish.api.jdbc.validation.MySQLConnectionValidation");
+        } else if(dbVendor.equalsIgnoreCase("ORACLE")) {
+            classNames.add("org.glassfish.api.jdbc.validation.OracleConnectionValidation");
+        } else if(dbVendor.equalsIgnoreCase("POSTGRES")) {
+            classNames.add("org.glassfish.api.jdbc.validation.PostgresConnectionValidation");
+        }
+        return classNames;
+    }
+
+    /**
      * Get Validation table names list for the database that the jdbc 
      * connection pool refers to. This is used for connection validation.
      * @param poolName

@@ -367,6 +367,27 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     void setValidationTableName(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the validationClassName property.
+     *
+     * Specifies the custom validation class name to be used to perform 
+     * connection validation. This parameter is mandatory, if connection-validation-type is
+     * set to custom-validation. 
+     * 
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getValidationClassname();
+
+    /**
+     * Sets the value of the validationClassName property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setValidationClassname(String value) throws PropertyVetoException;
+
+    /**
      * Gets the value of the failAllConnections property.
      *
      * Indicates if all connections in the pool must be closed should a single

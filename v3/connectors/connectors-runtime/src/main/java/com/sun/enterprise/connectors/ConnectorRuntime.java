@@ -1106,6 +1106,16 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
+     * Get Validation class names list for the database vendor that the jdbc 
+     * connection pool refers to. This is used for custom connection validation.
+     * @param dbVendor
+     * @return all validation class names.
+     */        
+    public Set<String> getValidationClassNames(String dbVendor) {
+        return jdbcAdminService.getValidationClassNames(dbVendor);
+    }
+    
+    /**
      * Get jdbc driver implementation class names list for the dbVendor and
      * resource type supplied. 
      * @param dbVendor
