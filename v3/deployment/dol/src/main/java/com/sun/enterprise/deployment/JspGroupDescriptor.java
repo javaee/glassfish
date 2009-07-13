@@ -46,18 +46,18 @@ import javax.servlet.descriptor.JspPropertyGroupDescriptor;
 public class JspGroupDescriptor extends Descriptor
         implements JspPropertyGroupDescriptor {
     
-    private boolean elIgnored = false;
-    private boolean scriptingInvalid = false;
-    private Boolean isXml = null;
-    private boolean deferredSyntaxAllowedAsLiteral = false;
-    private boolean trimDirectiveWhitespaces = false;
+    private String elIgnored;
+    private String scriptingInvalid;
+    private String isXml;
+    private String deferredSyntaxAllowedAsLiteral;
+    private String trimDirectiveWhitespaces;
     private Set urlPatterns = null;
     private Set includePreludes = null;
     private Set includeCodas = null;
     private String pageEncoding = null;
     private String defaultContentType = null;
     private String buffer = null;
-    private boolean errorOnUndeclaredNamespace = false;
+    private String errorOnUndeclaredNamespace;
     
     /**
      * Return the set of URL pattern aliases for this group.
@@ -140,73 +140,57 @@ public class JspGroupDescriptor extends Descriptor
     /**
      * elIgnored
      */
-    public void setElIgnored(boolean value) {
+    public void setElIgnored(String value) {
         elIgnored = value;
     }
 
-    /**
-     */
-    public boolean isElIgnored() {
+    public String getElIgnored() {
         return elIgnored;
     }
     
     /**
      * enable/disable scripting
      */
-    public void setScriptingInvalid(boolean value) {
+    public void setScriptingInvalid(String value) {
         scriptingInvalid = value;
     }
 
-    /**
-     * return if scripting is enabled.
-     */
-    public boolean isScriptingInvalid() {
+    public String getScriptingInvalid() {
         return scriptingInvalid;
     }
 
     /**
      * enable/disable xml 
      */
-    public void setIsXml(Boolean value) {
+    public void setIsXml(String value) {
         isXml = value;
     }
     
-    public Boolean getIsXml() {
+    public String getIsXml() {
         return isXml;
     }
 
-    public boolean isXml() {
-        return isXml;
-    }
-    
     /**
      * enable/disable deferredSyntaxAllowedAsLiteral
      */
-    public void setDeferredSyntaxAllowedAsLiteral(boolean value) {
+    public void setDeferredSyntaxAllowedAsLiteral(String value) {
         deferredSyntaxAllowedAsLiteral = value;
     }
 
-    /**
-     * return if is deferredSyntaxAllowedAsLiteral.
-     */
-    public boolean isDeferredSyntaxAllowedAsLiteral() {
+    public String getDeferredSyntaxAllowedAsLiteral() {
         return deferredSyntaxAllowedAsLiteral;
     }
 
     /**
      * enable/disable trimDirectiveWhitespaces
      */
-    public void setTrimDirectiveWhitespaces(boolean value) {
+    public void setTrimDirectiveWhitespaces(String value) {
         trimDirectiveWhitespaces = value;
     }
 
-    /**
-     * return if is trimDirectiveWhitespaces.
-     */
-    public boolean isTrimDirectiveWhitespaces() {
+    public String getTrimDirectiveWhitespaces() {
         return trimDirectiveWhitespaces;
     }
-
     
     /**
      * get display name.
@@ -258,22 +242,19 @@ public class JspGroupDescriptor extends Descriptor
     /**
      * set buffer
      */
-    public void setBuffer(String buffer) {
-        this.buffer = buffer;
-    }
-
-    /**
-     * check if it is errorOnUndeclaredNamespace
-     */
-    public boolean isErrorOnUndeclaredNamespace() {
-        return errorOnUndeclaredNamespace;
+    public void setBuffer(String value) {
+        buffer = value;
     }
 
     /**
      * set errorOnUndeclaredNamespace
      */
-    public void setErrorOnUndeclaredNamespace(boolean errorOnUndeclaredNamespace) {
-        this.errorOnUndeclaredNamespace = errorOnUndeclaredNamespace;
+    public void setErrorOnUndeclaredNamespace(String value) {
+        errorOnUndeclaredNamespace = value;
+    }
+
+    public String getErrorOnUndeclaredNamespace() {
+        return errorOnUndeclaredNamespace;
     }
 
     /**

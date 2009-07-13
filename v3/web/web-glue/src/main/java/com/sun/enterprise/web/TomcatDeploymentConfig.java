@@ -313,27 +313,19 @@ public class TomcatDeploymentConfig {
         for (JspPropertyGroupDescriptor jspGroup :
                 jspConfig.getJspPropertyGroups()) {
 
-            Vector urlPatterns = null;
-            Vector includePreludes = null;
-            Vector includeCodas = null;
-
             String pageEncoding = jspGroup.getPageEncoding();
-            String scriptingInvalid = jspGroup.isScriptingInvalid()?
-                                          "true": "false";
-            String elIgnored = jspGroup.isElIgnored()? "true": "false";
-            String isXml =
-                (((JspGroupDescriptor)jspGroup).getIsXml()==null)? null:
-                ((JspGroupDescriptor)jspGroup).getIsXml().toString();
-            String trimSpaces = jspGroup.isTrimDirectiveWhitespaces()?
-                                    "true": "false";
-            String poundAllowed = jspGroup.isDeferredSyntaxAllowedAsLiteral()?
-                                    "true": "false";
+            String scriptingInvalid = jspGroup.getScriptingInvalid();
+            String elIgnored = jspGroup.getElIgnored();
+            String isXml = jspGroup.getIsXml();
+            String trimSpaces = jspGroup.getTrimDirectiveWhitespaces();
+            String poundAllowed = jspGroup.getDeferredSyntaxAllowedAsLiteral();
             String defaultContentType = jspGroup.getDefaultContentType();
             String buffer = jspGroup.getBuffer();
             String errorOnUndeclaredNamespace =
-                jspGroup.isErrorOnUndeclaredNamespace()? "true": "false";
+                jspGroup.getErrorOnUndeclaredNamespace();
            
             // url-pattern
+            Vector urlPatterns = null;
             for (String urlPattern : jspGroup.getUrlPatterns()) {
                 if (urlPatterns == null) {
                     urlPatterns = new Vector();
@@ -346,6 +338,7 @@ public class TomcatDeploymentConfig {
             }
 
             // include-prelude
+            Vector includePreludes = null;
             for (String prelude : jspGroup.getIncludePreludes()) {
                 if (includePreludes == null) {
                     includePreludes = new Vector();
@@ -354,6 +347,7 @@ public class TomcatDeploymentConfig {
             }
 
             // include-coda
+            Vector includeCodas = null;
             for (String coda: jspGroup.getIncludeCodas()) {
                 if (includeCodas == null) {
                     includeCodas = new Vector();

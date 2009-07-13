@@ -98,21 +98,6 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
         return descriptor;
     }
 
-
-    /**
-     * receives notiification of the value for a particular tag
-     * 
-     * @param element the xml element
-     * @param value it's associated value
-     */
-    public void setElementValue(XMLElement element, String value) {
-        if (WebTagNames.IS_XML.equals(element.getQName())) {
-            descriptor.setIsXml(Boolean.valueOf(value));
-        } else {
-            super.setElementValue(element, value);
-        }
-    }
-    
     /**
      * write the descriptor class to a DOM tree and return it
      *
@@ -133,31 +118,33 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
             appendTextChild(myNode, WebTagNames.URL_PATTERN, urlPattern);
         }
         appendTextChild(myNode, WebTagNames.EL_IGNORED,
-               Boolean.toString(descriptor.isElIgnored()));
-        appendTextChild(myNode, WebTagNames.PAGE_ENCODING, descriptor.getPageEncoding());
+            descriptor.getElIgnored());
+        appendTextChild(myNode, WebTagNames.PAGE_ENCODING,
+            descriptor.getPageEncoding());
         appendTextChild(myNode, WebTagNames.SCRIPTING_INVALID,
-               Boolean.toString(descriptor.isScriptingInvalid()));
+            descriptor.getScriptingInvalid());
 
-        Boolean isXml = descriptor.getIsXml();
-        String isXmlString = ((isXml != null) ? isXml.toString() : null);
-        appendTextChild(myNode, WebTagNames.IS_XML, isXmlString);
+        appendTextChild(myNode, WebTagNames.IS_XML, descriptor.getIsXml());
 
         // include-prelude*
         for (String includePrelude : descriptor.getIncludePreludes()) {
-            appendTextChild(myNode, WebTagNames.INCLUDE_PRELUDE, includePrelude);
+            appendTextChild(myNode, WebTagNames.INCLUDE_PRELUDE,
+                includePrelude);
         }
         // include-coda*
         for (String includeCoda : descriptor.getIncludeCodas()) {
             appendTextChild(myNode, WebTagNames.INCLUDE_CODA, includeCoda);
         }
         appendTextChild(myNode, WebTagNames.DEFERRED_SYNTAX_ALLOWED_AS_LITERAL,
-                Boolean.toString(descriptor.isDeferredSyntaxAllowedAsLiteral()));
+            descriptor.getDeferredSyntaxAllowedAsLiteral());
         appendTextChild(myNode, WebTagNames.TRIM_DIRECTIVE_WHITESPACES,
-                Boolean.toString(descriptor.isTrimDirectiveWhitespaces()));
-        appendTextChild(myNode, WebTagNames.DEFAULT_CONTENT_TYPE, descriptor.getDefaultContentType());
+            descriptor.getTrimDirectiveWhitespaces());
+        appendTextChild(myNode, WebTagNames.DEFAULT_CONTENT_TYPE,
+            descriptor.getDefaultContentType());
         appendTextChild(myNode, WebTagNames.BUFFER, descriptor.getBuffer());
         appendTextChild(myNode, WebTagNames.ERROR_ON_UNDECLARED_NAMESPACE,
-                Boolean.toString(descriptor.isErrorOnUndeclaredNamespace()));
+            descriptor.getErrorOnUndeclaredNamespace());
+
         return myNode;
     }    
 }
