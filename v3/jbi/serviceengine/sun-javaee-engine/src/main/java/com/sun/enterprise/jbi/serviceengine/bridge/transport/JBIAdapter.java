@@ -47,6 +47,7 @@ import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.jbi.messaging.MessageExchange;
+import org.glassfish.webservices.AdapterInvocationInfo;
 import org.glassfish.webservices.EjbRuntimeEndpointInfo;
 
 /**
@@ -61,6 +62,7 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
     private NMRServerConnection con;
     private ClassLoader classLoader;
     private EjbRuntimeEndpointInfo ejbEndPtInfo;
+    private AdapterInvocationInfo adapterInvocationInfo;
     
     /**
      * Creates an {@link com.sun.xml.ws.api.server.Adapter} that delivers
@@ -70,11 +72,13 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
                       ServiceEngineEndpoint endpt, 
                       MessageExchange me,
                       ClassLoader classLoader
-                      ,EjbRuntimeEndpointInfo ejbEndPtInfo) {
+                      ,EjbRuntimeEndpointInfo ejbEndPtInfo,
+                      AdapterInvocationInfo adapterInvocationInfo) {
         super(endpoint);
         con = new NMRServerConnection(me, endpt);
         this.classLoader = classLoader;
         this.ejbEndPtInfo = ejbEndPtInfo;
+        this.adapterInvocationInfo = adapterInvocationInfo;
     }
     
     protected WSToolkit createToolkit() {
@@ -104,8 +108,9 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
      * returning the response back to NMR. 
      * For non-EJB cases ejbEndPtInfo will be null. */
     private void postInvoke() {
-        //if(ejbEndPtInfo!=null)
-         //   ejbEndPtInfo.releaseImplementor();
+        if(ejbEndPtInfo!=null && adapterInvocationInfo != null) {
+            ejbEndPtInfo.releaseImplementor(adapterInvocationInfo.getInv());
+        }
         
     }
     

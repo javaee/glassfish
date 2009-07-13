@@ -120,7 +120,7 @@ public class JBIAdapterBuilder {
                     }
                 }
             }
-            return new JBIAdapter(endpt.getWsep(), endpt, me, endpt.getClassLoader(), ejbEndPtInfo);
+            return new JBIAdapter(endpt.getWsep(), endpt, me, endpt.getClassLoader(), ejbEndPtInfo, adapterInfo);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE,"Exception in creating JBIAdapter:"+e.getMessage(), e);
