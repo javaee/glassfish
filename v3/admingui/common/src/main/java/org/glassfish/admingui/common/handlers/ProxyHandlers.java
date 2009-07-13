@@ -449,7 +449,8 @@ public class ProxyHandlers {
     input={
         @HandlerInput(name="type",   type=String.class, required=true)},
     output={
-        @HandlerOutput(name="result",        type=List.class)})
+        @HandlerOutput(name="result",        type=List.class),
+        @HandlerOutput(name="firstItem",   type=String.class)})
 
         public static void getProxyNamesByType(HandlerContext handlerCtx) {
         try{
@@ -458,11 +459,17 @@ public class ProxyHandlers {
             Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
             Set data = (Set) query.queryType(type);
             Iterator iter = data.iterator();
+            String firstItem = "";
             while (iter.hasNext()) {
                 Map attr = ((AMXProxy) iter.next()).attributesMap();
-                result.add(attr.get("Name"));
+                String name = (String)attr.get("Name");
+                if(GuiUtil.isEmpty(firstItem)) {
+                    firstItem = name;
+                }
+                result.add(name);
             }
             handlerCtx.setOutputValue("result", result);
+            handlerCtx.setOutputValue("firstItem", firstItem);
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
