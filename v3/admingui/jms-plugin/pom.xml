@@ -104,5 +104,11 @@
             <artifactId>console-plugin-service</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
+

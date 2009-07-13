@@ -34,12 +34,81 @@
  holder.
 -->
 
-<!-- configuration/jmsPhysicalDestinations.jsf -->
-
 <!initPage
-    setAttribute(key="helpKey" value="$resource{help.jmsPhysicalDestinations}" );
-    setPageSessionAttribute(key="actualLink" value="../configuration/jmsPhysicalDestinations.jsf");
+    setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
+    //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
 />
 
-#include "/jms/jmsPhysicalDestinations_1.inc"
-#include "/jms/jmsPhysicalDestinations_2.inc"
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.connectionFactories.pageTitle}" >
+<!define name="content">
+    <event>
+        <!beforeCreate
+            getRequestValue(key="name" value=>$page{clusterName});     #in case this is from cluster
+            getRequestValue(key="name" value=>$page{instanceName});    #in case this is from standalone instance
+            getRequestValue(key="name" value=>$page{targetName});
+            getMqServerConnection(connection="#{pageSession.mqConnection}");
+            gui.log(message="mqConnection = #{pageSession.mqConnection}");
+            #println("!!!!!!!!!! targetName = #{targetName}");
+            getPhysicalDestinations(targetName="#{targetName}", result=>$attribute{listOfRows} );
+            gui.log(message="listOfRows = $attribute{listOfRows}");
+        />
+    </event>
+#include "/shared/restart.inc"
+    <sun:form id="propertyForm">
+ #include treeBreadcrumbs.inc
+#include "/shared/alertMsg.inc"
+        <sun:title id="propertyContentPage" title="$resource{i18n.jmsPhysDestinations.PageTitle}"
+            helpText="$resource{i18n.jmsPhysDestinations.PageHelp}"/>
+        "<br /> <br />
+        <sun:table id="configs" title="$resource{i18n.jmsPhysDestinations.TableTitle}">
+            <!facet actionsTop>
+                 <sun:panelGroup id="topActionsGroup1">
+                    <sun:button id="newButton" text="$resource{i18n.button.New}" >
+                        <!command redirect(page="/jms/jmsPhysicalDestinationNew.jsf"); /*?name=#{targetName}&actualLink=#{actualLink}");*/ />
+                    </sun:button>
+
+                    <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
+                        onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmDeletePhysicalDestinations}') )
+                        { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+                        else {return false;}"
+                    >
+                    <!command
+                        getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
+                        getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+                        deleteJMSDest(targetName="#{targetName}", selectedRows="${selectedRows}");
+                        setAttribute(key="selectedRows" value="${selectedRows}");
+                        redirect(page="#{actualLink}?name=#{targetName}");
+                    />
+                    </sun:button>
+                    <sun:button id="flushButton" text="$resource{i18n.button.Flush}" primary="#{false}" >
+                        <!command
+                            getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
+                            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+                            #flushJMSDestination(targetName="#{targetName}", selectedRows="${selectedRows}");
+                            redirect(page="#{actualLink}?name=#{targetName}");
+                        />
+                    </sun:button>
+                 </sun:panelGroup>
+             </facet>
+
+            <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{configsTableRowGroupId});
+                />
+                <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+                    <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
+                </sun:tableColumn>
+
+                <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="col11">
+                    <staticText id="nameCol" value="#{td.value.name}" />
+                </sun:tableColumn>
+
+                <sun:tableColumn headerText="$resource{i18n.common.type.header}"  rowHeader="$boolean{true}" id="col7">
+                    <staticText id="typeCol"  value="#{td.value.type}" />
+                </sun:tableColumn>
+            </sun:tableRowGroup>
+        </sun:table>
+        <sun:hidden id="helpKey" value="$attribute{helpKey}" />
+    </sun:form>
+</define>
+</composition>
