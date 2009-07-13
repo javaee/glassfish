@@ -57,11 +57,12 @@ public class ConnectorJavaBeanValidator implements PostConstruct {
             ConnectorJavaBeanValidator.class, LogDomains.RSR_LOGGER);
 
     public void postConstruct() {
-        //beanValidator = getBeanValidator(null);
     }
 
     private Validator getBeanValidator(Object o) {
-        Validator beanValidator = null;
+        if(beanValidator != null){
+            return beanValidator;
+        }
 /*
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = null;
