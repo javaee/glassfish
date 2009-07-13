@@ -44,7 +44,7 @@ import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
 
 /**
- * Domain Admin Server utility methods.
+ * Domain Admin Server utility method.
  */
 public class DASUtils {
 
@@ -54,14 +54,16 @@ public class DASUtils {
 
     /**
      * See if DAS is alive.
+     * Do not print out the results of the version command from the server.
      *
      * @return true if DAS can be reached and can handle commands,
      * otherwise false.
      */
-    public static boolean pingDAS(ProgramOptions programOpts, Environment env) {
+    public static boolean pingDASQuietly(ProgramOptions programOpts,
+            Environment env) {
         try {
-            CLICommand cmd = new RemoteCommand("version", programOpts, env);
-            cmd.execute(new String[] { "version" });
+            RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
+            cmd.executeAndReturnOutput(new String[] { "version" });
             return true;
         } catch (AuthenticationException aex) {
             return true;
@@ -80,48 +82,6 @@ public class DASUtils {
             } else {
                 return false; // unknown error, shouldn't really happen
             }
-        }
-    }
-
-    /**
-     * See if DAS can be contacted with the present authentication info.
-     * @return true if DAS can be reached with this authentication info
-     */
-    /* XXX - who uses this?
-    public static boolean pingDASWithAuth(CommandInvoker invoker) {
-        try {
-            invoker.invoke();
-            return true;
-        }
-        catch (Exception ex) {
-            ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
-            if (ea.getFirstInstanceOf(java.net.ConnectException.class) != null) {
-                CLILogger.getInstance().printDebugMessage("Got java.net.ConnectException");
-                return false; // this definitely means server is not up
-            } else if (ea.getFirstInstanceOf(java.io.IOException.class) != null) {
-                CLILogger.getInstance().printDebugMessage("Auth info is incorrect" 
-                    + ex.getMessage());
-                return false;
-            } else {
-                return false; //unknown error, shouldn't really happen
-            }
-        }
-    }
-    */
-
-    /**
-     * Do not print out the results of the version command from the server.
-     *
-     * @return true if DAS can be reached and can handle commands,
-     * otherwise false.
-     */
-    public static boolean pingDASQuietly(ProgramOptions programOpts,
-            Environment env) {
-        try {
-            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            return pingDAS(programOpts, env);
-        } finally {
-            CLILogger.getInstance().popAndUnlockLevel();
         }
     }
 }

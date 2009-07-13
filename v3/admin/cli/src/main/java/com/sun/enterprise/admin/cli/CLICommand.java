@@ -48,6 +48,7 @@ import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.commands.CommandTable; // XXX - temporary
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 
 /**
  * Base class for a CLI command.  An instance of a subclass of this
@@ -85,7 +86,9 @@ public abstract class CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CLICommand.class);
 
-    // XXX - can't be static in multimode
+    private static final Map<String,String> systemProps = 
+            Collections.unmodifiableMap(new ASenvPropertyReader().getProps());
+
     protected static final CLILogger logger = CLILogger.getInstance();
 
     protected String name;
@@ -144,7 +147,7 @@ public abstract class CLICommand {
      * XXX - this is just temporary
      */
     private static CLICommand getCommandClass(String name,
-	    ProgramOptions programOpts, Environment env) {
+            ProgramOptions programOpts, Environment env) {
         try {
             Class cls = localCommands.get(name);
             if (cls == null)    // XXX - to allow experimenting with new cmds
@@ -187,7 +190,7 @@ public abstract class CLICommand {
      * Finally, this constructor calls the initializeLogger method.
      */
     protected CLICommand(String name, ProgramOptions programOpts,
-	    Environment env) {
+            Environment env) {
         this.name = name;
         this.programOpts = programOpts;
         this.env = env;
@@ -221,8 +224,13 @@ public abstract class CLICommand {
      * Then it calls the prepare, parse, and validate methods, finally
      * returning the result of calling the executeCommand method.
      * Note that argv[0] is the command name.
+     *
+     * @throws CommandException if execution of the command fails
+     * @throws CommandValidationException if there's something wrong
+     *          with the options or arguments
      */
-    public int execute(String[] argv) throws CommandException {
+    public int execute(String... argv)
+            throws CommandException, CommandValidationException  {
         this.argv = argv;
         initializePasswords();
         prepare();
@@ -271,15 +279,21 @@ public abstract class CLICommand {
      * The prepare method must ensure that the commandOpts,
      * operandType, operandMin, and operandMax fields are set.
      */
-    protected abstract void prepare() throws CommandException;
+    protected abstract void prepare()
+            throws CommandException, CommandValidationException;
 
     /**
      * The parse method sets the options and operands fields
      * based on the content of the command line arguments.
      * If the program options say this is a help request,
      * we set options and operands as if "--help" had been specified.
+     *
+     * @throws CommandException if execution of the command fails
+     * @throws CommandValidationException if there's something wrong
+     *          with the options or arguments
      */
-    protected void parse() throws CommandException {
+    protected void parse()
+            throws CommandException, CommandValidationException  {
         /*
          * If this is a help request, we don't need the command
          * metadata and we throw away all the other options and
@@ -290,13 +304,9 @@ public abstract class CLICommand {
             options.put("help", "true");
             operands = Collections.emptyList();
         } else {
-            try {
-                Parser rcp = new Parser(argv, 1, commandOpts, false);
-                options = rcp.getOptions();
-                operands = rcp.getOperands();
-            } catch (CommandValidationException ex) {
-                throw new CommandException(ex.getMessage());
-            }
+            Parser rcp = new Parser(argv, 1, commandOpts, false);
+            options = rcp.getOptions();
+            operands = rcp.getOperands();
         }
         logger.printDebugMessage("params: " + options);
         logger.printDebugMessage("operands: " + operands);
@@ -308,31 +318,34 @@ public abstract class CLICommand {
      * command.  The validate method supplies missing options from
      * the environment.  It also supplies passwords from the password
      * file or prompts for them if interactive.
+     *
+     * @throws CommandException if execution of the command fails
+     * @throws CommandValidationException if there's something wrong
+     *          with the options or arguments
      */
-    protected void validate() throws CommandException {
+    protected void validate()
+            throws CommandException, CommandValidationException  {
         /*
          * Check for missing options and operands.
          */
-        if (operands.size() < operandMin)
-            throw new CommandException(
-                    strings.get("notEnoughOperands", name, operandType));
-        if (operands.size() > operandMax) {
-            if (operandMax == 0)
-                throw new CommandException(
-                    strings.get("noOperandsAllowed", name));
-            else if (operandMax == 1)
-                throw new CommandException(
-                    strings.get("tooManyOperands1", name));
-            else
-                throw new CommandException(
-                    strings.get("tooManyOperands", name, operandMax));
-        }
+        Console cons = programOpts.isInteractive() ? System.console() : null;
+
         boolean missingOption = false;
         for (ValidOption opt : commandOpts) {
             if (opt.isValueRequired() != ValidOption.REQUIRED)
                 continue;
             if (opt.getType().equals("PASSWORD"))
                 continue;       // passwords are handled later
+            // if option isn't set, prompt for it (if interactive)
+            if (getParam(opt.getName()) == null && cons != null &&
+                    !missingOption) {
+                cons.printf("%s ",
+                    strings.get("optionPrompt", opt.getName()));
+                String val = cons.readLine();
+                if (ok(val))
+                    options.put(opt.getName(), val);
+            }
+            // if it's still not set, that's an error
             if (getParam(opt.getName()) == null) {
                 missingOption = true;
                 logger.printMessage(
@@ -340,8 +353,32 @@ public abstract class CLICommand {
             }
         }
         if (missingOption)
-            throw new CommandException(
+            throw new CommandValidationException(
                     strings.get("missingOptions", name));
+
+        if (operands.size() < operandMin && cons != null) {
+            cons.printf("%s ",
+                strings.get("operandPrompt", /* XXX - need operand name */0));
+            String val = cons.readLine();
+            if (ok(val)) {
+                operands = new ArrayList<String>();
+                operands.add(val);
+            }
+        }
+        if (operands.size() < operandMin)
+            throw new CommandValidationException(
+                    strings.get("notEnoughOperands", name, operandType));
+        if (operands.size() > operandMax) {
+            if (operandMax == 0)
+                throw new CommandValidationException(
+                    strings.get("noOperandsAllowed", name));
+            else if (operandMax == 1)
+                throw new CommandValidationException(
+                    strings.get("tooManyOperands1", name));
+            else
+                throw new CommandValidationException(
+                    strings.get("tooManyOperands", name, operandMax));
+        }
 
         initializeCommandPassword();
     }
@@ -358,16 +395,20 @@ public abstract class CLICommand {
      * operands in operands.
      *
      * @return the exit code
-     * @throws CommandException if anything goes wrong
+     * @throws CommandException if execution of the command fails
+     * @throws CommandValidationException if there's something wrong
+     *          with the options or arguments
      */
-    protected abstract int executeCommand() throws CommandException;
+    protected abstract int executeCommand()
+            throws CommandException, CommandValidationException;
 
     /**
      * Initialize all the passwords required by the command.
      *
      * @throws CommandException
      */
-    private void initializeCommandPassword() throws CommandException {
+    private void initializeCommandPassword()
+            throws CommandException, CommandValidationException {
         /*
          * Go through all the valid options and check for required password
          * options that weren't specified in the password file.  If option
@@ -384,16 +425,12 @@ public abstract class CLICommand {
             }
             if (opt.isValueRequired() != ValidOption.REQUIRED)
                 continue;
-            try {
-                String pwd = getPassword(opt.getName());
-                if (pwd == null)
-                    throw new CommandException(strings.get("missingPassword",
-                        name, pwdname));
-                passwords.put(pwdname, pwd);
-                options.put(pwdname, pwd);
-            } catch (CommandValidationException cve) {
-                throw new CommandException(cve);
-            }
+            String pwd = getPassword(opt.getName());
+            if (pwd == null)
+                throw new CommandValidationException(
+                            strings.get("missingPassword", name, pwdname));
+            passwords.put(pwdname, pwd);
+            options.put(pwdname, pwd);
         }
     }
 
@@ -448,6 +485,14 @@ public abstract class CLICommand {
      */
     protected boolean isPasswordValid(String passwd) {
         return (passwd.length() < 8)? false:true;
+    }
+
+    /**
+     * Return the named system property, or property
+     * set in asenv.conf.
+     */
+    protected String getSystemProperty(String name) {
+        return systemProps.get(name);
     }
 
     /**

@@ -88,7 +88,8 @@ public class MultimodeCommand extends CLICommand {
      * the environment.
      */
     @Override
-    protected void validate() throws CommandException {
+    protected void validate()
+            throws CommandException, CommandValidationException {
         super.validate();
         if (options.containsKey("printprompt"))
             printPrompt = Boolean.parseBoolean(options.get("printprompt"));
@@ -100,7 +101,8 @@ public class MultimodeCommand extends CLICommand {
     }
 
     @Override
-    protected int executeCommand() throws CommandException {
+    protected int executeCommand()
+            throws CommandException, CommandValidationException {
         BufferedReader reader = null;
         try {
             if (file == null) {
@@ -143,7 +145,7 @@ public class MultimodeCommand extends CLICommand {
      * @return the exit code of the last command executed
      */
     private int executeCommands(BufferedReader reader)
-            throws CommandException, IOException {
+            throws CommandException, CommandValidationException, IOException {
         String line = null;
         int rc = 0;
         for (;;) {
@@ -159,10 +161,10 @@ public class MultimodeCommand extends CLICommand {
 
             String command = args[0];
 
-	    // handle built-in exit and quit commands
-	    // XXX - care about their arguments?
-	    if (command.equals("exit") || command.equals("quit"))
-		break;
+            // handle built-in exit and quit commands
+            // XXX - care about their arguments?
+            if (command.equals("exit") || command.equals("quit"))
+                break;
 
             try {
                 CLICommand cmd =

@@ -56,9 +56,9 @@ public class CommandTable extends HashMap<String, Class> {
         put("list-commands",            ListCommandsCommand.class);
         put("monitor",                  Object.class); // XXX - not yet impl
         put("multimode",                MultimodeCommand.class);
-        put("restart-domain",           Object.class); // XXX - not yet impl
+        put("restart-domain",           RestartDomainCommand.class);
         put("start-domain",             StartDomainCommand.class);
-        put("stop-domain",              Object.class); // XXX - not yet impl
+        put("stop-domain",              StopDomainCommand.class);
         put("version",                  VersionCommand.class);
         put("login",                    Object.class); // XXX - not yet impl
         put("create-domain",            Object.class); // XXX - not yet impl

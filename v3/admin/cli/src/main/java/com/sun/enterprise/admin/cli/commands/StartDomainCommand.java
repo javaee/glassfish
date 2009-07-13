@@ -46,7 +46,6 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
@@ -56,6 +55,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
 
 /**
+ * The start-domain command.
  *
  * @author bnevins
  * @author Bill Shannon
@@ -98,7 +98,7 @@ public class StartDomainCommand extends CLICommand {
             runCommandEmbedded();
         else
             runCommandNotEmbedded();
-	return 0;
+        return 0;
     }
 
     private boolean getBooleanOption(String name) {
@@ -125,9 +125,9 @@ public class StartDomainCommand extends CLICommand {
             info.setDebug(getBooleanOption("debug"));
             info.setUpgrade(getBooleanOption("upgrade"));
 
-	    info.setRespawnInfo(programOpts.getClassName(),
-			    programOpts.getClassPath(),
-			    programOpts.getProgramArguments());
+            info.setRespawnInfo(programOpts.getClassName(),
+                            programOpts.getClassPath(),
+                            programOpts.getProgramArguments());
  
             launcher.setup();
             // CLI calls this method only to ensure that domain.xml is parsed
@@ -227,47 +227,42 @@ public class StartDomainCommand extends CLICommand {
     // bnevins: note to me -- this String handling is EVIL.
     // Need to add plenty of utilities...
     private void waitForDAS(Set<Integer> ports) throws CommandException {
-        try {
-            logger.pushAndLockLevel(Level.WARNING);
-            if (ports == null || ports.size() <= 0) {
-                String msg = strings.get("noPorts");
-                throw new CommandException(
-                        strings.get("CommandUnSuccessfulWithArg", name, msg));
-            }
-            long startWait = System.currentTimeMillis();
-            logger.printMessage(strings.get("WaitDAS"));
+        if (ports == null || ports.size() <= 0) {
+            String msg = strings.get("noPorts");
+            throw new CommandException(
+                    strings.get("CommandUnSuccessfulWithArg", name, msg));
+        }
+        long startWait = System.currentTimeMillis();
+        logger.printMessage(strings.get("WaitDAS"));
 
-            boolean alive = false;
+        boolean alive = false;
 
-            pinged:
-            while (!timedOut(startWait)) {
-                for (int port : ports) {
-                    if (isServerAlive(port)) {
-                        alive = true;
-                        break pinged;
-                    }
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    // don't care
+        pinged:
+        while (!timedOut(startWait)) {
+            for (int port : ports) {
+                if (isServerAlive(port)) {
+                    alive = true;
+                    break pinged;
                 }
             }
-
-            if (!alive) {
-                String msg = strings.get("dasNoStart", 
-                    info.getDomainName(), (WAIT_FOR_DAS_TIME_MS / 1000));
-                throw new CommandException(msg);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                // don't care
             }
-        } finally{
-            logger.popAndUnlockLevel();
-        }                
+        }
+
+        if (!alive) {
+            String msg = strings.get("dasNoStart", 
+                info.getDomainName(), (WAIT_FOR_DAS_TIME_MS / 1000));
+            throw new CommandException(msg);
+        }
     }
  
     private boolean isServerAlive(int port) {
-	programOpts.setPort(port);
-	programOpts.setInteractive(false);	// don't prompt
-	return DASUtils.pingDASQuietly(programOpts, env);
+        programOpts.setPort(port);
+        programOpts.setInteractive(false);      // don't prompt
+        return DASUtils.pingDASQuietly(programOpts, env);
     }
  
     private boolean isServerAlive(Set<Integer> ports) {
@@ -281,22 +276,17 @@ public class StartDomainCommand extends CLICommand {
     }
  
     private void report(GFLauncherInfo info) {
+        String msg = strings.get("DomainLocation", info.getDomainName(),
+                            info.getDomainRootDir().getAbsolutePath());
+        logger.printMessage(msg);
+        Integer ap = -1;
         try {
-            logger.pushAndLockLevel(Level.INFO);
-            String msg = strings.get("DomainLocation", info.getDomainName(),
-                                info.getDomainRootDir().getAbsolutePath());
-            logger.printMessage(msg);
-            Integer ap = -1;
-            try {
-                ap = info.getAdminPorts().iterator().next();
-            } catch (Exception e) {
-                //ignore
-            }
-            msg = strings.get("DomainAdminPort", ap);
-            logger.printMessage(msg);
-        } finally {
-            logger.popAndUnlockLevel();
+            ap = info.getAdminPorts().iterator().next();
+        } catch (Exception e) {
+            //ignore
         }
+        msg = strings.get("DomainAdminPort", ap);
+        logger.printMessage(msg);
     }
 
     private void waitForParentToDie() {

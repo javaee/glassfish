@@ -50,7 +50,7 @@ public class LocalCommand extends CLICommand {
     private CLIMain cli;
 
     public LocalCommand(String name, ProgramOptions programOpts,
-	    Environment env) {
+            Environment env) {
         super(name, programOpts, env);
         cli = new CLIMain();
     }

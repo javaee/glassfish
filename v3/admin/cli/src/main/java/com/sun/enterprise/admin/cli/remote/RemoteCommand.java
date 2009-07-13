@@ -50,6 +50,7 @@ import java.util.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.ValidOption;
+import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.InvalidCommandException;
 import com.sun.enterprise.util.net.NetUtils;
@@ -66,7 +67,7 @@ import org.xml.sax.SAXException;
 public class RemoteCommand extends CLICommand {
 
     private static final LocalStringsImpl   strings =
-            new LocalStringsImpl(CLIRemoteCommand.class);
+            new LocalStringsImpl(RemoteCommand.class);
 
     private static final String QUERY_STRING_INTRODUCER = "?";
     private static final String QUERY_STRING_SEPARATOR = "&";
@@ -74,10 +75,11 @@ public class RemoteCommand extends CLICommand {
     private static final String COMMAND_NAME_REGEXP =
                                     "^[a-zA-Z][-a-zA-Z0-9_]*$";
 
-    private Map<String, String>             mainAtts;
-                                            // XXX - used by ListCommandsCommand
     private String                          responseFormatType = "hk2-agent";
     private OutputStream                    userOut; // XXX - never set
+    // return output string rather than printing it
+    private boolean                         returnOutput = false;
+    private String                          output;
     private boolean                         doUpload = false;
     private boolean                         addedUploadOption = false;
     private Payload.Outbound                outboundPayload;
@@ -168,20 +170,20 @@ public class RemoteCommand extends CLICommand {
             if (commandOpts == null)
                 // goes to server
              */
-	    try {
-		fetchCommandMetadata();
-	    } catch (AuthenticationException ex) {
-		/*
-		 * Failed to authenticate to server.
-		 * If we can update our authentication information
-		 * (e.g., by prompting the user for the username
-		 * and password), try again.
-		 */
-		if (updateAuthentication())
-		    fetchCommandMetadata();
-		else
-		    throw ex;
-	    }
+            try {
+                fetchCommandMetadata();
+            } catch (AuthenticationException ex) {
+                /*
+                 * Failed to authenticate to server.
+                 * If we can update our authentication information
+                 * (e.g., by prompting the user for the username
+                 * and password), try again.
+                 */
+                if (updateAuthentication())
+                    fetchCommandMetadata();
+                else
+                    throw ex;
+            }
             if (commandOpts == null)
                 throw new CommandException("Unknown command: " + name);
         } catch (CommandException cex) {
@@ -238,20 +240,20 @@ public class RemoteCommand extends CLICommand {
 
             // remove the last character, whether it was "?" or "&"
             uriString.setLength(uriString.length() - 1);
-	    try {
-		executeRemoteCommand(uriString.toString());
-	    } catch (AuthenticationException ex) {
-		/*
-		 * Failed to authenticate to server.
-		 * If we can update our authentication information
-		 * (e.g., by prompting the user for the username
-		 * and password), try again.
-		 */
-		if (updateAuthentication())
-		    executeRemoteCommand(uriString.toString());
-		else
-		    throw ex;
-	    }
+            try {
+                executeRemoteCommand(uriString.toString());
+            } catch (AuthenticationException ex) {
+                /*
+                 * Failed to authenticate to server.
+                 * If we can update our authentication information
+                 * (e.g., by prompting the user for the username
+                 * and password), try again.
+                 */
+                if (updateAuthentication())
+                    executeRemoteCommand(uriString.toString());
+                else
+                    throw ex;
+            }
         } catch (IOException ioex) {
             // possibly an error caused while reading or writing a file?
             throw new CommandException("I/O Error", ioex);
@@ -263,51 +265,66 @@ public class RemoteCommand extends CLICommand {
      * Actually execute the remote command.
      */
     private void executeRemoteCommand(String uri) throws CommandException {
-	doHttpCommand(uri, chooseRequestMethod(), new HttpCommand() {
-	    public void doCommand(HttpURLConnection urlConnection)
-		    throws CommandException, IOException {
+        doHttpCommand(uri, chooseRequestMethod(), new HttpCommand() {
+            public void doCommand(HttpURLConnection urlConnection)
+                    throws CommandException, IOException {
 
-	    if (doUpload) {
-		/*
-		 * If we are uploading anything then set the content-type
-		 * and add the uploaded part(s) to the payload.
-		 */
-		urlConnection.setChunkedStreamingMode(0); // use default value
-		urlConnection.setRequestProperty("Content-Type",
-			outboundPayload.getContentType());
-	    }
-	    urlConnection.connect();
-	    if (doUpload) {
-		outboundPayload.writeTo(urlConnection.getOutputStream());
-		outboundPayload = null; // no longer needed
-	    }
-	    InputStream in = urlConnection.getInputStream();
+            if (doUpload) {
+                /*
+                 * If we are uploading anything then set the content-type
+                 * and add the uploaded part(s) to the payload.
+                 */
+                urlConnection.setChunkedStreamingMode(0); // use default value
+                urlConnection.setRequestProperty("Content-Type",
+                        outboundPayload.getContentType());
+            }
+            urlConnection.connect();
+            if (doUpload) {
+                outboundPayload.writeTo(urlConnection.getOutputStream());
+                outboundPayload = null; // no longer needed
+            }
+            InputStream in = urlConnection.getInputStream();
 
-	    String responseContentType = urlConnection.getContentType();
+            String responseContentType = urlConnection.getContentType();
 
-	    Payload.Inbound inboundPayload =
-		PayloadImpl.Inbound.newInstance(responseContentType, in);
+            Payload.Inbound inboundPayload =
+                PayloadImpl.Inbound.newInstance(responseContentType, in);
 
-	    boolean isReportProcessed = false;
-	    PayloadFilesManager downloadedFilesMgr =
-		    new PayloadFilesManager.Perm();
-	    Iterator<Payload.Part> partIt = inboundPayload.parts();
-	    while (partIt.hasNext()) {
-		/*
-		 * The report will always come first among the parts of
-		 * the payload.  Be sure to process the report right away
-		 * so any following data parts will be accessible.
-		 */
-		if (!isReportProcessed) {
-		    handleResponse(options, partIt.next().getInputStream(),
-			    urlConnection.getResponseCode(), userOut);
-		    isReportProcessed = true;
-		} else {
-		    processDataPart(downloadedFilesMgr, partIt.next());
-		}
-	    }
-	    }
-	});
+            boolean isReportProcessed = false;
+            PayloadFilesManager downloadedFilesMgr =
+                    new PayloadFilesManager.Perm();
+            Iterator<Payload.Part> partIt = inboundPayload.parts();
+            while (partIt.hasNext()) {
+                /*
+                 * The report will always come first among the parts of
+                 * the payload.  Be sure to process the report right away
+                 * so any following data parts will be accessible.
+                 */
+                if (!isReportProcessed) {
+                    handleResponse(options, partIt.next().getInputStream(),
+                            urlConnection.getResponseCode(), userOut);
+                    isReportProcessed = true;
+                } else {
+                    processDataPart(downloadedFilesMgr, partIt.next());
+                }
+            }
+            }
+        });
+    }
+
+    /**
+     * Execute the command and return the output as a string
+     * instead of writing it out.
+     */
+    public String executeAndReturnOutput(String... args)
+            throws CommandException, CommandValidationException {
+        /*
+         * Tellthe low level output processing to just save the output
+         * string instead of writing it out.  Yes, this is pretty gross.
+         */
+        returnOutput = true;
+        execute(args);
+        return output;
     }
 
     /**
@@ -376,7 +393,7 @@ public class RemoteCommand extends CLICommand {
                     if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
                         msg = strings.get("InvalidCredentials",
                                             programOpts.getUser());
-			throw new AuthenticationException(msg);
+                        throw new AuthenticationException(msg);
                     } else {
                         msg = "Status: " + rc;
                     }
@@ -506,9 +523,10 @@ public class RemoteCommand extends CLICommand {
             rrm = new RemoteResponseManager(in, code);
             rrm.process();
         } catch (RemoteSuccessException rse) {
-            if (rrm != null)
-                mainAtts = rrm.getMainAtts();
-            Log.info(rse.getMessage());
+            if (returnOutput)
+                output = rse.getMessage();
+            else
+                logger.printMessage(rse.getMessage());
             return;
         } catch (RemoteException rfe) {
             // XXX - gross
@@ -533,10 +551,6 @@ public class RemoteCommand extends CLICommand {
         sb.append("Remote command: ").append(name);
         // XXX - include more information if known
         return sb.toString();
-    }
-
-    public Map<String, String> getMainAtts() {
-        return mainAtts;
     }
 
     /**
@@ -734,7 +748,7 @@ public class RemoteCommand extends CLICommand {
      */
     protected boolean updateAuthentication() {
         Console cons;
-	if (programOpts.isInteractive() && (cons = System.console()) != null) {
+        if (programOpts.isInteractive() && (cons = System.console()) != null) {
             cons.printf("%s ",
                 strings.get("AdminUserPrompt", programOpts.getUser()));
             String user = cons.readLine();
@@ -747,8 +761,8 @@ public class RemoteCommand extends CLICommand {
                 programOpts.setUser(user);
             programOpts.setPassword(password);
             return true;
-	}
-	return false;
+        }
+        return false;
     }
 
     private void initializeAuth() throws CommandException {

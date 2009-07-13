@@ -36,12 +36,14 @@
 
 package com.sun.enterprise.admin.cli.commands;
 
+import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.ValidOption;
 import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
 
@@ -51,7 +53,7 @@ import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
  * @author bnevins
  * @author Bill Shannon
  */
-public class ListCommandsCommand extends RemoteCommand {
+public class ListCommandsCommand extends CLICommand {
     String[] remoteCommands;
     String[] localCommands;
     boolean localOnly;
@@ -66,12 +68,7 @@ public class ListCommandsCommand extends RemoteCommand {
     }
 
     @Override
-    protected void fetchCommandMetadata() {
-        /*
-         * Don't fetch information from server.
-         * We need to work even if server is down.
-         * XXX - could "merge" options if server is up
-         */
+    protected void prepare() {
         Set<ValidOption> opts = new HashSet<ValidOption>();
         addOption(opts, "localonly", '\0', "BOOLEAN", false, "false");
         addOption(opts, "remoteonly", '\0', "BOOLEAN", false, "false");
@@ -82,7 +79,8 @@ public class ListCommandsCommand extends RemoteCommand {
     }
 
     @Override
-    protected void validate() throws CommandException {
+    protected void validate()
+            throws CommandException, CommandValidationException {
         super.validate();
         localOnly = getBooleanOption("localonly");
         remoteOnly = getBooleanOption("remoteonly");
@@ -98,12 +96,8 @@ public class ListCommandsCommand extends RemoteCommand {
     }
 
     @Override
-    public int executeCommand() throws CommandException {
-        // throw away all arguments and options for remote
-        argv = new String[] { argv[0] };
-        options = new HashMap<String, String>();
-        operands = Collections.emptyList();
- 
+    public int executeCommand()
+            throws CommandException, CommandValidationException {
         if (!remoteOnly) {
             getLocalCommands();
             printLocalCommands();
@@ -125,33 +119,44 @@ public class ListCommandsCommand extends RemoteCommand {
         return localCommands;
     }
 
-    String[] getRemoteCommands() throws CommandException {
-        /*
-         * XXX - This is very disgusting.
-         * We increase the logging level such that normal command
-         * output is suppressed.  Then, after running the remote
-         * command, we retrieve the results of the command from
-         * the "back channel" that is "mainAtts", which comes from
-         * the manifest returned from the server.
-         * XXX - Like I said, this is very disgusting.
-         */
-        int ret = -1;
-        try {
-            logger.pushAndLockLevel(Level.WARNING);
-            ret = super.executeCommand();
-        } catch (Exception e) {
-            throw new CommandException(
-                strings.get("LocalRemoteCommand.errorRemote", e.getMessage()));
-        } finally {
-            logger.popAndUnlockLevel();
-        }
+    /**
+     * Get the list of commands from the remote server.
+     *
+     * @return the commands as a String array, sorted
+     */
+    String[] getRemoteCommands()
+            throws CommandException, CommandValidationException {
+        RemoteCommand cmd =
+            new RemoteCommand("list-commands", programOpts, env);
+        String cmds = cmd.executeAndReturnOutput("list-commands");
+        List<String> rcmds = new ArrayList<String>();
+        BufferedReader r = new BufferedReader(new StringReader(cmds));
+        String line;
 
-        if (ret == 0) {
-            // throw away everything but the main atts
-            Map<String,String> mainAtts = this.getMainAtts();
-            String cmds = mainAtts.get("children");
-            remoteCommands = cmds.split(";");
+        /*
+         * The output of the remote list-commands command is a bunch of
+         * lines of the form:
+         * Command : cmd-name
+         * We extract the command name from each such line.
+         * XXX - depending on this output format is gross;
+         * should be able to send --terse to remote command
+         * to cause it to produce exactly the output we want.
+         */
+        try {
+            while ((line = r.readLine()) != null) {
+                if (line.startsWith("Command")) {
+                    int i = line.indexOf(':');
+                    if (i < 0)
+                        continue;
+                    String s = line.substring(i + 1).trim();
+                    rcmds.add(s);
+                }
+            }
+        } catch (IOException ioex) {
+            // ignore it, will never happen
         }
+        Collections.sort(rcmds);
+        remoteCommands = rcmds.toArray(new String[rcmds.size()]);
         return remoteCommands;
     }
 

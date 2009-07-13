@@ -84,7 +84,8 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
      * Require the user to actually type the passwords.
      */
     @Override
-    protected void validate() throws CommandException {
+    protected void validate()
+            throws CommandException, CommandValidationException {
         if (programOpts.isHelp())
             return;
 
