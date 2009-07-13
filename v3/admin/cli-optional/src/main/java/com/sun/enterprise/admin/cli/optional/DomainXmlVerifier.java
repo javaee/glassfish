@@ -190,22 +190,31 @@ public class DomainXmlVerifier {
         ArrayList<String> keys = new ArrayList<String>(beans.size());
         for (ConfigBeanProxy cbp : beans) {
             String key = Dom.unwrap(cbp).getKey();
-            keyBeanMap.put(key,cbp);
+            keyBeanMap.put(key,Dom.unwrap(cbp));
             keys.add(key);
         }
-        
+
+        WeakHashMap errorKeyBeanMap = new WeakHashMap();
         String[] strKeys = keys.toArray(new String[beans.size()]);
         for (int i = 0; i < strKeys.length; i++) {
-            for (int j = 0; j < strKeys.length; i++) {
+            boolean foundDuplicate = false;
+            for (int j = 0; j < strKeys.length; j++) {
                 // If the keys are same and if the indexes don't match
                 // we have a duplicate. So output that error
                 if ( (strKeys[i].equals(strKeys[j])) && (i!=j) ) {
-                    Result result = new Result(
-                        "Duplicate Key : " + strKeys[i] + " for type = "+
-                        ((Dom)keyBeanMap.get(strKeys[i])).getProxyType()); 
-                    output(result);
+                    foundDuplicate = true;
+                    errorKeyBeanMap.put(strKeys[i],
+                        ((Dom)keyBeanMap.get(strKeys[i])).getProxyType());
+                    error = true;
+                    break;
                 }
             }
+        }
+
+        for (Object errorKey : errorKeyBeanMap.keySet()) {
+            Result result = new Result( "Duplicate Key : " + errorKey +
+                " for type = " + errorKeyBeanMap.get(errorKey));
+            output(result);
         }
     }    
 }
