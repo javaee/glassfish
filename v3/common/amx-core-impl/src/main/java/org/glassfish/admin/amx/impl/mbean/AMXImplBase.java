@@ -70,7 +70,7 @@ import org.glassfish.admin.amx.core.AMX_SPI;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
-import org.glassfish.admin.amx.impl.AMXStartupServiceNew;
+import org.glassfish.admin.amx.impl.AMXStartupService;
 import org.glassfish.admin.amx.impl.util.MBeanInfoSupport;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.ClassUtil;
@@ -218,7 +218,7 @@ public class AMXImplBase extends MBeanImplBase
         public MBeanTrackerMBean
     getMBeanTracker()
     {
-        return AMXStartupServiceNew.getMBeanTracker(getMBeanServer());
+        return AMXStartupService.getMBeanTracker(getMBeanServer());
     }
     
     public ObjectName[] getChildren()

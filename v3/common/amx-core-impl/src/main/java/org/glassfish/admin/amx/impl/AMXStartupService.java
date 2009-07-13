@@ -77,7 +77,7 @@ import org.glassfish.api.amx.AMXValues;
 An {@link AMXLoader} responsible for loading core amx MBeans
  */
 @Service
-public final class AMXStartupServiceNew
+public final class AMXStartupService
         implements org.jvnet.hk2.component.PostConstruct,
         org.jvnet.hk2.component.PreDestroy,
         AMXStartupServiceMBean
@@ -106,7 +106,7 @@ public final class AMXStartupServiceNew
         return MBeanServerInvocationHandler.newProxyInstance(server, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME, MBeanTrackerMBean.class, false);
     }
 
-    public AMXStartupServiceNew()
+    public AMXStartupService()
     {
         new StringifierRegistryIniterImpl(StringifierRegistryImpl.DEFAULT);
         new StringifierRegistryIniter(StringifierRegistryImpl.DEFAULT);
@@ -156,7 +156,7 @@ public final class AMXStartupServiceNew
             e.printStackTrace();
             throw new Error(e);
         }
-        //debug( "AMXStartupServiceNew.postConstruct(): registered: " + OBJECT_NAME );
+        //debug( "AMXStartupService.postConstruct(): registered: " + OBJECT_NAME );
         ImplUtil.getLogger().fine("Initialized AMXStartupServiceNew in " + delta.elapsedMillis() + " ms, registered as " + OBJECT_NAME);
 
         mEvents.register(new ShutdownListener());
@@ -181,7 +181,7 @@ public final class AMXStartupServiceNew
     }
 
     /**
-    Return a proxy to the AMXStartupServiceNew.
+    Return a proxy to the AMXStartupService.
      */
     public static AMXStartupServiceMBean getAMXStartupServiceMBeanProxy(final MBeanServer mbs)
     {
@@ -293,7 +293,7 @@ public final class AMXStartupServiceNew
             {
                 ImplUtil.getLogger().info("AMXStartupServiceNew.AMXLoaderThread: loading: " + mLoader.getClass().getName());
                 mTop = mLoader.loadAMXMBeans();
-                //ImplUtil.getLogger().info( "AMXStartupServiceNew.AMXLoaderThread: loaded: "  + mLoader.getClass().getName() );
+                //ImplUtil.getLogger().info( "AMXStartupService.AMXLoaderThread: loaded: "  + mLoader.getClass().getName() );
             }
             catch (final Exception e)
             {
@@ -349,7 +349,7 @@ public final class AMXStartupServiceNew
         {
             // Find and load any additional AMX subsystems
             final Collection<AMXLoader> loaders = mHabitat.getAllByContract(AMXLoader.class);
-            //ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans(): found this many loaders: " + loaders.size() );
+            //ImplUtil.getLogger().info( "AMXStartupService._loadAMXMBeans(): found this many loaders: " + loaders.size() );
             final AMXLoaderThread[] threads = new AMXLoaderThread[loaders.size()];
             int i = 0;
             for (final AMXLoader loader : loaders)
