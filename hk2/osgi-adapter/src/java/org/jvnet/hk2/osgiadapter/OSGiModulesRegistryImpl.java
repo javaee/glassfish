@@ -136,12 +136,30 @@ public class OSGiModulesRegistryImpl
                     final Module m = getModule(bundle);
                     if (m!=null) {
                         // getModule can return null if some bundle got uninstalled
-                        // before we have finished initialization.
-                        // call remove as it processes provider names
+                        // before we have finished initialization. This can
+                        // happen if framework APIs are called in parallel
+                        // by some third party bundles.
+                        // We need to call remove as it processes provider names
+                        // and updates the cache.
                         remove(m);
                     }
                     break;
                 }
+                case BundleEvent.UPDATED :
+                    final Module m = getModule(bundle);
+                    if (m!=null) {
+                        // getModule can return null if some bundle got uninstalled
+                        // before we have finished initialization. This can
+                        // happen if framework APIs are called in parallel
+                        // by some third party bundles.
+                        // We need to call remove as it processes provider names
+                        // and updates the cache.
+                        remove(m);
+                        add(m);
+                    } else {
+                        add(makeModule(bundle));
+                    }
+                    break;
             }
         } catch (Exception e) {
             logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "bundleChanged",
@@ -197,6 +215,22 @@ public class OSGiModulesRegistryImpl
         os.close();
     }
 
+    private void deleteCache() {
+        String cacheLocation = System.getProperty(INHABITITANTS_CACHE_DIR);
+        if (cacheLocation == null) {
+            return;
+        }
+        File io = new File(cacheLocation, "inhabitants");
+        if (io.exists()) {
+            if (io.delete()) {
+                logger.logp(Level.FINE, "OSGiModulesRegistryImpl",
+                        "deleteCache", "deleted = {0}", new Object[]{io});
+            } else {
+                logger.logp(Level.WARNING, "OSGiModulesRegistryImpl",
+                        "deleteCache", "failed to delete = {0}", new Object[]{io});
+            }
+        }
+    }
     // Factory method
     private OSGiModuleDefinition makeModuleDef(Bundle bundle)
             throws IOException, URISyntaxException {
@@ -222,6 +256,13 @@ public class OSGiModulesRegistryImpl
         // It is overridden to make it synchronized as it is called from
         // BundleListener.
         super.remove(module);
+
+        // Update cache and delete the underlying file so that
+        // it gets created during subsequent startup.
+        final URI location = module.getModuleDefinition().getLocations()[0];
+        if (cachedData.remove(location) != null) {
+            deleteCache();
+        }
     }
 
     // factory method
