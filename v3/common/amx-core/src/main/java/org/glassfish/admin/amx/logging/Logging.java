@@ -59,8 +59,6 @@ public interface Logging
    /**
 		Sets the log level of the Logger for the specified module.  This operation
 		will not effect a change to the corresponding loggin configuration for that module.
-		<b>This capability is subject to removal, due to the confusion
-		caused by configuration settings not matching</b>.
 		
 		@param module	a module name as specified in {@link LogModuleNames}.
 		@param level	a log level
@@ -72,10 +70,21 @@ public interface Logging
         @Param(name="level") String level );
 
    /**
+		Sets the log level of the Logger for the specified module.  This operation
+		will not effect a change to the corresponding loggin configuration for that module.
+
+		@param module	a module name as specified in {@link LogModuleNames}.
+		@param level	a log level
+     */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    @Description( "Sets the value of one or more logging properties" )
+    public void updateLoggingProperties(
+        @Param(name="properties") Map <String, String> properties );
+
+   /**
    		Gets the log level of the Logger for the specified module, which may or may not
    		be the same as that found in the configuration.
-		<b>This capability is subject to removal, due to the confusion
-		caused by configuration settings not matching</b>.
+		
    		
    		@param moduleName a module name as specified in {@link LogModuleNames}
     */
@@ -84,10 +93,8 @@ public interface Logging
     public String getModuleLogLevel( @Param(name="moduleName") String moduleName );
     
     /**
-       		Gets the log level of the Logger for the specified module, which may or may not
-       		be the same as that found in the configuration.
-    		<b>This capability is subject to removal, due to the confusion
-    		caused by configuration settings not matching</b>.
+       		Gets all the logging properties in the logging.properties file
+
        		
      */
      @ManagedOperation(impact=MBeanOperationInfo.INFO)
@@ -95,11 +102,31 @@ public interface Logging
      public Map<String, String> getLoggingProperties( );
 
     /**
+       		Gets the configuration properties for logging
+     */
+
+     @ManagedOperation(impact=MBeanOperationInfo.INFO)
+     @Description( "Get logging configuration properties" )
+     public Map<String, String>  getLoggingAttributes( );
+
+
+    /**
+       		Sets the value of one or more of the logging configuration properties .
+
+     */
+
+     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+     @Description( "Set value of the value of one or more of the logging configuration properties." )
+     public void setLoggingAttributes(@Param(name="properties") Map <String, String> properties );
+
+
+    /**
         This method may be used to verify that your Logging listener is working
         correctly.
         @param level the log level of the log message.
         @param message  the message to be placed in Notif.getMessage()
      */
+     
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
     public void testEmitLogMessage(
          @Param(name="level") final String level,
