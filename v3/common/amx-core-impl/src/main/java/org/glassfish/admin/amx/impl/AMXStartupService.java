@@ -374,7 +374,7 @@ public final class AMXStartupService
             ImplUtil.getLogger().info("AMXStartupServiceNew: AMX ready for use, DomainRoot = " + getDomainRoot());
         }
         
-        // sanity-check our listeners
+        // sanity-check (self-test) our listeners
         if ( bootAMXListener.getCallback().getRegistered() == null )
         {
             throw new IllegalStateException( "BootAMX listener was not called" );
