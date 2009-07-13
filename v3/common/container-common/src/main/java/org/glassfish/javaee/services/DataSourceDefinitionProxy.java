@@ -78,7 +78,7 @@ public class DataSourceDefinitionProxy implements NamingObjectProxy, Serializabl
         if(actualResourceName == null){
             
             actualResourceName = ConnectorsUtil.deriveDataSourceDefinitionResourceName
-                    (desc.getComponentId(), desc.getName());
+                    (desc.getResourceId(), desc.getName());
 
             try{
                 if(habitat == null){

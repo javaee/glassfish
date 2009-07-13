@@ -40,9 +40,7 @@ import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
 import com.sun.enterprise.container.common.spi.WebServiceReferenceManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import com.sun.enterprise.naming.spi.NamingUtils;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
@@ -165,6 +163,21 @@ public class ComponentEnvManagerImpl
         return compEnvId;
     }
 
+    private void setResourceId(JndiNameEnvironment env, DataSourceDefinitionDescriptor desc){
+
+        String resourceId = "";
+        if(dependencyAppliesToScope(desc, ScopeType.COMPONENT)){
+            resourceId = getApplicationName(env) +    "/" + getModuleName(env) + "/" +
+                    getComponentEnvId(env) ;
+        } else if(dependencyAppliesToScope(desc, ScopeType.MODULE)){
+            resourceId = getApplicationName(env) +    "/" + getModuleName(env) ;
+        } else if(dependencyAppliesToScope(desc, ScopeType.APP)){
+            resourceId = getApplicationName(env)  ;
+        }
+        
+        desc.setResourceId(resourceId);
+
+    }
     private void addDataSourceBindings(JndiNameEnvironment env, ScopeType scope, Collection<JNDIBinding> jndiBindings) {
 
         for(Iterator itr = env.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
@@ -173,17 +186,7 @@ public class ComponentEnvManagerImpl
             if(!dependencyAppliesToScope(next, scope)){
                 continue;
             }
-
-            //TODO V3 handle once rules for "module", "app" is set
-            if(!dependencyAppliesToScope(next, ScopeType.COMPONENT) &&
-                    !(dependencyAppliesToScope(next, ScopeType.GLOBAL))){
-                continue;
-            }
-
-            if(!dependencyAppliesToScope(next, ScopeType.GLOBAL)){
-                String componentEnvId = getComponentEnvId(env);
-                next.setComponentId(componentEnvId);
-            }
+            setResourceId(env, next);
 
             DataSourceDefinitionProxy proxy = habitat.getComponent(DataSourceDefinitionProxy.class);
             proxy.setDescriptor(next);
@@ -233,48 +236,18 @@ public class ComponentEnvManagerImpl
 
     private void undeployDataSourceDefinitions(JndiNameEnvironment env) {
 
-
         for(Iterator itr = env.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
             DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
-
-            if(!(dependencyAppliesToScope(next, ScopeType.GLOBAL) ||
-                    (dependencyAppliesToScope(next, ScopeType.COMPONENT)))){
-               continue;
-            }
-
             undeployDataSource(next);
         }
-
-        /* TODO V3 handle once rules for "module", "app" is set
-        for(JndiNameEnvironment moduleEnv : getJndiNameEnvironmentsForModule(env)) {
-            for(Iterator itr = moduleEnv.getDataSourceDefinitionDescriptors().iterator();itr.hasNext();){
-                DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
-
-                if(!dependencyAppliesToScope(next, ScopeType.MODULE)){
-                    continue;
-                }
-                undeployDataSource(next);
-            }
-        }
-
-        for(JndiNameEnvironment appEnv : getJndiNameEnvironmentsForApp(env)) {
-            for(Iterator itr = appEnv.getDataSourceDefinitionDescriptors().iterator();itr.hasNext();){
-                DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
-
-                if(!dependencyAppliesToScope(next, ScopeType.APP)){
-                    continue;
-                }
-                undeployDataSource(next);
-            }
-        }
-        */
     }
 
     private void undeployDataSource(DataSourceDefinitionDescriptor next) {
+
         Collection<ResourceDeployer> resourceDeployers = habitat.getAllByContract(ResourceDeployer.class);
 
         try{
-                ResourceDeployer deployer = getResourceDeployer(next, resourceDeployers);
+            ResourceDeployer deployer = getResourceDeployer(next, resourceDeployers);
             deployer.undeployResource(next);
         }catch(Exception e){
             _logger.log(Level.WARNING, "unable to undeploy DataSourceDefinition [ " + next.getName() + " ] ", e);

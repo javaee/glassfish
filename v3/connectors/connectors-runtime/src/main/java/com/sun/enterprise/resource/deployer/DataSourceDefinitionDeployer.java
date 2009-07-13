@@ -73,8 +73,8 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
         final DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor) resource;
 
-        String poolName = ConnectorsUtil.deriveDataSourceDefinitionPoolName(desc.getComponentId(), desc.getName());
-        String resourceName = ConnectorsUtil.deriveDataSourceDefinitionResourceName(desc.getComponentId(), desc.getName());
+        String poolName = ConnectorsUtil.deriveDataSourceDefinitionPoolName(desc.getResourceId(), desc.getName());
+        String resourceName = ConnectorsUtil.deriveDataSourceDefinitionResourceName(desc.getResourceId(), desc.getName());
 
         if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "DataSourceDefinitionDeployer.deployResource() : pool-name ["+poolName+"], " +
@@ -124,8 +124,8 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         final DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor) resource;
         Collection<ResourceDeployer> deployers = habitat.getAllByContract(ResourceDeployer.class);
 
-        String poolName = ConnectorsUtil.deriveDataSourceDefinitionPoolName(desc.getComponentId(), desc.getName());
-        String resourceName = ConnectorsUtil.deriveDataSourceDefinitionResourceName(desc.getComponentId(), desc.getName());
+        String poolName = ConnectorsUtil.deriveDataSourceDefinitionPoolName(desc.getResourceId(), desc.getName());
+        String resourceName = ConnectorsUtil.deriveDataSourceDefinitionResourceName(desc.getResourceId(), desc.getName());
 
         if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "DataSourceDefinitionDeployer.undeployResource() : pool-name ["+poolName+"], " +
