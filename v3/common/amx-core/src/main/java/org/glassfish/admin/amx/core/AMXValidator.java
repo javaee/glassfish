@@ -55,6 +55,7 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.InstanceNotFoundException;
+import javax.management.MBeanServerInvocationHandler;
 
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenType;
@@ -63,6 +64,8 @@ import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.Pathnames;
+import org.glassfish.admin.amx.base.MBeanTrackerMBean;
+
 import static org.glassfish.admin.amx.core.PathnameConstants.*;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import static org.glassfish.api.amx.AMXValues.*;
@@ -93,6 +96,9 @@ public final class AMXValidator
     private final ProxyFactory mProxyFactory;
 
     private final DomainRoot mDomainRoot;
+    
+    // created if needed
+    private MBeanTrackerMBean  mMBeanTracker;
 
     public AMXValidator(final MBeanServerConnection conn)
     {
@@ -609,6 +615,16 @@ public final class AMXValidator
                 {
                     fail(proxy, "Children attribute must be non-null");
                 }
+                final Set<ObjectName> childrenSet = SetUtil.newSet(children);
+                if ( childrenSet.size() != children.length )
+                {
+                    fail(proxy, "Children contains duplicates");
+                }
+                if ( childrenSet.contains(null) )
+                {
+                    fail(proxy, "Children contains null");
+                }
+
                 // verify that each child is non-null and references its parent
                 for (final ObjectName childObjectName : children)
                 {
@@ -635,6 +651,20 @@ public final class AMXValidator
                 if (caseSensitiveTypes.size() != caseInsensitiveTypes.size())
                 {
                     fail(proxy, "Children types must be case-insensitive");
+                }
+                
+                // verify that the MBeanTracker agrees with the parent MBean
+                final Set<ObjectName> tracked = getMBeanTracker().getChildrenOf(proxy.objectName()); 
+                if ( childrenSet.size() != children.length )
+                {
+                    // try again, in case it's a timing issue
+                    final Set<ObjectName> childrenSetNow = SetUtil.newSet( proxy.getChildren() );
+                    if ( ! tracked.equals( childrenSetNow ) )
+                    {
+                        fail(proxy, "MBeanTracker has different MBeans than the MBean: {" + 
+                            CollectionUtil.toString(tracked, ", ") + "} vs MBean having {" +
+                            CollectionUtil.toString(childrenSetNow, ", ") + "}");
+                    }
                 }
             }
             catch (final Exception e)
@@ -671,7 +701,16 @@ public final class AMXValidator
             }
         }
     }
-
+    
+    private MBeanTrackerMBean getMBeanTracker() {
+        if ( mMBeanTracker == null )
+        {
+            mMBeanTracker = MBeanServerInvocationHandler.newProxyInstance(
+                mMBeanServer, MBeanTrackerMBean.MBEAN_TRACKER_OBJECT_NAME, MBeanTrackerMBean.class, false);
+        }
+        return mMBeanTracker;
+    }   
+    
     private static final class MetadataValidator
     {
         private final Descriptor mDescriptor;
