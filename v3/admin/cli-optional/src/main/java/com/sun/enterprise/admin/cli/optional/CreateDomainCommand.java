@@ -43,6 +43,7 @@ import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -52,6 +53,17 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
+
+// imports for config pluggability feature
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.embedded.Server;
+import org.glassfish.api.admin.config.Container;
+import org.glassfish.api.admin.config.DomainInitializer;
+import org.glassfish.api.admin.config.DomainContext;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.logging.LogDomains;
 
 public class CreateDomainCommand extends BaseLifeCycleCommand {
 
@@ -390,11 +402,11 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
         // fix for bug# 4930684
         // domain name is validated before the ports
         //
-
-        String domainFilePath = (domainPath + File.separator + domainName);
+        String domainFilePath = (domainPath + File.separator + domainName);        
+        
         if (FileUtils.safeGetCanonicalFile(new File(domainFilePath)).exists()) {
             throw new CommandValidationException(
-                    getLocalizedString("DomainExists", new Object[]{domainName}));
+                getLocalizedString("DomainExists", new Object[]{domainName}));
         }
 
         final Integer instancePort = getPort(domainProperties,
@@ -481,6 +493,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
         DomainsManager manager = new PEDomainsManager();
 
         manager.createDomain(domainConfig);
+        modifyInitialDomainXml();
         CLILogger.getInstance().printMessage(getLocalizedString("DomainCreated",
                 new Object[]{domainName}));
         //checkAsadminPrefsFile();
@@ -725,6 +738,39 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
                     new Object[]{MASTER_PASSWORD}));
         }
         return optionValue;
+    }
+
+    private void modifyInitialDomainXml() throws LifecycleException {
+        // for each module implementing the @Contract DomainInitializer, extract
+        // the initial domain.xml and insert it into the existing domain.xml
+        Server server = new Server.Builder("dummylaunch").build();
+        server.start();
+        Habitat habitat = server.getHabitat();
+        // Will always need DAS's name & config. No harm using the name 'server'
+        // to fetch <server-config>
+        com.sun.enterprise.config.serverbeans.Server serverConfig =
+           habitat.getComponent(com.sun.enterprise.config.serverbeans.Server.class,
+           "server");
+        Config config = habitat.getComponent(
+            Config.class, serverConfig.getConfigRef());
+
+        // Create a context object for this domain creation to enable the new
+        // modules to make decisions
+        DomainContext ctx = new DomainContext();
+        ctx.setDomainType("dev"); //TODO : Whenever clustering/HA is supported
+        // this setting needs to be fixed. Domain type can be dev/ha/cluster and
+        // this type needs to be extracted possibly using an api from installer
+        ctx.setLogger(LogDomains.getLogger(
+            DomainInitializer.class, LogDomains.SERVER_LOGGER));
+
+        // now for every such Inhabitant, fetch the actual initial config and
+        // insert it into the module that initial config was targeted for.
+        for (DomainInitializer inhabitant : habitat.getAllByContract(
+            DomainInitializer.class)) {
+            Container newContainerConfig = inhabitant.getInitialConfig(ctx);
+            config.getContainers().add(newContainerConfig);
+        }
+        server.stop();
     }
 }
 
