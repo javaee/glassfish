@@ -46,11 +46,9 @@
             getRequestValue(key="name" value=>$page{clusterName});     #in case this is from cluster
             getRequestValue(key="name" value=>$page{instanceName});    #in case this is from standalone instance
             getRequestValue(key="name" value=>$page{targetName});
-            getMqServerConnection(connection="#{pageSession.mqConnection}");
-            gui.log(message="mqConnection = #{pageSession.mqConnection}");
-            #println("!!!!!!!!!! targetName = #{targetName}");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
+
             getPhysicalDestinations(targetName="#{targetName}", result=>$attribute{listOfRows} );
-            gui.log(message="listOfRows = $attribute{listOfRows}");
         />
     </event>
 #include "/shared/restart.inc"
@@ -75,9 +73,9 @@
                     <!command
                         getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                        deleteJMSDest(targetName="#{targetName}", selectedRows="${selectedRows}");
+                        deleteJMSDest(selectedRows="${selectedRows}");
                         setAttribute(key="selectedRows" value="${selectedRows}");
-                        redirect(page="#{actualLink}?name=#{targetName}");
+                        redirect(page="#{pageSession.selfPage}");
                     />
                     </sun:button>
                     <sun:button id="flushButton" text="$resource{i18n.button.Flush}" primary="#{false}" >

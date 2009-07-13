@@ -33,6 +33,7 @@ public class JmsHandlers {
     protected static final String JMS_OBJECT_NAME = "com.sun.messaging.jms.server:type=DestinationManager,subtype=Config";
     protected static final String OP_LIST_DESTINATIONS = "getDestinations";
     protected static final String OP_CREATE = "create";
+    protected static final String OP_DESTROY = "destroy";
     protected static final String PROP_NAME = "name";
     protected static final String PROP_DEST_TYPE = "desttype";
 
@@ -143,22 +144,20 @@ public class JmsHandlers {
 
     @Handler(id="deleteJMSDest",
     input={
-        @HandlerInput(name="selectedRows", type=List.class, required=true),
-        @HandlerInput(name="targetName", type=String.class, required=true)}
+        @HandlerInput(name="selectedRows", type=List.class, required=true)}
+//        @HandlerInput(name="targetName", type=String.class, required=true)}
     )
     public static void deleteJMSDest(HandlerContext handlerCtx) {
-        String configName = ((String) handlerCtx.getInputValue("targetName"));
+//        String configName = ((String) handlerCtx.getInputValue("targetName"));
         List obj = (List) handlerCtx.getInputValue("selectedRows");
         List<Map> selectedRows = (List) obj;
         try{
             for(Map oneRow : selectedRows){
                 String name = (String)oneRow.get("name");
-                Object[] params = new Object[]{name, (String)oneRow.get("type"), configName};
-                String[] types = new String[]{
-                    "java.lang.String",
-                    "java.lang.String",
-                    "java.lang.String"};
-                JMXUtil.invoke("com.sun.appserv:type=resources,category=config", "deletePhysicalDestination", params, types);
+                String type = ((String)oneRow.get("type")).substring(0,1).toLowerCase();
+                Object[] params = new Object[]{type, name};
+                String[] types = new String[]{"java.lang.String","java.lang.String"};
+                JMXUtil.invoke(JMS_OBJECT_NAME, OP_DESTROY, params, types);
             }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
