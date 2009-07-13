@@ -51,6 +51,7 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.RealmConfig;
+import com.sun.enterprise.security.auth.realm.RealmStatsProvider;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.common.Util;
@@ -62,6 +63,8 @@ import com.sun.logging.LogDomains;
 import java.util.Enumeration;
 import java.util.List;
 import org.glassfish.api.Startup.Lifecycle;
+import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -150,6 +153,10 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
                  _logger.log(Level.INFO, "Security startup service called");
              }
              
+             
+               StatsProviderManager.register("security", PluginPoint.SERVER, "realm", new RealmStatsProvider());
+               StatsProviderManager.register("security", PluginPoint.SERVER, "web", new WebSecurityDeployerStatsProvider()); 
+             
             //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager
             //And since LoginContextDriver has too many static methods that use AuditManager
             //we have to make this workaround here.
@@ -237,6 +244,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     public void preDestroy() {
         //DO Nothing ?
         //TODO:V3 need to see if something needs cleanup
+       
     }
     
      /**

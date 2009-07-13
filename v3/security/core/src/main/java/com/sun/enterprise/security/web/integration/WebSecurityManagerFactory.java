@@ -38,6 +38,7 @@ package com.sun.enterprise.security.web.integration;
 import java.util.HashMap;
 import java.util.Map;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.factory.SecurityManagerFactory;
 import org.glassfish.internal.api.ServerContext;
@@ -61,6 +62,7 @@ public class WebSecurityManagerFactory extends SecurityManagerFactory {
 
     private static Logger logger =
             Logger.getLogger(LogDomains.SECURITY_LOGGER);
+    private WebSecurityDeployerProbeProvider probeProvider = new WebSecurityDeployerProbeProvider();
     public WebSecurityManagerFactory() {
         registerPolicyHandlers();
     }
@@ -282,6 +284,7 @@ public class WebSecurityManagerFactory extends SecurityManagerFactory {
          } 
          if (manager == null || !register) {
              try {
+                 probeProvider.securityManagerCreationEvent(ctxId);
                  manager = new WebSecurityManager(wbd, context, this, register);
                  if (register) {
                     String appName = wbd.getApplication().getRegistrationName();

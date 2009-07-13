@@ -84,6 +84,7 @@ import org.apache.catalina.util.StringManager;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.probe.provider.StatsProviderManager;
 //import com.sun.enterprise.Switch;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
@@ -99,6 +100,7 @@ import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.security.jmac.config.HttpServletConstants;
 import com.sun.enterprise.security.jmac.config.HttpServletHelper;
+
 /*V3:Comment
 import com.sun.enterprise.webservice.monitoring.WebServiceEngineImpl;
 import com.sun.enterprise.webservice.monitoring.AuthenticationListener;
@@ -111,6 +113,7 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
+import org.glassfish.probe.provider.PluginPoint;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
@@ -136,6 +139,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     public static final String FORM = "FORM";
     private static final String SERVER_AUTH_CONTEXT = "__javax.security.auth.message.ServerAuthContext";
     private static final String MESSAGE_INFO = "__javax.security.auth.message.MessageInfo";
+    private LoginProbeProvider probeProvider = new LoginProbeProvider();
 
     // name of system property that can be used to define 
     // corresponding default provider for system apps.
@@ -445,6 +449,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * @param the password.
      */
     public Principal authenticate(String username, String password) {
+        
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("Tomcat callback for authenticate user/password");
             _logger.fine("usename = " + username);
@@ -452,8 +457,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (authenticate(username, password, null)) {
             SecurityContext secCtx = SecurityContext.getCurrent();
             assert (secCtx != null); // or auth should've failed
+            //Monitoring probe
+            probeProvider.loginSuccessfulEvent(username);
             return new WebPrincipal(username, password, secCtx);
+            
         } else {
+            probeProvider.loginFailedEvent(username);
             return null;
         }
     }
@@ -462,8 +471,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (authenticate(null, null, certs)) {
             SecurityContext secCtx = SecurityContext.getCurrent();
             assert (secCtx != null); // or auth should've failed
+                        //Monitoring probe
+            probeProvider.loginSuccessfulEvent(null);
             return new WebPrincipal(certs, secCtx);
         } else {
+            probeProvider.loginFailedEvent(null);
             return null;
         }
     }
@@ -1481,6 +1493,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     }
 
     public void initializeRealm(Object descriptor, boolean isSystemApp, String realmName) {
+        StatsProviderManager.register("security", PluginPoint.SERVER, "webintegration", new LoginStatsProvider());
         this.isSystemApp = isSystemApp;
         webDesc = (WebBundleDescriptor) descriptor;
         Application app = webDesc.getApplication();

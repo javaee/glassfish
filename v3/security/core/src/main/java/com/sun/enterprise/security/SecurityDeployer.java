@@ -77,6 +77,8 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     
     private EventListener listener = null;
     
+    private static WebSecurityDeployerProbeProvider probeProvider = new WebSecurityDeployerProbeProvider();
+    
     public static class AppDeployEventListener implements EventListener {
 
         public void event(Event event) {
@@ -180,6 +182,8 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                     String msg = "Error in generating security policy for " + appName;
                     throw new DeploymentException(msg, se);
                 }
+                probeProvider.policyGenerationEndedEvent(appName);
+                probeProvider.webUndeploymentEndedEvent(appName);
             }
         }
     };
@@ -217,6 +221,10 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             return;
         }
         String appName = params.name();
+        
+        //Monitoring - calling probes
+        probeProvider.policyGenerationStartedEvent(appName);
+        probeProvider.webDeploymentStartedEvent(appName);
         try {
             //policyLoader.loadPolicy();
             Application app = dc.getModuleMetaData(Application.class);
@@ -258,6 +266,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             return;
         }
         String appName = params.name();
+        //Monitoring 
+        
+        probeProvider.policyRemovalStartedEvent(appName);
         //Destroy the managers if present
         boolean managersDestroyed = cleanSecurityContext(appName);
         //Remove policy files only if managers are not destroyed by cleanup
@@ -276,6 +287,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 _logger.log(Level.WARNING, msg, ex);
                 throw new DeploymentException(msg, ex);
             }
+             probeProvider.policyRemovalEndedEvent(appName);
 
         }
 
@@ -332,12 +344,14 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
      * @param appName  the app name
      */
     private boolean cleanSecurityContext(String appName) {
+        probeProvider.webUndeploymentStartedEvent(appName);
         boolean cleanUpDone = false;
 	ArrayList<WebSecurityManager> managers =
 	    wsmf.getManagersForApp(appName,true);
 	for (int i = 0; managers != null && i < managers.size(); i++) {
   
 	    try {
+                 probeProvider.securityManagerDestructionEvent(appName);
 	         managers.get(i).destroy();
                  cleanUpDone = true;
 	    } catch (javax.security.jacc.PolicyContextException pce){
@@ -347,6 +361,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
 			     pce);
 	    }
 	}
+        probeProvider.webUndeploymentEndedEvent(appName);
         return cleanUpDone;
     }
 

@@ -61,6 +61,7 @@ public class RealmsManager {
     // Keep track of name of default realm for this domain. This is updated during startup
     // using value from server.xml
     private  String defaultRealmName="default";
+    private RealmsProbeProvider probeProvider = new RealmsProbeProvider();
     
     public RealmsManager() {
         
@@ -107,10 +108,13 @@ public class RealmsManager {
     
     void removeFromLoadedRealms(String realmName) {
         loadedRealms.remove(realmName);
+        probeProvider.realmRemovedEvent(realmName);
+        
     }
 
     void putIntoLoadedRealms(String realmName, Realm realm) {
         loadedRealms.put(realmName, realm);
+        probeProvider.realmAddedEvent(realmName);
     }
     
     public Realm getFromLoadedRealms(String realmName) {

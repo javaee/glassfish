@@ -68,6 +68,19 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+				<probe-provider-class-names>com.sun.web.security.LoginProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins> 
     </build>
     <dependencies>
         <dependency>
@@ -137,6 +150,12 @@
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.provider</groupId>
+            <artifactId>gfprobe-provider-client</artifactId>
+            <!--version>${gfprobe-provider-client.version}</version-->
+            <version>3.0.0-b008</version>
         </dependency>
     </dependencies>
 </project>

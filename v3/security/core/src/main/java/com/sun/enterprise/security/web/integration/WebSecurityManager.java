@@ -70,6 +70,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
+import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.api.web.Constants; 
 
@@ -148,6 +149,8 @@ public class WebSecurityManager  {
     private ServerContext serverContext = null;
     // WebBundledescriptor
     private WebBundleDescriptor wbd = null;
+    //ProbeProvider
+    private WebSecurityDeployerProbeProvider probeProvider = new WebSecurityDeployerProbeProvider();
     private boolean register = true;
     
     WebSecurityManager(WebBundleDescriptor wbd, ServerContext svc, WebSecurityManagerFactory fact, boolean register) throws PolicyContextException{
@@ -269,6 +272,8 @@ public class WebSecurityManager  {
     }
     
      public void loadPolicyConfiguration() throws PolicyContextException {
+         
+        probeProvider.policyConfirationCreationEvent(CONTEXT_ID);
 
 	boolean inService = getPolicyFactory().inService(CONTEXT_ID);
 
@@ -548,6 +553,7 @@ public class WebSecurityManager  {
             uncheckedPermissionCache = null;
         }
         factory.removeAppNameForContext(CONTEXT_ID);
+        probeProvider.policyConfigurationDestructionEvent(CONTEXT_ID);
         wsmf.getManager(CONTEXT_ID,null,true);
     }
    

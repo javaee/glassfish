@@ -40,7 +40,18 @@
         <configuration>
           <forkMode>always</forkMode>
         </configuration>
-      </plugin>             
+      </plugin>
+           <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                                <probe-provider-class-names>org.glassfish.ejb.security.application.EjbSecurityProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     	<testSourceDirectory>src/test/java</testSourceDirectory>
     </build>

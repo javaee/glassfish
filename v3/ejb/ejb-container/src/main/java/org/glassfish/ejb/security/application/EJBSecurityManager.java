@@ -66,11 +66,14 @@ import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
 import com.sun.enterprise.security.PermissionCacheFactory;
+import com.sun.enterprise.security.SecurityUtil;
 import java.util.logging.*;
 
 import com.sun.logging.LogDomains;
 import com.sun.ejb.EjbInvocation;
+import com.sun.ejb.Container;
 
+import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import java.security.*;
 
@@ -79,10 +82,11 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
 
 import com.sun.enterprise.security.factory.SecurityManagerFactory;
-import java.util.List;
-import org.glassfish.api.embedded.Server;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.probe.provider.annotations.ProbeProvider;
 
 /**
  * This class is used by the EJB server to manage security. All
@@ -150,6 +154,7 @@ public final class EJBSecurityManager
 
     private InvocationManager invMgr;
     private EJBSecurityManagerFactory ejbSFM = null;
+    private EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
 
     /**
      * This method iniitalizes the EJBSecurityManager
@@ -231,6 +236,8 @@ public final class EJBSecurityManager
     }
 
     public void loadPolicyConfiguration(EjbDescriptor eDescriptor) throws Exception {
+        probeProvider.ejbPCCreationStartEvent(contextId);
+        
         boolean inService = getPolicyFactory().inService(contextId);
 
 	// only load the policy configuration if it isn't already in service.
@@ -268,6 +275,7 @@ public final class EJBSecurityManager
 
 
     private void initialize() throws Exception {
+        StatsProviderManager.register("security", PluginPoint.SERVER, "ejb-security", new EjbSecurityStatsProvider());
         contextId = getContextID(deploymentDescriptor);
         String appName = deploymentDescriptor.getApplication().getRegistrationName();
         roleMapperFactory.setAppNameForContext(appName, contextId);
@@ -645,6 +653,7 @@ public final class EJBSecurityManager
         return prdm;
     }
 
+
     /**
      * This method is called by the EJB container to decide whether or not
      * a method specified in the Invocation should be allowed.
@@ -903,6 +912,7 @@ public final class EJBSecurityManager
         try {
 
             boolean wasInService = getPolicyFactory().inService(this.contextId);
+            probeProvider.ejbPCDestructionStartEvent(contextId);
             getPolicyFactory().getPolicyConfiguration(this.contextId, true);
 
             if (wasInService) {

@@ -122,6 +122,19 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+				<probe-provider-class-names>com.sun.enterprise.security.auth.realm.RealmsProbeProvider,com.sun.enterprise.security.WebSecurityDeployerProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins> 
     </build>
     <dependencies>
         <dependency>
@@ -195,5 +208,23 @@
             <artifactId>connectors-internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.provider</groupId>
+            <artifactId>gfprobe-provider-client</artifactId>
+            <!--version>${gfprobe-provider-client.version}</version-->
+            <version>3.0.0-b008</version>
+        </dependency>
+         <dependency>
+            <groupId>org.glassfish.gmbal</groupId>
+            <artifactId>gmbal-api</artifactId>
+            <version>2.0.0-b006</version>
+        </dependency>
+         <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
     </dependencies>
 </project>
