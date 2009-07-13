@@ -782,26 +782,16 @@ public class RemoteCommand extends CLICommand {
         if (programOpts.getUser() == null && li != null) {
             // not on command line and in .asadminpass
             programOpts.setUser(li.getUser());
+            logger.printDebugMessage("Getting user name from ~/.asadminpass: " +
+                                        programOpts.getUser());
         }
 
         // initialize password
 
-        // this is for asadmin-login command's special processing.        
-        // XXX - does this work?
-        String password = programOpts.getPassword();
-        /*
-        if (getOption("password") != null) {
-            password = getOption("password");
-            options.remove("password");
-            //encodedPasswords.put(CLIUtil.ENV_PREFIX+"PASSWORD",password);
-            //base64encode(encodedPasswords);
-        }
-        */
-
-        if (!ok(password) && li != null) {
+        if (programOpts.getPassword() == null && li != null) {
             // not in passwordfile and in .asadminpass
-            password = li.getPassword();
+            programOpts.setPassword(li.getPassword());
+            logger.printDebugMessage("Getting password from ~/.asadminpass");
         }                
-        programOpts.setPassword(password);
     }
 }
