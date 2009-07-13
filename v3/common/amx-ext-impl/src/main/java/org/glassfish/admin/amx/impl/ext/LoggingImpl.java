@@ -227,6 +227,16 @@ public final class LoggingImpl extends AMXImplBase
         }
     }
 
+        public void
+    updateLoggingProperties( Map<String, String> properties)
+    {
+        try {
+            loggingConfig.updateLoggingProperties(properties);
+        } catch (java.io.IOException e){
+          logger.log (Level.SEVERE, "Can not get module log level");
+        }
+    }
+
         public int
     getLogLevelListenerCount( final Level logLevel )
     {
@@ -261,30 +271,30 @@ public final class LoggingImpl extends AMXImplBase
     }
 
 
-        public synchronized String
-    getLogFile( final String key, final String fileName )
+        public Map <String, String>   getLoggingAttributes( )
     {
-        unimplemented();
-        
-        if ( ! SERVER_KEY.equals( key ) )
-        {
-            throw new IllegalArgumentException( "" + key );
+        try {
+            Map<String, String> props = loggingConfig.getLoggingProperties();
+            Map<String,String> attributes = new HashMap<String,String>();
+            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.file", props.get("com.sun.enterprise.server.logging.GFFileHandler.file"));
+            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes", props.get("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes"));
+            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInBytes", props.get("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInBytes"));
+            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.logtoConsole", props.get("com.sun.enterprise.server.logging.GFFileHandler.logtoConsole"));
+            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.handler", props.get("handler"));
+            attributes.put("com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging", props.get("com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging"));
+            return attributes;
+        } catch (java.io.IOException e){
+            logger.log (Level.SEVERE, "Can not get log filename");
+            return null;
         }
-        
-        final String  dir   = null; //getLogMBean().getLogFilesDirectory();
-        final String  file  = dir + FILE_SEP + fileName;
-        
-        try
-        {
-             return FileUtils.fileToString( new File( file ) );
-        }
-        catch( FileNotFoundException e )
-        {
-            throw new RuntimeException( e );
-        }
-        catch( IOException e )
-        {
-            throw new RuntimeException( e );
+    }
+
+        public void setLoggingAttributes( Map<String,String> properties)
+    {
+        try {
+            loggingConfig.updateLoggingProperties(properties);
+        } catch (java.io.IOException e){
+            logger.log (Level.SEVERE, "Can not set log filename");
         }
     }
 
@@ -295,7 +305,6 @@ public final class LoggingImpl extends AMXImplBase
         unimplemented();
     	//getLogMBean().rotateNow( );
     }
-
 
 
         public synchronized void
