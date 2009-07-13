@@ -163,7 +163,7 @@ public class FlashlightProbe
         sbldr.append(" ").append(providerJavaMethodName).append("(");
         String delim = "";
         for (Class c : paramTypes) {
-            sbldr.append(delim).append(c.getName());
+            sbldr.append(delim).append((c == null) ? " " : c.getName());
             delim = ", ";
         }
         sbldr.append(")");

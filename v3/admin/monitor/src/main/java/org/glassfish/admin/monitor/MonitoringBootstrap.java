@@ -8,16 +8,9 @@ package org.glassfish.admin.monitor;
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.probe.provider.StatsProviderManagerDelegate;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.probe.provider.StatsProviderManager;
 import org.glassfish.api.Startup;
-import org.glassfish.api.amx.MBeanListener;
-//import org.glassfish.api.event.Events;
-//import org.glassfish.api.event.EventListener;
-//import org.glassfish.api.event.EventListener.Event;
-//import org.glassfish.api.event.EventTypes;
-//import org.glassfish.api.event.RestrictTo;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -30,7 +23,6 @@ import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleLifecycleListener;
@@ -42,7 +34,13 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Collections;
 import java.util.StringTokenizer;
+import org.glassfish.api.amx.MBeanListener;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 /**
  *
@@ -50,7 +48,7 @@ import org.glassfish.flashlight.provider.ProbeProviderFactory;
  */
 @Service
 @Scoped(Singleton.class)
-public class MonitoringBootstrap implements Startup, PostConstruct, Init, ModuleLifecycleListener, ConfigListener {
+public class MonitoringBootstrap implements EventListener, Startup, PostConstruct, Init, ModuleLifecycleListener, ConfigListener {
 
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
@@ -62,9 +60,14 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
     protected ProbeProviderFactory probeProviderFactory;
     @Inject
     protected ProbeClientMediator pcm;
-    //@Inject Events events;
+    @Inject
+    Events events;
     @Inject(optional=true)
     ModuleMonitoringLevels config = null;
+
+    @Inject
+    private org.glassfish.flashlight.provider.ProbeRegistry probeRegistry;
+
 
     Map<String,Module> map = Collections.synchronizedMap(new WeakHashMap<String,Module>());
 
@@ -75,12 +78,9 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
     private StatsProviderManagerDelegateImpl spmd;
 
     public void postConstruct() {
-        //Set the StatsProviderManagerDelegate
-        spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain, config);
-        StatsProviderManager.setStatsProviderManagerDelegate(spmd);
-        //System.out.println("StatsProviderManagerDelegate is assigned ********************");
-
-        mprint("addon init postConstruct() ...");
+        //setStatsProviderManagerDelegate();
+        //mprint("addon init postConstruct() ...");
+        events.register(this);
         // Register as ModuleLifecycleListener
         registry.register(this);
         // Iterate thru existing modules
@@ -91,7 +91,18 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
             //}
         }
 
-        //events.register(this);
+        //Set the StatsProviderManagerDelegate
+        //spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain, config);
+        //StatsProviderManager.setStatsProviderManagerDelegate(spmd);
+        //mprint(" StatsProviderManagerDelegate is assigned ********************");
+
+    }
+
+    public void setStatsProviderManagerDelegate() {
+        //Set the StatsProviderManagerDelegate
+        spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain, config);
+        StatsProviderManager.setStatsProviderManagerDelegate(spmd);
+        mprint(" StatsProviderManagerDelegate is assigned ********************");
 
         // Register listener for AMX DomainRoot loaded
         MBeanListener.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
@@ -100,6 +111,26 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
     public Lifecycle getLifecycle() {
         // This service stays running for the life of the app server, hence SERVER.
         return Lifecycle.SERVER;
+    }
+
+    public void event(Event event) {
+        if (event.is(EventTypes.SERVER_READY)) {
+            mprint("***************************************");
+            mprint("**** SERVER_READY event received *****");
+            mprint("***************************************");
+            setStatsProviderManagerDelegate();
+
+            //Testing to see if the probes are already registered
+            /*
+            mprint("***************************************");
+            java.util.Collection<org.glassfish.flashlight.provider.FlashlightProbe> probes =
+                        probeRegistry.getAllProbes();
+            for (org.glassfish.flashlight.provider.FlashlightProbe probe : probes) {
+                mprint(probe.toString());
+            }
+            mprint("***************************************");
+            */
+        }
     }
 
     public void moduleResolved(Module module) {
@@ -158,7 +189,7 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
                     mprint("xnames = " + xnames);
                     StringTokenizer st = new StringTokenizer(xnames, DELIMITER);
                     while (st.hasMoreTokens()) {
-                        processProbeProviderXML(st.nextToken());
+                        processProbeProviderXML(mcl, st.nextToken());
                     }
                 }
             }
@@ -189,11 +220,8 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
         //
     }
 
-    private void processProbeProviderXML(String xname) {
-        mprint("processProbeProviderXML for " + xname);
-        //
-        // to implement
-        //
+    private void processProbeProviderXML(ClassLoader mcl, String xname) {
+        probeProviderFactory.processXMLProbeProviders(mcl, xname);
     }
 
     private void mprint(String str) {
@@ -245,4 +273,5 @@ public class MonitoringBootstrap implements Startup, PostConstruct, Init, Module
         }
         return true;
     }
+
 }
