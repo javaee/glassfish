@@ -47,7 +47,7 @@
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             getJvmOptionsValues(objectNameStr="#{pageSession.objectNameStr}"  result=>$attribute{tableList});
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfigTab/serverJvmOptions.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverJvmOptions.jsf");
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );

@@ -58,7 +58,7 @@
             formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
             mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{nps}");
             setPageSessionAttribute(key="convertToFalseList" value={"EnvClasspathIgnored"});
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfigTab/serverInstJvmPathSettings.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmPathSettings.jsf");
             setPageSessionAttribute(key="skipAttrsList", value={"RmicOptions" "JavacOptions" "JavaHome" "DebugOptions" "DebugEnabled" "BytecodePreprocessors"});
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
