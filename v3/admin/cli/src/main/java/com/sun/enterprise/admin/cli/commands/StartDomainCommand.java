@@ -101,11 +101,6 @@ public class StartDomainCommand extends CLICommand {
         return 0;
     }
 
-    private boolean getBooleanOption(String name) {
-        String val = options.get(name);
-        return val != null && Boolean.parseBoolean(val);
-    }
-
     private void runCommandNotEmbedded() throws CommandException {
         try {
             GFLauncher launcher = GFLauncherFactory.getInstance(

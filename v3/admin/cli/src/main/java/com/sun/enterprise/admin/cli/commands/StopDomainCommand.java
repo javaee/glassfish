@@ -113,7 +113,7 @@ public class StopDomainCommand extends RemoteCommand {
         }
 
         // get domainsDir
-        String domaindir = options.get("domaindir");
+        String domaindir = getOption("domaindir");
 
         if (ok(domaindir)) {
             domainsDir = new File(domaindir);

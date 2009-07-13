@@ -95,11 +95,6 @@ public class ListCommandsCommand extends RemoteCommand {
         }
     }
 
-    private boolean getBooleanOption(String name) {
-        String val = options.get(name);
-        return val != null && Boolean.parseBoolean(val);
-    }
-
     @Override
     public int executeCommand()
             throws CommandException, CommandValidationException {

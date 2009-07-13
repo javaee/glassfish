@@ -84,4 +84,37 @@ public class DASUtils {
             }
         }
     }
+
+    /**
+     * See if DAS is alive, but insist that athentication is correct.
+     * Do not print out the results of the version command from the server.
+     *
+     * @return true if DAS can be reached and can handle commands,
+     * otherwise false.
+     */
+    public static boolean pingDASWithAuth(ProgramOptions programOpts,
+            Environment env) {
+        try {
+            RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
+            cmd.executeAndReturnOutput(new String[] { "version" });
+            return true;
+        } catch (AuthenticationException aex) {
+            return false;
+        } catch (Exception ex) {
+            ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
+            if (ea.getFirstInstanceOf(ConnectException.class) != null) {
+                CLILogger.getInstance().printDebugMessage(
+                                        "Got java.net.ConnectException");
+                return false; // this definitely means server is not up
+            } else if (ea.getFirstInstanceOf(IOException.class) != null) {
+                CLILogger.getInstance().printDebugMessage(
+                        "It appears that server has started, but for" +
+                        " some reason the exception is thrown: " +
+                        ex.getMessage());
+                return true;
+            } else {
+                return false; // unknown error, shouldn't really happen
+            }
+        }
+    }
 }

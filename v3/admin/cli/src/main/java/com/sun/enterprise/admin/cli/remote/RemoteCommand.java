@@ -216,7 +216,7 @@ public class RemoteCommand extends CLICommand {
 
                 // if we know what the command options are, we process the
                 // parameters by type here
-                ValidOption opt = getOption(paramName);
+                ValidOption opt = getValidOption(paramName);
                 if (opt == null) {      // XXX - should never happen
                     String msg = strings.get("unknownOption",
                             name, paramName);
@@ -694,7 +694,7 @@ public class RemoteCommand extends CLICommand {
         boolean sawDirectory = false;
         for (Map.Entry<String, String> param : options.entrySet()) {
             String paramName = param.getKey();
-            ValidOption opt = getOption(paramName);
+            ValidOption opt = getValidOption(paramName);
             if (opt != null && opt.getType().equals("FILE")) {
                 sawFile = true;
                 // if any FILE parameter is a directory, turn off doUpload
@@ -718,7 +718,7 @@ public class RemoteCommand extends CLICommand {
 
         if (sawFile && !sawDirectory) {
             // found a FILE param, is doUpload set?
-            String upString = options.get("upload");
+            String upString = getOption("upload");
             if (ok(upString))
                 doUpload = Boolean.parseBoolean(upString);
             else
@@ -735,7 +735,7 @@ public class RemoteCommand extends CLICommand {
      * @param name  the option name
      * @return      the ValidOption descriptor
      */
-    private ValidOption getOption(String name) {
+    private ValidOption getValidOption(String name) {
         for (ValidOption opt : commandOpts)
             if (opt.getName().equals(name))
                 return opt;
@@ -790,8 +790,8 @@ public class RemoteCommand extends CLICommand {
         // XXX - does this work?
         String password = programOpts.getPassword();
         /*
-        if (options.get("password") != null) {
-            password = options.get("password");
+        if (getOption("password") != null) {
+            password = getOption("password");
             options.remove("password");
             //encodedPasswords.put(CLIUtil.ENV_PREFIX+"PASSWORD",password);
             //base64encode(encodedPasswords);

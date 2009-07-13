@@ -91,13 +91,15 @@ public class MultimodeCommand extends CLICommand {
     protected void validate()
             throws CommandException, CommandValidationException {
         super.validate();
-        if (options.containsKey("printprompt"))
-            printPrompt = Boolean.parseBoolean(options.get("printprompt"));
+        String pp = getOption("printprompt");
+        if (pp != null)
+            printPrompt = Boolean.parseBoolean(pp);
         else
             printPrompt = programOpts.isInteractive();
-        encoding = options.get("encoding");
-        if (options.containsKey("file"))
-            file = new File(options.get("file"));
+        encoding = getOption("encoding");
+        String fname = getOption("file");
+        if (fname != null)
+            file = new File(fname);
     }
 
     @Override

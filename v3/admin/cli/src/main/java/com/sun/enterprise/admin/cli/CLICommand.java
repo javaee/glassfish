@@ -130,8 +130,10 @@ public abstract class CLICommand {
 
         // see if it's a local command
         try {
-            if (cliDescriptorsReader.getCommand(name) != null)
+            if (cliDescriptorsReader.getCommand(name) != null) {
+                logger.printMessage("WARNING: Using old command: " + name);
                 return new LocalCommand(name, programOpts, env);
+            }
         } catch (CommandValidationException ex) {
             // ignore it
         }
@@ -150,7 +152,7 @@ public abstract class CLICommand {
             ProgramOptions programOpts, Environment env) {
         try {
             Class cls = localCommands.get(name);
-            if (cls == null)    // XXX - to allow experimenting with new cmds
+            if (cls == null)    // XXX - for optional commands
                 cls = Class.forName(nameToClass(name));
             Constructor cons = cls.getConstructor(new Class[] {
                                 String.class,
@@ -165,8 +167,8 @@ public abstract class CLICommand {
     }
 
     private static String nameToClass(String name) {
-        StringBuilder sb =
-            new StringBuilder("com.sun.enterprise.admin.cli.commands.");
+        StringBuilder sb = new StringBuilder(
+                            "com.sun.enterprise.admin.cli.optional.commands.");
         boolean makeUpper = true;
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
@@ -337,7 +339,7 @@ public abstract class CLICommand {
             if (opt.getType().equals("PASSWORD"))
                 continue;       // passwords are handled later
             // if option isn't set, prompt for it (if interactive)
-            if (getParam(opt.getName()) == null && cons != null &&
+            if (getOption(opt.getName()) == null && cons != null &&
                     !missingOption) {
                 cons.printf("%s ",
                     strings.get("optionPrompt", opt.getName()));
@@ -346,7 +348,7 @@ public abstract class CLICommand {
                     options.put(opt.getName(), val);
             }
             // if it's still not set, that's an error
-            if (getParam(opt.getName()) == null) {
+            if (getOption(opt.getName()) == null) {
                 missingOption = true;
                 logger.printMessage(
                         strings.get("missingOption", "--" + opt.getName()));
@@ -381,13 +383,6 @@ public abstract class CLICommand {
         }
 
         initializeCommandPassword();
-    }
-
-    private String getParam(String name) {
-        String value = options.get(name);
-        if (value == null)
-            value = env.getStringOption(name);
-        return value;
     }
 
     /**
@@ -488,6 +483,26 @@ public abstract class CLICommand {
     }
 
     /**
+     * Get an option value, that might come from the command line
+     * or from the environment.
+     */
+    protected String getOption(String name) {
+        String val = options.get(name);
+        if (val == null)
+            val = env.getStringOption(name);
+        return val;
+    }
+
+    /**
+     * Get a boolean option value, that might come from the command line
+     * or from the environment.
+     */
+    protected boolean getBooleanOption(String name) {
+        String val = getOption(name);
+        return val != null && Boolean.parseBoolean(val);
+    }
+
+    /**
      * Return the named system property, or property
      * set in asenv.conf.
      */
@@ -511,7 +526,7 @@ public abstract class CLICommand {
     }
 
     private static boolean ok(String s) {
-        return s != null && s.length() > 0 && !s.equals("null");
+        return s != null && s.length() > 0;
     }
 
     /**
