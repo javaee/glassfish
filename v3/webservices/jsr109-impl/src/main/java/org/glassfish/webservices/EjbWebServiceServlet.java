@@ -38,10 +38,8 @@ package org.glassfish.webservices;
 
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
 
 import com.sun.logging.LogDomains;
-import com.sun.web.security.RealmAdapter;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.util.Base64;
@@ -51,16 +49,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import org.glassfish.webservices.monitoring.WebServiceTesterServlet;
-import org.glassfish.webservices.monitoring.AuthenticationListener;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
+import org.glassfish.webservices.EjbMessageDispatcher;
 
 /**
  * Servlet responsible for invoking EJB webservice endpoint.
@@ -150,6 +147,7 @@ public class EjbWebServiceServlet extends HttpServlet {
         ClassLoader savedClassLoader = null;
         
         boolean authenticated = false;
+        SecurityService secServ = org.glassfish.internal.api.Globals.get(SecurityService.class);
         try {
             // Set context class loader to application class loader
             savedClassLoader = Thread.currentThread().getContextClassLoader();
@@ -170,30 +168,25 @@ public class EjbWebServiceServlet extends HttpServlet {
                 realmName = hreq.getServerName() + ":" + hreq.getServerPort();
             }
             
-            /*try {
-                //TODO BM fix this
-                authenticated = doSecurity(hreq, ejbEndpoint, realmName);
+            try {
+                if (secServ != null) {
+                    WebServiceContextImpl context = (WebServiceContextImpl) ((EjbRuntimeEndpointInfo) ejbEndpoint).getWebServiceContext();
+                    authenticated = secServ.doSecurity(hreq, ejbEndpoint, realmName, context);
+                }
+                
             } catch(Exception e) {
-                sendAuthenticationEvents(false, hreq.getRequestURI(), null);
+                //sendAuthenticationEvents(false, hreq.getRequestURI(), null);
                 logger.log(Level.WARNING, "authentication failed for " +
                            ejbEndpoint.getEndpoint().getEndpointName(),
                            e);
-            } */
-            //TODO BM check into this
-   	        /*if (auditManager.isAuditOn()){
-
-	            auditManager.ejbAsWebServiceInvocation(
-                    ejbEndpoint.getEndpoint().getEndpointName(),authenticated);
-            }   */
-
-
-
-            /*if (!authenticated) {
+            } 
+            
+            if (!authenticated) {
                 hresp.setHeader("WWW-Authenticate",
                         "Basic realm=\"" + realmName + "\"");
                 hresp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
-            }*/
+            }
             
             // depending on the jaxrpc or jax-ws version, this will return the
             // right dispatcher.
@@ -205,8 +198,10 @@ public class EjbWebServiceServlet extends HttpServlet {
         } finally {
             if( authenticated ) {
                 // remove any security context from the thread before returning
-
-              //  SecurityContext.setCurrent(null);
+                if (secServ != null) {
+                    //  SecurityContext.setCurrent(null);
+                    secServ.resetSecurityContext();
+                }
             }
             
             // Restore context class loader
@@ -214,123 +209,4 @@ public class EjbWebServiceServlet extends HttpServlet {
         }
         return;
     }
-    
-   /* private boolean doSecurity(HttpServletRequest hreq,
-                               EjbRuntimeEndpointInfo epInfo,
-                               String realmName) throws Exception {
-
-        //BUG2263 - Clear the value of UserPrincipal from previous request
-        //If authentication succeeds, the proper value will be set later in
-        //this method.
-        WebServiceContextImpl context = (WebServiceContextImpl)
-                ((EjbRuntimeEndpointInfo)epInfo).getWebServiceContext();
-        if (context != null) {
-            context.setUserPrincipal(null);        
-        }
-        
-        WebServiceEndpoint endpoint = epInfo.getEndpoint();
-        boolean authenticated = false;
-        
-        String method = hreq.getMethod();
-        if( method.equals("GET") || !endpoint.hasAuthMethod() ) {
-            return true;
-        }
-        
-        WebPrincipal webPrincipal = null;
-        String endpointName = endpoint.getEndpointName();
-        
-        if( endpoint.hasBasicAuth() ) {
-            String rawAuthInfo = hreq.getHeader(AUTHORIZATION_HEADER);
-            if (rawAuthInfo==null) {
-                sendAuthenticationEvents(false, hreq.getRequestURI(), null);
-                return false;
-            }
-            
-            String[] usernamePassword =
-                    parseUsernameAndPassword(rawAuthInfo);
-            if( usernamePassword != null ) {
-                webPrincipal = new WebPrincipal
-                        (usernamePassword[0], usernamePassword[1], SecurityContext.init());
-            } else {
-                logger.log(Level.WARNING, "BASIC AUTH username/password " +
-                           "http header parsing error for " + endpointName);
-            }
-        } else {
-
-            X509Certificate certs[] =  (X509Certificate[]) hreq.getAttribute(Globals.CERTIFICATES_ATTR);
-            if ((certs == null) || (certs.length < 1)) {
-                certs = (X509Certificate[])
-                    hreq.getAttribute(Globals.SSL_CERTIFICATE_ATTR);
-            }
-
-            if( certs != null ) {
-                webPrincipal = new WebPrincipal(certs, SecurityContext.init());
-            } else {
-                logger.log(Level.WARNING, "CLIENT CERT authentication error for " + endpointName);
-            }
-
-        }
-
-        if (webPrincipal==null) {
-            sendAuthenticationEvents(false, hreq.getRequestURI(), null);           
-            return authenticated;
-        }
-        
-        RealmAdapter ra = new RealmAdapter(realmName);
-        authenticated = ra.authenticate(webPrincipal);
-        if( authenticated == false ) {
-            sendAuthenticationEvents(false, hreq.getRequestURI(), webPrincipal);
-            logger.fine("authentication failed for " +  endpointName);
-        }
-
-        sendAuthenticationEvents(true, hreq.getRequestURI(), webPrincipal);
-        if(epInfo instanceof Ejb2RuntimeEndpointInfo) {
-            // For JAXRPC based EJb endpoints the rest of the steps are not needed
-            return authenticated;
-        }
-        //Setting if userPrincipal in WSCtxt applies for JAXWS endpoints only
-        epInfo.prepareInvocation(false);
-        WebServiceContextImpl ctxt = (WebServiceContextImpl)
-                ((EjbRuntimeEndpointInfo)epInfo).getWebServiceContext();
-        ctxt.setUserPrincipal(webPrincipal);
-        return authenticated;
-    } */
-
-    private String[] parseUsernameAndPassword(String rawAuthInfo) {
-
-        String[] usernamePassword = null;
-        if ( (rawAuthInfo != null) && 
-             (rawAuthInfo.startsWith("Basic ")) ) {
-            String authString = rawAuthInfo.substring(6).trim();
-            // Decode and parse the authorization credentials
-            String unencoded =
-                new String(base64Helper.decode(authString.getBytes()));
-            int colon = unencoded.indexOf(':');
-            if (colon > 0) {
-                usernamePassword = new String[2];
-                usernamePassword[0] = unencoded.substring(0, colon).trim();
-                usernamePassword[1] = unencoded.substring(colon + 1).trim();
-            }
-        }
-        return usernamePassword;
-    }
-
-    /*private void sendAuthenticationEvents(boolean success,
-            String url, WebPrincipal principal) {
-        
-        Endpoint endpoint = WebServiceEngineImpl.getInstance().getEndpoint(url);
-        if (endpoint==null) {
-            return;
-        }
-        
-        for (AuthenticationListener listener : WebServiceEngineImpl.getInstance().getAuthListeners()) {
-            if (success) {
-                listener.authSucess(endpoint.getDescriptor().getBundleDescriptor(),
-                        endpoint, principal);
-            } else {
-                listener.authFailure(endpoint.getDescriptor().getBundleDescriptor(),
-                        endpoint, principal);
-            }
-        }
-    }*/
 }

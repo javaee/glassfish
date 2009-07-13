@@ -215,10 +215,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     /**
      * Create for WS Ejb endpoint authentication.
      * Roles related data is not available here.
+     */
      
     public RealmAdapter(String realmName) {
         _realmName = realmName;
-    }*/
+    }
 
     /**
      * Create the realm adapter. Extracts the role to user/group mapping
@@ -535,17 +536,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 _logger.log(Level.FINE, "Web login succeeded for: " + username);
             }
         }
-        /*V3:Comment
-        if (webDesc!=null && webDesc.hasWebServices()) {
-        WebPrincipal principal = new WebPrincipal(username, password, null);
-        for (AuthenticationListener listener : WebServiceEngineImpl.getInstance().getAuthListeners()) {
-        if (success) {
-        listener.authSucess(webDesc, null, principal);                        
-        } else {
-        listener.authFailure(webDesc, null, principal);
-        }
-        }
-        }*/
+        
         return success;
     }
     // BEGIN IASRI 4747594

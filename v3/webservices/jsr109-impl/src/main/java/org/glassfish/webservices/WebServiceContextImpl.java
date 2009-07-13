@@ -46,6 +46,8 @@ import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
 import java.util.Set;
 import java.util.Iterator;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.ejb.api.EJBInvocation;
 
 /**
  * <p><b>NOT THREAD SAFE: mutable instance variables</b>
@@ -95,14 +97,11 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
     public boolean isUserInRole(String role) {
         WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
         InvocationManager mgr = wscImpl.getInvocationManager();
-        //Object o = mgr.getCurrentInvocation().getContainerContext();
-      /* TODO BM check on this part with StatelessSessionContainer 
-
-      if(o instanceof StatelessSessionContainer) {
-            StatelessSessionContainer cont = (StatelessSessionContainer) o;
-            boolean res = cont.getSecurityManager().isCallerInRole(role);
-            return res;
-        }*/
+        if (ComponentInvocation.ComponentInvocationType.EJB_INVOCATION.equals(mgr.getCurrentInvocation().getInvocationType())) {
+           EJBInvocation inv = (EJBInvocation)mgr.getCurrentInvocation();
+           boolean res = true;//inv.isCallerInRole(role);
+           return res;
+        }
         // This is a servlet endpoint
         return this.jaxwsContextDelegate.isUserInRole(role);
     }

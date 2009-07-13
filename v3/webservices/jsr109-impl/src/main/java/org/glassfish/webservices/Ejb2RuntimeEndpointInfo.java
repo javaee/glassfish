@@ -38,6 +38,7 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.glassfish.ejb.api.EjbEndpointFacade;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -65,20 +66,13 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
                                   Object servant, Class tie) {
                                   
         super(webServiceEndpoint, ejbContainer, servant);
-      /*  tieClass = tie;
-
-	try {
-	    // merge message security policy from domain.xml and sun-specific
-	    // deployment descriptor
-	    serverAuthConfig = ServerAuthConfig.getConfig
-		(com.sun.enterprise.security.jauth.AuthConfig.SOAP,
-		 endpoint.getMessageSecurityBinding(),
-		 null);
-	} catch (com.sun.enterprise.security.jauth.AuthException ae) {
-            logger.log(Level.SEVERE, 
-		       "EJB Webservice security configuration Failure", ae);
-	}*/
-
+        tieClass = tie;
+        if (Globals.getDefaultHabitat() != null) {
+            SecurityService secServ = Globals.get(SecurityService.class);
+            if (secServ != null) {
+                secServ.mergeSOAPMessageSecurityPolicies(webServiceEndpoint.getMessageSecurityBinding());
+            }
+        }
     }
     /*
     public Handler getHandlerImplementor(MessageContext msgContext)
@@ -151,9 +145,6 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
             messageDispatcher = new EjbWebServiceDispatcher();
         }
         return messageDispatcher;
-    }
-
-    public ServerAuthConfig getServerAuthConfig() {
-        return serverAuthConfig;
     }*/
+
 }
