@@ -546,14 +546,6 @@ public class RemoteCommand extends CLICommand {
         return s != null && s.length() > 0;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Remote command: ").append(name);
-        // XXX - include more information if known
-        return sb.toString();
-    }
-
     /**
      * Get the metadata for the command from the server.
      *

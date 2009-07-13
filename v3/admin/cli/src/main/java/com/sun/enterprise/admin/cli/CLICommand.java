@@ -238,23 +238,66 @@ public abstract class CLICommand {
         prepare();
         parse();
         validate();
+        if (programOpts.isEcho())
+            logger.printMessage(toString());
+        else if (logger.isDebug())
+            logger.printDebugMessage(toString());
         return executeCommand();
+    }
+
+    /**
+     * Return a string representing the command line used with this command.
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(' ');
+        if (ok(programOpts.getHost()))
+            sb.append("--host ").append(programOpts.getHost()).append(' ');
+        if (programOpts.getPort() > 0)
+            sb.append("--port ").append(programOpts.getPort()).append(' ');
+        if (ok(programOpts.getUser()))
+            sb.append("--user ").append(programOpts.getUser()).append(' ');
+        if (ok(programOpts.getPasswordFile()))
+            sb.append("--passwordfile ").
+                append(programOpts.getPasswordFile()).append(' ');
+        if (programOpts.isSecure())
+            sb.append("--secure ");
+        sb.append("--interactive=").
+            append(Boolean.toString(programOpts.isInteractive())).append(' ');
+        sb.append("--echo=").
+            append(Boolean.toString(programOpts.isEcho())).append(' ');
+        sb.append("--terse=").
+            append(Boolean.toString(programOpts.isTerse())).append(' ');
+
+        if (options != null && operands != null) {
+            Set<String> optionKeys = options.keySet();
+            for (String key : optionKeys) {
+                String value = options.get(key);
+                sb.append("--").append(key);
+                if (ok(value)) {
+                    sb.append('=').append(value);
+                }
+                sb.append(' ');
+            }
+            for (Object o : operands)
+                sb.append(o).append(' ');
+        } else if (argv != null) {
+            for (String arg : argv)
+                sb.append(arg).append(' ');
+        }
+
+        return sb.toString();
     }
 
     /**
      * Initialize the state of the logger based on any program options.
      */
-    // XXX - this won't work in multimode, each cmd needs own logger
-    // XXX - echo should be handled by AsadminMain and Multimode
     protected void initializeLogger() {
         if (programOpts.isTerse())
             logger.setOutputLevel(java.util.logging.Level.INFO);
         else
             logger.setOutputLevel(java.util.logging.Level.FINE);
-        if (programOpts.isEcho())
-            logger.printMessage(toString());
-        else if (logger.isDebug())
-            logger.printDebugMessage(toString());
     }
 
     /**
