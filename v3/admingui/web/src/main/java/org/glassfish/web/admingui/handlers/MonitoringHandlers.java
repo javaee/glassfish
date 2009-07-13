@@ -48,8 +48,12 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
+import java.util.Date;
 
 import javax.management.Attribute;
 import javax.management.ObjectName;
@@ -116,6 +120,9 @@ public class MonitoringHandlers {
         public static void getStatsbyTypeName(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
         String name = (String) handlerCtx.getInputValue("name");
+        Locale locale = GuiUtil.getLocale();
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, locale);
+        NumberFormat nf = NumberFormat.getNumberInstance(locale);
         List result = new ArrayList();
         try {
             Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
@@ -124,30 +131,60 @@ public class MonitoringHandlers {
             while (iter.hasNext()) {
                 Map<String, Object> monattrs = ((AMXProxy) iter.next()).attributesMap();
                for (String monName : monattrs.keySet()) {
-                    if ((!monName.equals("Parent")) && (!monName.equals("Children"))) {
+                    if ((!monName.equals("Parent")) && (!monName.equals("Children"))&& (!monName.equals("Name"))) {
                         Map statMap = new HashMap();
-                        statMap.put("Name", monName);
                         Object val = monattrs.get(monName);
+                        String details = "--";
+                        String desc = "--";
+                        String start = "--";
+                        String last = "--";
+                        String unit = "";
                         if (val instanceof CompositeDataSupport) {
                             CompositeDataSupport cds = ((CompositeDataSupport) val);
+                            statMap.put("Name", cds.get("name"));
+                            
                             CompositeType ctype = cds.getCompositeType();
-                            Set attrSet = ctype.keySet();
-                            Iterator citer = attrSet.iterator();
-                            String cvalues = "";
-                            while (citer.hasNext()) {
-                                String oneEntry = (String) citer.next();
-                                cvalues = cvalues + "\n" + oneEntry + " = " + cds.get(oneEntry) + ",";
+                           if(cds.containsKey("unit")){
+                                unit = (String)cds.get("unit");
                             }
-                            val = cvalues;
+                            if(cds.containsKey("description")){
+                                desc = (String)cds.get("description");
+                            }
+                            if(cds.containsKey("startTime")){
+                                start = df.format(new Date((Long)cds.get("startTime")));
+                            }
+                            if(cds.containsKey("lastSampleTime")){
+                                last = df.format(new Date((Long)cds.get("lastSampleTime")));
+                            }
+                            if(cds.containsKey("maxTime")){
+                                details = (GuiUtil.getMessage("monitoring.MaxTime")+": " + cds.get("maxTime") + " " + unit + "<br/>");
+                            }
+                            if(cds.containsKey("minTime")){
+                                details = details + (GuiUtil.getMessage("monitoring.MinTime")+": " + cds.get("minTime") + " " + unit + "<br/>");
+                            }
+                            if(cds.containsKey("totalTime")){
+                                details = details + (GuiUtil.getMessage("monitoring.TotalTime")+": " + cds.get("totalTime") + " " + unit + "<br/>");
+                            }
+                            if(cds.containsKey("count")){
+                                val = cds.get("count") + " " + unit;
+                            }
+                            
                         } else if (val instanceof String[]) {
+                            statMap.put("Name", monName);
                             String values = "";
                             for (String s : (String[]) val) {
-                                values = values + s + "\n";
+                                values = values + s + "<br/>";
 
                             }
                             val = values;
+                        } else {
+                            statMap.put("Name", monName);
                         }
+                        statMap.put("StartTime", start);
+                        statMap.put("LastTime", last);
+                        statMap.put("Description", desc);
                         statMap.put("Value", val);
+                        statMap.put("Details", details);
                         result.add(statMap);
 
 
