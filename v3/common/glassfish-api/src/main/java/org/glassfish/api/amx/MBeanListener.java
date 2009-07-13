@@ -203,22 +203,15 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         @Override
         public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener) {
             super.mbeanRegistered(objectName,listener);
-            try
-            {
-                mConn.invoke( domainRoot(), "waitAMXReady", null, null );
-            }
-            catch( final Exception e )
-            {
-                throw new RuntimeException(e);
-            }
+            AMXUtil.invokeWaitAMXReady(mConn);
             mLatch.countDown();
         }
     }
 
     /**
-        Wait until AMX is ready.
+        Wait until AMX has loaded and is ready for use.
         <p>
-        This will *not* cause AMX to load; it will block forever until AMX is ready. In other words,
+        This will <em>not</em> cause AMX to load; it will block forever until AMX is ready. In other words,
         don't call this method unless it's a convenient thread that can wait forever.
      */
     public static ObjectName waitAMXReady( final MBeanServerConnection server)
@@ -264,7 +257,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
         // race condition: must listen *before* looking for existing MBeans
         try
         {
-            mMBeanServer.addNotificationListener(AMXValues.getMBeanServerDelegateObjectName(), this, null, this);
+            mMBeanServer.addNotificationListener( AMXUtil.getMBeanServerDelegateObjectName(), this, null, this);
         }
         catch (final Exception e)
         {
@@ -287,7 +280,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
                 props = props + "," + NAME_KEY + mName;
             }
 
-            final ObjectName pattern = AMXValues.newObjectName(AMXValues.amxJMXDomain(), props);
+            final ObjectName pattern = AMXUtil.newObjectName(AMXValues.amxJMXDomain(), props);
             try
             {
                 final Set<ObjectName> matched = mMBeanServer.queryNames(pattern, null);
@@ -308,7 +301,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
     {
         try
         {
-            mMBeanServer.removeNotificationListener(AMXValues.getMBeanServerDelegateObjectName(), this);
+            mMBeanServer.removeNotificationListener( AMXUtil.getMBeanServerDelegateObjectName(), this);
         }
         catch (final Exception e)
         {

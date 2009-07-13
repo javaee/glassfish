@@ -36,7 +36,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.glassfish.api.amx.AMXValues;
+import org.glassfish.api.amx.AMXUtil;
 
 /**
 Start and stop JMX connectors.
@@ -136,7 +136,7 @@ final class JMXMPConnectorStarter
             final JMXServiceURL serviceURL = new JMXServiceURL("service:jmx:jmxmp://localhost:" + port);
             final JMXConnectorServer jmxmp = JMXConnectorServerFactory.newJMXConnectorServer(serviceURL, env, mMBeanServer);
 
-            ObjectName objectName = AMXValues.newObjectName("jmxremote:type=jmx-connector,name=jmxmp,port=" + port);
+            ObjectName objectName = AMXUtil.newObjectName("jmxremote:type=jmx-connector,name=jmxmp,port=" + port);
             objectName = mMBeanServer.registerMBean(jmxmp, objectName).getObjectName();
 
             boolean startedOK = false;

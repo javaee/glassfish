@@ -40,7 +40,8 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 /**
-AMX must be "booted" before use.
+ AMX must be "booted" before use.  Use {@link #bootAMX} to start AMX either in-process
+ or remotely.
  */
 public final class AMXBooter
 {
@@ -48,8 +49,14 @@ public final class AMXBooter
     {
     }
 
-    /** wait for the BootAMXMBean to appear; it always will load early in server startup */
-    private static final class BootAMXCallback extends MBeanListener.CallbackImpl
+    /**
+        Callback for {@link MBeanListener} that waits for the BootAMXMBean to appear;
+        it always will load early in server startup. Once it has loaded, AMX can be booted
+        via {@link #bootAMX}.  A client should normally just call {@link #bootAMX}, but
+        this callback may be suclassed if desired, and used as a trigger to
+        boot AMX and then take other dependent actions.
+     */
+    public static class BootAMXCallback extends MBeanListener.CallbackImpl
     {
         private final MBeanServerConnection mConn;
         public BootAMXCallback(final MBeanServerConnection conn)
@@ -66,13 +73,15 @@ public final class AMXBooter
     }
 
     /**
-    Ensure that AMX is loaded and ready to go.  Can be called more than once.
+    Ensure that AMX is loaded and ready to use.  This method returns only when all
+    AMX subsystems have been loaded.
+    It can be called more than once without ill effect, subsequent calls are ignored.
     @param conn connection to the MBeanServer
     @return the ObjectName of {@link DomainRoot}
      */
     public static ObjectName bootAMX(final MBeanServerConnection conn)
     {
-        ObjectName domainRootObjectName = findDomainRoot(conn);
+        ObjectName domainRootObjectName = AMXUtil.findDomainRoot(conn);
 
         if (domainRootObjectName == null)
         {
@@ -85,7 +94,7 @@ public final class AMXBooter
             try
             {
                 conn.invoke(BootAMXMBean.OBJECT_NAME, BootAMXMBean.BOOT_AMX_OPERATION_NAME, null, null);
-                domainRootObjectName = MBeanListener.waitAMXReady(conn);
+                domainRootObjectName = AMXUtil.invokeWaitAMXReady(conn);
             }
             catch (final Exception e)
             {
@@ -93,30 +102,12 @@ public final class AMXBooter
                 throw new RuntimeException(e);
             }
         }
+        else
+        {
+            AMXUtil.invokeWaitAMXReady(conn);
+        }
         return domainRootObjectName;
     }
-
-    /**
-    @return the ObjectName of DomainRoot if it exists, otherwise null
-     */
-    public static ObjectName findDomainRoot(final MBeanServerConnection conn)
-    {
-        final ObjectName objectName = AMXValues.domainRoot();
-        try
-        {
-            if (!conn.isRegistered(objectName))
-            {
-                return null;
-            }
-        }
-        catch (final Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        return objectName;
-    }
-
 }
 
 

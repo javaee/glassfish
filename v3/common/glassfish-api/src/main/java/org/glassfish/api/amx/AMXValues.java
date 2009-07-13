@@ -153,9 +153,6 @@ public final class AMXValues
     of the other types.
      */
     public static final String GROUP_OTHER = "other";
-    
-
-
 
     private AMXValues()
     {
@@ -189,66 +186,24 @@ public final class AMXValues
         return dasName() + "-config";
     }
 
+    /** return the ObjectName of the AMX DomainRoot MBean */
     public static ObjectName domainRoot()
     {
-        return newObjectName("", "domain-root", amxJMXDomain());
+        return AMXUtil.newObjectName("", "domain-root", amxJMXDomain());
     }
 
     /** ObjectName for top-level monitoring MBean (parent of those for each server) */
     public static ObjectName monitoringRoot()
     {
-        return newObjectName("/", "mon", null);
+        return AMXUtil.newObjectName("/", "mon", null);
     }
 
     /** ObjectName for top-level monitoring MBean for specified server */
     public static ObjectName serverMon(final String serverName)
     {
-        return newObjectName("/mon", "server-mon", serverName);
-    }
-
-    public static ObjectName getMBeanServerDelegateObjectName()
-    {
-        return newObjectName("JMImplementation", "type=MBeanServerDelegate");
-    }
-
-    public static String prop(final String key, final String value)
-    {
-        return key + "=" + value;
-    }
-
-    public static ObjectName newObjectName(final String s)
-    {
-        try
-        {
-            return new ObjectName( s );
-        }
-        catch( final Exception e )
-        {
-            throw new RuntimeException("bad ObjectName", e);
-        }
-    }
-
-
-    /** Make a new AMX ObjectName with unchecked exception */
-    public static ObjectName newObjectName(
-            final String pp,
-            final String type,
-            final String name)
-    {
-        String props = prop(PARENT_PATH_KEY, pp) + "," + prop(TYPE_KEY, type);
-        if (name != null)
-        {
-            props = props + "," + prop(NAME_KEY, name);
-        }
-
-        return newObjectName( amxJMXDomain(), props);
-    }
-
-    /** Make a new ObjectName with unchecked exception */
-    public static ObjectName newObjectName(
-            final String domain,
-            final String props)
-    {
-        return newObjectName(domain + ":" + props);
+        return AMXUtil.newObjectName("/mon", "server-mon", serverName);
     }
 }
+
+
+

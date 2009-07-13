@@ -71,7 +71,7 @@ import org.glassfish.admin.amx.annotation.Taxonomy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import static org.glassfish.api.amx.AMXValues.*;
 
-import org.glassfish.api.amx.AMXBooter;
+import org.glassfish.api.amx.AMXUtil;
 
 
 /**
@@ -127,7 +127,7 @@ public final class ProxyFactory implements NotificationListener
 		{
 			mMBeanServerID		= JMXUtil.getMBeanServerID( conn );
 				
-			mDomainRootObjectName = AMXBooter.findDomainRoot(conn);
+			mDomainRootObjectName = AMXUtil.findDomainRoot(conn);
             if ( mDomainRootObjectName == null )
             {
                 throw new IllegalStateException( "ProxyFactory: AMX has not been started" );

@@ -34,7 +34,7 @@ import javax.management.StandardMBean;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
-import org.glassfish.api.amx.AMXValues;
+import org.glassfish.api.amx.AMXUtil;
 import org.glassfish.api.amx.BootAMXMBean;
 
 /**
@@ -154,7 +154,7 @@ final class BootAMX implements BootAMXMBean
      */
     public JMXServiceURL[] getJMXServiceURLs()
     {
-        final ObjectName queryPattern = AMXValues.newObjectName("jmxremote:type=jmx-connector,*");
+        final ObjectName queryPattern = AMXUtil.newObjectName("jmxremote:type=jmx-connector,*");
         final Set<ObjectName> objectNames = mMBeanServer.queryNames(queryPattern, null);
 
         final List<JMXServiceURL> urls = new ArrayList<JMXServiceURL>();

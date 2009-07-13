@@ -44,7 +44,7 @@ public interface BootAMXMBean
     public JMXServiceURL[] getJMXServiceURLs();
     
     /** ObjectName for BooterNewMBean */
-    public static final ObjectName OBJECT_NAME = AMXValues.newObjectName(AMXValues.amxSupportDomain(), "type=boot-amx");
+    public static final ObjectName OBJECT_NAME = AMXUtil.newObjectName(AMXValues.amxSupportDomain(), "type=boot-amx");
 
 }
 

@@ -24,7 +24,7 @@ package org.glassfish.admin.amx.impl;
 
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-import org.glassfish.api.amx.AMXBooter;
+import org.glassfish.api.amx.AMXUtil;
 
 import org.glassfish.admin.amx.util.TimingDelta;
 import org.glassfish.admin.amx.util.FeatureAvailability;
@@ -216,7 +216,7 @@ public final class AMXStartupServiceNew
 
     public ObjectName loadAMXMBeans()
     {
-        ObjectName objectName = AMXBooter.findDomainRoot(mMBeanServer);
+        ObjectName objectName = AMXUtil.findDomainRoot(mMBeanServer);
         if (objectName == null)
         {
             try
