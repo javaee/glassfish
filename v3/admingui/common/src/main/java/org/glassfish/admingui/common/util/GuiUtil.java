@@ -543,6 +543,21 @@ public class GuiUtil {
         return retStr.toString();
     }
 
+    public static String ListToString(List<String> list , String delimiter) {
+        StringBuffer retStr = new StringBuffer();
+        if(list == null || list.size() <=0 ) return "";
+        for(String oneItem : list){
+            retStr.append(oneItem);
+            retStr.append(delimiter);
+        }
+        String ret = retStr.toString();
+        ret = ret.substring(0, ret.length()-1);
+        return ret;
+    }
+
+
+
+
     public static boolean isSelected(String name, List<Map> selectedList) {
         if (selectedList == null || name == null) {
             return false;
