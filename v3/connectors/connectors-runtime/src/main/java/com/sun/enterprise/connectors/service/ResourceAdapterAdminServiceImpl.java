@@ -103,22 +103,29 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             throw cre;
         }
 
-        try {
+        unbindConnectorDescriptor(moduleName);
+    }
 
-            String descriptorJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForDescriptor(moduleName);
+    private void unbindConnectorDescriptor(String moduleName) throws ConnectorRuntimeException {
+        if(ConnectorRuntime.getRuntime().isServer()){
+            try {
 
-            _logger.fine("ResourceAdapterAdminServiceImpl :: destroyActiveRA "
-                    + moduleName + " removing descriptor " + descriptorJNDIName);
+                String descriptorJNDIName = ConnectorAdminServiceUtils.
+                        getReservePrefixedJNDINameForDescriptor(moduleName);
 
-            _runtime.getNamingManager().getInitialContext().unbind(descriptorJNDIName);
+                _logger.fine("ResourceAdapterAdminServiceImpl :: destroyActiveRA "
+                        + moduleName + " removing descriptor " + descriptorJNDIName);
 
-        } catch (NamingException ne) {
-            ConnectorRuntimeException cre =
-                    new ConnectorRuntimeException("Failed to remove connector descriptor from JNDI");
-            cre.initCause(ne);
-            _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_jndi_removal_failure", moduleName);
-            _logger.log(Level.SEVERE, "", cre);
-            throw cre;
+                _runtime.getNamingManager().getInitialContext().unbind(descriptorJNDIName);
+
+            } catch (NamingException ne) {
+                ConnectorRuntimeException cre =
+                        new ConnectorRuntimeException("Failed to remove connector descriptor from JNDI");
+                cre.initCause(ne);
+                _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_jndi_removal_failure", moduleName);
+                _logger.log(Level.SEVERE, "", cre);
+                throw cre;
+            }
         }
     }
 
@@ -217,10 +224,6 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 //Update RAConfig in Connector Descriptor and bind in JNDI
                 //so that ACC clients could use RAConfig
                 updateRAConfigInDescriptor(connectorDescriptor, moduleName);
-/*
-                ConnectorInternalObjectsProxy proxy = new ConnectorInternalObjectsProxy(connectorDescriptor);
-                _runtime.getNamingManager().publishObject(descriptorJNDIName, proxy, true);
-*/
                 _runtime.getNamingManager().publishObject(descriptorJNDIName, connectorDescriptor, true);
 
                 String securityWarningMessage=
