@@ -35,7 +35,10 @@
  */
 package com.sun.enterprise.deployment;
 
+import com.sun.enterprise.deployment.util.DOLUtils;
+
 import java.util.Properties;
+import java.util.logging.Level;
 import java.sql.Connection;
 
 /**
@@ -66,7 +69,7 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
     private boolean loginTimeoutSet = false; 
     private boolean serverNameSet = false;
 
-    private String componentId;
+    private String resourceId;
 
     private static final String JAVA_URL = "java:";
     private static final String JAVA_COMP_URL = "java:comp/";
@@ -74,12 +77,12 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
     public DataSourceDefinitionDescriptor(){
     }
 
-    public String getComponentId(){
-        return componentId;
+    public String getResourceId(){
+        return resourceId;
     }
 
-    public void setComponentId(String componentId){
-        this.componentId = componentId;
+    public void setResourceId(String resourceId){
+        this.resourceId = resourceId;
     }
 
     public String getName() {
@@ -166,9 +169,14 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
         return loginTimeout;
     }
 
-    public void setLoginTimeout(long loginTimeout) {
-        this.loginTimeout = loginTimeout;
-        setLoginTimeoutSet(true);
+    public void setLoginTimeout(String loginTimeout) {
+        try{
+            this.loginTimeout = Long.parseLong(loginTimeout);
+            setLoginTimeoutSet(true);
+        }catch(NumberFormatException nfe){
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "invalid loginTimeout value [ " + loginTimeout+ " ]," +
+                    " required long");
+        }
     }
 
     private void setLoginTimeoutSet(boolean b) {
@@ -201,6 +209,9 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
     }
 
     public void setIsolationLevel(int isolationLevel) {
+        if(isolationLevel == -1){
+            return ;
+        }
         switch(isolationLevel){
             case Connection.TRANSACTION_READ_COMMITTED :
             case Connection.TRANSACTION_READ_UNCOMMITTED :
@@ -209,7 +220,6 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
             this.isolationLevel = isolationLevel;
                 break;
             default :
-                //TODO V3 log ?
                 throw new IllegalStateException
                         ("Isolation level [ "+isolationLevel+" ] not of of standard isolation levels.");
         }
@@ -243,8 +253,13 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
         return maxIdleTime;
     }
 
-    public void setMaxIdleTime(long maxIdleTime) {
-        this.maxIdleTime = maxIdleTime;
+    public void setMaxIdleTime(String maxIdleTime) {
+        try{
+            this.maxIdleTime = Long.parseLong(maxIdleTime);
+        }catch(NumberFormatException nfe){
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "invalid maxIdleTime value [ " + maxIdleTime + " ]," +
+                    " required long");
+        }
     }
 
     public int getMaxStatements() {

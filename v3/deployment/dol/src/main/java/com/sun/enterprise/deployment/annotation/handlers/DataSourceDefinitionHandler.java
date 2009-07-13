@@ -205,7 +205,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
 
                 if (desc.getMaxIdleTime() == -1) {
                     if (defn.maxIdleTime() != -1) {
-                        desc.setMaxIdleTime(defn.maxIdleTime());
+                        desc.setMaxIdleTime(String.valueOf(defn.maxIdleTime()));
                     }
                 }
 
@@ -217,7 +217,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
 
                 if (!desc.isLoginTimeoutSet()) {
                     if (defn.loginTimeout() != 0) {
-                        desc.setLoginTimeout(defn.loginTimeout());
+                        desc.setLoginTimeout(String.valueOf(defn.loginTimeout()));
                     }
                 }
 
@@ -306,7 +306,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
             desc.setInitialPoolSize(defn.initialPoolSize());
         }
         if (defn.maxIdleTime() != -1) {
-            desc.setMaxIdleTime(defn.maxIdleTime());
+            desc.setMaxIdleTime(String.valueOf(defn.maxIdleTime()));
         }
 
         if (defn.maxStatements() != -1) {
@@ -314,7 +314,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
         }
 
         if (defn.loginTimeout() != 0) {
-            desc.setLoginTimeout(defn.loginTimeout());
+            desc.setLoginTimeout(String.valueOf(defn.loginTimeout()));
         }
 
 
