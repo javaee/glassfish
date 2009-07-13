@@ -689,22 +689,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         String defaultJmsHost = getJmsService().getDefaultJmsHost();
         logFine("Default JMS Host :: " + defaultJmsHost);
 
-        JmsHost jmsHost = null;
-        if (defaultJmsHost == null || defaultJmsHost.equals("")) {
-            jmsHost = (JmsHost) Globals.get(JmsHost.class); //ServerBeansFactory.getJmsHostBean(ctx);
-        } else {
-                String defaultJmsHostName = getJmsService().getDefaultJmsHost();
-                List jmsHostsList = getJmsService().getJmsHost();
+        JmsHost jmsHost = getJmsHost();
 
-                for (int i=0; i < jmsHostsList.size(); i ++)
-                {
-                    JmsHost tmpJmsHost = (JmsHost) jmsHostsList.get(i);
-                    if (tmpJmsHost != null && tmpJmsHost.getName().equals(defaultJmsHostName))
-                        jmsHost = tmpJmsHost;
-                }
-
-            //jmsHost = jmsService.getJmsHostByName(defaultJmsHost);
-        }
 
         if (jmsHost != null) {//todo: && jmsHost.isEnabled()) {
             JavaConfig javaConfig = (JavaConfig) Globals.get(JavaConfig.class); ;
@@ -1188,6 +1174,27 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         setAddressList();
     }
 
+    protected JmsHost getJmsHost()
+    {
+        String defaultJmsHost = getJmsService().getDefaultJmsHost();
+        JmsHost jmsHost = null;
+        if (defaultJmsHost == null || defaultJmsHost.equals("")) {
+            jmsHost = (JmsHost) Globals.get(JmsHost.class); //ServerBeansFactory.getJmsHostBean(ctx);
+        } else {
+                String defaultJmsHostName = getJmsService().getDefaultJmsHost();
+                List jmsHostsList = getJmsService().getJmsHost();
+
+                for (int i=0; i < jmsHostsList.size(); i ++)
+                {
+                    JmsHost tmpJmsHost = (JmsHost) jmsHostsList.get(i);
+                    if (tmpJmsHost != null && tmpJmsHost.getName().equals(defaultJmsHostName))
+                        jmsHost = tmpJmsHost;
+                }
+
+            //jmsHost = jmsService.getJmsHostByName(defaultJmsHost);
+        }
+        return jmsHost;
+    }
     /**
      * Updates the JmsHost information in the MQAddressList of the resource adapter.
      *
@@ -1220,6 +1227,10 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             RECONNECTATTEMPTS, val, val, "java.lang.Integer");
         setProperty(cd, envProp4);
 
+        String integrationMode = getJmsService().getType();
+        boolean lazyInit = getJmsHost().getLazyInit();
+        val= "true";
+        if (EMBEDDED.equals(integrationMode) && lazyInit)
         val = "false";
         ConnectorConfigProperty  envProp5 = new ConnectorConfigProperty  (
             MQ_PORTMAPPER_BIND, val, val, "java.lang.Boolean");
@@ -1990,7 +2001,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                 return false;
              }
     }
-    
+
     public void handleRequest(SelectableChannel selectableChannel){
         SocketChannel socketChannel = null;
         if (selectableChannel instanceof SocketChannel) {
