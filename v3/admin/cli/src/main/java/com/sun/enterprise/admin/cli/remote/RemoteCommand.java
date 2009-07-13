@@ -197,7 +197,8 @@ public class RemoteCommand extends CLICommand {
      * Runs the command using the specified arguments.
      */
     @Override
-    protected int executeCommand() throws CommandException {
+    protected int executeCommand()
+            throws CommandException, CommandValidationException {
 
         try {
             initializeDoUpload();
