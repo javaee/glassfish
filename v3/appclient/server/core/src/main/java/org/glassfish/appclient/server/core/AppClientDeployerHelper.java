@@ -371,9 +371,10 @@ public abstract class AppClientDeployerHelper {
         facadeArchive.close();
     }
 
-    private void copyMainClass(final WritableArchive facadeArchive) throws IOException {
-        OutputStream os = facadeArchive.putNextEntry(AppClientDeployer.APPCLIENT_FACADE_CLASS_FILE);
-        InputStream is = openByteCodeStream("/" + AppClientDeployer.APPCLIENT_FACADE_CLASS_FILE);
+    private void copyClass(final WritableArchive facadeArchive,
+            final String classResourcePath) throws IOException {
+        OutputStream os = facadeArchive.putNextEntry(classResourcePath);
+        InputStream is = openByteCodeStream("/" + classResourcePath);
 
         copyStream(is, os);
         try {
@@ -381,6 +382,15 @@ public abstract class AppClientDeployerHelper {
             facadeArchive.closeEntry();
         } catch (IOException ignore) {
         }
+    }
+    
+
+    private void copyAgentMainClass(final WritableArchive facadeArchive) throws IOException {
+        copyClass(facadeArchive, AppClientDeployer.APPCLIENT_AGENT_MAIN_CLASS_FILE);
+    }
+
+    private void copyMainClass(final WritableArchive facadeArchive) throws IOException {
+        copyClass(facadeArchive, AppClientDeployer.APPCLIENT_FACADE_CLASS_FILE);
     }
 
     private void copyPersistenceUnitXML(final ReadableArchive sourceClient,

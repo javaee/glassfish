@@ -107,4 +107,12 @@ public class Util {
         m.appendTail(sb);
 
         return sb.toString();
-    }}
+    }
+    
+    public static String toXMLEscaped(final String content) {
+        return content.
+                    replaceAll("<", "&lt;").
+                    replaceAll(">", "&gt;").
+                    replaceAll("\"", "&quot;");
+    }
+}

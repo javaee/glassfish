@@ -48,6 +48,8 @@ import org.glassfish.appclient.client.acc.UserError;
  */
 public class JWSAppClientContainerMain {
 
+    public static final String SECURITY_CONFIG_PATH_PLACEHOLDER = "security.config.path";
+
     private static Logger logger = Logger.getLogger(JWSAppClientContainerMain.class.getName());
 
     /**

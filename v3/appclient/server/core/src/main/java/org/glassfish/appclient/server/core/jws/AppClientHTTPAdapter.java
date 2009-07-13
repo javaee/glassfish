@@ -43,6 +43,8 @@ import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.MimeType;
 import com.sun.logging.LogDomains;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -50,8 +52,11 @@ import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.appclient.server.core.jws.servedcontent.ACCConfigContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 
@@ -78,14 +83,21 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private final Map<String,DynamicContent> dynamicContent;
     private final Properties tokens;
 
+    private final ACCConfigContent accConfigContent;
+
     public AppClientHTTPAdapter(
             final String contextRoot,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent,
-            final Properties tokens) throws IOException {
+            final Properties tokens,
+            final File domainDir,
+            final File installDir) throws IOException {
         super(contextRoot, staticContent);
         this.dynamicContent = dynamicContent;
         this.tokens = tokens;
+        this.accConfigContent = new ACCConfigContent(
+                new File(domainDir, "config"),
+                new File(new File(installDir, "lib"), "appclient"));
     }
 
     /**
@@ -145,7 +157,13 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
          * items from the query string.  This merges the request-time
          * tokens with those that were known when this adapter was created.
          */
-        final Properties allTokens = prepareRequestPlaceholders(tokens, gReq);
+        Properties allTokens = null;
+        try {
+            allTokens = prepareRequestPlaceholders(tokens, gReq);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "prepareRequestPlaceholder", e);
+            finishErrorResponse(gResp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
 
         /*
          * Create an instance of the dynamic content using the dynamic
@@ -198,14 +216,21 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      */
     private Properties prepareRequestPlaceholders(
             final Properties adapterTokens,
-            GrizzlyRequest request) {
+            GrizzlyRequest request) throws FileNotFoundException, IOException {
         final Properties answer = new Properties(adapterTokens);
 
         answer.setProperty("request.scheme", request.getScheme());
         answer.setProperty("request.host", request.getServerName());
         answer.setProperty("request.port", Integer.toString(request.getServerPort()));
         answer.setProperty("request.adapter.context.root", contextRoot());
-
+        
+        
+        answer.setProperty("request.sun-ac.xml.content", 
+                Util.toXMLEscaped(accConfigContent.sunACC()));
+        answer.setProperty("request.appclient.login.conf.content",
+                Util.toXMLEscaped(accConfigContent.appClientLogin()));
+        answer.setProperty("request.message.security.config.provider.security.config",
+                Util.toXMLEscaped(accConfigContent.securityConfig()));
         /*
          *Treat query parameters with the name "arg" as command line arguments to the
          *app client.

@@ -65,7 +65,7 @@
             In v3, run the client facade as the main JAR. Eventually Java Web
             Start might support the splash screen in the JAR.
         -->
-        <jar href="${client.facade.jar.path}" />
+        <jar href="${client.facade.jar.path}" main="true" />
 
         <!--
             These next JARs will have been signed using the
@@ -91,12 +91,21 @@
 
         ${app.library.extension}
 
-        <property name="agent.args" value="${agent.args}"/>
+        <property name="agent.args" value="mode=jws,client=url=${client.facade.jar.path}${request.extra.agent.args}"/>
 
         <!--
             Properties specified on the request as query parameters (if any)
         -->
         ${request.properties}
+
+        <!--
+            Content normally read from files during an appclient script launch.
+        -->
+        <property name="sun-acc.xml.content" value="${request.sun-ac.xml.content}"/>
+        <property name="appclient.login.conf.content" value="${request.appclient.login.conf.content}"/>
+        <property name="message.security.config.provider.security.config"
+            value="${request.message.security.config.provider.security.config}"/>
+
 
 <!-- from the command line -->
 <!--
@@ -132,7 +141,7 @@
 
     </resources>
 
-    <application-desc main-class="org.glassfish.appclient.client.acc.JWSAppClientContainerMain">
+    <application-desc main-class="org.glassfish.appclient.client.JWSAppClientContainerMain">
 
         ${appclient.main.class.arguments}
 

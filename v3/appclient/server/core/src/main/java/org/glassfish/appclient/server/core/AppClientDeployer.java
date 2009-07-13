@@ -160,7 +160,10 @@ public class AppClientDeployer
 
     private Logger logger;
 
-    public static final String APPCLIENT_FACADE_CLASS_FILE = "org/glassfish/appclient/client/AppClientFacade.class";
+    public static final String APPCLIENT_FACADE_CLASS_FILE = 
+            "org/glassfish/appclient/client/AppClientFacade.class";
+    public static final String APPCLIENT_AGENT_MAIN_CLASS_FILE =
+            "org/glassfish/appclient/client/JWSAppClientContainerMain.class";
     public static final String APPCLIENT_COMMAND_CLASS_NAME = "org.glassfish.appclient.client.AppClientFacade";
     public static final Attributes.Name GLASSFISH_APPCLIENT_MAIN_CLASS =
             new Attributes.Name("GlassFish-AppClient-Main-Class");
@@ -320,7 +323,8 @@ public class AppClientDeployer
             systemAdapter = startSystemContentAdapter();
         }
         final AppClientHTTPAdapter adapter = new AppClientHTTPAdapter(
-                contextRoot, staticContent, dynamicContent, tokens);
+                contextRoot, staticContent, dynamicContent, tokens,
+                serverEnv.getDomainRoot(), new File(installRootURI));
         httpAdapters.put(appName, adapter);
         requestDispatcher.registerEndpoint(
                 contextRoot,
@@ -460,7 +464,8 @@ public class AppClientDeployer
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
                     staticSystemContent, 
                     dynamicSystemContent,
-                    new Properties());
+                    new Properties(),
+                    serverEnv.getDomainRoot(), new File(installRootURI));
 
             requestDispatcher.registerEndpoint(
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
@@ -518,7 +523,8 @@ public class AppClientDeployer
             }
         }
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("The Java Web Start system-level adapter will serve the following fixed content:"
+            logger.fine("The Java Web Start system-level adapter will serve the following " +
+                    "fixed content:"
                     + result.toString());
         }
         return result;
