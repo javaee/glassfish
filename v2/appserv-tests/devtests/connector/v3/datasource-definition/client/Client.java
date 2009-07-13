@@ -15,10 +15,12 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 import javax.annotation.sql.*;
 
-/*@DataSourceDefinitions(
+
+@DataSourceDefinitions(
         value = {
 
-                @DataSourceDefinition(name = "java:global/Appclient_DataSource",
+
+/*               @DataSourceDefinition(name = "java:global/env/Appclient_DataSource",
                         className = "org.apache.derby.jdbc.ClientDataSource",
                         portNumber = 1527,
                         serverName = "localhost",
@@ -27,8 +29,9 @@ import javax.annotation.sql.*;
                         databaseName = "hello-client",
                         properties = {"connectionAttributes=;create=true"}
                 ),
+*/
 
-                @DataSourceDefinition(name = "java:comp/Appclient_DataSource",
+                @DataSourceDefinition(name = "java:comp/env/Appclient_DataSource",
                         className = "org.apache.derby.jdbc.ClientDataSource",
                         portNumber = 1527,
                         serverName = "localhost",
@@ -38,7 +41,8 @@ import javax.annotation.sql.*;
                         properties = {"connectionAttributes=;create=true"}
                 )
         }
-)*/
+)
+
 public class Client {
 
     private String host;
@@ -67,8 +71,8 @@ public class Client {
 
 /*
             InitialContext ic = new InitialContext();
-            boolean global = lookupDataSource("java:global/Appclient_DataSource");
-            boolean comp = lookupDataSource("java:comp/Appclient_DataSource");
+            boolean global = lookupDataSource("java:global/env/Appclient_DataSource");
+            boolean comp = lookupDataSource("java:comp/env/Appclient_DataSource");
             if (global && comp) {
                 System.out.println("4444 appclient Success");
                 System.out.println("AppClient successful injection of EMF references!");
@@ -78,38 +82,56 @@ public class Client {
             }
 */
 
+
+
             InitialContext ic = new InitialContext();
 
-            boolean globalServlet_DataSource = lookupDataSource("java:global/Servlet_DataSource");
-            boolean compServlet_DataSource = lookupDataSource("java:comp/Servlet_DataSource");
 
-            boolean globalHelloSfulEJB = lookupDataSource("java:global/HelloStatefulEJB_DataSource");
-            boolean compHelloSfulEJB = lookupDataSource("java:comp/HelloStatefulEJB_DataSource");
+            boolean globalServlet_DataSource = lookupDataSource("java:global/env/Servlet_DataSource", true);
+            boolean compServlet_DataSource = lookupDataSource("java:comp/env/Servlet_DataSource", false);
 
-            boolean globalHelloEJB = lookupDataSource("java:global/HelloEJB_DataSource");
-            boolean compHelloEJB = lookupDataSource("java:comp/HelloEJB_DataSource");
+            boolean globalHelloSfulEJB = lookupDataSource("java:global/env/HelloStatefulEJB_DataSource", true);
+            boolean compHelloSfulEJB = lookupDataSource("java:comp/env/HelloStatefulEJB_DataSource", false);
+            boolean appHelloStatefulEjb = lookupDataSource("java:app/env/HelloStatefulEJB_DataSource", false);
 
-            boolean globalServlet_DD_DataSource = lookupDataSource("java:global/Servlet_DD_DataSource");
-            boolean compServlet_DD_DataSource = lookupDataSource("java:comp/Servlet_DD_DataSource");
+            boolean globalHelloEJB = lookupDataSource("java:global/env/HelloEJB_DataSource", true);
+            boolean compHelloEJB = lookupDataSource("java:comp/env/HelloEJB_DataSource", false);
 
-            boolean globalHelloStateful_DD_DataSource = lookupDataSource("java:global/HelloStatefulEJB_DD_DataSource");
-            boolean compHelloStateful_DD_DataSource = lookupDataSource("java:comp/HelloStatefulEJB_DD_DataSource");
+            boolean globalServlet_DD_DataSource = lookupDataSource("java:global/env/Servlet_DD_DataSource", true);
+            boolean compServlet_DD_DataSource = lookupDataSource("java:comp/env/Servlet_DD_DataSource", false);
 
-            boolean globalHello_DD_DataSource = lookupDataSource("java:global/HelloEJB_DD_DataSource");
-            boolean compHello_DD_DataSource = lookupDataSource("java:comp/HelloEJB_DD_DataSource");
+            boolean globalHelloStateful_DD_DataSource = lookupDataSource("java:global/env/HelloStatefulEJB_DD_DataSource", true);
+            boolean compHelloStateful_DD_DataSource = lookupDataSource("java:comp/env/HelloStatefulEJB_DD_DataSource", false);
 
+            boolean globalHello_DD_DataSource = lookupDataSource("java:global/env/HelloEJB_DD_DataSource", true);
+            boolean compHello_DD_DataSource = lookupDataSource("java:comp/env/HelloEJB_DD_DataSource", false);
 
-            if (globalServlet_DataSource && !compServlet_DataSource && globalHelloSfulEJB && globalServlet_DD_DataSource && !compServlet_DD_DataSource && !compHelloSfulEJB && globalHelloEJB && !compHelloEJB && globalHelloStateful_DD_DataSource && !compHelloStateful_DD_DataSource && globalHello_DD_DataSource && !compHello_DD_DataSource) {
+            boolean comp = lookupDataSource("java:comp/env/Appclient_DataSource",true);
+            boolean comp_dd = lookupDataSource("java:comp/env/Appclient_DD_DataSource",true);
+            
+
+            if (comp && comp_dd && globalServlet_DataSource && !compServlet_DataSource && globalHelloSfulEJB &&
+                    globalServlet_DD_DataSource && !compServlet_DD_DataSource
+                    && !compHelloSfulEJB && globalHelloEJB
+                    && !compHelloEJB && globalHelloStateful_DD_DataSource
+                    && !compHelloStateful_DD_DataSource && globalHello_DD_DataSource
+                    && !compHello_DD_DataSource && !appHelloStatefulEjb)
+ {
                 System.out.println("AppClient successful lookup of datasource definitions !");
             } else {
                 throw new RuntimeException("Appclient failure during lookup of datasource definitions");
             }
 
 
+
+
+
+
             String url = "http://" + host + ":" + port +
                     "/datasource-definition/servlet";
             System.out.println("invoking webclient servlet at " + url);
             int code = invokeServlet(url);
+
 
             if (code != 200) {
                 System.out.println("Incorrect return code: " + code);
@@ -127,7 +149,7 @@ public class Client {
 
     }
 
-    private boolean lookupDataSource(String dataSourceName) {
+    private boolean lookupDataSource(String dataSourceName, boolean expectSuccess) {
         Connection c = null;
         try {
             InitialContext ic = new InitialContext();
@@ -136,7 +158,9 @@ public class Client {
             System.out.println("got connection : " + c);
             return true;
         } catch (Exception e) {
-            //e.printStackTrace();
+            if(expectSuccess){
+            	e.printStackTrace();
+            }
             return false;
         } finally {
             try {

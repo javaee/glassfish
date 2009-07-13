@@ -33,7 +33,7 @@ import javax.annotation.sql.*;
 @DataSourceDefinitions(
         value = {
 
-                @DataSourceDefinition(name = "java:global/Servlet_DataSource",
+                @DataSourceDefinition(name = "java:global/env/Servlet_DataSource",
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",
@@ -41,13 +41,29 @@ import javax.annotation.sql.*;
                         properties = {"connectionAttributes=;create=true"}
                 ),
 
-                @DataSourceDefinition(name = "java:comp/Servlet_DataSource",
+                @DataSourceDefinition(name = "java:comp/env/Servlet_DataSource",
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
                         user = "APP",
                         password = "APP",
-                        databaseName = "hello-servlet",
+                        databaseName = "hello-servlet-comp",
+                        properties = {"connectionAttributes=;create=true"}
+                ),
+                @DataSourceDefinition(name = "java:app/env/Servlet_DataSource",
+                        className = "org.apache.derby.jdbc.EmbeddedXADataSource",
+                        user = "APP",
+                        password = "APP",
+                        databaseName = "hello-servlet-app",
+                        properties = {"connectionAttributes=;create=true"}
+                ),
+                @DataSourceDefinition(name = "java:module/env/Servlet_DataSource",
+                        className = "org.apache.derby.jdbc.EmbeddedXADataSource",
+                        user = "APP",
+                        password = "APP",
+                        databaseName = "hello-servlet-module",
                         properties = {"connectionAttributes=;create=true"}
                 )
+
+
 
         }
 )
@@ -63,13 +79,16 @@ public class Servlet extends HttpServlet {
     @EJB(beanName = "HelloStatefulEJB")
     HelloStateful helloStateful;
 
+/*
     private Hello helloStateless2;
     private HelloStateful helloStateful2;
 
+*/
     private
     @Resource
     UserTransaction ut;
 
+/*
     @EJB(beanName = "HelloEJB")
     private void setHelloStateless2(Hello h) {
         helloStateless2 = h;
@@ -79,6 +98,7 @@ public class Servlet extends HttpServlet {
     private void setHelloStateful2(HelloStateful hf) {
         helloStateful2 = hf;
     }
+*/
 
     public void init(ServletConfig config) throws ServletException {
 
@@ -95,33 +115,36 @@ public class Servlet extends HttpServlet {
 
             InitialContext ic = new InitialContext();
 
-            boolean global = lookupDataSource("java:global/Servlet_DataSource");
-            boolean comp = lookupDataSource("java:comp/Servlet_DataSource");
+            boolean global = lookupDataSource("java:global/env/Servlet_DataSource", true);
+            boolean comp = lookupDataSource("java:comp/env/Servlet_DataSource", true);
+            boolean appServletDataSource = lookupDataSource("java:app/env/Servlet_DataSource", true);
+            boolean moduleServletDataSource = lookupDataSource("java:module/env/Servlet_DataSource", true);
 
-            boolean globalHelloSfulEJB = lookupDataSource("java:global/HelloStatefulEJB_DataSource");
-            boolean compHelloSfulEJB = lookupDataSource("java:comp/HelloStatefulEJB_DataSource");
+            boolean globalHelloSfulEJB = lookupDataSource("java:global/env/HelloStatefulEJB_DataSource", true);
+            boolean compHelloSfulEJB = lookupDataSource("java:comp/env/HelloStatefulEJB_DataSource", false);
+            boolean appHelloStatefulEjb = lookupDataSource("java:app/env/HelloStatefulEJB_DataSource", true);
 
-            boolean globalHelloEJB = lookupDataSource("java:global/HelloEJB_DataSource");
-            boolean compHelloEJB = lookupDataSource("java:comp/HelloEJB_DataSource");
+            boolean globalHelloEJB = lookupDataSource("java:global/env/HelloEJB_DataSource", true);
+            boolean compHelloEJB = lookupDataSource("java:comp/env/HelloEJB_DataSource", false);
+            boolean moduleHelloEjb = lookupDataSource("java:module/env/HelloEJB_DataSource", false);
 
-            boolean globalServlet_DD_DataSource = lookupDataSource("java:global/Servlet_DD_DataSource");
-            boolean compServlet_DD_DataSource = lookupDataSource("java:comp/Servlet_DD_DataSource");
+            boolean globalServlet_DD_DataSource = lookupDataSource("java:global/env/Servlet_DD_DataSource", true);
+            boolean compServlet_DD_DataSource = lookupDataSource("java:comp/env/Servlet_DD_DataSource", false);
 
-            boolean globalHelloStateful_DD_DataSource = lookupDataSource("java:global/HelloStatefulEJB_DD_DataSource");
-            boolean compHelloStateful_DD_DataSource = lookupDataSource("java:comp/HelloStatefulEJB_DD_DataSource");
+            boolean globalHelloStateful_DD_DataSource = lookupDataSource("java:global/env/HelloStatefulEJB_DD_DataSource", true);
+            boolean compHelloStateful_DD_DataSource = lookupDataSource("java:comp/env/HelloStatefulEJB_DD_DataSource", false);
 
-            boolean globalHello_DD_DataSource = lookupDataSource("java:global/HelloEJB_DD_DataSource");
-            boolean compHello_DD_DataSource = lookupDataSource("java:comp/HelloEJB_DD_DataSource");
+            boolean globalHello_DD_DataSource = lookupDataSource("java:global/env/HelloEJB_DD_DataSource", true);
+            boolean compHello_DD_DataSource = lookupDataSource("java:comp/env/HelloEJB_DD_DataSource", false);
 
 
-            if (global && comp && globalHelloSfulEJB && globalServlet_DD_DataSource && compServlet_DD_DataSource
+            if (global && comp && appServletDataSource && globalHelloSfulEJB && globalServlet_DD_DataSource && compServlet_DD_DataSource
                     && !compHelloSfulEJB && globalHelloEJB && !compHelloEJB && globalHelloStateful_DD_DataSource
-                    && !compHelloStateful_DD_DataSource && globalHello_DD_DataSource && !compHello_DD_DataSource) {
-                System.out.println("4444 Servlet Success");
-                System.out.println("Servlet successful injection of EMF/EM references!");
+                    && !compHelloStateful_DD_DataSource && globalHello_DD_DataSource && !compHello_DD_DataSource
+                    && appHelloStatefulEjb && !moduleHelloEjb && moduleServletDataSource) {
+                System.out.println("Servlet successful lookup of datasource-definitions !");
             } else {
-                System.out.println("4444 Servlet Failure");
-                throw new RuntimeException("HelloEJB failure");
+                throw new RuntimeException("Servlet failure");
             }
 
 
@@ -131,7 +154,7 @@ public class Servlet extends HttpServlet {
             // invoke method on the EJB
             System.out.println("invoking stateless ejb");
             helloStateless.hello();
-            helloStateless2.hello();
+//            helloStateless2.hello();
 
             System.out.println("committing tx");
             ut.commit();
@@ -140,9 +163,9 @@ public class Servlet extends HttpServlet {
 
             System.out.println("invoking stateless ejb");
             helloStateful.hello();
-            helloStateful2.hello();
+  //          helloStateful2.hello();
 
-            Hello helloStateless3 = (Hello)
+    /*        Hello helloStateless3 = (Hello)
                     ic.lookup("java:comp/env/helloStateless3");
 
             helloStateless3.hello();
@@ -156,16 +179,16 @@ public class Servlet extends HttpServlet {
                     ic.lookup("java:comp/env/helloStateful3");
 
             helloStateful3.hello();
-
+*/
             System.out.println("successfully invoked ejbs");
 
             System.out.println("accessing connections");
             try {
-                MyThread thread = new MyThread(helloStateful2);
+                MyThread thread = new MyThread(helloStateful);
                 thread.start();
 
                 sleepFor(2);
-                helloStateful2.ping();
+                helloStateful.ping();
                 //throw new EJBException("Did not get ConcurrentAccessException");
             } catch (javax.ejb.ConcurrentAccessException conEx) {
                 ;   //Everything is fine
@@ -221,7 +244,7 @@ public class Servlet extends HttpServlet {
         }
     }
 
-    private boolean lookupDataSource(String dataSourceName) {
+    private boolean lookupDataSource(String dataSourceName, boolean expectSuccess) {
         Connection c = null;
         try {
             System.out.println("lookup dataSource : " + dataSourceName);
@@ -231,7 +254,9 @@ public class Servlet extends HttpServlet {
             System.out.println("got connection : " + c);
             return true;
         } catch (Exception e) {
-            // e.printStackTrace();
+            if(expectSuccess){
+                e.printStackTrace();
+            }
             return false;
         } finally {
             try {

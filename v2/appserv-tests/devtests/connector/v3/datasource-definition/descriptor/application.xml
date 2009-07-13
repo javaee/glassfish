@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd">
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd">
     <display-name>datasource-definitionApp</display-name>
     <module>
         <java>datasource-definition-client.jar</java>
@@ -14,4 +14,35 @@
             <context-root>datasource-definition</context-root>
         </web>
     </module>
+
+
+    <data-source>
+       <name>java:global/env/Application_Level_DataSource</name>
+       <class-name>org.apache.derby.jdbc.ClientXADataSource</class-name>
+       <server-name>localhost</server-name>
+       <port-number>1527</port-number>
+       <database-name>application-level-global-datasource</database-name>
+       <user>APP</user>
+       <password>APP</password>
+       <property>
+         <name>connectionAttributes</name>
+         <value>;create=true</value>
+       </property>
+     </data-source>
+
+
+    <data-source>
+       <name>java:app/env/Application_Level_DataSource</name>
+       <class-name>org.apache.derby.jdbc.ClientXADataSource</class-name>
+       <server-name>localhost</server-name>
+       <port-number>1527</port-number>
+       <database-name>application-level-app-datasource</database-name>
+       <user>APP</user>
+       <password>APP</password>
+       <property>
+         <name>connectionAttributes</name>
+         <value>;create=true</value>
+       </property>
+     </data-source>
+
 </application>

@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application-client xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    version="5"
-                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_5.xsd">
+                    version="6"
+                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_6.xsds">
     <display-name>datasource-definitionClient</display-name>
+
+    <data-source>
+      <name>java:comp/env/Appclient_DD_DataSource</name>
+      <class-name>org.apache.derby.jdbc.EmbeddedXADataSource</class-name>
+      <database-name>hello-client-comp-dd</database-name>
+      <user>APP</user>
+      <password>APP</password>
+      <property>
+        <name>connectionAttributes</name>
+        <value>;create=true</value>
+      </property>
+    </data-source>
+
 </application-client>
 

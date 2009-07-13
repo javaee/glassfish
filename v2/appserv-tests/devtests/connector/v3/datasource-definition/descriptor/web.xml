@@ -14,7 +14,7 @@
         <url-pattern>/servlet</url-pattern>
     </servlet-mapping>
     <data-source>
-       <name>java:global/Servlet_DD_DataSource</name>
+       <name>java:global/env/Servlet_DD_DataSource</name>
        <class-name>org.apache.derby.jdbc.ClientDataSource</class-name>
        <server-name>localhost</server-name>
        <port-number>1527</port-number>
@@ -28,7 +28,7 @@
      </data-source>
      
      <data-source>
-       <name>java:comp/Servlet_DD_DataSource</name>
+       <name>java:comp/env/Servlet_DD_DataSource</name>
        <class-name>org.apache.derby.jdbc.ClientDataSource</class-name>
        <server-name>localhost</server-name>
        <port-number>1527</port-number>
