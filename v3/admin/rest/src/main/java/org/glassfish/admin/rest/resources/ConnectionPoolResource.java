@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jun 30 14:26:58 PDT 2009
+* date=Mon Jul 13 13:06:35 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -13,13 +13,14 @@ package org.glassfish.admin.rest.resources;
 import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
+import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.ConnectionPool;
 public class ConnectionPoolResource extends TemplateResource<ConnectionPool> {
 
 @Path("commands/ping-connection-pool")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.jvnet.hk2.config.Dom execPingConnectionPool(
+public org.glassfish.admin.rest.provider.GetResult execPingConnectionPool(
 	 @QueryParam("pool_name")  @DefaultValue("")  String Pool_name 
  	) {
 	java.util.Properties p = new java.util.Properties();
@@ -30,4 +31,14 @@ public org.jvnet.hk2.config.Dom execPingConnectionPool(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
+@Path("ping/")
+public ConnectionPoolPingResource getConnectionPoolPingResource() {
+ConnectionPoolPingResource resource = resourceContext.getResource(ConnectionPoolPingResource.class);
+return resource;
+}
+
+public String[] getCommandResourcesPaths() {
+return new String[]{"ping"};
+}
+
 }

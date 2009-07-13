@@ -61,12 +61,12 @@ import javax.ws.rs.WebApplicationException;
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class DomXmlProvider extends ProviderUtil implements MessageBodyWriter<List<Dom>> {
+public class DomXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
 
      @Context
      protected UriInfo uriInfo;
 
-     public long getSize(final List<Dom> proxy, final Class<?> type, final Type genericType,
+     public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
@@ -74,14 +74,18 @@ public class DomXmlProvider extends ProviderUtil implements MessageBodyWriter<Li
 
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
-         if ("java.util.List<org.jvnet.hk2.config.Dom>".equals(genericType.toString())) {
-             return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
+         try {
+             if (Class.forName("org.glassfish.admin.rest.provider.GetResultList").equals(genericType)) {
+                 return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
+             }
+         } catch (java.lang.ClassNotFoundException e) {
+             return false;
          }
-         return false; 
+         return false;
      }
 
 
-     public void writeTo(final List<Dom> proxy, final Class<?> type, final Type genericType,
+     public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
@@ -89,13 +93,14 @@ public class DomXmlProvider extends ProviderUtil implements MessageBodyWriter<Li
      }
 
 
-     private String getXml(List<Dom> proxy) {
+     private String getXml(GetResultList proxy) {
         String result;
         result ="<" ;
         result = result + getTypeKey();
         result = result + ">";
         result = result + "\n";
-             result = result + getResourcesLinks(proxy);
+             result = result + getResourcesLinks(proxy.getDomList(),
+                 proxy.getCommandResourcesPaths());
         result = result + getEndXmlElement(getTypeKey());
         return result;
     }
@@ -107,11 +112,12 @@ public class DomXmlProvider extends ProviderUtil implements MessageBodyWriter<Li
 
 
     private String getResourceKey() {
-        return "resource";
+        return "child-resource";
     }
 
 
-    private String getResourcesLinks(List<Dom> proxyList) {
+    private String getResourcesLinks(List<Dom> proxyList,
+        String[] commandResourcesPaths) {
         String result = "";
         String elementName;
         for (Dom proxy: proxyList) { //for each element
@@ -122,6 +128,19 @@ public class DomXmlProvider extends ProviderUtil implements MessageBodyWriter<Li
                     result = result + getElementLink(uriInfo,elementName);
                     result = result + getEndXmlElement(getResourceKey());
                     result = result + "\n";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        //add command resources
+        for (String commandResourcePath : commandResourcesPaths) {
+            try {
+                result = result + indent; //indent
+                result = result + getStartXmlElement(getResourceKey());
+                result = result + getElementLink(uriInfo, commandResourcePath);
+                result = result + getEndXmlElement(getResourceKey());
+                result = result + "\n";
             } catch (Exception e) {
                 e.printStackTrace();
             }

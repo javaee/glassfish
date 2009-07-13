@@ -61,12 +61,12 @@ import javax.ws.rs.WebApplicationException;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<List<Dom>> {
+public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
 
      @Context
      protected UriInfo uriInfo;
 
-     public long getSize(final List<Dom> proxy, final Class<?> type, final Type genericType,
+     public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
@@ -74,14 +74,19 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<L
 
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
-         if ("java.util.List<org.jvnet.hk2.config.Dom>".equals(genericType.toString())) {
-             return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
+         try {
+             if (Class.forName("org.glassfish.admin.rest.provider.GetResultList").equals(genericType)) {
+                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
+             }
+         } catch (java.lang.ClassNotFoundException e) {
+             return false;
          }
+
          return false;
      }
 
 
-     public void writeTo(final List<Dom> proxy, final Class<?> type, final Type genericType,
+     public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
@@ -89,7 +94,7 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<L
      }
 
 
-     private String getJson(List<Dom> proxy) {
+     private String getJson(GetResultList proxy) {
         String result;
         result ="{" ;
            result = result + getTypeKey();
@@ -101,7 +106,8 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<L
            result = result + getResourcesKey();
            result = result + ":";
            result = result + "[";
-             result = result + getResourcesLinks(proxy);
+             result = result + getResourcesLinks(proxy.getDomList(),
+                 proxy.getCommandResourcesPaths());
            result = result + "]";
         result = result + "}" ;
         return result;
@@ -121,11 +127,12 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<L
 
 
     private String getResourcesKey() {
-        return quote("resources");
+        return quote("child-resources");
     }
 
 
-    private String getResourcesLinks(List<Dom> proxyList) {
+    private String getResourcesLinks(List<Dom> proxyList,
+        String[] commandResourcesPaths) {
         String result = "";
         String elementName;
         for (Dom proxy: proxyList) {
@@ -140,6 +147,19 @@ public class DomJsonProvider extends ProviderUtil implements MessageBodyWriter<L
 
         int endIndex = result.length() - 1;
         if (endIndex > 0) result = result.substring(0, endIndex);
+
+        //add command resources
+        for (String commandResourcePath : commandResourcesPaths) {
+            try {
+                if (result.length() > 0) {
+                    result = result + ",";
+                }
+                result = result + quote(getElementLink(uriInfo, commandResourcePath));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return result;
     }
 

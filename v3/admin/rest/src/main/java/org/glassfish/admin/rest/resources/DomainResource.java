@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jun 30 14:26:58 PDT 2009
+* date=Mon Jul 13 13:06:35 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -13,6 +13,7 @@ package org.glassfish.admin.rest.resources;
 import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
+import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.Domain;
 @Path("/domain/")
 public class DomainResource extends TemplateResource<Domain> {
@@ -23,7 +24,7 @@ return org.glassfish.admin.rest.RestService.theDomain;
 @Path("commands/stop-domain")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.jvnet.hk2.config.Dom execStopDomain(
+public org.glassfish.admin.rest.provider.GetResult execStopDomain(
 	 @QueryParam("force")  @DefaultValue("true")  String Force 
  	) {
 	java.util.Properties p = new java.util.Properties();
@@ -37,7 +38,7 @@ public org.jvnet.hk2.config.Dom execStopDomain(
 @Path("commands/restart-domain")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.jvnet.hk2.config.Dom execRestartDomain(
+public org.glassfish.admin.rest.provider.GetResult execRestartDomain(
  	) {
 	java.util.Properties p = new java.util.Properties();
 	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
@@ -49,7 +50,7 @@ public org.jvnet.hk2.config.Dom execRestartDomain(
 @Path("commands/uptime")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.jvnet.hk2.config.Dom execUptime(
+public org.glassfish.admin.rest.provider.GetResult execUptime(
  	) {
 	java.util.Properties p = new java.util.Properties();
 	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
@@ -61,7 +62,7 @@ public org.jvnet.hk2.config.Dom execUptime(
 @Path("commands/version")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.jvnet.hk2.config.Dom execVersion(
+public org.glassfish.admin.rest.provider.GetResult execVersion(
 	 @QueryParam("verbose")  @DefaultValue("false")  String Verbose 
  	) {
 	java.util.Properties p = new java.util.Properties();
@@ -75,7 +76,7 @@ public org.jvnet.hk2.config.Dom execVersion(
 @Path("commands/rotate-log")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.jvnet.hk2.config.Dom execRotateLog(
+public org.glassfish.admin.rest.provider.GetResult execRotateLog(
  	) {
 	java.util.Properties p = new java.util.Properties();
 	org.glassfish.api.ActionReport ar = org.glassfish.admin.rest.RestService.habitat.getComponent(org.glassfish.api.ActionReport.class);
@@ -87,7 +88,7 @@ public org.jvnet.hk2.config.Dom execRotateLog(
 @Path("commands/get-host-and-port")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public org.jvnet.hk2.config.Dom execGetHostAndPort(
+public org.glassfish.admin.rest.provider.GetResult execGetHostAndPort(
 	 @QueryParam("target")  @DefaultValue("")  String Target 
  ,
 	 @QueryParam("virtualServer")  @DefaultValue("")  String VirtualServer 
@@ -107,6 +108,46 @@ public org.jvnet.hk2.config.Dom execGetHostAndPort(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
+@Path("stop/")
+public DomainStopResource getDomainStopResource() {
+DomainStopResource resource = resourceContext.getResource(DomainStopResource.class);
+return resource;
+}
+
+@Path("restart/")
+public DomainRestartResource getDomainRestartResource() {
+DomainRestartResource resource = resourceContext.getResource(DomainRestartResource.class);
+return resource;
+}
+
+@Path("uptime/")
+public DomainUptimeResource getDomainUptimeResource() {
+DomainUptimeResource resource = resourceContext.getResource(DomainUptimeResource.class);
+return resource;
+}
+
+@Path("version/")
+public DomainVersionResource getDomainVersionResource() {
+DomainVersionResource resource = resourceContext.getResource(DomainVersionResource.class);
+return resource;
+}
+
+@Path("rotate-log/")
+public DomainRotateLogResource getDomainRotateLogResource() {
+DomainRotateLogResource resource = resourceContext.getResource(DomainRotateLogResource.class);
+return resource;
+}
+
+@Path("host-port/")
+public DomainHostPortResource getDomainHostPortResource() {
+DomainHostPortResource resource = resourceContext.getResource(DomainHostPortResource.class);
+return resource;
+}
+
+public String[] getCommandResourcesPaths() {
+return new String[]{"stop", "restart", "uptime", "version", "rotate-log", "host-port"};
+}
+
 	@Path("configs/")
 	public ConfigsResource getConfigsResource() {
 		ConfigsResource resource = resourceContext.getResource(ConfigsResource.class);

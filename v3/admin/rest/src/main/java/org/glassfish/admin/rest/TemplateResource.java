@@ -67,6 +67,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.TransactionFailure;
 
+import org.glassfish.admin.rest.provider.GetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.resources.ResourceUtil;
@@ -106,13 +107,13 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         MediaType.TEXT_HTML,
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-    public Dom get(@QueryParam("expandLevel")
+    public GetResult get(@QueryParam("expandLevel")
             @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return Dom.unwrap(getEntity());
+        return new GetResult(Dom.unwrap(getEntity()), getCommandResourcesPaths());
     }
 
 
@@ -192,7 +193,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
 
     @OPTIONS
-    @Produces({"application/json", "text/html", "application/xml"})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult = new OptionsResult();
         try {
@@ -229,6 +230,10 @@ public class TemplateResource<E extends ConfigBeanProxy> {
      *
      * */
 
+    public String[] getCommandResourcesPaths() {
+        return new String[] {};
+    }
+
 
     private ActionReport processRedirectsAnnotation(RestRedirect.OpType type,
             HashMap<String, String> data) {
@@ -236,7 +241,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         String commandName = __resourceUtil.getCommand(type, getConfigBean());
         if (commandName != null) {
             return __resourceUtil.runCommand(commandName,
-                data, RestService.habitat, RestService.logger);//processed
+                data, RestService.habitat);//processed
         }
 
         return null;//not processed
@@ -265,4 +270,5 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
 
     private ResourceUtil __resourceUtil;
+
 }

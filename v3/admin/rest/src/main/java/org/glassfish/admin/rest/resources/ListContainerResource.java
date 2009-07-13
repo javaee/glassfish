@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jun 30 14:26:58 PDT 2009
+* date=Mon Jul 13 13:06:35 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -14,6 +14,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
+import org.glassfish.admin.rest.provider.GetResultList;
 import org.glassfish.api.admin.config.Container;
 public class ListContainerResource extends TemplateListOfResource<Container> {
 
@@ -22,15 +23,16 @@ public class ListContainerResource extends TemplateListOfResource<Container> {
 	public ContainerResource getContainerResource(@PathParam("Name") String id) {
 		ContainerResource resource = resourceContext.getResource(ContainerResource.class);
 		for (Container c: entity){
-        /*
-        no name exists, code must accommodate the type eg /jruby-container
 			if(c.getName().equals(id)){
 				resource.setEntity(c);
 			}
-        */
 		}
 		return resource;
 	}
+
+public String[] getCommandResourcesPaths() {
+return new String[]{};
+}
 
 
 public String getPostCommand() {

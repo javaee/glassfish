@@ -144,6 +144,7 @@ public class GeneratorResource {
     }
     private HashMap<String, String> genSingleFiles = new HashMap<String, String>();
     private HashMap<String, String> genListFiles = new HashMap<String, String>();
+    private HashMap<String, String> genCommandResourceFiles = new HashMap<String, String>();
 
     public void generateList(ConfigModel model) throws IOException {
 
@@ -175,6 +176,7 @@ public class GeneratorResource {
 //        out.write("import org.glassfish.admin.rest.TemplateResource;\n");
         out.write("import org.glassfish.admin.rest.TemplateListOfResource;\n");
 //        out.write("import com.sun.jersey.api.core.ResourceContext;\n");
+        out.write("import org.glassfish.admin.rest.provider.GetResultList;\n");
         out.write("import " + model.targetTypeName + ";\n");
 
 
@@ -230,6 +232,7 @@ public class GeneratorResource {
         out.write("\t\treturn resource;\n");
         out.write("\t}\n\n");
         generateCommand("List" + beanName, out);
+        generateCommandResources("List" + beanName, out);
 
         out.write("\n");
         generateGetPostCommandMethod("List" + beanName, out);
@@ -275,6 +278,7 @@ public class GeneratorResource {
         out.write("import org.glassfish.admin.rest.TemplateResource;\n");
 //        out.write("import org.glassfish.admin.rest.TemplateListOfResource;\n");
 //        out.write("import com.sun.jersey.api.core.ResourceContext;\n");
+        out.write("import org.glassfish.admin.rest.provider.GetResult;\n");
         out.write("import " + model.targetTypeName + ";\n");
 
 
@@ -299,6 +303,8 @@ public class GeneratorResource {
         }
 
         generateCommand(beanName, out);
+
+        generateCommandResources(beanName, out);
 
         Set<String> elem = model.getElementNames();
 
@@ -457,9 +463,9 @@ public class GeneratorResource {
                 ///\"" + a + "
                 out.write("@Path(\"commands/" + MappingConfigBeansToCommands[i][1] + "\")\n");
                 out.write("@POST\n");
-                String ret = "org.jvnet.hk2.config.Dom";
+                String ret = "org.glassfish.admin.rest.provider.GetResult";
                 if (resourceName.startsWith("List")) {
-                    ret = "List<org.jvnet.hk2.config.Dom>";
+                    ret = "org.glassfish.admin.rest.provider.GetResultList";
                 }
                 out.write("@Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})\n");
                 out.write("public " + ret + " exec" + getBeanName(MappingConfigBeansToCommands[i][1]) + "(\n");
@@ -645,4 +651,169 @@ public class GeneratorResource {
         {"ListSystemProperty", "create-system-properties"},
         {"ListVirtualServer", "create-virtual-server"},
      };
+
+
+    private static String ConfigBeansToCommandResourcesMap[][] = {
+        //{config-bean, command, method, resource-path}
+        {"Domain", "stop-domain", "POST", "stop"},
+        {"Domain", "restart-domain", "POST", "restart"},
+        {"Domain", "uptime", "GET", "uptime"},
+        {"Domain", "version", "GET", "version"},
+        {"Domain", "rotate-log", "POST", "rotate-log"},
+        {"Domain", "get-host-and-port", "GET", "host-port"},
+        ///{"ListApplication", "deploy"},
+        ///{"Application", "redeploy"},
+        {"ConnectionPool", "ping-connection-pool", "GET", "ping"},
+    };
+
+
+    private void generateCommandResources(String resourceName, 
+        BufferedWriter out) throws IOException {
+
+        if (genCommandResourceFiles.containsKey(resourceName)) {
+            return;
+        }
+        genCommandResourceFiles.put(resourceName, resourceName);
+
+
+        String commandResourcesPaths = "{";
+        for (int i = 0; i < ConfigBeansToCommandResourcesMap.length; i++) {
+            if (resourceName.equals(ConfigBeansToCommandResourcesMap[i][0])) {
+                if (commandResourcesPaths.length() > 1) {
+                    commandResourcesPaths = commandResourcesPaths + ", ";
+                }
+                commandResourcesPaths = commandResourcesPaths + "\"" +
+                    ConfigBeansToCommandResourcesMap[i][3] + "\"";
+
+                String commandResourceFileName = genDir + "/" + resourceName +
+                    getBeanName(ConfigBeansToCommandResourcesMap[i][3]) +
+                        "Resource.java";
+                String commandResourceName = resourceName +
+                    getBeanName(ConfigBeansToCommandResourcesMap[i][3]) +
+                        "Resource";
+
+                //generate command resource for the resource- resourceName
+                createCommandResourceFile(commandResourceFileName,
+                    commandResourceName, ConfigBeansToCommandResourcesMap[i][1],
+                        ConfigBeansToCommandResourcesMap[i][2]);
+
+                //define method with @Path in resource- resourceName
+                out.write("@Path(\"" + ConfigBeansToCommandResourcesMap[i][3] + "/\")\n");
+                out.write("public " + commandResourceName + " get" +
+                    commandResourceName + "() {\n");
+                out.write(commandResourceName + " resource = resourceContext.getResource(" + commandResourceName + ".class);\n");
+                out.write("return resource;\n");
+                out.write("}\n\n");
+            }
+        }
+        commandResourcesPaths = commandResourcesPaths + "}";
+
+        //define method to return command resource paths.
+        out.write("public String[] getCommandResourcesPaths() {\n");
+        out.write("return new String[]" +  commandResourcesPaths + ";\n");
+        out.write("}\n\n");
+    }
+
+    private void createCommandResourceFile(String commandResourceFileName,
+        String commandResourceName, String commandName,
+            String commandMethod) throws IOException {
+        File file = new File(commandResourceFileName);
+        try {
+            file.createNewFile();
+        } catch (Exception e) {}
+
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        //header
+        genHeader(out);
+
+        //package
+        out.write("package org.glassfish.admin.rest.resources;\n\n");
+
+        //imports
+        out.write("import java.util.HashMap;\n\n");
+        out.write("import javax.ws.rs.*;\n");
+        out.write("import javax.ws.rs.core.Context;\n");
+        out.write("import javax.ws.rs.core.MediaType;\n");
+        out.write("import javax.ws.rs.core.Response;\n");
+        out.write("import javax.ws.rs.core.UriInfo;\n\n");
+        out.write("import org.glassfish.admin.rest.provider.OptionsResult;\n");
+        out.write("import org.glassfish.admin.rest.provider.MethodMetaData;\n");
+        out.write("import org.glassfish.admin.rest.resources.ResourceUtil;\n");
+        out.write("import org.glassfish.admin.rest.RestService;\n");
+        out.write("import org.glassfish.api.ActionReport;\n\n");
+
+        //class header
+        out.write("public class " + commandResourceName + " {\n\n");
+
+        //constructor
+        out.write("public " + commandResourceName + "() {\n");
+        out.write("__resourceUtil = new ResourceUtil();\n");
+        out.write("}\n");
+
+        //create command method
+        createCommandMethod(commandMethod, out);
+
+        //create options method
+        createCommandOptionsMethod(out);
+
+        //variable declarations
+        out.write("@Context\n");
+        out.write("protected UriInfo uriInfo;\n\n");
+        out.write("private static final String commandName = \"" + commandName + "\";\n");
+        out.write("private static final String commandMethod = \"" + commandMethod + "\";\n");
+        out.write("private ResourceUtil __resourceUtil;\n");
+        out.write("}\n");
+
+        out.close();
+        System.out.println("created:" + file.getAbsolutePath());
+    }
+
+
+    private void createCommandMethod(String commandMethod, BufferedWriter out) throws IOException {
+        out.write("@" + commandMethod + "\n");
+        out.write("@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})\n");
+        out.write("public Response executeCommand(HashMap<String, String> data) {\n");
+        out.write("try {\n");
+        out.write("if (data.containsKey(\"error\")) {\n");
+        out.write("return Response.status(415).entity(\n");
+        out.write("\"Unable to parse the input entity. Please check the syntax.\").build();");
+        out.write("}/*unsupported media*/\n\n");
+        out.write("__resourceUtil.adjustParameters(data);\n\n");
+
+        out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.habitat);\n\n");
+        out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
+
+        out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
+        out.write("return Response.status(200).entity(\"\\\"\" + commandMethod + \" of \"\n");
+        out.write("+ uriInfo.getAbsolutePath() + \" executed successfully.\").build();  /*200 - ok*/\n");
+        out.write("}\n\n");
+        out.write("String errorMessage = actionReport.getMessage();\n");
+        out.write("return Response.status(400).entity(errorMessage).build(); /*400 - bad request*/\n");
+        out.write("} catch (Exception e) {\n");
+        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
+        out.write("}\n");
+        out.write("}\n");
+    }
+
+
+    private void createCommandOptionsMethod(BufferedWriter out) throws IOException {
+        out.write("@OPTIONS\n");
+        out.write("@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})\n");
+        out.write("public OptionsResult options() {\n");
+        out.write("OptionsResult optionsResult = new OptionsResult();\n");
+        out.write("try {\n");
+        out.write("//command method metadata\n");
+        out.write("MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(\n");
+        out.write("commandName, RestService.habitat, RestService.logger);\n");
+
+        out.write("optionsResult.putMethodMetaData(commandMethod, methodMetaData);\n");
+        out.write("} catch (Exception e) {\n");
+        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
+        out.write("}\n\n");
+
+        out.write("return optionsResult;\n");
+        out.write("}\n\n");
+    }
 }

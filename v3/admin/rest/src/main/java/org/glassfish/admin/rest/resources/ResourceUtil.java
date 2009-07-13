@@ -119,11 +119,10 @@ public class ResourceUtil {
      * @return ActionReport object with command execute status details.
      */
     public ActionReport runCommand(String commandName,
-            HashMap<String, String> parameters, Habitat habitat, Logger logger) {
+            HashMap<String, String> parameters, Habitat habitat) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         ActionReport ar = habitat.getComponent(ActionReport.class);
         Properties p = new Properties();
-        CommandModel cm = cr.getModel(commandName, logger);
         p.putAll(parameters);
 
         cr.doCommand(commandName, p, ar);

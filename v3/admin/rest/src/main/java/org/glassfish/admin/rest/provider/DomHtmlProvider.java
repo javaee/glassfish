@@ -61,12 +61,12 @@ import javax.ws.rs.WebApplicationException;
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<List<Dom>> {
+public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
 
      @Context
      protected UriInfo uriInfo;
 
-     public long getSize(final List<Dom> proxy, final Class<?> type, final Type genericType,
+     public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
@@ -74,14 +74,18 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<L
 
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
-         if ("java.util.List<org.jvnet.hk2.config.Dom>".equals(genericType.toString())) {
-             return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
+         try {
+             if (Class.forName("org.glassfish.admin.rest.provider.GetResultList").equals(genericType)) {
+                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
+             }
+         } catch (java.lang.ClassNotFoundException e) {
+             return false;
          }
          return false; 
      }
 
 
-     public void writeTo(final List<Dom> proxy, final Class<?> type, final Type genericType,
+     public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
@@ -89,12 +93,13 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<L
      }
 
 
-     private String getHtml(List<Dom> proxy) {
+     private String getHtml(GetResultList proxy) {
         String result;
         result = "<html><head><title>GlassFish REST Access to "+getTypeKey()+"</title></head><body>";
         result = result + "<h1>" + getTypeKey() + "</h1>";
         result = result + "<h2>Child Resources:</h2>" ;
-            result = result + getResourcesLinks(proxy);
+            result = result + getResourcesLinks(proxy.getDomList(),
+                proxy.getCommandResourcesPaths());
         result = result + "</html></body>";
         return result;
     }
@@ -105,10 +110,8 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<L
     }
 
 
-
-
-
-    private String getResourcesLinks(List<Dom> proxyList) {
+    private String getResourcesLinks(List<Dom> proxyList,
+        String[] commandResourcesPaths) {
         String result = "";
         for (Dom proxy: proxyList) { //for each element
             try {
@@ -121,8 +124,18 @@ public class DomHtmlProvider extends ProviderUtil implements MessageBodyWriter<L
             }
         }
 
+        //add command resources
+        for (String commandResourcePath : commandResourcesPaths) {
+            try {
+                result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath) + ">";
+                result = result + commandResourcePath;
+                result = result + "</a>";
+                result = result + "<br>";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return result;
     }
-
-
 }

@@ -65,6 +65,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 
+import org.glassfish.admin.rest.provider.GetResultList;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
@@ -89,14 +90,16 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
 
     @GET
-    @Produces({"application/json", "text/html", "application/xml"})
-    public List<Dom> get(@QueryParam("expandLevel")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML,
+        MediaType.APPLICATION_XML})
+    public GetResultList get(@QueryParam("expandLevel")
             @DefaultValue("1") int expandLevel) {
 
         List<Dom> domList = new ArrayList();
         List<E> entities = getEntity();
         if (entities==null){
-            return domList;//empty one
+            return new GetResultList(domList,
+               getCommandResourcesPaths());//empty dom list
         }
         Iterator iterator = entities.iterator();
         E e;
@@ -105,7 +108,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
             domList.add(Dom.unwrap(e));
         }
 
-        return domList;
+        return new GetResultList(domList, getCommandResourcesPaths());
     }
 
 
@@ -121,7 +124,8 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
     @POST //create
     @Produces(MediaType.TEXT_HTML)
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
+        MediaType.APPLICATION_FORM_URLENCODED})
     public Response CreateResource(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
@@ -136,7 +140,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
             if (null != commandName) {
                 ActionReport actionReport = __resourceUtil.runCommand(commandName,
-                    data, RestService.habitat, RestService.logger);
+                    data, RestService.habitat);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
@@ -157,7 +161,7 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
  
     @OPTIONS 
-    @Produces({"application/json", "text/html", "application/xml"})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult = new OptionsResult();
         try {
@@ -178,6 +182,11 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
 
     abstract public String getPostCommand();
+
+
+    public String[] getCommandResourcesPaths() {
+        return new String[] {};
+    }
 
 
     private String getErrorMessage(HashMap<String, String> data, ActionReport ar) {

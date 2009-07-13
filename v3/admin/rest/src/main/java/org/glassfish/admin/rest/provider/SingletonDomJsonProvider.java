@@ -61,12 +61,12 @@ import javax.ws.rs.WebApplicationException;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class SingletonDomJsonProvider extends ProviderUtil implements MessageBodyWriter<Dom> {
+public class SingletonDomJsonProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
 
      @Context
      protected UriInfo uriInfo;
 
-     public long getSize(final Dom proxy, final Class<?> type, final Type genericType,
+     public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
@@ -75,7 +75,7 @@ public class SingletonDomJsonProvider extends ProviderUtil implements MessageBod
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
-             if (Class.forName("org.jvnet.hk2.config.Dom").equals(genericType)) {
+             if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
                  return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {
@@ -85,7 +85,7 @@ public class SingletonDomJsonProvider extends ProviderUtil implements MessageBod
      }
 
 
-     public void writeTo(final Dom proxy, final Class<?> type, final Type genericType,
+     public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
@@ -93,19 +93,20 @@ public class SingletonDomJsonProvider extends ProviderUtil implements MessageBod
      }
 
 
-     private String getJson(Dom proxy) {
+     private String getJson(GetResult proxy) {
         String result;
         result ="{" ;
-           result = result + getTypeKey(proxy);
+           result = result + getTypeKey(proxy.getDom());
            result = result + ":";
            result = result + "{";
-             result = result + getAttributes(proxy);
+             result = result + getAttributes(proxy.getDom());
            result = result + "}";
            result = result + ",";
            result = result + getResourcesKey();
            result = result + ":";
            result = result + "[";
-             result = result + getResourcesLinks(proxy);
+             result = result + getResourcesLinks(proxy.getDom(),
+                 proxy.getCommandResourcesPaths());
            result = result + "]";
         result = result + "}" ;
         return result;
@@ -132,11 +133,11 @@ public class SingletonDomJsonProvider extends ProviderUtil implements MessageBod
 
 
     private String getResourcesKey() {
-        return quote("resources");
+        return quote("child-resources");
     }
 
 
-    private String getResourcesLinks(Dom proxy) {
+    private String getResourcesLinks(Dom proxy, String[] commandResourcesPaths) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) {
@@ -153,6 +154,18 @@ public class SingletonDomJsonProvider extends ProviderUtil implements MessageBod
 
         int endIndex = result.length() - 1;
         if (endIndex > 0) result = result.substring(0, endIndex );
+
+        //add command resources
+        for (String commandResourcePath : commandResourcesPaths) {
+            try {
+                if (result.length() > 0) {
+                    result = result + ",";
+                }
+                result = result + quote(getElementLink(uriInfo, commandResourcePath));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return result;
     }
 

@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jun 30 14:26:59 PDT 2009
+* date=Mon Jul 13 13:06:36 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -14,6 +14,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
+import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.Application;
 public class ListApplicationResource extends TemplateListOfResource<Application> {
 
@@ -32,7 +33,7 @@ public class ListApplicationResource extends TemplateListOfResource<Application>
 @Path("commands/deploy")
 @POST
 @Produces({javax.ws.rs.core.MediaType.TEXT_HTML, javax.ws.rs.core.MediaType.APPLICATION_JSON, javax.ws.rs.core.MediaType.APPLICATION_XML})
-public List<org.jvnet.hk2.config.Dom> execDeploy(
+public org.glassfish.admin.rest.provider.GetResultList execDeploy(
 	 @QueryParam("name")  @DefaultValue("")  String Name 
  ,
 	 @QueryParam("contextroot")  @DefaultValue("")  String Contextroot 
@@ -112,6 +113,10 @@ public List<org.jvnet.hk2.config.Dom> execDeploy(
 	System.out.println("exec command =" + ar.getActionExitCode());
 	return get(1);
 }
+public String[] getCommandResourcesPaths() {
+return new String[]{};
+}
+
 
 public String getPostCommand() {
 	return "deploy";

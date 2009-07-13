@@ -61,12 +61,12 @@ import javax.ws.rs.WebApplicationException;
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class SingletonDomXmlProvider extends ProviderUtil implements MessageBodyWriter<Dom> {
+public class SingletonDomXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
 
      @Context
      protected UriInfo uriInfo;
 
-     public long getSize(final Dom proxy, final Class<?> type, final Type genericType,
+     public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
@@ -75,7 +75,7 @@ public class SingletonDomXmlProvider extends ProviderUtil implements MessageBody
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
-             if (Class.forName("org.jvnet.hk2.config.Dom").equals(genericType)) {
+             if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
                  return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {
@@ -85,7 +85,7 @@ public class SingletonDomXmlProvider extends ProviderUtil implements MessageBody
      }
 
 
-     public void writeTo(final Dom proxy, final Class<?> type, final Type genericType,
+     public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
@@ -93,21 +93,22 @@ public class SingletonDomXmlProvider extends ProviderUtil implements MessageBody
      }
 
 
-     private String getXml(Dom proxy) {
+     private String getXml(GetResult proxy) {
         String result;
         result ="<" ;
-        result = result + getTypeKey(proxy);
+        result = result + getTypeKey(proxy.getDom());
 
-        String attributes = getAttributes(proxy); 
+        String attributes = getAttributes(proxy.getDom());
         if ((attributes != null) && (attributes.length() > 1)) {
             result = result + " ";
-            result = result + getAttributes(proxy);
+            result = result + getAttributes(proxy.getDom());
         }
 
         result = result + ">";
         result = result + "\n";
-             result = result + getResourcesLinks(proxy);
-        result = result + getEndXmlElement(getTypeKey(proxy));
+             result = result + getResourcesLinks(proxy.getDom(),
+                 proxy.getCommandResourcesPaths());
+        result = result + getEndXmlElement(getTypeKey(proxy.getDom()));
         return result;
     }
 
@@ -118,7 +119,7 @@ public class SingletonDomXmlProvider extends ProviderUtil implements MessageBody
 
 
     private String getResourceKey() {
-        return "resource";
+        return "child-resource";
     }
 
 
@@ -136,7 +137,7 @@ public class SingletonDomXmlProvider extends ProviderUtil implements MessageBody
     }
 
 
-    private String getResourcesLinks(Dom proxy) {
+    private String getResourcesLinks(Dom proxy, String[] commandResourcesPaths) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) { //for each element
@@ -151,6 +152,18 @@ public class SingletonDomXmlProvider extends ProviderUtil implements MessageBody
             }
         }
 
+        //add command resources
+        for (String commandResourcePath : commandResourcesPaths) {
+            try {
+                result = result + indent; //indent
+                result = result + getStartXmlElement(getResourceKey());
+                result = result + getElementLink(uriInfo, commandResourcePath);
+                result = result + getEndXmlElement(getResourceKey());
+                result = result + "\n";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return result;
     }
 

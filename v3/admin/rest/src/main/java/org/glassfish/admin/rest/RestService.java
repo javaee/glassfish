@@ -169,9 +169,8 @@ public class RestService implements Startup, PostConstruct, PreDestroy {
 
         if (context.equals("/management")) {
             //uncomment if you need to run the generator:
-            r.add(GeneratorResource.class);
+            //r.add(GeneratorResource.class);
             r.add(org.glassfish.admin.rest.resources.DomainResource.class);
-            //r.add(DefaultConfigResource.class);
         }
 
         if (context.equals("/monitoring")) {

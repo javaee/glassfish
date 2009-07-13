@@ -61,12 +61,12 @@ import javax.ws.rs.WebApplicationException;
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBodyWriter<Dom> {
+public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
 
     @Context
     protected UriInfo uriInfo;
 
-    public long getSize(final Dom proxy, final Class<?> type, final Type genericType,
+    public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         return -1;
     }
@@ -74,7 +74,7 @@ public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBod
     public boolean isWriteable(final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         try {
-            if (Class.forName("org.jvnet.hk2.config.Dom").equals(genericType)) {
+            if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
             }
         } catch (java.lang.ClassNotFoundException e) {
@@ -83,22 +83,23 @@ public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBod
         return false;
     }
 
-    public void writeTo(final Dom proxy, final Class<?> type, final Type genericType,
+    public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType,
             final MultivaluedMap<String, Object> httpHeaders,
             final OutputStream entityStream) throws IOException, WebApplicationException {
         entityStream.write(getHtml(proxy).getBytes());
     }
 
-    private String getHtml(Dom proxy) {
+    private String getHtml(GetResult proxy) {
         String result;
-        result = "<html><head><title>GlassFish REST Access to "+getTypeKey(proxy)+"</title></head><body>";
-        result = result + "<h1>" + getTypeKey(proxy) + "</h1>";
+        result = "<html><head><title>GlassFish REST Access to "+getTypeKey(proxy.getDom())+"</title></head><body>";
+        result = result + "<h1>" + getTypeKey(proxy.getDom()) + "</h1>";
         result = result + "<h2>Attributes:</h2>";
-        result = result + getAttributes(proxy) + "<br>";
+        result = result + getAttributes(proxy.getDom()) + "<br>";
         result = result + "<h2>Child Resources:</h2>";
-        result = result + getResourcesLinks(proxy);
-        result = result + "</html></body>";
+        result = result + getResourcesLinks(proxy.getDom(),
+            proxy.getCommandResourcesPaths());
+        result = result + "</body></html>";
         return result;
     }
 
@@ -117,7 +118,7 @@ public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBod
         return result;
     }
 
-    private String getResourcesLinks(Dom proxy) {
+    private String getResourcesLinks(Dom proxy, String[] commandResourcesPaths) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
         for (String elementName : elementNames) { //for each element
@@ -132,6 +133,17 @@ public class SingletonDomHtmlProvider extends ProviderUtil implements MessageBod
             }
         }
 
+        //add command resources
+        for (String commandResourcePath : commandResourcesPaths) {
+            try {
+                result = result + "<a href=" + getElementLink(uriInfo, commandResourcePath) + ">";
+                result = result + commandResourcePath;
+                result = result + "</a>";
+                result = result + "<br>";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return result;
     }
 

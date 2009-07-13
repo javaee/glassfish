@@ -4,7 +4,7 @@
 * Generated code from the com.sun.enterprise.config.serverbeans.*
 * config beans, based on  HK2 meta model for these beans
 * see generator at org.admin.admin.rest.GeneratorResource
-* date=Tue Jun 30 14:26:58 PDT 2009
+* date=Mon Jul 13 13:06:35 PDT 2009
 * Very soon, this generated code will be replace by asm or even better...more dynamic logic.
 * Ludovic Champenois ludo@dev.java.net
 *
@@ -13,8 +13,13 @@ package org.glassfish.admin.rest.resources;
 import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
+import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.JmsService;
 public class JmsServiceResource extends TemplateResource<JmsService> {
+
+public String[] getCommandResourcesPaths() {
+return new String[]{};
+}
 
 	@Path("jms-host/")
 	public ListJmsHostResource getJmsHostResource() {
