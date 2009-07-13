@@ -162,6 +162,9 @@ public abstract class BundleNode<T extends RootDeploymentDescriptor>
         } else {              
             bundleNode = appendChild(parent, getXMLRootTag().getQName());
         }
+        // module-name
+        appendTextChild(bundleNode, TagNames.MODULE_NAME, descriptor.getModuleDescriptor().getModuleName());
+
         // description, display-name, icons...
         writeDisplayableComponentInfo(bundleNode, descriptor);
        

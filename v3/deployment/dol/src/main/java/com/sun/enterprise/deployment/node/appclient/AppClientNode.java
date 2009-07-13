@@ -70,8 +70,9 @@ public class AppClientNode extends BundleNode<ApplicationClientDescriptor> {
     
     public final static String SCHEMA_ID_14 = "application-client_1_4.xsd";
     
-    public final static String SCHEMA_ID = "application-client_5.xsd";
-    public final static String SPEC_VERSION = "5";
+    public final static String SCHEMA_ID_15 = "application-client_5.xsd";
+    public final static String SCHEMA_ID = "application-client_6.xsd";
+    public final static String SPEC_VERSION = "6";
     private final static List<String> systemIDs = initSystemIDs();
  
     public final static XMLElement tag = new XMLElement(ApplicationClientTagNames.APPLICATION_CLIENT_TAG);
@@ -80,6 +81,7 @@ public class AppClientNode extends BundleNode<ApplicationClientDescriptor> {
         final ArrayList<String> systemIDs = new ArrayList<String>();
         systemIDs.add(SCHEMA_ID);
         systemIDs.add(SCHEMA_ID_14);
+        systemIDs.add(SCHEMA_ID_15);
         return Collections.unmodifiableList(systemIDs);
     }
     
@@ -180,6 +182,13 @@ public class AppClientNode extends BundleNode<ApplicationClientDescriptor> {
         return systemIDs;
     }
 
+    public void setElementValue(XMLElement element, String value) {
+        if (TagNames.MODULE_NAME.equals(element.getQName())) {
+            getDescriptor().getModuleDescriptor().setModuleName(value);
+        } else {
+            super.setElementValue(element, value);
+        }
+    }
 
     /**
      * write the descriptor class to a DOM tree and return it

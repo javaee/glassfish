@@ -119,12 +119,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
         application.setRegistrationName(name);
 
-        // for standalone module, make module name the same as app name
-        if (application.isVirtual()) {
-            application.getModules().iterator().next().setModuleName(
-                application.getAppName());
-        }
-
         // write out xml files if needed
         if (Boolean.valueOf(WRITEOUT_XML)) {
             saveAppDescriptor(application, dc);

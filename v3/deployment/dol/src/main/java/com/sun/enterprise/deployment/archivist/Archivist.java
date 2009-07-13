@@ -1122,9 +1122,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      * @return the new module descriptor
      */
     public ModuleDescriptor createModuleDescriptor(T descriptor) {
-        ModuleDescriptor newModule = new ModuleDescriptor();
-        newModule.setModuleType(getModuleType());
-        newModule.setDescriptor(descriptor);
+        ModuleDescriptor newModule = descriptor.getModuleDescriptor();
         setDescriptor(descriptor);
         return newModule;
     }
