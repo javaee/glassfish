@@ -455,7 +455,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         private final PendingConfigBeans mPending;
         volatile boolean    mQuit = false;
-        private CountDownLatch mInitalQueueLatch = new CountDownLatch(1);
+        private volatile CountDownLatch mInitalQueueLatch = new CountDownLatch(1);
         
         AMXConfigLoaderThread( final PendingConfigBeans pending )
         {
@@ -542,7 +542,6 @@ public final class AMXConfigLoader extends MBeanImplBase
                     job = mPending.take();
                 }
             }
-            
             mInitalQueueLatch.countDown();
             
             // ongoing processing once initial queue has been emptied: blocking behavior
