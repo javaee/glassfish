@@ -75,6 +75,20 @@ public class ConnectorsUtil {
         return result;
     }
 
+    public static boolean getPingDuringPoolCreation(String poolName, Resources allResources) {
+        boolean pingOn = false;
+        ResourcePool pool = getConnectionPoolConfig(poolName, allResources);
+        if(pool instanceof JdbcConnectionPool) {
+            JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;
+            pingOn = Boolean.parseBoolean(jdbcPool.getPing());
+        } else if (pool instanceof com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) {
+            com.sun.enterprise.config.serverbeans.ConnectorConnectionPool ccPool = 
+                    (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) pool;
+            pingOn = Boolean.parseBoolean(ccPool.getPing());                    
+        }
+        return pingOn;                        
+    }
+
     /**
      * get the installation directory of System RARs
      * @param moduleName RARName

@@ -283,7 +283,8 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         ccp.setMatchConnections(Boolean.valueOf(domainCcp.getMatchConnections()));
         ccp.setAssociateWithThread(Boolean.valueOf(domainCcp.getAssociateWithThread()));
         ccp.setPooling(Boolean.valueOf(domainCcp.getPooling()));
-
+        ccp.setPingDuringPoolCreation(Boolean.valueOf(domainCcp.getPing()));
+        
         boolean lazyConnectionEnlistment = Boolean.valueOf(domainCcp.getLazyConnectionEnlistment());
         boolean lazyConnectionAssociation = Boolean.valueOf(domainCcp.getLazyConnectionAssociation());
 

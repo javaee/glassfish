@@ -75,6 +75,7 @@ public class ConnectorConnectionPool implements Serializable {
     private boolean associateWithThread_ = false;
     private boolean partitionedPool = false;
     private boolean poolingOn = true;
+    private boolean pingDuringPoolCreation = false;
     private String poolDataStructureType;
     private String poolWaitQueue;
     private String dataStructureParameters;
@@ -126,6 +127,19 @@ public class ConnectorConnectionPool implements Serializable {
         this.name = name;
     }
 
+    public boolean getPingDuringPoolCreation() {
+        return pingDuringPoolCreation;
+    }
+
+    /**
+     * Setter method of Ping pool during creation attribute.
+     * 
+     * @param enabled enables/disables ping during creation.
+     */
+    public void setPingDuringPoolCreation(boolean enabled) {
+        pingDuringPoolCreation = enabled;    
+    }
+    
     public boolean isPoolingOn() {
         return poolingOn;
     }
@@ -180,6 +194,7 @@ public class ConnectorConnectionPool implements Serializable {
                 (getConCreationRetryInterval());
         clone.setConCreationRetryAttempts(getConCreationRetryAttempts());
         clone.setPreferValidateOverRecreate(isPreferValidateOverRecreate());
+        //TODO add all new attributes added.
         return clone;
     }
 

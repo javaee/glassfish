@@ -1139,4 +1139,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public ConnectorJavaBeanValidator getConnectorBeanValidator(){
         return connectorBeanValidator;    
     }
+
+    /**
+     * Check if ping is on during pool creation. 
+     * 
+     * @param poolName
+     * @return
+     */
+    public boolean getPingDuringPoolCreation(String poolName) {
+        return ConnectorsUtil.getPingDuringPoolCreation(poolName, 
+                allResources.getComponent(Resources.class));
+    }
 }

@@ -301,6 +301,9 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     conConnPool.setPooling(toBoolean(rp.getValue(), true));
                     logFine("POOLING");
 
+                } else if ("PING".equals(name.toUpperCase())) {
+                    conConnPool.setPingDuringPoolCreation(toBoolean(rp.getValue(), false));
+                    logFine("PING");
                 } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
                     conConnPool.setPoolDataStructureType(rp.getValue());
                     logFine("POOLDATASTRUCTURE");
@@ -506,6 +509,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
         ccp.setNonTransactional(Boolean.valueOf(adminPool.getNonTransactionalConnections()));
 
+        ccp.setPingDuringPoolCreation(Boolean.valueOf(adminPool.getPing()));
         //These are default properties of all Jdbc pools
         //So set them here first and then figure out from the parsing routine
         //if they need to be reset

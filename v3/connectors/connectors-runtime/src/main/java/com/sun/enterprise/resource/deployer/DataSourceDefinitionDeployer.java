@@ -697,5 +697,13 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         public void setSqlTraceListeners(String value) throws PropertyVetoException {
             //do nothing
         }
+
+        public String getPing() {            
+            return String.valueOf(false);
+        }
+
+        public void setPing(String value) throws PropertyVetoException {
+            //do nothing
+        }
     }
 }

@@ -514,4 +514,13 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return all validation class names.
      */        
     public Set<String> getValidationClassNames(String dbVendor);
+    
+    /**
+     * Check if Ping attribute is on during pool creation. This is used for
+     * pinging the pool for erroneous values during pool creation.
+     * 
+     * @param poolName
+     * @return true if ping is on
+     */
+    public boolean getPingDuringPoolCreation(String poolName);
 }

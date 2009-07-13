@@ -678,6 +678,25 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *              {@link String }
      */
     void setPooling(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the ping property.
+     *
+     * Property to ping pool during creation.
+     * 
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="false", dataType=Boolean.class)
+    String getPing();
+
+    /**
+     * Sets the value of the ping property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setPing(String value) throws PropertyVetoException;
   
     /**
      * Gets the value of the statementCacheSize property.
