@@ -224,7 +224,8 @@ public class PluginHandlers {
     	input={
             @HandlerInput(name="type", type=String.class, required=true)},
         output={
-            @HandlerOutput(name="result",  type=List.class)})
+            @HandlerOutput(name="labels",  type=List.class),
+            @HandlerOutput(name="values",  type=List.class)})
     public static void getContentOfIntegrationPoints(HandlerContext handlerCtx) throws java.io.IOException {
         // Get the input
         String type = (String) handlerCtx.getInputValue("type");
@@ -232,7 +233,8 @@ public class PluginHandlers {
         // Get the IntegrationPoints
         FacesContext ctx = handlerCtx.getFacesContext();
         Set<IntegrationPoint> points = getSortedIntegrationPoints(getIntegrationPoints(ctx, type));
-        List result = new ArrayList();
+        List labels = new ArrayList();
+        List values = new ArrayList();
         if (points != null) {
             for(IntegrationPoint it : points){
                 String content = it.getContent();
@@ -240,11 +242,26 @@ public class PluginHandlers {
                     GuiUtil.getLogger().warning("No Content specified for Integration Point: " + type + " id : " + it.getId());
                     continue;
                 }
-                List asList = GuiUtil.parseStringList(content, ",");
-                result.add(asList);
+                List labelsAndValues = GuiUtil.parseStringList(content, ";");
+                List<String> ll = GuiUtil.parseStringList((String)labelsAndValues.get(0), ",");
+                for(String one : ll){
+                    labels.add(one);
+                }
+
+                if (labelsAndValues.size() == 2){
+                    List<String> vv = GuiUtil.parseStringList((String)labelsAndValues.get(1), ",");
+                    for(String one : vv){
+                        values.add(one);
+                    }
+                }else{
+                    for(String one: ll){
+                        values.add(one);
+                    }
+                }
             }
         }
-        handlerCtx.setOutputValue("result", result);
+        handlerCtx.setOutputValue("labels", labels);
+        handlerCtx.setOutputValue("values", values);
 	}
 
     /**
