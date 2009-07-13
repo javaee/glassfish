@@ -36,27 +36,71 @@
  */
 package org.glassfish.api.deployment.archive;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 /**
- * Composite handlers are just like any other ArchiveHandler except they
- * get a chance at looking at the archive before the archive handlers do
- *
- * The main reason for this tag interface is that some archive handlers might
- * be tricked into thinking a composite archive is theirs when in fact they only
- * own a part of it.
- *
- * For instance, take a war file inside an ear file. and asssume that the war file
- * contains some .jsp files. The archive handler responsible for handling the war
- * file could be fooled into thinking the ear file is a war file since it contains
- * jsp files, yet in reality, it only owns one of the sub archive bundled inside
- * the composite ear file.
- *
- * @author Jerome Dochez 
+ * A <strong>lot</strong> of methods need to be written in order to implement
+ * ReadableArchive.  The no-op methods are implemented here to make ScatteredWar
+ * easier to understand.
+ * @author Byron Nevins
  */
-@Contract
-public interface CompositeHandler extends ArchiveHandler {
+abstract public class ReadableArchiveAdapter implements ReadableArchive{
 
-    public boolean accept(ReadableArchive source, String entryName);
-    
+    public long getEntrySize(String arg0) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void open(URI arg0) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public ReadableArchive getSubArchive(String arg0) throws IOException {
+        return null;
+    }
+
+    public boolean delete() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean renameTo(String arg0) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void close() throws IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public long getArchiveSize() throws SecurityException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean exists() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Enumeration<String> entries() {
+        return null;
+    }
+
+    public Enumeration<String> entries(String prefix) {
+        return null;
+    }
+
+    public Collection<String> getDirectories() throws IOException  {
+        return null;
+    }
+
+    public boolean isDirectory (java.lang.String name) {
+        return false;
+    }
+
+    public void setParentArchive(ReadableArchive parentArchive) {
+    }
+
+    public ReadableArchive getParentArchive() {
+        return null;
+    }
 }

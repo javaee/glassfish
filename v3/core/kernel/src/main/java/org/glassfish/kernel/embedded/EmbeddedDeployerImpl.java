@@ -17,14 +17,12 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.data.ApplicationInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URI;
@@ -59,6 +57,9 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
     @Inject
     ArchiveFactory factory;
 
+    @Inject
+    SnifferManager snifferMgr;
+
     Map<String, ApplicationInfo> deployedApps = new HashMap<String, ApplicationInfo>();
 
     final static Logger logger = LogDomains.getLogger(EmbeddedDeployerImpl.class, LogDomains.CORE_LOGGER);
@@ -87,17 +88,29 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
     }
 
     public String deploy(ReadableArchive archive, DeployCommandParameters params) {
-        List<Sniffer> sniffers = new ArrayList<Sniffer>();
+
+        ActionReport report = new PlainTextActionReporter();
+        ExtendedDeploymentContext context = null;
+        try {
+            context = deployment.getContext(logger, archive, params, report);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        final ClassLoader cl = context.getClassLoader();
+        Collection<Sniffer> sniffers = snifferMgr.getSniffers(archive, cl);
+        List<Sniffer> finalSniffers = new ArrayList<Sniffer>();
+
+        // nowe we intersect with the conficgured sniffers.
         for (EmbeddedContainer container : server.getContainers()) {
             for (Sniffer sniffer : container.getSniffers()) {
-                sniffers.add(sniffer);
+                if (sniffers.contains(sniffer)) {
+                    finalSniffers.add(sniffer);            
+                }
             }
         }
-        ActionReport report = new PlainTextActionReporter();
         ApplicationInfo appInfo = null;
         try {
-            ExtendedDeploymentContext context = deployment.getContext(logger, archive, params, report);
-            appInfo = deployment.deploy(sniffers, context);
+            appInfo = deployment.deploy(finalSniffers, context);
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }

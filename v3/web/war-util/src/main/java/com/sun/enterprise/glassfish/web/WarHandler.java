@@ -133,7 +133,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         return cloader;
     }
 
-    private void configureLoaderAttributes(WebappClassLoader cloader,
+    protected void configureLoaderAttributes(WebappClassLoader cloader,
             SunWebXmlParser sunWebXmlParser, File base) {
 
         boolean delegate = sunWebXmlParser.isDelegate();
@@ -190,7 +190,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
     }
 
-    private void configureLoaderProperties(WebappClassLoader cloader,
+    protected void configureLoaderProperties(WebappClassLoader cloader,
             SunWebXmlParser sunWebXmlParser, File base) {
 
         cloader.setUseMyFaces(sunWebXmlParser.isUseBundledJSF());
@@ -222,7 +222,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
     }
 
-    private class SunWebXmlParser {
+    protected class SunWebXmlParser {
         private String baseStr = null;
         private XMLStreamReader parser = null;
 

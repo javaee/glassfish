@@ -112,9 +112,6 @@ public class ASMainStatic extends AbstractMain {
         // our unique class loader.
         ClassLoader singleClassLoader = null;
 
-        // initialize hk2
-        HK2Factory.initialize();
-
         // set up the cache.
         final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), getPreferedCacheDir()):new File(domainDir, getPreferedCacheDir());
         out = new File(cacheDir, "glassfish.jar");

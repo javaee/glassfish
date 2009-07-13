@@ -1,22 +1,23 @@
 package org.glassfish.tests.embedded.inplanted;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.admin.*;
-import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.admin.*;
+import org.glassfish.api.container.Sniffer;
+import org.junit.BeforeClass;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.AfterClass;
+import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 
 /**
+ * Test embedded API with an existing domain.xml
+ *
  * @author Jerome Dochez
  */
-public class InplantedTest {
-
+public class ExistingDomainTest {
     static Server server;
 
     @BeforeClass
@@ -36,6 +37,12 @@ public class InplantedTest {
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
             efsb.setInstallRoot(f);
+            // find the domain root.
+            f = new File(f,"domains");
+            f = new File(f, "domain1");
+            Assert.assertTrue(f.exists());
+            efsb.setInstanceRoot(f);
+
             Server.Builder builder = new Server.Builder("inplanted");
             builder.setEmbeddedFileSystem(efsb.build());
             server = builder.build();
@@ -45,7 +52,7 @@ public class InplantedTest {
         }
     }
 
-    @Test
+    //@Test
     public void testWeb() throws Exception {
         System.out.println("test web");
         File f = new File(System.getProperty("basedir"));
@@ -82,7 +89,8 @@ public class InplantedTest {
                 throw e;
             }
         }
-        
-        
+
+
     }
+    
 }

@@ -45,6 +45,8 @@ import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.ScatteredArchive;
+import org.glassfish.api.embedded.ScatteredArchive.Builder;
 import org.glassfish.api.embedded.ContainerBuilder;
 import org.glassfish.distributions.test.ejb.SampleEjb;
 
@@ -114,16 +116,19 @@ public class EmbeddedTest {
         URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/web/WebHello.class");
         String p = source.getPath().substring(0, source.getPath().length()-"org/glassfish/distributions/test/web/WebHello.class".length());
 
+        System.out.println("Root is " + p);
+        ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", new File(p));
+        builder.setResources(new File(p));
+        builder.addClassPath((new File(p)).toURL());
+        DeployCommandParameters dp = new DeployCommandParameters(new File(p));
+
         System.out.println("Deploying " + p);
-        File path = new File(p);
-        DeployCommandParameters dp = new DeployCommandParameters(path);
-        dp.name="sampleweb";
         String appName = null;
         try {
-            appName = deployer.deploy(path, dp);
+            appName = deployer.deploy(builder.buildWar(), dp);
 
             try {
-                URL servlet = new URL("http://localhost:8080/sampleweb/hello");
+                URL servlet = new URL("http://localhost:8080/test-classes/hello");
                 URLConnection yc = servlet.openConnection();
                 BufferedReader in = new BufferedReader(
                                         new InputStreamReader(

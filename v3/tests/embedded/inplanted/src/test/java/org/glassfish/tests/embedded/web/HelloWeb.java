@@ -1,4 +1,4 @@
-package org.glassfish.distributions.test.web;
+package org.glassfish.tests.embedded.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,9 +9,9 @@ import javax.annotation.Resource;
 
 
 @WebServlet(urlPatterns={"/hello"})
-public class WebHello extends HttpServlet {
+public class HelloWeb extends HttpServlet {
 
-    public WebHello() {
+    public HelloWeb() {
         System.out.println("Servlet WEB-HELLO initialized");
     }
 
