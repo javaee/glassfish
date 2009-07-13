@@ -58,6 +58,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.Configured;
 import org.glassfish.api.amx.AMXCreatorInfo;
 
 /**
@@ -220,10 +221,20 @@ public class ConfigBeanJMXSupport {
     }
 
     public String getTypeString(final Class<? extends ConfigBeanProxy> intf) {
-        final Package pkg = intf.getPackage();
-        String simple = intf.getName().substring(pkg.getName().length() + 1, intf.getName().length());
-
-        return Util.typeFromName(simple);
+        String type = null;
+        
+        final Configured configuredAnnotation = intf.getAnnotation(Configured.class);
+        if ( configuredAnnotation != null && configuredAnnotation.name().length() != 0 )
+        {
+            type = configuredAnnotation.name();
+        }
+        else
+        {
+            final Package pkg = intf.getPackage();
+            String simple = intf.getName().substring(pkg.getName().length() + 1, intf.getName().length());
+            type = Util.typeFromName(simple);
+        }
+        return type;
     }
 
     public MBeanInfo getMBeanInfo() {
