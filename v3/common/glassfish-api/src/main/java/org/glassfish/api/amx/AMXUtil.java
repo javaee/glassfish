@@ -50,6 +50,25 @@ public final class AMXUtil
     }
     
     /**
+        Invoke the bootAMX() method on {@link BootAMXMBean}.  Upon return,
+        AMX continues to load.
+        A cilent should call {@link invokeWaitAMXReady} prior to use.
+     */
+    public static void invokeBootAMX(final MBeanServerConnection conn)
+    {
+        // start AMX and wait for it to be ready
+        try
+        {
+            conn.invoke(BootAMXMBean.OBJECT_NAME, BootAMXMBean.BOOT_AMX_OPERATION_NAME, null, null);
+        }
+        catch (final Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
         Invoke the waitAMXReady() method on the DomainRoot MBean, which must already be loaded.
      */
     public static ObjectName invokeWaitAMXReady(final MBeanServerConnection conn)

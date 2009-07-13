@@ -224,7 +224,7 @@ public class MBeanListener<T extends MBeanListener.Callback> implements Notifica
     
     /**
         Listen for the registration of the {@link BootAMXMBean}.
-        Listening starts automatically.
+        Listening starts automatically.  See {@link AMXBooter#BootAMXCallback}.
      */
     public static <T extends Callback> MBeanListener<T> listenForBootAMX(
         final MBeanServerConnection server,

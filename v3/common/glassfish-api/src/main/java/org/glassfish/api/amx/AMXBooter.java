@@ -85,22 +85,13 @@ public final class AMXBooter
 
         if (domainRootObjectName == null)
         {
+            // wait for the BootAMXMBean to be available (loads at startup)
             final BootAMXCallback callback = new BootAMXCallback(conn);
             MBeanListener.listenForBootAMX(conn, callback);
-            // block until ready
-            callback.await();
+            callback.await(); // block until the MBean appears
 
-            // start AMX and wait for it to be ready
-            try
-            {
-                conn.invoke(BootAMXMBean.OBJECT_NAME, BootAMXMBean.BOOT_AMX_OPERATION_NAME, null, null);
-                domainRootObjectName = AMXUtil.invokeWaitAMXReady(conn);
-            }
-            catch (final Exception e)
-            {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
+            AMXUtil.invokeBootAMX(conn);
+            domainRootObjectName = AMXUtil.invokeWaitAMXReady(conn);
         }
         else
         {
@@ -109,6 +100,7 @@ public final class AMXBooter
         return domainRootObjectName;
     }
 }
+
 
 
 
