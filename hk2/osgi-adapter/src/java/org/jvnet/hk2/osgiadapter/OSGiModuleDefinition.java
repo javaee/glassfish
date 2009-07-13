@@ -44,7 +44,6 @@ import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.common_impl.Jar;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.InhabitantsFile;
-import com.sun.hk2.component.Holder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
@@ -52,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.ObjectStreamException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -59,6 +59,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -73,7 +75,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     private String bundleName;
     private URI location;
     private String version;
-    private transient Manifest manifest=null;
+    private SerializableManifest manifest;
     private String lifecyclePolicyClassName;
     private ModuleMetadata metadata = new ModuleMetadata();
 
@@ -81,14 +83,14 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         this(Jar.create(jar), jar.toURI());
     }
 
-    public OSGiModuleDefinition(final Jar jarFile, URI location) throws IOException {
+    public OSGiModuleDefinition(Jar jarFile, URI location) throws IOException {
         /*
         * When we support reading metadata from external manifest.mf file,
         * we can create a custom URI and the URL handler can merge the
         * manifest info. For now, just use the standard URI.
         */
         this.location = location;
-        Manifest manifest = jarFile.getManifest();
+        manifest = new SerializableManifest(jarFile.getManifest());
         Attributes mainAttr = manifest.getMainAttributes();
         bundleName = manifest.getMainAttributes().getValue(Constants.BUNDLE_NAME);
 
@@ -193,24 +195,9 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         return lifecyclePolicyClassName;
     }
 
-    public synchronized Manifest getManifest() {
-        if (manifest==null) {
-            try {
-                // not sure this is what Sahoo wanted to fix with previous checkin, will
-                // need to be revisited asap.
-                if (location.toString().startsWith("reference:")) {
-                    manifest = new JarFile(new File(
-                            location.toString().substring("reference:".length()))).getManifest();   
-                } else {
-                    manifest = new JarFile(new File(location)).getManifest();
-                }
-            } catch (IOException e) {
-                manifest = null;
-            }
-        }
+    public Manifest getManifest() {
         return manifest;
     }
-
 
     public ModuleMetadata getMetadata() {
         return metadata;
@@ -334,4 +321,75 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }
+
+    private static class SerializableManifest extends Manifest implements Serializable {
+
+        private SerializableManifest()
+        {
+        }
+
+        private SerializableManifest(Manifest man)
+        {
+            super(man);
+        }
+
+        private Object writeReplace() throws ObjectStreamException {
+            return new ManifestData(this);
+        }
+
+        /**
+         * a class which is used as a substiture for
+         * {@link SerializableManifest} during serialization.
+         * @see java.io.Serializable
+         * @see #readResolve
+         * @see org.jvnet.hk2.osgiadapter.OSGiModuleDefinition.SerializableManifest#writeReplace
+         */
+        private static class ManifestData implements Serializable {
+            private Map<String, String> mainAttributes;
+            private Map<String, Map<String, String>> entries;
+
+            // called during serialization
+            private ManifestData(Manifest manifest)
+            {
+                mainAttributes = new HashMap<String, String>();
+                mainAttributes.putAll(toMap(manifest.getMainAttributes()));
+                entries = new HashMap<String, Map<String, String>>();
+                for (Map.Entry<String, Attributes> entry : manifest.getEntries().entrySet()) {
+                    entries.put(entry.getKey(), toMap(entry.getValue()));
+                }
+            }
+
+            // called during desrialization
+            private Object readResolve() throws ObjectStreamException {
+                SerializableManifest m = new SerializableManifest();
+                for (Map.Entry<String, String> entry : mainAttributes.entrySet()) {
+                    m.getMainAttributes().putValue(entry.getKey(), entry.getValue());
+                }
+                for (Map.Entry<String, Map<String, String>> entry : entries.entrySet()) {
+                    m.getEntries().put(entry.getKey(), toAttributes(entry.getValue()));
+                }
+                return m;
+            }
+
+            private Attributes toAttributes(Map<String, String> map) {
+                Attributes attrs = new Attributes();
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    attrs.putValue(entry.getKey(), entry.getValue());
+                }
+                return attrs;
+            }
+
+            private Map<String, String> toMap(Attributes attrs) {
+                Map<String, String> map = new HashMap<String, String>();
+                for (Map.Entry<Object, Object> entry : attrs.entrySet()) {
+                    // the cast is OK, as Manifest only puts Name, String pairs
+                    // See javadocs of Manifest.
+                    map.put(Attributes.Name.class.cast(entry.getKey()).toString(),
+                            (String)entry.getValue());
+                }
+                return map;
+            }
+        }
+    }
+
 }
