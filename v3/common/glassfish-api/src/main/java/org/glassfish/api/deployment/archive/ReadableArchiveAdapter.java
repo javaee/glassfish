@@ -50,7 +50,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 abstract public class ReadableArchiveAdapter implements ReadableArchive{
 
     public long getEntrySize(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 0L;
     }
 
     public void open(URI arg0) throws IOException {

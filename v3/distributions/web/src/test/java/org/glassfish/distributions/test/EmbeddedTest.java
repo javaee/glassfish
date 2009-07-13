@@ -74,7 +74,7 @@ public class EmbeddedTest {
     @Test
     public void testEjb() throws LifecycleException {
 
-        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
+        server.addContainer(server.getConfig(ContainerBuilder.Type.ejb));
         EmbeddedDeployer deployer = server.getDeployer();
 
         URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/ejb/SampleEjb.class");
@@ -107,7 +107,7 @@ public class EmbeddedTest {
     @Test
     public void testWeb() throws Exception {
         System.out.println("Starting Web " + server);
-        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+        ContainerBuilder b = server.getConfig(ContainerBuilder.Type.web);
         System.out.println("builder is " + b);
         server.addContainer(b);
         EmbeddedDeployer deployer = server.getDeployer();

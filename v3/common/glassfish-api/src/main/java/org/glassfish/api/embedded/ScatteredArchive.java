@@ -43,9 +43,11 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
 
 /**
  * Abstraction for a scattered archive (parts disseminated in various directories)
@@ -194,7 +196,39 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         // TODO: abstraction breakage. We need file-level abstraction for archive
         // and then more structured abstraction.
 
-        return (new Vector<String>()).elements();
+        Vector<String> entries = new Vector<String>();
+
+        for (URL url : urls) {
+            try {
+                File f = new File(url.toURI());
+                if (f.isFile()) {
+                    JarFile jar = new JarFile(f);
+                    Enumeration<JarEntry> jarEntries = jar.entries();
+                    while (jarEntries.hasMoreElements()) {
+                        entries.add(jarEntries.nextElement().getName());
+                    }
+                } else {
+                    getListOfFiles(f, null, entries);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (resources!=null) {
+            getListOfFiles(resources, null, entries);
+        }
+        return entries.elements();
+    }
+
+    private void getListOfFiles(File directory, String prefix, List<String> list) {
+        for (File f : directory.listFiles()) {
+            String name = prefix==null?f.getName():prefix+"/"+f.getName();
+            if (f.isDirectory()) {
+                getListOfFiles(f, name ,list);
+            } else {
+                list.add(name);
+            }
+        }
     }
 
     /**

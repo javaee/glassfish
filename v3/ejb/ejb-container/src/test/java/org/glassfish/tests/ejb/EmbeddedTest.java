@@ -21,7 +21,7 @@ public class EmbeddedTest {
         Server.Builder builder = new Server.Builder("build");
 
         Server server = builder.build();
-        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
+        server.addContainer(server.getConfig(ContainerBuilder.Type.ejb));
         EmbeddedDeployer deployer = server.getDeployer();
 
         URL source = SimpleEjb.class.getClassLoader().getResource("org/glassfish/tests/ejb/sample/SimpleEjb.class");

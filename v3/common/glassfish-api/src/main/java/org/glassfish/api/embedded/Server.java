@@ -237,13 +237,18 @@ public class Server {
         }
     }
 
+    /**
+     * Get the embedded container configuration for a container type
+     * @param type the container type (e.g. Type.ejb)
+     * @return the embedded configuration for this container
+     */
     @SuppressWarnings("unchecked")
-    public ContainerBuilder<EmbeddedContainer> createConfig(ContainerBuilder.Type type) {
+    public ContainerBuilder<EmbeddedContainer> getConfig(ContainerBuilder.Type type) {
         return habitat.getComponent(ContainerBuilder.class, type.toString());
     }
 
     /**
-     * Creates a new embedded container configuration of a type.
+     * Get the embedded container configuration of a type.
      *
      * @param configType the type of the embedded container configuration
      * @param <T> type of the embedded container

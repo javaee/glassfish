@@ -80,19 +80,6 @@ import javax.validation.constraints.Min;
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
     /**
-     * Name of the server instance.                                  
-     *
-     * @return name of the configured object
-     * 
-     */
-    // FIXME: should set 'key=true'.  See bugs 6039, 6040
-    @Attribute
-    @NotNull
-    String getName();
-
-    void setName(String value) throws PropertyVetoException;
-
-    /**
      * Gets the value of the configRef property.
      *
      * Points to a named config. Needed for stand-alone servers. If server

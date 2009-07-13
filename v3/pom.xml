@@ -214,6 +214,32 @@
             </modules>
         </profile>
         <profile>
+            <!-- this profile is used during the development -->
+            <id>IDE</id>
+            <modules>
+                <!-- Every time you change module list, please change
+                     the same under release profiles as well (below) -->
+                <module>javaee-api</module>
+                <module>common</module>
+                <module>deployment</module>
+                <module>admin</module>
+                <module>core</module>
+                <module>transaction</module>
+                <module>web</module>
+                <module>ejb</module>
+                <module>connectors</module>
+                <module>jdbc</module>
+                <module>extras</module>
+                <module>distributions</module>
+                <module>security</module>
+                <module>registration</module>
+                <module>tests</module>
+                <module>osgi-platforms</module>
+                <module>flashlight</module>
+                <module>webservices</module>
+            </modules>
+        </profile>        
+        <profile>
             <!--
                 The GlassFish build depends on maven-glassfishbuild-plugin as an extension,
                 so it causes a chicken and egg problem during a release;

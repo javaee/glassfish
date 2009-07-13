@@ -11,6 +11,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
 import java.io.File;
+import java.util.Enumeration;
 
 /**
  * @author Jerome Dochez
@@ -54,10 +55,17 @@ public class InplantedTest {
         ScatteredArchive.Builder builder = new ScatteredArchive.Builder("hello", f);
         builder.addClassPath(f.toURI().toURL());
         builder.setResources(f);
+        ScatteredArchive war = builder.buildWar();
+        System.out.println("War content");
+        Enumeration<String> contents = war.entries();
+        while(contents.hasMoreElements()) {
+            System.out.println(contents.nextElement());
+        }
         server.createPort(8080);
-        server.addContainer(server.createConfig(ContainerBuilder.Type.web));
+        server.addContainer(server.getConfig(ContainerBuilder.Type.web));
         DeployCommandParameters dp = new DeployCommandParameters(f);
-        String appName = server.getDeployer().deploy(builder.buildWar(), dp);
+        String appName = server.getDeployer().deploy(war, dp);
+        Thread.sleep(30000);
         server.getDeployer().undeploy(appName);
     }
 

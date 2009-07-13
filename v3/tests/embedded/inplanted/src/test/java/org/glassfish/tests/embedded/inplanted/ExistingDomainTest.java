@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
+import java.util.Enumeration;
 
 /**
  * Test embedded API with an existing domain.xml
@@ -62,8 +63,14 @@ public class ExistingDomainTest {
         builder.addClassPath(f.toURI().toURL());
         builder.setResources(f);
         server.createPort(8080);
-        server.addContainer(server.createConfig(ContainerBuilder.Type.web));
+        server.addContainer(server.getConfig(ContainerBuilder.Type.web));
         DeployCommandParameters dp = new DeployCommandParameters(f);
+        ScatteredArchive war = builder.buildWar();
+        System.out.println("War content");
+        Enumeration<String> contents = war.entries();
+        while(contents.hasMoreElements()) {
+            System.out.println(contents.nextElement());
+        }
         String appName = server.getDeployer().deploy(builder.buildWar(), dp);
         server.getDeployer().undeploy(appName);
     }
