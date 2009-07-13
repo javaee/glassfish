@@ -65,7 +65,7 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
  * @author bnevins
  * @author Bill Shannon
  */
-public class RestartDomainCommand extends CLICommand {
+public class RestartDomainCommand extends RemoteCommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(RestartDomainCommand.class);
@@ -74,16 +74,16 @@ public class RestartDomainCommand extends CLICommand {
      * Constructor.
      */
     public RestartDomainCommand(String name, ProgramOptions programOpts,
-            Environment env) {
+            Environment env)
+            throws CommandException, CommandValidationException {
         super(name, programOpts, env);
     }
 
     /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
+     * Don't care about remote options.
      */
     @Override
-    protected void prepare() {
+    protected void fetchCommandMetadata() throws CommandException {
         commandOpts = Collections.emptySet();
         operandType = "STRING";
         operandMin = 0;
