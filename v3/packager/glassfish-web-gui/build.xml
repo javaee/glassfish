@@ -131,7 +131,11 @@ own identifying information: Portions Copyright [yyyy]
 		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf" />
 		   <artifact groupID="com.sun.woodstock" artifactId="webui-jsf-suntheme" />
 	   </excludeArtifactsTransitively>
-       </resolveAll>
+     </resolveAll>
+
+                <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
+	        <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
+	         <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
 
        <stage-distribution-fragments graphid="all-modules" />
 
