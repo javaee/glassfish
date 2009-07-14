@@ -186,7 +186,31 @@ public class InstanceHandler {
     public static void stopDomain(HandlerContext handlerCtx) {
         V3AMX.getInstance().getDomainRoot().stopDomain();
     }
-    
+
+    /**
+     *	<p> This method returns values for the JVM Report </p>
+     *  <p> Output value: "ViewsList" -- Type: <code>java.util.Array</code>/</p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="getJvmReport",
+    input={
+        @HandlerInput(name="type",            type=String.class) },
+    output={
+        @HandlerOutput(name="report",        type=String.class) })
+    public static void getJvmReport(HandlerContext handlerCtx) {
+        String type = (String)handlerCtx.getInputValue("type");
+        if(type == null || type.equals("")){
+            type = "summary";
+        }
+        try{
+            String report = V3AMX.getInstance().getRuntime().getJVMReport(type);
+            handlerCtx.setOutputValue("report", report);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            handlerCtx.setOutputValue("report", "");
+        }
+    }
+
     private static final String PROPERTY_VALUE = "Value";
 }
         
