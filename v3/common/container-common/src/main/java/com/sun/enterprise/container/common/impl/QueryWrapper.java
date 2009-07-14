@@ -41,7 +41,6 @@ import com.sun.enterprise.container.common.spi.util.EntityManagerQueryMethod;
 import com.sun.enterprise.container.common.impl.util.DummyCallFlowAgentImpl;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaQuery;
 import java.util.*;
 
 /**
@@ -94,7 +93,6 @@ public class QueryWrapper implements Query {
     // State used to construct query delegate object itself.
     private QueryType queryType;
     private String queryString;
-    private CriteriaQuery queryCriteria;
     private Class queryResultClass;
     private String queryResultSetMapping;
 
@@ -111,7 +109,7 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.EJBQL,
-                                ejbqlString, null, null, null);
+                                ejbqlString, null, null);
     }
 
     public static Query createNamedQueryWrapper(EntityManagerFactory emf, 
@@ -121,7 +119,7 @@ public class QueryWrapper implements Query {
                                                 String name) {
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NAMED,
-                                name, null, null, null);
+                                name, null, null);
     }
 
     public static Query createNativeQueryWrapper(EntityManagerFactory emf, 
@@ -132,7 +130,7 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NATIVE,
-                                sqlString, null, null, null);
+                                sqlString, null, null);
         
     }
 
@@ -145,7 +143,7 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NATIVE,
-                                sqlString, null, resultClass, null);
+                                sqlString, resultClass, null);
         
     }
 
@@ -158,26 +156,14 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NATIVE,
-                                sqlString, null, null, resultSetMapping);
+                                sqlString,  null, resultSetMapping);
         
     }
 
-    public static Query createQueryWrapper(EntityManagerFactory emf,
-                                           Map emProperties,
-                                           EntityManager emDelegate,
-                                           Query queryDelegate,
-                                           CriteriaQuery criteriaQuery) {
-
-        return new QueryWrapper(emf, emProperties, emDelegate,
-                                queryDelegate, QueryType.CRITERIA,
-                                null, criteriaQuery, null, null);
-    }
-    
-
-    private QueryWrapper(EntityManagerFactory emf, Map emProperties,
+    protected QueryWrapper(EntityManagerFactory emf, Map emProperties,
                          EntityManager emDelegate, Query qDelegate,
                          QueryType type, String query,
-                         CriteriaQuery criteriaQuery, Class resultClass, String resultSetMapping)
+                         Class resultClass, String resultSetMapping)
     {
         entityMgrFactory = emf;
         entityMgrProperties = emProperties;
@@ -187,7 +173,6 @@ public class QueryWrapper implements Query {
 
         queryType = type;
         queryString = query;
-        queryCriteria = criteriaQuery;
         queryResultClass = resultClass;
         queryResultSetMapping = resultSetMapping;
 
@@ -196,37 +181,6 @@ public class QueryWrapper implements Query {
         callFlowAgent = new DummyCallFlowAgentImpl();    //TODO get it from ContainerUtil
     }
 
-    public List<Result> getTypedResultList() {
-
-        try {
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_TYPED_RESULT_LIST);
-            }
-            Query delegate = getQueryDelegate();
-            return delegate.getTypedResultList();
-        } finally {
-            clearDelegates();
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryEnd();
-            }
-        }
-    }
-
-    public Result getTypedSingleResult() {
-
-        try {
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_TYPED_SINGLE_RESULT);
-            }
-            Query delegate = getQueryDelegate();
-            return delegate.getTypedSingleResult();
-        } finally {
-            clearDelegates();
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryEnd();
-            }
-        }
-    }
 
     public List getResultList() {
         try {
@@ -424,6 +378,48 @@ public class QueryWrapper implements Query {
         return this;
     }
 
+    public Query setParameter(Parameter<Date> param, Date value,  TemporalType temporalType) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.SET_PARAMETER_PARAMETER_DATE_TEMPORAL_TYPE);
+            }
+            Query delegate = getQueryDelegate();
+            delegate.setParameter(param, value, temporalType);
+
+            SetterData setterData = SetterData.createParameter(param, value, temporalType);
+            setterInvocations.add(setterData);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+
+        return this;
+    }
+
+    public Query setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.SET_PARAMETER_PARAMETER_CALENDAR_TEMPORAL_TYPE);
+            }
+            Query delegate = getQueryDelegate();
+            delegate.setParameter(param, value, temporalType);
+
+            SetterData setterData = SetterData.createParameter(param, value, temporalType);
+            setterInvocations.add(setterData);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+
+        return this;
+    }
+
+
+
     public Query setParameter(String name, Object value) {
         
         try {
@@ -566,7 +562,7 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public <T> Parameter<T> getParameter(String name, Class<T> type) {
+    public Parameter<?> getParameter(String name) {
 
         try {
             if(callFlowAgent.isEnabled()) {
@@ -574,7 +570,7 @@ public class QueryWrapper implements Query {
             }
 
             Query delegate = getQueryDelegate();
-            return delegate.getParameter(name, type);
+            return delegate.getParameter(name);
 
         } finally {
             if(callFlowAgent.isEnabled()) {
@@ -583,7 +579,7 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public <T> Parameter<T> getParameter(int position, Class<T> type) {
+    public Parameter<?> getParameter(int position) {
 
         try {
             if(callFlowAgent.isEnabled()) {
@@ -591,7 +587,7 @@ public class QueryWrapper implements Query {
             }
 
             Query delegate = getQueryDelegate();
-            return delegate.getParameter(position, type);
+            return delegate.getParameter(position);
 
         } finally {
             if(callFlowAgent.isEnabled()) {
@@ -604,7 +600,7 @@ public class QueryWrapper implements Query {
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_VALUE);
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_VALUE_PARAMETER);
             }
 
             Query delegate = getQueryDelegate();
@@ -617,15 +613,15 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public <T> ResultItem<T> getResultItem(String alias, Class<T> type) {
+    public Object getParameterValue(String name) {
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_RESULT_ITEM_STRING_CLASS);
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_VALUE_STRING);
             }
 
             Query delegate = getQueryDelegate();
-            return delegate.getResultItem(alias, type);
+            return delegate.getParameterValue(name);
 
         } finally {
             if(callFlowAgent.isEnabled()) {
@@ -634,32 +630,15 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public <T> ResultItem<T> getResultItem(int position, Class<T> type) {
+    public Object getParameterValue(int position) {
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_RESULT_ITEM_INT_CLASS);
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_PARAMETER_VALUE_INT);
             }
 
             Query delegate = getQueryDelegate();
-            return delegate.getResultItem(position, type);
-
-        } finally {
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryEnd();
-            }
-        }
-    }
-
-    public List<ResultItem<?>> getResultItems() {
-
-        try {
-            if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_RESULT_ITEMS);
-            }
-
-            Query delegate = getQueryDelegate();
-            return delegate.getResultItems();
+            return delegate.getParameterValue(position);
 
         } finally {
             if(callFlowAgent.isEnabled()) {
@@ -769,53 +748,14 @@ public class QueryWrapper implements Query {
         
     }
 
-    private Query getQueryDelegate() {
+    protected Query getQueryDelegate() {
 
         if( queryDelegate == null ) {
 
             entityManagerDelegate = 
                 entityMgrFactory.createEntityManager(entityMgrProperties);
 
-            switch(queryType) {
-
-              case EJBQL :
-
-                  queryDelegate = 
-                      entityManagerDelegate.createQuery(queryString);
-                  break;
-                  
-                case CRITERIA :
-
-                    queryDelegate =
-                        entityManagerDelegate.createQuery(queryCriteria);
-                    break;
-
-              case NAMED :
-
-                  queryDelegate = 
-                      entityManagerDelegate.createNamedQuery(queryString);
-                  break;
-
-              case NATIVE :
-
-                  if( queryResultClass != null ) {
-
-                      queryDelegate = entityManagerDelegate.createNativeQuery
-                          (queryString, queryResultClass);
-
-                  } else if( queryResultSetMapping != null ) {
-
-                      queryDelegate = entityManagerDelegate.createNativeQuery
-                          (queryString, queryResultSetMapping);
-
-                  } else {
-
-                      queryDelegate = entityManagerDelegate.createNativeQuery
-                          (queryString);
-                  }
-
-                  break;
-            }
+            createQueryDelegate(queryType, entityManagerDelegate, queryString);
 
             // Now recreate the sequence of valid setter invocations applied 
             // to this query.
@@ -830,11 +770,43 @@ public class QueryWrapper implements Query {
 
     }
 
-    private enum QueryType {
+    protected Query createQueryDelegate(QueryType queryType, EntityManager entityManager, String queryString) {
+        Query retVal;
+        switch(queryType) {
+
+          case EJBQL :
+              retVal = entityManager.createQuery(queryString);
+              break;
+
+          case NAMED :
+              retVal = entityManager.createNamedQuery(queryString);
+              break;
+
+          case NATIVE :
+              if( queryResultClass != null ) {
+                  retVal = entityManager.createNativeQuery(queryString, queryResultClass);
+              } else if( queryResultSetMapping != null ) {
+                  retVal = entityManager.createNativeQuery(queryString, queryResultSetMapping);
+              } else {
+                  retVal = entityManager.createNativeQuery(queryString);
+              }
+              break;
+
+          default:
+              assert false : "The method is called with unexpected queryType."; 
+              retVal = null;
+        }
+        return retVal;
+    }
+
+
+    protected enum QueryType {
 
         EJBQL,
-        CRITERIA,
+        TYPED_EJBQL,
         NAMED,
+        TYPED_NAMED,
+        TYPED_CRITERIA,
         NATIVE
 
     }
@@ -845,6 +817,8 @@ public class QueryWrapper implements Query {
         FIRST_RESULT,
         HINT,
         PARAM_PARAMETER_OBJECT,
+        PARAM_PARAMETER_DATE_TEMPORAL_TYPE,
+        PARAM_PARAMETER_CALENDAR_TEMPORAL_TYPE,
         PARAM_NAME_OBJECT,
         PARAM_NAME_DATE_TEMPORAL,
         PARAM_NAME_CAL_TEMPORAL,
@@ -900,6 +874,24 @@ public class QueryWrapper implements Query {
             data.type = SetterType.PARAM_PARAMETER_OBJECT;
             data.parameter = param;
             data.object1 = value;
+            return data;
+        }
+
+        static SetterData<Date> createParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
+            SetterData<Date> data = new SetterData<Date>();
+            data.type = SetterType.PARAM_PARAMETER_DATE_TEMPORAL_TYPE;
+            data.parameter = param;
+            data.object1 = value;
+            data.temporalType = temporalType;
+            return data;
+        }
+
+        static SetterData<Calendar> createParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
+            SetterData<Calendar> data = new SetterData<Calendar>();
+            data.type = SetterType.PARAM_PARAMETER_CALENDAR_TEMPORAL_TYPE;
+            data.parameter = param;
+            data.object1 = value;
+            data.temporalType = temporalType;
             return data;
         }
 
@@ -1003,6 +995,16 @@ public class QueryWrapper implements Query {
             case PARAM_PARAMETER_OBJECT :
 
                 query.setParameter(parameter, object1);
+                break;
+
+            case PARAM_PARAMETER_DATE_TEMPORAL_TYPE:
+
+                query.setParameter((Parameter<Date>) parameter, (Date)object1, temporalType);
+                break;
+
+            case PARAM_PARAMETER_CALENDAR_TEMPORAL_TYPE:
+
+                query.setParameter((Parameter<Calendar>) parameter, (Calendar) object1, temporalType);
                 break;
 
             case PARAM_NAME_OBJECT :

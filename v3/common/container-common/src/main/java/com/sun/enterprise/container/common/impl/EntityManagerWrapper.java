@@ -448,19 +448,52 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         return returnValue;
     }
 
-    public Query createQuery(CriteriaQuery criteriaQuery) {
-        Query returnValue = null;
+    public <T> TypedQuery<T> createQuery(String ejbqlString, Class<T> resultClass) {
+        TypedQuery<T> returnValue = null;
 
         try {
             if(callFlowAgent.isEnabled()) {
-                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.CREATE_QUERY_QUERY_DEFINITION);
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.CREATE_QUERY_STRING_CLASS);
+            }
+            EntityManager delegate = _getDelegate();
+            returnValue = delegate.createQuery(ejbqlString, resultClass);
+
+            if( nonTxEntityManager != null ) {
+                TypedQuery<T> queryDelegate = returnValue;
+                returnValue = TypedQueryWrapper.createQueryWrapper
+                    (entityManagerFactory, emProperties, delegate,
+                     queryDelegate, ejbqlString, resultClass);
+                // It's now the responsibility of the QueryWrapper to
+                // close the non-tx EM delegate
+                nonTxEntityManager = null;
+            }
+        } catch(RuntimeException re) {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            throw re;
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+        return returnValue;
+    }
+
+    public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
+        TypedQuery<T> returnValue = null;
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.CREATE_QUERY_CRITERIA_QUERY);
             }
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createQuery(criteriaQuery);
 
             if( nonTxEntityManager != null ) {
-                Query queryDelegate = returnValue;
-                returnValue = QueryWrapper.createQueryWrapper
+                TypedQuery<T> queryDelegate = returnValue;
+
+                returnValue = TypedQueryWrapper.createQueryWrapper
                     (entityManagerFactory, emProperties, delegate,
                      queryDelegate, criteriaQuery);
                 // It's now the responsibility of the QueryWrapper to
@@ -496,6 +529,39 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                     (entityManagerFactory, emProperties, delegate,
                      queryDelegate, name);
                 // It's now the responsibility of the QueryWrapper to 
+                // close the non-tx EM delegate
+                nonTxEntityManager = null;
+            }
+        } catch(RuntimeException re) {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            throw re;
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
+        return returnValue;
+    }
+
+    public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
+        TypedQuery<T> returnValue = null;
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.CREATE_NAMED_QUERY);
+            }
+            EntityManager delegate = _getDelegate();
+            returnValue = delegate.createNamedQuery(name, resultClass);
+
+            if( nonTxEntityManager != null ) {
+                TypedQuery<T> queryDelegate = returnValue;
+                returnValue = TypedQueryWrapper.createNamedQueryWrapper
+                    (entityManagerFactory, emProperties, delegate,
+                     queryDelegate, name, resultClass);
+                // It's now the responsibility of the QueryWrapper to
                 // close the non-tx EM delegate
                 nonTxEntityManager = null;
             }

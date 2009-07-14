@@ -189,9 +189,15 @@ public enum EntityManagerMethod {
         }
     },
     
-    CREATE_QUERY_QUERY_DEFINITION {
+    CREATE_QUERY_STRING_CLASS {
         public String toString() {
-            return "createQuery(QueryDefinition definition)";
+            return "createQuery(String qlString, Class<T> resultClass)";
+        }
+    },
+
+    CREATE_QUERY_CRITERIA_QUERY {
+        public String toString() {
+            return "createQuery(CriteriaQuery criteriaQuery)";
         }
     },
 
@@ -201,6 +207,12 @@ public enum EntityManagerMethod {
         }
     },
     
+    CREATE_NAMED_QUERY_STRING_CLASS {
+        public String toString() {
+            return "createNamedQuery(String name, Class<T> resultClass)";
+        }
+    },
+
     CREATE_NATIVE_QUERY_STRING {
         public String toString() {
             return "createNativeQuery(String sqlString)";

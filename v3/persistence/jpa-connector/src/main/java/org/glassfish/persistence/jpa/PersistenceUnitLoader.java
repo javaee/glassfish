@@ -131,7 +131,7 @@ public class PersistenceUnitLoader {
             // our appserver interface classes. By Sahoo
             provider =
                     PersistenceProvider.class.cast(
-                    ClassLoader.class.cast(providerContainerContractInfo.getClassLoader())
+                    providerContainerContractInfo.getClassLoader()
                     .loadClass(pInfo.getPersistenceProviderClassName())
                     .newInstance());
         } catch (ClassNotFoundException e) {

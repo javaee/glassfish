@@ -45,18 +45,6 @@ package com.sun.enterprise.container.common.spi.util;
 
 public enum EntityManagerQueryMethod {
     
-    GET_TYPED_RESULT_LIST {
-        public String toString() {
-            return "getTypedResultList()";
-        }
-    },
-
-    GET_TYPED_SINGLE_RESULT {
-        public String toString() {
-            return "getTypedSingleResult()";
-        }
-    },
-
     GET_RESULT_LIST {
         public String toString() {
             return "getResultList()";
@@ -123,6 +111,18 @@ public enum EntityManagerQueryMethod {
         }
     },
 
+    SET_PARAMETER_PARAMETER_DATE_TEMPORAL_TYPE {
+        public String toString() {
+            return "setParameter(Parameter<Date> param, Date value,  TemporalType temporalType)";
+        }
+    },
+
+    SET_PARAMETER_PARAMETER_CALENDAR_TEMPORAL_TYPE {
+        public String toString() {
+            return "setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType)";
+        }
+    },
+
     SET_PARAMETER_STRING_OBJECT {
         public String toString() {
             return "setParameter(String name, Object value)";
@@ -177,27 +177,21 @@ public enum EntityManagerQueryMethod {
         }
     },
 
-    GET_PARAMETER_VALUE {
+    GET_PARAMETER_VALUE_PARAMETER {
         public String toString() {
-            return "getParameterValue()";
+            return "getParameterValue(Parameter)";
         }
     },
 
-    GET_RESULT_ITEM_STRING_CLASS {
+    GET_PARAMETER_VALUE_STRING {
         public String toString() {
-            return "getResultItem(String alias, Class<T> type)";
+            return "getParameterValue(String)";
         }
     },
 
-    GET_RESULT_ITEM_INT_CLASS {
+    GET_PARAMETER_VALUE_INT {
         public String toString() {
-            return "getResultItem(int position, Class<T> type)";
-        }
-    },
-
-    GET_RESULT_ITEMS {
-        public String toString() {
-            return "getResultItems()";
+            return "getParameterValue(int)";
         }
     },
 
