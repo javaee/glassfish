@@ -68,7 +68,14 @@ import org.glassfish.internal.api.ConnectorClassFinder;
  */
 public class ResourceAdapterAdminServiceImpl extends ConnectorService {
 
-    private ExecutorService execService = Executors.newCachedThreadPool();
+    private ExecutorService execService =
+    Executors.newCachedThreadPool(new ThreadFactory() {
+           public Thread newThread(Runnable r) {
+             Thread th = new Thread(r);
+             th.setDaemon(true);
+             return th;
+           }
+    });   
 
     /**
      * Default constructor
@@ -490,10 +497,10 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                     "[ "+ raName  +" ]");
             stopSuccessful = true;
         } catch (TimeoutException e) {
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "RA  [ " + raName + " ] stop timeout occured", e);
             cancelTask(future, true, raName);
         } catch(Exception e){
-            e.printStackTrace();
+            _logger.log(Level.WARNING, "RA  [ " + raName + " ] stop failed", e);
             cancelTask(future, true, raName);
         }
 
@@ -521,9 +528,6 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         public RAShutdownTask(ActiveResourceAdapter ratoBeShutDown) {
             super();
             this.ra = ratoBeShutDown;
-            //This thread is a daemon threadS
-            // TODO V3 not needed anymore as we use ExecService with timeout
-            // this.setDaemon(true);
         }
 
         public void run() {
