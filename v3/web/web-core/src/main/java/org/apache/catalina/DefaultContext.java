@@ -130,22 +130,6 @@ public interface DefaultContext {
 
 
     /**
-     * Return the Java class name of the Wrapper implementation used
-     * for servlets registered in this Context.
-     */
-    public String getWrapperClass();
-
-
-    /**
-     * Set the Java class name of the Wrapper implementation used
-     * for servlets registered in this Context.
-     *
-     * @param wrapperClass The new wrapper class
-     */
-    public void setWrapperClass(String wrapperClass);
-
-
-    /**
      * Set the resources DirContext object with which this Container is
      * associated.
      *

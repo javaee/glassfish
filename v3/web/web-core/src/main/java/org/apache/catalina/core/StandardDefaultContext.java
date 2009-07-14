@@ -206,12 +206,6 @@ public class StandardDefaultContext
 
 
     /**
-     * Java class name of the Wrapper class implementation we use.
-     */
-    private String wrapperClass = "org.apache.catalina.core.StandardWrapper";
-
-
-    /**
      * JNDI use flag.
      */
     private boolean useNaming = true;
@@ -495,29 +489,6 @@ public class StandardDefaultContext
     public void setReloadable(boolean reloadable) {
         boolean oldReloadable = this.reloadable;
         this.reloadable = reloadable;
-
-    }
-
-
-    /**
-     * Return the Java class name of the Wrapper implementation used
-     * for servlets registered in this Context.
-     */
-    public String getWrapperClass() {
-
-        return (this.wrapperClass);
-
-    }
-
-
-    /**
-     * Set the Java class name of the Wrapper implementation used
-     * for servlets registered in this Context.
-     *
-     * @param wrapperClass The new wrapper class
-     */
-    public void setWrapperClass(String wrapperClass) {
-        this.wrapperClass = wrapperClass;
 
     }
 

@@ -432,22 +432,6 @@ public interface Context extends Container {
     void setSessionTimeout(int timeout);
 
 
-    /**
-     * Return the Java class name of the Wrapper implementation used
-     * for servlets registered in this Context.
-     */
-    String getWrapperClass();
-
-
-    /**
-     * Set the Java class name of the Wrapper implementation used
-     * for servlets registered in this Context.
-     *
-     * @param wrapperClass The new wrapper class
-     */
-    void setWrapperClass(String wrapperClass);
-
-
     // START IASRI 4823322
     /**
      * Get Auditors associated with this context, if any.
@@ -1226,14 +1210,6 @@ public interface Context extends Container {
 
 
     /**
-     * Remove the tag library location forthe specified tag library URI.
-     *
-     * @param uri URI, relative to the web.xml file
-     */
-    void removeTaglib(String uri);
-    
-    
-    /**
      * Checks whether this web application has any watched resources
      * defined.
      */
@@ -1247,24 +1223,6 @@ public interface Context extends Container {
 
     
     /**
-     * Remove the specified watched resource name from the list associated
-     * with this Context.
-     * 
-     * @param name Name of the watched resource to be removed
-     */
-    public void removeWatchedResource(String name);
-        
-       
-    /**
-     * Remove the specified welcome file name from the list recognized
-     * by this Context.
-     *
-     * @param name Name of the welcome file to be removed
-     */
-    void removeWelcomeFile(String name);
-
-
-    /**
      * Removes any Wrapper lifecycle listeners from this Context
      */
     void removeWrapperLifecycles();
@@ -1274,6 +1232,12 @@ public interface Context extends Container {
      * Removes any Wrapper listeners from this Context
      */
     void removeWrapperListeners();
+
+
+    public void removeTaglibs();
+
+
+    public void removeWelcomeFiles();
 
 
     // START S1AS8PE 4817642

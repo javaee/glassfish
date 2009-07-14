@@ -1611,8 +1611,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         ctx.setJ2EEServer(j2eeServer);
         ctx.setJ2EEApplication(j2eeApplication);
-        ctx.setServer(server);
-        // ctx.setJavaVMs(javaVMs);
         ctx.setCachingAllowed(false);
         ctx.setCacheControls(vs.getCacheControls());
         ctx.setBean(wmInfo.getBean());
@@ -2416,9 +2414,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         String j2eeServer = _serverContext.getInstanceName();
         wm.setJ2EEServer(j2eeServer);
-
-        String server = domain + ":j2eeType=J2EEServer,name=" + j2eeServer;
-        wm.setServer(server);
 
         wm.setCrossContext(true);
         //wm.setJavaVMs(J2EEModuleUtil.getjavaVMs());

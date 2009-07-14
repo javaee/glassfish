@@ -208,14 +208,6 @@ public final class Globals {
         "javax.security.auth.subject";
 
     
-    /**
-     * The servlet context attribute under which we record the set of
-     * welcome files (as an object of type String[]) for this application.
-     */
-    public static final String WELCOME_FILES_ATTR =
-        "org.apache.catalina.WELCOME_FILES";
-
-
     // START SJSAS
     /**
      * The class name of the default servlet
