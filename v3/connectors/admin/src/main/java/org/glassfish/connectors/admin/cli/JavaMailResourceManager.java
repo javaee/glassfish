@@ -109,10 +109,10 @@ public class JavaMailResourceManager implements ResourceManager {
 
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof MailResource) {
-                if (((MailResource) resource).getJndiName().equals(jndiName)) {
+            if (resource instanceof BindableResource) {
+                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
                    String msg = localStrings.getLocalString(
-                            "create.mail.resource.duplicate",
+                            "create.mail.resource.duplicate.1",
                             "A Mail Resource named {0} already exists.",
                             jndiName);
                     ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);

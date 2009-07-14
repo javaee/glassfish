@@ -134,17 +134,7 @@ public class CreateCustomResource implements AdminCommand {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
                 }
-            } else if (resource instanceof ResourcePool) {
-                if (((ResourcePool) resource).getName().equals(jndiName))
-                {
-                    report.setMessage(localStrings.getLocalString(
-                            "create.custom.resource.duplicate.2",
-                            "Resource pool named {0} already exists.",
-                            jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            }
+            } 
         }
 
         try {

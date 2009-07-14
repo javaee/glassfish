@@ -96,7 +96,6 @@ public class DeleteJndiResource implements AdminCommand {
                     + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
-            return;
         }
 
     }
