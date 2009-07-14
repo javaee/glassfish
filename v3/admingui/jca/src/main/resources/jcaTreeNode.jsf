@@ -1,0 +1,59 @@
+<sun:treeNode id="Connectors"
+        text="$resource{i18n.tree.connectors}"
+        url="/jca/jca.jsf"
+        imageURL="/resource/jca/images/connector.png"
+        >
+            
+        <dynamicTreeNode id="connectorResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="connector-resource"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/connectorResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.connectorResources}"
+        url="/jca/connectorResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+        </dynamicTreeNode>                  
+        <dynamicTreeNode id="connectorConnectionPools"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="connector-connection-pool"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/connectorConnectionPoolEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.connectorConnectionPools}"
+        url="/jca/connectorConnectionPools.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/connectorConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+        </dynamicTreeNode>    
+        <dynamicTreeNode id="adminObjectResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="admin-object-resource"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/adminObjectEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.adminObjectResources}"
+        url="/jca/adminObjectResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>        
+ </sun:treeNode> 
+
