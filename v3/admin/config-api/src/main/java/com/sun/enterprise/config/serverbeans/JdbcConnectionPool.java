@@ -721,7 +721,28 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *              {@link String }
      */
     void setStatementCacheSize(String value) throws PropertyVetoException;
-    
+
+    /**
+     * Gets the value of the initSql property.
+     *
+     * Init sql is executed whenever a connection created from the pool. 
+     * This is mostly useful when the state of a
+     * connection is to be initialized
+     * 
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getInitSql();
+
+    /**
+     * Sets the value of the initSql property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setInitSql(String value) throws PropertyVetoException;
+
     /**
      * Gets the value of the matchConnections property.
      *

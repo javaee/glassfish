@@ -82,6 +82,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
 
     protected boolean isDestroyed = false;
     protected boolean isUsable = true;
+    protected boolean initSqlExecuted = false;
     protected int connectionCount = 0;
 
     protected int connectionType = ISNOTAPOOLEDCONNECTION;
@@ -182,6 +183,32 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         logWriter = mcf.getLogWriter();
         ce = new ConnectionEvent(this, ConnectionEvent.CONNECTION_CLOSED);
         tuneStatementCaching(statementCacheSize, statementCacheType);
+    }
+
+    private void executeInitSql(String initSql) {
+        _logger.log(Level.FINE, "jdbc.execute_init_sql_start");
+        java.sql.PreparedStatement stmt = null;
+        
+        if (initSql != null && !initSql.equalsIgnoreCase("null") &&
+                !initSql.equals("")) {
+        try {
+                stmt = actualConnection.prepareStatement(initSql);
+                stmt.execute();
+            } catch (SQLException sqle) {
+                _logger.log(Level.WARNING, "jdbc.exc_init_sql_error", initSql);
+                initSqlExecuted = false;
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                } catch (Exception e) {
+                    _logger.log(Level.FINE, "jdbc.exc_init_sql_error_stmt_close", e.getMessage());
+                }
+            }
+            initSqlExecuted = true;
+        }
+               
     }
 
     private void tuneStatementCaching(int statementCacheSize, 
@@ -370,6 +397,12 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                 actualConnection, this, cxReqInfo, spiMCF.isStatementWrappingEnabled(),
                 sqlTraceDelegator);
 
+        //TODO : need to see if this should be executed for every getConnection
+        if (!initSqlExecuted) {
+            //Check if Initsql is set and execute it
+            String initSql = spiMCF.getInitSql();
+            executeInitSql(initSql);
+        }
         incrementCount();
         isClean = false;
 

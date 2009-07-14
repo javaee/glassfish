@@ -243,7 +243,12 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 adminPool.getStatementCacheSize() + "",
                 "Statement Cache Size",
                 "java.lang.String"));
-        
+                    
+        propList.add(new ConnectorConfigProperty("InitSql",
+                adminPool.getInitSql() + "", 
+		"InitSql", 
+		"java.lang.String"));
+
         propList.add(new ConnectorConfigProperty("SqlTraceListeners",
                 adminPool.getSqlTraceListeners() + "",
                 "Sql Trace Listeners",

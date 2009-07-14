@@ -705,5 +705,13 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         public void setPing(String value) throws PropertyVetoException {
             //do nothing
         }
+
+        public String getInitSql() {
+            return null;
+        }
+
+        public void setInitSql(String value) throws PropertyVetoException {
+            //do nothing
+        }
     }
 }
