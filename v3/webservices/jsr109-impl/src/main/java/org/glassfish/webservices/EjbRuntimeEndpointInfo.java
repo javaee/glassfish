@@ -84,8 +84,6 @@ public class EjbRuntimeEndpointInfo {
 
     protected final Object webServiceEndpointServant;
 
-
-
     // the variables below are access in non-thread-safe ways
     private ServletAdapter adapter = null;
     private ServletAdapterList adapterList = null;
@@ -135,11 +133,7 @@ public class EjbRuntimeEndpointInfo {
                         // Set webservice context here
                         // If the endpoint has a WebServiceContext with @Resource then
                         // that has to be used
-                     /*   Invocation tmpInv = new Invocation();
-                        tmpInv.isWebService = true;
-                        tmpInv.container = container;
-                        tmpInv.transactionAttribute = Container.TX_NOT_INITIALIZED;
-                        invManager.preInvoke(tmpInv);*/
+
 
                         EjbDescriptor ejbDesc = endpoint.getEjbComponentImpl();
                         Iterator<ResourceReferenceDescriptor> it = ejbDesc.getResourceReferenceDescriptors().iterator();
@@ -312,8 +306,6 @@ public class EjbRuntimeEndpointInfo {
             this.adapterList = list;
             aInfo = (AdapterInvocationInfo)prepareInvocation(true);
         } finally {
-           // InvocationManager invManager =getInvocationManager();
-            //invManager.postInvoke(invManager.getCurrentInvocation());
             releaseImplementor(aInfo.getInv())       ;
         } 
          
@@ -333,8 +325,6 @@ public class EjbRuntimeEndpointInfo {
      */
     public void releaseImplementor(ComponentInvocation inv) {
 
-        /*InvocationManager invManager = getInvocationManager();
-        ComponentInvocation inv = invManager.getCurrentInvocation();*/
         container.endInvocation(inv);
 
     }

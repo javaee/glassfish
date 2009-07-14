@@ -193,9 +193,7 @@ public final class WebServiceInvocationHandler extends EJBLocalRemoteObject
         } catch(Throwable c) {
             inv.exception = c;
         } finally {
-            /*if (container instanceof EjbEndpointFacade){
-                ((EjbEndpointFacade)container).endInvocation(inv);
-            }*/
+            
             if( inv.ejb != null ) {
                 // Do post invoke tx processing so that a commit failure
                 // will be visible to web service client.
