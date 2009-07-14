@@ -133,6 +133,47 @@ public class LoggingHandlers {
      }
 
 
+    @Handler(id = "getLoggingAttributes",
+    output = {
+        @HandlerOutput(name = "attrs", type = Map.class)
+    })
+    public static void getLoggingAttributes(HandlerContext handlerCtx) {
+
+        Map<String, String>attrs = new HashMap();
+        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
+        Map<String, String>longAttrs = logging.getLoggingAttributes();
+        for(String oneAttr:  longAttrs.keySet()){
+            attrs.put(oneAttr.substring(oneAttr.lastIndexOf(".")+1), longAttrs.get(oneAttr));
+        }
+        handlerCtx.setOutputValue("attrs",  attrs);
+     }
+
+    @Handler(id = "saveLoggingAttributes",
+    input = {
+        @HandlerInput(name = "attrs", type = Map.class)
+    })
+    public static void saveLoggingAttributes(HandlerContext handlerCtx) {
+
+        Map<String, String>attrs = (Map)handlerCtx.getInputValue("attrs");
+        if (attrs.get("logtoConsole") == null){
+            attrs.put("logtoConsole", "false");
+        }
+        if (attrs.get("useSystemLogging") == null){
+            attrs.put("useSystemLogging", "false");
+        }
+
+        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
+        Map<String, String>longAttrs = logging.getLoggingAttributes();
+
+        for(String oneAttr:  longAttrs.keySet()){
+            String shortAttr = oneAttr.substring(oneAttr.lastIndexOf(".")+1);
+            String newValue = attrs.get(shortAttr);
+            longAttrs.put(oneAttr, (newValue == null)? "" : newValue);
+        }
+        logging.setLoggingAttributes(longAttrs);
+     }
+
+
     @Handler(id = "getValidLogLevels",
     output = {
         @HandlerOutput(name = "loggerList", type = List.class)
