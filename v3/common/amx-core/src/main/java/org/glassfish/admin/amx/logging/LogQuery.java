@@ -105,19 +105,33 @@ public interface LogQuery
 		                        a field within that log record.
 		@see LogRecordFields
 		@see LogModuleNames
-     */
+
+         
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
         public LogQueryResult
     queryServerLog( 
-    	String  name,
-    	long     startIndex,
-    	boolean searchForward,
-        int     maxRecords,
-        Long    fromTime,
-        Long    toTime,
-        String   logLevel,
-        Set<String>      modules,
-        List<Attribute> 	 nameValuePairs);
+    	@Param(name="logFilename") String  logFilename,
+    	@Param(name="startIndex") long     startIndex,
+    	@Param(name="searchForward") boolean searchForward,
+        @Param(name="maxRecords") int     maxRecords,
+        @Param(name="fromTime") Long    fromTime,
+        @Param(name="toTime") Long    toTime,
+        @Param(name="logLevel") String   logLevel,
+        @Param(name="modules") Set<String>      modules,
+        @Param(name="nameValuePairs") List<Attribute> 	 nameValuePairs);
+      */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+        public LogQueryResult
+    queryServerLog(
+    	 String  logFilename,
+    	 long     startIndex,
+    	 boolean searchForward,
+         int     maxRecords,
+         Long    fromTime,
+         Long    toTime,
+         String   logLevel,
+         Set<String>      modules,
+         List<Attribute> 	 nameValuePairs);
     
     /**
         Value for the <code>maximumNumberOfResults</code> parameter to

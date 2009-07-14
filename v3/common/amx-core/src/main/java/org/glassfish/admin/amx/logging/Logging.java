@@ -66,20 +66,8 @@ public interface Logging
     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
     @Description( "Sets the log level of the Logger for the specified module" )
     public void setModuleLogLevel(
-        @Param(name="moduleName") String moduleName,
-        @Param(name="level") String level );
-
-   /**
-		Sets the log level of the Logger for the specified module.  This operation
-		will not effect a change to the corresponding loggin configuration for that module.
-
-		@param module	a module name as specified in {@link LogModuleNames}.
-		@param level	a log level
-     */
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-    @Description( "Sets the value of one or more logging properties" )
-    public void updateLoggingProperties(
-        @Param(name="properties") Map <String, String> properties );
+        @Param(name="moduleName") final String moduleName,
+        @Param(name="level") final String level );
 
    /**
    		Gets the log level of the Logger for the specified module, which may or may not
@@ -90,8 +78,18 @@ public interface Logging
     */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
     @Description( "Gets the log level of the Logger for the specified module" )
-    public String getModuleLogLevel( @Param(name="moduleName") String moduleName );
-    
+    public String getModuleLogLevel( @Param(name="moduleName") final String moduleName );
+
+      /**
+    		Sets the log level of the Logger for the specified module.  This operation
+    		will not effect a change to the corresponding loggin configuration for that module.
+
+        */
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    @Description( "Sets the value of one or more logging properties" )
+    public void updateLoggingProperties(
+          @Param(name="properties") final Map <String, String> properties );
+
     /**
        		Gets all the logging properties in the logging.properties file
 
@@ -115,9 +113,10 @@ public interface Logging
 
      */
 
-     @ManagedOperation(impact=MBeanOperationInfo.ACTION)
-     @Description( "Set value of the value of one or more of the logging configuration properties." )
-     public void setLoggingAttributes(@Param(name="properties") Map <String, String> properties );
+    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    @Description( "Set value of the value of one or more of the logging configuration properties." )
+    public void updateLoggingAttributes(
+        @Param(name="properties") final Map <String, String> properties );
 
 
     /**
