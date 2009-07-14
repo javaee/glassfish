@@ -376,6 +376,10 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
             } else {
                 OrderingDescriptor.sort(wfList);
             }
+
+            for (WebFragmentDescriptor wf : wfList) {
+                descriptor.addOrderedLib(wf.getJarName());
+            }
         }
 
         return wfList;

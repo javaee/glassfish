@@ -122,6 +122,8 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     private Map<String, String> jarName2WebFragNameMap = null;
 
+    private List<String> orderedLibs = new ArrayList<String>();
+
     /**
      * Constrct an empty web app [{0}].
      */
@@ -1524,6 +1526,14 @@ public class WebBundleDescriptor extends BundleDescriptor
             jarName2WebFragNameMap = new HashMap<String, String>();
         }
         return Collections.unmodifiableMap(jarName2WebFragNameMap);
+    }
+
+    public List<String> getOrderedLibs() {
+        return orderedLibs;
+    }
+
+    public void addOrderedLib(String libName) {
+        orderedLibs.add(libName);
     }
 
     /* ----
