@@ -755,7 +755,7 @@ public class QueryWrapper implements Query {
             entityManagerDelegate = 
                 entityMgrFactory.createEntityManager(entityMgrProperties);
 
-            createQueryDelegate(queryType, entityManagerDelegate, queryString);
+            queryDelegate = createQueryDelegate(queryType, entityManagerDelegate, queryString);
 
             // Now recreate the sequence of valid setter invocations applied 
             // to this query.
