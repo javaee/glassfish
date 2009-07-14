@@ -211,13 +211,13 @@ public class GFLauncherUtils {
     public static List<File> stringToFiles(String cp)
     {
         List<File> list = new ArrayList<File>();
-        
+
         if(ok(cp)) {
+            cp = SmartFile.sanitizePaths(cp);
             String[] ss = cp.split(File.pathSeparator);
 
-            for(String s : ss) {
-                list.add(SmartFile.sanitize(new File(s)));
-            }
+            for(String s : ss)
+                list.add(new File(s));
         }
         
         return list;
