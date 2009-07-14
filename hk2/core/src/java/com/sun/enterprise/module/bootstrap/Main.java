@@ -61,6 +61,7 @@ import com.sun.hk2.component.KeyValuePairParser;
 import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -324,7 +325,7 @@ public class Main {
      */
     public ModuleStartup launch(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
         // now go figure out the start up module
-        final ModuleStartup startupCode;
+        ModuleStartup startupCode=null;
         final Module mainModule;
 
         if(mainModuleName!=null) {
@@ -359,17 +360,25 @@ public class Main {
         } else {
             Collection<ModuleStartup> startups = habitat.getAllByContract(ModuleStartup.class);
             if(startups.isEmpty())
-                throw new BootException("No module has ModuleStartup");
+                throw new BootException("No module has a ModuleStartup implementation");
             if(startups.size()>1) {
-                Iterator<ModuleStartup> itr = startups.iterator();
-                ModuleStartup a = itr.next();
-                ModuleStartup b = itr.next();
-                Module am = registry.find(a.getClass());
-                Module bm = registry.find(b.getClass());
-                throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
+                for (ModuleStartup startup :startups) {
+                    String serviceName = startup.getClass().getAnnotation(Service.class).name();
+                    if (serviceName==null || serviceName.isEmpty()) {
+                        startupCode = startup;
+                    }
+                }
+                if (startupCode==null) {
+                    Iterator<ModuleStartup> itr = startups.iterator();
+                    ModuleStartup a = itr.next();
+                    ModuleStartup b = itr.next();
+                    Module am = registry.find(a.getClass());
+                    Module bm = registry.find(b.getClass());
+                    throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
+                }
+            } else {
+                startupCode = startups.iterator().next();
             }
-
-            startupCode = startups.iterator().next();
             mainModule = registry.find(startupCode.getClass());
         }
 

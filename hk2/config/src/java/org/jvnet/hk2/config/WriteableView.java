@@ -128,7 +128,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             if (!changedCollections.containsKey(property.xmlName())) {
                 // wrap collections so we can record events on that collection mutation.
                 changedCollections.put(property.xmlName(),
-                        new ProtectedList((List) value, defaultView, property.xmlName()));
+                        new ProtectedList(List.class.cast(value), defaultView, property.xmlName()));
             }
             return changedCollections.get(property.xmlName());
         }
@@ -277,8 +277,8 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                 appliedChanges.add(event);
             }
             for (ProtectedList entry :  changedCollections.values())  {
-                List originalList = entry.readOnly;
-                for (PropertyChangeEvent event : (List<PropertyChangeEvent>) entry.changeEvents) {
+                List<Object> originalList = entry.readOnly;
+                for (PropertyChangeEvent event : entry.changeEvents) {
                     if (event.getOldValue()==null) {
                         originalList.add(event.getNewValue());
                     } else {
@@ -386,13 +386,13 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 private class ProtectedList extends AbstractList {
 
     final ConfigBeanProxy readView;
-    final List readOnly;
+    final List<Object> readOnly;
     final String id;
     final List<PropertyChangeEvent> changeEvents = new ArrayList<PropertyChangeEvent>();
     final List proxied;
 
-    ProtectedList(List readOnly, ConfigBeanProxy parent, String id) {
-        proxied = Collections.synchronizedList(new ArrayList(readOnly));
+    ProtectedList(List<Object> readOnly, ConfigBeanProxy parent, String id) {
+        proxied = Collections.synchronizedList(new ArrayList<Object>(readOnly));
         this.readView = parent;
         this.readOnly = readOnly;
         this.id = id;
