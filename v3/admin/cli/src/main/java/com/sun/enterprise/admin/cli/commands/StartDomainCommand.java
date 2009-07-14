@@ -282,7 +282,7 @@ public class StartDomainCommand extends CLICommand {
         } catch (Exception e) {
             //ignore
         }
-        msg = strings.get("DomainAdminPort", ap);
+        msg = strings.get("DomainAdminPort", ""+ap);
         logger.printMessage(msg);
     }
 
