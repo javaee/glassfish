@@ -45,13 +45,13 @@
                 content="webApp/webAppDeploymentTask.jsf"/>
         -->
                 
-        <!-- Add view monitoring data under the 'Monitoring' Task group -->
+        <!-- Add view monitoring data under the 'Monitoring' Task group 
         <integration-point 
                 id="webViewMonitor" 
                 type="org.glassfish.admingui:commonTask" 
                 priority="100"
                 parentId="monitoring"
-                content="monitor/webViewMonitoringDataTask.jsf"/>
+                content="monitor/webViewMonitoringDataTask.jsf"/>-->
                 
         <!-- Adding Tabs to the Server Instance General page -->        
         <integration-point
