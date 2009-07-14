@@ -40,10 +40,7 @@ package org.glassfish.admin.amx.logging;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.management.MBeanOperationInfo;
-import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.admin.amx.annotation.ManagedOperation;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.admin.amx.annotation.*;
 
 
 /**
@@ -106,6 +103,7 @@ for( int i = 0; i < infos.length; ++i ) {<br>
 		
 		@return Map<String,Number>
 	 */
+    @ManagedAttribute
 	public Map<String,Number>[]	getErrorInfo();
 	
 	
@@ -124,7 +122,10 @@ for( int i = 0; i < infos.length; ++i ) {<br>
 		@param level
 		@return Map<String,Integer>
 	 */
-	public Map<String,Integer>	getErrorDistribution(long timestamp, String level);
+    @ManagedOperation
+	public Map<String,Integer>	getErrorDistribution(
+        @Param(name="timestamp") long timestamp,
+        @Param(name="level") String level);
 	
 	/**
 	    @return all the logger names currently in use
@@ -136,7 +137,7 @@ for( int i = 0; i < infos.length; ++i ) {<br>
 	    @return all the logger names currently in use under this logger.
 	 */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[]   getLoggerNamesUnder( String loggerName );
+    public String[]   getLoggerNamesUnder( @Param(name="loggerName") String loggerName );
     
     /**
         Set the number of intervals error statistics should be maintained.
@@ -144,7 +145,7 @@ for( int i = 0; i < infos.length; ++i ) {<br>
         @param numIntervals number of intervals
      */
     @ManagedAttribute
-    public void setKeepErrorStatisticsForIntervals(final int numIntervals );
+    public void setKeepErrorStatisticsForIntervals( @Param(name="numIntervals") final int numIntervals );
     
     /*
         See {@link #setErrorStatisticsIntervals}.
@@ -158,7 +159,7 @@ for( int i = 0; i < infos.length; ++i ) {<br>
         @param minutes The duration of an interval in minutes.
      */
     @ManagedAttribute
-    public void setErrorStatisticsIntervalMinutes(final long minutes);
+    public void setErrorStatisticsIntervalMinutes( @Param(name="minutes") final long minutes);
     
     /*
         See {@link #setErrorStatisticsIntervalMinutes}.
