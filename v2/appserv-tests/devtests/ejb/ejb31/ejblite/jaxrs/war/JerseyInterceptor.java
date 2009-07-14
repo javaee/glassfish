@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 
 import com.acme.SingletonBean;
 import com.acme.StatelessBean;
+import com.acme.FooManagedBean;
 
 public class JerseyInterceptor {
 
@@ -21,9 +22,9 @@ public class JerseyInterceptor {
 	    ((SingletonBean) beanInstance).interceptorWasHere = true;
 	} else if( beanInstance instanceof StatelessBean ) {
 	    ((StatelessBean) beanInstance).interceptorWasHere = true;
+	} else if( beanInstance instanceof FooManagedBean ) {
+	    ((FooManagedBean) beanInstance).interceptorWasHere = true;
 	}
-
-	
 
 	// ...
 

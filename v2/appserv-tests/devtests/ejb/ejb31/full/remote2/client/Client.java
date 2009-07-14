@@ -32,6 +32,10 @@ public class Client {
 
 	try {
 
+	    Hello hGlobal =  (Hello) new InitialContext().lookup("java:global/HBGlobal");
+	    System.out.println("hGlobal = " + hGlobal);
+	    System.out.println("hGlobal hello = " + hGlobal.hello());
+
 	    SingletonRemote singleton = (SingletonRemote) new InitialContext().lookup("java:global/" + appName + "/SingletonBean");
 
 	    // pass name of remotestateless app

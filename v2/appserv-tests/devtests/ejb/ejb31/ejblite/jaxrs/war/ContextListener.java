@@ -17,6 +17,11 @@ public class ContextListener implements ServletContextListener {
 	System.out.println("In ContextListener::contextInitialized");
 
 	try {
+
+	    FooManagedBean f = (FooManagedBean)
+		new InitialContext().lookup("java:module/FooManagedBean");
+	    f.hello();
+
 	    Object jaxrsEjbGlue = new InitialContext().lookup("java:org.glassfish.ejb.container.interceptor_binding_spi");
 	    System.out.println("jaxrsEjbGlue = " + jaxrsEjbGlue);
 	    Method m = jaxrsEjbGlue.getClass().getMethod("registerInterceptor", java.lang.Object.class);

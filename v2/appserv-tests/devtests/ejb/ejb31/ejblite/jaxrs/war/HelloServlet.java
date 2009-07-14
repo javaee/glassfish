@@ -15,13 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.naming.*;
+import javax.annotation.Resource;
 
 @WebServlet(urlPatterns="/HelloServlet", loadOnStartup=1)
 public class HelloServlet extends HttpServlet {
 
     @EJB private SingletonBean simpleSingleton;
     @EJB private StatelessBean simpleStateless;
-    
+    @Resource private FooManagedBean fooManagedBean;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -47,6 +48,10 @@ public class HelloServlet extends HttpServlet {
 
 	simpleStateless.assertInterceptorBinding();
 	System.out.println("Stateless interceptor binding asserted");
+
+	fooManagedBean.assertInterceptorBinding();
+	System.out.println("FooManagedBean interceptor binding asserted");
+	fooManagedBean.hello();
 
 
 	out.println("<HTML> <HEAD> <TITLE> JMS Servlet Output </TITLE> </HEAD> <BODY BGCOLOR=white>");
