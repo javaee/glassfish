@@ -163,6 +163,9 @@ public abstract class DatabaseCommand extends CLICommand {
      * Defines the command to ping the derby database.
      * Note that when using Darwin (Mac), the property,
      * "-Dderby.storage.fileSyncTransactionLog=True" is defined.
+     * See:
+     * http://www.jasonbrome.com/blog/archives/2004/12/05/apache_derby_on_mac_os_x.html
+     * https://issues.apache.org/jira/browse/DERBY-1
      */
     protected String[] pingDatabaseCmd(boolean bRedirect) throws Exception {
         if (OS.isDarwin()) {
