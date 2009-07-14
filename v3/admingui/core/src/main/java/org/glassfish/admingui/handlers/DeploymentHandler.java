@@ -228,7 +228,8 @@ public class DeploymentHandler {
 
              //If we are redeploying a web app, we want to preserve context root.
              //can use Query instead of hard code object name
-             AMXProxy app = V3AMX.getInstance().getApplication(appName);
+             //AMXProxy app = V3AMX.getInstance().getApplication(appName);
+	     AMXProxy app = V3AMX.objectNameToProxy("amx:pp=/domain/applications,type=application,name="+appName);
              String ctxRoot = (String) app.attributesMap().get("ContextRoot");
              if (ctxRoot != null){
                  deploymentProps.setContextRoot(ctxRoot);
