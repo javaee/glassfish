@@ -235,18 +235,19 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
         if (adminUser == null || adminUser.length() == 0) {
             adminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
+            masterPassword = DEFAULT_MASTER_PASSWORD;
         } else {
             if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER) &&
                     (adminPassword == null || adminPassword.length() == 0)) {
                 adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
+                masterPassword = DEFAULT_MASTER_PASSWORD;
             } else {                            
                 adminPassword = getAdminPassword();
                 validatePassword(adminPassword, ADMIN_PASSWORD);
+                masterPassword = getMasterPassword();
+                validatePassword(masterPassword, MASTER_PASSWORD);
             }
         }
-        //masterPassword = getMasterPassword();        
-        masterPassword = DEFAULT_MASTER_PASSWORD;
-        //validatePassword(masterPassword, MASTER_PASSWORD);
 
 
         try {
