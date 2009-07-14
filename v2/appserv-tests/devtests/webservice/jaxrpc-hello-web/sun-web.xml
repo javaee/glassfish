@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 8.0 Servlet 2.4//EN" "http://www.sun.com/software/appserver/dtds/sun-web-app_2_4-0.dtd">
+<sun-web-app>
+  <context-root>/hello-jaxrpc</context-root>
+  <servlet>
+    <servlet-name>HelloImpl</servlet-name>
+    <webservice-endpoint>
+      <port-component-name>HelloIF</port-component-name>
+      <endpoint-address-uri>hello</endpoint-address-uri>
+    </webservice-endpoint>
+  </servlet>
+</sun-web-app>

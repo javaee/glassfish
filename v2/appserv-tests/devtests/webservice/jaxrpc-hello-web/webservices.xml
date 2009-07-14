@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservices xmlns="http://java.sun.com/xml/ns/j2ee" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://www.ibm.com/webservices/xsd/j2ee_web_services_1_1.xsd">
+<webservice-description>
+<display-name>MyHelloService</display-name>
+<webservice-description-name>MyHelloService</webservice-description-name>
+<wsdl-file>WEB-INF/wsdl/MyHelloService.wsdl</wsdl-file>
+<jaxrpc-mapping-file>build/mapping.xml</jaxrpc-mapping-file>
+<port-component>
+<display-name>HelloIF</display-name>
+<port-component-name>HelloIF</port-component-name>
+<wsdl-port xmlns:wsdl-port_ns__="urn:Foo">wsdl-port_ns__:HelloIFPort</wsdl-port>
+<service-endpoint-interface>helloservice.HelloIF</service-endpoint-interface>
+<service-impl-bean>
+<servlet-link>HelloImpl</servlet-link>
+</service-impl-bean>
+</port-component>
+</webservice-description>
+</webservices>

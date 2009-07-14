@@ -1,0 +1,65 @@
+<!DOCTYPE project [
+  <!ENTITY jaxrpctargets SYSTEM "../common/targets.xml">
+]>
+
+<project name="jaxrpc-hello-web" default="build" basedir=".">
+
+  <property name="appname" value="MyHelloService"/>
+  <property file="../common/build.properties"/>
+  <property file="build.properties"/>
+
+  &jaxrpctargets;
+
+<path id="class.path">
+        <fileset dir="${env.AS_HOME}/modules">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.APS_HOME}/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+
+    </path>
+
+
+  <target name="create-war" description="Packages the WAR file">
+     <echo message="Creating the WAR...."/>
+     <delete file="${assemble.war}/${war.file}" />
+     <delete dir="${assemble.war}/WEB-INF" />
+     <copy todir="${assemble.war}/WEB-INF/classes/">
+         <fileset dir="${build}/" 
+                  includes="**/*.class" 
+                  excludes="**/*Client.class, **/*.wsdl, **/*mapping.xml"/>
+     </copy>
+     <copy file="${build}/MyHelloService.wsdl" todir="${assemble.war}/WEB-INF/wsdl" />
+     <copy file="${build}/mapping.xml" todir="${assemble.war}/${build}/" />
+     <copy file="sun-web.xml" todir="${assemble.war}/WEB-INF" />
+     <copy file="webservices.xml" todir="${assemble.war}/WEB-INF" />
+     <war destfile="${assemble.war}/${war.file}" 
+          webxml="./web.xml" filesonly="true" >
+       <fileset dir="${assemble.war}" includes="WEB-INF/**, build/**" />
+     </war>
+     <copy file="${assemble.war}/${war.file}" todir="." />
+  </target>
+
+  <target name="build" depends="build-service"
+     description="Executes the targets needed to build the service.">
+  </target>
+
+  <target name="deploy">
+    <antcall target="admin_command_common">
+      <param name="admin.command"
+        value="deploy ${war.file}" />
+    </antcall>
+  </target>
+
+  <target name="undeploy">
+    <antcall target="admin_command_common">
+      <param name="admin.command"
+        value="undeploy ${context.path}" />
+    </antcall>
+  </target>
+
+</project>
