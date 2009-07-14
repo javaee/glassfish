@@ -100,9 +100,52 @@
                     <include>**/*.properties</include>
                 </includes>
             </resource>
+
+            <!--
+                The next resource definitions will include the DTDs and
+                schemas in the module so we can find them at runtime in the
+                client.  The dependency:unpack-dependency goal below will
+                by default deposit the unpacked contents into
+                target/dependency.  The .dtd and .xsd files are packaged into
+                their respective JARs in glassfish/lib, so we define that
+                combined directory as a resource
+                location so the .dtd and .xsd files will be packaged by default.
+                This is coordinated with the SaxParserHandlerBundled class
+                which resolves entities via the class path.
+            -->
+            <resource>
+                <directory>target/dependency/glassfish/lib/</directory>
+                <includes>
+                    <include>**/*.dtd</include>
+                    <include>**/*.xsd</include>
+                </includes>
+            </resource>
         </resources>
 
         <plugins>
+
+            <!--
+                Unpack the modules which contain the DTDs and schemas so
+                we can package them as resources.
+            -->
+            <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-dependency-plugin</artifactId>
+                 <executions>
+                   <execution>
+                     <id>unpack-dtds-and-schemas</id>
+                     <phase>generate-resources</phase>
+                     <goals>
+                       <goal>unpack-dependencies</goal>
+                     </goals>
+                     <configuration>
+                       <includeGroupIds>org.glassfish.deployment</includeGroupIds>
+                       <includeArtifactIds>schemas,dtds</includeArtifactIds>
+                       <includes>**/*.dtd,**/*.xsd</includes>
+                     </configuration>
+                   </execution>
+                 </executions>
+            </plugin>
             <plugin>
 
 <!--
@@ -137,8 +180,6 @@
                     <configuration>
 
                             <archive>
-
-                                <index>true</index>
 
                                 <manifest>
                                     <mainClass>org.glassfish.appclient.client.acc.AppClientCommand</mainClass>
@@ -222,15 +263,21 @@
         <!--
             We depend on the deployment/dtds module which contains the
             sun-application-client-container_1_2.dtd.  We use that for
-            generating JAXB classes but we do not want to package the DTD
-            with the ACC module, nor do we want the ACC module depending on
-            the deploymenet/dtds module at runtime.  Note the scope is "compile"
-            to indicate this.
+            generating JAXB classes.  We depend on both the DTDs and
+            the schemas at runtime.
         -->
         <dependency>
             <scope>compile</scope>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dtds</artifactId>
+            <type>zip</type>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <scope>runtime</scope>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>schemas</artifactId>
             <type>zip</type>
             <version>${project.version}</version>
         </dependency>
