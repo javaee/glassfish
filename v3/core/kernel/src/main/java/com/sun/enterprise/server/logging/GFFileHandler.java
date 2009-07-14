@@ -307,10 +307,10 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
      *  A package private method to set the limit for File Rotation.
      */
     synchronized void setLimitForRotation( int rotationLimitInBytes ) {
-        if ((rotationLimitInBytes == 0) ||
-	        (rotationLimitInBytes >= MINIMUM_FILE_ROTATION_VALUE )) {
+//        if ((rotationLimitInBytes == 0) ||
+//	        (rotationLimitInBytes >= MINIMUM_FILE_ROTATION_VALUE )) {
             limitForFileRotation = rotationLimitInBytes;
-        }
+//        }
     }
     
 
@@ -482,6 +482,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     public void log() {
 
         LogRecord record;
+
+/*
         int maxMsg = 1;
         int queueSize =  pendingRecords.size();
 
@@ -505,8 +507,32 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             }
         }
 
+ */
+
+        // take is blocking so we take one record off the queue
+        try {
+            record = pendingRecords.take();
+            super.publish(record);
+            if (record.getLevel().intValue()>=Level.WARNING.intValue()) {
+                recentErrors.offer(record);
+            }
+        } catch (InterruptedException e) {
+            return;
+        }
+
+        // now try to read more.  we end up blocking on the above take call if nothing is in the queue
+        Vector<LogRecord> v = new Vector<LogRecord>();
+        int msgs = pendingRecords.drainTo(v, flushFrequency );
+        for(int j=0;j<msgs; j++) {
+             super.publish(v.get(j));
+             if (v.get(j).getLevel().intValue()>=Level.WARNING.intValue()) {
+                recentErrors.offer(v.get(j));
+            }
+        }
+
+
         flush();       
-        if ( ( rotationRequested.get() )
+         if ( ( rotationRequested.get() )
             || ( ( limitForFileRotation > 0 )
                 &&  ( meter.written >= limitForFileRotation ) ) )
         {

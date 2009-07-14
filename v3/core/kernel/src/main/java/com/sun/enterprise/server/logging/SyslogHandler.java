@@ -10,7 +10,6 @@ import org.jvnet.hk2.component.Singleton;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.config.support.TranslatedConfigView;
-import com.sun.enterprise.server.logging.Syslog;
 import com.sun.enterprise.v3.common.BooleanLatch;
 
 import java.util.logging.*;
@@ -117,7 +116,7 @@ public class SyslogHandler extends Handler implements PostConstruct, PreDestroy 
         msg = msg +" [ " + slLvl +" glassfish ] " +record.getMessage();
 
          //send message
-        sysLogger.log(Syslog.DAEMON, l, msg);
+        sysLogger.log(Syslog.DAEMON, Syslog.WARNING, msg);
 
     }
 
