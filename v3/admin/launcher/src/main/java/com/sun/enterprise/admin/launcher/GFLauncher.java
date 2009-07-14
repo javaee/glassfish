@@ -447,30 +447,39 @@ public abstract class GFLauncher {
         return ( this.propsToJvmOptions(props) );
     }
     private List<String> getNativePathCommandLine() {
-        // do nothing unless we have something to add.
-        // in that case, concatenate rather than replace.
         List<String> list = new ArrayList<String>();
-        
-        // if not enabled -- fagetaboutit
-        if(profiler == null || !profiler.isEnabled())
-            return list;
-        
-        List<File> profilerNativeFiles = profiler.getNativePath();
-        
-        // if no native path configured -- color me GONE!
-        if(profilerNativeFiles.size() <= 0)
-            return list;
-        
-        // OK -- we have at least one file in the path.  Append it/them...
-        List<File> nativeFiles = GFLauncherUtils.stringToFiles(
-                System.getProperty(JAVA_NATIVE_SYSPROP_NAME));
 
-        // put the existing files first, then append the profiler paths
-        nativeFiles.addAll(profilerNativeFiles);
+        // 1. get the existing native library path that java put together for us.
+        String nativePathsString = System.getProperty(JAVA_NATIVE_SYSPROP_NAME);
+
+        if(!GFLauncherUtils.ok(nativePathsString))
+            nativePathsString = "";
+
+        // 2. Add our lib directory if and only if it does not exist already.
+        // we just append it here because SmartFile is smart and will solve any
+        // problems for us.
+
+        nativePathsString += File.pathSeparator + getInfo().getInstallDir().getAbsolutePath() + "/lib";
+        
+        // 3. convert to List<File>
+        List<File> nativePaths = GFLauncherUtils.stringToFiles(nativePathsString);
+
+        // 4. add Profiler native path(s) if any
+        nativePaths.addAll(getProfilerNativePath());
+
+        // 5. make the command line option
         String nativeCommand = "-D" + JAVA_NATIVE_SYSPROP_NAME + "=";
-        nativeCommand += GFLauncherUtils.fileListToPathString(nativeFiles);
+        nativeCommand += GFLauncherUtils.fileListToPathString(nativePaths);
         list.add(nativeCommand);
         return list;
+    }
+
+    private List<File> getProfilerNativePath() {
+        // if not enabled -- fagetaboutit
+        if(profiler == null || !profiler.isEnabled())
+            return Collections.emptyList();
+        else
+            return profiler.getNativePath();
     }
 
     void logCommandLine() {
