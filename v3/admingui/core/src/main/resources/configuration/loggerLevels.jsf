@@ -57,7 +57,9 @@
 <sun:title id="title" title="$resource{i18n.log.LogLevelsPageTitle}"  helpText="$resource{i18n.log.LogLevelsPageTitleHelp}">
 #include "/configuration/loggerLevelsButtons.jsf"
 </sun:title>
-
+"<br/>
+        <sun:staticText id="text1" text="$resource{i18n.log.LogLevelsPageTitleHelp}" />
+"<br/>
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.log.LoggerLevelTableTitle}"
             deselectMultipleButton="$boolean{true}"
