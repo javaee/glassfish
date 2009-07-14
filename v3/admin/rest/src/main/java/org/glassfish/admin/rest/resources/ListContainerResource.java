@@ -23,9 +23,10 @@ public class ListContainerResource extends TemplateListOfResource<Container> {
 	public ContainerResource getContainerResource(@PathParam("Name") String id) {
 		ContainerResource resource = resourceContext.getResource(ContainerResource.class);
 		for (Container c: entity){
-			if(c.getName().equals(id)){
+                        //FIXME -- Bean no longer derived from Named  
+			/*if(c.getName().equals(id)){
 				resource.setEntity(c);
-			}
+			}*/
 		}
 		return resource;
 	}
