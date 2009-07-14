@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
+import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
 
@@ -57,8 +58,7 @@ public interface LogQuery
     /**
         The lowest supported log level for which queries may be performed.
      */
-    public static final String  LOWEST_SUPPORTED_QUERY_LEVEL  =
-        Level.WARNING.toString();
+    public static final String  LOWEST_SUPPORTED_QUERY_LEVEL  = Level.WARNING.toString();
     
 	/**
 		Query a server log file for records beginning at index <code>startIndex</code>.
@@ -105,11 +105,10 @@ public interface LogQuery
 		                        a field within that log record.
 		@see LogRecordFields
 		@see LogModuleNames
-
-         
+      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
         public LogQueryResult
-    queryServerLog( 
+    queryServerLog(
     	@Param(name="logFilename") String  logFilename,
     	@Param(name="startIndex") long     startIndex,
     	@Param(name="searchForward") boolean searchForward,
@@ -119,19 +118,6 @@ public interface LogQuery
         @Param(name="logLevel") String   logLevel,
         @Param(name="modules") Set<String>      modules,
         @Param(name="nameValuePairs") List<Attribute> 	 nameValuePairs);
-      */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
-        public LogQueryResult
-    queryServerLog(
-    	 String  logFilename,
-    	 long     startIndex,
-    	 boolean searchForward,
-         int     maxRecords,
-         Long    fromTime,
-         Long    toTime,
-         String   logLevel,
-         Set<String>      modules,
-         List<Attribute> 	 nameValuePairs);
     
     /**
         Value for the <code>maximumNumberOfResults</code> parameter to
@@ -154,18 +140,18 @@ public interface LogQuery
     /**
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[] getDiagnosticCauses( String messageID );
+    public String[] getDiagnosticCauses(  @Param(name="messageID") String messageID );
     
     /**
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String[] getDiagnosticChecks( String messageID );
+    public String[] getDiagnosticChecks( @Param(name="messageID") String messageID );
     
     
     /**
      */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    public String getDiagnosticURI( String messageID );
+    public String getDiagnosticURI(  @Param(name="messageID") String messageID );
 	
 }
 

@@ -91,19 +91,16 @@ public interface Logging
           @Param(name="properties") final Map <String, String> properties );
 
     /**
-       		Gets all the logging properties in the logging.properties file
-
-       		
+        Gets all the logging properties in the logging.properties file
      */
-     @ManagedOperation(impact=MBeanOperationInfo.INFO)
+     @ManagedAttribute
      @Description( "Gets all the logging properties" )
      public Map<String, String> getLoggingProperties( );
 
     /**
-       		Gets the configuration properties for logging
+     Gets the configuration properties for logging
      */
-
-     @ManagedOperation(impact=MBeanOperationInfo.INFO)
+     @ManagedAttribute
      @Description( "Get logging configuration properties" )
      public Map<String, String>  getLoggingAttributes( );
 

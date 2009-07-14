@@ -658,6 +658,11 @@ public final class Util
         public static String
     deduceType( final Class<?> intf )
     {
+        if ( intf == null )
+        {
+            throw new IllegalArgumentException( "null interface" );
+        }
+        
         String type = null;
         
         AMXMBeanMetadata meta = null;
