@@ -47,7 +47,7 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.NotificationBuilder;
 import org.glassfish.admin.amx.util.*;
 import com.sun.enterprise.server.logging.GFFileHandler;
-//import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
+import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
 //import com.sun.enterprise.server.logging.ModuleToLoggerNameMapper;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -92,7 +92,7 @@ public final class LoggingImpl extends AMXImplBase
     private static final String	ACCESS_LOG_NAME	= "access.log";
     private final LoggingConfigImpl loggingConfig;
 //    private final GFFileHandler  gfFileHandler;
-//    private final LogFilter logFilter;
+    private final LogFilter logFilter;
     private final Logger logger;
 
     final String  FILE_SEP;
@@ -131,7 +131,7 @@ public final class LoggingImpl extends AMXImplBase
         final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
         loggingConfig = new LoggingConfigImpl();
         loggingConfig.setupConfigDir(env.getConfigDirPath());
-//        logFilter = new LogFilter();
+        logFilter = new LogFilter();
 //        gfFileHandler =   InjectedValues.getInstance().getGFFileHandler();
         logger = Logger.getAnonymousLogger();
 
@@ -299,7 +299,7 @@ public final class LoggingImpl extends AMXImplBase
         }
     }
 
-        public void setLoggingAttributes( final Map<String,String> properties)
+        public void updateLoggingAttributes( final Map<String,String> properties)
     {
         try {
             loggingConfig.updateLoggingProperties(properties);
@@ -470,12 +470,12 @@ public final class LoggingImpl extends AMXImplBase
         String logLevel, Boolean onlyLevel, List listOfModules,
         Properties nameValueMap)
     {
-/*
-        return LogFilter.getLogRecordsUsingQuery(logFilename, fromRecord, next,
+
+        return logFilter.getLogRecordsUsingQuery(logFilename, fromRecord, next,
             forward, requestedCount, fromDate, toDate, logLevel, onlyLevel,
             listOfModules, nameValueMap);
- */
-            return null;
+
+//            return null;
     }
 
         public Map<String,Number>[]
