@@ -493,7 +493,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
         DomainsManager manager = new PEDomainsManager();
 
         manager.createDomain(domainConfig);
-        modifyInitialDomainXml();
+        //modifyInitialDomainXml();
         CLILogger.getInstance().printMessage(getLocalizedString("DomainCreated",
                 new Object[]{domainName}));
         //checkAsadminPrefsFile();
