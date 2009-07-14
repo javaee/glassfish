@@ -1,0 +1,73 @@
+<!DOCTYPE project [
+  <!ENTITY jaxrpctargets SYSTEM "../common/targets.xml">
+]>
+
+<project name="jaxrpc-hello-ejb" default="build" basedir=".">
+
+  <property name="appname" value="MyHelloEJBService"/>
+  <property file="../common/build.properties"/>
+  <property environment="env" />
+
+  <property file="${env.APS_HOME}/config.properties"/>
+  <property file="build.properties"/>
+
+  &jaxrpctargets;
+
+<path id="class.path">
+        <fileset dir="${env.AS_HOME}/modules">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.APS_HOME}/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+
+    </path>
+
+
+  <target name="create-ear" description="Packages the EAR file">
+     <echo message="Creating the EAR...."/>
+     <delete file="${assemble.ear}/${ear.file}" />
+     <delete dir="${assemble.ear}/META-INF" />
+     <copy todir="${assemble.ear}/META-INF/classes/">
+         <fileset dir="${build}/" 
+                  includes="**/*.class" 
+                  excludes="**/*Client.class, **/*.wsdl, **/*mapping.xml"/>
+     </copy>
+     <copy file="${build}/MyHelloService.wsdl" todir="${assemble.ear}/WEB-INF/wsdl" />
+     <copy file="${build}/mapping.xml" todir="${assemble.ear}/${build}/" />
+     <copy file="webservices.xml" todir="${assemble.ear}/META-INF" />
+     <jar destfile="${assemble.ear}/${ear.file}" 
+           >
+       <fileset dir="${assemble.ear}" includes="WEB-INF/**, META-INF/**, build/**" />
+     </jar>
+     <copy file="${assemble.ear}/${ear.file}" todir="." />
+  </target>
+
+  <target name="build" depends="build-service"
+     description="Executes the targets needed to build the service.">
+  </target>
+
+  <target name="deploy" depends="set-asadmin,build,create-ear">
+      <echo message="Deploying ${ear.file} from ${basedir}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="deploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--passwordfile ${admin.password.file}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${ear.file}"/>
+      </exec>
+    </target>
+
+
+  <target name="undeploy">
+    <antcall target="admin_command_common">
+      <param name="admin.command"
+        value="undeploy ${context.path}" />
+    </antcall>
+  </target>
+
+</project>
