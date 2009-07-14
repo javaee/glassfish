@@ -7,12 +7,15 @@ import org.glassfish.tests.utils.Utils;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.Transactions;
+
+import java.util.Collection;
 
 /**
  * This test will ensure that when a class is injected with a parent bean and a child
@@ -57,6 +60,20 @@ public class ParentConfigListenerTest extends ConfigApiTest {
         getHabitat().getComponent(Transactions.class).waitForDrain();
         assertTrue(container.received);
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(container.httpService);
+
+        // let's check that my newly added listener is available in the habitat.
+        Collection<NetworkListener> networkListeners = habitat.getAllByContract(NetworkListener.class);
+        boolean found = false;
+        for (NetworkListener nl : networkListeners) {
+            System.out.println("Network listener " + nl.getName());
+            if (nl.getName().equals("Funky-Listener")) {
+                found=true;
+            }
+        }
+        Assert.assertTrue("Newly added listener not found", found);
+        // direct access.
+        NetworkListener nl = habitat.getComponent(NetworkListener.class, "Funky-Listener");
+        Assert.assertTrue("Direct access to newly added listener failed", nl!=null);
         bean.removeListener(container);
     }
 }
