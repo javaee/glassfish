@@ -102,8 +102,10 @@ public class ASMainStatic extends AbstractMain {
 
         StartupContext sc = getContext(StartupContext.class);
         if (sc==null) {
-            sc = new StartupContext(findBootstrapFile().getParentFile(), args);
+            sc = new StartupContext(findBootstrapFile().getParentFile().getParentFile(), args);
         }
+        super.setContext(sc);
+        
         final File modulesDir = new File(sc.getRootDirectory() , "modules");
         final StartupContext startupContext = sc;
 
