@@ -54,7 +54,10 @@ import java.util.Map;
 @Taxonomy(stability = Stability.EXPERIMENTAL)
 @AMXMBeanMetadata(singleton=true, globalSingleton=true, leaf=true)
 public interface Logging
-	extends LogRecordEmitter, LogQuery, LogFileAccess, LogAnalyzer, AMXProxy
+	extends AMXProxy, LogQuery
+    // LogFileAccess    not implemented yet
+    // LogRecordEmitter    not implemented yet
+    // LogAnalyzer    not implemented yet
 {
    /**
 		Sets the log level of the Logger for the specified module.  This operation

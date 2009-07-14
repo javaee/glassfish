@@ -66,6 +66,10 @@ import java.util.logging.LogRecord;
 
  import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
  
+ import static org.glassfish.admin.amx.logging.LogRecordEmitter.*;
+ import static org.glassfish.admin.amx.logging.LogFileAccess.*;
+ import static org.glassfish.admin.amx.logging.LogAnalyzer.*;
+ 
 //import com.sun.enterprise.server.logging.LoggingImplHook;
 
 /**
