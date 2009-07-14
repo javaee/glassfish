@@ -207,19 +207,19 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                     newResource.setAllowNonComponentCallers(
                                     allownoncomponentcallers);
                     newResource.setStatementCacheSize(statementcachesize);
-                    //if (validationclassname != null) {
-                        //newResource.setValidationClassname(validationclassname);
-                    //}
-                    //newResource.setInitSql(initsql);
-                    //if (sqltracelisteners != null) {
-                        //newResource.setSqlTraceListeners(sqltracelisteners);
-                    //}
+                    if (validationclassname != null) {
+                        newResource.setValidationClassname(validationclassname);
+                    }
+                    newResource.setInitSql(initsql);
+                    if (sqltracelisteners != null) {
+                        newResource.setSqlTraceListeners(sqltracelisteners);
+                    }
                     //newResource.setAssociationsWithThreadConnectionsCount(associatewiththreadconnectionscount);
-                    //newResource.setPooling(pooling);
-                    //newResource.setPing(ping);
-                    //if (driverclassname != null) {
-                        //newResource.setDriverClassname(driverclassname);
-                    //}
+                    newResource.setPooling(pooling);
+                    newResource.setPing(ping);
+                    if (driverclassname != null) {
+                        newResource.setDriverClassname(driverclassname);
+                    }
                     
                     if (description != null) {
                         newResource.setDescription(description);
