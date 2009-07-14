@@ -38,6 +38,8 @@ package org.glassfish.web.admin.cli;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Collection;
+import java.lang.reflect.Field;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
@@ -62,9 +64,13 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Transactions;
 
 /**
  * Create Http Listener Command
@@ -123,6 +129,9 @@ public class CreateHttpListener implements AdminCommand {
     @Inject
     Configs configs;
 
+    @Inject
+    Habitat habitat;
+
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
      * the values the parameter values
@@ -135,15 +144,98 @@ public class CreateHttpListener implements AdminCommand {
         Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
         HttpService httpService = config.getHttpService();
-        // ensure we don't already have one of this name
-        for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
-            if (listener.getName().equals(listenerId)) {
-                report.setMessage(localStrings.getLocalString("create.http.listener.duplicate",
-                    "Http Listener named {0} already exists.", listenerId));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
+        if (!(verifyUniqueName(report, networkConfig) && verifyUniquePort(report, networkConfig)
+            && verifyDefaultVirtualServer(report, httpService))) {
+            return;
         }
+        VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
+        try {
+            final Transport transport = createOrGetTransport(networkConfig);
+            final Protocol protocol = createProtocol(networkConfig);
+            final ThreadPool threadPool = getThreadPool(networkConfig);
+
+            createNetworkListener(networkConfig, transport, protocol, threadPool);
+            updateVirtualServer(vs);
+
+        } catch (TransactionFailure e) {
+            report.setMessage(localStrings.getLocalString("create.http.listener.fail",
+                "Creation of: " + listenerId + "failed because of: " + e.getMessage(), listenerId, e.getMessage()));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(e);
+            return;
+        }
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private void updateVirtualServer(VirtualServer vs) throws TransactionFailure {
+        //now change the associated virtual server
+        ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+            public Object run(VirtualServer avs) throws PropertyVetoException {
+                String DELIM = ",";
+                String lss = avs.getNetworkListeners();
+                boolean listenerShouldBeAdded = true;
+                if (lss == null || lss.length() == 0) {
+                    lss = listenerId; //the only listener in the list
+                } else if (!lss.contains(listenerId)) { //listener does not already exist
+                    if (!lss.endsWith(DELIM)) {
+                        lss += DELIM;
+                    }
+                    lss += listenerId;
+                } else { //listener already exists in the list, do nothing
+                    listenerShouldBeAdded = false;
+                }
+                if (listenerShouldBeAdded) {
+                    avs.setNetworkListeners(lss);
+                }
+                return avs;
+            }
+        }, vs);
+    }
+
+    private void createNetworkListener(NetworkConfig networkConfig, final Transport transport, final Protocol protocol,
+        final ThreadPool threadPool) throws TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
+            public Object run(NetworkListeners listenersParam)
+                throws TransactionFailure {
+                final NetworkListener newListener = listenersParam.createChild(NetworkListener.class);
+                newListener.setName(listenerId);
+                newListener.setAddress(listenerAddress);
+                newListener.setPort(listenerPort);
+                newListener.setTransport(transport.getName());
+                newListener.setProtocol(protocol.getName());
+                newListener.setThreadPool(threadPool.getName());
+                newListener.setEnabled(enabled.toString());
+                //add properties
+/*
+                        if (properties != null) {
+                            for (Map.Entry entry : properties.entrySet()) {
+                                Property property = newListener.createChild(Property.class);
+                                property.setName((String) entry.getKey());
+                                property.setValue((String) entry.getValue());
+                                newListener.getProperty().add(property);
+                            }
+                        }
+*/
+                listenersParam.getNetworkListener().add(newListener);
+                return newListener;
+            }
+        }, networkConfig.getNetworkListeners());
+        habitat.getComponent(Transactions.class).waitForDrain();
+    }
+
+    private boolean verifyDefaultVirtualServer(ActionReport report, HttpService httpService) {
+        //no need to check the other things (e.g. id) for uniqueness
+        // ensure that the specified default virtual server exists
+        if (!defaultVirtualServerExists(httpService)) {
+            report.setMessage(localStrings.getLocalString("create.http.listener.vs.notexists",
+                "Virtual Server, {0} doesn't exist", defaultVirtualServer));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean verifyUniquePort(ActionReport report, NetworkConfig networkConfig) {
         //check port uniqueness, only for same address
         for (NetworkListener listener : networkConfig.getNetworkListeners()
             .getNetworkListener()) {
@@ -154,105 +246,72 @@ public class CreateHttpListener implements AdminCommand {
                     .getLocalString("port.occupied", def, listenerPort, listener.getName(), listenerAddress);
                 report.setMessage(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+                return false;
             }
         }
-        //no need to check the other things (e.g. id) for uniqueness
-        // ensure that the specified default virtual server exists
-        if (!defaultVirtualServerExists(httpService)) {
-            report.setMessage(localStrings.getLocalString("create.http.listener.vs.notexists",
-                "Virtual Server, {0} doesn't exist", defaultVirtualServer));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-        VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
-        try {
-            ConfigSupport.apply(new SingleConfigCode<NetworkConfig>() {
-                public Object run(final NetworkConfig configParam) throws TransactionFailure {
-                    return ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
-                        public Object run(NetworkListeners listenersParam)
-                            throws TransactionFailure, PropertyVetoException {
-                            final NetworkListener newListener = listenersParam.createChild(NetworkListener.class);
-                            newListener.setName(listenerId);
-                            newListener.setAddress(listenerAddress);
-                            newListener.setPort(listenerPort);
-                            createOrSetTransport(configParam, newListener);
-                            createProtocol(configParam, newListener);
-                            setThreadPool(configParam, newListener);
-                            //add properties
-/*
-                            if (properties != null) {
-                                for (Map.Entry entry : properties.entrySet()) {
-                                    Property property = newListener.createChild(Property.class);
-                                    property.setName((String) entry.getKey());
-                                    property.setValue((String) entry.getValue());
-                                    newListener.getProperty().add(property);
-                                }
-                            }
-*/
-                            listenersParam.getNetworkListener().add(newListener);
-                            return newListener;
-                        }
-                    }, configParam.getNetworkListeners());
-                }
-            }, networkConfig);
-            //now change the associated virtual server
-            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                public Object run(VirtualServer avs) throws PropertyVetoException {
-                    String DELIM = ",";
-                    String lss = avs.getNetworkListeners();
-                    boolean listenerShouldBeAdded = true;
-                    if (lss == null || lss.length() == 0) {
-                        lss = listenerId; //the only listener in the list
-                    } else if (!lss.contains(listenerId)) { //listener does not already exist
-                        if (!lss.endsWith(DELIM)) {
-                            lss += DELIM;
-                        }
-                        lss += listenerId;
-                    } else { //listener already exists in the list, do nothing
-                        listenerShouldBeAdded = false;
-                    }
-                    if (listenerShouldBeAdded) {
-                        avs.setNetworkListeners(lss);
-                    }
-                    return avs;
-                }
-            }, vs);
-
-        }
-        catch (
-            TransactionFailure e
-            ) {
-            String actual = e.getMessage();
-            String def = "Creation of: " + listenerId + "failed because of: " + actual;
-            String msg = localStrings.getLocalString("create.http.listener.fail", def, listenerId, actual);
-            report.setMessage(msg);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-            return;
-        }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        return true;
     }
 
-    private void setThreadPool(NetworkConfig config, NetworkListener newListener) {
+    private boolean verifyUniqueName(ActionReport report, NetworkConfig networkConfig) {
+        // ensure we don't already have one of this name
+        for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
+            if (listener.getName().equals(listenerId)) {
+                report.setMessage(localStrings.getLocalString("create.http.listener.duplicate",
+                    "Http Listener named {0} already exists.", listenerId));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void registerWithHabitat(NetworkListener newListener) {
+        Dom dom = Dom.unwrap(newListener);
+        habitat.add(dom);
+        String key = dom.getKey();
+        for (String contract : getContracts(dom.model)) {
+            habitat.addIndex(dom, contract, key);
+        }
+        if (key != null) {
+            habitat.addIndex(dom, dom.model.targetTypeName, key);
+        }
+        dom.initializationCompleted();
+    }
+
+    private Collection<String> getContracts(ConfigModel model) {
+        Field field;
+        try {
+            field = model.getClass().getDeclaredField("contracts");
+            field.setAccessible(true);
+            final Object value = field.get(model);
+            return (Collection<String>) value;
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private ThreadPool getThreadPool(NetworkConfig config) {
         final List<ThreadPool> pools = config.getParent(Config.class).getThreadPools().getThreadPool();
+        ThreadPool target = null;
         for (ThreadPool pool : pools) {
             if ("http-thread-pool".equals(pool.getName())) {
-                newListener.setThreadPool(pool.getName());
+                target = pool;
             }
         }
-        if (newListener.getThreadPool() == null && !pools.isEmpty()) {
-            newListener.setThreadPool(pools.get(0).getName());
+        if (target == null && !pools.isEmpty()) {
+            target = pools.get(0);
         }
+        return target;
     }
 
-    private Transport createOrSetTransport(NetworkConfig config, NetworkListener listener)
+    private Transport createOrGetTransport(NetworkConfig config)
         throws TransactionFailure {
         final Transports transports = config.getTransports();
         Transport transport = null;
         for (Transport item : transports.getTransport()) {
             if ("tcp".equals(item.getName())) {
-                listener.setTransport(item.getName());
                 transport = item;
             }
         }
@@ -266,12 +325,11 @@ public class CreateHttpListener implements AdminCommand {
                     return newTransport;
                 }
             }, config.getTransports());
-            listener.setTransport(transport.getName());
         }
         return transport;
     }
 
-    private Protocol createProtocol(NetworkConfig config, final NetworkListener listener)
+    private Protocol createProtocol(NetworkConfig config)
         throws TransactionFailure {
         return (Protocol) ConfigSupport.apply(new SingleConfigCode<Protocols>() {
             public Object run(Protocols param) throws TransactionFailure {
@@ -279,13 +337,11 @@ public class CreateHttpListener implements AdminCommand {
                 protocol.setSecurityEnabled(securityEnabled.toString());
                 protocol.setName(listenerId);
                 param.getProtocol().add(protocol);
-                listener.setProtocol(protocol.getName());
                 final Http http = protocol.createChild(Http.class);
                 http.setDefaultVirtualServer(defaultVirtualServer);
                 //listener.setRedirectPort(redirectPort) FIXME: Applicable only in case of cluster or enterprise profile
                 http.setXpoweredBy(xPoweredBy.toString());
                 //listener.Ssl(ssl); FIXME
-                listener.setEnabled(enabled.toString());
                 http.setServerName(serverName);
                 protocol.setHttp(http);
                 return protocol;
