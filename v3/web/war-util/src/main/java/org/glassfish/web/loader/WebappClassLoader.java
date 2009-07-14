@@ -360,7 +360,7 @@ public class WebappClassLoader
      * The list of JARs, in the order they should be searched
      * for locally loaded classes or resources.
      */
-    protected String[] jarNames = new String[0];
+    protected List<String> jarNames = new ArrayList<String>();
 
 
     /**
@@ -694,7 +694,7 @@ public class WebappClassLoader
     }
 
 
-    synchronized public void addJar(String jar, JarFile jarFile, File file)
+    public synchronized void addJar(String jar, JarFile jarFile, File file)
         throws IOException {
 
         if (jar == null)
@@ -712,16 +712,10 @@ public class WebappClassLoader
         if ((jarPath != null) && (jar.startsWith(jarPath))) {
 
             String jarName = jar.substring(jarPath.length());
-            while (jarName.startsWith("/"))
+            while (jarName.startsWith("/")) {
                 jarName = jarName.substring(1);
-
-            String[] result = new String[jarNames.length + 1];
-            for (i = 0; i < jarNames.length; i++) {
-                result[i] = jarNames[i];
             }
-            result[jarNames.length] = jarName;
-            jarNames = result;
-
+            jarNames.add(jarName);
         }
 
         try {
@@ -805,7 +799,7 @@ public class WebappClassLoader
             }
         }
 
-        length = jarNames.length;
+        length = jarNames.size();
 
         // Check if JARs have been added or removed
         if (getJarPath() != null) {
@@ -822,7 +816,7 @@ public class WebappClassLoader
                     if (!name.endsWith(".jar") && !name.endsWith(".zip"))
 // END OF IASRI 4657979
                         continue;
-                    if (!name.equals(jarNames[i])) {
+                    if (!name.equals(jarNames.get(i))) {
                         // Missing JAR
                         logger.finer("    Additional JARs have been added : '"
                                  + name + "'");
@@ -843,7 +837,7 @@ public class WebappClassLoader
                             return (true);
                         }
                     }
-                } else if (i < jarNames.length) {
+                } else if (i < jarNames.size()) {
                     // There was less JARs
                     logger.finer("    Additional JARs have been added");
                     return (true);
@@ -1748,7 +1742,7 @@ public class WebappClassLoader
         jarFiles = null;
         jarRealFiles = null;
         jarPath = null;
-        jarNames = null;
+        jarNames.clear();
         lastModifiedDates = null;
         paths = null;
         hasExternalRepositories = false;
