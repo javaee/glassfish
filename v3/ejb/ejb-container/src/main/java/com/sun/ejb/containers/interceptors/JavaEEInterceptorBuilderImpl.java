@@ -111,6 +111,12 @@ public class JavaEEInterceptorBuilderImpl implements JavaEEInterceptorBuilder {
 
     }
 
+    public void addRuntimeInterceptor(Object interceptor) {
+
+        interceptorManager.registerRuntimeInterceptor(interceptor);
+
+    }
+
 
 }
 

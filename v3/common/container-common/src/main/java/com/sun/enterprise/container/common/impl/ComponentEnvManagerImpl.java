@@ -528,7 +528,7 @@ public class ComponentEnvManagerImpl
     /**
      * Generate a unique id name for each J2EE component.
      */
-    private String getComponentEnvId(JndiNameEnvironment env) {
+    public String getComponentEnvId(JndiNameEnvironment env) {
 	    String id = null;
 
         if (env instanceof EjbDescriptor) {
@@ -556,6 +556,10 @@ public class ComponentEnvManagerImpl
                 ID_SEPARATOR + appEnv.getMainClassName();
         } else if( env instanceof ManagedBeanDescriptor ) {
             id = ((ManagedBeanDescriptor) env).getGlobalJndiName();
+        } else if( env instanceof EjbBundleDescriptor ) {
+            EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) env;
+            id = "__ejbBundle__" + ID_SEPARATOR + ejbBundle.getApplication().getName() +
+                    ID_SEPARATOR + ejbBundle.getModuleName();                  
         }
 
         if(_logger.isLoggable(Level.FINE)) {
@@ -572,6 +576,9 @@ public class ComponentEnvManagerImpl
             // EJB component
 	        EjbDescriptor ejbEnv = (EjbDescriptor) env;
             appName = ejbEnv.getApplication().getAppName();
+        } else if ( env instanceof EjbBundleDescriptor ) {
+             EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) env;
+            appName = ejbBundle.getApplication().getAppName();
         } else if (env instanceof WebBundleDescriptor) {
             WebBundleDescriptor webEnv = (WebBundleDescriptor) env;
 	        appName = webEnv.getApplication().getAppName();
@@ -598,6 +605,9 @@ public class ComponentEnvManagerImpl
             // EJB component
             EjbDescriptor ejbEnv = (EjbDescriptor) env;
             EjbBundleDescriptor ejbBundle = ejbEnv.getEjbBundleDescriptor();
+            moduleName = ejbBundle.getModuleDescriptor().getModuleName();
+        } else if( env instanceof EjbBundleDescriptor ) {
+            EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) env;
             moduleName = ejbBundle.getModuleDescriptor().getModuleName();
         } else if (env instanceof WebBundleDescriptor) {
             WebBundleDescriptor webEnv = (WebBundleDescriptor) env;

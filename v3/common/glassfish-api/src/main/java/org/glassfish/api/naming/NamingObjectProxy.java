@@ -67,4 +67,10 @@ public interface NamingObjectProxy {
     public Object create(Context ic)
             throws NamingException;
 
+    /**
+     * Special Naming Object proxy whose first create() call replaces
+     * itself in naming service. 
+     */
+    public interface InitializationNamingObjectProxy extends NamingObjectProxy {}
+
 }

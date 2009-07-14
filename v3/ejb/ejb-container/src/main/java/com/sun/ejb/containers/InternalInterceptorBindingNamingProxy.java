@@ -42,6 +42,7 @@ import com.sun.ejb.EjbInvocation;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.NamingException;
 
@@ -55,6 +56,9 @@ import javax.naming.NamingException;
 public class InternalInterceptorBindingNamingProxy
         implements NamedNamingObjectProxy {
 
+    @Inject
+    private Habitat habitat;
+
     private static final String INTERCEPTOR_BINDING
             = "java:org.glassfish.ejb.container.interceptor_binding_spi";
 
@@ -63,7 +67,7 @@ public class InternalInterceptorBindingNamingProxy
         Object returnValue = null;
 
         if (INTERCEPTOR_BINDING.equals(name)) {
-            returnValue = new InternalInterceptorBindingImpl();
+            returnValue = new InternalInterceptorBindingImpl(habitat);
         }
 
         return returnValue;

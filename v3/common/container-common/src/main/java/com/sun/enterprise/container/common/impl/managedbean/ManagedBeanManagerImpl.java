@@ -42,6 +42,9 @@ import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 import java.lang.reflect.Method;
+import java.lang.reflect.Member;
+import java.lang.reflect.Field;
+import java.lang.annotation.Annotation;
 
 
 import org.glassfish.api.managedbean.ManagedBeanManager;
@@ -187,36 +190,32 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                     Set<String> interceptorClasses = next.getAllInterceptorClasses();
 
 
-                    if( !interceptorClasses.isEmpty() || next.hasAroundInvokeMethod()) {
-
-
-                        Class targetClass = bundle.getClassLoader().loadClass(next.getBeanClassName());
-                        InterceptorInfo interceptorInfo = new InterceptorInfo();
-                        interceptorInfo.setTargetClass(targetClass);
-                        interceptorInfo.setInterceptorClassNames(next.getAllInterceptorClasses());
-                        interceptorInfo.setPostConstructInterceptors
-                                (next.getCallbackInterceptors(LifecycleCallbackDescriptor.CallbackType.POST_CONSTRUCT));
-                          interceptorInfo.setPreDestroyInterceptors
-                                (next.getCallbackInterceptors(LifecycleCallbackDescriptor.CallbackType.PRE_DESTROY));
-                        if( next.hasAroundInvokeMethod() ) {
-                            interceptorInfo.setHasTargetClassAroundInvoke(true);
-                        }
-
-                        Map<Method, List> interceptorChains = new HashMap<Method, List>();
-                        for(Method m : targetClass.getMethods()) {
-                            interceptorChains.put(m, next.getAroundInvokeInterceptors(m) );
-                        }
-
-                        interceptorInfo.setAroundInvokeInterceptorChains(interceptorChains);
-
-                        JavaEEInterceptorBuilderFactory interceptorBuilderFactory =
-                                habitat.getByContract(JavaEEInterceptorBuilderFactory.class);
-
-                        JavaEEInterceptorBuilder builder = interceptorBuilderFactory.createBuilder(interceptorInfo);
-
-                        next.setInterceptorBuilder(builder);   
-
+                    Class targetClass = bundle.getClassLoader().loadClass(next.getBeanClassName());
+                    InterceptorInfo interceptorInfo = new InterceptorInfo();
+                    interceptorInfo.setTargetClass(targetClass);
+                    interceptorInfo.setInterceptorClassNames(interceptorClasses);
+                    interceptorInfo.setPostConstructInterceptors
+                            (next.getCallbackInterceptors(LifecycleCallbackDescriptor.CallbackType.POST_CONSTRUCT));
+                      interceptorInfo.setPreDestroyInterceptors
+                            (next.getCallbackInterceptors(LifecycleCallbackDescriptor.CallbackType.PRE_DESTROY));
+                    if( next.hasAroundInvokeMethod() ) {
+                        interceptorInfo.setHasTargetClassAroundInvoke(true);
                     }
+
+                    Map<Method, List> interceptorChains = new HashMap<Method, List>();
+                    for(Method m : targetClass.getMethods()) {
+                        interceptorChains.put(m, next.getAroundInvokeInterceptors(m) );
+                    }
+
+                    interceptorInfo.setAroundInvokeInterceptorChains(interceptorChains);
+
+                    JavaEEInterceptorBuilderFactory interceptorBuilderFactory =
+                            habitat.getByContract(JavaEEInterceptorBuilderFactory.class);
+
+                    JavaEEInterceptorBuilder builder = interceptorBuilderFactory.createBuilder(interceptorInfo);
+
+                    next.setInterceptorBuilder(builder);
+
 
                     compEnvManager.bindToComponentNamespace(next);
 
@@ -231,6 +230,26 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                     " with name = " + next.getName(), e);
                 }
             }
+        }
+
+    }
+
+    /**
+     * Apply a runtime interceptor instance to all managed beans in the given module
+     * @param interceptorInstance
+     * @param bundle bundle descripto
+     *
+     */
+    public void registerRuntimeInterceptor(Object interceptorInstance, Object bundle) {
+
+
+        for(ManagedBeanDescriptor next : ((BundleDescriptor) bundle).getManagedBeans()) {
+
+            JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
+                       next.getInterceptorBuilder();
+
+            interceptorBuilder.addRuntimeInterceptor(interceptorInstance);
+
         }
 
     }
@@ -251,26 +270,15 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
 
             for(ManagedBeanDescriptor next : bundle.getManagedBeans()) {
 
-                com.sun.enterprise.container.common.spi.util.InjectionManager injectionMgr =
-                    habitat.getByContract(com.sun.enterprise.container.common.spi.util.InjectionManager.class);
-
                 for(Object instance : next.getBeanInstances()) {
 
                     InterceptorInvoker invoker = (InterceptorInvoker)
                             next.getInterceptorInfoForBeanInstance(instance);
 
-                    if( invoker == null ) {
-                        try {
-                            injectionMgr.invokeInstancePreDestroy(instance, next);
-                        } catch(Exception e) {
-                            _logger.log(Level.FINE, "Managed bean " + next.getBeanClassName() + " PreDestroy", e);
-                        }
-                    } else {
-                        try {
-                            invoker.invokePreDestroy();
-                        } catch(Exception e) {
-                            _logger.log(Level.FINE, "Managed bean " + next.getBeanClassName() + " PreDestroy", e);
-                        }
+                    try {
+                        invoker.invokePreDestroy();
+                    } catch(Exception e) {
+                        _logger.log(Level.FINE, "Managed bean " + next.getBeanClassName() + " PreDestroy", e);
                     }
 
                 }
@@ -319,5 +327,142 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
         return eligible;
     }
 
+    public Object resolveInjectionPoint(java.lang.reflect.Member member, Application app)
+        throws javax.naming.NamingException {
+
+        Object result = null;
+
+        Field field = null;
+        Method method = null;
+        Annotation[] annotations;
+
+
+        if( member instanceof Field ) {
+            field = (Field) member;
+            annotations = field.getDeclaredAnnotations();
+        } else if( member instanceof Method ) {
+            method = (Method) member;
+            annotations = method.getDeclaredAnnotations();
+        } else {
+            throw new IllegalArgumentException("Member must be Field or Method");
+        }
+
+        Annotation envAnnotation = getEnvAnnotation(annotations);
+
+        if( envAnnotation == null ) {
+            throw new IllegalArgumentException("No Java EE env dependency annotation found on " +
+                   member);
+        }
+
+        String envAnnotationName = null;
+        try {
+
+            Method m = envAnnotation.annotationType().getDeclaredMethod("name");
+            envAnnotationName = (String) m.invoke(envAnnotation);
+
+        } catch(Exception e) {
+            throw new IllegalArgumentException("Invalid annotation : must have name() attribute " +
+                           envAnnotation.toString(), e);
+        }
+
+        String envDependencyName = envAnnotationName;
+        Class declaringClass = member.getDeclaringClass();
+
+        if( (envAnnotationName == null) || envAnnotationName.equals("") ) {
+            if( field != null ) {
+                envDependencyName = declaringClass.getName() + "/" + field.getName();
+            } else {
+                envDependencyName = declaringClass.getName() + "/" +
+                        getInjectionMethodPropertyName(method);
+            }
+        }
+
+        if( envAnnotationName.startsWith("java:global/") ) {
+
+            javax.naming.Context ic = namingManager.getInitialContext();
+            result = ic.lookup(envAnnotationName);
+
+        } else {
+
+            BundleDescriptor matchingBundle = null;
+
+            for(BundleDescriptor bundle : app.getBundleDescriptors()) {
+
+                if( (bundle instanceof EjbBundleDescriptor) ||
+                    (bundle instanceof WebBundleDescriptor) ) {
+
+                    JndiNameEnvironment jndiEnv = (JndiNameEnvironment) bundle;
+
+                    // TODO normalize for java:comp/env/ prefix
+                    for(InjectionCapable next :
+                            jndiEnv.getInjectableResourcesByClass(declaringClass.getName())) {
+                        if( next.getComponentEnvName().equals(envDependencyName) ) {
+                            matchingBundle = bundle;
+                            break;
+                        }
+                    }
+                }
+
+                if( matchingBundle != null ) {
+                    break;
+                }
+            }
+
+            if( matchingBundle == null ) {
+                throw new IllegalArgumentException("Cannot find matching env dependency for " +
+                  member + " in Application " + app.getAppName());
+            }
+
+            String componentId = compEnvManager.getComponentEnvId((JndiNameEnvironment)matchingBundle);
+            String lookupName = envDependencyName.startsWith("java:") ?
+                    envDependencyName : "java:comp/env/" + envDependencyName;
+            result = namingManager.lookup(componentId, lookupName);
+
+        }
+
+        return result;
+
+    }
+
+    private String getInjectionMethodPropertyName(Method method)
+    {
+        String methodName = method.getName();
+        String propertyName = methodName;
+
+        if( (methodName.length() > 3) &&
+            methodName.startsWith("set") ) {
+            // Derive javabean property name.
+            propertyName =
+                methodName.substring(3, 4).toLowerCase() +
+                methodName.substring(4);
+        } else {
+           throw new IllegalArgumentException("Illegal env dependency setter name" +
+            method.getName());
+        }
+
+        return propertyName;
+    }
+
+
+    private Annotation getEnvAnnotation(Annotation[] annotations) {
+
+        Annotation envAnnotation = null;
+
+        for(Annotation next : annotations) {
+
+            String className = next.annotationType().getName();
+            if( className.equals("javax.ejb.EJB") ||
+                className.equals("javax.annotation.Resource") ||
+                className.equals("javax.persistence.PersistenceContext") ||
+                className.equals("javax.persistence.PersistenceUnit") ||
+                className.equals("javax.xml.ws.WebServiceRef") ) {
+                envAnnotation = next;
+                break;
+            }
+        }
+      
+        return envAnnotation;
+
+    }
 
 }

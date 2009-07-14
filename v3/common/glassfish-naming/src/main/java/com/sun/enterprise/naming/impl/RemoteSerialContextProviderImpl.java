@@ -110,9 +110,17 @@ public class RemoteSerialContextProviderImpl
                 }
 
 		    } else if (obj instanceof NamingObjectProxy) {
+
+                NamingObjectProxy namingProxy = (NamingObjectProxy) obj;
+
                 //this call will make sure that the actual object is initialized
-                ((NamingObjectProxy) obj).create(new InitialContext());
-                return super.lookup(name);
+                obj  = ((NamingObjectProxy) obj).create(new InitialContext());
+
+		// If it's an InitialNamingProxy, ignore the result of the
+		// create() call and re-lookup the name.
+                if( namingProxy instanceof NamingObjectProxy.InitializationNamingObjectProxy ) {
+                    return super.lookup(name);
+                }
             }
 	    } catch(Exception e) {
 	        RemoteException re = new RemoteException("", e);

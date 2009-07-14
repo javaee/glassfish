@@ -46,6 +46,15 @@ import org.glassfish.api.deployment.DeploymentContext;
  */
 
 @Contract
-public interface ManagedBeanManager {    
+public interface ManagedBeanManager {
+
+    /**
+     * Register an interceptor instance for all managed beans in the given module
+     *
+     * @param interceptorInstance
+     * @param bundle BundleDescriptor (passed as object because we can't
+     *        add a dependency on the DOL
+     */
+    public void registerRuntimeInterceptor(Object interceptorInstance, Object bundle);
 
 }

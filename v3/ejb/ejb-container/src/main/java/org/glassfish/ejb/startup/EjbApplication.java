@@ -32,6 +32,7 @@ import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
@@ -71,6 +72,7 @@ import java.io.IOException;
 public class EjbApplication
         implements ApplicationContainer<Collection<EjbDescriptor>> {
 
+    private EjbBundleDescriptor ejbBundle;
     private Collection<EjbDescriptor> ejbs;
     private Collection<Container> containers = new ArrayList();
     private ClassLoader ejbAppClassLoader;
@@ -94,10 +96,11 @@ public class EjbApplication
     // TODO: move restoreEJBTimers to correct location
 
     public EjbApplication(
-            Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
+            EjbBundleDescriptor bundle, DeploymentContext dc,
             ClassLoader cl, Habitat habitat, 
             EJBSecurityManagerFactory ejbSecMgrFactory) {
-        this.ejbs = bundleDesc;
+        this.ejbBundle = bundle;
+        this.ejbs = bundle.getEjbs();
         this.ejbAppClassLoader = cl;
         this.dc = dc;
         this.habitat = habitat;
@@ -108,6 +111,10 @@ public class EjbApplication
     
     public Collection<EjbDescriptor> getDescriptor() {
         return ejbs;
+    }
+
+    public EjbBundleDescriptor getEjbBundleDescriptor() {
+        return ejbBundle;
     }
 
     public boolean start(ApplicationContext startupContext) throws Exception {

@@ -386,6 +386,13 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                     try {
                         if (extension.getValue()==null) {
                             RootDeploymentDescriptor o = extension.getKey().getDefaultDescriptor();
+
+
+                            if( o != null ) {
+                                o.setModuleDescriptor(descriptor.getModuleDescriptor());
+                            }
+                          
+
                             processAnnotations(o, extension.getKey().getScanner(), archive);
                             if (o!=null && !o.isEmpty() && (o instanceof RootDeploymentDescriptor)) {
                                 extension.getKey().addExtension(descriptor, o);

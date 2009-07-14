@@ -36,13 +36,22 @@
 
 package com.sun.ejb.containers;
 
+import com.sun.ejb.Container;
+
 import org.glassfish.ejb.api.EjbContainerServices;
 import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+
+import javax.ejb.NoSuchEJBException;
+import javax.ejb.EJBException;
+
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
 /**
  *
@@ -57,25 +66,128 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
 
     }
 
-    public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> sClass) {
+    public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> businessInterface) {
 
-        return null;
+        EJBLocalObjectImpl localObjectImpl = getEJBLocalObject(ejbRef);
+
+        if( localObjectImpl == null ) {
+            throw new IllegalStateException("Invalid ejb ref");
+        }
+
+        Container container = localObjectImpl.getContainer();
+        EjbDescriptor ejbDesc = container.getEjbDescriptor();
+
+        S businessObject = null;
+
+        if (businessInterface != null) {
+            String intfName = businessInterface.getName();
+
+            if ((localObjectImpl != null) &&
+                    ejbDesc.getLocalBusinessClassNames().contains(intfName)) {
+
+                // Get proxy corresponding to this business interface.
+                businessObject = (S) localObjectImpl.getClientObject(intfName);
+
+            } else if( ejbDesc.isLocalBean() && intfName.equals( ejbDesc.getEjbClassName() ) ) {
+
+                businessObject = (S) localObjectImpl.getClientObject(ejbDesc.getEjbClassName());
+
+            }
+        }
+
+        if( businessObject == null ) {
+            throw new IllegalStateException("Unable to convert ejbRef for ejb " +
+            ejbDesc.getName() + " to a business object of type " + businessInterface);
+        }        
+
+        return businessObject;
 
     }
 
     public void remove(Object ejbRef) {
 
-        
-        try {
-            InvocationHandler invHandler = Proxy.getInvocationHandler(ejbRef);
-        } catch(IllegalArgumentException iae) {
+        EJBLocalObjectImpl localObjectImpl = getEJBLocalObject(ejbRef);
 
+        if( localObjectImpl == null ) {
+            throw new UnsupportedOperationException("Invalid ejb ref");
+        }
 
+        Container container = localObjectImpl.getContainer();
+        EjbDescriptor ejbDesc = container.getEjbDescriptor();
+        boolean isStatefulBean = false;
+
+        if( ejbDesc.getType().equals(EjbSessionDescriptor.TYPE) ) {
+
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+            isStatefulBean = sessionDesc.isStateful();
 
         }
 
-        
+        if( !isStatefulBean ) {
+            throw new UnsupportedOperationException("ejbRef for ejb " +
+                    ejbDesc.getName() + " is not a stateful bean ");
+        }
 
+        try {
+            localObjectImpl.remove();
+        } catch(Exception e) {
+            throw new NoSuchEJBException(e.getMessage(), e);
+        }
+
+    }
+
+    private EJBLocalObjectImpl getEJBLocalObject(Object ejbRef) {
+
+        // ejbRef is assumed to be either a local business view or
+        // no-interface view
+
+        EJBLocalObjectInvocationHandlerDelegate localObj = null;
+
+        // First try to convert it as a local or remote business interface object
+        try {
+
+            localObj = (EJBLocalObjectInvocationHandlerDelegate) Proxy.getInvocationHandler(ejbRef);
+            
+        } catch(IllegalArgumentException iae) {
+
+            Proxy proxy;
+
+            if( ejbRef instanceof OptionalLocalInterfaceProvider ) {
+
+                try {
+
+                     Field proxyField = ejbRef.getClass().getDeclaredField("__ejb31_delegate");
+
+                     final Field finalF = proxyField;
+                        java.security.AccessController.doPrivileged(
+                        new java.security.PrivilegedExceptionAction() {
+                            public java.lang.Object run() throws Exception {
+                                if( !finalF.isAccessible() ) {
+                                    finalF.setAccessible(true);
+                                }
+                                return null;
+                            }
+                        });
+
+                      proxy = (Proxy) proxyField.get(ejbRef);
+
+                } catch(Exception e) {
+
+                    throw new IllegalArgumentException("Invalid ejb ref", e);
+                }
+
+                              
+                try {
+
+                    localObj = (EJBLocalObjectInvocationHandlerDelegate)
+                            Proxy.getInvocationHandler(proxy);
+
+                } catch(IllegalArgumentException i) {}                      
+
+            }
+        }
+
+        return (localObj != null) ?  localObj.getDelegate() : null;
     }
 
 }

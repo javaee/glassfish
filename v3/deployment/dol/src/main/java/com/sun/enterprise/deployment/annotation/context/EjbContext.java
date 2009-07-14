@@ -156,7 +156,7 @@ public class EjbContext extends ResourceContainerContextImpl {
             return(result.toArray(new HandlerChainContainer[0]));
         } else {
             List<ServiceReferenceDescriptor> result = new ArrayList<ServiceReferenceDescriptor>();
-            result.addAll(getDescriptor().getEjbBundleDescriptor().getServiceReferenceDescriptors());
+            result.addAll(getDescriptor().getEjbBundleDescriptor().getEjbServiceReferenceDescriptors());
             return(result.toArray(new HandlerChainContainer[0]));
         }
     }    

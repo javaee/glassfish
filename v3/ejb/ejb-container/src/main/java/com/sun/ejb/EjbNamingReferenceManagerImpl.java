@@ -48,6 +48,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import javax.naming.Context;
+import com.sun.enterprise.util.Utility;
 
 import org.omg.CORBA.ORB;
 import java.util.Properties;
@@ -94,10 +95,40 @@ public class EjbNamingReferenceManagerImpl
          */
         if( !ejbRefDesc.isLocal() ) {
 
+
+
             // Get actual jndi-name from ejb module.
             String remoteJndiName = EJBUtils.getRemoteEjbJndiName(ejbRefDesc);
 
+            // We could be resolving an ejb-ref as part of a remote lookup thread.  In that
+            // case the context class loader won't be set appropriately on the thread
+            // being used to process the remote naming request.   We can't just always
+            // set the context class loader to the class loader of the application module
+            // that defined the ejb reference.  That would cause ClassCastExceptions
+            // when the returned object is assigned within a cross-application intra-server
+            // lookup. So, just try to lookup the interface associated with the ejb-ref
+            // using the context class loader.  If that doesn't work, explicitly use the
+            // defining application's class loader.
+
+            ClassLoader origClassLoader = Utility.getClassLoader();
+            boolean setCL = false;
+
             try {
+
+                try {
+                    
+                    String refInterface = ejbRefDesc.isEJB30ClientView() ?
+                       ejbRefDesc.getEjbInterface() : ejbRefDesc.getHomeClassName();
+                    origClassLoader.loadClass(refInterface);
+
+                } catch(ClassNotFoundException e) {
+
+                     ClassLoader referringBundleClassLoader =
+                             ejbRefDesc.getReferringBundleDescriptor().getClassLoader();
+                     Utility.setContextClassLoader(referringBundleClassLoader);
+                     setCL = true;
+
+                }
 
                 if (remoteJndiName.startsWith(CORBANAME)) {
                     GlassFishORBHelper orbHelper = habitat.getComponent(GlassFishORBHelper.class);
@@ -107,6 +138,7 @@ public class EjbNamingReferenceManagerImpl
                 } else {
                     jndiObj = context.lookup(remoteJndiName);
                 }
+                
             } catch(Exception e) {
                 // Important to make the real underlying lookup name part of the exception.
                 NamingException ne = new NamingException("Exception resolving Ejb for '" +
@@ -114,6 +146,10 @@ public class EjbNamingReferenceManagerImpl
                     remoteJndiName + "'");
                 ne.initCause(e);
                 throw ne;
+            } finally {
+                if( setCL ) {
+                    Utility.setContextClassLoader(origClassLoader);
+                }
             }
         }
 

@@ -39,6 +39,10 @@ import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.EjbsContext;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentsContext;
+
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -90,6 +94,24 @@ public abstract class AbstractResourceHandler extends AbstractHandler {
             if (aeHandler == null) {
                 aeHandler = ejbBundleContext.createContextForEjbInterceptor();
             }
+
+            // If it's still null and we're in an ejb-jar, use the EjbBundleContext.
+            // This way we process dependencies on any classes (other than ejbs ,
+            // interceptors , and their super-classes) that have annotations in case
+            // we need the info for managed classes we wouldn't normally know about
+            // (e.g. 299 classes).   In a .war, those are already processed during the
+            // .war annotation scanning.
+
+            EjbBundleDescriptor bundleDesc = ejbBundleContext.getDescriptor();
+            RootDeploymentDescriptor enclosingBundle = bundleDesc.getModuleDescriptor().getDescriptor();
+
+            boolean ejbJar = enclosingBundle instanceof EjbBundleDescriptor;
+
+            if( (aeHandler == null) && ejbJar ) {               
+                aeHandler = ejbBundleContext;
+            }
+
+
         }
         // WebBundleContext is a ResourceContainerContext.
 

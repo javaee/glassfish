@@ -49,4 +49,6 @@ public interface JavaEEInterceptorBuilder {
 
     public InterceptorInvoker createInvoker(Object targetInstance) throws Exception;
 
+    public void addRuntimeInterceptor(Object interceptor);
+
 }

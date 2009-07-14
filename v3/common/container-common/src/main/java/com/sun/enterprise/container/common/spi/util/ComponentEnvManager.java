@@ -52,6 +52,8 @@ public interface ComponentEnvManager {
     //Remove once WebContainer sets JndiNameEnvironment on every "new ComponentInvocation()"
     public JndiNameEnvironment getCurrentJndiNameEnvironment();
 
+    public String getComponentEnvId(JndiNameEnvironment env);
+
     public String bindToComponentNamespace(JndiNameEnvironment env)
         throws NamingException;
 

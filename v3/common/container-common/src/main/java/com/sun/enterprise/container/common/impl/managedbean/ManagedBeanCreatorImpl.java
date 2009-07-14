@@ -67,49 +67,32 @@ public class ManagedBeanCreatorImpl {
         Class managedBeanClass = loader.loadClass(desc.getBeanClassName());
         Object managedBean = managedBeanClass.newInstance();
 
-        // In the simple case the actual managed bean instance is given to the
-        // application.   However, if there are any interceptor classes associated
-        // with the managed bean or any around invoke methods defined on the
-        // managed bean class, a proxy will be returned to the caller.
-        Object callerObject = managedBean;
 
         Set<String> interceptorClasses = desc.getAllInterceptorClasses();
 
+        JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
+            desc.getInterceptorBuilder();
 
-        if( interceptorClasses.isEmpty() && !desc.hasAroundInvokeMethod()) {
-            // Inject instance and have injection manager call PostConstruct
-            injectionMgr.injectInstance(managedBean, desc.getGlobalJndiName(), true);
+        InterceptorInvoker interceptorInvoker =
+                interceptorBuilder.createInvoker(managedBean);
 
-            desc.addBeanInstanceInfo(managedBean);
+        // This is the actual object passed back to the caller.
+        Object callerObject = interceptorInvoker.getProxy();
 
-        } else {
-            JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
-                desc.getInterceptorBuilder();
+        Object[] interceptorInstances = interceptorInvoker.getInterceptorInstances();
 
-            InterceptorInvoker interceptorInvoker =
-                    interceptorBuilder.createInvoker(managedBean);
+         // Inject instances, but use injection invoker for PostConstruct
+        injectionMgr.injectInstance(managedBean, desc.getGlobalJndiName(), false);
 
-            callerObject = interceptorInvoker.getProxy();
-
-            Object[] interceptorInstances = interceptorInvoker.getInterceptorInstances();
-
-             // Inject instances, but use injection invoker for PostConstruct
-            injectionMgr.injectInstance(managedBean, desc.getGlobalJndiName(), false);
-
-            // Inject interceptor instances
-            for(int i = 0; i < interceptorInstances.length; i++) {
-                 // Inject instance and call PostConstruct method(s).
-                injectionMgr.injectInstance(interceptorInstances[i], desc.getGlobalJndiName(), false);
-            }
-
-            interceptorInvoker.invokePostConstruct();
-
-            desc.addBeanInstanceInfo(managedBean, interceptorInvoker);
-
+        // Inject interceptor instances
+        for(int i = 0; i < interceptorInstances.length; i++) {
+             // Inject instance and call PostConstruct method(s).
+            injectionMgr.injectInstance(interceptorInstances[i], desc.getGlobalJndiName(), false);
         }
 
+        interceptorInvoker.invokePostConstruct();
 
-        // TODO Create proxy if managed bean has interceptors    
+        desc.addBeanInstanceInfo(managedBean, interceptorInvoker);
 
         return callerObject;
 

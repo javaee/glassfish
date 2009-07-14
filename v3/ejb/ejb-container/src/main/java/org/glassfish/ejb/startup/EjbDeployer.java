@@ -32,6 +32,7 @@ import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.util.IASSecurityException;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -79,6 +80,9 @@ public class EjbDeployer
     
     @Inject
     protected EJBSecurityManagerFactory ejbSecManagerFactory;
+
+    @Inject
+    private ComponentEnvManager compEnvManager;
 
     protected CMPDeployer cmpDeployer;
 
@@ -157,22 +161,35 @@ public class EjbDeployer
             }
         }
 
-        Collection<EjbDescriptor> ebds = (Collection<EjbDescriptor>) ejbBundle.getEjbs();
-        EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat,
+
+        EjbApplication ejbApp = new EjbApplication(ejbBundle, dc, dc.getClassLoader(), habitat,
                                                    ejbSecManagerFactory);
 
+        try {
+            compEnvManager.bindToComponentNamespace(ejbBundle);
+
+        } catch(Exception e) {
+            throw new RuntimeException("Exception registering ejb bundle level resources", e);
+        }
+
         ejbApp.loadContainers(dc);
-
-
-
-
 
         return ejbApp;
     }
 
     public void unload(EjbApplication ejbApplication, DeploymentContext dc) {
 
-        // Right now all of the work is done in EjbApplication. 
+        EjbBundleDescriptor ejbBundle = ejbApplication.getEjbBundleDescriptor();
+
+        try {
+            compEnvManager.unbindFromComponentNamespace(ejbBundle);          
+        } catch(Exception e) {
+             _logger.log( Level.WARNING, "Error unbinding ejb bundle " +
+                     ejbBundle.getModuleName() + " dependency namespace", e);
+        }
+
+
+        // All the other work is done in EjbApplication. 
 
     }
 

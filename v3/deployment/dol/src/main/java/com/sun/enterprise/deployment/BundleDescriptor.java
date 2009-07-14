@@ -181,8 +181,10 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
     }
 
     public void addManagedBean(ManagedBeanDescriptor desc) {
-        managedBeans.add(desc);
-        desc.setBundle(this);
+        if (!hasManagedBeanByBeanClass(desc.getBeanClassName())) {
+            managedBeans.add(desc);
+            desc.setBundle(this);
+        }
     }
 
     public boolean hasManagedBeanByBeanClass(String beanClassName) {

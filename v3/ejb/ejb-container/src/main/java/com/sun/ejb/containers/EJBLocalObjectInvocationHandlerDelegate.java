@@ -86,7 +86,10 @@ public class EJBLocalObjectInvocationHandlerDelegate
         
         return result;
     }
-    
+
+    EJBLocalObjectInvocationHandler getDelegate() {
+        return delegate;
+    }
     
     public int hashCode() {
         return (int) containerId;

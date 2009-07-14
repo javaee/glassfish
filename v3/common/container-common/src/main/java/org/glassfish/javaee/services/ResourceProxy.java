@@ -62,7 +62,7 @@ import java.util.Collection;
  */
 @Service
 @Scoped(PerLookup.class)
-public class ResourceProxy implements NamingObjectProxy {
+public class ResourceProxy implements NamingObjectProxy.InitializationNamingObjectProxy {
     @Inject
     protected Habitat connectorRuntimeHabitat;
 
