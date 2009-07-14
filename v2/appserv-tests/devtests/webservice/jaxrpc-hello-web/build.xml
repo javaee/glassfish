@@ -6,6 +6,9 @@
 
   <property name="appname" value="MyHelloService"/>
   <property file="../common/build.properties"/>
+  <property environment="env" />
+
+  <property file="${env.APS_HOME}/config.properties"/>
   <property file="build.properties"/>
 
   &jaxrpctargets;
@@ -48,12 +51,18 @@
      description="Executes the targets needed to build the service.">
   </target>
 
-  <target name="deploy">
-    <antcall target="admin_command_common">
-      <param name="admin.command"
-        value="deploy ${war.file}" />
-    </antcall>
-  </target>
+  <target name="deploy" depends="set-asadmin,build,create-war">
+      <echo message="Deploying ${war.file} from ${basedir}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="deploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--passwordfile ${admin.password.file}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${war.file}"/>
+      </exec>
+    </target>
+
 
   <target name="undeploy">
     <antcall target="admin_command_common">
