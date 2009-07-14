@@ -211,13 +211,6 @@
         <dependency>
             <groupId>org.glassfish.provider</groupId>
             <artifactId>gfprobe-provider-client</artifactId>
-            <!--version>${gfprobe-provider-client.version}</version-->
-            <version>3.0.0-b008</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.gmbal</groupId>
-            <artifactId>gmbal-api</artifactId>
-            <version>2.0.0-b006</version>
         </dependency>
          <dependency>
             <groupId>org.glassfish.common</groupId>
