@@ -160,6 +160,12 @@
             imageURL="/resource/images/jvm.gif"
         />
 
+         <sun:treeNode id="loggerSetting"
+		    text="$resource{i18n.tree.loggerSettings}"
+		    url="/configuration/loggerLevels.jsf"
+		    imageURL="resource/images/logger.gif"
+		    />
+
         //Admin Service
         <sun:treeNode id="adminService"
             text="$resource{i18n.tree.adminService}"
