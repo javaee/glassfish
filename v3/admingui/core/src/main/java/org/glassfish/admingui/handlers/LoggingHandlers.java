@@ -126,7 +126,7 @@ public class LoggingHandlers {
         List<Map<String,String>> allRows = (List<Map<String,String>>) handlerCtx.getInputValue("allRows");
         Map<String,String> props = new HashMap();
         for(Map<String,String> oneRow : allRows){
-            props.put(oneRow.get("loggerName"), oneRow.get("level"));
+            props.put(oneRow.get("loggerName")+".level", oneRow.get("level"));
         }
         Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
         logging.updateLoggingProperties(props);
