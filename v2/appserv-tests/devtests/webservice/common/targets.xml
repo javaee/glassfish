@@ -49,6 +49,16 @@
         </not>
      </condition>
   </target>
+  <target name="set-asadmin" >
+     <condition property="ASADMIN" value="${env.AS_HOME}/bin/asadmin.bat">
+        <os family="windows"/>
+     </condition>
+     <condition property="ASADMIN" value="${env.AS_HOME}/bin/asadmin">
+        <not>
+           <os family="windows"/>
+        </not>
+     </condition>
+  </target>
 
 
 
