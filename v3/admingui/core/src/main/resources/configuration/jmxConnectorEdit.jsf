@@ -111,7 +111,7 @@
 
 #include "/shared/propertyDescTable.inc"
 
-<sun:hidden id="helpKey" value="$resource{help_web.jmxConnectorEdit}" />
+<sun:hidden id="helpKey" value="$resource{help.jmxConnectorEdit}" />
 
     </sun:form>
     "<br/>
