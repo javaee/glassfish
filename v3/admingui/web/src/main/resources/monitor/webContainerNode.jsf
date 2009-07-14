@@ -1,5 +1,0 @@
-<sun:treeNode	id="monitor_web"
-		text="$resource{i18n.tree.webContainer}"
-		url="/monitor/webContainerPage.jsf"
-		imageURL="/resource/images/container.gif"
- />

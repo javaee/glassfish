@@ -1,6 +1,0 @@
-<sun:tab id="monitor_jvm" immediate="true" text="$resource{i18n_web.jvm}">
-    <!command
-	setSessionAttribute(key="serverInstTabs" value="monitor_jvm");
-	redirect(page="#{request.contextPath}/monitor/jvmPage.jsf");
-    />
-</sun:tab>

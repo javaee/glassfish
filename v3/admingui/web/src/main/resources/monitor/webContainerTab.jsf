@@ -1,6 +1,0 @@
-<sun:tab id="monitor_web" immediate="true" text="$resource{i18n_web.webContainer}">
-    <!command
-	setSessionAttribute(key="serverInstTabs" value="monitor_web");
-	redirect(page="#{request.contextPath}/monitor/webContainerPage.jsf");
-    />
-</sun:tab>

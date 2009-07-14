@@ -88,33 +88,11 @@
             <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
                 
                 <sun:dropDown id="Application" label="$resource{i18n.common.Application}:" selected="#{appVal}" labels="$pageSession{apps}" >
-                    <!--<!beforeCreate
-                     getProxyNamesByType(type="WebRequestStatsProvider" result="#{pageSession.apps}");
-                     
-                    />
-                    <!command
-                        setAttribute(key="click" value="$this{component}");
-                        setAttribute(key="appVal" value="#{click.selected}");
-                        setAttribute(key="appList" value="#{appList}");                        
-                        setAttribute(key="vsVal" value="#{vsVal}");
-                        setAttribute(key="vsList" value="#{vsList}");    
-                        navigate(page="#{request.contextPath}/monitor/monitoringStatsPage.jsf");
-                    />-->
+                    
                 </sun:dropDown>
                 "&nbsp;&nbsp;&nbsp;
                 <sun:dropDown id="Component" label="$resource{web.monitoring.VirtualServer}:" selected="#{vsVal}" labels="$pageSession{vsList}" >
-                     <!--<!beforeCreate
-                     getProxyNamesByType(type="HttpServiceStatsProvider" result="#{pageSession.vsList}");
-                     
-                    />
-                   <!command
-                        setAttribute(key="click" value="$this{component}");
-                        setAttribute(key="vsVal" value="#{click.selected}");
-                        setAttribute(key="vsList" value="#{vsList}");
-                        setAttribute(key="appVal" value="#{appVal}");
-                        setAttribute(key="appList" value="#{appList}");                   
-                        navigate(page="#{request.contextPath}/monitor/monitoringStatsPage.jsf");
-                    />-->
+                  
                 </sun:dropDown>
                 <sun:button id="getStatsButton" 
                                 text="$resource{web.button.GetStatistics}">

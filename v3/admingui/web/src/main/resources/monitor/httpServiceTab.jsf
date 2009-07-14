@@ -1,6 +1,0 @@
-<sun:tab id="monitor_http" immediate="true" text="$resource{i18n_web.httpService}">
-    <!command
-	setSessionAttribute(key="serverInstTabs" value="monitor_http");
-	redirect(page="#{request.contextPath}/monitor/httpServicePage.jsf");
-    />
-</sun:tab>
