@@ -47,6 +47,7 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.NotificationBuilder;
 import org.glassfish.admin.amx.util.*;
 import com.sun.enterprise.server.logging.GFFileHandler;
+import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
 //import com.sun.enterprise.server.logging.ModuleToLoggerNameMapper;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -85,9 +86,10 @@ public final class LoggingImpl extends AMXImplBase
     
     private static final String	SERVER_LOG_NAME	= "server.log";
     private static final String	ACCESS_LOG_NAME	= "access.log";
-    private LoggingConfigImpl loggingConfig;
-    private GFFileHandler  gfFileHandler;
-    private Logger logger;
+    private final LoggingConfigImpl loggingConfig;
+//    private final GFFileHandler  gfFileHandler;
+//    private final LogFilter logFilter;
+    private final Logger logger;
 
     final String  FILE_SEP;
     
@@ -125,6 +127,7 @@ public final class LoggingImpl extends AMXImplBase
         final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
         loggingConfig = new LoggingConfigImpl();
         loggingConfig.setupConfigDir(env.getConfigDirPath());
+//        logFilter = new LogFilter();
 //        gfFileHandler =   InjectedValues.getInstance().getGFFileHandler();
         logger = Logger.getAnonymousLogger();
 
@@ -135,6 +138,7 @@ public final class LoggingImpl extends AMXImplBase
 	    Hook for subclass to modify anything in MBeanInfo.
 	    @Override
 	 */
+
     @Override
 		protected MBeanInfo
 	postRegisterModifyMBeanInfo( final MBeanInfo info )
@@ -150,7 +154,7 @@ public final class LoggingImpl extends AMXImplBase
 	    
 	    return JMXUtil.newMBeanInfo( info, ops );
 	}
-	
+
 	
     
     private static MBeanNotificationInfo[]    SELF_NOTIFICATION_INFOS = null;
@@ -222,18 +226,18 @@ public final class LoggingImpl extends AMXImplBase
             Map<String, String> props = loggingConfig.getLoggingProperties();
             return props;
         } catch (java.io.IOException e){
-          logger.log (Level.SEVERE, "Can not get module log level");
+          logger.log (Level.WARNING, "Can not get module log level");
           return null;
         }
     }
 
         public void
-    updateLoggingProperties( Map<String, String> properties)
+    updateLoggingProperties(final Map<String, String> properties)
     {
         try {
             loggingConfig.updateLoggingProperties(properties);
         } catch (java.io.IOException e){
-          logger.log (Level.SEVERE, "Can not get module log level");
+          logger.log (Level.WARNING, "Can not get module log level");
         }
     }
 
@@ -273,28 +277,30 @@ public final class LoggingImpl extends AMXImplBase
 
         public Map <String, String>   getLoggingAttributes( )
     {
+    String gfHandler = "com.sun.enterprise.server.logging.GFFileHandler";
+    String sysHandler = "com.sun.enterprise.server.logging.SyslogHandler";
         try {
             Map<String, String> props = loggingConfig.getLoggingProperties();
             Map<String,String> attributes = new HashMap<String,String>();
-            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.file", props.get("com.sun.enterprise.server.logging.GFFileHandler.file"));
-            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes", props.get("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes"));
-            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInBytes", props.get("com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInBytes"));
-            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.logtoConsole", props.get("com.sun.enterprise.server.logging.GFFileHandler.logtoConsole"));
-            attributes.put("com.sun.enterprise.server.logging.GFFileHandler.handler", props.get("handler"));
-            attributes.put("com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging", props.get("com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging"));
+            attributes.put(gfHandler+".file", props.get(gfHandler+".file"));
+            attributes.put(gfHandler+".rotationTimelimitInMinutes", props.get(gfHandler+".rotationTimelimitInMinutes"));
+            attributes.put(gfHandler+".rotationTimelimitInBytes", props.get(gfHandler+".rotationTimelimitInBytes"));
+            attributes.put(gfHandler+".logtoConsole", props.get(gfHandler+".logtoConsole"));
+            attributes.put("handlers", props.get("handlers"));
+            attributes.put(sysHandler+".useSystemLogging", props.get(sysHandler+".useSystemLogging"));
             return attributes;
         } catch (java.io.IOException e){
-            logger.log (Level.SEVERE, "Can not get log filename");
+            logger.log (Level.WARNING, "Can not get logging attributes");
             return null;
         }
     }
 
-        public void setLoggingAttributes( Map<String,String> properties)
+        public void setLoggingAttributes( final Map<String,String> properties)
     {
         try {
             loggingConfig.updateLoggingProperties(properties);
         } catch (java.io.IOException e){
-            logger.log (Level.SEVERE, "Can not set log filename");
+            logger.log (Level.WARNING, "Can not set logging attributes");
         }
     }
 
@@ -442,7 +448,7 @@ public final class LoggingImpl extends AMXImplBase
     	{
     	    actualName  = name;
     	}
-        final AttributeList result	= null; /*getLogMBean().getLogRecordsUsingQuery(actualName,
+        final AttributeList result	= getLogRecordsUsingQuery(actualName,
                                               Long.valueOf(startIndex),
                                               searchForward, sortAscending,
                                               maximumNumberOfResults,
@@ -450,10 +456,23 @@ public final class LoggingImpl extends AMXImplBase
                                                                : new Date(fromTime),
                                               toTime == null ? null
                                                              : new Date(toTime),
-                                              logLevel, true, moduleList, props) ;
-                                              */
+                                              logLevel, true, moduleList, props) ;                                             
             
         return convertQueryResult( result );
+    }
+
+    public AttributeList getLogRecordsUsingQuery(
+        String logFilename, Long fromRecord, Boolean next, Boolean forward,
+        Integer requestedCount, Date fromDate, Date toDate,
+        String logLevel, Boolean onlyLevel, List listOfModules,
+        Properties nameValueMap)
+    {
+    /*
+        return LogFilter.getLogRecordsUsingQuery(logFilename, fromRecord, next,
+            forward, requestedCount, fromDate, toDate, logLevel, onlyLevel,
+            listOfModules, nameValueMap);
+            */
+            return null;
     }
 
         public Map<String,Number>[]
