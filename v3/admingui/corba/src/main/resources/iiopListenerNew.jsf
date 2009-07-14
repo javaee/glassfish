@@ -62,7 +62,7 @@
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/shared/alertMsg.inc"
-        <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListener.NewPageTitle}" helpText="$resource{i18n_corba.iiopListener.NewPageHelp}">
+        <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListener.newPageTitle}" helpText="$resource{i18n_corba.iiopListener.newPageHelp}">
 #include "/shared/editPageButtons.inc"
         </sun:title>
         "<br><br>
