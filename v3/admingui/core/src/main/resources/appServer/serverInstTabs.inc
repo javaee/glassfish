@@ -71,7 +71,7 @@
 	    />
     </sun:tab>
 
-    <sun:tab id="token" immediate="true" text="$resource{i18n.appServer.tokenTab}">
+    <sun:tab id="token" immediate="true" text="$resource{i18n.systemProps.tableTitle}">
         <!command
             setSessionAttribute(key="serverInstTabs" value="token");
             redirect(page="#{request.contextPath}/appServer/token.jsf");

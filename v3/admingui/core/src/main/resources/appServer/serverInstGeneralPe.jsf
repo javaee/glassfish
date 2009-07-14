@@ -110,22 +110,12 @@
                 <sun:staticText id="hostName" text="#{sessionScope.serverName}" />
             </sun:property>
 
-<!--
-            <sun:property id="httpPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}">
-                <sun:staticText id="httpPorts" text="#{requestScope.httpPorts}"/>
-            </sun:property>
-            <sun:property id="iiopPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.iiopPortsLabel}">
-                <sun:staticText id="iiopPorts" text="#{requestScope.iiopPorts}"/>
-            </sun:property>
--->
-            <!-- TODO-V3
             <sun:property id="jvmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
                 <sun:hyperlink id="jvmlink" text="$resource{i18n.inst.jvmReport}"
                     onClick="javascript:
-                    var jvmWin = window.open('jvmReport.jsf?instanceName=#{instanceName}&pageTitle=$resource{i18n.jvm.jvmReportPageName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
+                    var jvmWin = window.open('jvmReport.jsf?pageTitle=$resource{i18n.jvm.jvmReportPageName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
                     jvmWin.focus(); return false;" />
             </sun:property> 
-            -->
 
             <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
                 <sun:staticText id="configDir" text="#{pageSession.valueMap['ConfigDir']}"/>
