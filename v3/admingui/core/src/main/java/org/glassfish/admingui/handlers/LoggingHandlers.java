@@ -170,7 +170,7 @@ public class LoggingHandlers {
             String newValue = attrs.get(shortAttr);
             longAttrs.put(oneAttr, (newValue == null)? "" : newValue);
         }
-        logging.setLoggingAttributes(longAttrs);
+        logging.updateLoggingAttributes(longAttrs);
      }
 
 
