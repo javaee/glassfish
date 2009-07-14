@@ -864,11 +864,13 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     public ManagedConnectionFactory[] obtainManagedConnectionFactories(
            String poolName) throws ConnectorRuntimeException {
 	ManagedConnectionFactory[] mcfs = null;
+        String raName = null;
         try {
 		ConnectorConnectionPool conPool =
 				getConnectorConnectionPool(poolName);
 		ActiveResourceAdapter activeResourceAdapter =
 					getResourceAdapter(conPool);
+            raName = activeResourceAdapter.getModuleName();
                 mcfs =
                      activeResourceAdapter.
                         createManagedConnectionFactories
@@ -901,13 +903,13 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throw cre;
         }
         for(ManagedConnectionFactory mcf : mcfs){
-            validateMCF(mcf);
+            validateMCF(mcf, raName);
         }
 	return mcfs;
     }
 
-    private void validateMCF(ManagedConnectionFactory mcf) {
-        _runtime.getConnectorBeanValidator().validateJavaBean(mcf);
+    private void validateMCF(ManagedConnectionFactory mcf, String raName) {
+        _runtime.getConnectorBeanValidator().validateJavaBean(mcf, raName);
     }
 
     /**
@@ -935,7 +937,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                         createManagedConnectionFactory(connectorConnectionPool, loader);
                 if (mcf != null) {
                     //validate MCF before it is used or related pooling infrastructure is created.
-                    validateMCF(mcf);
+                    validateMCF(mcf, activeResourceAdapter.getModuleName());
 
                     ResourcePrincipal prin =
                             getDefaultResourcePrincipal(poolName, mcf);

@@ -42,101 +42,54 @@ import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PostConstruct;
 
 import javax.validation.*;
+import javax.validation.bootstrap.GenericBootstrap;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.io.InputStream;
 
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.connectors.ConnectorRegistry;
 
 @Service
-@Scoped(Singleton.class)
-public class ConnectorJavaBeanValidator implements PostConstruct {
-    private Validator beanValidator;
+public class ConnectorJavaBeanValidator {
+
     private final static Logger _logger = LogDomains.getLogger(
             ConnectorJavaBeanValidator.class, LogDomains.RSR_LOGGER);
 
-    public void postConstruct() {
-    }
+    public boolean validateJavaBean(Object bean, String rarName) {
+        if (bean != null) {
+            Validator validator = ConnectorRegistry.getInstance().getBeanValidator(rarName);
+            if (validator != null) {
+                BeanDescriptor bd =
+                        validator.getConstraintsForClass(bean.getClass());
+                bd.getConstraintDescriptors();
 
-    private Validator getBeanValidator(Object o) {
-        if(beanValidator != null){
-            return beanValidator;
-        }
-/*
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        InputStream inputStream = null;
+                Class array[] = new Class[]{};
+                Set constraintViolations = validator.validate(bean, array);
 
-        try {
-
-            if (o == null) {
-                Thread.currentThread().setContextClassLoader(null);
+                if (constraintViolations != null) {
+                    Iterator it = constraintViolations.iterator();
+                    boolean violated = false;
+                    String msg = "Constraints for this bean violated. \n Message = ";
+                    while (it.hasNext()) {
+                        violated = true;
+                        ConstraintViolation cv = (ConstraintViolation) it.next();
+                        msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
+                    }
+                    if (violated) {
+                        _logger.log(Level.SEVERE, "Following validation constraints violated " +
+                                "for bean of type [ " + bean.getClass() + " ] : " + msg);
+                        throw new ValidationException(msg);
+                    }
+                    return false;
+                }
+                return true;
             } else {
-                Thread.currentThread().setContextClassLoader(o.getClass().getClassLoader());
+                _logger.log(Level.FINE, "no bean validator is available for RAR [ " + rarName + " ]");
+                return true;
             }
-*/
-            ValidatorFactory validatorFactory = null;
-            /*if (o != null) {
-                GenericBootstrap bootstrap = Validation.byDefaultProvider();
-                Configuration config = bootstrap.configure();
-                inputStream = o.getClass().getClassLoader().getResourceAsStream("META-INF/validation-mapping.xml");
-                config.addMapping(inputStream);
-
-                validatorFactory = config.buildValidatorFactory();
-            } else*/ {
-                validatorFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();
-/*
-                validatorFactory =
-                        Validation.buildDefaultValidatorFactory();
-*/
-            }
-            ValidatorContext validatorContext = validatorFactory.usingContext();
-            beanValidator = validatorContext.getValidator();
-/*
-        } finally {
-
-            try{
-                if(inputStream != null){
-                    inputStream.close();
-                }
-            }catch(Exception e){
-            // ignore ?
-            }
-            Thread.currentThread().setContextClassLoader(cl);
-
-        }
-*/
-        return beanValidator;
-    }
-
-    public boolean validateJavaBean(Object o) {
-        if (o != null) {
-            Validator validator = getBeanValidator(o);
-            BeanDescriptor bd =
-                    validator.getConstraintsForClass(o.getClass());
-            bd.getConstraintDescriptors();
-
-            Class array[] = new Class[]{};
-            Set constraintViolations = validator.validate(o, array);
-
-            if (constraintViolations != null) {
-                Iterator it = constraintViolations.iterator();
-                boolean violated = false;
-                String msg = "Constraints for this bean " +
-                        "violated. \n Message = ";
-                while (it.hasNext()) {
-                    violated = true;
-                    ConstraintViolation cv = (ConstraintViolation) it.next();
-                    msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
-                }
-                if (violated) {
-                    _logger.log(Level.SEVERE, "Following validation constraints violated " +
-                            "for bean of type [ " + o.getClass() + " ] : " + msg);
-                    throw new ValidationException(msg);
-                }
-                return false;
-            }
-            return true;
         }
         throw new ValidationException("null Bean passed for validation");
     }

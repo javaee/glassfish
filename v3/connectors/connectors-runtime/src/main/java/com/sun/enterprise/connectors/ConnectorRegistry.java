@@ -44,6 +44,7 @@ import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.validation.Validator;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,6 +80,7 @@ public class ConnectorRegistry {
     protected final Map<String, PoolMetaData> factories;
     protected final Map<String, ResourceAdapterConfig> resourceAdapterConfig;
     protected final Map<String, ConnectorApplication> rarModules;
+    protected final Map<String, Validator> beanValidators;
 
     /**
      * Return the ConnectorRegistry instance
@@ -100,6 +102,7 @@ public class ConnectorRegistry {
         factories = Collections.synchronizedMap(new HashMap<String, PoolMetaData>());
         resourceAdapterConfig = Collections.synchronizedMap(new HashMap<String, ResourceAdapterConfig>());
         rarModules = Collections.synchronizedMap(new HashMap<String, ConnectorApplication>());
+        beanValidators = Collections.synchronizedMap(new HashMap<String, Validator>());
         _logger.log(Level.FINE, "initialized the connector registry");
     }
 
@@ -164,6 +167,59 @@ public class ConnectorRegistry {
                     "Resourceadapter not found in connector registry.Returning null" +
                             rarModuleName);
             return null;
+        }
+    }
+
+
+    /**
+     * Adds the bean validator to the registry.
+     *
+     * @param rarModuleName RarName which is the key
+     * @param validator to be added to registry
+     */
+    public void addBeanValidator(String rarModuleName, Validator validator){
+        beanValidators.put(rarModuleName, validator);
+        _logger.log(Level.FINE, "Added the bean validator for RAR [ "+rarModuleName+" ] to connector registry");
+    }
+
+    /**
+     * Retrieves the bean validator of a resource-adapter
+     * from the registry. Key is the rarName.
+     *
+     * @param rarModuleName Rar name. It is the key
+     * @return bean validator
+     */
+    public Validator getBeanValidator(String rarModuleName){
+        if (rarModuleName != null) {
+            _logger.fine(
+                    "returning/found the validator for RAR [ "+rarModuleName+" ] from connector registry");
+            return beanValidators.get(rarModuleName);
+        } else {
+            _logger.fine(
+                    "bean validator for RAR [ "+rarModuleName+" ] not found in connector registry.Returning null");
+            return null;
+        }
+    }
+
+    /**
+     * Removes the bean validator of a resource-adapter
+     * from the registry.
+     * This method is called whenever an active connector module
+     * is removed from the Connector runtime. [eg. undeploy/recreate etc]
+     *
+     * @param rarModuleName RarName which is the key
+     * @return true if successfully removed
+     *         false if deletion fails.
+     */
+    public boolean removeBeanValidator(String rarModuleName) {
+        Object o = beanValidators.remove(rarModuleName);
+
+        if (o == null) {
+            _logger.fine("Failed to remove the bean validator for RAR [ "+rarModuleName+" ] from connector registry");
+            return false;
+        } else {
+            _logger.fine("removed the active bean validator for RAR [ "+rarModuleName +" ] from connector registry");
+            return true;
         }
     }
 

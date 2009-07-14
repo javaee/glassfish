@@ -367,6 +367,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                         "classloader chain : " + systemRarCLRemoved);
                 }
             }
+            _registry.removeBeanValidator(moduleName);
             return _registry.removeActiveResourceAdapter(moduleName);
         }
         return false;

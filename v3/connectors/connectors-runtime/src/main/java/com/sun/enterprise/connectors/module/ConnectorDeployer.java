@@ -40,6 +40,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.config.serverbeans.*;
@@ -61,10 +62,15 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
-import java.io.File;
+import javax.validation.*;
+import javax.validation.bootstrap.GenericBootstrap;
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.List;
 import java.beans.PropertyVetoException;
 
 /**
@@ -108,7 +114,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      */
     public MetaData getMetaData() {
         return new MetaData(false, null,
-                new Class[] { Application.class });
+                new Class[]{Application.class});
     }
 
     /**
@@ -145,16 +151,18 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 ccf = (ConnectorClassFinder) context.getClassLoader();
                 classLoader = ccf;
                 //for embedded .rar, compute the embedded .rar name
-                if(isEmbedded){
+                if (isEmbedded) {
                     moduleName = getEmbeddedRarModuleName(getApplicationName(context), moduleName);
                 }
 
                 //don't add the class-finder to the chain if its embedded .rar
 
-                if(!(isEmbedded)){
-                    classLoader =  clh.getConnectorClassLoader(null);
-					clh.getConnectorClassLoader(null).addDelegate(ccf);
+                if (!(isEmbedded)) {
+                    classLoader = clh.getConnectorClassLoader(null);
+                    clh.getConnectorClassLoader(null).addDelegate(ccf);
                 }
+
+                registerBeanValidator(moduleName, context.getSource());
 
                 ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
                 runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
@@ -162,7 +170,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
             } catch (Exception cre) {
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
-                if(!(isEmbedded) && ccf != null) {
+                if (!(isEmbedded) && ccf != null) {
                     clh.getConnectorClassLoader(null).removeDelegate(ccf);
                 }
                 return null;
@@ -185,10 +193,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         return (archive != null && archive.getParentArchive() != null);
     }
 
-    private String getApplicationName(DeploymentContext context){
+    private String getApplicationName(DeploymentContext context) {
         String applicationName = null;
         ReadableArchive parentArchive = context.getSource().getParentArchive();
-        if(parentArchive != null){
+        if (parentArchive != null) {
             applicationName = parentArchive.getName();
         }
         return applicationName;
@@ -208,7 +216,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         String moduleName = sourceDir.getName();
 
         try {
-            if(isEmbedded(context)){
+            if (isEmbedded(context)) {
                 String applicationName = getApplicationName(context);
                 moduleName = getEmbeddedRarModuleName(applicationName, moduleName);
             }
@@ -218,7 +226,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         } finally {
 
             //remove it only if it is not embedded
-            if(!isEmbedded(context)){
+            if (!isEmbedded(context)) {
                 //remove the class-finder (class-loader) from connector-class-loader chain
                 clh.getConnectorClassLoader(null).removeDelegate(ccf);
             }
@@ -233,8 +241,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      */
     public void clean(DeploymentContext dc) {
         UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
-        if( dcp != null && dcp.origin == OpsParams.Origin.undeploy){
-            if(dcp.cascade != null && dcp.cascade){
+        if (dcp != null && dcp.origin == OpsParams.Origin.undeploy) {
+            if (dcp.cascade != null && dcp.cascade) {
                 deleteAllResources(dcp.name(), dcp.target);
             }
         }
@@ -242,7 +250,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     /**
      * deletes all resources (pool, resource, admin-object-resource, ra-config, work-security-map) of a resource-adapter)
-     * @param moduleName resource-adapter name
+     *
+     * @param moduleName   resource-adapter name
      * @param targetServer target instance name
      */
     private void deleteAllResources(String moduleName, String targetServer) {
@@ -260,7 +269,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         deleteConnectionPools(conPools, moduleName);
         deleteAdminObjectResources(adminObjectResources, targetServer, moduleName);
         deleteWorkSecurityMaps(securityMaps, moduleName);
-        if(rac != null){
+        if (rac != null) {
             deleteRAConfig(rac);
         }
 
@@ -271,14 +280,14 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             // delete resource-adapter-config
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                   return param.getResources().remove(rac);
+                    return param.getResources().remove(rac);
                 }
             }, resources) == null) {
                 _logger.log(Level.WARNING, "Unable to delete resource-adapter-config for RAR : "
                         + rac.getResourceAdapterName());
             }
 
-        } catch(TransactionFailure tfe) {
+        } catch (TransactionFailure tfe) {
             _logger.log(Level.WARNING, "Unable to delete resource-adapter-config for RAR : "
                     + rac.getResourceAdapterName(), tfe);
 
@@ -288,16 +297,16 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     private void deleteWorkSecurityMaps(final Collection<WorkSecurityMap> workSecurityMaps, String raName) {
         try {
             // delete work-security-maps
-            if(ConfigSupport.apply(new SingleConfigCode<Resources>() {
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
                     for (WorkSecurityMap resource : workSecurityMaps) {
-                            param.getResources().remove(resource);
+                        param.getResources().remove(resource);
                     }
                     return true; // indicating that removal was successful
                 }
-            }, resources) == null){
+            }, resources) == null) {
                 _logger.log(Level.WARNING, "Unable to delete work-security-map(s) for RAR : " + raName);
             }
 
@@ -315,10 +324,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     for (AdminObjectResource resource : adminObjectResources) {
-                            param.getResources().remove(resource);
+                        param.getResources().remove(resource);
 
-                            // delete resource-ref
-                            targetServer.deleteResourceRef(resource.getJndiName());
+                        // delete resource-ref
+                        targetServer.deleteResourceRef(resource.getJndiName());
                     }
                     // not found
                     return true;
@@ -326,13 +335,13 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             }, resources) == null) {
                 _logger.log(Level.WARNING, "Unable to delete admin-object-resource(s) for RAR : " + raName);
             }
-        } catch(TransactionFailure tfe) {
+        } catch (TransactionFailure tfe) {
             _logger.log(Level.WARNING, "Unable to delete admin-object-resource(s) for RAR : " + raName, tfe);
         }
 
     }
 
-    private void deleteConnectorResources(final Collection<Resource> connectorResources, String target, String raName){
+    private void deleteConnectorResources(final Collection<Resource> connectorResources, String target, String raName) {
         try {
             final Server targetServer = domain.getServerNamed(target);
 
@@ -343,7 +352,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                         param.getResources().remove(resource);
 
                         // delete resource-ref
-                        targetServer.deleteResourceRef(((ConnectorResource)resource).getJndiName());
+                        targetServer.deleteResourceRef(((ConnectorResource) resource).getJndiName());
                     }
                     // not found
                     return true;
@@ -351,19 +360,19 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             }, resources) == null) {
                 _logger.log(Level.WARNING, "Unable to delete connector-resource(s) for RAR : " + raName);
             }
-        } catch(TransactionFailure tfe) {
+        } catch (TransactionFailure tfe) {
             _logger.log(Level.WARNING, "Unable to delete connector-resource(s) for RAR : " + raName, tfe);
         }
 
     }
 
-    private void deleteConnectionPools(final Collection<ConnectorConnectionPool> conPools, String raName){
+    private void deleteConnectionPools(final Collection<ConnectorConnectionPool> conPools, String raName) {
         // delete connector connection pool
         try {
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     for (ConnectorConnectionPool cp : conPools) {
-                            return param.getResources().remove(cp);
+                        return param.getResources().remove(cp);
                     }
                     // not found
                     return null;
@@ -390,5 +399,101 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     public void logFine(String message) {
         _logger.log(Level.FINE, message);
+    }
+
+    private void registerBeanValidator(String rarName, ReadableArchive archive) {
+
+        ClassLoader contextCL = null;
+        try {
+            contextCL = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(clh.getCommonClassLoader());
+            Validator beanValidator = null;
+            ValidatorFactory validatorFactory = null;
+
+            try {
+                List<String> mappingsList = getValidationMappingDescriptors(archive);
+
+                if (mappingsList.size() > 0) {
+                    GenericBootstrap bootstrap = Validation.byDefaultProvider();
+                    Configuration config = bootstrap.configure();
+
+                    InputStream inputStream = null;
+                    try {
+                        for (String fileName : mappingsList) {
+                            inputStream = archive.getEntry(fileName);
+                            config.addMapping(inputStream);
+                        }
+                        validatorFactory = config.buildValidatorFactory();
+                        ValidatorContext validatorContext = validatorFactory.usingContext();
+                        beanValidator = validatorContext.getValidator();
+
+                    } catch (IOException e) {
+                        _logger.log(Level.FINE, "Exception while processing xml files for detecting " +
+                                "bean-validation-mapping", e);
+                    } finally {
+                        try {
+                            if (inputStream != null) {
+                                inputStream.close();
+                            }
+                        } catch (Exception e) {
+                            // ignore ?
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                _logger.log(Level.WARNING, "Exception while processing xml files for detecting " +
+                        "bean-validation-mapping of RAR [ " + rarName + " ], using default validator", e);
+            }
+            if (beanValidator == null) {
+                validatorFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();
+                beanValidator = validatorFactory.getValidator();
+            }
+
+            ConnectorRegistry registry = ConnectorRegistry.getInstance();
+            registry.addBeanValidator(rarName, beanValidator);
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextCL);
+        }
+    }
+
+    private List<String> getValidationMappingDescriptors(ReadableArchive archive) {
+        String validationMappingNSName = "jboss.org/xml/ns/javax/validation/mapping";
+
+        Enumeration entries = archive.entries();
+        List<String> mappingList = new ArrayList<String>();
+
+        while (entries.hasMoreElements()) {
+
+            String fileName = (String) entries.nextElement();
+            if (fileName.toUpperCase().endsWith(".XML")) {
+                BufferedReader reader = null;
+                try {
+                    InputStream is = archive.getEntry(fileName);
+                    reader = new BufferedReader(new InputStreamReader(is));
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+
+                        if (line.contains(validationMappingNSName)) {
+                            mappingList.add(fileName);
+                            break;
+                        }
+                    }
+                } catch (IOException e) {
+                    _logger.log(Level.FINE, "Exception while processing xml file [ " + fileName + " ] " +
+                            "for detecting bean-validation-mapping", e);
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (Exception e) {
+							//ignore ?
+                        }
+                    }
+                }
+            }
+        }
+        return mappingList;
     }
 }

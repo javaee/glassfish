@@ -192,7 +192,7 @@ public class AdministeredObjectResource extends JavaEEResourceBase
 
             //ConnectorRuntime should be available in CLIENT mode now as admin-object-factory would have bootstapped
             //connector-runtime.
-            ConnectorRuntime.getRuntime().getConnectorBeanValidator().validateJavaBean(adminObject);
+            ConnectorRuntime.getRuntime().getConnectorBeanValidator().validateJavaBean(adminObject, resadapter_);
 
             return adminObject;
         } catch (PrivilegedActionException ex) {

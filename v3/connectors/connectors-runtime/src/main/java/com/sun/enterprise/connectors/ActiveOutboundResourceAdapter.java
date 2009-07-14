@@ -114,7 +114,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
                 // now the RA bean would have been fully configured (taking into account, resource-adapter-config),
                 // validate the RA bean now.
-                beanValidator.validateJavaBean(ra);
+                beanValidator.validateJavaBean(ra, moduleName);
 
                 ConnectorRegistry registry = ConnectorRegistry.getInstance();
                 String poolId = null;

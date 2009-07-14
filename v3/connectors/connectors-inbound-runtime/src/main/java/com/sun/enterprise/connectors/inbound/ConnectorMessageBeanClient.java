@@ -179,7 +179,7 @@ public final class ConnectorMessageBeanClient
                 //at this stage, activation-spec is created, config properties merged with ejb-descriptor.
                 //validate activation-spec now
                 ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-                runtime.getConnectorBeanValidator().validateJavaBean(activationSpec);
+                runtime.getConnectorBeanValidator().validateJavaBean(activationSpec, resourceAdapterMid);
 
                 aira.validateActivationSpec(activationSpec);
 
