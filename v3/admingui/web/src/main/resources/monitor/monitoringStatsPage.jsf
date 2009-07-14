@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- jdbc/jdbcConnectionPools.jsf -->
+<!-- monitor/monitoringStatsPage.jsf -->
 
 <!initPage
     setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings")
@@ -81,7 +81,7 @@
                     </sun:button>
                 </sun:panelGroup>
             </facet> 
-            </sun:title>
+            
 		 "<br /><br />
             <sun:propertySheet id="propertySheet">
                     <sun:propertySheetSection id="viewPropertySection">
@@ -335,6 +335,7 @@
         "<br/>
     </sun:tableRowGroup>    
 </sun:table>
+</sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_web.monitoringService}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"        
