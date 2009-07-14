@@ -936,6 +936,7 @@ public class CommandRunnerImpl implements CommandRunner {
 	    // <operand type="type" min="0/1" max="1"/>
 	    ActionReport.MessagePart primpart = cmd.addChild();
 	    primpart.setChildrenType("operand");
+	    primpart.addProperty("name", primary.getName());
 	    primpart.addProperty("type", typeOf(primary));
 	    primpart.addProperty("min",
 		    primary.getParam().optional() ? "0" : "1");

@@ -71,10 +71,11 @@ public class MultimodeCommand extends CLICommand {
      */
     @Override
     protected void prepare() throws CommandException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "file", 'f', "FILE", false, null);
         addOption(opts, "printprompt", '\0', "BOOLEAN", false, "true");
         addOption(opts, "encoding", '\0', "STRING", false, null);
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
         operandMin = 0;

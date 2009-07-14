@@ -42,6 +42,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.ValidOption;
 import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -56,7 +57,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author km@dev.java.net
  * @author Bill Shannon
  */
-public class VersionCommand extends RemoteCommand {
+public class VersionCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VersionCommand.class);
 
@@ -66,12 +67,13 @@ public class VersionCommand extends RemoteCommand {
     }
 
     @Override
-    protected void fetchCommandMetadata() {
-        /*
-         * Don't fetch information from server.
-         * We need to work even if server is down.
-         */
-        Set<ValidOption> opts = new HashSet<ValidOption>();
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        processProgramOptions();
+
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
+        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
         operandMin = 0;
@@ -81,7 +83,11 @@ public class VersionCommand extends RemoteCommand {
     @Override
     protected int executeCommand() throws CommandException {
         try {
-            super.executeCommand();
+            CLICommand cmd = new RemoteCommand("version", programOpts, env);
+            if (getBooleanOption("verbose"))
+                cmd.execute("version", "--verbose");
+            else
+                cmd.execute("version");
         } catch (Exception e) {
             // suppress all output and infer that the server is not running
             printRemoteException(e);

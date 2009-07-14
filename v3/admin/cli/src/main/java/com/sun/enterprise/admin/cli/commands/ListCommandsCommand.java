@@ -53,7 +53,7 @@ import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
  * @author bnevins
  * @author Bill Shannon
  */
-public class ListCommandsCommand extends RemoteCommand {
+public class ListCommandsCommand extends CLICommand {
     String[] remoteCommands;
     String[] localCommands;
     boolean localOnly;
@@ -68,15 +68,19 @@ public class ListCommandsCommand extends RemoteCommand {
     }
 
     @Override
-    protected void fetchCommandMetadata() {
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        processProgramOptions();
+
         /*
          * Don't fetch information from server.
          * We need to work even if server is down.
          * XXX - could "merge" options if server is up
          */
-        Set<ValidOption> opts = new HashSet<ValidOption>();
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "localonly", '\0', "BOOLEAN", false, "false");
         addOption(opts, "remoteonly", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
         operandMin = 0;

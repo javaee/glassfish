@@ -79,12 +79,14 @@ public class StartDomainCommand extends CLICommand {
      */
     @Override
     protected void prepare() throws CommandException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "domaindir", '\0', "STRING", false, null);
         addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
         addOption(opts, "debug", '\0', "BOOLEAN", false, "false");
         addOption(opts, "upgrade", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
+        operandName = "domain_name";
         operandType = "STRING";
         operandMin = 0;
         operandMax = 1;

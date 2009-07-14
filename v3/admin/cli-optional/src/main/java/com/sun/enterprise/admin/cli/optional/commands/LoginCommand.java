@@ -56,7 +56,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Nandini Ektare
  * @author Bill Shannon
  */
-public class LoginCommand extends RemoteCommand {
+public class LoginCommand extends CLICommand {
 
     private String adminUser = null;
     private String adminPassword = null;
@@ -73,11 +73,14 @@ public class LoginCommand extends RemoteCommand {
     }
 
     /**
-     * No data from server.
      */
     @Override
-    protected void fetchCommandMetadata() {
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        processProgramOptions();
+
         Set<ValidOption> opts = new HashSet<ValidOption>();
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
         operandMin = 0;

@@ -96,6 +96,7 @@ public abstract class CLICommand {
     protected Environment env;
     protected String[] argv;
     protected Set<ValidOption> commandOpts;
+    protected String operandName = "";
     protected String operandType;
     protected int operandMin;
     protected int operandMax;
@@ -237,12 +238,75 @@ public abstract class CLICommand {
         initializePasswords();
         prepare();
         parse();
+        if (checkHelp())
+            return 0;
         validate();
         if (programOpts.isEcho())
             logger.printMessage(toString());
         else if (logger.isDebug())
             logger.printDebugMessage(toString());
         return executeCommand();
+    }
+
+    /**
+     * Return the name of this command.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Return a Reader for the man page for this command,
+     * or null if not found.
+     */
+    public Reader getManPage() {
+        return CLIManFileFinder.getCommandManFile(this);
+    }
+
+    /**
+     * Get the usage text.
+     * XXX - need to handle program options.
+     *
+     * @return usage text
+     */
+    public String getUsage() {
+        StringBuffer usageText = new StringBuffer();
+        usageText.append("Usage: ");
+        usageText.append(getName());
+        usageText.append(" ");
+        for (ValidOption opt : commandOpts) {
+            final String optName = opt.getName();
+            // do not want to display password as an option
+            if (opt.getType().equals("PASSWORD"))
+                continue;
+            boolean optional = opt.isValueRequired() != ValidOption.REQUIRED;
+            String defValue = opt.getDefaultValue();
+            if (optional)
+                usageText.append("[");
+            usageText.append("--").append(optName);
+
+            if (opt.getType().equals("BOOLEAN")) {
+                usageText.append("=").append("true|false");
+            } else {    // STRING or FILE
+                if (ok(defValue))
+                    usageText.append(" ").append(defValue);
+                else
+                    usageText.append(" <").append(optName).append('>');
+            }
+            if (optional)
+                usageText.append("] ");
+            else
+                usageText.append(" ");
+        }
+
+        if (operandMax > 0) {
+            if (operandMin == 0)
+                usageText.append("[").append(operandName).append("] ");
+            else
+                usageText.append(operandName).append(" ");
+        }
+
+        return usageText.toString();
     }
 
     /**
@@ -288,6 +352,44 @@ public abstract class CLICommand {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * If the program options haven't already been set, parse them
+     * on the command line and remove them from the command line.
+     * Subclasses should call this method in their prepare method
+     * if they want to allow program options after the command name.
+     * Currently RemoteCommand does this, as well as the local commands
+     * that also need to talk to the server.
+     */
+    protected void processProgramOptions()
+            throws CommandException, CommandValidationException  {
+        if (!programOpts.isOptionsSet()) {
+            /*
+             * asadmin options and command options are intermixed.
+             * Parse the entire command line for asadmin options,
+             * removing them from the command line, and ignoring
+             * unknown options.
+             */
+            Parser rcp = new Parser(argv, 0,
+                            ProgramOptions.getValidOptions(), true);
+            Map<String, String> params = rcp.getOptions();
+            // program options may change
+            programOpts = new ProgramOptions(params, env);
+            initializeLogger();
+            initializePasswords();
+            List<String> operands = rcp.getOperands();
+            argv = operands.toArray(new String[operands.size()]);
+            // warn about deprecated use of program options
+            if (params.size() > 0) {
+                // at least one program option specified after command name
+                Set<String> names = params.keySet();
+                String[] na = names.toArray(new String[names.size()]);
+                System.out.println("Deprecated syntax: " + name +
+                        ", Options: " + Arrays.toString(na));
+                // XXX - recommend correct syntax
+            }
+        }
     }
 
     /**
@@ -403,7 +505,7 @@ public abstract class CLICommand {
 
         if (operands.size() < operandMin && cons != null) {
             cons.printf("%s ",
-                strings.get("operandPrompt", /* XXX - need operand name */0));
+                strings.get("operandPrompt", operandName));
             String val = cons.readLine();
             if (ok(val)) {
                 operands = new ArrayList<String>();
@@ -426,6 +528,36 @@ public abstract class CLICommand {
         }
 
         initializeCommandPassword();
+    }
+
+    /**
+     * Check if the current request is a help request, either because
+     * --help was specified as a programoption or a command option.
+     * If so, get the man page using the getManPage method, copy the
+     * content to System.out, and return true.  Otherwise return false.
+     * Subclasses may override this method to perform a different check
+     * or to use a different method to display the man page.
+     * If this method returns true, the validate and executeCommand methods
+     * won't be called.
+     */
+    protected boolean checkHelp()
+            throws CommandException, CommandValidationException {
+        if (programOpts.isHelp() || getBooleanOption("help")) {
+            Reader r = getManPage();
+            if (r == null)
+                throw new CommandException(strings.get("ManpageMissing", name));
+            BufferedReader br = new BufferedReader(r);
+            String line;
+            try {
+            while ((line = br.readLine()) != null)
+                System.out.println(line);
+            } catch (IOException ioex) {
+                throw new CommandException(
+                            strings.get("ManpageMissing", name), ioex);
+            }
+            return true;
+        } else
+            return false;
     }
 
     /**

@@ -140,6 +140,7 @@ public class AsadminMain {
     }
 
     public static int executeCommand(String[] argv) {
+        CLICommand cmd = null;
         try {
             Environment env = new Environment();
 
@@ -164,13 +165,21 @@ public class AsadminMain {
             if (argv.length == 0)
                 argv = new String[] { "multimode" };
             command = argv[0];
-            CLICommand cmd = CLICommand.getCommand(command, po, env);
+            cmd = CLICommand.getCommand(command, po, env);
             return cmd.execute(argv);
         } catch (CommandException ce) {
-            CLILogger.getInstance().printError(ce.getMessage());
+            if (ce.getCause() instanceof InvalidCommandException)
+                // XXX - find closest match with remote commands
+                CLILogger.getInstance().printError(ce.getMessage());
+            else if (ce.getCause() instanceof java.net.ConnectException)
+                // XXX - find closest match with local commands
+                CLILogger.getInstance().printError(ce.getMessage());
+            else
+                CLILogger.getInstance().printError(ce.getMessage());
             return ERROR;
         } catch (CommandValidationException cve) {
             CLILogger.getInstance().printError(cve.getMessage());
+            CLILogger.getInstance().printError(cmd.getUsage());
             return ERROR;
         }
     }

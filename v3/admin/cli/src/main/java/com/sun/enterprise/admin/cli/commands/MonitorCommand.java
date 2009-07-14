@@ -56,7 +56,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Prashanth
  * @author Bill Shannon
  */
-public class MonitorCommand extends RemoteCommand {
+public class MonitorCommand extends CLICommand {
 
     private int interval = 30 * 1000;    // default 30 seconds
     private String type;
@@ -80,16 +80,20 @@ public class MonitorCommand extends RemoteCommand {
     }
 
     /**
-     * Ignore remote options.
      */
     @Override
-    protected void fetchCommandMetadata() throws CommandException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        processProgramOptions();
+
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, TYPE, '\0', "STRING", true, null);
         addOption(opts, FILENAME, '\0', "STRING", false, null);
         addOption(opts, INTERVAL, '\0', "STRING", false, "30");
         addOption(opts, FILTER, '\0', "STRING", false, null);
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
+        operandName = "target";
         operandType = "STRING";
         operandMin = 1;
         operandMax = 1;

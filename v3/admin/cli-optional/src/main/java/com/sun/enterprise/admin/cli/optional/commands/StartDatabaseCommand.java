@@ -81,14 +81,18 @@ public final class StartDatabaseCommand extends DatabaseCommand {
      * operandType, operandMin, and operandMax fields are set.
      */
     @Override
-    protected void prepare() throws CommandException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
-        addOption(opts, DB_HOST, '\0', "STRING", false, null);
-        addOption(opts, DB_PORT, '\0', "STRING", false, null);
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        processProgramOptions();
+
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
+        addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
+        addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
         addOption(opts, DB_HOME, '\0', "STRING", false, null);
         // not a remote command so have to process --terse and --echo ourselves
         addOption(opts, "terse", '\0', "BOOLEAN", false, "false");
         addOption(opts, "echo", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
         operandMin = 0;

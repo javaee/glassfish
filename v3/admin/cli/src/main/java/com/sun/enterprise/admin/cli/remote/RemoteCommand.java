@@ -118,32 +118,7 @@ public class RemoteCommand extends CLICommand {
     @Override
     protected void prepare() throws CommandException {
         try {
-            if (!programOpts.isOptionsSet()) {
-                /*
-                 * asadmin options and command options are intermixed.
-                 * Parse the entire command line for asadmin options,
-                 * removing them from the command line, and ignoring
-                 * unknown options.
-                 */
-                Parser rcp = new Parser(argv, 0,
-                                ProgramOptions.getValidOptions(), true);
-                Map<String, String> params = rcp.getOptions();
-                // program options may change
-                programOpts = new ProgramOptions(params, env);
-                initializeLogger();
-                initializePasswords();
-                List<String> operands = rcp.getOperands();
-                argv = operands.toArray(new String[operands.size()]);
-                // warn about deprecated use of program options
-                if (params.size() > 0) {
-                    // at least one program option specified after command name
-                    Set<String> names = params.keySet();
-                    String[] na = names.toArray(new String[names.size()]);
-                    System.out.println("Deprecated syntax: " + name +
-                            ", Options: " + Arrays.toString(na));
-                    // XXX - recommend correct syntax
-                }
-            }
+            processProgramOptions();
 
             initializeAuth();
 
@@ -160,7 +135,6 @@ public class RemoteCommand extends CLICommand {
                 commandOpts.add(opt);
                 return;
             }
-            // XXX - "asadmin --host localhost command --help" won't work
 
             /*
              * Find the metadata for the command.
@@ -186,11 +160,23 @@ public class RemoteCommand extends CLICommand {
             }
             if (commandOpts == null)
                 throw new CommandException("Unknown command: " + name);
+
+            // everyone gets a --help option until we have a help command
+            // on the server
+            addOption(commandOpts, "help", '?', "BOOLEAN", false, "false");
         } catch (CommandException cex) {
             throw cex;
         } catch (Exception e) {
             throw new CommandException(e.getMessage());
         }
+    }
+
+    /**
+     * We do all our help processing in executeCommand.
+     */
+    protected boolean checkHelp()
+            throws CommandException, CommandValidationException {
+        return false;
     }
 
     /**
@@ -225,10 +211,10 @@ public class RemoteCommand extends CLICommand {
                 if (opt.getType().equals("FILE")) {
                     addFileOption(uriString, paramName, paramValue);
                 } else if (opt.getType().equals("PASSWORD")) {
-                    addOption(uriString, paramName,
+                    addStringOption(uriString, paramName,
                                 encoder.encode(paramValue.getBytes()));
                 } else
-                    addOption(uriString, paramName, paramValue);
+                    addStringOption(uriString, paramName, paramValue);
             }
 
             // add operands
@@ -236,7 +222,7 @@ public class RemoteCommand extends CLICommand {
                 if (operandType.equals("FILE"))
                     addFileOption(uriString, "DEFAULT", operand);
                 else
-                    addOption(uriString, "DEFAULT", operand);
+                    addStringOption(uriString, "DEFAULT", operand);
             }
 
             // remove the last character, whether it was "?" or "&"
@@ -418,6 +404,21 @@ public class RemoteCommand extends CLICommand {
         return name;
     }
 
+    /**
+     * Get the man page from the server.
+     */
+    public Reader getManPage() {
+        try {
+            String manpage = executeAndReturnOutput(name, "--help");
+            return new StringReader(manpage);
+        } catch (CommandException cex) {
+            // ignore
+        } catch (CommandValidationException cvex) {
+            // ignore
+        }
+        return super.getManPage();
+    }
+
     private void processDataPart(final PayloadFilesManager downloadedFilesMgr,
             final Payload.Part part) throws IOException {
         /*
@@ -445,7 +446,7 @@ public class RemoteCommand extends CLICommand {
      * @param option the option expression to be added
      * @return the URI so far, including the newly-added option
      */
-    private StringBuilder addOption(StringBuilder uriString, String name,
+    private StringBuilder addStringOption(StringBuilder uriString, String name,
             String option) {
         try {
             String encodedOption = URLEncoder.encode(option, "UTF-8");
@@ -488,7 +489,7 @@ public class RemoteCommand extends CLICommand {
             // if we are about to upload it -- give just the name
             // o/w give the full path
             String pathToPass = (doUpload ? f.getName() : f.getPath());
-            addOption(uriString, optionName, pathToPass);
+            addStringOption(uriString, optionName, pathToPass);
         }
         return uriString;
     }
@@ -557,10 +558,10 @@ public class RemoteCommand extends CLICommand {
         // XXX - there should be a "help" command, that returns XML output
         //StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
                 //append("help").append(QUERY_STRING_INTRODUCER);
-        //addOption(uriString, "DEFAULT", name);
+        //addStringOption(uriString, "DEFAULT", name);
         StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
                 append(name).append(QUERY_STRING_INTRODUCER);
-        addOption(uriString, "Xhelp", "true");
+        addStringOption(uriString, "Xhelp", "true");
 
         // remove the last character, whether it was "?" or "&"
         uriString.setLength(uriString.length() - 1);
@@ -604,7 +605,7 @@ public class RemoteCommand extends CLICommand {
      * @return the set of ValidOptions
      */
     private Set<ValidOption> parseMetadata(InputStream in) {
-        Set<ValidOption> valid = new HashSet<ValidOption>();
+        Set<ValidOption> valid = new LinkedHashSet<ValidOption>();
         boolean sawFile = false;
         try {
             DocumentBuilder d =
@@ -630,6 +631,7 @@ public class RemoteCommand extends CLICommand {
             for (int i = 0; i < opts.getLength(); i++) {
                 Node n = opts.item(i);
                 NamedNodeMap attrs = n.getAttributes();
+                operandName = getAttr(attrs, "name");
                 operandType = getAttr(attrs, "type");
                 operandMin = Integer.parseInt(getAttr(attrs, "min"));
                 String max = getAttr(attrs, "max");

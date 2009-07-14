@@ -62,7 +62,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
  * @author bnevins
  * @author Bill Shannon
  */
-public class StopDomainCommand extends RemoteCommand {
+public class StopDomainCommand extends CLICommand {
     private File domainsDir;
     private File domainRootDir;
     private String domainName;
@@ -83,13 +83,17 @@ public class StopDomainCommand extends RemoteCommand {
     }
 
     /**
-     * Don't care about remote options.
      */
     @Override
-    protected void fetchCommandMetadata() throws CommandException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        processProgramOptions();
+
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "domaindir", '\0', "STRING", false, null);
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
+        operandName = "domain_name";
         operandType = "STRING";
         operandMin = 0;
         operandMax = 1;

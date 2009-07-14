@@ -76,9 +76,12 @@ public final class StopDatabaseCommand extends DatabaseCommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
-        addOption(opts, DB_HOST, '\0', "STRING", false, null);
-        addOption(opts, DB_PORT, '\0', "STRING", false, null);
+        processProgramOptions();
+
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
+        addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
+        addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
+        addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
         operandMin = 0;
