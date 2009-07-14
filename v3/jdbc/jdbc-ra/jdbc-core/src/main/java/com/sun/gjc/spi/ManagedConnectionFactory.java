@@ -976,7 +976,18 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         spec.setDetail(DataSourceSpec.STATEMENTCACHETYPE, statementCacheType);
     }
 
+    public String getInitSql() {
+        return spec.getDetail(DataSourceSpec.INTISQL);
+    }
 
+    public void setInitSql(String initSql) {
+        //TODO remove case where "null" is checked. Might be a CLI/GUI bug.
+        if(initSql != null && !initSql.equalsIgnoreCase("null") && 
+                !initSql.equals("")) {
+            spec.setDetail(DataSourceSpec.INTISQL, initSql);
+        }
+    }
+    
     /**
      * Set StatementTimeout value
      *
