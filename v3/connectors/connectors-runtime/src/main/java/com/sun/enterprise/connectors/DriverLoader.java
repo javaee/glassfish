@@ -41,17 +41,16 @@ public class DriverLoader implements ConnectorConstants,
     private static Logger logger =
     LogDomains.getLogger(DriverLoader.class, LogDomains.RSR_LOGGER);
 
-    private Map<String, ClassLoader> classLoaders = new HashMap();
-
     private static final String DRIVER_INTERFACE_NAME="java.sql.Driver";
     private static final String SERVICES_DRIVER_IMPL_NAME = "META-INF/services/java.sql.Driver";
 
     /**
-     * Gets a set of driver or datasource classnames for the particular vendor
-     * that is loaded using a URLClassLoader.
+     * Gets a set of driver or datasource classnames for the particular vendor.
+     * Loads the jdbc driver, introspects the jdbc driver jar and gets the 
+     * classnames.
      * @return
      */
-    public Set<String> getImplementationClassNames(String dbVendor, String resType) {
+    public Set<String> getJdbcDriverClassNames(String dbVendor, String resType) {
         //Map of all jar files with the set of driver implementations. every file
         // that is a jdbc jar will have a set of driver impls.
         Set<String> implClassNames = new TreeSet<String>();
@@ -63,9 +62,7 @@ public class DriverLoader implements ConnectorConstants,
 
         for (File file : allJars) {
             if (file.isFile()) {
-                logger.finest("DriverLoader : file.getName()=" + file.getName());
-                //Find if this particular jar file has any implementation of Driver
-                //or DataSource
+                //Introspect jar and get classnames.
                 implClassNames = introspectAndLoadJar(file, resType, dbVendor);
                 //Found the impl classnames for the particular dbVendor. 
                 //Hence no need to search in other jar files.
@@ -90,17 +87,12 @@ public class DriverLoader implements ConnectorConstants,
                 if (zipEntry != null) {
 
                     String entry = zipEntry.getName();
-
                     if (DRIVER_INTERFACE_NAME.equals(resType)) {
-
                         if (SERVICES_DRIVER_IMPL_NAME.equals(entry)) {
 
                             InputStream metaInf = jarFile.getInputStream(zipEntry);
-
                             implClass = processMetaInf(metaInf);
-
                             if (implClass != null) {
-
                                 if (isLoaded(implClass, resType)) {
                                     //Add to the implClassNames only if vendor name matches.
                                     if(isVendorSpecific(f, dbVendor)) {
@@ -109,6 +101,7 @@ public class DriverLoader implements ConnectorConstants,
                                 }
                             }
                             logger.finest("Driver loader : implClass = " + implClass);
+                            
                         }
                     }
                     if (entry.endsWith(".class")) {
@@ -142,9 +135,7 @@ public class DriverLoader implements ConnectorConstants,
      * Returns a list of all driver class names that were loaded from the jar file.
      * @param f
      * @param dbVendor
-     * @return map of String and Set of driver class implementations.
-     * String - Will include the implementation vendor + implementation version.
-     * Set - set of all classname strings that implement java.sql.Driver
+     * @return Set of driver/datasource class implementations based on resType
      */
     private Set<String> introspectAndLoadJar(File f, String resType, String dbVendor) {
 
@@ -157,6 +148,8 @@ public class DriverLoader implements ConnectorConstants,
     /**
      * Reads the META-INF/services/java.sql.Driver file contents and returns
      * the driver implementation class name.
+     * In case of jdbc40 drivers, the META-INF/services/java.sql.Driver file
+     * contains the name of the driver class.
      * @param metaInf
      * @return driver implementation class name
      */
@@ -172,26 +165,27 @@ public class DriverLoader implements ConnectorConstants,
                 driverClassName = line;
             }
         } catch(IOException ioex) {
-             logger.finest("DriverLoader : exception while processing META-INF directory for DriverClassName " + ioex);
+             logger.finest("DriverLoader : exception while processing " +
+                     "META-INF directory for DriverClassName " + ioex);
         } finally {
             try {
                 if(buffReader != null)
                     buffReader.close();
             } catch (IOException ex) {
-                logger.log(Level.FINE, "Error while closing File handles", ex);
+                logger.log(Level.FINE, "Error while closing File handles after reading META-INF files : ", ex);
             }
             try {
                 if(reader != null)
                     reader.close();
             } catch (IOException ex) {
-                logger.log(Level.FINE, "Error while closing File handles", ex);
+                logger.log(Level.FINE, "Error while closing File handles after reading META-INF files : ", ex);
             }
         }
         return driverClassName;
     }
     
     /**
-     * Find if the classname has been loaded and if it is a Driver or a 
+     * Check if the classname has been loaded and if it is a Driver or a 
      * DataSource impl.
      * @param classname
      * @return
@@ -200,13 +194,12 @@ public class DriverLoader implements ConnectorConstants,
         Class cls = null;
         try {
             //This will fail in case the driver is not in classpath.
-            cls = Thread.currentThread().getContextClassLoader().loadClass(classname);
+            cls = ConnectorRuntime.getRuntime().getConnectorClassLoader().loadClass(classname);
         //Check shud be made here to look into the lib directory now to see
         // if there are any newly installed drivers.
         //If so, create a URLClassLoader and load the class with common
         //classloader as the parent.
         } catch (Exception ex) {
-            //ex.printStackTrace();
             cls = null;
         }
         return (isResType(cls, resType));
@@ -251,7 +244,6 @@ public class DriverLoader implements ConnectorConstants,
         try {
             urls.add(f.toURI().toURL());
         } catch (MalformedURLException ex) {
-            ex.printStackTrace();
         }
         ClassLoader loader = ConnectorRuntime.getRuntime().getConnectorClassLoader();
         if (!urls.isEmpty()) {
@@ -260,7 +252,6 @@ public class DriverLoader implements ConnectorConstants,
             try {
                 urlCls = urlClassLoader.loadClass(classname);
             } catch (ClassNotFoundException ex) {
-                ex.printStackTrace();
             }
             isLoaded = isResType(urlCls, resType);
             if(isLoaded) {
@@ -306,35 +297,19 @@ public class DriverLoader implements ConnectorConstants,
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.WARNING, "Exception while reading manifest file : ", ex);
         }
         return isVendorSpecific;
     }
 
-    /**
-     * Get the driver implementation class name from META-INF/services/java.sql.Driver
-     * file, the name of the driver implementation class name.
-     * @param f
-     * @return
-     */
-    private String getFromManifest(File f) {
-        String driverClassName = null;
-        try {
-            JarFile jarFile = new JarFile(f);
-            Manifest manifest = jarFile.getManifest();     
-            //manifest.getMainAttributes()
-        } catch(IOException ex) {
-            ex.printStackTrace();
-        }
-        return driverClassName;
-    }
-
     private String getSystemLibLocation() {
+        //TODO add domains lib also to the locations where jdbc drivers are
+        //introspected.
         String systemLibLocation = System.getProperty(ConnectorConstants.INSTALL_ROOT) +
                 File.separator + "lib";
         return systemLibLocation;
     }
-    //need to add support for which driver vendor it belongs.
+    //TODO need to add support for which driver vendor it belongs.
 
     private static class JarFileFilter implements FilenameFilter {
 
@@ -345,9 +320,14 @@ public class DriverLoader implements ConnectorConstants,
         }
     }
 
-    //This is a bad way of doing things. But for jars that do not have a manifest
-    // we do this kind of iteration to find if the class names contain a dbVendor
-    //string in them.
+    /**
+     * Utility method that checks if a jar file is vendor specific by iteration.
+     * This method is used for jar files that do not have a manifest file to 
+     * look up the classname.
+     * @param dbVendor
+     * @param f
+     * @return true if f is vendor specific.
+     */
     private boolean isVendorSpecificByIteration(String dbVendor, File f) {
         JarFile jarFile;
         boolean isVendorSpecific = false;
@@ -368,7 +348,8 @@ public class DriverLoader implements ConnectorConstants,
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.WARNING, "Exception while introspecting jdbc jar file " +
+                    "for driver/datasource classname introspection : ", ex);
         }
         return isVendorSpecific;
     }
@@ -396,9 +377,9 @@ public class DriverLoader implements ConnectorConstants,
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.WARNING, "Exception while reading manifest file : ", ex);
         }
-        //should we close the jar file handles? 
+        //TODO should we close the jar file handles? 
         return isVendorSpecific;
     }
 }

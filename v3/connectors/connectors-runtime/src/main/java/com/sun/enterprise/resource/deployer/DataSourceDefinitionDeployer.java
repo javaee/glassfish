@@ -713,5 +713,13 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         public void setInitSql(String value) throws PropertyVetoException {
             //do nothing
         }
+
+        public String getDriverClassname() {
+            return desc.getClassName();
+        }
+
+        public void setDriverClassname(String value) throws PropertyVetoException {
+            //do nothing
+        }
     }
 }

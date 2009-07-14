@@ -15,5 +15,5 @@ public interface DriverLoader {
      * @param resType
      * @return set of implementation class names for the dbvendor.
      */    
-    public Set<String> getImplementationClassNames(String dbVendor, String resType);    
+    public Set<String> getJdbcDriverClassNames(String dbVendor, String resType);    
 }

@@ -451,10 +451,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
                 connectionDefinitionClassName, resType);
     }
 
-    public Set<String> getImplementationClassNames(String dbVendor, String resType) {
-        return driverLoader.getImplementationClassNames(dbVendor, resType);
-    }
-
     /**
      * Provides the list of built in custom resources by
      * resource-type and factory-class-name pair.
@@ -1134,8 +1130,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return all jdbc driver implementation class names
      */
     public Set<String> getJdbcDriverClassNames(String dbVendor, String resType) {
-        Set<String> emptySet = new HashSet();
-        return emptySet;
+        return driverLoader.getJdbcDriverClassNames(dbVendor, resType);
     }
 
     /**

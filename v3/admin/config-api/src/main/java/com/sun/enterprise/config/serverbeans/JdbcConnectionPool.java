@@ -104,6 +104,27 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     void setDatasourceClassname(String value) throws PropertyVetoException;
 
     /**
+     *
+     * Gets the value of the driverClassname property.
+     * 
+     * Name of the vendor supplied JDBC driver resource manager.
+     * Get classnames that implement java.sql.Driver.
+     * 
+     @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getDriverClassname();
+
+    /**
+     * Sets the value of the driverClassname property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setDriverClassname(String value) throws PropertyVetoException;
+
+    /**
      * Gets the value of the resType property.
      *
      * DataSource implementation class could implement one of
