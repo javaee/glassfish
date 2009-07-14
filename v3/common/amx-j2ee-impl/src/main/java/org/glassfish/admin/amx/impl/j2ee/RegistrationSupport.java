@@ -307,6 +307,10 @@ final class RegistrationSupport
                 intf = StatefulSessionBean.class;
                 impl = StatefulSessionBeanImpl.class;
             }
+            else
+            {
+                throw new IllegalArgumentException( "Unknown EJB type: " + ejbType + ", expected Stateless or Stateful");
+            }
         }
 
         return registerJ2EEChild(parentMBean, meta, intf, impl, ejbName);
