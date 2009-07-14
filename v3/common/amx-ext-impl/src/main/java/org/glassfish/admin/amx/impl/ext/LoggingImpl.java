@@ -47,7 +47,7 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.NotificationBuilder;
 import org.glassfish.admin.amx.util.*;
 import com.sun.enterprise.server.logging.GFFileHandler;
-import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
+//import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
 //import com.sun.enterprise.server.logging.ModuleToLoggerNameMapper;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -138,7 +138,7 @@ public final class LoggingImpl extends AMXImplBase
 	    Hook for subclass to modify anything in MBeanInfo.
 	    @Override
 	 */
-
+/*
     @Override
 		protected MBeanInfo
 	postRegisterModifyMBeanInfo( final MBeanInfo info )
@@ -154,7 +154,7 @@ public final class LoggingImpl extends AMXImplBase
 	    
 	    return JMXUtil.newMBeanInfo( info, ops );
 	}
-
+*/
 	
     
     private static MBeanNotificationInfo[]    SELF_NOTIFICATION_INFOS = null;
@@ -428,8 +428,7 @@ public final class LoggingImpl extends AMXImplBase
         final Set<String>     modules,
         final List<Attribute> nameValuePairs)
     {
-        unimplemented();
-            
+
         if ( name == null )
         {
             throw new IllegalArgumentException( "use MOST_RECENT_NAME, not null" );
@@ -467,11 +466,11 @@ public final class LoggingImpl extends AMXImplBase
         String logLevel, Boolean onlyLevel, List listOfModules,
         Properties nameValueMap)
     {
-    /*
+/*
         return LogFilter.getLogRecordsUsingQuery(logFilename, fromRecord, next,
             forward, requestedCount, fromDate, toDate, logLevel, onlyLevel,
             listOfModules, nameValueMap);
-            */
+ */
             return null;
     }
 
