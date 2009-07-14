@@ -7,7 +7,7 @@
             redirect(page="#{pageSession.parentPage}");
         />
     </sun:button>
-     <sun:button id="updateButton" rendered="#{edit}" text="$resource{i18n.button.Update}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+     <sun:button id="updateButton" rendered="#{edit}" text="$resource{i18n.button.Save}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
         <!command
             updatePhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", attributes="#{pageSession.valueMap}");
             redirect(page="#{pageSession.parentPage}");
