@@ -824,13 +824,6 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of defined error pages for all specified error codes
-     * and exception types.
-     */
-    ErrorPage[] findErrorPages();
-
-
-    /**
      * Return the filter definition for the specified filter name, if any;
      * otherwise return <code>null</code>.
      *
@@ -1110,12 +1103,9 @@ public interface Context extends Container {
 
 
     /**
-     * Remove the error page for the specified error code or
-     * Java language exception, if it exists; otherwise, no action is taken.
-     *
-     * @param errorPage The error page definition to be removed
+     * Removes any error page declarations from this Context.
      */
-    void removeErrorPage(ErrorPage errorPage);
+    void removeErrorPages();
 
 
     /**

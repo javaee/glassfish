@@ -1170,10 +1170,7 @@ public class ContextConfig
         */
 
         // Removing errors pages
-        ErrorPage[] errorPages = context.findErrorPages();
-        for (i = 0; i < errorPages.length; i++) {
-            context.removeErrorPage(errorPages[i]);
-        }
+        context.removeErrorPages();
 
         // Removing filter defs
         FilterDef[] filterDefs = context.findFilterDefs();
