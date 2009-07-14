@@ -48,14 +48,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.Servlet;
@@ -64,6 +57,7 @@ import javax.servlet.http.HttpSession;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
+import com.sun.enterprise.deployment.AbsoluteOrderingDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -495,13 +489,21 @@ public class WebModule extends PwcWebModule {
     @Override
     public synchronized void start() throws LifecycleException {
         // Get interestList of ServletContainerInitializers present, if any.
-        List<String> orderingList = (webBundleDescriptor.getAbsoluteOrderingDescriptor() == null) ? null :
-                webBundleDescriptor.getAbsoluteOrderingDescriptor().getOrdering();
-        boolean hasOthers = (webBundleDescriptor.getAbsoluteOrderingDescriptor() == null) ? false :
-                webBundleDescriptor.getAbsoluteOrderingDescriptor().hasOthers();
+        List<String> orderingList = null;
+        boolean hasOthers = false;
+        Map<String, String> webFragmentMap = Collections.emptyMap();
+        if (webBundleDescriptor != null) {
+            AbsoluteOrderingDescriptor aod =
+                    webBundleDescriptor.getAbsoluteOrderingDescriptor();
+            if (aod != null) {
+                orderingList = aod.getOrdering();
+                hasOthers = aod.hasOthers();
+            }
+            webFragmentMap = webBundleDescriptor.getJarNameToWebFragmentNameMap();
+        }
         this.setServletContainerInitializerInterestList(
-                ServletContainerInitializerUtil.getInterestList(webBundleDescriptor.getJarNameToWebFragmentNameMap(),
-                        orderingList, hasOthers, wmInfo.getAppClassLoader()));
+            ServletContainerInitializerUtil.getInterestList(webFragmentMap,
+                orderingList, hasOthers, wmInfo.getAppClassLoader()));
 
         // Start and register Tomcat mbeans
         super.start();
