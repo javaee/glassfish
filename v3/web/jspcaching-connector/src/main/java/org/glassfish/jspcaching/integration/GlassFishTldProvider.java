@@ -151,7 +151,6 @@ public class GlassFishTldProvider
             for (URI uri : uris) {
                 List entries =  JarURIPattern.getJarEntries(uri, pattern);
                 if (entries != null && entries.size() > 0) {
-System.out.println("XXX TLDPUT=" + uri);
                     tldMap.put(uri, entries);
                 }
             }
