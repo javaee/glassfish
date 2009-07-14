@@ -163,7 +163,7 @@
          <sun:treeNode id="loggerSetting"
 		    text="$resource{i18n.tree.loggerSettings}"
 		    url="/configuration/loggerLevels.jsf"
-		    imageURL="resource/images/logger.gif"
+		    imageURL="/resource/images/logger.gif"
 		    />
 
         //Admin Service
