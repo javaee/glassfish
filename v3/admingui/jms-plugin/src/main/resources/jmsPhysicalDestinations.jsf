@@ -48,6 +48,7 @@
             getRequestValue(key="name" value=>$page{targetName});
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
             setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationEdit.jsf");
+            setPageSessionAttribute(key="viewPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationStats.jsf");
 
             getPhysicalDestinations(targetName="#{targetName}", result=>$attribute{listOfRows} );
         />
@@ -99,12 +100,15 @@
                     <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
                 </sun:tableColumn>
 
-                <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="col11">
+                <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}">
                     <sun:hyperlink id="nameCol" text="#{td.value.name}" url="#{pageSession.editPage}?name=#{td.value.name}&type=#{td.value.type}" />
                 </sun:tableColumn>
 
-                <sun:tableColumn headerText="$resource{i18n.common.type.header}"  rowHeader="$boolean{true}" id="col7">
+                <sun:tableColumn headerText="$resource{i18n.common.type.header}"  rowHeader="$boolean{true}">
                     <staticText id="typeCol"  value="#{td.value.type}" />
+                </sun:tableColumn>
+                <sun:tableColumn headerText="$resource{i18njms.Stats}">
+                    <sun:hyperlink id="statsCol" text="$resource{i18njms.View}" url="#{pageSession.viewPage}?name=#{td.value.name}&type=#{td.value.type}" />
                 </sun:tableColumn>
             </sun:tableRowGroup>
         </sun:table>

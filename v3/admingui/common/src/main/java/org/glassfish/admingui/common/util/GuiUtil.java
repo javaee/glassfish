@@ -284,6 +284,12 @@ public class GuiUtil {
         }
         return encdString;
     }
+
+    public static ResourceBundle getBundle (String resourceName) {
+        Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
+        return ResourceBundleManager.getInstance().getBundle(resourceName, locale);
+    }
+
     /*
      * returns the strings from org.glassfish.admingui.core.Strings 
      * if no such key exists, return the key itself.
@@ -311,8 +317,12 @@ public class GuiUtil {
     }
 
     public static String getMessage(String resourceName, String key) {
-        Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
-        ResourceBundle bundle = ResourceBundleManager.getInstance().getBundle(resourceName, locale);
+        ResourceBundle bundle = getBundle(resourceName);
+        String ret = bundle.getString(key);
+        return (ret == null) ? key : ret;
+    }
+
+    public static String getMessage(ResourceBundle bundle, String key) {
         String ret = bundle.getString(key);
         return (ret == null) ? key : ret;
     }

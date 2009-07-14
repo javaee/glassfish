@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.Attribute;
@@ -38,6 +39,7 @@ public class JmsHandlers {
     protected static final String OP_DESTROY = "destroy";
     protected static final String OP_PURGE = "purge";
 
+    // Config attributes
     protected static final String ATTR_CONSUMER_FLOW_LIMIT = "ConsumerFlowLimit";
     protected static final String ATTR_LIMIT_BEHAVIOR = "LimitBehavior";
     protected static final String ATTR_LOCAL_DELIVERY_PREFERRED = "LocalDeliveryPreferred";
@@ -50,6 +52,59 @@ public class JmsHandlers {
     protected static final String ATTR_MAX_TOTAL_MSG_BYTES = "MaxTotalMsgBytes";
     protected static final String ATTR_VALIDATE_XML_SCHEMA_ENABLED = "ValidateXMLSchemaEnabled";
     protected static final String ATTR_XML_SCHEMA_URI_LIST = "XMLSchemaURIList";
+
+    // Monitoring attributes
+    protected static final String ATTR_CREATED_BY_ADMIN = "CreatedByAdmin";
+    protected static final String ATTR_TEMPORARY = "Temporary";
+    protected static final String ATTR_CONNECTION_ID = "ConnectionID";
+    protected static final String ATTR_STATE = "State";
+    protected static final String ATTR_STATE_LABEL = "StateLabel";
+    protected static final String ATTR_NUM_PRODUCERS = "NumProducers";
+    protected static final String ATTR_NUM_CONSUMERS = "NumConsumers";
+    protected static final String ATTR_NUM_WILDCARD_PRODUCERS = "NumWildcardProducers";
+    protected static final String ATTR_NUM_WILDCARD_CONSUMERS = "NumWildcardConsumers";
+    protected static final String ATTR_NUM_WILDCARDS = "NumWildcards";
+    protected static final String ATTR_PEAK_NUM_CONSUMERS = "PeakNumConsumers";
+    protected static final String ATTR_AVG_NUM_CONSUMERS = "AvgNumConsumers";
+    protected static final String ATTR_NUM_ACTIVE_CONSUMERS = "NumActiveConsumers";
+    protected static final String ATTR_PEAK_NUM_ACTIVE_CONSUMERS = "PeakNumActiveConsumers";
+    protected static final String ATTR_AVG_NUM_ACTIVE_CONSUMERS = "AvgNumActiveConsumers";
+    protected static final String ATTR_NUM_BACKUP_CONSUMERS = "NumBackupConsumers";
+    protected static final String ATTR_PEAK_NUM_BACKUP_CONSUMERS = "PeakNumBackupConsumers";
+    protected static final String ATTR_AVG_NUM_BACKUP_CONSUMERS = "AvgNumBackupConsumers";
+    protected static final String ATTR_NUM_MSGS = "NumMsgs";
+    protected static final String ATTR_NUM_MSGS_REMOTE = "NumMsgsRemote";
+    protected static final String ATTR_NUM_MSGS_PENDING_ACKS = "NumMsgsPendingAcks";
+    protected static final String ATTR_NUM_MSGS_HELD_IN_TRANSACTION = "NumMsgsHeldInTransaction";
+    protected static final String ATTR_NEXT_MESSAGE_ID = "NextMessageID";
+    protected static final String ATTR_PEAK_NUM_MSGS = "PeakNumMsgs";
+    protected static final String ATTR_AVG_NUM_MSGS = "AvgNumMsgs";
+    protected static final String ATTR_NUM_MSGS_IN = "NumMsgsIn";
+    protected static final String ATTR_NUM_MSGS_OUT = "NumMsgsOut";
+    protected static final String ATTR_MSG_BYTES_IN = "MsgBytesIn";
+    protected static final String ATTR_MSG_BYTES_OUT = "MsgBytesOut";
+    protected static final String ATTR_PEAK_MSG_BYTES = "PeakMsgBytes";
+    protected static final String ATTR_TOTAL_MSG_BYTES = "TotalMsgBytes";
+    protected static final String ATTR_TOTAL_MSG_BYTES_REMOTE = "TotalMsgBytesRemote";
+    protected static final String ATTR_TOTAL_MSG_BYTES_HELD_IN_TRANSACTION = "TotalMsgBytesHeldInTransaction";
+    protected static final String ATTR_PEAK_TOTAL_MSG_BYTES = "PeakTotalMsgBytes";
+    protected static final String ATTR_AVG_TOTAL_MSG_BYTES = "AvgTotalMsgBytes";
+    protected static final String ATTR_DISK_RESERVED = "DiskReserved";
+    protected static final String ATTR_DISK_USED = "DiskUsed";
+    protected static final String ATTR_DISK_UTILIZATION_RATIO = "DiskUtilizationRatio";
+    
+
+    protected static final String[] ATTRS_CONFIG = new String[]{ATTR_MAX_NUM_MSGS, ATTR_MAX_BYTES_PER_MSG, ATTR_MAX_TOTAL_MSG_BYTES, ATTR_LIMIT_BEHAVIOR,
+        ATTR_MAX_NUM_PRODUCERS, ATTR_MAX_NUM_ACTIVE_CONSUMERS, ATTR_MAX_NUM_BACKUP_CONSUMERS, ATTR_CONSUMER_FLOW_LIMIT,
+        ATTR_LOCAL_DELIVERY_PREFERRED, ATTR_USE_DMQ, ATTR_VALIDATE_XML_SCHEMA_ENABLED, ATTR_XML_SCHEMA_URI_LIST};
+    protected static final String[] ATTRS_MONITOR = new String[] {ATTR_CREATED_BY_ADMIN, ATTR_TEMPORARY, ATTR_CONNECTION_ID, ATTR_STATE, ATTR_STATE_LABEL,
+        ATTR_NUM_PRODUCERS, ATTR_NUM_CONSUMERS, ATTR_NUM_WILDCARD_PRODUCERS, ATTR_NUM_WILDCARD_CONSUMERS, ATTR_NUM_WILDCARDS, ATTR_PEAK_NUM_CONSUMERS,
+        ATTR_AVG_NUM_CONSUMERS, ATTR_NUM_ACTIVE_CONSUMERS, ATTR_PEAK_NUM_ACTIVE_CONSUMERS, ATTR_AVG_NUM_ACTIVE_CONSUMERS,
+        ATTR_NUM_BACKUP_CONSUMERS, ATTR_PEAK_NUM_BACKUP_CONSUMERS, ATTR_AVG_NUM_BACKUP_CONSUMERS, ATTR_NUM_MSGS, ATTR_NUM_MSGS_REMOTE,
+        ATTR_NUM_MSGS_PENDING_ACKS, ATTR_NUM_MSGS_HELD_IN_TRANSACTION, ATTR_NEXT_MESSAGE_ID, ATTR_PEAK_NUM_MSGS, ATTR_AVG_NUM_MSGS,
+        ATTR_NUM_MSGS_IN, ATTR_NUM_MSGS_OUT, ATTR_MSG_BYTES_IN, ATTR_MSG_BYTES_OUT, ATTR_PEAK_MSG_BYTES, ATTR_TOTAL_MSG_BYTES, ATTR_TOTAL_MSG_BYTES_REMOTE,
+        ATTR_TOTAL_MSG_BYTES_HELD_IN_TRANSACTION, ATTR_PEAK_TOTAL_MSG_BYTES, ATTR_AVG_TOTAL_MSG_BYTES, ATTR_DISK_RESERVED, ATTR_DISK_USED,
+        ATTR_DISK_UTILIZATION_RATIO};
 
     protected static final String PROP_NAME = "name";
     protected static final String PROP_DEST_TYPE = "desttype";
@@ -86,11 +141,7 @@ public class JmsHandlers {
         Map valueMap = new HashMap();
         try {
             String objectName = getJmsDestinationObjectName(SUBTYPE_CONFIG, name, type);
-            AttributeList attributes = (AttributeList)JMXUtil.getMBeanServer().getAttributes(
-                new ObjectName(objectName),
-                new String[]{ATTR_MAX_NUM_MSGS, ATTR_MAX_BYTES_PER_MSG, ATTR_MAX_TOTAL_MSG_BYTES, ATTR_LIMIT_BEHAVIOR,
-                    ATTR_MAX_NUM_PRODUCERS, ATTR_MAX_NUM_ACTIVE_CONSUMERS, ATTR_MAX_NUM_BACKUP_CONSUMERS, ATTR_CONSUMER_FLOW_LIMIT,
-                    ATTR_LOCAL_DELIVERY_PREFERRED, ATTR_USE_DMQ, ATTR_VALIDATE_XML_SCHEMA_ENABLED, ATTR_XML_SCHEMA_URI_LIST});
+            AttributeList attributes = (AttributeList)JMXUtil.getMBeanServer().getAttributes(new ObjectName(objectName),ATTRS_CONFIG);
             for (Attribute attribute: attributes.asList()) {
                 valueMap.put(attribute.getName(), (attribute.getValue() != null) ? attribute.getValue().toString() : null);
             }
@@ -102,6 +153,47 @@ public class JmsHandlers {
 
 
         handlerCtx.setOutputValue("destData", valueMap);
+    }
+
+    @Handler(id="getPhysicalDestinationStats",
+        input={
+            @HandlerInput(name="name", type=String.class, required=true),
+            @HandlerInput(name="type", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="statsData", type=java.util.List.class)}
+     )
+    public static void getPhysicalDestinationStats(HandlerContext handlerCtx){
+        String name = (String)handlerCtx.getInputValue("name");
+        String type = (String)handlerCtx.getInputValue("type");
+        List statsList = new ArrayList();
+        try {
+            String objectName = getJmsDestinationObjectName(SUBTYPE_MONITOR, name, type);
+            AttributeList attributes = (AttributeList)JMXUtil.getMBeanServer().getAttributes(new ObjectName(objectName),ATTRS_MONITOR);
+            ResourceBundle bundle = GuiUtil.getBundle("org.glassfish.admingui.plugin.jms.Strings");
+            statsList.add(createRow("Name", name, ""));
+            statsList.add(createRow("Type", type.substring(0,1).toUpperCase() + type.substring(1), ""));
+            for (Attribute attribute: attributes.asList()) {
+                statsList.add(
+                        createRow(
+                            GuiUtil.getMessage(bundle, "jmsPhysDestinations."+attribute.getName()),
+                            attribute.getValue(),
+                            GuiUtil.getMessage(bundle, "jmsPhysDestinations."+attribute.getName()+"Help")));
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+
+
+        handlerCtx.setOutputValue("statsData", statsList);
+    }
+
+    private static Map createRow(String label, Object value, String helpText) {
+        Map map = new HashMap();
+        map.put("label", label);
+        map.put("value", (value != null) ? value.toString() : null);
+        map.put("help", helpText);
+
+        return map;
     }
 
     @Handler(id="getPhysicalDestinations",
