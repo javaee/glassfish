@@ -49,7 +49,6 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-registration" : {"type" : "require" },
-                        "pkg:/glassfish-amx" : {"type" : "require" },
                         "pkg:/glassfish-web" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],

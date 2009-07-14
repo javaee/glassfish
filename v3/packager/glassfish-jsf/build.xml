@@ -29,76 +29,10 @@ own identifying information: Portions Copyright [yyyy]
 	<graphDef id="all-modules" tolerateBrokenPOMs="true">
 		<scope level="compile,runtime">
 			<subtract>
-			    <subtract>
-				    <subtract>
-				    <subtract>
-				    <subtract>
-				    <subtract>
-				    <subtract>
-				    <subtract>
-				    <subtract>
-				    <subtract>
-					    <subtract>
-						    <subtract>
-							    <subtract>
-								    <subtract>
-				    <fullGraph/>
-			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
-	                                 <scope level="compile,runtime"/>
-	                             </subGraph>
-	
-			         </subtract>
-                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-hk2">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			         </subtract>
-                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba-omgapi">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-registration">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-management">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-amx">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jca">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jpa">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-codegen">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
+			    <fullGraph/>
 			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jta">	
 	                                 <scope level="compile,runtime"/>
-				     </subGraph>
+			     </subGraph>
 			 </subtract>
 		</scope>					 
        </graphDef>

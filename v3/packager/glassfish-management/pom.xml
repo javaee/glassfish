@@ -70,26 +70,7 @@
         <!--
           modules to be included in this bundle
         -->       
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-optional</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.flashlight</groupId>
-            <artifactId>flashlight-framework</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.flashlight</groupId>
-            <artifactId>flashlight-agent</artifactId>
-            <version>${project.version}</version>
-        </dependency>   	
-        <dependency>
-            <groupId>org.glassfish.flashlight</groupId>
-            <artifactId>extra-jdk-packages</artifactId>
-            <version>${project.version}</version>
-        </dependency> 
+
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>rest-service</artifactId>
@@ -98,42 +79,7 @@
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>felix</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-hk2</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-  	</dependency>
-        <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-grizzly</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-        </dependency>
- 	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-nucleus</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-        </dependency>
-   	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-corba-omgapi</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-       </dependency> 
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-common</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-    	</dependency>
+
   	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-registration</artifactId>

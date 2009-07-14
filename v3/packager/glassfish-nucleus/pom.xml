@@ -156,28 +156,31 @@
             <groupId>org.glassfish.provider</groupId>
             <artifactId>gfprobe-provider-client</artifactId>
        </dependency>
-       <dependency>
-           <groupId>org.glassfish.common</groupId>
-           <artifactId>btrace-jars</artifactId>
-           <version>${project.version}</version>
-	   <type>distribution-fragment</type>
-       </dependency> 
+            <dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-agent</artifactId>
+            <version>${project.version}</version>
+        </dependency>   	
+        <dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>extra-jdk-packages</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>btrace-jars</artifactId>
+            <version>${project.version}</version>
+	    <type>distribution-fragment</type>
+        </dependency> 
    
 	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>felix</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-hk2</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-  	</dependency>
         <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-grizzly</artifactId>

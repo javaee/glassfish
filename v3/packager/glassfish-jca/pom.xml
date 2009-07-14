@@ -88,11 +88,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.connectors</groupId>
-            <artifactId>connectors-internal-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.connectors</groupId>
             <artifactId>connectors-runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -106,58 +101,11 @@
              can be excluded during staging -->	
         <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>felix</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-hk2</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-  	</dependency>
-        <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-grizzly</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-        </dependency>
- 	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-nucleus</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-        </dependency>
-   	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-corba-omgapi</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-       </dependency> 
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-common</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-    	</dependency>
-  	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-registration</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>  	
-        <dependency>        
-           <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-management</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-        <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-amx</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-	</dependency>
+ 
     </dependencies>
 
     <profiles>

@@ -94,35 +94,7 @@
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-rcm</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-compat</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-	    <artifactId>grizzly-cometd</artifactId>
-	     <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-comet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-messagesbus</artifactId>
-        </dependency>
-        <!-- previous packages - required for dependency graph calculation -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-	    <artifactId>felix</artifactId>
-	    <version>${project.version}</version>
-	    <type>zip</type>
-        </dependency> 
+        <!-- previous package - required for dependency graph calculation -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
 	    <artifactId>glassfish-hk2</artifactId>

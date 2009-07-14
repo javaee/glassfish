@@ -98,36 +98,6 @@
        	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>felix</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-hk2</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-  	</dependency>
-        <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-grizzly</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-        </dependency>
- 	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-nucleus</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-        </dependency>   
- 	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-corba-omgapi</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-       </dependency> 
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-common</artifactId>

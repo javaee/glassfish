@@ -169,12 +169,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-amx</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jca</artifactId>
             <version>${project.version}</version>
             <type>zip</type>

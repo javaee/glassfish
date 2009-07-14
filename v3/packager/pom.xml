@@ -69,7 +69,7 @@
 	<module>glassfish-common</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
-	<module>glassfish-amx</module>
+	<!--module>glassfish-amx</module-->
 	<module>glassfish-jca</module>
 	<module>glassfish-jpa</module>
 	<module>glassfish-codegen</module>
