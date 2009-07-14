@@ -38,6 +38,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.monitoring.MonitoringItem;
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -78,10 +80,36 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, org.glas
     public void setModuleMonitoringLevels(ModuleMonitoringLevels value) throws PropertyVetoException;
     
     /**
-    	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
+     * Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
     @Element
     List<Property> getProperty();
+
+    /**
+     * Gets the value of the mbean-enabled attribute.
+     * This boolean attribute determines whether monitoring mebans are enabled
+     * or disabled. When disabled, all montioring activity will be disabled
+     *
+     * @return present monitoring activity status
+     */
+    @Attribute(defaultValue="true")
+    public String getMbeanEnabled();
+
+    /**
+     * Sets the value of the meban-enabled attribute.
+     *
+     * @param value allowed object is
+     *              {@link ModuleMonitoringLevels }
+     */
+    public void setMbeanEnabled(String value) throws PropertyVetoException;
+
+    /**
+     * Get the monitoring configuration for other types of containers.
+     *
+     * @return  list of container monitoring configurations
+     */
+    @Element("*")
+    List<MonitoringItem> getMonitoringItems();
 }
