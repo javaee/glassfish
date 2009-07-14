@@ -156,7 +156,7 @@
         <mq.version>4.4-011-1</mq.version>
         <jaxr.version>JAXR_RA_AS90_20060317</jaxr.version>
         <webbeans.version>1.0.0.PREVIEW1</webbeans.version>
-        <jersey.version>1.1.1-ea</jersey.version>
+        <jersey.version>1.1.0-ea</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gfprobe-provider-client.version>3.0.0-b008</gfprobe-provider-client.version>
