@@ -43,7 +43,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private final TreeNode serverNode;
     private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
     static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
-    private static boolean AMXReady = false;
+    private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
 
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm,
@@ -153,16 +153,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     public void mbeanRegistered(final ObjectName objectName, final MBeanListener listener) {
         super.mbeanRegistered(objectName, listener);
         AMXReady = true;
+        statsProviderRegistry.setAMXReady(true);
         for (StatsProviderRegistry.StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
             if (statsProviderRegistry.getConfigEnabled(spre.getConfigStr())) {
                 ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
                 spre.setManagedObjectManager(mom);
             }
         }
-    }
-
-    public static boolean isAMXReady() {
-        return AMXReady;
     }
 
     StatsProviderRegistry getStatsProviderRegistry() {

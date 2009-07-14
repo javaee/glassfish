@@ -22,6 +22,7 @@ public class StatsProviderRegistry {
                         statsProviderToRegistryElementMap = new HashMap();
     private Map<String, Boolean> configEnabledMap = new HashMap();
     private MonitoringRuntimeDataRegistry mrdr;
+    private boolean isAMXReady = false;
 
     public StatsProviderRegistry(MonitoringRuntimeDataRegistry mrdr) {
         this.mrdr = mrdr;
@@ -138,7 +139,7 @@ public class StatsProviderRegistry {
 
             //Reregister the statsProvider in Gmbal
             //if (mbeanEnabled) {
-            if (StatsProviderManagerDelegateImpl.isAMXReady()) {
+            if (isAMXReady()) {
                     registerGmbal(spre);
             }
             //}
@@ -254,6 +255,14 @@ public class StatsProviderRegistry {
 
     Collection<StatsProviderRegistryElement> getSpreList() {
         return statsProviderToRegistryElementMap.values();
+    }
+
+    void setAMXReady(boolean ready) {
+        this.isAMXReady = ready;
+    }
+
+    boolean isAMXReady() {
+        return this.isAMXReady;
     }
 
     class StatsProviderRegistryElement {
