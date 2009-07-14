@@ -2,7 +2,7 @@
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="defaultCloseOperation" type="int" value="0"/>
     <Property name="title" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
       <Connection code="stringManager.getString(&quot;upgrade.gui.mainframe.titleMessage&quot;,&#xa;    commonInfoModel.getTarget().getVersion())" type="code"/>
     </Property>

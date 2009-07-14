@@ -61,6 +61,7 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         StringManager.getManager(MainFrame.class);
     private static final CommonInfoModel commonInfoModel =
         CommonInfoModel.getInstance();
+    
     // putting this in one place in case formatting needs to change
     private static final String REQUIRED_FIELD_CHAR =
         stringManager.getString("upgrade.gui.detailspanel.requiredField.char");

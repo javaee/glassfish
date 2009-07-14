@@ -50,9 +50,9 @@ public class Utils {
     private static HelpBroker helpBroker ;    
     private static final Logger log = LogService.getLogger();
 
-    /** Creates a new instance of Utils */
-    public Utils() {
-    }
+    // don't need to instantiate
+    private Utils() {}
+
     public static HelpBroker getHelpBroker(){
         if(helpBroker == null){
             String helpHSString = "com/sun/enterprise/tools/upgrade/doc/UpgradeToolHelp.hs";

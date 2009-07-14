@@ -33,19 +33,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.tools.upgrade.gui;
 
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
 import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
+import com.sun.enterprise.tools.upgrade.gui.util.Utils;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
+import java.awt.CardLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.logging.Logger;
+import javax.help.CSH;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -67,6 +69,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
 
     // contained in the card layout of mainPanel
     private enum Panels { DATA_COLLECTION_PANEL, PROGRESS_PANEL }
+
     private final DataCollectionPanel dataCollectionPanel =
         new DataCollectionPanel(this);
     private final ProgressPanel progressPanel =
@@ -89,19 +92,20 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
                 "Cannot find image %s", imageURLString));
         }
         initComponents();
-        
+
         // add listener to close app when window closed
         addWindowListener(new WindowAdapter() {
-            /* todo: In original version, this operation
-             * exited no matter what the user clicked.
-             * Need to check desired behavior. Simplest
-             * operation is performed here. Exit the app.
-             */
             @Override
             public void windowClosing(WindowEvent we) {
-                performExit();
+                doCancelAction();
             }
         });
+
+        // enable help button
+        if (Utils.getHelpBroker() != null) {
+            Utils.getHelpBroker().enableHelpOnButton(
+                helpButton, "WIZARD_FIRST", null);
+        }
 
         // update status of 'next' button by checking state of panel
         dataCollectionPanel.checkState();
@@ -127,7 +131,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
         cancelButton = new javax.swing.JButton();
         helpButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(stringManager.getString("upgrade.gui.mainframe.titleMessage",
             commonInfoModel.getTarget().getVersion()));
     setMinimumSize(new java.awt.Dimension(725, 545));
@@ -247,39 +251,68 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
     pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // TODO: this button didn't do anything before. remove it?
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        // TODO add your handling code here:
+        CardLayout layoutManager = (CardLayout) mainPanel.getLayout();
+        layoutManager.show(mainPanel, Panels.DATA_COLLECTION_PANEL.name());
+        nextButton.setText(
+            stringManager.getString("upgrade.gui.mainframe.nextbutton"));
+        backButton.setEnabled(false);
+        cancelButton.setEnabled(true);
+
+        // todo: does not appear to be working
+        CSH.setHelpIDString(helpButton, "WIZARD_FIRST");
     }//GEN-LAST:event_backButtonActionPerformed
 
+    /*
+     * If current panel is data collection panel, check arguments and
+     * continue. Change button to "Finish" which simply exits the application.
+     */
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
-//        if (this.processArguments()) {
-//            printArguments();
-//            de = new DialogEvent(this, DialogEvent.UPGRADE_ACTION);
-//            this.currentNavigationPanel = Panels.PROGRESS_PANEL;
-//            CSH.setHelpIDString(gethelpButton(), "WIZARD_RESULT");
-//            this.setCurrentNavigationPanel();
-//        } else {
-//            return;
-//        }
+        if (dataCollectionPanel.isVisible()) {
+            // validate inputs
+
+            // UI changes
+            CardLayout layoutManager = (CardLayout) mainPanel.getLayout();
+            layoutManager.show(mainPanel, Panels.PROGRESS_PANEL.name());
+            nextButton.setText(
+                stringManager.getString("upgrade.gui.mainframe.finishbutton"));
+            cancelButton.setEnabled(false);
+            backButton.setEnabled(true);
+            CSH.setHelpIDString(helpButton, "WIZARD_RESULT");
+
+            // start worker thread
+
+
+            return;
+        }
+        if (progressPanel.isVisible()) {
+            performExit();
+        }
+        // this shouldn't happen, but might as well be safe
+        throw new AssertionError("No expected panel is visible");
     }//GEN-LAST:event_nextButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        int option = JOptionPane.showConfirmDialog(this,
+        doCancelAction();
+    }//GEN-LAST:event_cancelButtonActionPerformed
+
+    // called by cancel button and main window listener
+    private void doCancelAction() {
+        int retVal = JOptionPane.showConfirmDialog(this,
             stringManager.getString("upgrade.gui.mainframe.exitMessage"),
             stringManager.getString("upgrade.gui.mainframe.exitMessageTitle"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.QUESTION_MESSAGE);
-        if (option == JOptionPane.NO_OPTION) {
+        if (retVal == JOptionPane.NO_OPTION) {
             return;
         }
         performExit();
-    }//GEN-LAST:event_cancelButtonActionPerformed
+    }
 
     private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
         // TODO add your handling code here:
-
     }//GEN-LAST:event_helpButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;
     private javax.swing.JButton cancelButton;
@@ -289,7 +322,6 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
     private javax.swing.JButton nextButton;
     // End of variables declaration//GEN-END:variables
 
-    // called from window listener and close button
     private void performExit() {
         logger.fine("Before Recover Call");
         commonInfoModel.recover();
