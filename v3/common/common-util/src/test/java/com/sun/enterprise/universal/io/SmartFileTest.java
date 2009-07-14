@@ -94,7 +94,7 @@ public class SmartFileTest {
         // where are we now?
         String here = SmartFile.sanitize(".");
 
-        String cp1before = "/a/b/c" + sep + "qqq" + sep + "z/e";
+        String cp1before = "/a/b/c" + sep + "qqq"+ sep + "qqq"+ sep + "qqq"+ sep + "qqq"+ sep + "qqq"+ sep + "./././qqq/./." + sep + "z/e";
         String cp1expected = "/a/b/c" + sep + here + "/qqq" + sep + here + "/z/e";
 
         if(sep.equals(";")) {

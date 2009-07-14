@@ -107,15 +107,33 @@ public class SmartFile {
         try {
             String[] paths = pathsString.split(File.pathSeparator);
             StringBuilder sb = new StringBuilder();
+            Set<String> pathsSet = new HashSet<String>();
+            List<String> pathsList = new LinkedList<String>();
 
-            // TODO - possible enhancement -- add the strings to a Set to get rid of dupes
             for(int i = 0; i < paths.length; i++) {
                 String path = paths[i];
 
-                if(i > 0)
+                // ignore empty path elements.  E.g. "c:/foo;;;;;;;" should become "C:/foo"
+                // not "c:/foo;thisdir;thisdir;thisdir etc"
+                if(!ok(path))
+                    continue;
+
+                // pathsSet is only here for removing duplicates.  We need the
+                // List to maintain the original order!
+                path = SmartFile.sanitize(path);
+
+                if(pathsSet.add(path))
+                    pathsList.add(path);
+            }
+
+            boolean firstElement = true;
+            for(String path : pathsList) {
+                if(firstElement)
+                    firstElement = false;
+                else
                     sb.append(File.pathSeparator);
 
-                sb.append(SmartFile.sanitize(path));
+                sb.append(path);
             }
             return sb.toString();
         }
