@@ -523,4 +523,16 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return true if ping is on
      */
     public boolean getPingDuringPoolCreation(String poolName);
+    
+    /**
+     * Fetch the DataSource/Driver implementation class names for the particular 
+     * dbVendor and resource type. Sometimes an already stored datasource
+     * classname is used in this method.
+     * @param datasourceClassName
+     * @param dbVendor
+     * @param resType
+     * @return set of implementation class names for the dbvendor.
+     */
+    public Set<String> getImplementationClassNames(String dbVendor, String resType);
+    
 }

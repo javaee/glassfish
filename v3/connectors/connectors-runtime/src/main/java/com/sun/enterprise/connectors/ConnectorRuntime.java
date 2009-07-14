@@ -170,6 +170,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ProcessEnvironment processEnvironment;
+    
+    @Inject
+    private DriverLoader driverLoader;
 
     @Inject
     private ConnectorJavaBeanValidator connectorBeanValidator;
@@ -446,6 +449,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName, String resType) {
         return ccPoolAdmService.getConnectionDefinitionPropertiesAndDefaults(
                 connectionDefinitionClassName, resType);
+    }
+
+    public Set<String> getImplementationClassNames(String dbVendor, String resType) {
+        return driverLoader.getImplementationClassNames(dbVendor, resType);
     }
 
     /**
