@@ -895,7 +895,7 @@ public class ApplicationContext
         // Remove the specified attribute
         synchronized (attributes) {
             // Check for read only attribute
-           if (readOnlyAttributes.containsKey(name))
+            if (readOnlyAttributes.containsKey(name))
                 return;
             found = attributes.containsKey(name);
             if (found) {
@@ -1301,12 +1301,10 @@ public class ApplicationContext
      * Set an attribute as read only.
      */
     void setAttributeReadOnly(String name) {
-
         synchronized (attributes) {
             if (attributes.containsKey(name))
                 readOnlyAttributes.put(name, name);
         }
-
     }
 
 

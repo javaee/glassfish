@@ -711,6 +711,12 @@ public class StandardContext
     private List absoluteOrderingList;
 
     /**
+     * The list of ordered libs, which is used as the value of the
+     * ServletContext attribute with name javax.servlet.context.orderedLibs
+     */
+    private List<String> orderedLibs;
+
+    /**
      * Restricted ServletContext, some of whose methods (namely the
      * configuration methods added by Servlet 3.0) throw an
      * IllegalStateException if invoked by a restricted ServletContextListener
@@ -5751,7 +5757,7 @@ public class StandardContext
             ok = false;
         }
 
-        // We put the resources into the servlet context
+        // Store some required info as ServletContext attributes
         if (ok) {
             getServletContext().setAttribute
                 (Globals.RESOURCES_ATTR, getResources());
@@ -5759,6 +5765,11 @@ public class StandardContext
             getServletContext().setAttribute
                 (Globals.ALTERNATE_RESOURCES_ATTR, getAlternateDocBases());
             context.setAttributeReadOnly(Globals.ALTERNATE_RESOURCES_ATTR);
+            if (orderedLibs != null && !orderedLibs.isEmpty()) {
+                getServletContext().setAttribute(ServletContext.ORDERED_LIBS,
+                    orderedLibs);
+                context.setAttributeReadOnly(ServletContext.ORDERED_LIBS);
+            }
         }
 
         // Initialize associated mapper
@@ -7209,6 +7220,15 @@ public class StandardContext
     }    
 
     
+    /**
+     * Sets the list of ordered libs, which will be used as the value of the
+     * ServletContext attribute with name javax.servlet.context.orderedLibs
+     */
+    public void setOrderedLibs(List<String> orderedLibs) {
+        this.orderedLibs = orderedLibs;
+    }
+
+
     public void startRecursive() throws LifecycleException {
         // nothing to start recursive, the servlets will be started by load-on-startup
         start();

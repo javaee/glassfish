@@ -602,6 +602,8 @@ public class TomcatDeploymentConfig {
             webModule.setAbsoluteOrdering(
                 wmd.getAbsoluteOrderingDescriptor().getOrdering());
         }
+
+        webModule.setOrderedLibs(wmd.getOrderedLibs());
     }
 
     
