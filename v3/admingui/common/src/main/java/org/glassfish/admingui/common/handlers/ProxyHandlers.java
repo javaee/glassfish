@@ -233,11 +233,17 @@ public class ProxyHandlers {
     }
 
 
-    
+    /*
+     * Gets the default value of the specified bean.  If an orig Map is passed in, then only those fields in the orig Map that
+     * has default value will be updated. This updated map will be the output.  This is so we don't overwrite any field that doesn't
+     * have default value.
+     * If no orig Map is specified, then the default values that AMX retuns will be the output.
+     */
     @Handler(id="getDefaultProxyAttrs",
     input={
         @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="childType",   type=String.class, required=true)},
+        @HandlerInput(name="childType",   type=String.class, required=true),
+        @HandlerInput(name="orig",   type=Map.class)},
     output={
         @HandlerOutput(name="valueMap",        type=Map.class)})
 
@@ -245,9 +251,22 @@ public class ProxyHandlers {
         try{
             String parentName = (String) handlerCtx.getInputValue("parentObjectNameStr");
             String childType = (String) handlerCtx.getInputValue("childType");
+            Map<String, String> orig = (Map) handlerCtx.getInputValue("orig");
             AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
-            Map valueMap = amx.getDefaultValues(childType, true);
-            handlerCtx.setOutputValue("valueMap", valueMap);
+            Map<String, String> defaultMap = amx.getDefaultValues(childType, true);
+            
+            if (orig == null){
+                handlerCtx.setOutputValue("valueMap", defaultMap);
+                return;
+            }
+            //we only want to fill in any default value that is available. Preserve all other fields user has entered.
+            for(String origKey: orig.keySet()){
+                String defaultV = defaultMap.get(origKey);
+                if(defaultV != null){
+                    orig.put(origKey, defaultV);
+                }
+            }
+            handlerCtx.setOutputValue("valueMap", orig);
         }catch (Exception ex){
             ex.printStackTrace();
             handlerCtx.setOutputValue("valueMap", new HashMap());
