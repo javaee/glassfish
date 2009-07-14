@@ -1,8 +1,9 @@
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
-
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +11,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
-
+ 
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +20,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
-
+ 
  Contributor(s):
-
+ 
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -33,17 +34,25 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- configuration/loggerLevelsButtons.jsf -->
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton"  text="$resource{i18n.button.Save}" >
-                <!command
-                    getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
-                    updateLoggerLevels(allRows="#{requestScope.allRows}")
-                    prepareSuccessfulMsg();
-                    redirect(page="#{request.contextPath}/configuration/loggerLevels.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
+<!-- configuration/loggingTabs.inc -->
+
+
+<sun:tabSet id="loggingTabs" immediate="true" selected="#{sessionScope.loggingTabs}" >
+
+	<sun:tab id="loggerGeneral" immediate="true" text="$resource{i18n.common.General}">
+	<!command
+            setSessionAttribute(key="loggingTabs" value="loggerGeneral");
+            redirect(page="#{request.contextPath}/configuration/loggerGeneral.jsf");
+	/>
+	</sun:tab>
+
+    <sun:tab id="loggerLevels" immediate="true" text="$resource{i18n.log.LogLevels}">
+	<!command
+            setSessionAttribute(key="loggingTabs" value="loggerLevels");
+            redirect(page="#{request.contextPath}/configuration/loggerLevels.jsf");
+	/>
+	</sun:tab>
+
+	
+
+</sun:tabSet>

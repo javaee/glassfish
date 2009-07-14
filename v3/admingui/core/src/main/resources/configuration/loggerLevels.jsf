@@ -44,7 +44,7 @@
 <!define name="content">
 <event>
     <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setSessionAttribute(key="loggingTabs" value="loggerLevels");
         getLoggerLevels(loggerList="#{requestScope.tableList}")
         getValidLogLevels(loggerList="#{pageSession.levelList}")
     />
@@ -54,11 +54,12 @@
     
             <sun:form id="form1">
 #include "/shared/alertMsg.inc"
+#include "/configuration/loggingTabs.inc"
 <sun:title id="title" title="$resource{i18n.log.LogLevelsPageTitle}"  helpText="$resource{i18n.log.LogLevelsPageTitleHelp}">
 #include "/configuration/loggerLevelsButtons.jsf"
 </sun:title>
 "<br/>
-        <sun:staticText id="text1" text="$resource{i18n.log.LogLevelsPageTitleHelp}" />
+        <sun:staticText id="text1" text="$resource{i18n.log.LogTableHelp}" />
 "<br/>
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.log.LoggerLevelTableTitle}"
