@@ -132,7 +132,6 @@ public final class ProxyFactory implements NotificationListener
             {
                 throw new IllegalStateException( "ProxyFactory: AMX has not been started" );
             }
-            System.out.println( "AMX DomainRoot ObjectName = " + mDomainRootObjectName );
             mDomainRoot           = getProxy(mDomainRootObjectName, DomainRoot.class);
 			
 			// we should always be able to listen to MBeans--

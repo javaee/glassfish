@@ -208,20 +208,6 @@ public final class ObjectNameBuilder
         return buildChildObjectName(server, parent, intf, null);
     }
 
-    public static ObjectName getDomainRootObjectName(final String domainName)
-    {
-        final String type = Util.deduceType(DomainRoot.class);
-
-        String props = Util.makeRequiredProps(type, domainName);
-        props = Util.concatenateProps(Util.makeProp(PARENT_PATH_KEY, DomainRoot.PARENT_PATH), props);
-        return Util.newObjectName(domainName, props);
-    }
-
-    public static ObjectName getDomainRootObjectName()
-    {
-        return getDomainRootObjectName(AMXValues.amxJMXDomain());
-    }
-
     private static String toString(final Object o)
     {
         return (SmartStringifier.toString(o));

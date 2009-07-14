@@ -61,7 +61,7 @@ public final class SystemInfoImpl extends AMXImplBase
     public SystemInfoImpl(
             final MBeanServer server)
     {
-        super(ObjectNameBuilder.getDomainRootObjectName(AMXValues.amxJMXDomain()), SystemInfo.class);
+        super( AMXValues.domainRoot(), SystemInfo.class);
 
         mServer = server;
 

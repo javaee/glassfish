@@ -232,6 +232,7 @@ public final class AMXStartupService
         return objectName;
     }
 
+    /** also works as a loaded/not loaded flag: null if not yet loaded */
     private volatile ObjectName DOMAIN_ROOT_OBJECTNAME = null;
 
     private synchronized ObjectName loadDomainRoot()
@@ -242,7 +243,7 @@ public final class AMXStartupService
         }
 
         final DomainRootImpl domainRoot = new DomainRootImpl();
-        DOMAIN_ROOT_OBJECTNAME = ObjectNameBuilder.getDomainRootObjectName(AMXValues.amxJMXDomain());
+        DOMAIN_ROOT_OBJECTNAME = AMXValues.domainRoot();
         try
         {
             DOMAIN_ROOT_OBJECTNAME = mMBeanServer.registerMBean(domainRoot, DOMAIN_ROOT_OBJECTNAME).getObjectName();

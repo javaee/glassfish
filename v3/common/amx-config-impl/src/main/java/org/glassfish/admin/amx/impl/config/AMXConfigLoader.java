@@ -623,7 +623,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         if ( parentObjectName == null  )
         {
-            parentObjectName = getDomainRoot();
+            parentObjectName = AMXValues.domainRoot();
         }
 
         final AMXConfigImpl impl = new AMXConfigImpl( parentObjectName, cb );
@@ -690,12 +690,7 @@ public final class AMXConfigLoader extends MBeanImplBase
 
         return name;
     }
-    
-    private ObjectName getDomainRoot()
-    {
-        return ObjectNameBuilder.getDomainRootObjectName();
-    }
-    
+        
     private DomainRoot getDomainRootProxy()
     {
         return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy(false);
@@ -709,7 +704,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         if ( parent == null )
         {
-            parentObjectName = getDomainRoot();
+            parentObjectName = AMXValues.domainRoot();
         }
         else
         {

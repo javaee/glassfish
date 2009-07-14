@@ -189,7 +189,7 @@ public final class AMXValues
     /** return the ObjectName of the AMX DomainRoot MBean */
     public static ObjectName domainRoot()
     {
-        return AMXUtil.newObjectName("", "domain-root", amxJMXDomain());
+        return AMXUtil.newObjectName("", "domain-root", null);
     }
 
     /** ObjectName for top-level monitoring MBean (parent of those for each server) */

@@ -71,8 +71,6 @@ public final class ObjectNamesTest extends TestBase
     @Test
     public void testMisc() {
         get().getJMXDomain();
-        final ObjectName objectName = get().getDomainRootObjectName(amxDomain());
-        
     }
 }
 
