@@ -160,7 +160,7 @@
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gfprobe-provider-client.version>3.0.0-b008</gfprobe-provider-client.version>
-        <gmbal.version>3.0.0-b005</gmbal.version>
+        <gmbal.version>3.0.0-b008</gmbal.version>
     </properties>
 
 
