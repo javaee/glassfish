@@ -47,10 +47,7 @@ import com.sun.hk2.component.InhabitantsFile;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.io.ObjectStreamException;
 import java.net.URI;
 import java.net.URISyntaxException;
