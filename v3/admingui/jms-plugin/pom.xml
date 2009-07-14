@@ -109,6 +109,11 @@
             <artifactId>console-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.messaging.mq</groupId>
+            <artifactId>imqjmx</artifactId>
+            <version>4.3</version>
+        </dependency>
     </dependencies>
 </project>
 

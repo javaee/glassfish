@@ -47,6 +47,7 @@
             getRequestValue(key="name" value=>$page{instanceName});    #in case this is from standalone instance
             getRequestValue(key="name" value=>$page{targetName});
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
+            setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationEdit.jsf");
 
             getPhysicalDestinations(targetName="#{targetName}", result=>$attribute{listOfRows} );
         />
@@ -55,10 +56,10 @@
     <sun:form id="propertyForm">
  #include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
-        <sun:title id="propertyContentPage" title="$resource{i18n.jmsPhysDestinations.PageTitle}"
-            helpText="$resource{i18n.jmsPhysDestinations.PageHelp}"/>
+        <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.PageTitle}"
+            helpText="$resource{i18njms.jmsPhysDestinations.PageHelp}"/>
         "<br /> <br />
-        <sun:table id="configs" title="$resource{i18n.jmsPhysDestinations.TableTitle}">
+        <sun:table id="configs" title="$resource{i18njms.jmsPhysDestinations.TableTitle}">
             <!facet actionsTop>
                  <sun:panelGroup id="topActionsGroup1">
                     <sun:button id="newButton" text="$resource{i18n.button.New}" >
@@ -82,8 +83,9 @@
                         <!command
                             getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                            #flushJMSDestination(targetName="#{targetName}", selectedRows="${selectedRows}");
-                            redirect(page="#{actualLink}?name=#{targetName}");
+                            flushJMSDestination(selectedRows="${selectedRows}");
+                            prepareAlertMsg(summary="$resource{i18njms.jmsPhysDestinations.flushed}", type="success");
+                            redirect(page="#{pageSession.selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{configName}");
                         />
                     </sun:button>
                  </sun:panelGroup>
@@ -98,7 +100,7 @@
                 </sun:tableColumn>
 
                 <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="col11">
-                    <staticText id="nameCol" value="#{td.value.name}" />
+                    <sun:hyperlink id="nameCol" text="#{td.value.name}" url="#{pageSession.editPage}?name=#{td.value.name}&type=#{td.value.type}" />
                 </sun:tableColumn>
 
                 <sun:tableColumn headerText="$resource{i18n.common.type.header}"  rowHeader="$boolean{true}" id="col7">
