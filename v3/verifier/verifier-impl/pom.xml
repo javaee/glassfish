@@ -59,71 +59,88 @@
     </developers>
     
     <dependencies>
+        <!-- All the dependencies have been marked optional so that 
+             when some module like deployment depends on verifier, they
+             don't automatically see verifier's dependency -->
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-javaee-full</artifactId>
             <version>${project.version}</version>
-        </dependency>   
-        <dependency>
-		  <groupId>javax.help</groupId>
-		  <artifactId>javahelp</artifactId>
-		  <version>2.0.02</version>
-  		</dependency>
+            <optional>true</optional>
+        </dependency>        
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-common</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.persistence.cmp</groupId>
             <artifactId>cmp-support-ejb</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.persistence</groupId>
             <artifactId>jpa-connector</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency> <!-- depends on bootstrap classes like ASMainFelix -->
             <groupId>org.glassfish.core</groupId>
             <artifactId>glassfish</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jsp-impl</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet.jsp</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.jms</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>javax.help</groupId>
+            <artifactId>javahelp</artifactId>
+            <version>2.0.02</version>
+            <scope>provided</scope>
+  	</dependency>
     </dependencies>
 </project>
