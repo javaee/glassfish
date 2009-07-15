@@ -61,7 +61,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
@@ -86,7 +85,7 @@ import org.glassfish.deployment.common.DownloadableArtifacts;
 @Service(name="deploy")
 @I18n("deploy.command")
 @Scoped(PerLookup.class)
-public class DeployCommand extends DeployCommandParameters implements AdminCommand, EventListener, PostConstruct {
+public class DeployCommand extends DeployCommandParameters implements AdminCommand, EventListener {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
 
@@ -129,15 +128,13 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         origin = Origin.deploy;
     }
 
-    public void postConstruct() {
-        events.register(this);
-    }
-
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
      */
     public void execute(AdminCommandContext context) {
+
+      events.register(this);
 
       try {
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
@@ -326,6 +323,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
         }
       } finally {
+          events.unregister(this);
+
           if (payloadFilesMgr != null) {
               payloadFilesMgr.cleanup();
           }
