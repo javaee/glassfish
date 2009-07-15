@@ -288,7 +288,7 @@ public final class LoggingImpl extends AMXImplBase
             Map<String,String> attributes = new HashMap<String,String>();
             attributes.put(gfHandler+".file", props.get(gfHandler+".file"));
             attributes.put(gfHandler+".rotationTimelimitInMinutes", props.get(gfHandler+".rotationTimelimitInMinutes"));
-            attributes.put(gfHandler+".rotationTimelimitInBytes", props.get(gfHandler+".rotationTimelimitInBytes"));
+            attributes.put(gfHandler+".rotationLimitInBytes", props.get(gfHandler+".rotationLimitInBytes"));
             attributes.put(gfHandler+".logtoConsole", props.get(gfHandler+".logtoConsole"));
             attributes.put("handlers", props.get("handlers"));
             attributes.put(sysHandler+".useSystemLogging", props.get(sysHandler+".useSystemLogging"));
@@ -887,65 +887,6 @@ public final class LoggingImpl extends AMXImplBase
 	}
 	*/
     
-    
-//    private LogMBeanIntf getLogMBean() { return null; }
-    
-    /**
-        The interface to which delegation occured in V2.
-     */
-     /*
-    interface LogMBeanIntf extends NotificationEmitter
-    {
-        public List getLoggerNames();
-
-        public List   getLoggerNamesUnder( String loggerName );
-        public String getLogLevel( String loggerName );
-        public void   setLogLevel( String loggerName, String level );
-        public void   setLogLevelForModule( String module, String level );
-
-        public AttributeList getLogRecordsUsingQuery( 
-            String  logFilename,
-            Long    fromRecord,
-            Boolean next,
-            Boolean forward,
-            Integer requestedCount,
-            Date    fromDate,
-            Date    toDate,
-            String  logLevel,
-            Boolean onlyLevel,
-            List    listOfModules,
-            Properties nameValueMap) ;
-        
-        public String[] getArchivedLogfiles();
-        public void rotateNow();
-        public void rotateAccessLog();
-
-        public String getLogFilesDirectory();
-        
-        public ArrayList	getDiagnosticCausesForMessageId( String messageID );
-        public ArrayList	getDiagnosticChecksForMessageId( String messageID );
-        public String       getDiagnosticURIForMessageId( String messageID );
- */       
-        /**
-         * @return a list of Map objects. Each map object contains
-         * the tuple [TimeStamp, SevereCount, WarningCount].
-         */   
-//        public List<Map<String,Object>> getErrorInformation();
-        
-        /**
-         * @return a list of Map objects. Each map object contains
-         * the tuple [ModuleId, SevereCount|WarningCount].
-         */    
-/*
-        public Map<String,Integer> getErrorDistribution( long timeStamp, Level level);
-        
-        public void setKeepErrorStatisticsForIntervals(int numberOfIntervals);
-        public int getKeepErrorStatisticsForIntervals();
-
-        public void setErrorStatisticsIntervalDuration(long minutes);
-        public long getErrorStatisticsIntervalDuration(); 
-    };
-    */
 }
 
 
