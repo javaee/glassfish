@@ -86,6 +86,7 @@ public class EmbeddedWebContainer implements
     
     public EmbeddedWebContainer() {
         embedded = new Embedded();
+        embedded.setUseNaming(false);
     }
     
 
@@ -150,14 +151,12 @@ public class EmbeddedWebContainer implements
             ((StandardEngine)engine).setDomain(defaultDomain);
             engine.setDefaultHost(virtualServerId);
             engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
-            embedded.addEngine(engine);
             
             WebListener webListener = 
                 createWebListener(webListenerId, WebListener.class);
             webListener.setPort(port);
             webListener.setDefaultHost(virtualServerId);
             webListener.setDomain(defaultDomain);
-            addWebListener(webListener);
             WebListener[] webListeners = new WebListener[1];
             webListeners[0] = webListener;
             
@@ -165,11 +164,15 @@ public class EmbeddedWebContainer implements
             defaultVirtualServer = (VirtualServer)
                 createVirtualServer(virtualServerId, docRoot, webListeners);
             defaultVirtualServer.addAlias(hostName);
-            addVirtualServer(defaultVirtualServer);
-      
+            engine.addChild(defaultVirtualServer);
+            
             Context context = (Context) createContext(docRoot, null);
             defaultVirtualServer.addChild(context);
-                                   
+      
+            embedded.addEngine(engine);
+                      
+            addWebListener(webListener);
+            
             embedded.start();
             
         } catch (Exception e) {
@@ -204,14 +207,12 @@ public class EmbeddedWebContainer implements
             ((StandardEngine)engine).setDomain(defaultDomain);
             engine.setDefaultHost(config.getVirtualServerId());
             engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
-            embedded.addEngine(engine);
             
             WebListener webListener = 
                 createWebListener(config.getWebListenerId(), WebListener.class);
             webListener.setPort(config.getPort());
             webListener.setDefaultHost(config.getVirtualServerId());
             webListener.setDomain(defaultDomain);
-            addWebListener(webListener);
             WebListener[] webListeners = new WebListener[1];
             webListeners[0] = webListener;
             
@@ -221,11 +222,15 @@ public class EmbeddedWebContainer implements
             for (String alias : config.getHostNames()) {
                 defaultVirtualServer.addAlias(alias);
             }
-            addVirtualServer(defaultVirtualServer);
+            engine.addChild(defaultVirtualServer);
             
             Context context = (Context) createContext(docRoot, null);
             defaultVirtualServer.addChild(context);
-                                   
+            
+            embedded.addEngine(engine);
+            
+            addWebListener(webListener);
+            
             embedded.start();
             
         } catch (Exception e) {
@@ -252,7 +257,7 @@ public class EmbeddedWebContainer implements
         }
         
     }
-
+   
     /**
      * Creates a <tt>Context</tt>, configures it with the given
      * docroot and classloader, and registers it with the default
@@ -386,6 +391,7 @@ public class EmbeddedWebContainer implements
 
         try {
             webListener = c.newInstance();
+            webListener.setId(id);
         } catch (Exception e) {
             log.severe("Couldn't create connector");
         } 

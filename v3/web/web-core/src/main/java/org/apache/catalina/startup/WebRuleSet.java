@@ -468,10 +468,16 @@ public class WebRuleSet extends RuleSetBase {
     /**
      * Reset counter used for validating the web.xml file.
      */
-    public void recycle(){
-        jspConfig.isJspConfigSet = false;
-        sessionConfig.isSessionConfigSet = false;
-        loginConfig.isLoginConfigSet = false;
+    public void recycle() {
+        if (jspConfig!=null) {
+            jspConfig.isJspConfigSet = false;
+        }
+        if (sessionConfig!=null) {
+            sessionConfig.isSessionConfigSet = false;
+        }
+        if (loginConfig!=null) {
+            loginConfig.isLoginConfigSet = false;
+        }
     }
 }
 
