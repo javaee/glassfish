@@ -54,22 +54,25 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 public class ProgramOptions {
 
     private static final Set<ValidOption> programOptions;
-    private static final Map<String, String> emptyOptions;
+
+    // the known program option names
+    public static final String HOST             = "host";
+    public static final String PORT             = "port";
+    public static final String USER             = "user";
+    public static final String PASSWORDFILE     = "passwordfile";
+    public static final String TERSE            = "terse";
+    public static final String ECHO             = "echo";
+    public static final String INTERACTIVE      = "interactive";
+    public static final String SECURE           = "secure";
+    public static final String HELP             = "help";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ProgramOptions.class);
 
     private Map<String, String>             options;
-    private String                          host;
-    private int                             port;
-    private String                          user;
+    private Environment                     env;
+    private boolean                         optionsSet;
     private String                          password;
-    private String                          passwordFile;
-    private boolean                         secure = false;
-    private boolean                         terse = false;
-    private boolean                         echo = false;
-    private boolean                         interactive = false;
-    private boolean                         help = false;
 
     /*
      * Information passed in from AsadminMain and used by start-domain.
@@ -85,20 +88,19 @@ public class ProgramOptions {
      */
     static {
         Set<ValidOption> opts = new HashSet<ValidOption>();
-        addMetaOption(opts, "host", 'H', "STRING", false,
+        addMetaOption(opts, HOST, 'H', "STRING", false,
                 CLIConstants.DEFAULT_HOSTNAME);
-        addMetaOption(opts, "port", 'p', "STRING", false,
+        addMetaOption(opts, PORT, 'p', "STRING", false,
                 "" + CLIConstants.DEFAULT_ADMIN_PORT);
-        addMetaOption(opts, "user", 'u', "STRING", false, "anonymous");
+        addMetaOption(opts, USER, 'u', "STRING", false, "anonymous");
         addMetaOption(opts, "password", 'w', "STRING", false, null);
-        addMetaOption(opts, "passwordfile", 'W', "FILE", false, null);
-        addMetaOption(opts, "secure", 's', "BOOLEAN", false, "false");
-        addMetaOption(opts, "terse", 't', "BOOLEAN", false, "false");
-        addMetaOption(opts, "echo", 'e', "BOOLEAN", false, "false");
-        addMetaOption(opts, "interactive", 'I', "BOOLEAN", false, "false");
-        addMetaOption(opts, "help", '?', "BOOLEAN", false, "false");
+        addMetaOption(opts, PASSWORDFILE, 'W', "FILE", false, null);
+        addMetaOption(opts, SECURE, 's', "BOOLEAN", false, "false");
+        addMetaOption(opts, TERSE, 't', "BOOLEAN", false, "false");
+        addMetaOption(opts, ECHO, 'e', "BOOLEAN", false, "false");
+        addMetaOption(opts, INTERACTIVE, 'I', "BOOLEAN", false, "false");
+        addMetaOption(opts, HELP, '?', "BOOLEAN", false, "false");
         programOptions = Collections.unmodifiableSet(opts);
-        emptyOptions = Collections.emptyMap();
     }
 
     /**
@@ -124,7 +126,8 @@ public class ProgramOptions {
      * with no options from the command line.
      */
     public ProgramOptions(Environment env) throws CommandException {
-        this(emptyOptions, env);
+        this(new HashMap<String, String>(), env);
+        optionsSet = false;
     }
 
     /**
@@ -134,102 +137,47 @@ public class ProgramOptions {
      */
     public ProgramOptions(Map<String, String> options, Environment env)
             throws CommandException {
-        // set defaults from environment
-        echo = env.getBooleanOption("echo");
-        terse = env.getBooleanOption("terse");
-        if (env.hasOption("interactive"))
-            interactive = env.getBooleanOption("interactive");
-        else
-            interactive = System.console() != null;
-        host = env.getStringOption("host");
-        if (!ok(host))
-            host = CLIConstants.DEFAULT_HOSTNAME;
-        String sport = env.getStringOption("port");
-        if (ok(sport)) {
-            String badPortMsg = strings.get("badport", sport);
-            try {
-                port = Integer.parseInt(sport);
-                if (port < 1 || port > 65535)
-                    throw new CommandException(badPortMsg);
-            } catch (NumberFormatException e) {
-                throw new CommandException(badPortMsg);
-            }
-        } else
-            port = CLIConstants.DEFAULT_ADMIN_PORT; // the default port
-        secure = env.getBooleanOption("secure");
-        user = env.getStringOption("user");
-        passwordFile = env.getStringOption("passwordfile");
-        // override defaults with any explicit options
+        this.env = env;
         updateOptions(options);
+    }
+
+    /**
+     * Copy constructor.  Create a new ProgramOptions with the same
+     * options as the specified ProgramOptions.
+     */
+    public ProgramOptions(ProgramOptions other) {
+        this.options = new HashMap<String, String>(other.options);
+        this.env = other.env;
+        this.password = other.password;
+        this.programArguments = other.programArguments;
+        this.classPath = other.classPath;
+        this.className = other.className;
     }
 
     /**
      * Update the program options based on the specified
      * options from the command line.
      */
-    public void updateOptions(Map<String, String> options)
+    public void updateOptions(Map<String, String> newOptions)
             throws CommandException {
-        this.options = options;
-        String value;
+        if (options == null)
+            options = newOptions;
+        else
+            options.putAll(newOptions); // merge in the new options
+        optionsSet = true;
 
-        if (options.containsKey("echo")) {
-            value = options.get("echo");
-            if (ok(value))
-                echo = Boolean.parseBoolean(value);
-            else
-                echo = true;
-        }
-
-        if (options.containsKey("terse")) {
-            value = options.get("terse");
-            if (ok(value))
-                terse = Boolean.parseBoolean(value);
-            else
-                terse = true;
-        }
-
-        if (options.containsKey("interactive")) {
-            value = options.get("interactive");
-            if (ok(value))
-                interactive = Boolean.parseBoolean(value);
-            else
-                interactive = true;
-        }
-
-        if (options.containsKey("help"))
-            help = true;    // don't care about the value
-
-        value = options.get("host");
-        if (ok(value))
-            host = value;
-
-        value = options.get("port");
-        if (ok(value)) {
-            String badPortMsg = strings.get("badport", value);
+        // have to verify port value now
+        String sport = options.get(PORT);
+        if (ok(sport)) {
+            String badPortMsg = strings.get("badport", sport);
             try {
-                port = Integer.parseInt(value);
+                int port = Integer.parseInt(sport);
                 if (port < 1 || port > 65535)
                     throw new CommandException(badPortMsg);
             } catch (NumberFormatException e) {
                 throw new CommandException(badPortMsg);
             }
         }
-
-        if (options.containsKey("secure")) {
-            value = options.get("secure");
-            if (ok(value))
-                secure = Boolean.parseBoolean(value);
-            else
-                secure = true;
-        }
-
-        value = options.get("user");
-        if (ok(value))
-            user = value;
-
-        value = options.get("passwordfile");
-        if (ok(value))
-            passwordFile = value;
     }
 
     private static boolean ok(String s) {
@@ -251,14 +199,15 @@ public class ProgramOptions {
      */
     public void toEnvironment(Environment env) {
         // copy all the parameters into corresponding environment variables
-        putEnv(env, "echo");
-        putEnv(env, "terse");
-        putEnv(env, "interactive");
-        putEnv(env, "host");
-        putEnv(env, "port");
-        putEnv(env, "secure");
-        putEnv(env, "user");
-        // XXX - "help"?
+        putEnv(env, ECHO);
+        putEnv(env, TERSE);
+        putEnv(env, INTERACTIVE);
+        putEnv(env, HOST);
+        putEnv(env, PORT);
+        putEnv(env, SECURE);
+        putEnv(env, USER);
+        putEnv(env, PASSWORDFILE);
+        // XXX - HELP?
     }
 
     private void putEnv(Environment env, String name) {
@@ -271,6 +220,12 @@ public class ProgramOptions {
      * @return the host
      */
     public String getHost() {
+        String host = options.get(HOST);
+        if (!ok(host))
+            host = env.getStringOption(HOST);
+
+        if (host == null || host.length() == 0)
+            host = CLIConstants.DEFAULT_HOSTNAME;
         return host;
     }
 
@@ -278,13 +233,27 @@ public class ProgramOptions {
      * @param host the host to set
      */
     public void setHost(String host) {
-        this.host = host;
+        options.put(HOST, host);
     }
 
     /**
      * @return the port
      */
     public int getPort() {
+        int port;
+        String sport = options.get(PORT);
+        if (!ok(sport))
+            sport = env.getStringOption(PORT);
+        if (ok(sport)) {
+            try {
+                port = Integer.parseInt(sport);
+                if (port < 1 || port > 65535)
+                    port = -1;  // should've been verified in constructor
+            } catch (NumberFormatException e) {
+                port = -1;  // should've been verified in constructor
+            }
+        } else
+            port = CLIConstants.DEFAULT_ADMIN_PORT; // the default port
         return port;
     }
 
@@ -292,13 +261,19 @@ public class ProgramOptions {
      * @param port the port to set
      */
     public void setPort(int port) {
-        this.port = port;
+        options.put(PORT, Integer.toString(port));
     }
 
     /**
      * @return the user
      */
     public String getUser() {
+        String user = null;
+        if (options.containsKey(USER)) {
+            String value = options.get(USER);
+            if (ok(value))
+                user = value;
+        }
         return user;
     }
 
@@ -306,7 +281,7 @@ public class ProgramOptions {
      * @param user the user to set
      */
     public void setUser(String user) {
-        this.user = user;
+        options.put(USER, user);
     }
 
     /**
@@ -327,6 +302,12 @@ public class ProgramOptions {
      * @return the passwordFile
      */
     public String getPasswordFile() {
+        String passwordFile = null;
+        if (options.containsKey(PASSWORDFILE)) {
+            String value = options.get(PASSWORDFILE);
+            if (ok(value))
+                passwordFile = value;
+        }
         return passwordFile;
     }
 
@@ -334,13 +315,22 @@ public class ProgramOptions {
      * @param passwordFile the passwordFile to set
      */
     public void setPasswordFile(String passwordFile) {
-        this.passwordFile = passwordFile;
+        options.put(PASSWORDFILE, passwordFile);
     }
 
     /**
      * @return the secure
      */
     public boolean isSecure() {
+        boolean secure;
+        if (options.containsKey(SECURE)) {
+            String value = options.get(SECURE);
+            if (ok(value))
+                secure = Boolean.parseBoolean(value);
+            else
+                secure = true;
+        } else
+            secure = env.getBooleanOption(SECURE);
         return secure;
     }
 
@@ -348,13 +338,22 @@ public class ProgramOptions {
      * @param secure the secure to set
      */
     public void setSecure(boolean secure) {
-        this.secure = secure;
+        options.put(SECURE, Boolean.toString(secure));
     }
 
     /**
      * @return the terse
      */
     public boolean isTerse() {
+        boolean terse;
+        if (options.containsKey(TERSE)) {
+            String value = options.get(TERSE);
+            if (ok(value))
+                terse = Boolean.parseBoolean(value);
+            else
+                terse = true;
+        } else
+            terse = env.getBooleanOption(TERSE);
         return terse;
     }
 
@@ -362,13 +361,22 @@ public class ProgramOptions {
      * @param terse the terse to set
      */
     public void setTerse(boolean terse) {
-        this.terse = terse;
+        options.put(TERSE, Boolean.toString(terse));
     }
 
     /**
      * @return the echo
      */
     public boolean isEcho() {
+        boolean echo;
+        if (options.containsKey(ECHO)) {
+            String value = options.get(ECHO);
+            if (ok(value))
+                echo = Boolean.parseBoolean(value);
+            else
+                echo = true;
+        } else
+            echo = env.getBooleanOption(ECHO);
         return echo;
     }
 
@@ -376,13 +384,24 @@ public class ProgramOptions {
      * @param echo the echo to set
      */
     public void setEcho(boolean echo) {
-        this.echo = echo;
+        options.put(ECHO, Boolean.toString(echo));
     }
 
     /**
      * @return the interactive
      */
     public boolean isInteractive() {
+        boolean interactive;
+        if (options.containsKey(INTERACTIVE)) {
+            String value = options.get(INTERACTIVE);
+            if (ok(value))
+                interactive = Boolean.parseBoolean(value);
+            else
+                interactive = true;
+        } else if (env.hasOption(INTERACTIVE)) {
+            interactive = env.getBooleanOption(INTERACTIVE);
+        } else
+            interactive = System.console() != null;
         return interactive;
     }
 
@@ -390,13 +409,16 @@ public class ProgramOptions {
      * @param interactive the interactive to set
      */
     public void setInteractive(boolean interactive) {
-        this.interactive = interactive;
+        options.put(INTERACTIVE, Boolean.toString(interactive));
     }
 
     /**
      * @return the help
      */
     public boolean isHelp() {
+        boolean help = false;
+        if (options.containsKey(HELP))
+            help = true;    // don't care about the value
         return help;
     }
 
@@ -404,14 +426,21 @@ public class ProgramOptions {
      * @param help the help to set
      */
     public void setHelp(boolean help) {
-        this.help = help;
+        options.put(HELP, Boolean.toString(help));
     }
 
     /**
      * @return were options set on the command line?
      */
     public boolean isOptionsSet() {
-        return options != emptyOptions;
+        return optionsSet;
+    }
+
+    /**
+     * Set whether the program options have already been set.
+     */
+    public void setOptionsSet(boolean optionsSet) {
+        this.optionsSet = optionsSet;
     }
 
     /**

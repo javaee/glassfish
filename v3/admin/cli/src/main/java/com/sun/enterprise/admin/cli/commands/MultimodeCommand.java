@@ -150,6 +150,13 @@ public class MultimodeCommand extends CLICommand {
             throws CommandException, CommandValidationException, IOException {
         String line = null;
         int rc = 0;
+
+        /*
+         * Any program options we start with are copied to the environment
+         * to serve as defaults for commands we run, and then we give each
+         * command an empty program options.
+         */
+        programOpts.toEnvironment(env);
         for (;;) {
             if (printPrompt) {
                 System.out.print("asadmin> ");
@@ -170,7 +177,18 @@ public class MultimodeCommand extends CLICommand {
 
             CLICommand cmd = null;
             try {
-                cmd = CLICommand.getCommand(command, programOpts, env);
+                /*
+                 * Every command gets its own copy of program options
+                 * so that any program options specified in its
+                 * command line options don't effect other commands.
+                 * But all commands share the same environment.
+                 */
+                ProgramOptions po = new ProgramOptions(env);
+                // copy over AsadminMain info
+                po.setProgramArguments(programOpts.getProgramArguments());
+                po.setClassPath(programOpts.getClassPath());
+                po.setClassName(programOpts.getClassName());
+                cmd = CLICommand.getCommand(command, po, env);
                 rc = cmd.execute(args);
             } catch (CommandValidationException cve) {
                 logger.printError(cve.getMessage());
@@ -232,8 +250,8 @@ public class MultimodeCommand extends CLICommand {
     private String[] getArgs(String line) {
         // for now, just split on white-space character,
         // this is not enough for args (quoted) with white spaces in them
-        String regex = "\\s";
-        String[] parts = line.split(regex);
+        String regex = "\\s+";
+        String[] parts = line.trim().split(regex);
         return parts;
     }
 }
