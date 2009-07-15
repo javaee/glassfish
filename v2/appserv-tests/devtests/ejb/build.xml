@@ -76,7 +76,8 @@
 
     <target name="start-database" depends="init-common">
         <echo message="Starting database"/>
-	<exec executable="${ASADMIN}" failonerror="false">
+	<!-- spawn is added to prevent a hang on Windows -->
+	<exec spawn="true" executable="${ASADMIN}" failonerror="false">
           <arg line="start-database"/>
 	</exec>
     </target>
