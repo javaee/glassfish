@@ -155,6 +155,7 @@ public final class EJBSecurityManager
     private InvocationManager invMgr;
     private EJBSecurityManagerFactory ejbSFM = null;
     private EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
+    private static EjbSecurityStatsProvider ejbStatsProvider = null;
 
     /**
      * This method iniitalizes the EJBSecurityManager
@@ -275,7 +276,16 @@ public final class EJBSecurityManager
 
 
     private void initialize() throws Exception {
-        StatsProviderManager.register("security", PluginPoint.SERVER, "ejb-security", new EjbSecurityStatsProvider());
+        if (ejbStatsProvider == null) {
+            synchronized (EjbSecurityStatsProvider.class) {
+                if (ejbStatsProvider == null) {
+                    ejbStatsProvider = new EjbSecurityStatsProvider();
+                    StatsProviderManager.register("security", PluginPoint.SERVER, "ejb-security", ejbStatsProvider);
+                }
+
+            }
+        }
+           
         contextId = getContextID(deploymentDescriptor);
         String appName = deploymentDescriptor.getApplication().getRegistrationName();
         roleMapperFactory.setAppNameForContext(appName, contextId);
