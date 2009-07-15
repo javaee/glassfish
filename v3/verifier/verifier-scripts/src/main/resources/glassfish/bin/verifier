@@ -7,4 +7,4 @@
 AS_INSTALL=`dirname $0`/..
 AS_INSTALL_LIB=$AS_INSTALL/modules
 
-java -Dorg.osgi.framework.storage=/tmp/verifier-cache/ -cp "$AS_INSTALL_LIB/glassfish.jar:$AS_INSTALL_LIB/verifier.jar" com.sun.enterprise.tools.verifier.VerifierOSGiMain $*
+java -Dorg.osgi.framework.storage=/tmp/verifier-cache/ -Dorg.jvnet.hk2.osgimain.autostartBundles=osgi-adapter.jar -cp "$AS_INSTALL_LIB/glassfish.jar:$AS_INSTALL_LIB/verifier.jar" com.sun.enterprise.tools.verifier.VerifierOSGiMain $*
