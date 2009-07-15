@@ -2503,18 +2503,18 @@ public class StandardContext
      * resource injection into the new Filter instance before returning
      * it.
      */
-    public <T extends Filter> T createFilter(Class<T> c)
+    public <T extends Filter> T createFilter(Class<T> clazz)
             throws ServletException {
         T filter = null;
         boolean beforeInitCalled = false;
         try {
-            filter = c.newInstance();
+            filter = clazz.newInstance();
             fireContainerEvent(ContainerEvent.BEFORE_FILTER_INITIALIZED,
                 filter);
             beforeInitCalled = true;
         } catch (Throwable t) {
             throw new ServletException("Unable to create Filter from " +
-                                       "class " + c.getName(), t);
+                                       "class " + clazz.getName(), t);
         } finally {
             if (beforeInitCalled) {
                 fireContainerEvent(ContainerEvent.AFTER_FILTER_INITIALIZED,
@@ -2648,17 +2648,12 @@ public class StandardContext
      * Adds the listener with the given class name to this ServletContext.
      */
     public void addListener(String className) {
-        Object obj = null;
         try {
-            obj = loadListener(getLoader().getClassLoader(), className);
+            addListener(loadListener(getLoader().getClassLoader(), className));
         } catch (Throwable t) {
             throw new IllegalArgumentException(
                 "Unable to load listener of type " + className, t); 
         }
-        if (!(obj instanceof EventListener)) {
-            throw new IllegalArgumentException("Invalid listener type");
-        }
-        addListener((EventListener)obj);
     }
 
     /**
@@ -2715,6 +2710,39 @@ public class StandardContext
                 "Unable to instantiate listener of type " +
                 listenerClass.getName(), t); 
         }
+    }
+
+    /**
+     * Instantiates the given EventListener class and performs any
+     * required resource injection into the new EventListener instance
+     * before returning it.
+     */
+    public <T extends EventListener> T createListener(Class<T> clazz)
+            throws ServletException {
+        if (!(ServletContextListener.class.isAssignableFrom(clazz)) &&
+                (ServletContextAttributeListener.class.isAssignableFrom(clazz)) &&
+                (ServletRequestListener.class.isAssignableFrom(clazz)) &&
+                (ServletRequestAttributeListener.class.isAssignableFrom(clazz)) &&
+                (HttpSessionListener.class.isAssignableFrom(clazz)) &&
+                (HttpSessionAttributeListener.class.isAssignableFrom(clazz))) {
+            throw new IllegalArgumentException("Invalid listener type");
+        }
+
+        T listener = null;
+        try {
+            listener = clazz.newInstance();
+        } catch (Throwable t) {
+            throw new ServletException("Unable to instantiate " +
+                clazz.getName(), t);
+        }
+
+        // START PWC 1.2 6310695
+        // Inject the instantiated listener
+        fireContainerEvent(ContainerEvent.AFTER_LISTENER_INSTANTIATED,
+                           listener);
+        // END PWC 1.2 6310695
+
+        return listener;
     }
 
     public void setJspConfigDescriptor(JspConfigDescriptor jspConfigDesc) {
@@ -3235,13 +3263,13 @@ public class StandardContext
      * resource injection into the new Servlet instance before returning
      * it.
      */
-    public <T extends Servlet> T createServlet(Class<T> c)
+    public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
         T servlet = null;
         boolean beforeInitCalled = false;
         StandardWrapper wrapper = null;
         try {
-            servlet = c.newInstance();
+            servlet = clazz.newInstance();
             wrapper = (StandardWrapper) createWrapper();
             wrapper.setServlet(servlet);
             wrapper.getInstanceSupport().fireInstanceEvent(
@@ -3249,7 +3277,7 @@ public class StandardContext
             beforeInitCalled = true;
         } catch (Throwable t) {
             throw new ServletException("Unable to create Servlet from " +
-                                       "class " + c.getName(), t);
+                                       "class " + clazz.getName(), t);
         } finally {
             if (beforeInitCalled) {
                 wrapper.getInstanceSupport().fireInstanceEvent(
@@ -4528,12 +4556,11 @@ public class StandardContext
 
         // Instantiate the required listeners
         List<String> listeners = findApplicationListeners();
-        Object results[] = new Object[listeners.size()];
+        EventListener results[] = new EventListener[listeners.size()];
         boolean ok = true;
-        Iterator<String> iter = listeners.iterator(); 
+
         int i = 0;
-        while (iter.hasNext()) {
-            String listener = iter.next();
+        for (String listener : listeners) {
             try {
                 results[i++] = loadListener(getLoader().getClassLoader(),
                                             listener);
@@ -4609,7 +4636,8 @@ public class StandardContext
 
 
     /**
-     * Instantiates and returns the listener with the specified classname
+     * Loads and instantiates and returns the listener with the specified
+     * classname.
      *
      * @param loader the classloader to use
      * @param listenerClassName the fully qualified classname to instantiate
@@ -4619,19 +4647,15 @@ public class StandardContext
      * @throws Exception if the specified classname fails to be loaded or
      * instantiated
      */
-    protected Object loadListener(ClassLoader loader, String listenerClassName)
+    protected EventListener loadListener(ClassLoader loader,
+                                         String listenerClassName)
             throws Exception {
         if (log.isLoggable(Level.FINE)) {
             log.fine(" Configuring event listener class '" +
                      listenerClassName + "'");
         }
-        Class clazz = loader.loadClass(listenerClassName);
-        Object listener = clazz.newInstance();
-        // START PWC 1.2 6310695
-        fireContainerEvent(ContainerEvent.AFTER_LISTENER_INSTANTIATED,
-                           listener);
-        // END PWC 1.2 6310695
-        return listener;
+        return createListener((Class<EventListener>)
+            loader.loadClass(listenerClassName));
     }
 
     /**
@@ -6723,20 +6747,13 @@ public class StandardContext
 
         private static final List<String> restrictedMethods =
             Arrays.asList(
-                "setInitParameter",
-                "addServlet",
-                "createServlet",
-                "getServletRegistration",
-                "getServletRegistrations", 
-                "addFilter",
-                "createFilter",
-                "getFilterRegistration",
-                "getFilterRegistrations",
-                "getSessionCookieConfig",
-                "setSessionTrackingModes",
-                "getDefaultSessionTrackingModes",
-                "getEffectiveSessionTrackingModes",
-                "addListener");
+                "setInitParameter", "addServlet", "createServlet",
+                "getServletRegistration", "getServletRegistrations", 
+                "addFilter", "createFilter", "getFilterRegistration",
+                "getFilterRegistrations", "getSessionCookieConfig",
+                "setSessionTrackingModes", "getDefaultSessionTrackingModes",
+                "getEffectiveSessionTrackingModes", "addListener",
+                "createListener");
 
         /*
          * The ServletContext to which to delegate the invocation of any

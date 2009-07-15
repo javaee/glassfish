@@ -321,6 +321,11 @@ public class OSGiServletContext implements ServletContext {
         //TODO(Sahoo): Not Yet Implemented
     }
 
+    public <T extends EventListener> T createListener(Class<T> c)
+            throws ServletException {
+        return null; //TODO(Sahoo): Not Yet Implemented
+    }
+
     public JspConfigDescriptor getJspConfigDescriptor()
     {
         return null; //TODO(Sahoo): Not Yet Implemented

@@ -1079,9 +1079,9 @@ public class ApplicationContext
      * resource injection into the new Servlet instance before returning
      * it.
      */
-    public <T extends Servlet> T createServlet(Class<T> c)
+    public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
-        return context.createServlet(c);
+        return context.createServlet(clazz);
     }
 
 
@@ -1138,9 +1138,9 @@ public class ApplicationContext
      * resource injection into the new Filter instance before returning
      * it.
      */
-    public <T extends Filter> T createFilter(Class<T> c)
+    public <T extends Filter> T createFilter(Class<T> clazz)
             throws ServletException {
-        return context.createFilter(c);
+        return context.createFilter(clazz);
     }
 
 
@@ -1226,6 +1226,17 @@ public class ApplicationContext
      */
     public void addListener(Class <? extends EventListener> listenerClass) {
         context.addListener(listenerClass);
+    }
+
+
+    /**
+     * Instantiates the given EventListener class and performs any
+     * required resource injection into the new EventListener instance
+     * before returning it.
+     */
+    public <T extends EventListener> T createListener(Class<T> clazz)
+            throws ServletException {
+        return context.createListener(clazz);
     }
 
 

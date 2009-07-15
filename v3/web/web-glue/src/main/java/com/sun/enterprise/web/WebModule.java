@@ -1591,7 +1591,7 @@ public class WebModule extends PwcWebModule {
 
 
     /**
-     * Instantiates and returns the listener with the specified classname
+     * Loads and instantiates the listener with the specified classname.
      *
      * @param loader the classloader to use
      * @param listenerClassName the fully qualified classname to instantiate
@@ -1602,7 +1602,8 @@ public class WebModule extends PwcWebModule {
      * instantiated
      */
     @Override
-    protected Object loadListener(ClassLoader loader, String listenerClassName)
+    protected EventListener loadListener(ClassLoader loader,
+                                         String listenerClassName)
             throws Exception {
         try {
             return super.loadListener(loader, listenerClassName);

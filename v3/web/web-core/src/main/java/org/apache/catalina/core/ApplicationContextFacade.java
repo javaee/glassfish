@@ -464,13 +464,13 @@ public final class ApplicationContextFacade
      * resource injection into the new Servlet instance before returning
      * it.
      */
-    public <T extends Servlet> T createServlet(Class<T> c)
+    public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (T) doPrivileged(
-                "createServlet", new Object[] {c});
+                "createServlet", new Object[] {clazz});
         } else {
-            return context.createServlet(c);
+            return context.createServlet(clazz);
         }
     }
 
@@ -553,13 +553,13 @@ public final class ApplicationContextFacade
      * resource injection into the new Filter instance before returning
      * it.
      */
-    public <T extends Filter> T createFilter(Class<T> c)
+    public <T extends Filter> T createFilter(Class<T> clazz)
             throws ServletException {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (T) doPrivileged(
-                "createFilter", new Object[] {c});
+                "createFilter", new Object[] {clazz});
         } else {
-            return context.createFilter(c);
+            return context.createFilter(clazz);
         }
     }
 
@@ -599,7 +599,8 @@ public final class ApplicationContextFacade
      */
     public SessionCookieConfig getSessionCookieConfig() {        
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (SessionCookieConfig) doPrivileged("getSessionCookieConfig", null);
+            return (SessionCookieConfig) doPrivileged(
+                "getSessionCookieConfig", null);
         } else {
             return context.getSessionCookieConfig();
         }
@@ -660,6 +661,22 @@ public final class ApplicationContextFacade
      */
     public void addListener(Class <? extends EventListener> listenerClass) {
         context.addListener(listenerClass);
+    }
+
+
+    /**
+     * Instantiates the given EventListener class and performs any
+     * required resource injection into the new EventListener instance
+     * before returning it.
+     */
+    public <T extends EventListener> T createListener(Class<T> clazz)
+            throws ServletException {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (T) doPrivileged(
+                "createListener", new Object[] {clazz});
+        } else {
+            return context.createListener(clazz);
+        }
     }
 
 
