@@ -121,6 +121,15 @@ public final class Environment {
     }
 
     /**
+     * Remove the name environment entry.
+     *
+     * @param name the environment entry name
+     */
+    public void remove(String name) {
+        env.remove(name);
+    }
+
+    /**
      * Set the environment entry corresponding to the named option
      * to the specified value.
      *

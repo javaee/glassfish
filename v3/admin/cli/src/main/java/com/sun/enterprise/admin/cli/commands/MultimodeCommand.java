@@ -169,6 +169,8 @@ public class MultimodeCommand extends CLICommand {
                 continue;
 
             String command = args[0];
+            if (command.length() == 0)
+                continue;
 
             // handle built-in exit and quit commands
             // XXX - care about their arguments?

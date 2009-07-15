@@ -44,16 +44,16 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
- * A local export command.
+ * A local unset command to unset environment variables.
  *  
  * @author Bill Shannon
  */
-public class ExportCommand extends CLICommand {
+public class UnsetCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =
-            new LocalStringsImpl(ExportCommand.class);
+            new LocalStringsImpl(UnsetCommand.class);
 
-    public ExportCommand(String name, ProgramOptions programOpts,
+    public UnsetCommand(String name, ProgramOptions programOpts,
             Environment env) throws CommandException {
         super(name, programOpts, env);
     }
@@ -66,7 +66,7 @@ public class ExportCommand extends CLICommand {
         commandOpts = Collections.unmodifiableSet(opts);
         operandName = "environment-variable";
         operandType = "STRING";
-        operandMin = 0;
+        operandMin = 1;
         operandMax = Integer.MAX_VALUE;
     }
 
@@ -75,37 +75,20 @@ public class ExportCommand extends CLICommand {
             throws CommandException, CommandValidationException {
         int ret = 0;    // by default, success
 
-        // if no operands, print out everything
-        if (operands.size() == 0) {
-            for (Map.Entry<String, String> e : env.entrySet())
-                logger.printMessage(e.getKey() + " = " + e.getValue());
-        } else {
-            // otherwise, process each operand
-            for (String arg : operands) {
-                // separate into name and value
-                String name, value;
-                int eq = arg.indexOf('=');
-                if (eq < 0) {   // no value
-                    name = arg;
-                    value = null;
-                } else {
-                    name = arg.substring(0, eq);
-                    value = arg.substring(eq + 1);
-                }
-
-                // check that name is legitimate
-                if (!name.startsWith(Environment.AS_ADMIN_ENV_PREFIX)) {
-                    logger.printMessage(strings.get("badEnvVarSet", name));
-                    ret = -1;
-                    continue;
-                }
-
-                // if no value, print it, otherwise set it
-                if (value == null)
-                    logger.printMessage(name + " = " + env.get(name));
-                else
-                    env.put(name, value);
+        // process each operand
+        for (String name : operands) {
+            // check that name is legitimate
+            if (!name.startsWith(Environment.AS_ADMIN_ENV_PREFIX)) {
+                logger.printMessage(strings.get("badEnvVarUnset", name));
+                ret = -1;
+                continue;
             }
+
+            if (env.get(name) == null) {
+                logger.printMessage(strings.get("cantRemoveEnvVar", name));
+                ret = -1;
+            } else
+                env.remove(name);
         }
         return ret;
     }
