@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 122
+PASS: 124
 FAIL: 0
 UNKNOWN: 0
 
@@ -105,6 +105,8 @@ UNKNOWN: 0
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
 [PASSED] session2 : ejb30/session2 Test asadmin redeploy  
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin deploy (server)
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin redeploy (server)
 [PASSED] jsp : ejb30/war/jsp Test asadmin deploy  
 [PASSED] jsp : ejb30/war/jsp Test asadmin redeploy  
 [PASSED] servlet : ejb30/war/servlet Test asadmin deploy  
