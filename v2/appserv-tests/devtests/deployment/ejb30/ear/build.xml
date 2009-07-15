@@ -15,15 +15,15 @@
 		<ant dir="session2" target="private-all">
 			<property name="build" value="${build}/session2"/>
 		</ant>
+		<ant dir="mdb" target="private-all">
+			<property name="build" value="${build}/mdb"/>
+		</ant>
 <!--
 		<ant dir="session3" target="private-all">
 			<property name="build" value="${build}/session3"/>
 		</ant>
 		<ant dir="security" target="private-all">
 			<property name="build" value="${build}/security"/>
-		</ant>
-		<ant dir="mdb" target="private-all">
-			<property name="build" value="${build}/mdb"/>
 		</ant>
 		<ant dir="xmloverride" target="private-all">
 			<property name="build" value="${build}/xmloverride"/>
