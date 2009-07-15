@@ -42,6 +42,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import java.io.*; 
 import java.util.jar.*;
 import java.util.*;
+import java.net.URI;
 
 /**     
  * Application's listed J2EE modules exist in the Enterprise archive
@@ -88,8 +89,8 @@ public class ModulesExistEjb extends ApplicationTest implements AppCheck {
                               String moduleName =
 			         ejbd.getModuleDescriptor().getArchiveUri();
                               String moduleDir = FileUtils.makeFriendlyFilename(moduleName);
-                              File f = new File(archBase + File.separator
-                                           + moduleDir);
+                              File f = new File(new File(URI.create(archBase)),
+                                           moduleDir);
                               moduleDirExists = f.isDirectory();
 //                            }catch (Exception e) { throw new IOException(e.getMessage());}
 //                        }
