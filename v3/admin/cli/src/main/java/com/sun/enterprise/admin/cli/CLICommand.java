@@ -374,15 +374,14 @@ public abstract class CLICommand {
             Parser rcp = new Parser(argv, 0,
                             ProgramOptions.getValidOptions(), true);
             Map<String, String> params = rcp.getOptions();
-            // program options may change
-            programOpts = new ProgramOptions(params, env);
-            initializeLogger();
-            initializePasswords();
             List<String> operands = rcp.getOperands();
             argv = operands.toArray(new String[operands.size()]);
-            // warn about deprecated use of program options
             if (params.size() > 0) {
                 // at least one program option specified after command name
+                programOpts.updateOptions(params);
+                initializeLogger();
+                initializePasswords();
+                // warn about deprecated use of program options
                 Set<String> names = params.keySet();
                 String[] na = names.toArray(new String[names.size()]);
                 System.out.println("Deprecated syntax: " + name +

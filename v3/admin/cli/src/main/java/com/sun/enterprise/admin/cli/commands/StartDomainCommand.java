@@ -257,6 +257,7 @@ public class StartDomainCommand extends CLICommand {
     }
  
     private boolean isServerAlive(int port) {
+        logger.printDebugMessage("Check if server is alive on port " + port);
         programOpts.setPort(port);
         programOpts.setInteractive(false);      // don't prompt
         return DASUtils.pingDASQuietly(programOpts, env);

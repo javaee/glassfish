@@ -134,47 +134,17 @@ public class ProgramOptions {
      */
     public ProgramOptions(Map<String, String> options, Environment env)
             throws CommandException {
-        this.options = options;
-        if (options.containsKey("echo")) {
-            String value = options.get("echo");
-            if (ok(value))
-                echo = Boolean.parseBoolean(value);
-            else
-                echo = true;
-        } else
-            echo = env.getBooleanOption("echo");
-        if (options.containsKey("terse")) {
-            String value = options.get("terse");
-            if (ok(value))
-                terse = Boolean.parseBoolean(value);
-            else
-                terse = true;
-        } else
-            terse = env.getBooleanOption("terse");
-        if (options.containsKey("interactive")) {
-            String value = options.get("interactive");
-            if (ok(value))
-                interactive = Boolean.parseBoolean(value);
-            else
-                interactive = true;
-        } else if (env.hasOption("interactive")) {
+        // set defaults from environment
+        echo = env.getBooleanOption("echo");
+        terse = env.getBooleanOption("terse");
+        if (env.hasOption("interactive"))
             interactive = env.getBooleanOption("interactive");
-        } else
+        else
             interactive = System.console() != null;
-
-        if (options.containsKey("help"))
-            help = true;    // don't care about the value
-
-        host = options.get("host");
+        host = env.getStringOption("host");
         if (!ok(host))
-            host = env.getStringOption("host");
-
-        if (host == null || host.length() == 0)
             host = CLIConstants.DEFAULT_HOSTNAME;
-
-        String sport = options.get("port");
-        if (!ok(sport))
-            sport = env.getStringOption("port");
+        String sport = env.getStringOption("port");
         if (ok(sport)) {
             String badPortMsg = strings.get("badport", sport);
             try {
@@ -186,29 +156,80 @@ public class ProgramOptions {
             }
         } else
             port = CLIConstants.DEFAULT_ADMIN_PORT; // the default port
+        secure = env.getBooleanOption("secure");
+        user = env.getStringOption("user");
+        passwordFile = env.getStringOption("passwordfile");
+        // override defaults with any explicit options
+        updateOptions(options);
+    }
+
+    /**
+     * Update the program options based on the specified
+     * options from the command line.
+     */
+    public void updateOptions(Map<String, String> options)
+            throws CommandException {
+        this.options = options;
+        String value;
+
+        if (options.containsKey("echo")) {
+            value = options.get("echo");
+            if (ok(value))
+                echo = Boolean.parseBoolean(value);
+            else
+                echo = true;
+        }
+
+        if (options.containsKey("terse")) {
+            value = options.get("terse");
+            if (ok(value))
+                terse = Boolean.parseBoolean(value);
+            else
+                terse = true;
+        }
+
+        if (options.containsKey("interactive")) {
+            value = options.get("interactive");
+            if (ok(value))
+                interactive = Boolean.parseBoolean(value);
+            else
+                interactive = true;
+        }
+
+        if (options.containsKey("help"))
+            help = true;    // don't care about the value
+
+        value = options.get("host");
+        if (ok(value))
+            host = value;
+
+        value = options.get("port");
+        if (ok(value)) {
+            String badPortMsg = strings.get("badport", value);
+            try {
+                port = Integer.parseInt(value);
+                if (port < 1 || port > 65535)
+                    throw new CommandException(badPortMsg);
+            } catch (NumberFormatException e) {
+                throw new CommandException(badPortMsg);
+            }
+        }
 
         if (options.containsKey("secure")) {
-            String value = options.get("secure");
+            value = options.get("secure");
             if (ok(value))
                 secure = Boolean.parseBoolean(value);
             else
                 secure = true;
-        } else
-            secure = env.getBooleanOption("secure");
+        }
 
-        if (options.containsKey("user")) {
-            String value = options.get("user");
-            if (ok(value))
-                user = value;
-        } else
-            user = env.getStringOption("user");
+        value = options.get("user");
+        if (ok(value))
+            user = value;
 
-        if (options.containsKey("passwordfile")) {
-            String value = options.get("passwordfile");
-            if (ok(value))
-                passwordFile = value;
-        } else
-            passwordFile = env.getStringOption("passwordfile");
+        value = options.get("passwordfile");
+        if (ok(value))
+            passwordFile = value;
     }
 
     private static boolean ok(String s) {
