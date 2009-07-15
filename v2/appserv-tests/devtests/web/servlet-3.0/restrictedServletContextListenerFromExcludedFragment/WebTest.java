@@ -2,12 +2,9 @@ import java.io.*;
 import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
-/*
- * Unit test for
- *
- *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=8565
- *  ("[SPEC] Special treatment of ServletContextListeners declared
- *  in TLDs of web-fragment JAR files omitted from <absolute-ordering>"):
+/**
+ * Unit test for javax.servlet.context.orderedLibs ServletContext
+ * attribute.
  *
  * This unit test creates and deploys a WAR file that bundles two web
  * fragments with names webFragment1 and webFragment2, respectively.
@@ -15,22 +12,15 @@ import com.sun.ejte.ccl.reporter.*;
  * Either fragment bundles a Tag Library Descriptor (TLD) resource
  * declaring a ServletContextListener.
  *
- * The main web.xml declares an absolute ordering of the fragments, but
- * omits webFragment1 from it.
+ * The main web.xml declares an absolute ordering of the two web fragments,
+ * with webFragment2 listed first, followed by webFragment1.
  * 
- * Either ServletContextListener attempts to register a Servlet. However,
- * since webFragment1 was omitted from the absolute ordering, the call
- * to ServletContext#addServlet by its ServletContextListener must result
- * in an IllegalStateException, as required by the Servlet spec. The
- * ServletContextListener catches this exception and stores it as a
- * ServletContext attribute.
+ * Either ServletContextListener checks for the presence and contents of the
+ * javax.servlet.context.orderedLibs ServletContext attribute and, if
+ * satisfied, registers a Servlet.
  *
- * On the other hand, the Servlet registration by the ServletContextListener
- * in webFragment2 is expected to succeed, and the client attempts to access
- * this Servlet. When the Servlet is accessed, it checks for the presence of
- * the ServletContext attribute stored by the ServletContextListener of 
- * webFragment1, and throws a ServletException if the attribute is missing,
- * causing the test to fail.
+ * The client then accesses each of the Servlets. If it fails to access any
+ * of the Servlets, it reports an error, causing the test to fail.
  */
 public class WebTest {
 
@@ -38,7 +28,7 @@ public class WebTest {
         new SimpleReporterAdapter("appserv-tests");
 
     private static final String TEST_NAME =
-        "restricted-servlet-context-listener-from-excluded-fragment";
+        "javax-servlet-context-orderedLibs";
 
     private String host;
     private String port;
@@ -51,7 +41,8 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for IT 8565");
+        stat.addDescription("Unit test for " +
+            "javax.servlet.context.orderedLibs ServletContext attribute");
 
         try {
             new WebTest(args).doTest();
@@ -66,12 +57,22 @@ public class WebTest {
 
     private void doTest() throws Exception {
         
-        String url = "http://" + host + ":" + port + contextRoot + "/fragmentServlet";
+        String url = "http://" + host + ":" + port + contextRoot +
+            "/webFragment1Servlet";
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
         int code = conn.getResponseCode();
         if (code != 200) {
             throw new Exception("Unexpected return code: " + code);
         }
+
+        url = "http://" + host + ":" + port + contextRoot +
+            "/webFragment2Servlet";
+        conn = (HttpURLConnection) (new URL(url)).openConnection();
+        code = conn.getResponseCode();
+        if (code != 200) {
+            throw new Exception("Unexpected return code: " + code);
+        }
+
     }
 }

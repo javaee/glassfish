@@ -8,10 +8,6 @@ public class WebFragmentServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
-        Object attr = getServletContext().getAttribute("exception");
-        if (attr == null ||
-                !attr.getClass().equals(IllegalStateException.class)) {
-            throw new ServletException("Missing ServletContext attribute");
-        }
+        res.getWriter().println("Hello world");
     }
 }
