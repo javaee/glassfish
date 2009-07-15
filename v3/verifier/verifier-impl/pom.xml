@@ -135,6 +135,7 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
             <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.help</groupId>
