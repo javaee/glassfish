@@ -13,7 +13,7 @@
 
   &jaxrpctargets;
 
-<path id="class.path">
+  <path id="class.path">
         <fileset dir="${env.AS_HOME}/modules">
             <include name="**/*.jar"/>
         </fileset>
@@ -27,27 +27,37 @@
     </path>
 
 
-  <target name="create-ear" description="Packages the EAR file">
-     <echo message="Creating the EAR...."/>
-     <delete file="${assemble.ear}/${ear.file}" />
+  <target name="create-ejb-jar" description="Packages the EJB JAR file">
+     <echo message="Creating the EJB JAR...."/>
+     <delete file="${assemble.ear}/${ejbjar.file}" />
      <delete dir="${assemble.ear}/META-INF" />
-     <copy todir="${assemble.ear}/META-INF/classes/">
+     <copy todir="${assemble.ear}">
          <fileset dir="${build}/" 
                   includes="**/*.class" 
                   excludes="**/*Client.class, **/*.wsdl, **/*mapping.xml"/>
      </copy>
-     <copy file="${build}/MyHelloService.wsdl" todir="${assemble.ear}/WEB-INF/wsdl" />
+     <copy file="${build}/MyHelloService.wsdl" todir="${assemble.ear}/META-INF/wsdl" />
      <copy file="${build}/mapping.xml" todir="${assemble.ear}/${build}/" />
      <copy file="webservices.xml" todir="${assemble.ear}/META-INF" />
-     <jar destfile="${assemble.ear}/${ear.file}" 
+     <copy file="ejb-jar.xml" todir="${assemble.ear}/META-INF" />
+     <copy file="sun-ejb-jar.xml" todir="${assemble.ear}/META-INF" />
+     <jar destfile="${assemble.ear}/${ejbjar.file}" 
            >
-       <fileset dir="${assemble.ear}" includes="WEB-INF/**, META-INF/**, build/**" />
+       <fileset dir="${assemble.ear}" includes="META-INF/**, build/**,helloservice/**" />
      </jar>
-     <copy file="${assemble.ear}/${ear.file}" todir="." />
+     <copy file="${assemble.ear}/${ejbjar.file}" todir="." />
   </target>
 
   <target name="build" depends="build-service"
      description="Executes the targets needed to build the service.">
+  </target>
+
+  <target name="create-ear" depends="create-ejb-jar"
+     description="Executes the targets needed to create the ejb jar.">
+     <jar destfile="${assemble.ear}/${ear.file}" 
+           >
+       <fileset dir="${assemble.ear}" includes="${ejbjar.file}" />
+     </jar>
   </target>
 
   <target name="deploy" depends="set-asadmin,build,create-ear">

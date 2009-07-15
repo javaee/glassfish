@@ -3,7 +3,7 @@
 <webservice-description>
 <display-name>MyHelloService</display-name>
 <webservice-description-name>MyHelloService</webservice-description-name>
-<wsdl-file>WEB-INF/wsdl/MyHelloService.wsdl</wsdl-file>
+<wsdl-file>META-INF/wsdl/MyHelloService.wsdl</wsdl-file>
 <jaxrpc-mapping-file>build/mapping.xml</jaxrpc-mapping-file>
 <port-component>
 <display-name>HelloIF</display-name>
