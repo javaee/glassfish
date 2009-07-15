@@ -94,5 +94,11 @@ public interface EJBInvocation {
      * @throws java.lang.Exception TODO, change this to throw some subclass
      */
     public boolean authorizeWebService(Method m) throws Exception;
+    
+/**
+    *
+    * @return true if the SecurityManager reports that the caller is in role
+    */
+   public boolean isCallerInRole(String role);
 
 }

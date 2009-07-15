@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.security.ssl;
+package com.sun.enterprise.security.integration;
 
 /**
  *

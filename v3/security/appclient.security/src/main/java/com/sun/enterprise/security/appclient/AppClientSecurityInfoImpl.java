@@ -44,7 +44,7 @@ import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
-import com.sun.enterprise.security.ssl.AppClientSSL;
+import com.sun.enterprise.security.integration.AppClientSSL;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.logging.LogDomains;
 import java.util.List;
@@ -212,7 +212,7 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
 	    //XXX do not use NSS in this release
 	    //CertDb   certDB  = security.getCertDb();
 	    sslUtils.setAppclientSsl(convert(ssl));	
-            this.appClientSSLUtil.setAppClientSSL(ssl);
+            this.appClientSSLUtil.setAppClientSSL(convert(ssl));
 	} catch (Exception ex) {
 
         }

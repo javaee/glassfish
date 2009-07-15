@@ -635,7 +635,16 @@ public class EjbInvocation
 		//inv.setWebServiceMethod(null);
 	    }
              return true;
-	}            
+	} 
+    
+/**
+    * Implements the  method in org.glassfish.ejb.api.EJBInvocation
+    * @return true if the SecurityManager reports that the caller is in role
+    */
+   public boolean isCallerInRole(String role) {
+       return getEjbSecurityManager().isCallerInRole(role);
+   } 
+
        
     }
     

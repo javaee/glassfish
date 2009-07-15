@@ -71,6 +71,7 @@ import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.CipherInfo;
 import org.glassfish.enterprise.iiop.api.IIOPSSLUtil;
+import com.sun.enterprise.security.integration.AppClientSSL;
 
 
 /**
@@ -178,13 +179,12 @@ public class IIOPSSLSocketFactory  implements ORBSocketFactory, Serializable
             } else {
                 if ((processType != null) && (processType == ProcessType.ACC)) {
                     IIOPSSLUtil sslUtil = Globals.getDefaultHabitat().getComponent(IIOPSSLUtil.class);
-                    org.glassfish.appclient.client.acc.config.Ssl clientSsl =
-                            (org.glassfish.appclient.client.acc.config.Ssl) sslUtil.getAppClientSSL();
+                    AppClientSSL clientSsl = (AppClientSSL)sslUtil.getAppClientSSL();
                     if (clientSsl != null) {
                         clientSslInfo = init(clientSsl.getCertNickname(),
-                                clientSsl.isSsl2Enabled(), clientSsl.getSsl2Ciphers(),
-                                clientSsl.isSsl3Enabled(), clientSsl.getSsl3TlsCiphers(),
-                                clientSsl.isTlsEnabled());
+                                clientSsl.getSsl2Enabled(), clientSsl.getSsl2Ciphers(),
+                                clientSsl.getSsl3Enabled(), clientSsl.getSsl3TlsCiphers(),
+                                clientSsl.getTlsEnabled());
                     } else { // include case keystore, truststore jvm option
 
                         clientSslInfo = getDefaultSslInfo();

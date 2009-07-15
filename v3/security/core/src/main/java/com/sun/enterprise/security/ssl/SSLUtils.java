@@ -62,7 +62,7 @@ import javax.net.ssl.X509TrustManager;
 //V3:Commented import com.sun.enterprise.config.clientbeans.Ssl
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 //V3:Commented import com.sun.web.security.SSLSocketFactory;
-
+import com.sun.enterprise.security.integration.AppClientSSL;
 import java.util.logging.*;
 import com.sun.logging.*;
 import org.jvnet.hk2.annotations.Service;

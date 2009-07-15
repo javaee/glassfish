@@ -46,7 +46,7 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 //V3:Commented import com.sun.enterprise.config.clientbeans.Ssl;
 import com.sun.enterprise.security.ssl.SSLUtils;
-import com.sun.enterprise.security.ssl.AppClientSSL;
+import com.sun.enterprise.security.integration.AppClientSSL;
 
 import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;

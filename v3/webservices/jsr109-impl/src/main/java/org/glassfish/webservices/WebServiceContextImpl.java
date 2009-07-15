@@ -99,7 +99,7 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
         InvocationManager mgr = wscImpl.getInvocationManager();
         if (ComponentInvocation.ComponentInvocationType.EJB_INVOCATION.equals(mgr.getCurrentInvocation().getInvocationType())) {
            EJBInvocation inv = (EJBInvocation)mgr.getCurrentInvocation();
-           boolean res = true;//inv.isCallerInRole(role);
+           boolean res = inv.isCallerInRole(role);
            return res;
         }
         // This is a servlet endpoint
