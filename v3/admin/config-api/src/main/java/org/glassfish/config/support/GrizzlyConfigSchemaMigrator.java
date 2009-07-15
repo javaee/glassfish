@@ -97,7 +97,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     }
 
     private void updateSsl(final String propName, final String value) throws TransactionFailure {
-        final Collection<Protocol> protocols = habitat.getAllByType(Protocol.class);
+        final Collection<Protocol> protocols = habitat.getAllByContract(Protocol.class);
         for (Protocol protocol : protocols) {
             final Ssl ssl = protocol.getSsl();
             if (ssl != null) {

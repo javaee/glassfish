@@ -1080,7 +1080,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         HashSet<NetworkListener> httpListeners = new HashSet<NetworkListener>();
         for (String listener : listeners) {
             boolean found = false;
-            for (NetworkListener httpListener : habitat.getAllByType(NetworkListener.class)) {
+            for (NetworkListener httpListener : habitat.getAllByContract(NetworkListener.class)) {
                 if (httpListener.getName().equals(listener)) {
                     httpListeners.add(httpListener);
                     found = true;
@@ -2594,7 +2594,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             HashSet<NetworkListener> networkListeners = new HashSet<NetworkListener>();
             for (String listener : listeners) {
                 boolean found = false;
-                for (NetworkListener httpListener : habitat.getAllByType(NetworkListener.class)) {
+                for (NetworkListener httpListener : habitat.getAllByContract(NetworkListener.class)) {
                     if (httpListener.getName().equals(listener)) {
                         networkListeners.add(httpListener);
                         found = true;
@@ -2712,7 +2712,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * Need to update connector and mapper restart is required when
          * virtual-server.http-listeners is changed dynamically
          */
-        Collection<NetworkListener> httpListeners = habitat.getAllByType(NetworkListener.class);
+        Collection<NetworkListener> httpListeners = habitat.getAllByContract(NetworkListener.class);
         if (httpListeners != null) {
             for (NetworkListener httpListener : httpListeners) {
                 updateConnector(httpListener, habitat.getByType(HttpService.class));
@@ -2812,7 +2812,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             updateHost(virtualServer);
         }
 
-        Collection<NetworkListener> listeners = habitat.getAllByType(NetworkListener.class);
+        Collection<NetworkListener> listeners = habitat.getAllByContract(NetworkListener.class);
         if (listeners != null) {
             for (NetworkListener httpListener : listeners) {
                 updateConnector(httpListener, httpService);

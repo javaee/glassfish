@@ -62,8 +62,8 @@ public class IIOPUtils implements PostConstruct {
         if( processEnv.getProcessType() == ProcessType.Server) {
 
             iiopService = habitat.getComponent(IiopService.class);
-            final Collection<ThreadPool> threadPool = habitat.getAllByType(ThreadPool.class);
-            final Collection<NetworkListener> listeners = habitat.getAllByType(NetworkListener.class);
+            final Collection<ThreadPool> threadPool = habitat.getAllByContract(ThreadPool.class);
+            final Collection<NetworkListener> listeners = habitat.getAllByContract(NetworkListener.class);
             final Set<String> names = new TreeSet<String>();
             threadPools = new ArrayList<ThreadPool>();
             for (NetworkListener listener : listeners) {
