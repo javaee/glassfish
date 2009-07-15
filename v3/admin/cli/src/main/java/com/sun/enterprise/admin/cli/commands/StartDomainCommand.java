@@ -78,7 +78,10 @@ public class StartDomainCommand extends CLICommand {
      * operandType, operandMin, and operandMax fields are set.
      */
     @Override
-    protected void prepare() throws CommandException {
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        processProgramOptions();
+
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "domaindir", '\0', "STRING", false, null);
         addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
