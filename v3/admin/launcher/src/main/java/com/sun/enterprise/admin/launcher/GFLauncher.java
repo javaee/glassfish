@@ -35,6 +35,7 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import java.util.logging.Level;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
+import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
 
 /**
  * This is the main Launcher class designed for external and internal usage.
@@ -267,7 +268,8 @@ public abstract class GFLauncher {
         if(jvmOptions != null)
             addIgnoreNull(cmdLine, jvmOptions.toStringArray());
 
-        addIgnoreNull(cmdLine, getNativePathCommandLine());
+        GFLauncherNativeHelper nativeHelper = new GFLauncherNativeHelper(info, javaConfig, jvmOptions, profiler);
+        addIgnoreNull(cmdLine, nativeHelper.getCommands());
         addIgnoreNull(cmdLine, getMainClass());
 
         try {
@@ -446,41 +448,6 @@ public abstract class GFLauncher {
         props.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getAbsolutePath());
         return ( this.propsToJvmOptions(props) );
     }
-    private List<String> getNativePathCommandLine() {
-        List<String> list = new ArrayList<String>();
-
-        // 1. get the existing native library path that java put together for us.
-        String nativePathsString = System.getProperty(JAVA_NATIVE_SYSPROP_NAME);
-
-        if(!GFLauncherUtils.ok(nativePathsString))
-            nativePathsString = "";
-
-        // 2. Add our lib directory if and only if it does not exist already.
-        // we just append it here because SmartFile is smart and will solve any
-        // problems for us.
-
-        nativePathsString += File.pathSeparator + getInfo().getInstallDir().getAbsolutePath() + "/lib";
-        
-        // 3. convert to List<File>
-        List<File> nativePaths = GFLauncherUtils.stringToFiles(nativePathsString);
-
-        // 4. add Profiler native path(s) if any
-        nativePaths.addAll(getProfilerNativePath());
-
-        // 5. make the command line option
-        String nativeCommand = "-D" + JAVA_NATIVE_SYSPROP_NAME + "=";
-        nativeCommand += GFLauncherUtils.fileListToPathString(nativePaths);
-        list.add(nativeCommand);
-        return list;
-    }
-
-    private List<File> getProfilerNativePath() {
-        // if not enabled -- fagetaboutit
-        if(profiler == null || !profiler.isEnabled())
-            return Collections.emptyList();
-        else
-            return profiler.getNativePath();
-    }
 
     void logCommandLine() {
         StringBuilder sb = new StringBuilder();
@@ -539,8 +506,6 @@ public abstract class GFLauncher {
     private long startTime;
     private String logFilename;
     private LaunchType mode = LaunchType.normal;
-    private final static String JAVA_NATIVE_SYSPROP_NAME = "java.library.path";
-    private static final String NEWLINE = System.getProperty("line.separator");
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncher.class);
     private boolean setupCalledByClients = false; //handle with care
     private int     exitValue = -1;

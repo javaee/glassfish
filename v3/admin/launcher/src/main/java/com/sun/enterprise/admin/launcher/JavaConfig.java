@@ -41,6 +41,7 @@
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
 import java.io.*;
 import java.util.*;
 
@@ -84,6 +85,16 @@ class JavaConfig {
         }
     }
 
+    String getNativeLibraryPrefix() {
+        String s = map.get(NATIVE_LIB_PREFIX);
+
+        if(!GFLauncherUtils.ok(s))
+            s = "";
+
+        return s;
+    }
+
+
     List<File> getSuffixClasspath() {
         String cp = map.get("classpath-suffix");
         
@@ -93,6 +104,15 @@ class JavaConfig {
         else {
             return new ArrayList<File>();
         }
+    }
+
+    String getNativeLibrarySuffix() {
+        String s = map.get(NATIVE_LIB_SUFFIX);
+
+        if(!GFLauncherUtils.ok(s))
+            s = "";
+
+        return s;
     }
 
     List<File> getSystemClasspath() {
