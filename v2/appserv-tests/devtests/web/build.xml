@@ -315,7 +315,7 @@
         <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
-<!-- XXX temporarily commented out, see IT 7919
+<!--  https://glassfish.dev.java.net/issues/show_bug.cgi?id=8728
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
 -->
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
@@ -329,9 +329,7 @@
 -->
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
-<!-- XXX temporarily commented out, see IT 7919
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
--->
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
@@ -363,16 +361,16 @@
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="largeCookieError" target="all"/>
-<!-- XXX temporarily commented out, see IT 7919
         <ant dir="httpListenerDynamicConfig" target="all"/>
--->
         <ant dir="webappLoaderEmptyJar" target="all"/>
     </target>
 
     <target name="security">
         <ant dir="ssl" target="all"/>
+<!-- https://glassfish.dev.java.net/issues/show_bug.cgi?id=8730
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="securityConstraintMapping" target="all"/>
+-->
         <ant dir="sslCookie" target="all"/>
         <ant dir="installationPathDisclosure" target="all"/>
         <ant dir="programmaticLogin" target="all"/>
@@ -415,18 +413,14 @@
         <ant dir="defaultKeepAlive" target="all"/>
         <ant dir="multiServletRequests" target="all"/>
 -->
-<!-- XXX temporarily commented out, see IT 7919
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
--->
 <!-- XXX temporarily commented out, see IT 8282
         <ant dir="caseSensitiveHostMapping" target="all"/>
 -->
         <ant dir="setResponseContentLengthToZeroKeepResponseHeaders" target="all"/>
         <ant dir="getLocalPort" target="all"/>
-<!-- XXX temporarily commented out, see IT 8287
         <ant dir="readerThreadsConfig" target="all"/>
         <ant dir="readerSelectorsConfig" target="all"/>
--->
         <ant dir="httpServletDoPost" target="all"/>
 <!-- XXX temporarily commented out, see IT 7420
         <ant dir="keepAliveTimeoutZero" target="all"/>
@@ -437,9 +431,7 @@
         <ant dir="defaultResponseType" target="all"/>
 -->
         <ant dir="httpListenerAdminReconfig" target="all"/>
-<!-- XXX temporarily commented out, see IT 8287
         <ant dir="headerBufferSize" target="all"/>
--->
 <!-- XXX temporarily commented out, see IT 7559
         <ant dir="defaultContentType" target="all"/>
 -->
@@ -447,9 +439,7 @@
         <!-- Fail on Hudson, removing it for now
         <ant dir="dosSlowClient" target="all"/>
         -->
-<!-- XXX temporarily commented out, see IT 8287
         <ant dir="sslMultiSelector" target="all"/>
--->
         <ant dir="httpRequestIgnoreInvalidAcceptLanguageHeader" target="all"/>
         <ant dir="sslServerName" target="all"/>
         <!-- Exclude for prelude, since port unification not supported
