@@ -64,19 +64,45 @@ public class TokenResolver {
     }
     /**
      * Replace $[variables} in map with a matching property from the map that this
-     *  instance was constructed with.  Both names and vlues are replaced.
+     *  instance was constructed with.  Both names and values are replaced.
      * @param map Map of Strings to be token-replaced
      */
     public void resolve(Map<String, String> map) {
-        Set<String> keys = map.keySet();
+        // we may be concurrently changing the map so we have to be careful!
 
-        for (String key : keys) {
-            String value = map.get(key);
+        // can't add to "map" arg while we are in the loop -- add all new
+        // entries AFTER the loop.
+
+        Map<String, String> newEntries = new HashMap<String,String>();
+
+        Set<Map.Entry<String,String>> set = map.entrySet();
+        Iterator<Map.Entry<String,String>> it = set.iterator();
+
+        while(it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            // usual case -- the RHS has a token
+            // will not get a concurrent mod exception -- it is just the value
+            // that changes...
             if (hasToken(value)) {
-                map.put(key, resolve(value));
+                value = resolve(value);
+                map.put(key, value);
+            }
+
+            // less usual case -- the LHS has a token.  Need to remove the entry
+            // from the map and replace.
+            // We have to worry about ConcurrentModification here!
+            if(hasToken(key)) {
+                String newKey = resolve(key);
+                newEntries.put(newKey, value);
+                it.remove(); // safe!!!
             }
         }
+        map.putAll(newEntries);
     }
+
     /**
      * Replace $[variables} in list with a matching property from the map
      * @param list List of Strings to be token-replaced
