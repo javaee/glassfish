@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -51,6 +51,13 @@
     <packaging>jar</packaging>
     <name>Java(TM) EE Specification APIs Repackaged as HK2 module and OSGi bundle</name>
 
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
     <build>
         <plugins>
             <plugin>
@@ -82,40 +89,42 @@
             </plugin>
         </plugins>
     </build>
+        </profile>
+
+
+        <profile>
+            <id>api</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>RELEASE</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/api-assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attached</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                   </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.enterprise.deploy</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.ejb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <version>${javax-persistence-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.jms</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.security.jacc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.resource</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -125,17 +134,52 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.jws</artifactId>
+            <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.soap</artifactId>
+            <artifactId>javax.enterprise.deploy</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.ws</artifactId>
+            <artifactId>javax.management.j2ee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.resource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.security.auth.message</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.security.jacc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.transaction</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.stream</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.activation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -150,49 +194,60 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.mail</artifactId>
+            <artifactId>javax.xml.ws</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.transaction</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>${jsf-api.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet.jsp</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--
         <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-api</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.jws</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet.jsp.jstl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>${javax-persistence-api.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.management.j2ee</artifactId>
+            <artifactId>javax.xml.soap</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.activation</artifactId>
+            <artifactId>javax.jms</artifactId>
             <version>${project.version}</version>
+        </dependency>
+	<dependency>
+	    <groupId>org.glassfish</groupId>
+	    <artifactId>bean-validator</artifactId>
+            <version>3.0-JBoss-4.0.0.Beta1-b01</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.stream</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.jboss.webbeans</groupId>
+            <artifactId>jsr299-api</artifactId>
+            <version>${webbeans.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.security.auth.message</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
     </dependencies>
 </project>
