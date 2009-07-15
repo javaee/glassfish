@@ -109,8 +109,7 @@ public class MultimodeCommand extends CLICommand {
         BufferedReader reader = null;
         try {
             if (file == null) {
-                System.out.println(
-                    "Enter commands one per \"line\", ^D to quit");
+                System.out.println(strings.get("multimodeIntro"));
                 if (encoding != null)
                     reader = new BufferedReader(
                                 new InputStreamReader(System.in, encoding));
@@ -169,10 +168,14 @@ public class MultimodeCommand extends CLICommand {
             if (command.equals("exit") || command.equals("quit"))
                 break;
 
+            CLICommand cmd = null;
             try {
-                CLICommand cmd =
-                    CLICommand.getCommand(command, programOpts, env);
+                cmd = CLICommand.getCommand(command, programOpts, env);
                 rc = cmd.execute(args);
+            } catch (CommandValidationException cve) {
+                logger.printError(cve.getMessage());
+                logger.printError(cmd.getUsage());
+                rc = ERROR;
             } catch (CommandException ce) {
                 logger.printError(ce.getMessage());
                 rc = ERROR;

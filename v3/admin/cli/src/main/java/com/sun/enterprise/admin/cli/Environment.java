@@ -49,6 +49,7 @@ import java.util.*;
  * @author Bill Shannon
  */
 public final class Environment {
+    // XXX - should Environment just extend HashMap?
 
     public static final String AS_ADMIN_ENV_PREFIX = "AS_ADMIN_";
 
@@ -61,7 +62,7 @@ public final class Environment {
         // initialize it with all relevant system environment entries
         for (Map.Entry<String, String> e : System.getenv().entrySet()) {
             if (e.getKey().startsWith(AS_ADMIN_ENV_PREFIX)) {
-                env.put(e.getKey(), e.getValue());
+                env.put(e.getKey().toUpperCase(Locale.ENGLISH), e.getValue());
             }
         }
     }
@@ -129,6 +130,13 @@ public final class Environment {
      */
     public String putOption(String name, String value) {
         return env.put(optionToEnv(name), value);
+    }
+
+    /**
+     * Return a set of all the entries, just like a Map does.
+     */
+    public Set<Map.Entry<String, String>> entrySet() {
+        return env.entrySet();
     }
 
     /**

@@ -299,11 +299,21 @@ public abstract class CLICommand {
                 usageText.append(" ");
         }
 
+        String opname = operandName;
+        if (!ok(opname))
+            opname = "operand";
         if (operandMax > 0) {
-            if (operandMin == 0)
-                usageText.append("[").append(operandName).append("] ");
-            else
-                usageText.append(operandName).append(" ");
+            if (operandMin == 0) {
+                usageText.append("[").append(opname);
+                if (operandMax > 1)
+                    usageText.append(" ...");
+                usageText.append("] ");
+            } else {
+                usageText.append(opname);
+                if (operandMax > 1)
+                    usageText.append(" ...");
+                usageText.append(" ");
+            }
         }
 
         return usageText.toString();
