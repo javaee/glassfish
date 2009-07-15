@@ -53,6 +53,8 @@ public class Util {
      * capturing into group 1 all chars between the "${" and the "}"
      */
     private static final Pattern TOKEN_SUBSTITUTION = Pattern.compile("\\$\\{([^\\}]*)\\}");
+    private static final String SLASH_REPLACEMENT = Matcher.quoteReplacement("\\\\");
+    private static final String DOLLAR_REPLACEMENT = Matcher.quoteReplacement("\\$");
 
 
     /**
@@ -83,14 +85,13 @@ public class Util {
              */
             if (propertyValue != null) {
                 /*
-                 * The next line quotes any $ signs in the replacement string
+                 * The next line quotes any $ signs and backslashes in the replacement string
                  * so they are not interpreted as meta-characters by the regular expression
-                 * processor's appendReplacement.  The replaceAll replaces all occurrences
-                 * of $ with \$.  The extra slashes are needed to quote the backslash
-                 * for the Java language processor and then again for the regex
-                 * processor (!).
+                 * processor's appendReplacement.
                  */
-                String adjustedPropertyValue = propertyValue.replaceAll("\\$", "\\\\\\$");
+                String adjustedPropertyValue =
+                        propertyValue.replaceAll("\\\\",SLASH_REPLACEMENT).
+                            replaceAll("\\$", DOLLAR_REPLACEMENT);
                 String x = s.substring(m.start(),m.end());
                 try {
                     m.appendReplacement(sb, adjustedPropertyValue);
