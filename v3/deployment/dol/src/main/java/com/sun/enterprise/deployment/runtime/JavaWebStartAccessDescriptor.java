@@ -118,8 +118,8 @@ public class JavaWebStartAccessDescriptor extends Descriptor {
 
         this.vendor = vendor;
     }
-    
-    public void setBundleDescriptor(BundleDescriptor bundle) {
+
+     public void setBundleDescriptor(BundleDescriptor bundle) {
         bundleDescriptor = bundle;
     }
 
@@ -127,5 +127,21 @@ public class JavaWebStartAccessDescriptor extends Descriptor {
         return bundleDescriptor;
     }
 
+    /**
+     * Declaration and methods for jnlp-doc subelement.
+     */
+    private JnlpDocDescriptor jnlpDoc = null;
+
+    public JnlpDocDescriptor getJnlpDoc() {
+        if (jnlpDoc == null) {
+            jnlpDoc = new JnlpDocDescriptor();
+        }
+        return jnlpDoc;
+    }
+
+    public void setJnlpDoc(JnlpDocDescriptor jnlpDoc) {
+        this.jnlpDoc = jnlpDoc;
+    }
     
+
 }

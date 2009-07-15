@@ -191,7 +191,11 @@ public final class DTDRegistry {
     public static final String SUN_APPCLIENT_500_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Application Client 5.0//EN";
     public static final String SUN_APPCLIENT_500_DTD_SYSTEM_ID =
-        "http://www.sun.com/software/appserver/dtds/sun-application-client_5_0-0.dtd";    
+        "http://www.sun.com/software/appserver/dtds/sun-application-client_5_0-0.dtd";
+    public static final String SUN_APPCLIENT_600_DTD_PUBLIC_ID =
+        "-//Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 Application Client 6.0//EN";
+    public static final String SUN_APPCLIENT_600_DTD_SYSTEM_ID =
+        "http://www.sun.com/software/appserver/dtds/sun-application-client_6_0-0.dtd";
 
     /**
      * Connectors: Sun ONE App Server specific dtd info.

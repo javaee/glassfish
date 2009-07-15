@@ -99,7 +99,8 @@ public class AppClientRuntimeNode extends
        publicIDToDTD.put(DTDRegistry.SUN_APPCLIENT_130_DTD_PUBLIC_ID, DTDRegistry.SUN_APPCLIENT_130_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.SUN_APPCLIENT_140_DTD_PUBLIC_ID, DTDRegistry.SUN_APPCLIENT_140_DTD_SYSTEM_ID);       
        publicIDToDTD.put(DTDRegistry.SUN_APPCLIENT_141_DTD_PUBLIC_ID, DTDRegistry.SUN_APPCLIENT_141_DTD_SYSTEM_ID);       
-       publicIDToDTD.put(DTDRegistry.SUN_APPCLIENT_500_DTD_PUBLIC_ID, DTDRegistry.SUN_APPCLIENT_500_DTD_SYSTEM_ID);       
+       publicIDToDTD.put(DTDRegistry.SUN_APPCLIENT_500_DTD_PUBLIC_ID, DTDRegistry.SUN_APPCLIENT_500_DTD_SYSTEM_ID);
+       publicIDToDTD.put(DTDRegistry.SUN_APPCLIENT_600_DTD_PUBLIC_ID, DTDRegistry.SUN_APPCLIENT_600_DTD_SYSTEM_ID);
        if (!restrictDTDDeclarations()) {           
            publicIDToDTD.put(DTDRegistry.SUN_APPCLIENT_140beta_DTD_PUBLIC_ID, DTDRegistry.SUN_APPCLIENT_140beta_DTD_SYSTEM_ID);       
        }
@@ -117,14 +118,14 @@ public class AppClientRuntimeNode extends
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-	return DTDRegistry.SUN_APPCLIENT_500_DTD_PUBLIC_ID;
+	return DTDRegistry.SUN_APPCLIENT_600_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-	return DTDRegistry.SUN_APPCLIENT_500_DTD_SYSTEM_ID;
+	return DTDRegistry.SUN_APPCLIENT_600_DTD_SYSTEM_ID;
     }
 
     /**
