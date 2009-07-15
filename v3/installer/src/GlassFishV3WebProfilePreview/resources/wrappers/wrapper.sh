@@ -164,14 +164,17 @@ then
 	fi
 fi
 
-tmp=`mktemp -d -t install.XXXXXX`
+tmpdir_name=`date +%m%d%y%H%M%S`
+tmpdir_path=/tmp/install.${tmpdir_name}
+mkdir ${tmpdir_path}
 if [ $? -ne 0 ]; then
-    echo "Unable to create temporary directory, exiting..."
-    exit 1
+ 	echo "Unable to create temporary directory, exiting..."
+    	exit 1
 fi
+
 echo "Extracting archive, please wait..."
-tail +186l $0 > $tmp/tmp.jar
-cd $tmp
+tail +189l $0 > ${tmpdir_path}/tmp.jar
+cd ${tmpdir_path}
 $my_jar xvf tmp.jar 
 $my_jar xvf ./Product/Packages/Engine.zip 
 $my_jar xvf ./Product/Packages/Resources.zip 
@@ -181,5 +184,5 @@ chmod ugo+x product-installer.sh
 chmod ugo+x install/bin/engine-wrapper
 echo "InstallHome.directory.INSTALL_HOME=$HOME/glassfishv3" > install.properties
 sh product-installer.sh $ARGS
-rm -rf ${tmp}/*
+rm -rf ${tmpdir_path}/*
 exit $?
