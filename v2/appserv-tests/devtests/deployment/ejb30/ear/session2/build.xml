@@ -29,9 +29,9 @@
     </target>
 
     <target name="assemble" depends="compile">
-        <jar destfile="${ejb.jar}" basedir="${build}">
+        <jar destfile="${ejb.jar}" basedir="${build}" 
+                excludes="**/ClientSuper.class,**/Client.class">
                 <metainf file="descriptor/sun-ejb-jar.xml"/>
-                <fileset dir="${build}" includes="**/Sless*.class,**/Sful*.class,**/ExternalBusiness.class,**/Foo*.class,**/MyCallbackHandler.class"/>
         </jar>
 
         <jar destfile="${client.jar}" basedir="${build}"

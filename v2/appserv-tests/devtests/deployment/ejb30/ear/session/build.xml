@@ -30,7 +30,7 @@
 
     <target name="assemble" depends="compile">
         <jar destfile="${ejb.jar}" basedir="${build}"
-                excludes="**/Client.class">
+                excludes="**/Client.class, **/ClientSuper.class">
         </jar>
 
         <jar destfile="${client.jar}" basedir="${build}"

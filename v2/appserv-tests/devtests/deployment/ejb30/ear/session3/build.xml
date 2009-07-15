@@ -131,7 +131,9 @@
     </target>
  
     <target name="private-all">
+        <!--
         <antcall target="startDerby"/>
+        -->
         <antcall target="setup_sql"/>
         <antcall target="assemble"/>
         <antcall target="declare-test">
