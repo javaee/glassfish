@@ -2,3 +2,5 @@
 Import-Package: \
                         com.sun.logging.enterprise.system.core.security, \
                         *
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider

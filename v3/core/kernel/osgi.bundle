@@ -11,3 +11,5 @@
                         com.sun.enterprise.v3.services.impl; \
                         org.glassfish.kernel.embedded; \
                         org.glassfish.kernel.event; version=${project.osgi.version}
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider
