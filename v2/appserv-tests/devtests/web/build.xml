@@ -503,7 +503,7 @@
        <antcall target="copyMailJars"/>
        -->
 
-       <java classname="ResultsProducer" fork="true" failonerror="false" maxmemory="512m" dir="${build.classes.dir}">
+       <java classname="ResultsProducer" fork="true" failonerror="false" maxmemory="1024m" dir="${build.classes.dir}">
             <arg value="${env.APS_HOME}/test_resultsValid.xml"/>
             <arg value="${TOTAL_EXPECTED}"/>
             <arg value="${env.APS_HOME}/count.txt"/>
