@@ -79,7 +79,7 @@
             </sun:property>
 
             <sun:property id="logHandlerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.Handler}" helpText="$resource{i18n.log.HandlerHelp}">
-                <sun:textField id="LogHandler" columns="$int{70}" text="#{pageSession.valueMap['handler']}" />
+                <sun:textField id="LogHandler" columns="$int{70}" text="#{pageSession.valueMap['handlers']}" />
             </sun:property>
 
             <sun:property id="FileRotationLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.log.FileRotationLimit}" helpText="$resource{i18n.log.FileRotationLimitHelp}">
