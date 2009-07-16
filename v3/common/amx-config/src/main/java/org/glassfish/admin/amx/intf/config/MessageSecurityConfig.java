@@ -35,35 +35,32 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.base.Singleton;
+
+
 import java.util.Map;
 
 /**
-Configuration for the &lt;provider-config&gt; element.
+Configuration for the &lt;message-security-config&gt; element.
  */
-public interface Provider
-        extends NamedConfigElement, PropertiesAccess
+public interface MessageSecurityConfig
+        extends NamedConfigElement
 {
-    public String getClassName();
+    /**
+    One of the values defined by {@link MessageLayerValues}.
+     */
+    public String getAuthLayer();
 
-    public void setClassName(final String value);
+    public String getDefaultClientProvider();
 
-    public String getProviderId();
+    public void setDefaultClientProvider(final String value);
 
-    /** Returns {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
-    public String getProviderType();
+    public String getDefaultProvider();
 
-    /** Use {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
-    public void setProviderType(final String value);
+    public void setDefaultProvider(final String value);
 
     /**
-    Get the RequestPolicy MBean.
+    @return A map of Provider MBean proxies keyed on provider-id.
      */
-    RequestPolicy getRequestPolicy();
-
-    /**
-    Get the ResponsePolicy MBean.
-     */
-    ResponsePolicy getResponsePolicy();
+    //public Map<String, Provider> getProvider();
 }
-
-

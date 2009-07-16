@@ -37,67 +37,22 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
+
+import java.util.Map;
+
 /**
-
-Configuration for the &lt;das-config&gt; element.
-
-The name is confusing, this item actually lives inside an <admin-service>,
-which is in turn inside a <config>
+Configuration for the &lt;session-config&gt; element.
  */
-public interface DAS extends ConfigElement, PropertiesAccess, Singleton
+public interface SessionConfig
+        extends ConfigElement, Singleton
 {
-    
-    public String getAdminSessionTimeoutInMinutes();
-
-    public void setAdminSessionTimeoutInMinutes(String value);
-
-    public String getAutodeployDir();
-
-    public void setAutodeployDir(String value);
-
-    
-    public String getAutodeployEnabled();
-
-    public void setAutodeployEnabled(String value);
-
-    
-    public String getAutodeployJSPPrecompilationEnabled();
-
-    public void setAutodeployJSPPrecompilationEnabled(String value);
-
-    
-    public String getAutodeployPollingIntervalInSeconds();
-
-    public void setAutodeployPollingIntervalInSeconds(String value);
-
-    
-    public String getAutodeployVerifierEnabled();
-
-    public void setAutodeployVerifierEnabled(String value);
+    /**
+    Get the SessionManager MBean.
+     */
+    public SessionManager getSessionManager();
 
     /**
-    @since Glassfish V3
+    Get the SessionProperties MBean.
      */
-    
-    public String getAutodeployRetryTimeout();
-
-    /**
-    @since Glassfish V3
-     */
-    public void setAutodeployRetryTimeout(String value);
-
-    /**
-    See {@link ValidationLevelValues}.  Read-only.
-     */
-    public String getDeployXMLValidation();
-
-    
-    public String getDynamicReloadEnabled();
-
-    public void setDynamicReloadEnabled(String value);
-
-    
-    public String getDynamicReloadPollIntervalInSeconds();
-
-    public void setDynamicReloadPollIntervalInSeconds(String value);
+    public SessionProperties getSessionProperties();
 }

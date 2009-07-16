@@ -37,30 +37,67 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
-import java.util.Map;
-
 /**
-Configuration for the &lt;message-security-config&gt; element.
+
+Configuration for the &lt;das-config&gt; element.
+
+The name is confusing, this item actually lives inside an <admin-service>,
+which is in turn inside a <config>
  */
-public interface MessageSecurity
-        extends NamedConfigElement
+public interface DasConfig extends ConfigElement, PropertiesAccess, Singleton
 {
+    
+    public String getAdminSessionTimeoutInMinutes();
+
+    public void setAdminSessionTimeoutInMinutes(String value);
+
+    public String getAutodeployDir();
+
+    public void setAutodeployDir(String value);
+
+    
+    public String getAutodeployEnabled();
+
+    public void setAutodeployEnabled(String value);
+
+    
+    public String getAutodeployJSPPrecompilationEnabled();
+
+    public void setAutodeployJSPPrecompilationEnabled(String value);
+
+    
+    public String getAutodeployPollingIntervalInSeconds();
+
+    public void setAutodeployPollingIntervalInSeconds(String value);
+
+    
+    public String getAutodeployVerifierEnabled();
+
+    public void setAutodeployVerifierEnabled(String value);
+
     /**
-    One of the values defined by {@link MessageLayerValues}.
+    @since Glassfish V3
      */
-    public String getAuthLayer();
-
-    public String getDefaultClientProvider();
-
-    public void setDefaultClientProvider(final String value);
-
-    public String getDefaultProvider();
-
-    public void setDefaultProvider(final String value);
+    
+    public String getAutodeployRetryTimeout();
 
     /**
-    @return A map of Provider MBean proxies keyed on provider-id.
+    @since Glassfish V3
      */
-    public Map<String, Provider> getProvider();
+    public void setAutodeployRetryTimeout(String value);
+
+    /**
+    See {@link ValidationLevelValues}.  Read-only.
+     */
+    public String getDeployXMLValidation();
+
+    
+    public String getDynamicReloadEnabled();
+
+    public void setDynamicReloadEnabled(String value);
+
+    
+    public String getDynamicReloadPollIntervalInSeconds();
+
+    public void setDynamicReloadPollIntervalInSeconds(String value);
 }

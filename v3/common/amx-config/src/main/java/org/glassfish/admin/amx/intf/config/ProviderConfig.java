@@ -35,24 +35,35 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-
-
 import java.util.Map;
 
 /**
-Configuration for the &lt;session-config&gt; element.
+Configuration for the &lt;provider-config&gt; element.
  */
-public interface Session
-        extends ConfigElement, Singleton
+public interface ProviderConfig
+        extends NamedConfigElement, PropertiesAccess
 {
-    /**
-    Get the SessionManager MBean.
-     */
-    public SessionManager getSessionManager();
+    public String getClassName();
+
+    public void setClassName(final String value);
+
+    public String getProviderId();
+
+    /** Returns {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
+    public String getProviderType();
+
+    /** Use {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
+    public void setProviderType(final String value);
 
     /**
-    Get the SessionProperties MBean.
+    Get the RequestPolicy MBean.
      */
-    public SessionProperties getSessionProperties();
+    RequestPolicy getRequestPolicy();
+
+    /**
+    Get the ResponsePolicy MBean.
+     */
+    ResponsePolicy getResponsePolicy();
 }
+
+

@@ -79,8 +79,18 @@ public final class AMXProxyTests extends AMXTestBase
         return m.getName().startsWith("get") && m.getParameterTypes().length == 0;
     }
     
-    private <T extends AMXProxy> void testProxyInterface(final AMXProxy amxIn, Class<T> clazz )
+    
+    private <T extends AMXProxy> void testProxyInterface(final AMXProxy amx, Class<T> clazz)
     {
+        final List<String> problems = _testProxyInterface(amx, clazz);
+        assert problems.size() == 0 : CollectionUtil.toString( problems, "\n" );
+    }
+    
+    
+    private <T extends AMXProxy> List<String> _testProxyInterface(final AMXProxy amxIn, Class<T> clazz)
+    {
+        final List<String> problems = new ArrayList<String>();
+        
         final T amx = amxIn.as(clazz);
         
         final String nameProp = amx.nameProp();
@@ -125,10 +135,11 @@ public final class AMXProxyTests extends AMXTestBase
                 }
                 catch( final Exception e )
                 {
-                    assert false : "Error invoking " + m.getName() + "() on " + amx.objectName() + " = " + e;
+                    problems.add( "Error invoking " + m.getName() + "() on " + amx.objectName() + " = " + e );
                 }
             }
         }
+        return problems;
     }
 
     @Test
@@ -254,12 +265,13 @@ public final class AMXProxyTests extends AMXTestBase
         {
             try
             {
-                testProxyInterface( amx, interfaces.get(amx.type()) );
+                final List<String> p = _testProxyInterface( amx, interfaces.get(amx.type()) );
+                problems.addAll(p);
             }
             catch( final Throwable t )
             {
                 final Throwable rootCause = ExceptionUtil.getRootCause(t);
-                problems.add( "Failure for " + amx.objectName() + ": " + rootCause.getMessage() );
+                problems.add( rootCause.getMessage() );
             }
         }
 

@@ -38,10 +38,10 @@ package amxtest;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.glassfish.admin.amx.intf.config.*;
 import org.glassfish.admin.amx.core.*;
 import org.glassfish.admin.amx.base.*;
-import org.glassfish.admin.amx.config.*;
+import org.glassfish.admin.amx.intf.config.*;
+import org.glassfish.admin.amx.intf.config.grizzly.*;
 import org.glassfish.admin.amx.monitoring.*;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -100,7 +100,7 @@ class Interfaces {
             ConnectorService.class,
             ContextParam.class,
             CustomResource.class,
-            DAS.class,
+            DasConfig.class,
             Domain.class,
             EJBContainer.class,
             EJBContainerAvailability.class,
@@ -131,7 +131,7 @@ class Interfaces {
             ManagementRule.class,
             ManagementRules.class,
             ManagerProperties.class,
-            MessageSecurity.class,
+            MessageSecurityConfig.class,
             Module.class,
             ModuleLogLevels.class,
             ModuleMonitoringLevels.class,
@@ -141,7 +141,7 @@ class Interfaces {
             ORB.class,
             Profiler.class,
             Property.class,
-            Provider.class,
+            ProviderConfig.class,
             RegistryLocation.class,
             RequestPolicy.class,
             Resource.class,
@@ -156,7 +156,7 @@ class Interfaces {
             Server.class,
             ServerRef.class,
             Servers.class,
-            Session.class,
+            SessionConfig.class,
             SessionManager.class,
             SessionProperties.class,
             StandaloneServer.class,
@@ -170,7 +170,26 @@ class Interfaces {
             VirtualServer.class,
             WebContainer.class,
             WebContainerAvailability.class,
-            WebServiceEndpoint.class
+            WebServiceEndpoint.class,
+            
+            // grizzly
+            FileCache.class,
+            Http.class,
+            NetworkConfig.class,
+            NetworkListener.class,
+            NetworkListeners.class,
+            PortUnification.class,
+            Protocol.class,
+            ProtocolChain.class,
+            ProtocolChainInstanceHandler.class,
+            ProtocolFilter.class,
+            ProtocolFinder.class,
+            Protocols.class,
+            SelectionKeyHandler.class,
+            Ssl.class,
+            Transport.class,
+            Transports.class
+
             
         /*
             AppClientModule.class,

@@ -80,7 +80,7 @@ public interface AdminService
     public void setType(String value);
 
     /** may return null if not present */
-    public DAS getDAS();
+    public DasConfig getDAS();
 }
 
 
