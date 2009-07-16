@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="430"/>
+    <property name="TOTAL_EXPECTED" value="449"/>
 
     &commonSetup;
     &commonBuild;
@@ -315,7 +315,7 @@
         <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
-<!--  https://glassfish.dev.java.net/issues/show_bug.cgi?id=8728
+<!-- XXX temporarily commented out, see IT 8728
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
 -->
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
@@ -329,7 +329,9 @@
 -->
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
+<!-- XXX temporarily commented out, see IT 8728
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
+-->
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
@@ -367,10 +369,8 @@
 
     <target name="security">
         <ant dir="ssl" target="all"/>
-<!-- https://glassfish.dev.java.net/issues/show_bug.cgi?id=8730
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="securityConstraintMapping" target="all"/>
--->
         <ant dir="sslCookie" target="all"/>
         <ant dir="installationPathDisclosure" target="all"/>
         <ant dir="programmaticLogin" target="all"/>
