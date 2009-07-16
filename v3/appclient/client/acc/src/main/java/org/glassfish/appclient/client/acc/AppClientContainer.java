@@ -370,6 +370,12 @@ public class AppClientContainer {
 
         prepareURLStreamHandling();
 
+        //This is required for us to enable interrupt jaxws service
+        //creation calls
+        System.setProperty("javax.xml.ws.spi.Provider",
+                           "com.sun.enterprise.webservice.spi.ProviderImpl");
+        //InjectionManager's injectClass will be called from getMainMethod
+
         /**
          * We don't really need the main method here but we do need the side-effects.
          */
