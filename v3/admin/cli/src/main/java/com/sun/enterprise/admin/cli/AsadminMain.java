@@ -74,9 +74,12 @@ public class AsadminMain {
         className = main.getClass().getName();
 
         command = args[0];
-        if (Boolean.parseBoolean(System.getenv("ASADMIN_NEW"))) {
+        // now the default is the new version
+        if (System.getenv("ASADMIN_NEW") == null ||
+                Boolean.parseBoolean(System.getenv("ASADMIN_NEW"))) {
             exitCode = executeCommand(args);
         } else {
+        CLILogger.getInstance().printMessage("Using OLD asadmin");
         // old way
         try {
             try {
