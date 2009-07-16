@@ -45,9 +45,13 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.VirtualServerInfo;
+import com.sun.enterprise.deployment.web.UserDataConstraint;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.xml.rpc.spi.model.*;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -984,7 +988,7 @@ public class WsUtil {
      * a generated service interface.
      *
      * @return Collection of String class names
-     *//*
+     */
     public Collection getSEIsFromGeneratedService
         (Class generatedServiceInterface) throws Exception {
 
@@ -1005,7 +1009,7 @@ public class WsUtil {
         }
 
         return seis;
-    }*/
+    }
 
    /* *//**
      * Called from client side deployment object on receipt of final
@@ -1052,7 +1056,7 @@ public class WsUtil {
 
     *//**
      * Find a Port object within the JAXRPC Model.
-     *//*
+     */
     public Port getPortFromModel(Model model, QName portName) {
         
         for(Iterator serviceIter = model.getServices(); serviceIter.hasNext();){
@@ -1067,10 +1071,10 @@ public class WsUtil {
         return null;
     }
 
-    *//**
+    /**
      * Find a Service in which a particular port is defined.  Assumes port
      * QName is unique within a WSDL.
-     *//*
+     */
     public Service getServiceForPort(Model model, QName thePortName) {
 
         for(Iterator serviceIter = model.getServices(); 
@@ -1089,10 +1093,10 @@ public class WsUtil {
         return null;
     }
 
-    *//**
+    /**
      * Logic for matching a port qname with a Port object from 
      * the JAXRPC-RI Model.
-     *//*
+     */
     public boolean portsEqual(Port port, QName candidatePortName) {
 
         boolean equal = false;
@@ -1123,7 +1127,7 @@ public class WsUtil {
         return ports;
     }
 
-    *//**
+    /**
      *@return a method object representing the target of a web service 
      * invocation
      *//*
@@ -1418,36 +1422,7 @@ public class WsUtil {
         return headers;
     }   */
     
-    /**
-     * @return the web server information based on a deployment request.
-     */
-    public WebServerInfo getWebServerInfo() {
-
-        /** TODO BM fix the getWebServerInfo
-         * If there is only one target and that target is a stand alone server, WSDL_TARGET_HINT in options would have been set
-         * by the client. Use this hint to enable WSDL generation with the specific target's host and port. 
-         * Refer to bug 6157923 for more info
-         */
-        
-        /*String serverTarget = (String) request.getOptionalArguments().get(DeploymentProperties.WSDL_TARGET_HINT);
-        if(serverTarget == null) {
-            return(getWebServerInfoForDAS(request));
-        }
-        ConfigContext cc = AdminService.getAdminService().getAdminContext().getAdminConfigContext();
-        if(cc==null) {
-            return(getWebServerInfoForDAS(request));
-        }
-        Config config = ServerHelper.getConfigForServer(cc, serverTarget);
-        JMXConnectorConfig info = ServerHelper.getJMXConnectorInfo(cc, serverTarget);
-        if((config==null) || (info==null) ) {
-            return(getWebServerInfoForDAS(request));
-        }
-        String host = info.getHost();
-        return(getWebServerInfo(cc, config, null, serverTarget, host));*/
-        return getWebServerInfoForDAS();
-    }
-    
-    private WebServerInfo getWebServerInfoForDAS() {
+    public WebServerInfo getWebServerInfoForDAS() {
         WebServerInfo wsi = new WebServerInfo();
 
         if(this.networkListeners == null) {
@@ -1614,7 +1589,7 @@ public class WsUtil {
     
     *//**
      * @return the default Logger implementation for this package
-     *//*
+     */
     public static Logger getDefaultLogger() {
         return logger;
     }    
@@ -1626,11 +1601,104 @@ public class WsUtil {
     public static LocalStringManagerImpl getDefaultStringManager() {
         return localStrings;
     }
-    
+
+    public void validateEjbEndpoint(WebServiceEndpoint ejbEndpoint) {
+        EjbDescriptor ejbDescriptor = ejbEndpoint.getEjbComponentImpl();
+        EjbBundleDescriptor bundle = ejbDescriptor.getEjbBundleDescriptor();
+        WebServicesDescriptor webServices = bundle.getWebServices();
+        Collection endpoints = 
+            webServices.getEndpointsImplementedBy(ejbDescriptor);
+        if( endpoints.size() == 1 ) {
+            if( ejbDescriptor.hasWebServiceEndpointInterface() ) {
+                if(!ejbEndpoint.getServiceEndpointInterface().equals
+                   (ejbDescriptor.getWebServiceEndpointInterfaceName())) {
+                    String msg = "Ejb " + ejbDescriptor.getName() + 
+                        " service endpoint interface does not match " +
+                        " port component " + ejbEndpoint.getEndpointName();
+                    throw new IllegalStateException(msg);
+                }
+            } else {
+                String msg = "Ejb " + ejbDescriptor.getName() + 
+                    " must declare <service-endpoint> interface";
+                throw new IllegalStateException(msg);
+            }
+        } else if( endpoints.size() > 1 ) {
+            String msg = "Ejb " + ejbDescriptor.getName() + 
+                " implements " + endpoints.size() + " web service endpoints " +
+                " but must only implement 1";
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    public void updateServletEndpointRuntime(WebServiceEndpoint endpoint) {
+ 
+        // Copy the value of the servlet impl bean class into
+        // the runtime information.  This way, we'll still 
+        // remember it after the servlet-class element has been 
+        // replaced with the name of the container's servlet class.
+        endpoint.saveServletImplClass();
+
+        WebComponentDescriptor webComp = 
+            (WebComponentDescriptor) endpoint.getWebComponentImpl();
+
+        WebBundleDescriptor bundle = webComp.getWebBundleDescriptor();
+        WebServicesDescriptor webServices = bundle.getWebServices();
+        Collection endpoints = 
+            webServices.getEndpointsImplementedBy(webComp);
+
+        if( endpoints.size() > 1 ) {
+            String msg = "Servlet " + endpoint.getWebComponentLink() + 
+                " implements " + endpoints.size() + " web service endpoints " +
+                " but must only implement 1";
+            throw new IllegalStateException(msg);
+        }
+
+        if( endpoint.getEndpointAddressUri() == null ) {
+            Set urlPatterns = webComp.getUrlPatternsSet();
+            if( urlPatterns.size() == 1 ) {
+
+                // Set endpoint-address-uri runtime info to uri.
+                // Final endpoint address will still be relative to context roo
+
+                String uri = (String) urlPatterns.iterator().next();
+                endpoint.setEndpointAddressUri(uri);
+
+                // Set transport guarantee in runtime info if transport 
+                // guarantee is INTEGRAL or CONDIFIDENTIAL for any 
+                // security constraint with this url-pattern.
+                Collection constraints = 
+                    bundle.getSecurityConstraintsForUrlPattern(uri);
+                for(Iterator i = constraints.iterator(); i.hasNext();) {
+                    SecurityConstraint next = (SecurityConstraint) i.next();
+                        
+                    UserDataConstraint dataConstraint = 
+                        next.getUserDataConstraint();
+                    String guarantee = (dataConstraint != null) ?
+                        dataConstraint.getTransportGuarantee() : null;
+
+                    if( (guarantee != null) && 
+                        ( guarantee.equals
+                          (UserDataConstraint.INTEGRAL_TRANSPORT) || 
+                          guarantee.equals
+                          (UserDataConstraint.CONFIDENTIAL_TRANSPORT) ) ) {
+                        endpoint.setTransportGuarantee(guarantee);
+                        break;
+                    }
+                }
+            } else {
+                String msg = "Endpoint " + endpoint.getEndpointName() +
+                    " has not been assigned an endpoint address " +
+                    " and is associated with servlet " + 
+                    webComp.getCanonicalName() + " , which has " +
+                    urlPatterns.size() + " url patterns"; 
+                throw new IllegalStateException(msg);
+            } 
+        }
+    }    
    
 
 
-    public void downloadFile(URL httpUrl, File toFile) throws Exception {
+    /*public void downloadFile(URL httpUrl, File toFile) throws Exception {
         InputStream is = null;
         FileOutputStream os = null;
         try {

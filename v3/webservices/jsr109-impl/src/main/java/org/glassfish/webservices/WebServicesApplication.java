@@ -82,7 +82,7 @@ public class WebServicesApplication implements ApplicationContainer {
                     logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
                       app.getAppName(),
                       //                                                                 vvvvv TODO
-                      new WsUtil(config, habitat).getWebServerInfo().getWebServerRootURL(false).toString() + contextRoot)
+                      new WsUtil(config, habitat).getWebServerInfoForDAS().getWebServerRootURL(false).toString() + contextRoot)
                     );
                 }
             }

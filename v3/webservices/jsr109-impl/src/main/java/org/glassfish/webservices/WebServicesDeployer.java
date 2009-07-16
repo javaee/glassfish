@@ -40,6 +40,7 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
+import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -69,7 +70,7 @@ import java.util.logging.Logger;
  * 
  */
 @Service
-public class WebServicesDeployer implements Deployer<WebServicesContainer,WebServicesApplication> {
+public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,WebServicesApplication> {
 
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
@@ -620,7 +621,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
                             new Object[] {next.getName()}));
                     }*/
                     //TODO check equivalent of wsUtil.getWebServerInfo(request)
-                    wsep.composeFinalWsdlUrl(wsUtil.getWebServerInfo().getWebServerRootURL(wsep.isSecure()));
+                    wsep.composeFinalWsdlUrl(wsUtil.getWebServerInfoForDAS().getWebServerRootURL(wsep.isSecure()));
                 }
                 continue;
             }
@@ -695,7 +696,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
             // The protocol and port will be based on whether the endpoint
             // has a transport guarantee of INTEGRAL or CONFIDENTIAL.
             // If yes, https will be used.  Otherwise, http will be used.
-            WebServerInfo wsi = new WsUtil(config, habitat).getWebServerInfo();
+            WebServerInfo wsi = new WsUtil(config, habitat).getWebServerInfoForDAS();
             URL rootURL = wsi.getWebServerRootURL(nextEndpoint.isSecure());
 
             URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL);
