@@ -91,7 +91,16 @@ public class DomainRootImpl extends AMXImplBase
     {
         return child(Query.class);
     }
-
+    
+    public ObjectName getJ2EEDomain()
+    {
+        return child( "J2EEDomain" );
+    }
+    
+    public ObjectName getMonitoringRoot()
+    {
+        return child( MonitoringRoot.class );
+    }
 
     public ObjectName getPathnames()
     {

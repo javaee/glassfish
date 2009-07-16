@@ -44,10 +44,10 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
 	Top-level interface for accessing all MonitoringRoot information.
+    <p>
+    Call {@link AMXProxy#childrenMap} to get the ServerMon children.
  */
 @AMXMBeanMetadata(type="mon", singleton=true, globalSingleton=true)
 public interface MonitoringRoot extends AMXProxy, Singleton
 {
-    @ManagedAttribute
-    public Map<String,ServerMon>	getServerMon();
 }

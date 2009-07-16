@@ -145,7 +145,7 @@ public interface DomainRoot extends AMXProxy
     @return the JSR 77 J2EEDomain.
      */
     @ManagedAttribute
-    public AMXProxy getJ2EE();
+    public AMXProxy getJ2EEDomain();
 
     /**
     Get the DomainConfig.

@@ -35,25 +35,22 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
+import java.util.Map;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.glassfish.api.amx.AMXValues;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.monitoring.ServerMon;
+import org.glassfish.admin.amx.core.Util;
 
 public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 {
     public MonitoringRootImpl(final ObjectName parent) {
         super(parent, MonitoringRoot.class);
     }
-
-    public ObjectName getServerMon()
-    {
-        return child(ServerMon.class);
-    }
-
-
+    
     @Override
         protected final void
     registerChildren()

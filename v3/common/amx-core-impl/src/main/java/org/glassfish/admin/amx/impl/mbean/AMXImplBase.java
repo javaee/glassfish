@@ -74,6 +74,7 @@ import org.glassfish.admin.amx.impl.AMXStartupService;
 import org.glassfish.admin.amx.impl.util.MBeanInfoSupport;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.ClassUtil;
+import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.MapUtil;
@@ -230,6 +231,16 @@ public class AMXImplBase extends MBeanImplBase
         }
         
         return CollectionUtil.toArray(children, ObjectName.class);
+    }
+    
+    public ObjectName[] getChildren( final Class<?> clazz )
+    {
+        return getChildren( Util.deduceType(clazz) );
+    }
+    
+    public ObjectName[] getChildren( final String type )
+    {
+        return getChildren( SetUtil.newSingletonSet(type) );
     }
     
     public ObjectName[] getChildren(final Set<String> types )
@@ -659,6 +670,7 @@ public class AMXImplBase extends MBeanImplBase
     protected ObjectName[] getObjectNamesForAttribute( final String attributeName )
     {
         final String[] types = attributeNameToType(attributeName);
+        cdebug( "getObjectNamesForAttribute" );
         
         ObjectName[] result = null;
         Map<String,ObjectName> children = null;

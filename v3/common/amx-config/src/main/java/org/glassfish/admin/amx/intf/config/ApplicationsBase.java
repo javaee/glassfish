@@ -54,8 +54,8 @@ public interface ApplicationsBase
     @return Map, keyed by name of the item
 
     @since Appserver V3
-     */
     public Map<String, Application> getApplication();
+     */
 }
 
 

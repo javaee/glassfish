@@ -135,7 +135,7 @@ public class V3AMX {
     }
 
     public Application getApplication(String appName){
-        return getApplications().getApplication().get(appName);
+        return getApplications().childrenMap(Application.class).get(appName);
     }
 
     public ApplicationRef getApplicationRef(String server, String appName){
