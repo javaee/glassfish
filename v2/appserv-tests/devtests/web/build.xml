@@ -497,6 +497,7 @@
             <arg value="${env.APS_HOME}/test_resultsValid.xml"/>
             <arg value="${TOTAL_EXPECTED}"/>
             <arg value="${env.APS_HOME}/count.txt"/>
+            <jvmarg value="-Xmx1024m"/>
        </java>
 
        <!--  We need to execute ant using CMD line so the jars are picked -->
