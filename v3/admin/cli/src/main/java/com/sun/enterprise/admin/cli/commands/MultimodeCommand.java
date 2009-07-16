@@ -162,8 +162,11 @@ public class MultimodeCommand extends CLICommand {
                 System.out.print("asadmin> ");
                 System.out.flush();
             }
-            if ((line = reader.readLine()) == null)
+            if ((line = reader.readLine()) == null) {
+                if (printPrompt)
+                    System.out.println();
                 break;
+            }
             String[] args = getArgs(line);
             if (args.length == 0)
                 continue;
@@ -244,8 +247,6 @@ public class MultimodeCommand extends CLICommand {
             }
             AsadminMain.writeCommandToDebugLog(args, rc);
         }
-        if (printPrompt)
-            System.out.println();
         return rc;
     }
 
