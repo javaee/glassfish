@@ -232,6 +232,30 @@ public final class AMXProxyTests extends AMXTestBase
     {
         testProxyInterface( getDomainConfig().getSystemApplications(), SystemApplications.class );
     }
+
+    @Test
+    public void testServers()
+    {
+        testProxyInterface( getDomainConfig().getServers(), Servers.class );
+    }
+
+    @Test
+    public void testAllGenerically()
+    {
+        final Set<AMXProxy> all = getQueryMgr().queryAll();
+        
+        for( final AMXProxy amx : getQueryMgr().queryAll() )
+        {
+            if ( amx instanceof AMXConfigProxy )
+            {
+                testProxyInterface( amx, AMXConfigProxy.class );
+            }
+            else
+            {
+                testProxyInterface( amx, AMXProxy.class );
+            }
+        }
+    }
 }
 
 
