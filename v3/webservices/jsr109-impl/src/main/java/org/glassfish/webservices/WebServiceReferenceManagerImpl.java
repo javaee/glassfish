@@ -154,12 +154,12 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
                     // handler chain (since service-ref handler chain can
                     // optionally specify handler-port association)
                     // so create a configured service and call getPorts
-                    //TODO BM fix for jaxrpc
-                    /*javax.xml.rpc.Service configuredService =
+
+                    javax.xml.rpc.Service configuredService =
                             wsUtil.createConfiguredService(desc);
                     Iterator ports = configuredService.getPorts();
                     wsUtil.configureHandlerChain
-                            (desc, serviceDelegate, ports, cl);*/
+                            (desc, serviceDelegate, ports, cl);
                 }
 
                 // check if this is a post 1.1 web service
@@ -208,10 +208,10 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
             // an interface any more
             InvocationHandler handler = null;
             if(serviceDelegate != null) {
-                // TODO BM fix for jaxrpc
-                /*handler = new ServiceInvocationHandler(desc, serviceDelegate, cl);
+
+                handler = new ServiceInvocationHandler(desc, serviceDelegate, cl);
                 returnObj = Proxy.newProxyInstance
-                        (cl, new Class[] { serviceInterfaceClass }, handler);*/
+                        (cl, new Class[] { serviceInterfaceClass }, handler);
             } else if(jaxwsDelegate != null) {
                 returnObj = jaxwsDelegate;
             } else if(injValue != null) {

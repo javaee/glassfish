@@ -52,6 +52,27 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.xml.rpc.spi.model.*;
+import javax.xml.namespace.QName;
+import javax.xml.rpc.handler.MessageContext;
+import javax.xml.rpc.Stub;
+import javax.xml.rpc.ServiceFactory;
+import javax.xml.rpc.handler.soap.SOAPMessageContext;
+import javax.xml.rpc.soap.SOAPFaultException;
+import javax.xml.rpc.handler.HandlerInfo;
+import javax.xml.rpc.handler.HandlerRegistry;
+import com.sun.xml.rpc.spi.JaxRpcObjectFactory;
+import com.sun.xml.rpc.spi.model.Model;
+import com.sun.xml.rpc.spi.model.ModelProperties;
+import com.sun.xml.rpc.spi.model.Port;
+import com.sun.xml.rpc.spi.model.Service;
+import com.sun.xml.rpc.spi.runtime.ClientTransportFactory;
+import com.sun.xml.rpc.spi.runtime.ClientTransportFactoryTypes;
+import com.sun.xml.rpc.spi.runtime.SOAPConstants;
+import com.sun.xml.rpc.spi.runtime.StreamingHandler;
+import com.sun.xml.rpc.spi.runtime.StubBase;
+import com.sun.xml.rpc.spi.runtime.Tie;
+import com.sun.xml.rpc.spi.tools.WSDLUtil;
+
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -142,7 +163,7 @@ public class WsUtil {
     private static Logger logger = LogDomains.getLogger(WsUtil.class,LogDomains.WEBSERVICES_LOGGER);
 
 
-    //private JaxRpcObjectFactory rpcFactory;
+    private JaxRpcObjectFactory rpcFactory;
 
     /*public WsUtil() {
        // rpcFactory = JaxRpcObjectFactory.newInstance();
@@ -320,9 +341,9 @@ public class WsUtil {
         return isWar ? "WEB-INF/wsdl" : "META-INF/wsdl";
     }*/
 
-    /**//**
+    /**
      * Set up a stub for request/response SOAP message logging.
-     *//*
+     */
     public void setClientTransportLog(ServiceReferenceDescriptor serviceRef,
                                       Stub stub, String transportLogUrlStr) {
         try {
@@ -355,7 +376,7 @@ public class WsUtil {
         } catch(Throwable t) {
             logger.log(Level.INFO, "", t);
         }
-    }*/
+    }
 
     /**
      * Collect all relative imports from a web service's main wsdl document.
@@ -679,7 +700,7 @@ public class WsUtil {
         return;
     }
 
-  /*  public HandlerInfo createHandlerInfo(WebServiceHandler handler,
+    public HandlerInfo createHandlerInfo(WebServiceHandler handler,
                                          ClassLoader loader) 
         throws Exception {
 
@@ -702,7 +723,7 @@ public class WsUtil {
         Class handlerClass = loader.loadClass(handler.getHandlerClass());
         return new HandlerInfo(handlerClass, properties, headers);
     }
-*/
+
    /**
      * Accessing wsdl URL might involve file system access, so wrap
      * operation in a doPrivileged block.
@@ -759,7 +780,7 @@ public class WsUtil {
 
 
 
-    /*public javax.xml.rpc.Service createConfiguredService
+    public javax.xml.rpc.Service createConfiguredService
         (ServiceReferenceDescriptor desc) throws Exception {
         
         final ServiceReferenceDescriptor serviceRef = desc;
@@ -793,8 +814,8 @@ public class WsUtil {
 
         return service;
     }
-*/
-    /*public void configureHandlerChain(ServiceReferenceDescriptor serviceRef,
+
+    public void configureHandlerChain(ServiceReferenceDescriptor serviceRef,
                                       javax.xml.rpc.Service service, 
                                       Iterator ports, ClassLoader loader)
         throws Exception {
@@ -824,7 +845,7 @@ public class WsUtil {
                 }
             }
         }
-    }*/
+    }
 
     /**
      * Create an xslt template for transforming the packaged webservice
