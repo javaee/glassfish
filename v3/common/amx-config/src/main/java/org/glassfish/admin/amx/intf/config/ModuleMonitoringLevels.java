@@ -62,17 +62,17 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
      */
     public final static String OFF = "OFF";
 
-    public String getJVM();
+    public String getJvm();
 
-    public void setJVM(final String value);
+    public void setJvm(final String value);
 
     public String getConnectorService();
 
     public void setConnectorService(final String value);
 
-    public String getJMSService();
+    public String getJmsService();
 
-    public void setJMSService(final String value);
+    public void setJmsService(final String value);
 
     public String getConnectorConnectionPool();
 
@@ -82,13 +82,13 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
 
     public void setEjbContainer(final String value);
 
-    public String getHTTPService();
+    public String getHttpService();
 
-    public void setHTTPService(final String value);
+    public void setHttpService(final String value);
 
-    public String getJDBCConnectionPool();
+    public String getJdbcConnectionPool();
 
-    public void setJDBCConnectionPool(final String value);
+    public void setJdbcConnectionPool(final String value);
 
     public String getOrb();
 
