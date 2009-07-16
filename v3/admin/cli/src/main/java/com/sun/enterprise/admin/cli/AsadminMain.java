@@ -182,9 +182,23 @@ public class AsadminMain {
             return ERROR;
         } catch (CommandValidationException cve) {
             CLILogger.getInstance().printError(cve.getMessage());
-            CLILogger.getInstance().printError(cmd.getUsage());
+            if (cmd == null)    // error parsing program options
+                printUsage();
+            else
+                CLILogger.getInstance().printError(cmd.getUsage());
             return ERROR;
         }
+    }
+
+    /**
+     * Print usage message for asadmin command.
+     * XXX - should be derived from ProgramOptions.
+     */
+    private static void printUsage() {
+        CLILogger.getInstance().printError(
+"Usage: asadmin [--host localhost] [--port 4848] [--user anonymous]\n" +
+"\t[--passwordfile file] [--secure=true/false] [--echo=true/false]\n" +
+"\t[--interactive=true/false] [--help] [command [options] [operands]]");
     }
 
     public int local(String[] args) throws InvalidCommandException{
