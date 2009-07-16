@@ -76,7 +76,8 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 					java.lang.Short.class,
 					java.lang.Long.class,
 					java.lang.Float.class,
-                                        java.lang.Character.class
+                                        java.lang.Character.class,
+                                        java.lang.Class.class
 					    };
    private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EnvironmentProperty.class);
@@ -179,6 +180,10 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 		    break;
 		}
 	    }
+            if (typeClass != null && typeClass.isEnum()) {
+                allowedType = true;
+            }
+
 	    if (this.isBoundsChecking() && !allowedType) {
 		throw new IllegalArgumentException(localStrings.getLocalString(
 										   "enterprise.deployment.exceptiontypenotallowedprprtytype",
@@ -345,6 +350,10 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
                 } else {
                     return Character.valueOf(string.charAt(0));
                 }
+            } else if (Class.class.equals(type)) {
+                return Class.forName(string);
+            } else if (type != null && type.isEnum()) {
+                return Enum.valueOf(type, string);
             }
 	} catch (Throwable t) {
 	    throw new IllegalArgumentException(localStrings.getLocalString(
