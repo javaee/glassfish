@@ -139,7 +139,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     public static final String FORM = "FORM";
     private static final String SERVER_AUTH_CONTEXT = "__javax.security.auth.message.ServerAuthContext";
     private static final String MESSAGE_INFO = "__javax.security.auth.message.MessageInfo";
-    private static LoginProbeProvider probeProvider = new LoginProbeProvider();
+    private LoginProbeProvider probeProvider = new LoginProbeProvider();
 
     // name of system property that can be used to define 
     // corresponding default provider for system apps.
@@ -1484,10 +1484,13 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     }
 
     public void initializeRealm(Object descriptor, boolean isSystemApp, String realmName) {
-        StatsProviderManager.register("security", PluginPoint.SERVER, "webintegration", new LoginStatsProvider());
+
         this.isSystemApp = isSystemApp;
         webDesc = (WebBundleDescriptor) descriptor;
         Application app = webDesc.getApplication();
+
+        StatsProviderManager.register("security", PluginPoint.SERVER, "webintegration/"+app.getAppName(), new LoginStatsProvider());
+       
         mapper = app.getRoleMapper();
         LoginConfiguration loginConfig = webDesc.getLoginConfiguration();
         _realmName = app.getRealm();
