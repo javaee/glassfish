@@ -182,16 +182,22 @@ public class UtilHandlers {
      */
     @Handler(id="listAdd",
     	input={
-	    @HandlerInput(name="list", type=List.class, required=true),
-            @HandlerInput(name="value", type=Object.class, required=true)
+            @HandlerInput(name="list", type=List.class, required=true),
+            @HandlerInput(name="value", type=Object.class, required=true),
+            @HandlerInput(name="index", type=Integer.class, required=true)
         }
     )
     public static void listAdd(HandlerContext handlerCtx) {
+
         List list = (List)handlerCtx.getInputValue("list");
-        list.add(handlerCtx.getInputValue("value"));
+        Integer index = (Integer)handlerCtx.getInputValue("index");
+        if (index == null)
+            list.add(handlerCtx.getInputValue("value"));
+        else{
+            list.add(index, handlerCtx.getInputValue("value"));
+        }
     }
-    
-    
+
     /**
      *	<p> Compare if 2 objects is equal </p>
      *
@@ -417,6 +423,23 @@ public class UtilHandlers {
 		}
         handlerCtx.setOutputValue("commaString", commaString);
     }
+    
+    @Handler(id = "convertListToCommaString",
+    input = {
+        @HandlerInput(name = "list", type = List.class, required = true)},
+    output = {
+        @HandlerOutput(name = "commaString", type = String.class)})
+    public static void convertListToCommaString(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+        String commaString = "";
+		if( (list != null) && list.size() > 0 ) {
+			commaString = GuiUtil.ListToString(list, ",");
+		}
+        handlerCtx.setOutputValue("commaString", commaString);
+    }
+
+
+
     
      //This is the reserve of the above method.
     //We want to separator and display each jar in one line in the text box.
