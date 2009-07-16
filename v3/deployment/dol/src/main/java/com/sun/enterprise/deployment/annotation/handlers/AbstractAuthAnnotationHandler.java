@@ -81,6 +81,7 @@ import javax.servlet.http.HttpServletResponse;
  *     protected void processSecurityConstraint(Annotation authAnnotation,
  *          SecurityConstraint securityConstraint,
  *          WebComponentDescriptor webCompDesc);
+ *     protected Classlt;? extends Annotaion&gt;[] relatedAnnotationClasses();
  *      
  * @author Shing Wai Chan
  */
@@ -160,30 +161,14 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
         boolean ok = true;
         if (ElementType.TYPE.equals(ainfo.getElementType())) {
             for (WebComponentContext webCompContext : webCompContexts) {
-                WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                addAllHttpMethodConstraint(authAnnotation, webCompDesc,
-                        webCompContext);
+                addAllHttpMethodConstraint(ainfo, webCompContext, authAnnotation);
             }
         } else {
             Method annMethod = (Method) ainfo.getAnnotatedElement();
             if (isValidHttpServletAnnotatedMethod(annMethod)) {
                 String httpMethod = annMethod.getName().substring(2).toUpperCase();
                 for (WebComponentContext webCompContext : webCompContexts) {
-                    WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-
-                    SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
-                    if (typeSecConstr != null) {
-                        validateClassMethodAccessControlAnnotations(ainfo, typeSecConstr);
-                        //there should be only one
-                        for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
-                            wrc.addHttpMethodOmission(httpMethod);
-                            addHttpMethodConstraint(authAnnotation,
-                                    webCompDesc, httpMethod, wrc.getUrlPatterns(), webCompContext);
-                        }
-                    } else {
-                        addHttpMethodConstraint(authAnnotation, webCompDesc,
-                                httpMethod, null, webCompContext);
-                    }
+                    processHttpMethodAnnotation(ainfo, webCompContext, authAnnotation, httpMethod);
                 }     
             } else {
                 ok = false;
@@ -249,6 +234,13 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
         return true;
     }
 
+    /**
+     * This method returns a list of related annotation types.
+     * Those annotations should not be used with the given annotaton type.
+     */
+    protected Class<? extends Annotation>[] relatedAnnotationTypes() {
+        return new Class[0];
+    }
 
     //---------- helper methods ---------
 
@@ -395,33 +387,87 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
         }
     }
 
-    private void addAllHttpMethodConstraint(Annotation authAnnotation,
-            WebComponentDescriptor webCompDesc,
-            WebComponentContext webCompContext) {
+    private void processHttpMethodAnnotation(AnnotationInfo ainfo, 
+            WebComponentContext webCompContext, Annotation authAnnotation, String httpMethod)
+            throws AnnotationProcessorException {
 
-        // if it exists, then it must be orthogonal and combine in the same security constraint
-        SecurityConstraint securityConstraint =
-                webCompContext.getTypeSecurityConstraint();
-        
-        if (securityConstraint == null) {
-            Set<String> nonOverridedUrlPatterns =
-                    webCompContext.getNonOverridedUrlPatterns();
+        WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
 
-            if (nonOverridedUrlPatterns == null) {
-                nonOverridedUrlPatterns = getNonOverridedUrlPatterns(webCompDesc);
-                webCompContext.setNonOverridedUrlPatterns(nonOverridedUrlPatterns);
+        SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
+        if (typeSecConstr != null) {
+            validateClassMethodAccessControlAnnotations(ainfo, typeSecConstr);
+            //there should be only one
+            for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
+                wrc.addHttpMethodOmission(httpMethod);
+                addHttpMethodConstraint(authAnnotation,
+                        webCompDesc, httpMethod, wrc.getUrlPatterns(), webCompContext);
             }
-
-            securityConstraint =
-                createSecurityConstraint(webCompDesc, nonOverridedUrlPatterns, null);
-            webCompContext.setTypeSecurityConstraint(securityConstraint);
-        }
-
-        if (securityConstraint != null) {
-            processSecurityConstraint(authAnnotation, securityConstraint, webCompDesc);
+        } else {
+            addHttpMethodConstraint(authAnnotation, webCompDesc,
+                    httpMethod, null, webCompContext);
         }
     }
 
+    private void addAllHttpMethodConstraint(AnnotationInfo ainfo,
+            WebComponentContext webCompContext, Annotation authAnnotation) 
+            throws AnnotationProcessorException {
+
+        Class clazz = (Class)ainfo.getAnnotatedElement();
+        WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
+        //leaf class
+        if (clazz.getName().equals(webCompContext.getComponentClassName())) {
+            // if it exists, then it must be orthogonal and combine in the same security constraint
+            SecurityConstraint securityConstraint =
+                    webCompContext.getTypeSecurityConstraint();
+        
+            if (securityConstraint == null) {
+                Set<String> nonOverridedUrlPatterns =
+                        webCompContext.getNonOverridedUrlPatterns();
+
+                if (nonOverridedUrlPatterns == null) {
+                    nonOverridedUrlPatterns = getNonOverridedUrlPatterns(webCompDesc);
+                    webCompContext.setNonOverridedUrlPatterns(nonOverridedUrlPatterns);
+                }
+
+                securityConstraint =
+                    createSecurityConstraint(webCompDesc, nonOverridedUrlPatterns, null);
+                webCompContext.setTypeSecurityConstraint(securityConstraint);
+            }
+
+            if (securityConstraint != null) {
+                processSecurityConstraint(authAnnotation, securityConstraint, webCompDesc);
+            }
+        } else { // non-leaf
+            for (Method method : webCompDesc.getUserDefinedHttpMethods()) {
+                if (method.getDeclaringClass().equals(clazz)) {
+                    // check no related annotations for the given method
+                    boolean exclude = method.isAnnotationPresent(getAnnotationType());
+                    if (!exclude) {
+                        for (Class annClass : relatedAnnotationTypes()) {
+                            if (method.isAnnotationPresent(annClass)) {
+                                exclude = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!exclude) {
+                         String httpMethod = method.getName().substring(2).toUpperCase();
+                         processHttpMethodAnnotation(ainfo, webCompContext, authAnnotation, httpMethod);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Add a http method constraint according to the given data.
+     * If urlPatterns is null, then one use the non overrided url patterns.
+     * @param authAnnotation
+     * @param webCompDesc
+     * @param httpMethod
+     * @param urlPatterns
+     * @param webCompContext
+     */
     private void addHttpMethodConstraint(
             Annotation authAnnotation, WebComponentDescriptor webCompDesc,
             String httpMethod, Set<String> urlPatterns,

@@ -39,10 +39,18 @@ import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.MultipartConfig;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
 
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * Common data and behavior of the deployment
@@ -92,6 +100,7 @@ public class WebComponentDescriptor extends Descriptor {
     private boolean enabled = true;
     private Boolean asyncSupported = null;
     private MultipartConfig multipartConfig = null;
+    private List<Method> httpMethods = null;
 
     /**
      * The default constructor.
@@ -377,6 +386,78 @@ public class WebComponentDescriptor extends Descriptor {
 
     public Boolean isAsyncSupported() {
         return asyncSupported;
+    }
+
+    /**
+     * This method return an array of user defined http doDelete, doGet,
+     * doHead, doOptions, doPost, doPut, doTrace methods.
+     * It is used for processing web security annotations.
+     * @return an array of methods.
+     */
+    public Method[] getUserDefinedHttpMethods() {
+        if (httpMethods == null) {
+            httpMethods = new ArrayList<Method>();
+
+            if (isServlet) {
+                List<String> searchingMethods = new ArrayList();
+                String[] httpMString = new String[] { "doDelete", "doGet",
+                        "doHead", "doOptions", "doPost", "doPut", "doTrace" };
+                for (String s : httpMString) {
+                    searchingMethods.add(s);
+                }
+
+                try {
+                    Class implClass = Class.forName(implFile, true,
+                        Thread.currentThread().getContextClassLoader()); 
+                    Class clazz = implClass;
+                    String packageName = null;
+                    Package clazzPackage = implClass.getPackage();
+                    if (clazzPackage != null) {
+                        packageName = clazzPackage.getName();
+                    }
+
+                    // the processing is stopped at javax.servlet package as
+                    // a) there is no user defined class there
+                    // b) there is no security annotations used there
+                    while (clazz != null && (!clazz.getName().startsWith("javax.servlet."))
+                            && searchingMethods.size() > 0) {
+                        Package p = clazz.getPackage();
+                        Method[] methods = clazz.getDeclaredMethods(); 
+                        for (Method m : methods) {
+                            String methodName = m.getName();
+                            if (searchingMethods.contains(methodName)) {
+                                Class<?> returnType = m.getReturnType();
+                                Class<?>[] parameterTypes = m.getParameterTypes();
+                                int modifiers = m.getModifiers();
+                                boolean isSamePackage = (p == null && clazzPackage == null) ||
+                                    (p != null && clazzPackage != null &&
+                                        packageName.equals(p.getName()));
+                                boolean valid = (Modifier.isPublic(modifiers) ||
+                                        Modifier.isProtected(modifiers) ||
+                                        ((!Modifier.isPrivate(modifiers)) && isSamePackage));
+                                valid = valid && (void.class.equals(returnType)) &&
+                                    (parameterTypes.length == 2) &&
+                                    (parameterTypes[0].equals(HttpServletRequest.class) &&
+                                         parameterTypes[1].equals(HttpServletResponse.class));
+                                if (valid) {
+                                    httpMethods.add(m);
+                                    searchingMethods.remove(methodName);
+                                }
+
+                                if (searchingMethods.size() == 0) {
+                                    break;
+                                }
+                            }
+                        }
+                        clazz = clazz.getSuperclass();
+                    }
+                } catch(Throwable t) {
+                    throw new IllegalStateException(t);
+                }
+            }
+        }
+
+        return httpMethods.toArray(new Method[httpMethods.size()]);
     }
 
     /* -----------

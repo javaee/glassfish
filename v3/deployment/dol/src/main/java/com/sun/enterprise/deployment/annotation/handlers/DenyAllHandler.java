@@ -45,6 +45,8 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.Annotation;
 import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 
 /**
  * This handler is responsible for handling the javax.annotation.security.DenyAll.
@@ -89,5 +91,10 @@ public class DenyAllHandler extends AbstractAuthAnnotationHandler {
     @Override
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAndWebAnnotationTypes();
+    }
+
+    @Override
+    protected Class<? extends Annotation>[] relatedAnnotationTypes() {
+        return new Class[] { PermitAll.class, RolesAllowed.class };
     }
 }

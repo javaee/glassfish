@@ -42,7 +42,9 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import org.jvnet.hk2.annotations.Service;
 
+import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import java.lang.annotation.Annotation;
 
 /**
@@ -87,5 +89,10 @@ public class PermitAllHandler extends AbstractAuthAnnotationHandler {
     @Override
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAndWebAnnotationTypes();
+    }
+
+    @Override
+    protected Class<? extends Annotation>[] relatedAnnotationTypes() {
+        return new Class[] { DenyAll.class, RolesAllowed.class };
     }
 }
