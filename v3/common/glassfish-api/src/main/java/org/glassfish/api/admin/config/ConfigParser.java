@@ -14,17 +14,6 @@ import java.io.IOException;
 public interface ConfigParser {
 
     /**
-     * Parse a Container configuration and add it the main configuration.
-     *
-     * @param habitat habitat were to
-     * @param configuration
-     * @deprecated This method needed to be generic and should not be used. Use {@link #parseContainerConfig(org.jvnet.hk2.component.Habitat,java.net.URL, Class)}.
-     */
-    @Deprecated
-    public Container parseContainerConfig(Habitat habitat, URL configuration) throws IOException;
-
-
-    /**
      * Parse a Container's configuration defined by it's XML template pointed by configuration URL.
      * <br/> <br/>
      * Example:<br/>

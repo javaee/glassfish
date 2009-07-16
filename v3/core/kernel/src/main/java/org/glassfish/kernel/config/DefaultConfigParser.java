@@ -72,51 +72,6 @@ public class DefaultConfigParser implements ConfigParser {
 
     Logger logger = Logger.getLogger(LogDomains.CORE_LOGGER);
 
-    public Container parseContainerConfig(Habitat habitat, final URL configuration) throws IOException {
-
-
-        org.jvnet.hk2.config.ConfigParser configParser = new org.jvnet.hk2.config.ConfigParser(habitat);
-        // I don't use the GlassFish document here as I don't need persistence
-        final DomDocument doc = new DomDocument(habitat) {
-            public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
-                // by default, people get the translated view.
-                return new GlassFishConfigBean(habitat,this, dom, configModel, xmlStreamReader);
-            }
-        };
-
-        (new Populator() {
-
-            public void run(org.jvnet.hk2.config.ConfigParser parser) {
-                long now = System.currentTimeMillis();
-                if (configuration != null) {
-                    try {                        
-                        DomDocument newElement = parser.parse(configuration,  doc);
-                        logger.info(newElement.getRoot().getProxyType().toString());
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                    }
-                    Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
-                }
-            }
-        }).run(configParser);
-
-        // add the new container configuration to the server config
-        final Container container = doc.getRoot().createProxy(Container.class);
-
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Config>() {
-                public Object run(Config config) throws PropertyVetoException, TransactionFailure {
-                    config.getContainers().add(container);
-                    return null;
-                }
-            }, config);
-        } catch(TransactionFailure e) {
-            logger.log(Level.SEVERE, "Cannot add new configuration to the Config element", e);
-        }
-
-        return  container;
-    }
-
     public <T extends Container> T parseContainerConfig(Habitat habitat, final URL configuration, Class<T> configType) throws IOException {
 
 
