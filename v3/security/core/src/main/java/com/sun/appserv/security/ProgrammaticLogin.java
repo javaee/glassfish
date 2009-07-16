@@ -334,7 +334,8 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
             AccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     //V3:Commentedif (isServer) {
-                    if (SecurityServicesUtil.getInstance().isServer()) {
+                    if (SecurityServicesUtil.getInstance() != null && 
+                            SecurityServicesUtil.getInstance().isServer()) {
                         LoginContextDriver.logout();
                     } else {
                         // Reset the username/password state on logout
