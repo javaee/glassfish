@@ -56,5 +56,5 @@ public interface AbstractModule
     deployed to a directory or not.
      */
     
-    public boolean getDirectoryDeployed();
+    public String getDirectoryDeployed();
 }

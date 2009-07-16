@@ -45,5 +45,5 @@ import java.util.Map;
  */
 public interface Module extends AMXConfigProxy, PropertiesAccess
 {
-    public Map<String, Engine> getEngine();
+   // public Map<String, Engine> getEngine();
 }

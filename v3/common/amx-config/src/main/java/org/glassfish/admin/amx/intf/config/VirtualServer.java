@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
 
 /**
 Configuration for the &lt;virtual-server&gt; element.
@@ -51,9 +50,9 @@ public interface VirtualServer
 
     public void setHosts(String value);
 
-    public String getHTTPListeners();
+    public String getHttpListeners();
 
-    public void setHTTPListeners(String value);
+    public void setHttpListeners(String value);
 
     //** default: "${com.sun.aas.instanceRoot}/logs/server.log" */
     public String getLogFile();
@@ -64,9 +63,9 @@ public interface VirtualServer
 
     public void setState(String value);
 
-    public String getDocRoot();
+    public String getDocroot();
 
-    public void setDocRoot(String value);
+    public void setDocroot(String value);
 
     /**
     Get the HTTPAccessLog MBean.

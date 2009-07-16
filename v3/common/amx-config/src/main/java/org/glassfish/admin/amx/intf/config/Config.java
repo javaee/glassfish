@@ -82,11 +82,6 @@ public interface Config
     public ThreadPools getThreadPools();
 
     /**
-    @deprecated use {@link ThreadPools#getThreadPool}
-     */
-    public Map<String, ThreadPool> getThreadPool();
-
-    /**
     Return the DiagnosticService.  May be null.
     @since AppServer 9.0
      */

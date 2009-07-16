@@ -99,7 +99,7 @@ public class V3AMXUtil {
 
     // returns a  http-listener that is linked to a non-admin VS
     private static NetworkListener getListener() {
-        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
+        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().childrenMap(VirtualServer.class);
         return getOneVsWithNetworkListener(new ArrayList(vsMap.keySet()));
     }
 
@@ -113,7 +113,7 @@ public class V3AMXUtil {
         }
         NetworkListener secureListener = null;
         HttpService hConfig = V3AMX.getServerConfig("server-config").getHttpService();
-        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().getVirtualServer();
+        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().childrenMap(VirtualServer.class);
         for (String vsName : vsList) {
             if (vsName.equals("__asadmin")) {
                 continue;

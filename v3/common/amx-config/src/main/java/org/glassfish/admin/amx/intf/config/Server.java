@@ -75,12 +75,12 @@ public interface Server
     @since AppServer 9.0
      */
     
-    public String getLBWeight();
+    public String getLbWeight();
 
     /**
     <b>EE only</b>
     Set the load balancer weight for this server to the specified value.
     @since AppServer 9.0
      */
-    public void setLBWeight(final String weight);
+    public void setLbWeight(final String weight);
 }

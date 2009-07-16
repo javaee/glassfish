@@ -89,7 +89,7 @@ public interface JavaConfig
      */
     public void setSystemClasspath(String classpath);
 
-    public String[] getJVMOptions();
+    public String[] getJvmOptions();
 
     /**
     Add jvm options.
@@ -98,7 +98,7 @@ public interface JavaConfig
     it in quotes eg </code>"C:Program Files\dir"</code>
 
      */
-    public void setJVMOptions(String[] value);
+    public void setJvmOptions(String[] value);
 
     public String getNativeLibraryPathPrefix();
 
@@ -108,9 +108,9 @@ public interface JavaConfig
 
     public void setNativeLibraryPathSuffix(String value);
 
-    public String getRMICOptions();
+    public String getRmicOptions();
 
-    public void setRMICOptions(String value);
+    public void setRmicOptions(String value);
 
     public String getServerClasspath();
 

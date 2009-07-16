@@ -278,13 +278,13 @@ public interface JDBCConnectionPool
     @since AppServer 9.1
      */
     
-    String getValidateAtMostOncePeriodInSeconds();
+    String getValidateAtmostOncePeriodInSeconds();
 
     /**
     @see #getValidateAtMostOncePeriodInSeconds
     @since AppServer 9.1
      */
-    void setValidateAtMostOncePeriodInSeconds(String seconds);
+    void setValidateAtmostOncePeriodInSeconds(String seconds);
 
     /**
     lazy-connection-enlistment (String)<br>
@@ -377,13 +377,13 @@ public interface JDBCConnectionPool
     @since AppServer 9.1
      */
     
-    String getWrapJDBCObjects();
+    String getWrapJdbcObjects();
 
     /**
-    @see #getWrapJDBCObjects
+    @see #getWrapJdbcObjects
     @since AppServer 9.1
      */
-    void setWrapJDBCObjects(String wrap);
+    void setWrapJdbcObjects(String wrap);
 
     /**
     associate-with-thread (integer)<br>

@@ -42,5 +42,5 @@ public interface Resource
         extends NamedConfigElement, Enabled, Description,
         PropertiesAccess, ObjectType, ResourceRefReferent
 {
-    public String getJNDIName();
+    //public String getJNDIName();
 }

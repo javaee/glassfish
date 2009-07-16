@@ -53,7 +53,7 @@ public interface ThreadPools
     @return Map of ThreadPool proxies, keyed by name.
 
      */
-    public Map<String, ThreadPool> getThreadPool();
+    //public Map<String, ThreadPool> getThreadPool();
 
 }
 

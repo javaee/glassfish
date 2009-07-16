@@ -287,11 +287,17 @@ public final class RuntimeImpl extends AMXImplBase
         }
     }
 
-    public JMXServiceURL[] getJMXServiceURLs()
+    public String[] getJMXServiceURLs()
     {
         try
         {
-            return (JMXServiceURL[]) getMBeanServer().getAttribute(BootAMXMBean.OBJECT_NAME, "JMXServiceURLs");
+            final JMXServiceURL[] items = (JMXServiceURL[])getMBeanServer().getAttribute(BootAMXMBean.OBJECT_NAME, "JMXServiceURLs");
+            final String [] urls = new String[ items.length ];
+            for( int i = 0; i < items.length; ++i )
+            {
+                urls[i] = "" + items[i];
+            }
+            return urls;
         }
         catch (final JMException e)
         {

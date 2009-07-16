@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.intf.config;
 /**
 Configuration for a &lt;thread-pool&gt; element.
  */
-public interface ThreadPool extends PropertiesAccess, NamedConfigElement
+public interface ThreadPool extends NamedConfigElement
 {
     public String getIdleThreadTimeoutSeconds();
 
@@ -53,16 +53,6 @@ public interface ThreadPool extends PropertiesAccess, NamedConfigElement
     public String getMaxThreadPoolSize();
 
     public void setMaxThreadPoolSize(String value);
-
-    
-    public String getThreadIncrement();  // unused.  delete?
-
-    public void setThreadIncrement(String value);  // unused.  delete?
-
-    
-    public String getNumWorkQueues();  // unused.  delete?
-
-    public void setNumWorkQueues(String value);  // unused.  delete?
 
     public String getName();
 

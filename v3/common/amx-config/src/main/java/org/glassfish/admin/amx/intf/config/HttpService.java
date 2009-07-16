@@ -53,7 +53,7 @@ public interface HttpService
 		@return Map of all VirtualServer proxies, keyed by the name of the virtual server.
 
 	 */
-	public Map<String,VirtualServer>		getVirtualServer();
+	//public Map<String,VirtualServer>		getVirtualServer();
 
 	/**
 		Get the AccessLog.

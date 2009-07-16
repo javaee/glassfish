@@ -104,12 +104,12 @@ public final class RealmsImpl extends AMXImplBase
         final Config config = domainConfig.getConfigs().getConfig().values().iterator().next();
         final SecurityService ss = config.getSecurityService();
         
-        final Map<String,AuthRealm> authRealmConfigs = ss.getAuthRealm();
+        final Map<String,AuthRealm> authRealmConfigs = ss.childrenMap(AuthRealm.class);
         
         final List<String> goodRealms = new ArrayList<String>();
         for( final AuthRealm authRealm : authRealmConfigs.values() )
         {
-            final Map<String,Property> propConfigs = authRealm.getProperty();
+            final Map<String,Property> propConfigs = authRealm.childrenMap(Property.class);
             final Properties props = new Properties();
             for (final Property p : propConfigs.values() )
             {
@@ -356,7 +356,7 @@ public final class RealmsImpl extends AMXImplBase
             return false;
         }
 
-        final Map<String,Property>  props = adminFileAuthRealm.getProperty();
+        final Map<String,Property>  props = adminFileAuthRealm.childrenMap(Property.class);
         final Property keyfileProp = props.get("file");
         if ( keyfileProp == null ) {
             throw new IllegalStateException( "Cannot find property 'file'" );

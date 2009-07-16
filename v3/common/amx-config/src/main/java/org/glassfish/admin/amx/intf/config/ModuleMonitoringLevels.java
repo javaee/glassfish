@@ -78,9 +78,9 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
 
     public void setConnectorConnectionPool(final String value);
 
-    public String getEJBContainer();
+    public String getEjbContainer();
 
-    public void setEJBContainer(final String value);
+    public void setEjbContainer(final String value);
 
     public String getHTTPService();
 
@@ -90,9 +90,9 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
 
     public void setJDBCConnectionPool(final String value);
 
-    public String getORB();
+    public String getOrb();
 
-    public void setORB(final String value);
+    public void setOrb(final String value);
 
     public String getThreadPool();
 

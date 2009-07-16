@@ -54,11 +54,11 @@ public interface AdminService
     @return Map of JMXConnector proxies, keyed by name.
 
      */
-    public Map<String, JMXConnector> getJMXConnector();
+    // public Map<String, JMXConnector> getJMXConnector();
 
-    public String getSystemJMXConnectorName();
+    public String getSystemJmxConnectorName();
 
-    public void setSystemJMXConnectorName(String value);
+    public void setSystemJmxConnectorName(String value);
 
     public String getType();
     /** Possible value for Type.  See {@link #setType} */

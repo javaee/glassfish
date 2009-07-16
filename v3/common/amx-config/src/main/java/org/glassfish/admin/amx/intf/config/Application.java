@@ -92,7 +92,7 @@ public interface Application
      */
     public void setAvailabilityEnabled(String enabled);
     
-    public Map<String,Module> getModule();
+    //public Map<String,Module> getModule();
 }
 
 

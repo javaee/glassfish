@@ -65,9 +65,9 @@ public interface SecurityService extends
 
     public void setDefaultRealm(String value);
 
-    public String getJACC();
+    public String getJacc();
 
-    public void setJACC(String value);
+    public void setJacc(String value);
 
     /**                                               
     This attribute is used to customize the
@@ -106,13 +106,13 @@ public interface SecurityService extends
      */
     public void setActivateDefaultPrincipalToRoleMapping(String enabled);
 
-    public Map<String, JACCProvider> getJACCProvider();
+    //public Map<String, JACCProvider> getJACCProvider();
 
-    public Map<String, AuthRealm> getAuthRealm();
+    //public Map<String, AuthRealm> getAuthRealm();
 
-    public Map<String, AuditModule> getAuditModule();
+    //public Map<String, AuditModule> getAuditModule();
 
-    public Map<String, MessageSecurity> getMessageSecurity();
+    //public Map<String, MessageSecurity> getMessageSecurity();
 }
 
 

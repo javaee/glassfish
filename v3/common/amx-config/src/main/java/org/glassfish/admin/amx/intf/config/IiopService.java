@@ -62,7 +62,7 @@ public interface IiopService
     @return Map of IiopListener MBean proxies, keyed by name.
 
      */
-    public Map<String, IiopListener> getIIOPListener();
+    //public Map<String, IiopListener> getIIOPListener();
 
     /**
     Get a proxy to an ORB

@@ -47,30 +47,30 @@ public interface JMSService
         extends ConfigElement, PropertiesAccess, Singleton
 {
 
-    public String getAddressListBehavior();
+    public String getAddresslistBehavior();
 
-    public void setAddressListBehavior(final String value);
+    public void setAddresslistBehavior(final String value);
 
-    public String getAddressListIterations();
+    public String getAddresslistIterations();
 
-    public void setAddressListIterations(final String value);
+    public void setAddresslistIterations(final String value);
 
-    public String getDefaultJMSHost();
+    public String getDefaultJmsHost();
 
-    public void setDefaultJMSHost(final String value);
+    public void setDefaultJmsHost(final String value);
 
     
     public String getInitTimeoutInSeconds();
 
     public void setInitTimeoutInSeconds(final String value);
 
-    public String getMQScheme();
+    public String getMqScheme();
 
-    public void setMQScheme(final String value);
+    public void setMqScheme(final String value);
 
-    public String getMQService();
+    public String getMqService();
 
-    public void setMQService(final String value);
+    public void setMqService(final String value);
 
     
     public String getReconnectAttempts();
@@ -99,7 +99,7 @@ public interface JMSService
     @return Map of JMSHost MBean proxies, keyed by name.
 
      */
-    public Map<String, JMSHost> getJMSHost();
+    //public Map<String, JMSHost> getJMSHost();
 }
 
 

@@ -61,7 +61,7 @@ public interface ApplicationRef extends Ref
     them. Defaults to unavailable (false).
      */
     
-    public String getLBEnabled();
+    public String getLbEnabled();
 
     /**
     <b>EE only</b>
@@ -69,7 +69,7 @@ public interface ApplicationRef extends Ref
     this application to consider this application unavailable to
     them.
      */
-    public void setLBEnabled(final String lbEnabled);
+    public void setLbEnabled(final String lbEnabled);
 
     /**
     The time, in minutes, that it takes this application to reach
