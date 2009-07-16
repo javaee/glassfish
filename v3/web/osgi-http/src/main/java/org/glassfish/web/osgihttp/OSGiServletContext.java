@@ -328,7 +328,10 @@ public class OSGiServletContext implements ServletContext {
 
     public JspConfigDescriptor getJspConfigDescriptor()
     {
-        return null; //TODO(Sahoo): Not Yet Implemented
+        return delegate.getJspConfigDescriptor();
     }
 
+    public ClassLoader getClassLoader() {
+        return delegate.getClassLoader();
+    }
 }

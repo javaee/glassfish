@@ -691,6 +691,15 @@ public final class ApplicationContextFacade
     }
 
 
+    public ClassLoader getClassLoader() {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (ClassLoader) doPrivileged("getClassLoader", null);
+        } else {
+            return context.getClassLoader();
+        }
+    }
+
+
     // START PWC 1.2
     /**
      * Gets the underlying StandardContext to which this
