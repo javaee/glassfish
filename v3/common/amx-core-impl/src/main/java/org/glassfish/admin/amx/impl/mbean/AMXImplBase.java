@@ -670,7 +670,6 @@ public class AMXImplBase extends MBeanImplBase
     protected ObjectName[] getObjectNamesForAttribute( final String attributeName )
     {
         final String[] types = attributeNameToType(attributeName);
-        cdebug( "getObjectNamesForAttribute" );
         
         ObjectName[] result = null;
         Map<String,ObjectName> children = null;
