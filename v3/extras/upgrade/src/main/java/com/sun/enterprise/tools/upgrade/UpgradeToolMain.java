@@ -106,9 +106,10 @@ public class UpgradeToolMain {
             guiIn.processArguments(guiIn.parse(args));
         }
 
+        final UpgradeToolMain thisToolMain = this;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainFrame().setVisible(true);
+                new MainFrame(thisToolMain).setVisible(true);
             }
         });
     }
@@ -277,5 +278,17 @@ public class UpgradeToolMain {
             main.startGUI(args);
         }
 
+    }
+
+    /*
+     * Called from the GUI worker thread to perform the upgrade.
+     * 
+     * If we have an exit code from the process, return it here.
+     * Otherwise we can remove the return value. Will know once
+     * the asadmin upgrade process is final.
+     */
+    public int performUpgrade() {
+        upgrade();
+        return 0;
     }
 }

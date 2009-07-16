@@ -307,6 +307,28 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         processDirTextKeyReleased();
     }
 
+    /*** Getters for data fields ***/
+    public String getSourceDirPath() {
+        return sourceTextField.getText();
+    }
+    
+    public String getDestinationDirPath() {
+        return targetTextField.getText();
+    }
+
+    public String getAdminUserName() {
+        return adminUserTextField.getText();
+    }
+
+    public String getAdminPassword() {
+        return adminPWField.getPassword().toString();
+    }
+
+    public String getMasterPassword() {
+        return masterPWField.getPassword().toString();
+    }
+    /*** end getters ***/
+
     /*
      * Check required fields and update "next" button in main
      * frame. No need to check state of main frame since the fields

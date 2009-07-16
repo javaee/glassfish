@@ -39,12 +39,15 @@ package com.sun.enterprise.tools.upgrade.gui;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JProgressBar;
 
 /**
  * Panel to show the progress and results of an upgrade.
- * Still a work in progress.
- * 
+ * For information on how results get to the text area in
+ * the GUI, see the comments in UpgradeWorker.java.
+ *
  * @author Bobby Bissett
  */
 public class ProgressPanel extends javax.swing.JPanel {
@@ -88,7 +91,11 @@ public class ProgressPanel extends javax.swing.JPanel {
         resultsLabel.setText(stringManager.getString("upgrade.gui.progresspanel.textAreaText"));
 
         resultTextArea.setColumns(20);
+        resultTextArea.setEditable(false);
+        resultTextArea.setLineWrap(true);
         resultTextArea.setRows(5);
+        resultTextArea.setFocusable(false);
+        resultTextArea.setRequestFocusEnabled(false);
         resultTextAreaScrollPane.setViewportView(resultTextArea);
 
         progressLabel.setForeground(java.awt.Color.blue);
@@ -142,4 +149,26 @@ public class ProgressPanel extends javax.swing.JPanel {
     private javax.swing.JSeparator separator;
     // End of variables declaration//GEN-END:variables
 
+    // used by main frame and/or worker thread to set the state
+    JProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    /*
+     * This method is used to append text to JTextArea. This method
+     * is thread safe because JTextArea is thread safe. If the implementation
+     * of the GUI changes, change this method as needed to remain
+     * thread safe as the callers expect it to be.
+     *
+     * The level param is optional, but can be passed in so that the
+     * progress panel can use differentiate message types in an
+     * implementation-specifc way.
+     *
+     * todo: do we want red/yellow colors for different levels?
+     */
+    void appendResultString(String res, Level level) {
+        resultTextArea.append(res);
+        resultTextArea.append("\n");
+    }
+    
 }
