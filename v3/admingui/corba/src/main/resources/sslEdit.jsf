@@ -58,10 +58,10 @@
             setPageSessionAttribute(key="edit" value="#{true}" )
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
-                CommonCiphersList="#{requestScope.selectedCommon}"
-                EphemeralCiphersList="#{requestScope.selectedEphemeral}"
-                OtherCiphersList="#{requestScope.selectedOther}"
-                EccCiphersList="#{requestScope.selectedEcc}")
+                CommonCiphersList="#{pageSession.selectedCommon}"
+                EphemeralCiphersList="#{pageSession.selectedEphemeral}"
+                OtherCiphersList="#{pageSession.selectedOther}"
+                EccCiphersList="#{pageSession.selectedEcc}")
 
         }
         if (! #{requestScope.exist}){

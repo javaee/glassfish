@@ -97,13 +97,12 @@
             <sun:addRemove id="commonAddRemove"
                 selectAll="$boolean{true}"
                 items="#{pageSession.commonCiphers}"
-                selected="#{pageSession.selectedCommonCiphers}"
+                selected="#{pageSession.selectedCommon}"
                 availableItemsLabel="$resource{i18n.ssl.availableCommonCiphersLabel}"
                 selectedItemsLabel="$resource{i18n.ssl.selectedCommonCiphersLabel}">
             </sun:addRemove>
             <!beforeCreate
                 StringArrayToSelectItemArray(stringArray="#{requestScope.availableCommon}" item="#{pageSession.commonCiphers}")
-                StringArrayToSelectItemArray(stringArray="#{requestScope.selectedCommon}" item="#{pageSession.selectedCommonCiphers}")
             />
         </sun:property>
 
@@ -111,13 +110,12 @@
             <sun:addRemove id="ephemeralAddRemove"
                 selectAll="$boolean{true}"
                 items="#{pageSession.ephCiphers}"
-                selected="#{pageSession.selectedEphemeralCiphers}"
+                selected="#{pageSession.selectedEphemeral}"
                 availableItemsLabel="$resource{i18n.ssl.availableEphCiphersLabel}"
                 selectedItemsLabel="$resource{i18n.ssl.selectedEphCiphersLabel}">
             </sun:addRemove>
             <!beforeCreate
                 StringArrayToSelectItemArray(stringArray="#{requestScope.availableEphemeral}" item="#{pageSession.ephCiphers}")
-                StringArrayToSelectItemArray(stringArray="#{requestScope.selectedEphemeral}" item="#{pageSession.selectedEphemeralCiphers}")
             />
          </sun:property>
 
@@ -125,26 +123,24 @@
         <sun:addRemove id="otherAddRemove"
             selectAll="$boolean{true}"
             items="#{pageSession.other}"
-            selected="#{pageSession.selectedOtherCiphers}"
+            selected="#{pageSession.selectedOther}"
             availableItemsLabel="$resource{i18n.ssl.availableOtherCiphersLabel}"
             selectedItemsLabel="$resource{i18n.ssl.selectedOtherCiphersLabel}">
         </sun:addRemove>
         <!beforeCreate
                 StringArrayToSelectItemArray(stringArray="#{requestScope.availableOther}" item="#{pageSession.other}")
-                StringArrayToSelectItemArray(stringArray="#{requestScope.selectedOther}" item="#{pageSession.selectedOtherCiphers}")
             />
      </sun:property>
      <sun:property id="EccCiphersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" >
         <sun:addRemove id="eccAddRemove"
             selectAll="$boolean{true}"
             items="#{pageSession.eccCiphers}"
-            selected="#{pageSession.selectedEccCiphers}"
+            selected="#{pageSession.selectedEcc}"
             availableItemsLabel="$resource{i18n.ssl.availableEccCiphersLabel}"
             selectedItemsLabel="$resource{i18n.ssl.selectedEccCiphersLabel}">
         </sun:addRemove>
         <!beforeCreate
                 StringArrayToSelectItemArray(stringArray="#{requestScope.availableEcc}" item="#{pageSession.eccCiphers}")
-                StringArrayToSelectItemArray(stringArray="#{requestScope.selectedEcc}" item="#{pageSession.selectedEccCiphers}")
             />
      </sun:property>
 </sun:propertySheetSection>

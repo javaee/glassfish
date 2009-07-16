@@ -40,21 +40,13 @@
         <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}">
                 # onClick="return checkSSLRequiredElements(); " >
             <!command
-                selectItemArrayToStrArray(item="#{selectedCommonCiphers}"  strAry="#{requestScope.commonStr}")
-                selectItemArrayToStrArray(item="#{selectedEphCiphers}"  strAry="#{requestScope.ephStr}")
-                selectItemArrayToStrArray(item="#{selectedOtherCiphers}"  strAry="#{requestScope.otherStr}")
-                selectItemArrayToStrArray(item="#{selectedEccCiphers}"  strAry="#{requestScope.eccStr}")
-                convertCiphersItemsToStr(common="#{requestScope.commonStr}" ephemeral="#{requestScope.ephStr}" other="#{requestScope.otherStr}" ecc="#{requestScope.eccStr}" ciphers="{#requestScope.ciphers}")
-                mapPut(map="#{pageSession.valueMap}" key="SSL3TLSCiphers" value="#{requestScope.ciphers}")
-
+                convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
+                mapPut(map="#{pageSession.valueMap}" key="Ssl3TlsCiphers" value="#{requestScope.ciphers}")
                 saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                     skipAttrs="#{pageSession.skipAttrsList}"
                     convertToFalse="#{pageSession.convertToFalseList}"
                     parentObjectNameStr="#{pageSession.parentObjectNameStr}"
                 );
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 prepareSuccessfulMsg();
                 redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
             />
@@ -63,17 +55,13 @@
         <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
             <!command
-                convertCiphersItemsToStr( test="#{selectedCommonCiphers}"  common="#{selectedCommonCiphers}" ephemeral="#{selectedEphCiphers}" other="#{selectedOtherCiphers}" ecc="#{selectedEccCiphers}" ciphers="{#requestScope.ciphers}")
-                mapPut(map="#{pageSession.valueMap}" key="SSL3TLSCiphers" value="{#requestScope.ciphers}")
+                convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
+                mapPut(map="#{pageSession.valueMap}" key="Ssl3TlsCiphers" value="{#requestScope.ciphers}")
                 createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                     attrs="#{pageSession.valueMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
                     result => $attribute{objStr});
-
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                redirect(page="#{parentPage}?configName=#{configName}")
+                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
             />
         </sun:button>
         <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
