@@ -5,10 +5,6 @@
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
 
-    <listener>     
-        <listener-class>test.ServletTest</listener-class>
-    </listener>
-
     <servlet>
         <display-name>ServletTest</display-name>
         <servlet-name>ServletTest</servlet-name>
@@ -19,9 +15,7 @@
    <servlet-mapping>
         <servlet-name>ServletTest</servlet-name>
         <url-pattern>/*</url-pattern>
-    </servlet-mapping>
-
-    
+    </servlet-mapping>    
 
 </web-app>
 
