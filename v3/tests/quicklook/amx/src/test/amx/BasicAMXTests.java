@@ -39,12 +39,8 @@ import javax.management.ObjectName;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 
-import org.testng.annotations.Configuration;
-import org.testng.annotations.ExpectedExceptions;
-import org.testng.annotations.Test;
 import org.testng.annotations.*;
 import org.testng.Assert;
-
 
 
 import java.util.Set;
@@ -71,7 +67,7 @@ traverse the AMXProxy hierarchy and fetch all attributes.
 @Test(groups =
 {
     "amx"
-}, description = "AMXProxy tests")
+}, description = "Basic AMX tests")
 public final class BasicAMXTests extends AMXTestBase
 {
     public BasicAMXTests()
@@ -176,6 +172,7 @@ public final class BasicAMXTests extends AMXTestBase
             final Map<String, Object> result = ss.pingJDBCConnectionPool(pool.getName());
             assert result != null;
         }
+        System.out.println( "----------------------------- testSystemStatus -------------------------------" );
     }
 
 }

@@ -39,6 +39,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.HashSet;
 
+import java.net.MalformedURLException;
+import java.io.IOException;
+
 import org.testng.Reporter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -55,14 +58,13 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import java.net.MalformedURLException;
-import java.io.IOException;
-import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.base.Query;
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.api.amx.AMXBooter;
+import org.glassfish.admin.amx.base.*;
+import org.glassfish.admin.amx.core.*;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.admin.amx.intf.config.*;
 import org.glassfish.admin.amx.util.TimingDelta;
+
+import org.glassfish.api.amx.AMXBooter;
 
 /** The base class for AMX tests
  */
@@ -80,7 +82,9 @@ public class AMXTestBase
 
     private volatile MBeanServerConnection mMBeanServerConnection;
 
-    private volatile DomainRoot mDomainRoot;
+    private volatile ProxyFactory mProxyFactory;
+    private volatile DomainRoot   mDomainRoot;
+    private volatile Domain       mDomainConfig;
 
     private volatile Query mQueryMgr;
 
@@ -137,11 +141,15 @@ public class AMXTestBase
         try
         {
             mMBeanServerConnection = _getMBeanServerConnection();
+            mProxyFactory = ProxyFactory.getInstance(mMBeanServerConnection);
+
             //debug( "AMXTestBase.setup(): millis to connect: " + timing.elapsedMillis() );
             mDomainRoot = _getDomainRoot(mMBeanServerConnection);
             //debug( "AMXTestBase.setup(): millis to boot AMX: " + timing.elapsedMillis() );
             mQueryMgr = getDomainRootProxy().getQueryMgr();
             //debug( "AMXTestBase.setup(): millis to get QueryMgr: " + timing.elapsedMillis() );
+            
+            mDomainConfig = mDomainRoot.child(Domain.class);
 
             mAllAMX = getQueryMgr().queryAll();
         }
@@ -152,7 +160,7 @@ public class AMXTestBase
         //debug( "AMXTestBase.setup(): total setup millis: " + overall.elapsedMillis() );
     }
 
-    protected Query getQueryMgr()
+    protected final Query getQueryMgr()
     {
         return mQueryMgr;
     }
@@ -182,20 +190,26 @@ public class AMXTestBase
         return result;
     }
 
-    protected DomainRoot getDomainRootProxy()
+    protected final DomainRoot getDomainRootProxy()
     {
         return mDomainRoot;
     }
+    protected final Domain getDomainConfig() { return mDomainConfig; } 
+    protected final Ext getExt()             { return getDomainRootProxy().getExt(); }
 
-    protected DomainRoot _getDomainRoot(final MBeanServerConnection conn)
+
+    protected ProxyFactory getProxyFactory() { return mProxyFactory; }
+    
+    protected final DomainRoot _getDomainRoot(final MBeanServerConnection conn)
             throws MalformedURLException, IOException, java.net.MalformedURLException
     {
         final ObjectName domainRootObjectName = AMXBooter.bootAMX(conn);
-        final DomainRoot domainRoot = ProxyFactory.getInstance(conn).getDomainRootProxy();
-        return domainRoot;
-    }
+        final DomainRoot domainRoot = getProxyFactory().getDomainRootProxy();
+        return domainRoot;    }
 
-    private MBeanServerConnection _getMBeanServerConnection()
+    protected final MBeanServerConnection getMBeanServerConnection() { return mMBeanServerConnection; }
+    
+    private final MBeanServerConnection _getMBeanServerConnection()
             throws MalformedURLException, IOException
     {
         // service:jmx:rmi:///jndi/rmi://192.168.1.8:8686/jmxrmi

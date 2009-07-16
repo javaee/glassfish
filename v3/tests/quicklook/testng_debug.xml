@@ -51,6 +51,7 @@
   <test name="amx_tests">
     <classes>
       <class name="amxtest.BasicAMXTests"/>
+      <class name="amxtest.AMXProxyTests"/>
     </classes>
   </test>
   
