@@ -46,7 +46,7 @@
 /**
  *
  */
-package org.glassfish.jmail.admingui.handlers;
+package org.glassfish.full.admingui.handlers;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;

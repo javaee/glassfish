@@ -39,7 +39,7 @@
  * and open the template in the editor.
  */
 
-package org.glassfish.jmail.admingui;
+package org.glassfish.full.admingui;
 
 import org.glassfish.api.admingui.ConsoleProvider;
 import org.jvnet.hk2.annotations.Service;
