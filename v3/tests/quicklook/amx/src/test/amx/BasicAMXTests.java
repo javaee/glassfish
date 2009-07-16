@@ -172,7 +172,6 @@ public final class BasicAMXTests extends AMXTestBase
             final Map<String, Object> result = ss.pingJDBCConnectionPool(pool.getName());
             assert result != null;
         }
-        System.out.println( "----------------------------- testSystemStatus -------------------------------" );
     }
 
 }
