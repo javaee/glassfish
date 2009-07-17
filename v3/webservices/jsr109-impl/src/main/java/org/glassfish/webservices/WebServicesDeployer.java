@@ -33,6 +33,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -58,6 +59,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -132,14 +134,20 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             }
             BundleDescriptor bundle = dc.getModuleMetaData(BundleDescriptor.class);
 
+            String moduleCP = getModuleClassPath(dc);
+            List<URL> moduleCPUrls = ASClassLoaderUtil.getURLsFromClasspath(moduleCP, File.pathSeparator, null);
+            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+            URLClassLoader newCl = new URLClassLoader(ASClassLoaderUtil.convertURLListToArray(moduleCPUrls), oldCl);
+            Thread.currentThread().setContextClassLoader(newCl);
             WebServicesDescriptor wsDesc = bundle.getWebServices();
             for (WebService ws : wsDesc.getWebServices()) {
                 if (isJAXWSbasedService(dc, ws)){
                     setupJaxWSServiceForDeployment(dc, ws);
                 }
-                JaxRpcCodegenFactory.newInstance().getAdapter().run(habitat, dc, this.getModuleClassPath(dc));
+                JaxRpcCodegenFactory.newInstance().getAdapter().run(habitat, dc, moduleCP);
                 doWebServicesDeployment(app,dc);
             }
+            Thread.currentThread().setContextClassLoader(oldCl);
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
@@ -179,16 +187,14 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
          }**/
 
-        File classesDir;
         String webinfLibDir = null;
-        if (XModuleType.WAR.equals(bundle.getModuleType())) {
-            classesDir = new File(moduleDir, "WEB-INF"+File.separator+"classes");
-            webinfLibDir = moduleDir.getAbsolutePath() + File.separator + "WEB-INF"+File.separator+"lib";
-        } else if (XModuleType.EJB.equals(bundle.getModuleType())) {
-            classesDir = moduleDir;
-        } else {
+        if (!XModuleType.WAR.equals(bundle.getModuleType()) &&
+                !XModuleType.EJB.equals(bundle.getModuleType())) {
             // unknown module type with @WebService, just ignore...
             return;
+        }
+        if (XModuleType.WAR.equals(bundle.getModuleType())) {
+            webinfLibDir = moduleDir.getAbsolutePath() + File.separator + "WEB-INF"+File.separator+"lib";
         }
 
         wsdlDir = new File(wsdlDir, bundle.getWsdlDir().replaceAll("/", "\\"+File.separator));

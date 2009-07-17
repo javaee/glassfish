@@ -345,7 +345,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
             }
             //jaxrpcDD.setXMLValidationLevel(Deployer.getValidationLevel());
             jaxrpcDD.setXMLValidationLevel("none");
-            mappingDesc =  jaxrpcDD.read((JaxrpcMappingDescriptor) desc, is);
+            mappingDesc =  jaxrpcDD.read(is);
         } finally {
             if( is != null ) {
                 is.close();
@@ -600,29 +600,13 @@ public class JaxRpcRICodegen extends ModuleContentLinker
             dummyConfigFile.deleteOnExit();
         }
 
-        String classPath=null;
-        List<URL> urls = ASClassLoaderUtil.getURLsFromClasspath(moduleClassPath, File.pathSeparator, null);
-
-        // we need to add all web and appclient classpath
-        String modClassPath = ASClassLoaderUtil.getModuleClassPath(habitat, context);
-        List moduleList = ASClassLoaderUtil.getURLsFromClasspath(modClassPath, File.pathSeparator, null);
-        
-        moduleList.addAll(urls);
-        for (int i=0;i<moduleList.size();i++) {
-            if (classPath==null) {
-                classPath = (String) moduleList.get(i);
-            } else {
-                classPath = classPath + File.pathSeparatorChar + (String) moduleList.get(i);
-            }
-        }
-        
         // wscompile doesn't support the -extdirs option, so the best we
         // can do is prepend the ext dir jar files to the classpath.
         String optionalDependencyClassPath = 
             OptionalPkgDependency.getExtDirFilesAsClasspath();
         if(optionalDependencyClassPath.length() > 0) {
-            classPath = optionalDependencyClassPath +
-                File.pathSeparatorChar + classPath;
+            moduleClassPath = optionalDependencyClassPath +
+                File.pathSeparatorChar + moduleClassPath;
         }
 
 	jaxrpcArgs[jaxrpcCnt++] = generateTies ? "-gen:server" : "-gen:client";
@@ -636,7 +620,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         }
 
 	jaxrpcArgs[jaxrpcCnt++] = "-classpath";
-	jaxrpcArgs[jaxrpcCnt++] = classPath;
+	jaxrpcArgs[jaxrpcCnt++] = moduleClassPath;
 
 	if (logger.isLoggable(Level.FINE)) {
             long timeStamp = System.currentTimeMillis();
