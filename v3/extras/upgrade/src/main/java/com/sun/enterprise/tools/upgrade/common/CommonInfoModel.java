@@ -47,60 +47,56 @@ import com.sun.enterprise.util.i18n.StringManager;
  */
 public class CommonInfoModel{
 	
-	private static CommonInfoModel _commonInfoModel = null;
-	private TargetAppSrvObj tAppSrvObj = new TargetAppSrvObj();
-	private SourceAppSrvObj sAppSrvObj = new SourceAppSrvObj();
-    private boolean isInPlace = false; //- inplace or side-by-side upgrade process
-	private boolean nopromptMode = false; //- user required noprompt CLI mode	
-    private String osName; // machine OS type
-
     //Logging fields
     private static final StringManager stringManager =
-            StringManager.getManager(CommonInfoModel.class);
+        StringManager.getManager(CommonInfoModel.class);
     private static final Logger logger = LogService.getLogger();
-    
-	//- make this a singleton.
-	public static CommonInfoModel getInstance(){
-		if (_commonInfoModel == null){
-			_commonInfoModel = new CommonInfoModel();
-		}
-		return _commonInfoModel;
-	}
-    /**
-     * CommonInfoModel constructor
-     */
-    private CommonInfoModel(){
+
+    // singleton
+    private static final CommonInfoModel instance = new CommonInfoModel();
+
+    private TargetAppSrvObj tAppSrvObj = new TargetAppSrvObj();
+    private SourceAppSrvObj sAppSrvObj = new SourceAppSrvObj();
+    private boolean isInPlace = false; //- inplace or side-by-side upgrade process
+    private boolean nopromptMode = false; //- user required noprompt CLI mode
+    private String osName; // machine OS type
+
+    private CommonInfoModel() {}
+
+    public static CommonInfoModel getInstance() {
+        return instance;
     }
     
-	public SourceAppSrvObj getSource(){
-		return sAppSrvObj;
-	}
-	public TargetAppSrvObj getTarget(){
-		return tAppSrvObj;
-	}
-	
-	public void setupTasks() throws Exception {
-		String domainName = sAppSrvObj.getDomainName();
-		String srcDomainDir = sAppSrvObj.getDomainDir();
-		
-		//- identify target domain to upgrade
-		tAppSrvObj.setDomainName(domainName);
-		setIsInPlace(srcDomainDir.equals(tAppSrvObj.getDomainDir()));
+    public SourceAppSrvObj getSource() {
+        return sAppSrvObj;
+    }
 
-		if (isInPlace()){
+    public TargetAppSrvObj getTarget() {
+        return tAppSrvObj;
+    }
+	
+    public void setupTasks() throws Exception {
+        String domainName = sAppSrvObj.getDomainName();
+        String srcDomainDir = sAppSrvObj.getDomainDir();
+
+        //- identify target domain to upgrade
+        tAppSrvObj.setDomainName(domainName);
+        setIsInPlace(srcDomainDir.equals(tAppSrvObj.getDomainDir()));
+
+        if (isInPlace()) {
             //- Not all target appServer versions allow in-place upgrades
             if (tAppSrvObj.isInPlaceUpgradeAllowed()) {
                 String backupDomainPath = UpgradeUtils.getUpgradeUtils(this).backupDomain(
-                        domainName, sAppSrvObj.getInstallDir(), tAppSrvObj.getInstallDir());
+                    domainName, sAppSrvObj.getInstallDir(), tAppSrvObj.getInstallDir());
                 sAppSrvObj.setBackupDomainDir(backupDomainPath);
             } else {
                 throw new Exception(stringManager.getString("upgrade.common.inplace_upgrade_not_supported"));
             }
-		} else {
+        } else {
             UpgradeUtils.getUpgradeUtils(this).cloneDomain(
                 sAppSrvObj.getInstallDir(), tAppSrvObj.getDomainDir());
         }
-	}
+    }
 	
     public String getOSName() {
         return osName;
@@ -118,35 +114,36 @@ public class CommonInfoModel{
         this.isInPlace = b;
     }
 
-	//- Must know when in noprompt mode
-	public boolean isNoprompt(){
-		return nopromptMode;
-	}
-	public void setNoprompt(boolean flag){
-		nopromptMode = flag;
-	}
+    //- Must know when in noprompt mode
+    public boolean isNoprompt() {
+        return nopromptMode;
+    }
+
+    public void setNoprompt(boolean flag) {
+        nopromptMode = flag;
+    }
 	
-    public boolean isUpgradeSupported(){
-		boolean flag = true;
+    public boolean isUpgradeSupported() {
+        boolean retVal = true;
         String sourceVersion = sAppSrvObj.getVersion();
         String targetVersion = tAppSrvObj.getVersion();
 
         if (!sourceVersion.equals(UpgradeConstants.VERSION_91) &&
-            !sourceVersion.equals(UpgradeConstants.VERSION_3_0)){
+            !sourceVersion.equals(UpgradeConstants.VERSION_3_0)) {
             logger.info(stringManager.getString("upgrade.common.upgrade_not_supported",
-			sourceVersion, sAppSrvObj.getEdition(), targetVersion, tAppSrvObj.getEdition()));
-            flag = false;
+                sourceVersion, sAppSrvObj.getEdition(), targetVersion, tAppSrvObj.getEdition()));
+            retVal = false;
         }
-		return flag;
+        return retVal;
     }
 	
     public String findLatestDomainDirBackup(String domainRoot) {
-		return UpgradeUtils.getUpgradeUtils(this).findLatestDomainBackup(
-			domainRoot, sAppSrvObj.getDomainName());
+        return UpgradeUtils.getUpgradeUtils(this).findLatestDomainBackup(
+            domainRoot, sAppSrvObj.getDomainName());
     }
   
     public void recover() {
-        if (isInPlace()){
+        if (isInPlace()) {
             UpgradeUtils.getUpgradeUtils(this).recover();
         }
     }
