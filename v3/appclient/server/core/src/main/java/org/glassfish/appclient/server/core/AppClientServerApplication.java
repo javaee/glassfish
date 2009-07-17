@@ -39,6 +39,7 @@
 
 package org.glassfish.appclient.server.core;
 
+import org.glassfish.appclient.server.core.jws.Util;
 import com.sun.enterprise.deployment.Application;
 import java.io.IOException;
 import java.net.URI;
@@ -50,6 +51,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.appclient.server.core.jws.JavaWebStartState;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.runtime.JnlpDocDescriptor;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -70,7 +72,6 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.appclient.server.core.jws.Util;
 import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
 import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
@@ -362,6 +363,12 @@ public class AppClientServerApplication implements
         final Map<String,DynamicContent> dynamicContent =
                 initClientDynamicContent();
 
+        final JnlpDocDescriptor jnlpDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDoc();
+        if (jnlpDoc != null) {
+            DeveloperContentHandler.addDeveloperContent(dc.getClassLoader(),
+                    jnlpDoc, staticContent, dynamicContent);
+
+        }
         myContent = new HashSet<Content>(staticContent.values());
         myContent.addAll(dynamicContent.values());
 
@@ -380,9 +387,6 @@ public class AppClientServerApplication implements
         createAndAddStaticContent(result, helper.appClientServerURI(dc),
                 helper.appClientUserURI(dc),
                 CLIENT_JAR_PATH_PROPERTY_NAME);
-//        final StaticContent acJarContent = new FixedContent(
-//                new File(helper.appClientServerURI(dc)));
-//        result.put(helper.appClientUserURI(dc).toASCIIString(), acJarContent);
 
         createAndAddSignedStaticContentFromGeneratedFile(result, helper.facadeServerURI(dc),
                 helper.facadeUserURI(dc),
@@ -480,6 +484,8 @@ public class AppClientServerApplication implements
             final StaticContent newContent,
             final String uriStringForLookup) {
         content.put(uriStringForLookup, newContent);
+        logger.fine("Recording static content: URI for lookup = " +
+                uriStringForLookup + "; content = " + newContent.toString());
     }
 
     private File signedFileForGeneratedAppFile(final File unsignedFile) {
@@ -506,7 +512,7 @@ public class AppClientServerApplication implements
         final Map<String,DynamicContent> result = new HashMap<String,DynamicContent>();
 
         // TODO: needs to be expanded to pass any args we need to pass to the ACC (maybe all via agent args?)
-        tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "<argument> *** CHANGE THIS *** </argument>");
+        tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "");
 
         createAndAddDynamicContent(result, tHelper.mainJNLP(), MAIN_DOCUMENT_TEMPLATE);
         createAndAddDynamicContent(result, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
@@ -524,7 +530,7 @@ public class AppClientServerApplication implements
         content.put(uriStringForContent, newDynamicContent(processedTemplate,
                 JNLP_MIME_TYPE));
         logger.fine("Adding dyn content " + uriStringForContent + System.getProperty("line.separator") +
-                processedTemplate);
+                (logger.isLoggable(Level.FINER) ? processedTemplate : ""));
 
 
     }

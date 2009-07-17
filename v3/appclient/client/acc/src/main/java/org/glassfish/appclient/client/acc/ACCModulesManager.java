@@ -47,7 +47,6 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.naming.ClientNamingConfigurator;
 import org.glassfish.internal.api.Globals;
@@ -74,8 +73,6 @@ public class ACCModulesManager /*implements ModuleStartup*/ {
 
     private static Habitat habitat = null;
 
-    private StartupContext startupContext = null;
-
     public synchronized static void initialize(final ClassLoader loader) throws URISyntaxException {
         /*
          * The habitat might have been initialized earlier.  Currently
@@ -91,14 +88,8 @@ public class ACCModulesManager /*implements ModuleStartup*/ {
              */
             Globals.setDefaultHabitat(habitat);
 
-            /*
-             * Pass an explicit root file based on where the current JAR file
-             * is located so that relative paths to, for example, lib/dtds and
-             * lib/schemas will work.
-             */
-            File rootFile = findJARFileDirectory();
-            StartupContext startupContext = new StartupContext(rootFile, new Properties());
-            habitat.add(new ExistingSingletonInhabitant(startupContext));
+            StartupContext startupContext = new ACCStartupContext();
+            habitat.add(new ExistingSingletonInhabitant(StartupContext.class, startupContext));
             /*
              * Following the example from AppServerStartup, remove any
              * pre-loaded lazy inhabitant for ProcessEnvironment that exists
@@ -149,30 +140,7 @@ public class ACCModulesManager /*implements ModuleStartup*/ {
          * Initialize the habitat.
          */
         ModulesRegistry registry = new StaticModulesRegistry(loader);
-        Habitat habitat = registry.createHabitat("default");
-        return habitat;
+        Habitat h = registry.createHabitat("default");
+        return h;
     }
-
-    private static File findJARFileDirectory() throws URISyntaxException {
-        /*
-         * Define com.sun.aas.installRoot so the local resolver for DTDs and
-         * XSDs will find the local copies.
-         */
-        URI thisJARURI = ACCModulesManager.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-        File jarFile = new File(thisJARURI);
-        return jarFile.getParentFile();
-    }
-    
-//    public void setStartupContext(StartupContext startupContext) {
-//        this.startupContext = startupContext;
-//    }
-//
-//    public void start() {
-//        //no-op
-//    }
-//
-//    public void stop() {
-//        //no-op
-//    }
-
 }

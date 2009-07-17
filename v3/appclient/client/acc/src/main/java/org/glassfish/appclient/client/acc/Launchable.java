@@ -114,8 +114,10 @@ interface Launchable {
                         Thread.currentThread().getContextClassLoader());
             }
             if (result != null) {
-                URL clientOrFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart());
-                ACCClassLoader.instance().appendURL(clientOrFacadeURL);
+                if ( ! (result instanceof JWSFacadeLaunchable)) {
+                    URL clientOrFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart());
+                    ACCClassLoader.instance().appendURL(clientOrFacadeURL);
+                }
                 return result;
             }
             final String msg = localStrings.getLocalString(Launchable.class,

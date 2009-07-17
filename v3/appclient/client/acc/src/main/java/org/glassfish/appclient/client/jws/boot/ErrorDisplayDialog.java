@@ -47,6 +47,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import org.glassfish.appclient.client.acc.UserError;
 
 /**
  * Displays errors detected after Java Web Start has launched the 
@@ -65,6 +66,20 @@ public class ErrorDisplayDialog {
     private static ResourceBundle rb;
     
     /**
+     * Displays a kinder, gentler display for user errors - ones that normally
+     * a user could correct.  This is not typically user-fixable in a
+     * Java Web Start launch environment, but the nature of the error still 
+     * does not call for a stack trace.
+     * 
+     * @param ue UserError to be displayed
+     * @param rb ResourceBundle from which to retrieve i18n strings
+     */
+    public static void showUserError(final UserError ue, final ResourceBundle rb) {
+        showText(ue.messageForGUIDisplay(), rb);
+    }
+
+
+    /**
      *Displays a dialog box reporting an error, listing the stack trace in
      *a text box and allowing the user to copy the stack trace to the platform's
      *clipboard before dismissing the dialog box.
@@ -73,6 +88,21 @@ public class ErrorDisplayDialog {
      *@param rb a ResourceBundle containing localizable strings
      */
     public static void showErrors(Throwable t, ResourceBundle rb) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+
+        t.printStackTrace(ps);
+        showText(baos.toString(), rb);
+    }
+
+    /**
+     * Manages the dialog box to display whatever error information has already
+     * been formatted.
+     *
+     * @param text message to display
+     * @param rb ResourceBundle containing the i18n strings
+     */
+    private static void showText(final String text, final ResourceBundle rb) {
         
         ErrorDisplayDialog.rb = rb;
         
@@ -85,11 +115,7 @@ public class ErrorDisplayDialog {
         stackTraceArea.setEditable(false);
         stackTraceArea.setRows(16);
         
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        
-        t.printStackTrace(ps);
-        stackTraceArea.setText(baos.toString());
+        stackTraceArea.setText(text);
         
         /*
          *Place the text area inside a scroll pane.

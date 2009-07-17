@@ -35,6 +35,9 @@
  */
 package org.glassfish.appclient.server.core;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.IiopService;
+import org.glassfish.appclient.server.core.jws.Util;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.module.Module;
 import java.io.IOException;
@@ -42,7 +45,6 @@ import java.util.Arrays;
 import java.util.jar.Manifest;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.appclient.server.core.jws.NamingConventions;
-import org.glassfish.appclient.server.core.jws.Util;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -217,6 +219,11 @@ public class AppClientDeployer
     @Inject
     private ServerEnvironment serverEnv;
 
+    @Inject(name="server-config") // for now
+    Config config;
+
+    private IiopService iiopService;
+
     /** the class loader which knows about the org.glassfish.appclient.gf-client-module */
     private ClassLoader gfClientModuleClassLoader;
 
@@ -264,6 +271,8 @@ public class AppClientDeployer
         umbrellaRoot = new File(installRootURI).getParentFile();
         umbrellaRootURI = umbrellaRoot.toURI();
         domainLevelSignedJARsRoot = new File(serverEnv.getDomainRoot(), JWS_SIGNED_SYSTEM_JARS_ROOT);
+
+        iiopService = config.getIiopService();
     }
 
     @Override
@@ -324,7 +333,8 @@ public class AppClientDeployer
         }
         final AppClientHTTPAdapter adapter = new AppClientHTTPAdapter(
                 contextRoot, staticContent, dynamicContent, tokens,
-                serverEnv.getDomainRoot(), new File(installRootURI));
+                serverEnv.getDomainRoot(), new File(installRootURI),
+                iiopService);
         httpAdapters.put(appName, adapter);
         requestDispatcher.registerEndpoint(
                 contextRoot,
@@ -465,7 +475,8 @@ public class AppClientDeployer
                     staticSystemContent, 
                     dynamicSystemContent,
                     new Properties(),
-                    serverEnv.getDomainRoot(), new File(installRootURI));
+                    serverEnv.getDomainRoot(), new File(installRootURI),
+                    iiopService);
 
             requestDispatcher.registerEndpoint(
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
@@ -522,11 +533,6 @@ public class AppClientDeployer
                 systemJARRelativeURIs.add(relativeSystemPath(uri));
             }
         }
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("The Java Web Start system-level adapter will serve the following " +
-                    "fixed content:"
-                    + result.toString());
-        }
         return result;
     }
 
@@ -545,10 +551,6 @@ public class AppClientDeployer
         result.put(NamingConventions.systemJNLPURI(),
                 new SimpleDynamicContentImpl(replacedText, "jnlp"));
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("The Java Web Start system-level adapter will serve the following dynamic content: "
-                    + result.toString());
-        }
         return result;
     }
 

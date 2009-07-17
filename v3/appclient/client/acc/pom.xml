@@ -95,14 +95,10 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
+                <directory>src/main/resources</directory>
             </resource>
-
             <!--
-                The next resource definitions will include the DTDs and
+                The next resource definition will include the DTDs and
                 schemas in the module so we can find them at runtime in the
                 client.  The dependency:unpack-dependency goal below will
                 by default deposit the unpacked contents into

@@ -202,6 +202,7 @@ public class CommandLaunchInfo {
         DIR(true),
         CLASSFILE(true),
         CLASS,
+        URL,
         UNKNOWN;
 
         private final boolean usesAppClientCommandForMainProgram;

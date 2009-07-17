@@ -39,6 +39,8 @@
 
 package org.glassfish.appclient.server.core.jws;
 
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.MimeType;
@@ -67,15 +69,16 @@ import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
  */
 public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
-    private final static String LAST_MODIFIED_HEADER_NAME = "Last-Modified";
-    private final static String DATE_HEADER_NAME = "Date";
-    private final static String IF_MODIFIED_SINCE = "If-Modified-Since";
     private final static String IF_UNMODIFIED_SINCE = "If-Unmodified-Since";
 
     private static final String ARG_QUERY_PARAM_NAME = "arg";
     private static final String PROP_QUERY_PARAM_NAME = "prop";
     private static final String VMARG_QUERY_PARAM_NAME = "vmarg";
-    private final String lineSep = System.getProperty("line.separator");
+    private static final String ACC_ARG_QUERY_PARAM_NAME = "acc";
+
+    private static final String DEFAULT_ORB_LISTENER_ID = "orb-listener-1";
+
+    private final String LINE_SEP = System.getProperty("line.separator");
 
     private final Logger logger = LogDomains.getLogger(getClass(),
             LogDomains.ACC_LOGGER);
@@ -83,6 +86,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private final Map<String,DynamicContent> dynamicContent;
     private final Properties tokens;
 
+    private final IiopService iiopService;
     private final ACCConfigContent accConfigContent;
 
     public AppClientHTTPAdapter(
@@ -91,13 +95,18 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             final Map<String,DynamicContent> dynamicContent,
             final Properties tokens,
             final File domainDir,
-            final File installDir) throws IOException {
+            final File installDir,
+            final IiopService iiopService) throws IOException {
         super(contextRoot, staticContent);
         this.dynamicContent = dynamicContent;
         this.tokens = tokens;
+        this.iiopService = iiopService;
         this.accConfigContent = new ACCConfigContent(
                 new File(domainDir, "config"),
                 new File(new File(installDir, "lib"), "appclient"));
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(dumpContent());
+        }
     }
 
     /**
@@ -144,10 +153,14 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         final DynamicContent dc = dynamicContent.get(relativeURIString);
         if (dc == null) {
             respondNotFound(gResp);
+            logger.fine(logPrefix() + "Could not find dynamic content requested using " +
+                    relativeURIString);
             return;
         }
         if ( ! dc.isAvailable()) {
             finishErrorResponse(gResp, contentStateToResponseStatus(dc));
+            logger.fine(logPrefix() + "Found dynamic content (" + relativeURIString +
+                    " but is is not marked as available");
             return;
         }
 
@@ -170,10 +183,9 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
          * content's template and the just-prepared properties.
          */
         final DynamicContent.Instance instance = dc.getOrCreateInstance(allTokens);
-
         final Date instanceTimestamp = instance.getTimestamp();
 
-        if (returnIfClientCacheIsCurrent(gReq,
+        if (returnIfClientCacheIsCurrent(relativeURIString, gReq,
                 instanceTimestamp.getTime())) {
             return;
         }
@@ -192,18 +204,9 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         if (methodType.equalsIgnoreCase("GET")) {
             writeData(instance.getText(), gResp);
         }
+        logger.fine(logPrefix() + "Served dyn content for " + methodType + ": "
+                + relativeURIString + (logger.isLoggable(Level.FINER) ? "->" + instance.getText() : ""));
         finishResponse(gResp, HttpServletResponse.SC_OK);
-    }
-
-    private boolean returnIfClientCacheIsCurrent(final GrizzlyRequest gReq,
-            final long instanceTimestamp) {
-        final long ifModifiedSinceTime = gReq.getDateHeader(IF_MODIFIED_SINCE);
-        boolean result;
-        if (result = (ifModifiedSinceTime != -1) &&
-            (ifModifiedSinceTime > instanceTimestamp)) {
-            finishSuccessResponse(gReq.getResponse(), HttpServletResponse.SC_NOT_MODIFIED);
-        }
-        return result;
     }
 
     /**
@@ -231,6 +234,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
                 Util.toXMLEscaped(accConfigContent.appClientLogin()));
         answer.setProperty("request.message.security.config.provider.security.config",
                 Util.toXMLEscaped(accConfigContent.securityConfig()));
+
+        answer.setProperty("request.iiop.properties", buildIIOPProperties());
         /*
          *Treat query parameters with the name "arg" as command line arguments to the
          *app client.
@@ -248,8 +253,39 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         return answer;
     }
 
+    private String buildIIOPProperties() {
+        final StringBuilder sb = new StringBuilder();
+        final String indent = "        ";
+        for (IiopListener listener : iiopService.getIiopListener()) {
+            final String propPrefix = "appclient.iiop.listener." + listener.getId() + ".";
+            sb.append(propertyDef(indent, propPrefix + "port", listener.getPort()));
+            sb.append(propertyDef(indent, propPrefix + "isSecure", listener.getSecurityEnabled()));
+        }
+        return sb.toString();
+    }
+
+    private String propertyDef(final String indent, final String name, final String value) {
+        return indent + "<property name=\"" + name + "\" value=\"" + value + "\"/>" + LINE_SEP;
+    }
+
     private String getPathInfo(final GrizzlyRequest gReq) {
         return gReq.getRequestURI();
+    }
+
+    /**
+     * Returns the expression "-targetserver=host:port[,...]" representing the
+     * currently-active ORBs to which the ACC could attempt to bootstrap.
+     * @return
+     */
+    private String targetServerSetting() {
+        String port = null;
+        for (IiopListener listener : iiopService.getIiopListener()) {
+            if (listener.getId().equals(DEFAULT_ORB_LISTENER_ID)) {
+                port = listener.getPort();
+                break;
+            }
+        }
+        return "-targetserver=${request.host}:" + port;
     }
 
     private void processQueryParameters(String queryString, final Properties answer) {
@@ -267,6 +303,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         QueryParams arguments = new ArgQueryParams();
         QueryParams properties = new PropQueryParams();
         QueryParams vmArguments = new VMArgQueryParams();
+        QueryParams accArguments = new ACCArgQueryParams(targetServerSetting());
         QueryParams [] paramTypes = new QueryParams[] {arguments, properties, vmArguments};
 
         for (String param : queryParams) {
@@ -280,6 +317,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         answer.setProperty("request.arguments", arguments.toString());
         answer.setProperty("request.properties", properties.toString());
         answer.setProperty("request.vmargs", vmArguments.toString());
+        answer.setProperty("request.extra.agent.args", accArguments.toString());
     }
 
     /**
@@ -293,7 +331,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private void writeData(final String data,
             final GrizzlyResponse res) {
         try {
-            res.setStatus(200);
+            res.setStatus(HttpServletResponse.SC_OK);
 
 
             res.setContentLength(data.length());
@@ -329,7 +367,11 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         return "";
     }
 
-//    public static class DynamicContent {
+    private String commaIfNeeded(final int origLength) {
+        return origLength > 0 ? "," : "";
+    }
+
+    //    public static class DynamicContent {
 //        private final String content;
 //        private final Date timestamp;
 //
@@ -393,12 +435,49 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             if (value.length() == 0) {
                 value = "#missing#";
             }
-            arguments.append("<argument>").append(value).append("</argument>").append(lineSep);
+            arguments.append("<argument>").append(value).append("</argument>").append(LINE_SEP);
         }
 
         public String toString() {
             return arguments.toString();
         }
+    }
+
+    /**
+     * Processes query string parameters as ACC arguments.
+     * <p>
+     * The URL which launches the app client might contain query arguments
+     * of the form accarg=xxx or accarg=xxx=yyy.  Convert these into
+     * additional agent arguments the same way the appclient script does:
+     * arg=(whatever the query argument is).  For example,
+     * <code>
+     * ?accarg=-user=roland
+     * </code> in the URL
+     * translates to the agent argument
+     * <code>
+     * arg=-user=roland
+     * </code> in the agent arguments.
+     */
+    private class ACCArgQueryParams extends QueryParams {
+        private StringBuilder settings = new StringBuilder();
+        private final String targetServerSetting;
+
+
+        public ACCArgQueryParams(final String targetServerSetting) {
+            super (ACC_ARG_QUERY_PARAM_NAME);
+            this.targetServerSetting = targetServerSetting;
+        }
+
+        public void processValue(String value) {
+            settings.append(commaIfNeeded(settings.length())).append(value);
+        }
+
+        public String toString() {
+            return settings.toString() + commaIfNeeded(settings.length()) +
+                    targetServerSetting;
+        }
+
+
     }
 
     private class PropQueryParams extends QueryParams {
@@ -418,7 +497,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
                     if ((equalsSign + 1) < value.length()) {
                         propValue = value.substring(equalsSign + 1);
                     }
-                    properties.append("<property name=\"" + propName + "\" value=\"" + propValue + "\"/>").append(lineSep);
+                    properties.append("<property name=\"" + propName + "\" value=\"" + propValue + "\"/>").append(LINE_SEP);
                 }
             }
         }
@@ -445,4 +524,23 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         }
     }
 
+    @Override
+    protected String dumpContent() {
+        if (dynamicContent == null) {
+            return "   Dynamic content: not initialized";
+        }
+        if (dynamicContent.isEmpty()) {
+            return "  Dynamic content: empty" + LINE_SEP;
+        }
+        final StringBuilder sb = new StringBuilder("  Dynamic content:");
+        for (Map.Entry<String,DynamicContent> entry : dynamicContent.entrySet()) {
+            sb.append("  " + entry.getKey());
+            if (logger.isLoggable(Level.FINER)) {
+                sb.append("  ====").append(LINE_SEP).append(entry.getValue().toString())
+                        .append("  ====").append(LINE_SEP);
+            }
+        }
+        sb.append("  ========");
+        return sb.toString();
+    }
 }

@@ -40,18 +40,17 @@
 package org.glassfish.appclient.client;
 
 import com.sun.enterprise.container.common.spi.util.InjectionException;
-import com.sun.enterprise.deployment.node.SaxParserHandler;
+import com.sun.enterprise.deployment.node.SaxParserHandlerBundled;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.io.BufferedInputStream;
 import java.io.CharArrayWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
@@ -88,17 +87,19 @@ import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.LogService;
 import org.glassfish.appclient.client.acc.config.TargetServer;
+import org.glassfish.appclient.client.jws.boot.LaunchSecurityHelper;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
  * @author tjquinn
  */
 public class AppClientFacade {
+
+    private static final String SUN_ACC_CONTENT_PROPERTY_NAME = "sun-acc.xml.content";
 
     private static final Class<?> stringsAnchor = ACCClassLoader.class;
     private static LocalStringManager localStrings = new LocalStringManagerImpl(stringsAnchor);
@@ -110,6 +111,8 @@ public class AppClientFacade {
     private static URI installRootURI = null;
 
     private static AppClientContainer acc = null;
+
+    private static boolean isJWS = false;
 
 
     /**
@@ -205,6 +208,9 @@ public class AppClientFacade {
 //            ACCModulesManager.initialize(loader);
         Thread.currentThread().setContextClassLoader(loader);
 
+        isJWS = Boolean.getBoolean("appclient.is.jws");
+
+        initInstallRootProperty();
 
         if (launchInfo.getClientLaunchType() == ClientLaunchType.UNKNOWN) {
             throw new IllegalArgumentException();
@@ -214,7 +220,6 @@ public class AppClientFacade {
         /*
          * Load the ACC configuration XML file.
          */
-        initInstallRootProperty();
         ClientContainer clientContainer = readConfig(
                 appClientCommandArgs.getConfigFilePath(), loader);
 
@@ -255,9 +260,11 @@ public class AppClientFacade {
         acc = newACC;
     }
 
-
     private static void initInstallRootProperty() throws URISyntaxException {
         URI jarURI = ACCClassLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        if (jarURI.getScheme().startsWith("http")) {
+            return;
+        }
         File jarFile = new File(jarURI);
         File dirFile = jarFile.getParentFile().getParentFile();
         installRootURI = dirFile.toURI();
@@ -414,6 +421,14 @@ public class AppClientFacade {
                         launchInfo.getAppclientCommandArguments().getName());
                 break;
 
+            case URL:
+                container = createContainerForJWSLaunch(
+                        builder,
+                        launchInfo.getClientName(),
+                        launchInfo.getAppclientCommandArguments().getMainclass(),
+                        launchInfo.getAppclientCommandArguments().getName());
+                break;
+
             case CLASS:
                 container = createContainerForClassName(builder, launchInfo.getClientName());
                 break;
@@ -437,6 +452,16 @@ public class AppClientFacade {
             final String clientName) throws Exception, UserError {
 
         URI uri = Util.getURI(new File(appClientPath));
+        return builder.newContainer(uri, null /* callbackHandler */, mainClassName, clientName);
+    }
+
+    private static AppClientContainer createContainerForJWSLaunch(
+            final Builder builder,
+            final String appClientPath,
+            final String mainClassName,
+            final String clientName) throws Exception, UserError {
+
+        URI uri = URI.create(appClientPath);
         return builder.newContainer(uri, null /* callbackHandler */, mainClassName, clientName);
     }
 
@@ -487,8 +512,37 @@ public class AppClientFacade {
                 SAXException, URISyntaxException,
                 IOException {
         ClientContainer result = null;
-        File configFile = checkXMLFile(configPath);
-        checkXMLFile(launchInfo.getAppclientCommandArguments().getConfigFilePath());
+        Reader configReader;
+        /*
+         * During a Java Web Start launch, the config is passed as a property
+         * value.
+         */
+        String configInProperty = System.getProperty(SUN_ACC_CONTENT_PROPERTY_NAME);
+        if (configInProperty != null) {
+            /*
+             * Awkwardly, the sun-acc.xml content refers to a config file.
+             * We work around this for Java Web Start launch by capturing the
+             * content of that config file into a property setting in the
+             * generated JNLP document.  We need to write that content into
+             * a temporary file here on the client and then replace a
+             * placeholder in the sun-acc.xml content with the path to that
+             * temp file.
+             */
+            final File securityConfigTempFile = Util.writeTextToTempFile(
+                    configInProperty, "wss-client-config", ".xml", false);
+            final Properties p = new Properties();
+            p.setProperty("security.config.path", securityConfigTempFile.getAbsolutePath());
+            configInProperty = Util.replaceTokens(configInProperty, p);
+            configReader = new StringReader(configInProperty);
+        } else {
+            /*
+             * This is not a Java Web Start launch, so read the configuration
+             * from a disk file.
+             */
+            File configFile = checkXMLFile(configPath);
+            checkXMLFile(launchInfo.getAppclientCommandArguments().getConfigFilePath());
+            configReader = new FileReader(configFile);
+        }
         /*
          * Although JAXB makes it very simple to parse the XML into Java objects,
          * we have to do several things explicitly to use our local copies of
@@ -501,10 +555,10 @@ public class AppClientFacade {
         XMLReader reader = parser.getXMLReader();
 
         /*
-         * Get the GF-specific local entity resolver that knows about the
-         * local copy of the DTD.
+         * Get the local entity resolver that knows about the
+         * bundled .dtd and .xsd files.
          */
-        reader.setEntityResolver(new LocalDTDResolver());
+        reader.setEntityResolver(new SaxParserHandlerBundled());
 
         /*
          * To support installation-directory independence the default sun-acc.xml
@@ -512,7 +566,7 @@ public class AppClientFacade {
          * preprocess the sun-acc.xml file to replace any tokens with the
          * corresponding values, then submit that result to JAXB.
          */
-        InputSource inputSource = replaceTokensForParsing(configFile);
+        InputSource inputSource = replaceTokensForParsing(configReader);
 
         SAXSource saxSource = new SAXSource(reader, inputSource);
         JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
@@ -523,8 +577,7 @@ public class AppClientFacade {
         return result;
     }
 
-    private static InputSource replaceTokensForParsing(final File configFile) throws FileNotFoundException, IOException, URISyntaxException {
-        FileReader reader = new FileReader(configFile);
+    private static InputSource replaceTokensForParsing(final Reader reader) throws FileNotFoundException, IOException, URISyntaxException {
         char[] buffer = new char[1024];
 
         CharArrayWriter writer = new CharArrayWriter();
@@ -542,19 +595,6 @@ public class AppClientFacade {
             mapping.put(propName, props.getProperty(propName));
         }
 
-        /*
-         * Add com.sun.aas.installRoot if it's not already there.
-         */
-        if ( ! props.containsKey(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) ) {
-            URI thisJarURI = stringsAnchor.getProtectionDomain().getCodeSource().getLocation().toURI();
-            if (thisJarURI.getScheme().equals("jar")) {
-                String ssp = thisJarURI.getSchemeSpecificPart();
-                thisJarURI = (ssp.startsWith("file:") ? URI.create(ssp) : URI.create("file:" + ssp));
-            }
-            File thisJarFile = new File(thisJarURI);
-
-            mapping.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, thisJarFile.getParentFile().getParentFile().getAbsolutePath());
-        }
         TokenResolver resolver = new TokenResolver(mapping);
         String configWithTokensReplaced = resolver.resolve(writer.toString());
         InputSource inputSource = new InputSource(new StringReader(configWithTokensReplaced));
@@ -586,41 +626,6 @@ public class AppClientFacade {
         ue.setUsage(getUsage());
         throw ue;
 
-    }
-
-    private static class LocalDTDResolver extends DefaultHandler {
-
-        private final static String ACC_PUBLIC_ID = "-//Sun Microsystems Inc.//DTD Application Server 8.0 Application Client Container//EN";
-        private final static URI ACC_WEB_URI = URI.create("sun-application-client-container_1_2.dtd");
-
-        private final static Map<String,URI> publicIDToFilePath = initPublicIDToWeb();
-
-        private static Map<String,URI> initPublicIDToWeb() {
-            Map<String,URI> result = new HashMap<String,URI>();
-            result.put(ACC_PUBLIC_ID, ACC_WEB_URI);
-            return result;
-        }
-
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
-            if (publicId == null) {
-                if (systemId == null ||
-                    systemId.lastIndexOf('/') == systemId.length()) {
-                        return null;
-                }
-                String fileName = SaxParserHandler.getSchemaURLFor(systemId.substring(systemId.lastIndexOf('/') + 1));
-                if (fileName == null) {
-                    fileName = systemId;
-                }
-                return new InputSource(fileName);
-            }
-            if (publicIDToFilePath.containsKey(publicId)) {
-                URI dtdURI = installRootURI.resolve("lib/dtds/").resolve(publicIDToFilePath.get(publicId));
-                File dtdFile = new File(dtdURI);
-                return new InputSource(new BufferedInputStream(new FileInputStream(dtdFile)));
-            }
-            return null;
-        }
     }
 
     private static class JavaVersion {

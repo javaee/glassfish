@@ -43,6 +43,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.logging.LogDomains;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,6 +59,12 @@ import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
  */
 public class RestrictedContentAdapter extends GrizzlyAdapter {
 
+    protected final static String LAST_MODIFIED_HEADER_NAME = "Last-Modified";
+    protected final static String DATE_HEADER_NAME = "Date";
+    protected final static String IF_MODIFIED_SINCE = "If-Modified-Since";
+
+    private final static String LINE_SEP = System.getProperty("line.separator");
+    
     private final Logger logger = LogDomains.getLogger(
             RestrictedContentAdapter.class, LogDomains.ACC_LOGGER);
 
@@ -90,6 +97,8 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         for (Map.Entry<String,StaticContent> sc : content.entrySet()) {
             cache.put(sc.getKey(), sc.getValue().file());
         }
+        logger.fine(logPrefix() + "Initial static content loaded " +
+                dumpContent());
     }
 
     public RestrictedContentAdapter(final String contextRoot) {
@@ -101,7 +110,7 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         this.contextRoot = contextRoot;
         setHandleStaticResources(false);
 
-        setUseSendFile(true);
+        setUseSendFile(false);
         commitErrorResponse = true;
     }
 
@@ -127,7 +136,9 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
             return;
         }
         this.content.put(relativeURIString, newContent);
-        this.cache.put(contextRoot + "/" + relativeURIString, newContent.file());
+        this.cache.put(relativeURIString, newContent.file());
+        logger.fine(logPrefix() + "adding static content " +
+                relativeURIString + " " + newContent.toString());
     }
 
     public synchronized void addContentIfAbsent(
@@ -149,17 +160,22 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 
     protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) {
 
+        String relativeURIString = relativizeURIString(gReq.getRequestURI());
+
         /*
          * "Forbidden" seems like a more helpful response than "not found"
          * if the corresponding app client has been suspended.
          */
         if (state == State.SUSPENDED) {
             finishErrorResponse(gResp, HttpServletResponse.SC_FORBIDDEN);
+            logger.fine(logPrefix() + "is suspended; refused to serve static content requested using "
+                    + (relativeURIString == null ? "null" : relativeURIString));
             return true;
         }
 
-        String relativeURIString = relativizeURIString(gReq.getRequestURI());
         if (relativeURIString == null) {
+            logger.fine(logPrefix() + "Could not find static content requested using full request URI = "
+                    + gReq.getRequestURI() + " - relativized URI was null");
             respondNotFound(gResp);
             return true;
         }
@@ -181,6 +197,9 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
             return true;
         } else {
             finishErrorResponse(gResp, contentStateToResponseStatus(sc));
+            logger.fine(logPrefix() + "Found static content for " + gReq.getMethod() +
+                    ": " + relativeURIString + " -> " + sc.toString() +
+                    " but could not serve it; its state is " + sc.state());
             return true;
         }
     }
@@ -188,12 +207,59 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
     private void processContent(final String relativeURIString,
             final GrizzlyRequest gReq, final GrizzlyResponse gResp) {
         try {
+            final StaticContent sc = content.get(relativeURIString);
+
+            /*
+             * No need to actually send the file if the request contains a
+             * If-Modified-Since date and the file is not more recent.
+             */
+            final File fileToSend = sc.file();
+            if (fileToSend != null) {
+                if (returnIfClientCacheIsCurrent(relativeURIString,
+                        gReq, fileToSend.lastModified())) {
+                    return;
+                }
+
+                /*
+                 * The client's cache is obsolete.  Be sure to set the
+                 * time header values.
+                 */
+                gResp.addDateHeader(LAST_MODIFIED_HEADER_NAME, fileToSend.lastModified());
+                gResp.addDateHeader(DATE_HEADER_NAME, System.currentTimeMillis());
+            }
+
+            /*
+             * Delegate to the Grizzly implementation.
+             */
             super.service(relativeURIString, gReq.getRequest(), gResp.getResponse());
-            finishResponse(gResp, HttpServletResponse.SC_OK);
+            final int status = gResp.getStatus();
+            if (status != HttpServletResponse.SC_OK) {
+                logger.fine(logPrefix() + "Could not serve content for " +
+                        relativeURIString + " - status = " + status);
+            } else {
+                logger.fine(logPrefix() + "Served static content for " + gReq.getMethod() +
+                        ":" + sc.toString());
+            }
+            finishResponse(gResp, status);
         } catch (Exception e) {
-            gResp.getResponse().setErrorException(e);
-            finishResponse(gResp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            gResp.getResponse().setErrorException(e);
+//            finishErrorResponse(gResp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.log(Level.SEVERE, logPrefix() + relativeURIString, e);
         }
+    }
+
+    protected boolean returnIfClientCacheIsCurrent(final String relativeURIString,
+            final GrizzlyRequest gReq,
+            final long contentTimestamp) {
+        final long ifModifiedSinceTime = gReq.getDateHeader(IF_MODIFIED_SINCE);
+        boolean result;
+        if (result = (ifModifiedSinceTime != -1) &&
+            (ifModifiedSinceTime >= contentTimestamp)) {
+            finishSuccessResponse(gReq.getResponse(), 
+                    HttpServletResponse.SC_NOT_MODIFIED);
+            logger.fine(logPrefix() + relativeURIString + " is already current on the client; no downloaded needed");
+        }
+        return result;
     }
 
     protected int contentStateToResponseStatus(Content content) {
@@ -220,7 +286,11 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 
     @Override
     public String toString() {
-        return content.toString();
+        final StringBuilder sb = new StringBuilder(logPrefix()).append(LINE_SEP);
+        for (Map.Entry<String,StaticContent> entry : content.entrySet()) {
+            sb.append("  ").append(entry.toString()).append(LINE_SEP);
+        }
+        return sb.toString();
     }
 
 
@@ -256,5 +326,25 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 
     protected void finishErrorResponse(final GrizzlyResponse gResp, final int status) {
         finishResponse(gResp, status, true);
+    }
+
+    protected String dumpContent() {
+        if (content == null) {
+            return "  Static content: not initialized";
+        }
+        if (content.isEmpty()) {
+            return "  Static content: empty" + LINE_SEP;
+        }
+        final StringBuilder sb = new StringBuilder(LINE_SEP).append("  Static content");
+        for (Map.Entry<String,StaticContent> entry : content.entrySet()) {
+            sb.append("  ").append(entry.getKey()).append(" : ").
+                    append(entry.getValue().toString()).append(LINE_SEP);
+        }
+        sb.append(LINE_SEP).append("  ========");
+        return sb.toString();
+    }
+
+    protected String logPrefix() {
+        return "Adapter[" + contextRoot + "] ";
     }
 }

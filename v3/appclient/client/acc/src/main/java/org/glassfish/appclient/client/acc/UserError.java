@@ -35,6 +35,8 @@
  */
 package org.glassfish.appclient.client.acc;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.text.MessageFormat;
 
 /**
@@ -100,16 +102,27 @@ public class UserError extends Throwable {
      *and fix the error.
      */
     public void displayAndExit() {
+        display(System.err);
+        System.exit(1);
+    }
+
+    private void display(final PrintStream ps) {
         for (Throwable t = this; t != null; t = t.getCause()) {
-            System.err.println(t.toString());
+            ps.println(t.toString());
         }
         if (usage != null) {
-            System.err.println(usage);
+            ps.println(usage);
         }
         if (Boolean.getBoolean(SHOW_STACK_TRACES_PROPERTY_NAME)) {
-            printStackTrace();
+            printStackTrace(ps);
         }
-        System.exit(1);
+    }
+
+    public String messageForGUIDisplay() {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(os);
+        display(ps);
+        return os.toString();
     }
 
 }

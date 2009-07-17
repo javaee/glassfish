@@ -354,7 +354,7 @@ public class AppClientContainer {
          * the PU handling.  
          */
         Collection<? extends PersistenceUnitDescriptor> referencedPUs = desc.findReferencedPUs();
-        if (referencedPUs != null) {
+        if (referencedPUs != null && ! referencedPUs.isEmpty()) {
 
             ProviderContainerContractInfoImpl pcci = new ProviderContainerContractInfoImpl(
                     (ACCClassLoader) getClassLoader(), inst, client.getAnchorDir(), connectorRuntime);

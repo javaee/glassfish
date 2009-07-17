@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -37,46 +38,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
 -->
+
 <jnlp
     spec="1.0+"
     codebase="${request.scheme}://${request.host}:${request.port}${app.codebase.path}"
-    href="${main.jnlp.path}${request.query.string}">
+    href="${request.adapter.context.root}${main.jnlp.path}${request.query.string}">
     <information>
-        <title>${appclient.main.information.title}</title>
+        <title>Bad template</title>
         <vendor>${appclient.vendor}</vendor>
         <homepage href="${appclient.information.homepage.filepath}"/>
-        <description kind="one-line">${appclient.main.information.description.one-line}</description>
-        <description kind="short">${appclient.main.information.description.short}</description>
-        ${appclient.main.information.images}
+        <description kind="one-line">${appclient.information.description.one-line}</description>
+        <description kind="short">${appclient.information.description.short}</description>
+        ${appclient.information.images}
     <offline-allowed/>
     </information>
 
     <security>
         <all-permissions/>
     </security>
-
+    
     <resources>
-        
-<!--        <java version="1.6+"
-             java-vm-args="-showversion -javaagent=${gf-client.jar}=mode=jws,${agent.args} ${request.vmargs}" /> -->
-        <java version="1.6+" ${request.vmargs} />
-        
-        <!-- 
-            In v3, run the client facade as the main JAR. Eventually Java Web
-            Start might support the splash screen in the JAR.
-        -->
-        <jar href="${client.facade.jar.path}" main="true" />
+        <java version="1.6+" javaagent="${request.scheme}://${request.host}:$request.port}${system.context.root}/${agent.jar}=${agent.args}" ${request.vmargs}/>
 
-        <!--
-            These next JARs will have been signed using the
-            deployer-specified alias, if specified, or the default domain alias.
-            Note that even though these are fetched within the code base of the
-            app, we do not sign these once for each app but reuse ones
-            signed with the same alias.
-        -->
-        <jar href="${gf-client.jar}"/>
-        <jar href="${gf-client-module.jar}"/>
-
+        
         <!--
             Refer to extension JNLP documents which list other resources - JARs and JNLPs.
 
@@ -87,44 +71,29 @@
             or indirectly refers.
         -->
         <extension name="___system" href="${request.scheme}://${request.host}:${request.port}${system.context.root}/${system.jnlp}"/>
+        <extension name="___facade" href="${client.facade.jnlp.path}"/>
         <extension name="___client" href="${client.jnlp.path}"/>
 
         ${app.library.extension}
 
-        <property name="appclient.system.codebase" value="${request.scheme}://${request.host}:${request.port}${system.context.root}"/>
-        <property name="appclient.is.jws" value="true"/>
-
-        <property name="agent.args" value="mode=jws,client=url=${request.scheme}://${request.host}:${request.port}${app.codebase.path}/${client.facade.jar.path},${request.extra.agent.args}"/>
-
-        <property name="client.facade.jar.path" value="${client.facade.jar.path}"/>
-        <property name="full.app.codebase.path" value="${request.scheme}://${request.host}:${request.port}${app.codebase.path}"/>
         <!--
             Properties specified on the request as query parameters (if any)
         -->
         ${request.properties}
-
-        <!--
-            Content normally read from files during an appclient script launch.
-        -->
-        <property name="sun-acc.xml.content" value="${request.sun-ac.xml.content}"/>
-        <property name="appclient.login.conf.content" value="${request.appclient.login.conf.content}"/>
-        <property name="message.security.config.provider.security.config"
-            value="${request.message.security.config.provider.security.config}"/>
-
 
 <!-- from the command line -->
 <!--
 <property name="java.util.logging.manager" value="com.sun.enterprise.server.logging.ACCLogManager"/>
 -->
 
-        <!--
-            Turn on fine logging by default to help with diagnosis.  Users will not
-            usually see the output anyway.
-        -->
-        <property name="javax.enterprise.resource.corba.level" value="FINE"/>
+    <!--
+        Turn on fine logging by default to help with diagnosis.  Users will not
+        usually see the output anyway.
+    -->
+    <property name="javax.enterprise.resource.corba.level" value="FINE"/>
 
 
-<!-- =================================================================================
+<!-- --------------------------------------------------------------------------------------
     The next three properties are set in the jndi.properties file.  Set them
     here so they are detected in the Java Web Start environment.
 -->
@@ -137,10 +106,8 @@
 # supports dynamic RMI-IIOP.
 -->
         <property name="java.naming.factory.state" value="com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl"/>
-<!-- ================================================================================== -->
+<!-- -------------------------------------------------------------------------------------- ->
 
-        <property name="appclient.iiop.defaultHost" value="${request.host}"/>
-        <property name="appclient.iiop.defaultPort" value="${request.appclient.iiop.defaultPort}"/>
 
         <property name="${appclient.download.host.propertyName}" value="${request.host}"/>
 
@@ -148,7 +115,7 @@
 
     </resources>
 
-    <application-desc main-class="org.glassfish.appclient.client.JWSAppClientContainerMain">
+    <application-desc>
 
         ${appclient.main.class.arguments}
 
@@ -156,7 +123,7 @@
             Further arguments may be added dynamically.
         -->
         ${request.arguments}
-
+        
     </application-desc>
 
 </jnlp>

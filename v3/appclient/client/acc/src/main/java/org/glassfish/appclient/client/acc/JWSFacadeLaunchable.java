@@ -37,52 +37,33 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core.jws.servedcontent;
+package org.glassfish.appclient.client.acc;
 
-import java.util.Properties;
-import org.glassfish.appclient.server.core.jws.Util;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.jar.Attributes;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  *
- * @author Tim
+ * @author tjquinn
  */
-public class SimpleDynamicContentImpl extends Content.Adapter implements DynamicContent {
+public class JWSFacadeLaunchable extends FacadeLaunchable {
 
-    private final String template;
-    private final String mimeType;
-
-    private Instance instance = null;
-
-    public SimpleDynamicContentImpl(final String template, final String mimeType) {
-        this.template = template;
-        this.mimeType = mimeType;
+    public JWSFacadeLaunchable(Habitat habitat, ReadableArchive facadeClientRA, Attributes mainAttrs, ReadableArchive clientRA, String mainClassNameToLaunch) throws IOException {
+        super(habitat, facadeClientRA, mainAttrs, clientRA, mainClassNameToLaunch, null);
     }
 
-    public Instance getExistingInstance(Properties tokenValues) {
-        return getOrCreateInstance(tokenValues, false);
-    }
-
-    public Instance getOrCreateInstance(Properties tokenValues) {
-        return getOrCreateInstance(tokenValues, true);
-    }
-
-    private Instance getOrCreateInstance(final Properties tokenValues,
-            final boolean createIfAbsent) {
-        if (instance == null && createIfAbsent) {
-            instance = new DynamicContent.InstanceAdapter(
-                    Util.replaceTokens(template, tokenValues));
-        }
-        return instance;
-    }
-
-    public String getMimeType() {
-        return mimeType;
+    public JWSFacadeLaunchable(Habitat habitat, Attributes mainAttrs, ReadableArchive facadeRA) throws IOException, URISyntaxException {
+        super(habitat, mainAttrs, facadeRA, null);
     }
 
     @Override
-    public String toString() {
-        return (instance == null ? "null" : instance.getText());
+    public String getAnchorDir() {
+        throw new UnsupportedOperationException("getAnchorDir not yet supported during Java Web Start launches");
     }
+
 
 
 

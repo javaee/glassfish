@@ -37,53 +37,25 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core.jws.servedcontent;
+package org.glassfish.appclient.client.acc;
 
-import java.util.Properties;
-import org.glassfish.appclient.server.core.jws.Util;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
+ * Implements ReadableArchive for the https protocol to support
+ * launches of app clients using Java Web Start.
+ * <p>
+ * Although the JARs are stored as JARs in the Java Web Start cache,
+ * Java Web Start hides the actual location where the cached JAR resides.
+ * So this implementation does not rely on the JARs location but uses
+ * URLs to access the archive itself and its elements.
  *
- * @author Tim
+ * @author tjquinn
  */
-public class SimpleDynamicContentImpl extends Content.Adapter implements DynamicContent {
-
-    private final String template;
-    private final String mimeType;
-
-    private Instance instance = null;
-
-    public SimpleDynamicContentImpl(final String template, final String mimeType) {
-        this.template = template;
-        this.mimeType = mimeType;
-    }
-
-    public Instance getExistingInstance(Properties tokenValues) {
-        return getOrCreateInstance(tokenValues, false);
-    }
-
-    public Instance getOrCreateInstance(Properties tokenValues) {
-        return getOrCreateInstance(tokenValues, true);
-    }
-
-    private Instance getOrCreateInstance(final Properties tokenValues,
-            final boolean createIfAbsent) {
-        if (instance == null && createIfAbsent) {
-            instance = new DynamicContent.InstanceAdapter(
-                    Util.replaceTokens(template, tokenValues));
-        }
-        return instance;
-    }
-
-    public String getMimeType() {
-        return mimeType;
-    }
-
-    @Override
-    public String toString() {
-        return (instance == null ? "null" : instance.getText());
-    }
-
-
+@Service(name="https")
+@Scoped(PerLookup.class)
+public class HTTPSInputArchive extends HTTPInputArchive {
 
 }

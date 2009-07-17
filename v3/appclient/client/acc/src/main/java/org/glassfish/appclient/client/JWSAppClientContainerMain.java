@@ -39,8 +39,12 @@
 
 package org.glassfish.appclient.client;
 
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import org.glassfish.appclient.client.acc.UserError;
+import org.glassfish.appclient.client.jws.boot.ErrorDisplayDialog;
+import org.glassfish.appclient.client.jws.boot.JWSACCMain;
+import org.glassfish.appclient.client.jws.boot.LaunchSecurityHelper;
 
 /**
  *
@@ -52,6 +56,13 @@ public class JWSAppClientContainerMain {
 
     private static Logger logger = Logger.getLogger(JWSAppClientContainerMain.class.getName());
 
+    /** localizable strings */
+    private static final ResourceBundle rb =
+        ResourceBundle.getBundle(
+            JWSAppClientContainerMain.class.getPackage().getName().replaceAll("\\.", "/") + ".LocalStrings");
+
+
+
     /**
      * @param args the command line arguments
      */
@@ -61,15 +72,24 @@ public class JWSAppClientContainerMain {
             final long now = System.currentTimeMillis();
 
             final String agentArgsText = System.getProperty("agent.args");
+            LaunchSecurityHelper.setPermissions();
 
             AppClientFacade.prepareACC(agentArgsText, null);
+            AppClientFacade.launch(args);
 
             logger.fine("JWSAppClientContainer finished after " + (System.currentTimeMillis() - now) + " ms");
 
         } catch (UserError ue) {
-            ue.displayAndExit();
-        } catch (Exception e) {
-            e.printStackTrace();
+            ErrorDisplayDialog.showUserError(ue, rb);
+        } catch (Throwable thr) {
+            /*
+             *Display the throwable and stack trace to System.err, then
+             *display it to the user using the GUI dialog box.
+             */
+            System.err.println(rb.getString("jwsacc.errorLaunch"));
+            System.err.println(thr.toString());
+            thr.printStackTrace();
+            ErrorDisplayDialog.showErrors(thr, rb);
             System.exit(1);
         }
 

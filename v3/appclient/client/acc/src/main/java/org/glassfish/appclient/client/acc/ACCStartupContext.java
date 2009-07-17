@@ -37,53 +37,45 @@
  * holder.
  */
 
-package org.glassfish.appclient.server.core.jws.servedcontent;
+package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import java.io.File;
 import java.util.Properties;
-import org.glassfish.appclient.server.core.jws.Util;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 /**
- *
- * @author Tim
+ * The startup context is not used to furnish any directory information
+ * when used in the ACC.
+ * 
+ * @author tjquinn
  */
-public class SimpleDynamicContentImpl extends Content.Adapter implements DynamicContent {
+@Service
+@Scoped(Singleton.class)
+public class ACCStartupContext extends StartupContext {
 
-    private final String template;
-    private final String mimeType;
+    private final long timeZero;
+    private final Properties args = new Properties();
 
-    private Instance instance = null;
-
-    public SimpleDynamicContentImpl(final String template, final String mimeType) {
-        this.template = template;
-        this.mimeType = mimeType;
-    }
-
-    public Instance getExistingInstance(Properties tokenValues) {
-        return getOrCreateInstance(tokenValues, false);
-    }
-
-    public Instance getOrCreateInstance(Properties tokenValues) {
-        return getOrCreateInstance(tokenValues, true);
-    }
-
-    private Instance getOrCreateInstance(final Properties tokenValues,
-            final boolean createIfAbsent) {
-        if (instance == null && createIfAbsent) {
-            instance = new DynamicContent.InstanceAdapter(
-                    Util.replaceTokens(template, tokenValues));
-        }
-        return instance;
-    }
-
-    public String getMimeType() {
-        return mimeType;
+    public ACCStartupContext() {
+        this.timeZero = System.currentTimeMillis();
     }
 
     @Override
-    public String toString() {
-        return (instance == null ? "null" : instance.getText());
+    public File getRootDirectory() {
+//        throw new UnsupportedOperationException();
+        return new File(System.getProperty("user.home"));
     }
 
+    @Override
+    public Properties getArguments() {
+        return args;
+    }
 
-
+    @Override
+    public long getCreationTime() {
+        return timeZero;
+    }
 }

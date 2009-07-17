@@ -178,8 +178,12 @@ public class FacadeLaunchable implements Launchable {
         final Attributes mainAttrs = mf.getMainAttributes();
         FacadeLaunchable result = null;
         if (mainAttrs.containsKey(GLASSFISH_APPCLIENT)) {
-            result = new FacadeLaunchable(habitat, mainAttrs, facadeRA,
-                    dirContainingStandAloneFacade(facadeRA));
+            if ( ! (facadeRA instanceof HTTPInputArchive)) {
+                result = new FacadeLaunchable(habitat, mainAttrs, facadeRA,
+                        dirContainingStandAloneFacade(facadeRA));
+            } else {
+                result = new JWSFacadeLaunchable(habitat, mainAttrs, facadeRA);
+            }
         } else {
             /*
              * The facade does not contain GlassFish-AppClient so if it is
