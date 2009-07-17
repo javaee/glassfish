@@ -91,17 +91,57 @@ public abstract class CLICommand {
 
     protected static final CLILogger logger = CLILogger.getInstance();
 
+    /**
+     * The name of the command.
+     * Initialized in the constructor.
+     */
     protected String name;
+
+    /**
+     * The program options for the command.
+     * Initialized in the constructor.
+     */
     protected ProgramOptions programOpts;
+
+    /**
+     * The environment for the command.
+     * Initialized in the constructor.
+     */
     protected Environment env;
+
+    /**
+     * The command line arguments for this execution.
+     * Initialized in the execute method.
+     */
     protected String[] argv;
+
+    /**
+     * The metadata describing the command's options and operands.
+     * XXX - should be collected together into a CommandModel object
+     */
     protected Set<ValidOption> commandOpts;
     protected String operandName = "";
     protected String operandType;
     protected int operandMin;
     protected int operandMax;
+    protected boolean unknownOptionsAreOperands = false;
+
+    /**
+     * The options parsed from the command line.
+     * Initialized by the parse method.
+     */
     protected Map<String, String> options;
+
+    /**
+     * The operands parsed from the command line.
+     * Initialized by the parse method.
+     */
     protected List<String> operands;
+
+    /**
+     * The passwords read from the password file.
+     * Initialized by the initializeCommandPassword method.
+     */
     protected Map<String, String> passwords;
 
     static {
@@ -460,7 +500,8 @@ public abstract class CLICommand {
             options.put("help", "true");
             operands = Collections.emptyList();
         } else {
-            Parser rcp = new Parser(argv, 1, commandOpts, false);
+            Parser rcp =
+                new Parser(argv, 1, commandOpts, unknownOptionsAreOperands);
             options = rcp.getOptions();
             operands = rcp.getOperands();
         }
@@ -598,48 +639,98 @@ public abstract class CLICommand {
             if (!opt.getType().equals("PASSWORD"))
                 continue;
             String pwdname = opt.getName();
-            if (ok(passwords.get(pwdname))) {
-                options.put(pwdname, passwords.get(pwdname));
-                continue;
-            }
-            if (opt.isValueRequired() != ValidOption.REQUIRED)
-                continue;
-            String pwd = getPassword(opt.getName());
-            if (pwd == null)
+            String pwd = getPassword(opt, null, true);
+            // XXX - hack alert!  the description is stored in the default value
+            String description = opt.getDefaultValue();
+            if (!ok(description))
+                description = pwdname;
+            if (pwd == null) {
+                if (opt.isValueRequired() != ValidOption.REQUIRED)
+                    continue;       // not required, skip it
                 throw new CommandValidationException(
-                            strings.get("missingPassword", name, pwdname));
-            passwords.put(pwdname, pwd);
+                            strings.get("missingPassword", name, description));
+            }
             options.put(pwdname, pwd);
         }
     }
 
     /**
-     * Get a password of the given name.
-     * In not interactive, returns null.  Otherwise, prompts for the
-     * password twice, compares the two values, and if they're the same
-     * and meet other validity criteria (i.e., length) returns the password.
+     * Get a password for the given option.
+     * First, look in the passwords map.  If found, return it.
+     * If not found, and not required, return null;
+     * If not interactive, return null.  Otherwise, prompt for the
+     * password.  If create is true, prompt twice and compare the two values
+     * to make sure they're the same.  If the password meets other validity
+     * criteria (i.e., length) returns the password.  If defaultPassword is
+     * not null, "Enter" selects this default password, which is returned.
      */
-    protected String getPassword(String passwordName)
-            throws CommandValidationException {
+    protected String getPassword(ValidOption opt, String defaultPassword,
+            boolean create) throws CommandValidationException {
+
+        String passwordName = opt.getName();
+        String password = passwords.get(passwordName);
+        if (ok(password))
+            return password;
+
+        if (opt.isValueRequired() != ValidOption.REQUIRED)
+            return null;        // not required
 
         if (!programOpts.isInteractive())
-            return null;
+            return null;        // can't prompt for it
 
-        final String newprompt = strings.get("NewPasswordPrompt", passwordName);
-        final String confirmationPrompt =
-            strings.get("NewPasswordConfirmationPrompt", passwordName);
+        // XXX - hack alert!  the description is stored in the default value
+        String description = opt.getDefaultValue();
+        String newprompt;
+        if (ok(description)) {
+            if (defaultPassword != null)
+                newprompt = strings.get("NewPasswordDescriptionDefaultPrompt",
+                                            description);
+            else
+                newprompt =
+                    strings.get("NewPasswordDescriptionPrompt", description);
+        } else {
+            if (defaultPassword != null)
+                newprompt =
+                    strings.get("NewPasswordDefaultPrompt", passwordName);
+            else
+                newprompt = strings.get("NewPasswordPrompt", passwordName);
+        }
 
         String newpassword = readPassword(newprompt);
+        if (defaultPassword != null) {
+            if (newpassword == null)
+                newpassword = "";
+            if (newpassword.length() == 0) {
+                newpassword = defaultPassword;
+                passwords.put(passwordName, newpassword);
+                return newpassword;
+            }
+        }
         if (!isPasswordValid(newpassword)) {
             throw new CommandValidationException(
                     strings.get("PasswordLimit", passwordName));
         }
 
+        if (!create) {
+            passwords.put(passwordName, newpassword);
+            return newpassword;
+        }
+
+        String confirmationPrompt;
+        if (ok(description)) {
+            confirmationPrompt =
+                strings.get("NewPasswordDescriptionConfirmationPrompt",
+                            description);
+        } else {
+            confirmationPrompt =
+                strings.get("NewPasswordConfirmationPrompt", passwordName);
+        }
         String newpasswordAgain = readPassword(confirmationPrompt);
         if (!newpassword.equals(newpasswordAgain)) {
             throw new CommandValidationException(
                 strings.get("OptionsDoNotMatch", passwordName));
         }
+        passwords.put(passwordName, newpassword);
         return newpassword;
     }
 

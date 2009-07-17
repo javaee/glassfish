@@ -611,6 +611,12 @@ public class RemoteCommand extends CLICommand {
             DocumentBuilder d =
                     DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = d.parse(in);
+            NodeList cmd = doc.getElementsByTagName("command");
+            Node cmdnode = cmd.item(0);
+            NamedNodeMap cmdattrs = cmdnode.getAttributes();
+            String dashOk = getAttr(cmdattrs, "unknown-options-are-operands");
+            if (dashOk != null)
+                unknownOptionsAreOperands = Boolean.parseBoolean(dashOk);
             NodeList opts = doc.getElementsByTagName("option");
             for (int i = 0; i < opts.getLength(); i++) {
                 Node n = opts.item(i);
@@ -622,6 +628,9 @@ public class RemoteCommand extends CLICommand {
                             ValidOption.OPTIONAL : ValidOption.REQUIRED,
                         getAttr(attrs, "default"));
                 opt.setShortName(getAttr(attrs, "short"));
+                if (getAttr(attrs, "description") != null)
+                    // XXX - hack alert!  description is stored in default value
+                    opt.setDefaultValue(getAttr(attrs, "description"));
                 valid.add(opt);
                 if (opt.getType().equals("FILE"))
                     sawFile = true;
