@@ -62,7 +62,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="create-jvm-options" />
             <param name="operand.props"
-                   value="-DjvmRoute=MYINSTANCE"/>
+                   value="-- -DjvmRoute=MYINSTANCE"/>
         </antcall>
         <antcall target="stopDomain"/>
         <antcall target="startDomain"/>
