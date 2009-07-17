@@ -43,6 +43,7 @@ import org.glassfish.admin.amx.base.*;
 import org.glassfish.admin.amx.intf.config.*;
 import org.glassfish.admin.amx.intf.config.grizzly.*;
 import org.glassfish.admin.amx.monitoring.*;
+import org.glassfish.admin.amx.j2ee.*;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.logging.Logging;
@@ -189,38 +190,6 @@ class Interfaces {
             Ssl.class,
             Transport.class,
             Transports.class
-
-            
-        /*
-            AppClientModule.class,
-            EJBModule.class,
-            EntityBean.class,
-            J2EEApplication.class,
-            J2EEDomain.class,
-            J2EEResource.class,
-            J2EEServer.class,
-            JCAConnectionFactory.class,
-            JCAManagedConnectionFactory.class,
-            JCAResource.class,
-            JDBCDataSource.class,
-            JDBCDriver.class,
-            org.glassfish.admin.amx.j2ee.JDBCResource.class,
-            JMSResource.class,
-            org.glassfish.admin.amx.j2ee.JNDIResource.class,
-            JTAResource.class,
-            JVM.class,
-            JavaMailResource.class,
-            MessageDrivenBean.class,
-            RMI_IIOPResource.class,
-            org.glassfish.admin.amx.j2ee.ResourceAdapter.class,
-            ResourceAdapterModule.class,
-            Servlet.class,
-            StatefulSessionBean.class,
-            StatelessSessionBean.class,
-            URLResource.class,
-            WebModule.class
-        */
-        
         );
     }
 

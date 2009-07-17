@@ -252,9 +252,24 @@ public final class AMXProxyTests extends AMXTestBase
     /** subclass can override to add more */
     protected Interfaces getInterfaces()
     {
-        return new Interfaces();
+        return haveJ2EE() ? new InterfacesGlassfish() : new Interfaces();
     }
-    
+        
+    private boolean haveJ2EE()
+    {
+        try
+        {
+            Class.forName( "org.glassfish.admin.amx.j2ee.J2EEDomain" );
+            //System.out.println( "FOUND J2EEDomain" );
+            return true;
+        }
+        catch( final Exception e )
+        {
+            //System.out.println( "NOT FOUND J2EEDomain" );
+        }
+        return false;
+    }
+
     @Test
     public void testAllGenerically()
     {
