@@ -107,8 +107,8 @@
                 <sun:tableColumn headerText="$resource{i18n.common.type.header}"  rowHeader="$boolean{true}">
                     <staticText id="typeCol"  value="#{td.value.type}" />
                 </sun:tableColumn>
-                <sun:tableColumn headerText="$resource{i18njms.Stats}">
-                    <sun:hyperlink id="statsCol" text="$resource{i18njms.View}" url="#{pageSession.viewPage}?name=#{td.value.name}&type=#{td.value.type}" />
+                <sun:tableColumn headerText="$resource{i18njms.jmsPhysDestinations.Stats}">
+                    <sun:hyperlink id="statsCol" text="$resource{i18njms.jmsPhysDestinations.View}" url="#{pageSession.viewPage}?name=#{td.value.name}&type=#{td.value.type}" />
                 </sun:tableColumn>
             </sun:tableRowGroup>
         </sun:table>
