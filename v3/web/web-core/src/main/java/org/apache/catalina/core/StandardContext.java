@@ -117,12 +117,19 @@ public class StandardContext
     private static final Set<SessionTrackingMode> DEFAULT_SESSION_TRACKING_MODES =
         EnumSet.of(SessionTrackingMode.COOKIE);
 
-    private Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>>
-                                                servletContainerInitializerInterestList = null;
     /**
      * Array containing the safe characters set.
      */
     protected static final URLEncoder urlEncoder;
+
+    /**
+     * The descriptive information string for this implementation.
+     */
+    private static final String info =
+        "org.apache.catalina.core.StandardContext/1.0";
+
+    private static final RuntimePermission GET_CLASSLOADER_PERMISSION =
+        new RuntimePermission("getClassLoader");
 
     /**
      * GMT timezone - all HTTP dates are on GMT
@@ -147,6 +154,7 @@ public class StandardContext
         pipeline.setBasic(new StandardContextValve());
         namingResources.setContainer(this);
         broadcaster = new NotificationBroadcasterSupport();
+        mySecurityManager = new MySecurityManager();
     }
 
     /**
@@ -328,12 +336,6 @@ public class StandardContext
      * they were defined in the deployment descriptor.
      */
     private List<FilterMap> filterMaps = new ArrayList<FilterMap>();
-
-    /**
-     * The descriptive information string for this implementation.
-     */
-    private static final String info =
-        "org.apache.catalina.core.StandardContext/1.0";
 
     /**
      * The list of classnames of InstanceListeners that will be added
@@ -735,6 +737,13 @@ public class StandardContext
     // ServletContainerInitializer#onStartup
     private boolean isAllowedToRegisterServletContextListener = false;
 
+    /*
+     * Security manager responsible for enforcing permission check on
+     * ServletContext#getClassLoader
+     */
+    private MySecurityManager mySecurityManager;
+
+    private Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> servletContainerInitializerInterestList = null;
 
     // ----------------------------------------------------- Context Properties
 
@@ -2759,8 +2768,18 @@ public class StandardContext
         return jspConfigDesc;
     }
 
+    /**
+     * Gets the class loader of the web application represented by this
+     * ServletContext.
+     */
     public ClassLoader getClassLoader() {
-        return (getLoader() != null) ? getLoader().getClassLoader() : null;
+        ClassLoader webappLoader = (getLoader() != null) ?
+            getLoader().getClassLoader() : null;
+        if (webappLoader == null) {
+            return null;
+        }
+        mySecurityManager.checkGetClassLoaderPermission(webappLoader);
+        return webappLoader;
     }
 
     /**
@@ -6755,7 +6774,7 @@ public class StandardContext
                 "getFilterRegistrations", "getSessionCookieConfig",
                 "setSessionTrackingModes", "getDefaultSessionTrackingModes",
                 "getEffectiveSessionTrackingModes", "addListener",
-                "createListener");
+                "createListener", "getClassLoader");
 
         /*
          * The ServletContext to which to delegate the invocation of any
@@ -6797,6 +6816,74 @@ public class StandardContext
             }
 
             return result;
+        }
+    }
+
+    /**
+     * Custom security manager responsible for enforcing permission
+     * check on ServletContext#getClassLoader if necessary.
+     */
+    private static class MySecurityManager extends SecurityManager {
+
+        /*
+         * @return true if the specified class loader <code>cl</code>
+         * can be found in the class loader delegation chain of the
+         * <code>start</code> class loader, false otherwise
+         */
+        boolean isAncestor(ClassLoader start, ClassLoader cl) {
+            ClassLoader acl = start;
+            do {
+	        acl = acl.getParent();
+                if (cl == acl) {
+                    return true;
+                }
+            } while (acl != null);
+            return false;
+        }
+
+        /*
+         * Checks whether access to the webapp class loader associated 
+         * with this Context should be granted to the caller of 
+         * ServletContext#getClassLoader.
+         *
+         * If no security manager exists, this method returns immediately.
+         *
+         * Otherwise, it calls the security manager's checkPermission
+         * method with the getClassLoader permission if the class loader
+         * of the caller of ServletContext#getClassLoader is not the same as,
+         * or an ancestor of the webapp class loader associated with this
+         * Context.
+         */
+        void checkGetClassLoaderPermission(ClassLoader webappLoader) {
+            SecurityManager sm = System.getSecurityManager();
+            if (sm == null) {
+                return;
+            }
+
+            // Get the current execution stack as an array of classes
+            Class[] classContext = getClassContext();
+
+            /*
+             * Determine the caller of ServletContext#getClassLoader:
+             *
+             * classContext[0]:
+             *   org.apache.catalina.core.StandardContext$MySecurityManager
+             * classContext[1]:
+             *   org.apache.catalina.core.StandardContext
+             * classContext[2]:
+             *   org.apache.catalina.core.StandardContext
+             * classContext[3]:
+             *   org.apache.catalina.core.ApplicationContext
+             * classContext[4]:
+             *  org.apache.catalina.core.ApplicationContextFacade
+             * classContext[5]:
+             *  Caller whose classloader to check
+             */
+            ClassLoader ccl = classContext[5].getClassLoader();
+            if (ccl != null && ccl != webappLoader && 
+                    !isAncestor(webappLoader, ccl)) {
+                sm.checkPermission(GET_CLASSLOADER_PERMISSION);
+            }
         }
     }
 }

@@ -692,11 +692,7 @@ public final class ApplicationContextFacade
 
 
     public ClassLoader getClassLoader() {
-        if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (ClassLoader) doPrivileged("getClassLoader", null);
-        } else {
-            return context.getClassLoader();
-        }
+        return context.getClassLoader();
     }
 
 
