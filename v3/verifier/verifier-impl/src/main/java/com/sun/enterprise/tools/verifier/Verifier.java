@@ -327,7 +327,6 @@ public class Verifier
         //OptionalPkgDependency class itself.
         //But any way, we don't have a choice but to make this work around in our code.
         OptionalPkgDependency.satisfyOptionalPackageDependencies();
-        Descriptor.setBoundsChecking(false);
         try
         {
             DescriptorFactory.ResultHolder result =

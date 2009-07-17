@@ -49,6 +49,7 @@ import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.util.io.FileUtils;
@@ -110,6 +111,7 @@ public class DescriptorFactory
         ReadableArchive archive = null;
         Application application = null;
         try {
+            Descriptor.setBoundsChecking(false);
             archive = archiveFactory.openArchive(archiveFile);
             ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
             ActionReport dummyReport = new HTMLActionReporter();
@@ -159,6 +161,8 @@ public class DescriptorFactory
             if (archive != null) {
                 archive.close();
             }
+            // We need to reset it after descriptor building
+            Descriptor.setBoundsChecking(true);
         }
 
         ResultHolder result = new ResultHolder();
