@@ -221,9 +221,13 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
     }
 
     boolean isMac = false;
+    boolean isAix = false;
     String osName = System.getProperty("os.name").toLowerCase();
     if (osName.startsWith("mac os x")) {
         isMac=true;
+    }
+    if (osName.startsWith("aix")) {
+        isAix=true;
     }
 
     if (!isWindows) {
@@ -386,7 +390,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
         }catch(Exception e) {
     	LOGGER.log(Level.INFO, "JDKHome Couldnt be found ");
     	jdkHome = new File(javaHome).getParent();
-    	if (isMac) {
+    	if (isMac || isAix) {
        	 jdkHome = javaHome;
     	}
        }
@@ -481,7 +485,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 		    File.pathSeparator + existingPath; 
             LOGGER.log(Level.INFO, "New PATH: " +newPath);
             
-	    if (isMac) {
+	    if (isMac || isAix) {
 		    asadminExecuteCommand = new ExecuteCommand(asadminCommandArrayMac);
 	    }
 	    else {
@@ -655,7 +659,7 @@ void unconfigureUpdatetool(String installDir) throws Exception {
 /* Try to shutdown the notifer. Don't do this on Mac, the notifier command
 does not work on Mac, refer to Issue #7348. */
     String osName = System.getProperty("os.name").toLowerCase();
-    if (!osName.startsWith("mac os x")){
+    if (!osName.startsWith("mac os x") && !osName.startsWith("aix")){
     	try {
             String shutdownCommand;
             if (isWindows)
@@ -671,7 +675,7 @@ does not work on Mac, refer to Issue #7348. */
        } catch (Exception e) {
             LOGGER.log(Level.INFO, "Exception while unregistering notifier: " + e.getMessage());
        }
-} /* End, conditional code for Mac. */
+} /* End, conditional code for Mac and Aix. */
 
     /* Now unregister notifer. */
     try {

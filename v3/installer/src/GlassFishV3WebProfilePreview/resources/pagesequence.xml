@@ -47,7 +47,7 @@
     <page name="glassfish"/>
     <page name="updatetool"/>
     <page name="JDKSelection">
-	<when><![CDATA[ !IS_MAC ]]></when>
+	<when><![CDATA[ !(IS_MAC || IS_AIX)]]></when>
     </page>
     <page name="ReadyToInstall"/>
     <page name="Progress"/>

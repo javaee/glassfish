@@ -150,6 +150,8 @@
      if (isSilentMode()) 
   		if (System.getProperty("os.name").toLowerCase().startsWith("mac")) 
 			return;
+  		if (System.getProperty("os.name").toLowerCase().startsWith("aix")) 
+			return;
       theHiddenJDK = wizard.getComponentByName(content, "HIDDEN_JDK");
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       theJava = new JavaDetection(ConfigHelper.getStringValue("JDKSelection.directory.JDK_VERSIONRANGE"));
