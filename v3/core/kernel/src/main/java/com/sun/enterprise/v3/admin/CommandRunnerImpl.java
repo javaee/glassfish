@@ -880,7 +880,7 @@ public class CommandRunnerImpl implements CommandRunner {
 	// XXX - this is a hack for now.  if the request mapped to an
 	// XMLContentActionReporter, that means we want the command metadata.
 	if (report instanceof XMLContentActionReporter) {
-	    getMetadata(model, report);
+	    getMetadata(command, model, report);
 	} else {
 	    report.setMessage(model.getCommandName() + " - " + localStrings.getLocalString(i18nKey, ""));
 	    report.getTopMessagePart().addProperty("SYNOPSIS", getUsageText(command, model));
@@ -897,15 +897,29 @@ public class CommandRunnerImpl implements CommandRunner {
      * which will be translated to XML elements and attributes by the
      * XMLContentActionReporter.
      *
+     * @param command the command
      * @param model the CommandModel describing the command
      * @param report	the (assumed to be) XMLContentActionReporter
      */
-    private void getMetadata(CommandModel model, ActionReport report) {
+    private void getMetadata(AdminCommand command, CommandModel model,
+	    ActionReport report) {
+        LocalStringManagerImpl localStrings =
+		new LocalStringManagerImpl(command.getClass());
+
+        // Let's get the command i18n key
+        I18n i18n = model.getI18n();
+        String i18n_key = "";
+        if (i18n!=null) {
+            i18n_key = i18n.value();
+        }
+
 	ActionReport.MessagePart top = report.getTopMessagePart();
 	ActionReport.MessagePart cmd = top.addChild();
 	// <command name="name">
 	cmd.setChildrenType("command");
 	cmd.addProperty("name", model.getCommandName());
+	if (model.unknownOptionsAreOperands())
+	    cmd.addProperty("unknown-options-are-operands", "true");
 	CommandModel.ParamModel primary = null;
 	// for each parameter add
 	// <option name="name" type="type" short="s" default="default"
@@ -922,6 +936,9 @@ public class CommandRunnerImpl implements CommandRunner {
 	    ppart.addProperty("name", p.getName());
 	    ppart.addProperty("type", typeOf(p));
 	    ppart.addProperty("optional", Boolean.toString(param.optional()));
+	    String paramDesc = getParamDescription(localStrings, i18n_key, p);
+	    if (ok(paramDesc))
+		ppart.addProperty("description", paramDesc);
 	    if (ok(param.shortName()))
 		ppart.addProperty("short", param.shortName());
 	    if (ok(param.defaultValue()))
