@@ -144,7 +144,7 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
 
     public void accept(WebService webService) {
         
-        /*try {
+        try {
             
             String wsdlFileUri = webService.getWsdlFileUri();
             if (!webService.hasWsdlFile()) {
@@ -191,42 +191,16 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                     DOLUtils.getDefaultLogger().severe(msg);
                     throw new RuntimeException(msg);           
                 }
-            }*/
-            //TODO BM connect with ModuleContentLinkers accept
-            try {
-                 if("1.1".compareTo(webService.getWebServicesDescriptor().getSpecVersion())<0) {
-
-                    Collection<WebServiceEndpoint> endpoints = webService.getEndpoints();
-                    for(WebServiceEndpoint ep : endpoints) {
-                        if( ep.implementedByWebComponent() ) {
-                            updateServletEndpointRuntime(ep);
-                        } else {
-                            validateEjbEndpoint(ep);
-                        }
-                    }
-
-                 } else {
-                     jaxrpcWebService(webService);
-
-                }
-            } catch(Exception e) {
-                RuntimeException ge =new RuntimeException(e.getMessage());
-                ge.initCause(e);
-                throw ge;
             }
-
-       /* } catch(IOException ioe) {
-                    String msg = localStrings.getLocalString(
-		    	   "enterprise.deployment.util.servicewsdlfilenotreadable",
-                           "wsdl file {0}  for service-ref {1} cannot be opened : {2}",
-                           new Object[] {webService.getWsdlFileUri(), webService.getName(), ioe.getMessage()});
+        } catch(IOException ioe) {
+            String msg = localStrings.getLocalString(
+                   "enterprise.deployment.util.servicewsdlfilenotreadable",
+                   "wsdl file {0}  for service-ref {1} cannot be opened : {2}",
+                   new Object[] {webService.getWsdlFileUri(), webService.getName(), ioe.getMessage()});
                     DOLUtils.getDefaultLogger().severe(msg);
-                    throw new RuntimeException(ioe);
+            throw new RuntimeException(ioe);
         }
         
-        // For JAXRPC-2.0 based webservice, there is no model file
-        // XXX - TODO - This check should be changed to checking the version 
-        // once the 2.0 DTDs/Schemas are available
         if(webService.getMappingFileUri() == null) {
             return;
         }
@@ -251,75 +225,8 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                            new Object[] {webService.getMappingFileUri(), webService.getName(), ioe});
                     DOLUtils.getDefaultLogger().severe(msg);
                     throw new RuntimeException(ioe);                
-        }*/
-    }
-
-    public void updateServletEndpointRuntime(WebServiceEndpoint endpoint) {
-
-            // Copy the value of the servlet impl bean class into
-            // the runtime information.  This way, we'll still
-            // remember it after the servlet-class element has been
-            // replaced with the name of the container's servlet class.
-            endpoint.saveServletImplClass();
-
-            WebComponentDescriptor webComp =
-                (WebComponentDescriptor) endpoint.getWebComponentImpl();
-
-            WebBundleDescriptor bundle = webComp.getWebBundleDescriptor();
-            WebServicesDescriptor webServices = bundle.getWebServices();
-            Collection endpoints =
-                webServices.getEndpointsImplementedBy(webComp);
-
-            if( endpoints.size() > 1 ) {
-                String msg = "Servlet " + endpoint.getWebComponentLink() +
-                    " implements " + endpoints.size() + " web service endpoints " +
-                    " but must only implement 1";
-                throw new IllegalStateException(msg);
-            }
-
-            if( endpoint.getEndpointAddressUri() == null ) {
-                Set urlPatterns = webComp.getUrlPatternsSet();
-                if( urlPatterns.size() == 1 ) {
-
-                    // Set endpoint-address-uri runtime info to uri.
-                    // Final endpoint address will still be relative to context root
-                    String uri = (String) urlPatterns.iterator().next();
-                    endpoint.setEndpointAddressUri(uri);
-
-                    // Set transport guarantee in runtime info if transport
-                    // guarantee is INTEGRAL or CONDIFIDENTIAL for any
-                    // security constraint with this url-pattern.
-                    Collection constraints =
-                        bundle.getSecurityConstraintsForUrlPattern(uri);
-                    for(Iterator i = constraints.iterator(); i.hasNext();) {
-                        SecurityConstraint next = (SecurityConstraint) i.next();
-
-                        UserDataConstraint dataConstraint =
-                            next.getUserDataConstraint();
-                        String guarantee = (dataConstraint != null) ?
-                            dataConstraint.getTransportGuarantee() : null;
-
-                        if( (guarantee != null) &&
-                            ( guarantee.equals
-                              (UserDataConstraint.INTEGRAL_TRANSPORT) ||
-                              guarantee.equals
-                              (UserDataConstraint.CONFIDENTIAL_TRANSPORT) ) ) {
-                            endpoint.setTransportGuarantee(guarantee);
-                            break;
-                        }
-                    }
-                } else {
-                    String msg = localStrings.getLocalString(
-		    	   "enterprise.deployment.unassignedaddress",
-                           "Endpoint {0} has not been assigned an endpoint address\\n " +
-                           "and is associated with servlet {1} , which has  {2} urlPatterns",
-                           new Object[] {endpoint.getEndpointName(), webComp.getCanonicalName(), urlPatterns.size()});
-                    DOLUtils.getDefaultLogger().severe(msg);
-                    throw new IllegalStateException(msg);
-                }
-            }
         }
-    
+    }
 
     /**
      * All wsdl files and wsdl imported files live under a well-known
@@ -330,54 +237,4 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
         String wsdlDir = bundle.getWsdlDir();
         return (uri != null) && uri.startsWith(wsdlDir);
     }
-
-
-    public void validateEjbEndpoint(WebServiceEndpoint ejbEndpoint) {
-        EjbDescriptor ejbDescriptor = ejbEndpoint.getEjbComponentImpl();
-        EjbBundleDescriptor bundle = ejbDescriptor.getEjbBundleDescriptor();
-        WebServicesDescriptor webServices = bundle.getWebServices();
-        Collection endpoints =
-                webServices.getEndpointsImplementedBy(ejbDescriptor);
-        if( endpoints.size() == 1 ) {
-            if( ejbDescriptor.hasWebServiceEndpointInterface() ) {
-                if(!ejbEndpoint.getServiceEndpointInterface().equals
-                        (ejbDescriptor.getWebServiceEndpointInterfaceName())) {
-                    String msg = "Ejb " + ejbDescriptor.getName() +
-                            " service endpoint interface does not match " +
-                            " port component " + ejbEndpoint.getEndpointName();
-                    throw new IllegalStateException(msg);
-                }
-            } else {
-                String msg = "Ejb " + ejbDescriptor.getName() +
-                        " must declare <service-endpoint> interface";
-                throw new IllegalStateException(msg);
-            }
-        }
-    }
-
-    private void jaxrpcWebService(WebService webService)
-            throws Exception {
-
-        if((webService.getWsdlFileUrl() == null) ||
-                (webService.getMappingFileUri() == null)) {
-            throw new DeploymentException(localStrings.getLocalString(
-                    "enterprise.webservice.jaxrpcFilesNotFound",
-                    "Service {0} seems to be a JAXRPC based web service but without "+
-                            "the mandatory WSDL and Mapping file. Deployment cannot proceed",
-                    new Object[] {webService.getName()}));
-        }
-        /*ModelInfo modelInfo = createModelInfo(webService);
-        String args[] = createJaxrpcCompileArgs(true);
-
-        CompileTool wscompile =
-                rpcFactory.createCompileTool(System.out, "wscompile");
-        wscompileForWebServices = wscompile;
-        WsCompile delegate = new WsCompile(wscompile, webService);
-        delegate.setModelInfo(modelInfo);
-        wscompile.setDelegate(delegate);
-
-        jaxrpc(args, delegate, webService, files);*/
-    }
-
-
 }
