@@ -697,6 +697,12 @@ public abstract class CLICommand {
         }
 
         String newpassword = readPassword(newprompt);
+
+        /*
+         * If we allow for a default password, and the user just hit "Enter",
+         * return the default password.  No need to prompt twice or check
+         * for validity.
+         */
         if (defaultPassword != null) {
             if (newpassword == null)
                 newpassword = "";
@@ -706,14 +712,21 @@ public abstract class CLICommand {
                 return newpassword;
             }
         }
-        if (!isPasswordValid(newpassword)) {
-            throw new CommandValidationException(
-                    strings.get("PasswordLimit", passwordName));
-        }
 
+        /*
+         * If not creating a new password, don't need to verify that
+         * the user typed it correctly by making them type it twice,
+         * and don't need to check it for validity.  Just return what
+         * we have.
+         */
         if (!create) {
             passwords.put(passwordName, newpassword);
             return newpassword;
+        }
+
+        if (!isPasswordValid(newpassword)) {
+            throw new CommandValidationException(
+                    strings.get("PasswordLimit", passwordName));
         }
 
         String confirmationPrompt;
