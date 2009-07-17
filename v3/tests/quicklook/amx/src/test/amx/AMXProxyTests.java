@@ -252,24 +252,10 @@ public final class AMXProxyTests extends AMXTestBase
     /** subclass can override to add more */
     protected Interfaces getInterfaces()
     {
-        return haveJ2EE() ? new InterfacesGlassfish() : new Interfaces();
+        return haveJSR77() ? new InterfacesGlassfish() : new Interfaces();
     }
-        
-    private boolean haveJ2EE()
-    {
-        try
-        {
-            Class.forName( "org.glassfish.admin.amx.j2ee.J2EEDomain" );
-            //System.out.println( "FOUND J2EEDomain" );
-            return true;
-        }
-        catch( final Exception e )
-        {
-            //System.out.println( "NOT FOUND J2EEDomain" );
-        }
-        return false;
-    }
-
+    
+    
     @Test
     public void testAllGenerically()
     {
@@ -297,16 +283,42 @@ public final class AMXProxyTests extends AMXTestBase
         // don't mark this as a failure just yet
         // assert problems.size() == 0;
     }
+
+
+
     
-    
-/*
-where to put this, won't run on web distribution
-    @Test
-    public void testJ2EEDomain()
+    /** must be checked dynamically because it's not in the web distribution */
+    private static final Class<? extends AMXProxy> getJ2EEDomainClass()
+        throws ClassNotFoundException
     {
-        testProxyInterface( getDomainRootProxy().getJ2EEDomain(), J2EEDomain.class );
+        return Class.forName( "org.glassfish.admin.amx.j2ee.J2EEDomain" ).asSubclass(AMXProxy.class);
     }
-*/
+    
+    /** return true if we have the JSR 77 classes */
+    private boolean haveJSR77()
+    {
+        try
+        {
+            getJ2EEDomainClass();
+            //System.out.println( "FOUND J2EEDomain" );
+            return true;
+        }
+        catch( final Exception e )
+        {
+            //System.out.println( "NOT FOUND J2EEDomain" );
+        }
+        return false;
+    }
+    
+    @Test
+    public void testJ2EEDomain() throws ClassNotFoundException
+    {
+        if ( haveJSR77() )
+        {
+            testProxyInterface( getDomainRootProxy().getJ2EEDomain(), getJ2EEDomainClass() );
+        }
+    }
+    
 }
 
 
