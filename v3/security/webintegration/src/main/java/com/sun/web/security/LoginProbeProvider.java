@@ -13,7 +13,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
  *
  * @author nithyasubramanian
  */
-@ProbeProvider(moduleProviderName="security",moduleName="webintegration",probeProviderName="login" )
+@ProbeProvider(moduleProviderName="glassfish",moduleName="webintegration",probeProviderName="login" )
 public class LoginProbeProvider {
     
     @Probe(name="loginSuccessfulEvent")

@@ -12,7 +12,7 @@ import org.glassfish.probe.provider.annotations.ProbeParam;
  *
  * @author nithyasubramanian
  */
-@ProbeProvider(moduleProviderName="security",moduleName="core",probeProviderName="realm")
+@ProbeProvider(moduleProviderName="glassfish",moduleName="core",probeProviderName="realm")
 public class RealmsProbeProvider {
     
     @Probe(name="realmAddedEvent")

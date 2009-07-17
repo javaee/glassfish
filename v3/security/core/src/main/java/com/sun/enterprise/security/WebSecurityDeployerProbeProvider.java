@@ -12,7 +12,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
  *
  * @author nithyasubramanian
  */
-@ProbeProvider(moduleProviderName = "security", moduleName = "core", probeProviderName = "web")
+@ProbeProvider(moduleProviderName = "glassfish", moduleName = "core", probeProviderName = "web")
 public class WebSecurityDeployerProbeProvider {
 
     @Probe(name = "webDeploymentStartedEvent")

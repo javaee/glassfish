@@ -13,7 +13,7 @@ import org.glassfish.probe.provider.annotations.ProbeProvider;
  *
  * @author nithyasubramanian
  */
-@ProbeProvider(moduleProviderName="ejb-security",moduleName="ejb-container", probeProviderName="ejb")
+@ProbeProvider(moduleProviderName="glassfish",moduleName="ejb-container", probeProviderName="ejb")
 public class EjbSecurityProbeProvider {
     
     @Probe(name="ejbSecDeploymentStartedEvent")

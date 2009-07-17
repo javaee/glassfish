@@ -36,12 +36,12 @@ public class LoginStatsProvider {
         return failedLoginCount.getStatistic();
     }
     
-    @ProbeListener("security:webintegration:login:loginSuccessfulEvent")
+    @ProbeListener("glassfish:webintegration:login:loginSuccessfulEvent")
     public void loginSuccessfulEvent(@ProbeParam("username")String userName){
        successLoginCount.increment();
     }
         
-    @ProbeListener("security:webintegration:login:loginFailedEvent")
+    @ProbeListener("glassfish:webintegration:login:loginFailedEvent")
     public void loginFailedEvent(@ProbeParam("username")String userName){
        failedLoginCount.increment();
     }

@@ -61,7 +61,9 @@ import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.glassfish.api.Startup.Lifecycle;
 import org.glassfish.probe.provider.PluginPoint;
 import org.glassfish.probe.provider.StatsProviderManager;
@@ -104,6 +106,12 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     @Inject(name="MessageSecurityConfigListener", optional=true)
     private ConfigListener msgSecurityConfigListener;
+    
+    private static Map statsProviders = new HashMap();
+    
+    private static RealmStatsProvider realmStatsProvier = null;
+    
+    private static WebSecurityDeployerStatsProvider webStatsProvider = null;
         
     private static final LocalStringManagerImpl _localStrings =
 	new LocalStringManagerImpl(SecurityLifecycle.class);
@@ -116,6 +124,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             if (Util.isEmbeddedServer()) {
                 System.setProperty("java.security.auth.login.config", Util.writeConfigFileToTempDir("login.conf").getAbsolutePath());
                 System.setProperty("java.security.policy", Util.writeConfigFileToTempDir("server.policy").getAbsolutePath());
+                
                 
             }
             
@@ -153,9 +162,15 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
                  _logger.log(Level.INFO, "Security startup service called");
              }
              
+             realmStatsProvier = new RealmStatsProvider();
+             webStatsProvider = new WebSecurityDeployerStatsProvider();
              
-               StatsProviderManager.register("security", PluginPoint.SERVER, "realm", new RealmStatsProvider());
-               StatsProviderManager.register("security", PluginPoint.SERVER, "web", new WebSecurityDeployerStatsProvider()); 
+
+             StatsProviderManager.register("security", PluginPoint.SERVER, "realm",realmStatsProvier);
+             StatsProviderManager.register("security", PluginPoint.SERVER, "web", webStatsProvider); 
+             
+             statsProviders.put("realm", realmStatsProvier);
+             statsProviders.put("web", webStatsProvider);
              
             //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager
             //And since LoginContextDriver has too many static methods that use AuditManager

@@ -100,6 +100,8 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
         new ProgrammaticLoginPermission("logout");
 
     private static final String DEFAULT_WEBPROGRAMMATICLOGIN_IMPL="com.sun.web.security.WebProgrammaticLoginImpl";
+    
+
     /*V3:Commented 
      private static boolean isServer =
         (ApplicationServer.getServerContext() != null);*/

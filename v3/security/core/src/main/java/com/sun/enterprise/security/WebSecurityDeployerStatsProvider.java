@@ -73,32 +73,32 @@ public class WebSecurityDeployerStatsProvider {
         return policyConfCount.getStatistic();
     }    
     
-    @ProbeListener("security:core:web:webDeploymentStartedEvent")
+    @ProbeListener("glassfish:core:web:webDeploymentStartedEvent")
     public void webDeploymentStartedEvent(@ProbeParam("appName")String appName){
        deploymentTime.setStartTime(System.currentTimeMillis());
     }
     
-    @ProbeListener("security:core:web:webDeploymentEndedEvent")
+    @ProbeListener("glassfish:core:web:webDeploymentEndedEvent")
     public void webDeploymentEndedEvent(@ProbeParam("appName")String appName){
        
     }
     
-    @ProbeListener("security:core:web:securityManagerCreationEvent")
+    @ProbeListener("glassfish:core:web:securityManagerCreationEvent")
     public void securityManagerCreationEvent(
             @ProbeParam("appName") String appName) {
     }
 
-    @ProbeListener("security:core:web:securityManagerDestructionEvent")
+    @ProbeListener("glassfish:core:web:securityManagerDestructionEvent")
     public void securityManagerDestructionEvent(
             @ProbeParam("appName") String appName) {
     }
 
-    @ProbeListener("security:core:web:policyConfigurationCreationEvent")
+    @ProbeListener("glassfish:core:web:policyConfigurationCreationEvent")
     public void policyConfirationCreationEvent(
             @ProbeParam("contextId") String contextId) {
     }
 
-    @ProbeListener("security:core:web:policyConfigurationDestructionEvent")
+    @ProbeListener("glassfish:core:web:policyConfigurationDestructionEvent")
     public void policyConfigurationDestructionEvent(
             @ProbeParam("contextId") String contextId) {
     }
