@@ -39,6 +39,7 @@ package org.glassfish.web.embed;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.logging.Level;
 import org.glassfish.web.embed.config.*;
 import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.embedded.EmbeddedContainer;
@@ -251,7 +252,18 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      */
     public VirtualServer createVirtualServer(String id,
         File docRoot, WebListener...  webListeners);
-
+    
+    /**
+     * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
+     * maps it to all <tt>WebListener</tt> instances.
+     * 
+     * @param id the id of the <tt>VirtualServer</tt>
+     * @param docRoot the docroot of the <tt>VirtualServer</tt>
+     * 
+     * @return the new <tt>VirtualServer</tt> instance
+     */    
+    public VirtualServer createVirtualServer(String id, File docRoot);
+    
     /**
      * Adds the given <tt>VirtualServer</tt> to this
      * <tt>EmbeddedWebContainer</tt>.
@@ -302,5 +314,12 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      */
     public void removeVirtualServer(VirtualServer virtualServer)
         throws LifecycleException;
+    
+    /**
+     * Sets log level
+     * 
+     * @param level
+     */
+    public void setLogLevel(Level level);
 
 }

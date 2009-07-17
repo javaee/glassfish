@@ -139,6 +139,7 @@ public class EmbeddedWebContainer implements
      */
     public void start() throws LifecycleException {
    
+        log.info("EmbeddedWebContainer is starting");
         int port = 8080;
         String webListenerId = "http-listener-1";
         String virtualServerId = "server";
@@ -278,8 +279,7 @@ public class EmbeddedWebContainer implements
     public org.glassfish.web.embed.Context createContext(File docRoot, 
                                 String contextRoot, ClassLoader classLoader) {
         
-        if (log.isLoggable(Level.FINE))
-            log.fine("Creating context '" + contextRoot + "' with docBase '" +
+        log.info("Creating context '" + contextRoot + "' with docBase '" +
                      docRoot.getPath() + "'");
 
         Context context = new Context();
@@ -326,9 +326,8 @@ public class EmbeddedWebContainer implements
             ClassLoader classLoader) {
         
         String contextRoot = "";
-        if (log.isLoggable(Level.FINE))
-            log.fine("Creating context '" + contextRoot + "' with docBase '" +
-                     docRoot.getPath() + "'");
+        log.info("Creating context '" + contextRoot + "' with docBase '" +
+                docRoot.getPath() + "'");
 
         Context context = new Context();
         context.setDocBase(docRoot.getPath());
@@ -384,11 +383,8 @@ public class EmbeddedWebContainer implements
             throws InstantiationException, IllegalAccessException {
         
         T webListener = null;
-
-	if (log.isLoggable(Level.FINE)) {
-            log.fine("Creating connector "+id);
-	}
-
+        log.info("Creating connector "+id);
+        
         try {
             webListener = c.newInstance();
             webListener.setId(id);
@@ -424,6 +420,7 @@ public class EmbeddedWebContainer implements
             throw new ConfigException("Connector with name '"+
                     webListener.getId()+"' already exsits");           
         }
+        log.info("Added connector "+webListener.getId());
         
     }
 
@@ -500,12 +497,42 @@ public class EmbeddedWebContainer implements
     public org.glassfish.web.embed.VirtualServer createVirtualServer(String id,
         File docRoot, org.glassfish.web.embed.WebListener...  webListeners) {
         
+        log.info("Created virtual server "+id+" with ports ");
         VirtualServer virtualServer = new VirtualServer();
         virtualServer.setName(id);
         virtualServer.setAppBase(docRoot.getPath());
         int[] ports = new int[webListeners.length];
         for (int i=0; i<webListeners.length; i++) {
             ports[i] = webListeners[i].getPort();
+            log.info(""+ports[i]);
+        }
+        virtualServer.setPorts(ports);
+        
+        return virtualServer;
+        
+    }
+    
+    /**
+     * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
+     * maps it to all <tt>WebListener</tt> instances.
+     * 
+     * @param id the id of the <tt>VirtualServer</tt>
+     * @param docRoot the docroot of the <tt>VirtualServer</tt>
+     * 
+     * @return the new <tt>VirtualServer</tt> instance
+     */    
+    public org.glassfish.web.embed.VirtualServer createVirtualServer(String id, 
+            File docRoot) {
+        
+        log.info("Created virtual server "+id+" with ports ");
+        VirtualServer virtualServer = new VirtualServer();
+        virtualServer.setName(id);
+        virtualServer.setAppBase(docRoot.getPath());
+        Connector[] connectors = embedded.findConnectors();
+        int[] ports = new int[connectors.length];
+        for (int i=0; i<connectors.length; i++) {
+            ports[i] = ((org.apache.catalina.connector.Connector)connectors[i]).getPort();
+            log.info(""+ports[i]);
         }
         virtualServer.setPorts(ports);
         
@@ -538,6 +565,7 @@ public class EmbeddedWebContainer implements
         } else {
             engines[0].addChild((Container)virtualServer);
         }
+        log.info("Added virtual server "+virtualServer.getId());
         
     }
 
@@ -612,6 +640,15 @@ public class EmbeddedWebContainer implements
     public File getPath() {
         return path;
     }
-
-
+ 
+    
+    /**
+     * Sets log level
+     * 
+     * @param level
+     */
+    public void setLogLevel(Level level) {
+        log.setLevel(level);
+    }
+    
 }
