@@ -68,7 +68,7 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
 
     @Inject
     public HttpService httpService;
-
+    
     @Inject(optional=true)
     public AccessLog accessLog;
 
@@ -80,6 +80,7 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
 
     @Inject(name="docroot",optional=true)
     public Property docroot;
+    
     private WebContainer container;
 
     private Logger logger;

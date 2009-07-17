@@ -2806,10 +2806,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             httpService.getVirtualServer();
         for (com.sun.enterprise.config.serverbeans.VirtualServer virtualServer : virtualServers) {
             final VirtualServer vs = (VirtualServer) getEngine().findChild(virtualServer.getId());
-            vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
-            vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
+            if (vs != null) {
+                vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
+                vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
                 globalAccessLoggingEnabled);
-            updateHost(virtualServer);
+                updateHost(virtualServer);
+            }
         }
 
         Collection<NetworkListener> listeners = habitat.getAllByContract(NetworkListener.class);
