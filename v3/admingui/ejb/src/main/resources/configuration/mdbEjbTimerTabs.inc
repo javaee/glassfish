@@ -36,13 +36,13 @@
 -->
 <!-- configuration/mdbEjbTimerTabs.inc -->
 
-    <sun:tab id="mdbSettingsTab" immediate="$boolean{v}" text="$resource{i18n_ejb.ejbContainer.mdbSettingsTab}" >
+    <sun:tab id="mdbSettingsTab" immediate="$boolean{v}" text="$resource{i18n_ejbLite.ejbContainer.mdbSettingsTab}" >
         <!command
             setSessionAttribute(key="ejbContainerTabs" value="mdbSettingsTab");
             redirect(page="#{request.contextPath}/ejb/configuration/ejbContainerMDBSettings.jsf?configName=#{configName}");
 	/>    
     </sun:tab>    
-    <sun:tab id="ejbTimerTab" immediate="$boolean{true}" text="$resource{i18n_ejb.ejbContainer.ejbTimerTab}" >
+    <sun:tab id="ejbTimerTab" immediate="$boolean{true}" text="$resource{i18n_ejbLite.ejbContainer.ejbTimerTab}" >
         <!command
             setSessionAttribute(key="ejbContainerTabs" value="ejbTimerTab");
             redirect(page="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf?configName=#{configName}");

@@ -87,7 +87,7 @@
                  <sun:textField id="PoolResize" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['PoolResizeQuantity']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejb.ejb.NumBeans}"/>
              </sun:property>
-             <sun:property id="TimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbMdbSettings.timeoutLabel}" helpText="$resource{i18n_ejbLite.ejbMdbSettings.timeoutHelp}">
+             <sun:property id="TimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbMdbSettings.timeoutLabel}" helpText="$resource{i18n_ejb.ejbMdbSettings.timeoutHelp}">
                  <sun:textField id="Timeout" styleClass="integer" columns="$int{20}" style="padding-bottom 8pt" text="#{pageSession.valueMap['IdleTimeoutInSeconds']}" />
                  <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
              </sun:property>

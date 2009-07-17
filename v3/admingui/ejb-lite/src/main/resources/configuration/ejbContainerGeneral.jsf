@@ -39,10 +39,6 @@
 <!initPage
     setResourceBundle(key="i18n_ejbLite" bundle="org.glassfish.ejb-lite.admingui.Strings");
     setResourceBundle(key="help_ejbLite" bundle="org.glassfish.ejb-lite.admingui.Helplinks");
-
-    //Need to add the resource from the other plugin due to the tab text.
-    //The plugin infrastructure need to fix this.  
-    setResourceBundle(key="i18n_ejb" bundle="org.glassfish.ejb.admingui.Strings");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_ejbLite.headings.ejbSettings}" >
 <!define name="content">
