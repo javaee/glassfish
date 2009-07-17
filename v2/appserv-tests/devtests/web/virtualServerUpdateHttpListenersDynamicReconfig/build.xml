@@ -73,7 +73,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.vs2.http-listeners=my-listener"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.vs2.network-listeners=my-listener"/>
         </antcall>
     </target>
 

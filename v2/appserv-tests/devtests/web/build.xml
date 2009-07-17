@@ -329,9 +329,7 @@
 -->
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
-<!-- XXX temporarily commented out, see IT 8728
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
--->
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
