@@ -61,9 +61,9 @@ public interface DasConfig extends ConfigElement, PropertiesAccess, Singleton
     public void setAutodeployEnabled(String value);
 
     
-    public String getAutodeployJSPPrecompilationEnabled();
+    public String getAutodeployJspPrecompilationEnabled();
 
-    public void setAutodeployJSPPrecompilationEnabled(String value);
+    public void setAutodeployJspPrecompilationEnabled(String value);
 
     
     public String getAutodeployPollingIntervalInSeconds();
@@ -89,7 +89,7 @@ public interface DasConfig extends ConfigElement, PropertiesAccess, Singleton
     /**
     See {@link ValidationLevelValues}.  Read-only.
      */
-    public String getDeployXMLValidation();
+    public String getDeployXmlValidation();
 
     
     public String getDynamicReloadEnabled();
