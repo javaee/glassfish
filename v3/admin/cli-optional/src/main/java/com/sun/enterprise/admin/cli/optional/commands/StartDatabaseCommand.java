@@ -100,6 +100,24 @@ public final class StartDatabaseCommand extends DatabaseCommand {
     }
 
     /**
+     * The validate method validates that the type and quantity of
+     * parameters and operands matches the requirements for this
+     * command.  The validate method supplies missing options from
+     * the environment.  It also supplies passwords from the password
+     * file or prompts for them if interactive.
+     */
+    protected void validate()
+            throws CommandException, CommandValidationException  {
+        super.validate();
+
+        // if --terse or -echo are supplied, copy them over to program options
+        if (options.containsKey("echo"))
+            programOpts.setEcho(getBooleanOption("echo"));
+        if (options.containsKey("terse"))
+            programOpts.setEcho(getBooleanOption("terse"));
+    }
+
+    /**
      *  defines the command to start the derby database
      *  Note that when using Darwin (Mac), the property,
      *  "-Dderby.storage.fileSyncTransactionLog=True" is defined.
