@@ -1364,28 +1364,6 @@ public class ApplicationContext
      * List resource paths (recursively), and store all of them in the given
      * Set.
      */
-    private static void listPaths(Set set, DirContext resources, String path)
-        throws NamingException {
-
-        Enumeration childPaths = resources.listBindings(path);
-        while (childPaths.hasMoreElements()) {
-            Binding binding = (Binding) childPaths.nextElement();
-            String name = binding.getName();
-            String childPath = path + "/" + name;
-            set.add(childPath);
-            Object object = binding.getObject();
-            if (object instanceof DirContext) {
-                listPaths(set, resources, childPath);
-            }
-        }
-
-    }
-
-
-    /**
-     * List resource paths (recursively), and store all of them in the given
-     * Set.
-     */
     private static void listCollectionPaths
         (Set<String> set, DirContext resources, String path)
         throws NamingException {
