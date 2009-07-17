@@ -130,7 +130,7 @@
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejbLite.ejb.NumBeans}"/>
              </sun:property>
              <sun:property id="CacheResizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.cacheReSizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.cacheReSizeHelp}">
-                 <sun:textField id="CacheResize" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['PoolResizeQuantity']}" />
+                 <sun:textField id="CacheResize" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['CacheResizeQuantity']}" />
              </sun:property>
              <sun:property id="RemTimoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.remTimoutLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.remTimoutHelp}">
                  <sun:textField id="RemTimout"styleClass="integer"   columns="$int{20}" text="#{pageSession.valueMap['RemovalTimeoutInSeconds']}" />
