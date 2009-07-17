@@ -210,6 +210,17 @@
                    type="javaee:injection-targetType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
+      <xsd:element name="lookup-name"
+                   type="javaee:xsdStringType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The JNDI name to be looked up to resolve a resource reference.
+            
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
     </xsd:sequence>
   </xsd:group>
 
@@ -858,26 +869,20 @@
         java.lang.Long
         java.lang.Float
         java.lang.Double
+        		  java.lang.Class
+        		  any enumeration type (i.e. a subclass of java.lang.Enum)
         
-        Example:
+        Examples:
         
         <env-entry-type>java.lang.Boolean</env-entry-type>
+        <env-entry-type>java.lang.Class</env-entry-type>
+        <env-entry-type>com.example.Color</env-entry-type>
         
 ]]>
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string">
-        <xsd:enumeration value="java.lang.Boolean"/>
-        <xsd:enumeration value="java.lang.Byte"/>
-        <xsd:enumeration value="java.lang.Character"/>
-        <xsd:enumeration value="java.lang.String"/>
-        <xsd:enumeration value="java.lang.Short"/>
-        <xsd:enumeration value="java.lang.Integer"/>
-        <xsd:enumeration value="java.lang.Long"/>
-        <xsd:enumeration value="java.lang.Float"/>
-        <xsd:enumeration value="java.lang.Double"/>
-      </xsd:restriction>
+      <xsd:restriction base="javaee:fully-qualified-classType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 

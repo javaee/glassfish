@@ -71,6 +71,8 @@ public class ResourceHandler extends AbstractResourceHandler {
 
         envEntryTypes.put(String.class, String.class);
 
+        envEntryTypes.put(Class.class, Class.class);
+
         envEntryTypes.put(Character.class, Character.class);
         envEntryTypes.put(Character.TYPE, Character.class);
         envEntryTypes.put(char.class, Character.class);
@@ -302,14 +304,18 @@ public class ResourceHandler extends AbstractResourceHandler {
             descriptorInfo.descriptors = getResourceReferenceDescriptors
                 (logicalName, rcContexts);
             descriptorInfo.dependencyType = DependencyType.RESOURCE_REF;
-        } else if( envEntryTypes.containsKey(resourceType) ) {
+        } else if( envEntryTypes.containsKey(resourceType) || resourceType.isEnum()) {
             descriptorInfo.descriptors = getEnvironmentPropertyDescriptors
                 (logicalName, rcContexts);
             descriptorInfo.dependencyType = DependencyType.ENV_ENTRY;
             // Get corresponding class type.  This does the appropriate
-            // mapping for primitives.  For everything, the type is
+            // mapping for primitives.  For everything else, the type is
             // unchanged.
             descriptorInfo.resourceType = envEntryTypes.get(resourceType);
+            if (descriptorInfo.resourceType == null) {
+                // subclass of Enum case
+                descriptorInfo.resourceType = resourceType;
+            }
         } else {
             descriptorInfo.descriptors =
                 getJmsDestinationReferenceDescriptors

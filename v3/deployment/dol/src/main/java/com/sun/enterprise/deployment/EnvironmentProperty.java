@@ -163,7 +163,8 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 	    Class typeClass = null;
 	    // is it loadable ?
 	    try {
-		typeClass = Class.forName(type);
+		typeClass = Class.forName(type, true,
+                    Thread.currentThread().getContextClassLoader());
 	    } catch (Throwable t) {
 		if (this.isBoundsChecking()) {
 		    throw new IllegalArgumentException(localStrings.getLocalString(
@@ -213,7 +214,8 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 	    return String.class;
 	} else {
 	    try {
-		return Class.forName(this.type);
+		return Class.forName(this.type, true,
+                    Thread.currentThread().getContextClassLoader());
 	    } catch (Throwable t) {
 		return null;
 	    }
@@ -351,7 +353,8 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
                     return Character.valueOf(string.charAt(0));
                 }
             } else if (Class.class.equals(type)) {
-                return Class.forName(string);
+                return Class.forName(string, true,
+                    Thread.currentThread().getContextClassLoader());
             } else if (type != null && type.isEnum()) {
                 return Enum.valueOf(type, string);
             }
