@@ -69,6 +69,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.LogRecord;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.event.EventListener;
@@ -476,19 +477,33 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     private void invokeVerifier(DeploymentContext context) 
         throws DeploymentException {
-        try {
-            com.sun.enterprise.tools.verifier.Verifier verifier = 
-                habitat.getComponent(com.sun.enterprise.tools.verifier.Verifier.class);
-            com.sun.enterprise.tools.verifier.VerifierFrameworkContext verifierFrameworkContext = new com.sun.enterprise.tools.verifier.VerifierFrameworkContext();
-            verifierFrameworkContext.setArchive(context.getSource());
-            verifierFrameworkContext.setApplication(context.getModuleMetaData(com.sun.enterprise.deployment.Application.class));
-            verifierFrameworkContext.setJarFileName(context.getSourceDir().getAbsolutePath());
+        com.sun.enterprise.tools.verifier.Verifier verifier = habitat.getComponent(com.sun.enterprise.tools.verifier.Verifier.class);
+        com.sun.enterprise.tools.verifier.VerifierFrameworkContext verifierFrameworkContext = new com.sun.enterprise.tools.verifier.VerifierFrameworkContext();
+        verifierFrameworkContext.setArchive(context.getSource());
+        verifierFrameworkContext.setApplication(context.getModuleMetaData(com.sun.enterprise.deployment.Application.class));
+        verifierFrameworkContext.setJarFileName(context.getSourceDir().getAbsolutePath());
+        verifierFrameworkContext.setJspOutDir(context.getScratchDir("jsp"));
+        com.sun.enterprise.tools.verifier.ResultManager rm = verifierFrameworkContext.getResultManager();
+
+        try { 
             verifier.init(verifierFrameworkContext);
             verifier.verify();
         } catch (Exception e) {
-            DeploymentException de = new DeploymentException(e);
-            de.initCause(e);
-            throw de;
+            LogRecord logRecord = new LogRecord(Level.SEVERE,
+                                "Could not verify successfully.");
+            logRecord.setThrown(e);
+            verifierFrameworkContext.getResultManager().log(logRecord);
+        }  
+       
+        try {
+            verifier.generateReports();
+        } catch (IOException ioe) {
+            context.getLogger().warning(
+                "Can not generate verifier report: " + ioe.getMessage());
+        }
+        int failedCount = rm.getFailedCount() + rm.getErrorCount();
+        if (failedCount != 0) {
+            throw new DeploymentException(localStrings.getLocalString("deploy.failverifier","Some verifier tests failed. Aborting deployment"));
         }
     }
 
