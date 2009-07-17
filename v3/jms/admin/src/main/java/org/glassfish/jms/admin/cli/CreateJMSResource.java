@@ -143,7 +143,8 @@ public class CreateJMSResource implements AdminCommand {
                 String raKey = getMappedName(key);
                 if (raKey == null) raKey = key;
                 props.put(raKey, (String) props.get(key));
-                props.remove(key);
+                if(! raKey.equals(key))
+                    props.remove(key);
             }
          }
 
@@ -255,9 +256,11 @@ public class CreateJMSResource implements AdminCommand {
             String maxWaitTimeInMillis = null;
 	        String failAllConnections = null;
 	        String transactionSupport = null;
+            Properties parameters = new Properties();
 
             if(props != null){
             Enumeration keys =  props.keys();
+            Properties tmpProps = new Properties();
 
             while(keys.hasMoreElements())
             {
@@ -277,9 +280,21 @@ public class CreateJMSResource implements AdminCommand {
 		            transactionSupport = props.getProperty(propKey);
 		        else if("fail-all-connections".equals(propKey))
 		            failAllConnections = props.getProperty(propKey);
+                else
+                    tmpProps.setProperty(propKey, props.getProperty(propKey));
             }
+               if (tmpProps.size() >0)
+               {
+               String propString = "";
+                for (java.util.Map.Entry<Object, Object>prop : tmpProps.entrySet()) {
+                        propString += prop.getKey() + "=" + prop.getValue() + ":";
+                }
+                propString = propString.substring(0, propString.length());
+
+                parameters.put("property", propString);
+
+               }
          }
-        Properties parameters = new Properties();
         //parameters.setProperty("restype", resourceType);
 
         parameters.setProperty("poolname", jndiName);
