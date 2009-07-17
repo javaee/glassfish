@@ -34,13 +34,9 @@
  * holder.
  */
 package org.glassfish.admin.amx.intf.config;
-
-
-
-
-
 import java.util.Map;
 
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 
 /**
@@ -55,43 +51,15 @@ public interface Cluster
 	 */
 	public String	getConfigRef();
 
-	/**
-		Calls Container.getContaineeMap( XTypes.SERVER_REF_CONFIG ).
-		@return Map of ServerRef MBean proxies, keyed by name.
-
-	 */
+    @ChildGetter
 	public Map<String,ServerRef>	getServerRef();
 	
-	/**
-		Calls Container.getContaineeMap( XTypes.RESOURCE_REF_CONFIG ).
-		@return Map of ResourceRef MBean proxies, keyed by name.
-
-	 */
+    @ChildGetter
 	public Map<String,ResourceRef>	getResourceRef();
 	
-	/**
-		Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).
-		@return Map of ApplicationRef MBean proxies, keyed by name.
-
-	 */
+    @ChildGetter
 	public Map<String,ApplicationRef>	getDeployedItemRef();
 
-	/**
-		@return Map of ClusteredServer, keyed by name.
-	 */
-	public Map<String,ClusteredServer>		getClusteredServer();
-
-
-//     /**
-//         @since AppServer 9.0
-//      */
-//     public ClusteredServer    createClusteredServerConfig(
-//                                         String name, String nodeAgentName,
-//                                          Map<String,String> optional);
-//     /**
-//         @since AppServer 9.0
-//      */
-//      public void    removeClusteredServerConfig( String name );
 	
 	/**
 	 * Return the port used by GMS for group events.	

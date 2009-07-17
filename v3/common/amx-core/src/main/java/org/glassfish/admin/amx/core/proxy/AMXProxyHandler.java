@@ -63,8 +63,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
+import java.lang.reflect.Array;
 import org.glassfish.admin.amx.annotation.Stability;
 import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.admin.amx.annotation.ChildGetter;
 import org.glassfish.admin.amx.base.Tools;
 import static org.glassfish.api.amx.AMXValues.*;
 import org.glassfish.admin.amx.core.PathnameParser;
@@ -563,6 +566,105 @@ public final class AMXProxyHandler extends MBeanProxyHandler
             throw new RuntimeException( "Exception invoking " + operationName, e );
         }
     }
+    
+    private boolean isChildGetter( final Method m, final Object[] args)
+    {
+        boolean isChildGetter = false;
+        if ( args == null || args.length == 0 )
+        {
+            final ChildGetter getter = m.getAnnotation(ChildGetter.class);
+            isChildGetter = getter != null;
+        }
+        return isChildGetter;
+    }
+    
+    private String deduceChildType( final Method m )
+    {
+        String type = null;
+        final ChildGetter getter = m.getAnnotation(ChildGetter.class);
+        if ( getter != null )
+        {
+            type = getter.type();
+        }
+        
+        if ( type == null || type.length() == 0 )
+        {
+            String temp = m.getName();
+            final String GET = "get";
+            if ( temp.startsWith(GET) )
+            {
+                temp = temp.substring( GET.length() );
+            }
+            type = Util.typeFromName(temp);
+        }
+        
+        return type;
+    }
+    
+    private ObjectName[] handleChildGetter(
+        final Method method,
+        final Object[] args)
+    {
+        final String type = deduceChildType(method);
+        
+        final List<ObjectName> childrenList = childrenOfType(type);
+        
+        final ObjectName[] children = new ObjectName[ childrenList.size() ];
+        childrenList.toArray( children );
+        
+        return children;
+    }
+    
+    /**
+        Convert an ObjectName[] to the proxy-based Map/Set/List/[] result type
+     */
+        Object
+    autoConvert(final Method method, final ObjectName[] items )
+    {
+        //debug( "_invoke: trying to make ObjectName[] into proxies for " + method.getName() );
+        final Class<?> returnType = method.getReturnType();        
+        Class<? extends AMXProxy> proxyClass = AMXProxy.class;
+        
+        Object result = items;  // fallback is to return the original ObjectName[]
+        
+        if ( returnType.isArray() )
+        {
+            final Class<?> componentType = returnType.getComponentType();
+            if ( AMXProxy.class.isAssignableFrom(componentType) )
+            {
+                proxyClass = componentType.asSubclass(AMXProxy.class);
+                final List<AMXProxy> proxyList = proxyFactory().toProxyList(items, proxyClass);
+                final AMXProxy[] proxies = (AMXProxy[])Array.newInstance( proxyClass, proxyList.size() );
+                proxyList.toArray(proxies);
+                result = proxies;
+            }
+        }
+        else
+        {
+            if (method.getGenericReturnType() instanceof ParameterizedType)
+            {
+                proxyClass = getProxyClass((ParameterizedType) method.getGenericReturnType());
+            }
+            
+            // Note that specialized sub-types of Set/List/Map, are *not* supported;
+            // the method must be declared with Set/List/Map. This is intentional
+            // to discourage use of HashMap, LinkedList, ArrayList, TreeMap, etc.
+            if (Set.class.isAssignableFrom(returnType))
+            {
+                result = proxyFactory().toProxySet(items, proxyClass);
+            }
+            else if (List.class.isAssignableFrom(returnType))
+            {
+                result = proxyFactory().toProxyList(items, proxyClass);
+            }
+            else if (Map.class.isAssignableFrom(returnType))
+            {
+                result = proxyFactory().toProxyMap(items, proxyClass);
+            }
+        }
+        
+        return result;
+    }
 
     protected Object _invoke(
             final Object myProxy,
@@ -579,6 +681,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         if (SPECIAL_METHOD_NAMES.contains(methodName))
         {
             result = handleSpecialMethod(myProxy, method, args);
+        }
+        else if ( isChildGetter(method, args) )
+        {
+            result = handleChildGetter(method,args);
         }
         else if ( INVOKE_OPERATION.equals(methodName) )
         {
@@ -620,27 +726,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         else if (result != null &&
                  result instanceof ObjectName[])
         {
-            //System.out.println( "_invoke: trying to make ObjectName[] into proxies for " + method.getName() );
-            final ObjectName[] items = (ObjectName[]) result;
-
-            Class<? extends AMXProxy> proxyClass = AMXProxy.class;
-            if (method.getGenericReturnType() instanceof ParameterizedType)
-            {
-                proxyClass = getProxyClass((ParameterizedType) method.getGenericReturnType());
-            }
-
-            if (Set.class.isAssignableFrom(returnType))
-            {
-                result = proxyFactory().toProxySet(items, proxyClass);
-            }
-            else if (List.class.isAssignableFrom(returnType))
-            {
-                result = proxyFactory().toProxyList(items, proxyClass);
-            }
-            else if (Map.class.isAssignableFrom(returnType))
-            {
-                result = proxyFactory().toProxyMap(items, proxyClass);
-            }
+            result = autoConvert( method, (ObjectName[]) result );
         }
 
         //System.out.println( "_invoke: done:  result class is " + result.getClass().getName() );
@@ -857,22 +943,32 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         return childrenMap(Util.deduceType(intf), intf);
     }
 
-    public <T extends AMXProxy> Map<String, T> childrenMap(final String type, final Class<T> intf)
+    private List<ObjectName> childrenOfType(final String type)
     {
         final ObjectName[] objectNames = getChildren();
         if (objectNames == null)
         {
-            return null;
+            return Collections.emptyList();
         }
-
-        final Map<String, T> m = new HashMap<String, T>();
+        
+        final List<ObjectName> items = new ArrayList<ObjectName>();
 
         for (final ObjectName objectName : objectNames)
         {
             if (Util.getTypeProp(objectName).equals(type))
             {
-                m.put(Util.getNameProp(objectName), getProxy(objectName, intf));
+                items.add(objectName);
             }
+        }
+        return items;
+    }
+    
+    public <T extends AMXProxy> Map<String, T> childrenMap(final String type, final Class<T> intf)
+    {
+        final Map<String, T> m = new HashMap<String, T>();
+        for (final ObjectName objectName : childrenOfType(type))
+        {
+            m.put( Util.getNameProp(objectName), getProxy(objectName, intf));
         }
         return m;
     }

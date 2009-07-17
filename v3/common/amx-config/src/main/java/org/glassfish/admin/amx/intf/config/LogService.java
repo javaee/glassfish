@@ -61,13 +61,8 @@ public interface LogService
 	public String	getLogHandler();
 	public void	setLogHandler( String value );
 
-    /**
-        @since AppServer 9.0
-     */
-    
 	public String	getLogRotationTimeLimitInMinutes();
 	public void	setLogRotationTimeLimitInMinutes( String value );
-	
     
 	public String	getLogRotationLimitInBytes();
 	public void	setLogRotationLimitInBytes( String value );
@@ -84,22 +79,6 @@ public interface LogService
 	public String  getRetainErrorStatisticsForHours();
 	public void    setRetainErrorStatisticsForHours( String hours );
 	
-// -------------------- Operations --------------------
-// 	/**
-// 		Creates new module-log-levels element.
-// 
-// 		@param params Map of optional attributes whose keys are defined in
-// 		ModuleLogLevelsParams class.
-// 		@return A proxy to the ModuleLogLevels MBean.
-// 		@see ModuleLogLevelsConfigKeys
-// 	 */
-// 	public ModuleLogLevels	createModuleLogLevelsConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes module-log-levels element.
-// 	 */
-// 	public void			removeModuleLogLevels();
-
 	/**
 		Get the ModuleLogLevels MBean.
 	 */

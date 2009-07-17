@@ -50,6 +50,8 @@ import org.glassfish.admin.amx.core.AMXConstants;
 /**
 Extending this proxy interface implies that the class is part of the MBean API for configuration,
 that the interface is a dynamic proxy to a config MBean.
+<p>
+Note that considerable metadata is available for config MBeans, via MBeanInfo.getDescriptor().
 @see AMXProxy
 @see AMXConstants
 @see AMXConfigConstants

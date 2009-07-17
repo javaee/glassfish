@@ -37,14 +37,10 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import java.util.Map;
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 /**
-All MBeans that have system Properties must extend this interface.
-<p>
-Properties are always Strings.  Property names are required to be unique.
-<p>
-New for Glassfish V3:  system properties are first-class MBeans and so this
-interface extends Container.
+All MBeans that have system SystemProperties must extend this interface.
  */
 public interface SystemPropertiesAccess extends AMXConfigProxy
 {
@@ -52,6 +48,7 @@ public interface SystemPropertiesAccess extends AMXConfigProxy
     Return all SystemProperty MBeans, keyed by property name.
     @since Glassfish V3
      */
+    @ChildGetter
     public Map<String, SystemProperty> getSystemProperty();
 }
 

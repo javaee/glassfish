@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
 import org.glassfish.admin.amx.base.Singleton;
-
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 import java.util.Map;
 
@@ -48,13 +48,8 @@ Configuration for the &lt;admin-service&gt; element.
 public interface AdminService
         extends AMXConfigProxy, PropertiesAccess, Singleton
 {
-
-    /**
-    Calls Container.getContaineeMap( XTypes.JMX_CONNECTOR_CONFIG ).
-    @return Map of JMXConnector proxies, keyed by name.
-
-     */
-    // public Map<String, JMXConnector> getJMXConnector();
+    @ChildGetter
+    public Map<String, JMXConnector> getJMXConnector();
 
     public String getSystemJmxConnectorName();
 

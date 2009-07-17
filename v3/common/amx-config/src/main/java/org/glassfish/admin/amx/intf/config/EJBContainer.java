@@ -40,6 +40,7 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
 
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 /**
 Configuration for the &lt;ejb-container&gt; element.
@@ -99,27 +100,7 @@ public interface EJBContainer extends
 
     void setVictimSelectionPolicy(final String value);
 
-// 	/**
-// 		Creates ejb-timer-service element. Legal options include:
-// 		<ul>
-// 		<li>{@link EJBTimerServiceConfigKeys#MINIMUM_DELIVERY_INTERVAL_IN_MILLIS_KEY}</li>
-// 		<li>{@link EJBTimerServiceConfigKeys#MAX_REDELIVERIES_KEY}</li>
-// 		<li>{@link EJBTimerServiceConfigKeys#TIMER_DATASOURCE_KEY}</li>
-// 		<li>{@link EJBTimerServiceConfigKeys#REDELIVERY_INTERVAL__INTERNAL_IN_MILLIS_KEY}</li>
-// 		</ul>
-// 
-// 		@param params
-// 		@return A proxy to the EJBTimerService MBean.
-// 		@see EJBTimerServiceConfigKeys#REDELIVERY_INTERVAL__INTERNAL_IN_MILLIS_KEY
-// 	 */
-// 	EJBTimerService	createEJBTimerServiceConfig( Map<String,String> params );
-// 
-// 	/**
-// 		Removes ejb-timer-service element from config
-// 	 */
-// 	void		removeEJBTimerService();
-    /**
-    @return Get the EJBTimerService MBean.
-     */
     EJBTimerService getEJBTimerService();
 }
+
+

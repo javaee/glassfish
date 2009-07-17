@@ -107,10 +107,6 @@ public interface ApplicationConfig
 		@see #getAvailabilityEnabled
 	*/       
 	public void		setAvailabilityEnabled( String enabled );
-	
-    public Map<String,WebServiceEndpoint> getWebServiceEndpoint();
-    
-    public Map<String,Module> getModule();
 }
 
 

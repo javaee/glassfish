@@ -38,6 +38,8 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
+import org.glassfish.admin.amx.annotation.ChildGetter;
+
 
 import java.util.Map;
 
@@ -50,26 +52,32 @@ groups all resources under itself.
 public interface Resources
         extends ConfigElement, ConfigCollectionElement, Singleton
 {
-    /*
+    @ChildGetter
     public Map<String, CustomResource> getCustomResource();
 
-
+    @ChildGetter
     public Map<String, JNDIResource> getJNDIResource();
 
+    @ChildGetter
     public Map<String, JDBCResource> getJDBCResource();
 
+    @ChildGetter
     public Map<String, JDBCConnectionPool> getJDBCConnectionPool();
 
+    @ChildGetter
     public Map<String, ConnectorResource> getConnectorResource();
 
+    @ChildGetter
     public Map<String, ConnectorConnectionPool> getConnectorConnectionPool();
 
+    @ChildGetter
     public Map<String, AdminObjectResource> getAdminObjectResource();
 
+    @ChildGetter
     public Map<String, ResourceAdapter> getResourceAdapter();
 
+    @ChildGetter
     public Map<String, MailResource> getMailResource();
-    */
 }
 
 

@@ -37,6 +37,8 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
+import org.glassfish.admin.amx.annotation.ChildGetter;
+
 /**
 Configuration for the &lt;clusters&gt; element; it is an internal "node" which
 groups all resources under itself.
@@ -45,6 +47,7 @@ groups all resources under itself.
 public interface Clusters
         extends ConfigElement, ConfigCollectionElement
 {
+    @ChildGetter
     public Map<String, Cluster> getCluster();
 }
 

@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,72 +33,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.intf.config;
+package org.glassfish.admin.amx.annotation;
 
-import org.glassfish.admin.amx.base.Singleton;
-
-
-import java.util.Map;
-import org.glassfish.admin.amx.annotation.ChildGetter;
+import java.lang.annotation.Documented;
+import static java.lang.annotation.ElementType.METHOD;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
-Configuration for the &lt;jms-service&gt; element.
+    Used on an AMXProxy sub-interface only.  Indicates that the method
+    is a proxy-based method for getting a child or List/Set/Map of children; it doesn’t actually
+    exist as an MBean attribute or method.
+    <p>
+    The proxy method to which the annotation is applied must be of one of the following forms,
+    where the interface FooBar is a sub-interface of {@link org.glassfish.admin.amx.core.AMXProxy}.
+    <code>
+    <ul>
+    <li>FooBar           getFooBar();        // gets a singleton child </li>
+    <li>Set&lt;FooBar>   getFooBar();        // gets all FooBar </li>
+    <li>List&lt;FooBar>  getFooBar();        // gets all FooBar </li>
+    <li>Map&lt;String,FooBar>  getFooBar();  // gets all FooBar </li>
+    <li>FooBar[]         getFooBar();        // gets all FooBar </li>
+    </ul>
+    </code>
+    The child type is derived from the method name, but if the standard derivation would result
+    in the incorrect type then the annotation must include <code>type="child-type"></code>, where
+    "child-type" is the appropriate type.
+   @author Lloyd Chambers
  */
-public interface JMSService
-        extends ConfigElement, PropertiesAccess, Singleton
-{
-
-    public String getAddresslistBehavior();
-
-    public void setAddresslistBehavior(final String value);
-
-    public String getAddresslistIterations();
-
-    public void setAddresslistIterations(final String value);
-
-    public String getDefaultJmsHost();
-
-    public void setDefaultJmsHost(final String value);
-
-    
-    public String getInitTimeoutInSeconds();
-
-    public void setInitTimeoutInSeconds(final String value);
-
-    public String getMqScheme();
-
-    public void setMqScheme(final String value);
-
-    public String getMqService();
-
-    public void setMqService(final String value);
-
-    
-    public String getReconnectAttempts();
-
-    public void setReconnectAttempts(final String value);
-
-    
-    public String getReconnectEnabled();
-
-    public void setReconnectEnabled(final String value);
-
-    public String getReconnectIntervalInSeconds();
-
-    public void setReconnectIntervalInSeconds(final String value);
-
-    public String getStartArgs();
-
-    public void setStartArgs(final String value);
-
-    public String getType();
-
-    public void setType(final String value);
-
-
-    @ChildGetter
-    public Map<String, JMSHost> getJMSHost();
+@Retention(RUNTIME)
+@Documented
+@Target({METHOD})
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
+public @interface ChildGetter {
+    /** child type, derived automatically by default for the normal naming pattern */
+    String type() default "";
 }
+
 
 
 

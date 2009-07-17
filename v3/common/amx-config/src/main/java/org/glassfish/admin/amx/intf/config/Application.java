@@ -37,6 +37,8 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
+import org.glassfish.admin.amx.annotation.ChildGetter;
+
 /**
 Configuration for the &lt;application&gt; element.
 <p>
@@ -92,7 +94,8 @@ public interface Application
      */
     public void setAvailabilityEnabled(String enabled);
     
-    //public Map<String,Module> getModule();
+    @ChildGetter
+    public Map<String,Module> getModule();
 }
 
 

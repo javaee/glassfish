@@ -41,6 +41,7 @@ import org.glassfish.admin.amx.base.Singleton;
 
 
 import java.util.Map;
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 
 /**
@@ -53,7 +54,8 @@ public interface HttpService
 		@return Map of all VirtualServer proxies, keyed by the name of the virtual server.
 
 	 */
-	//public Map<String,VirtualServer>		getVirtualServer();
+    @ChildGetter
+	public Map<String,VirtualServer>		getVirtualServer();
 
 	/**
 		Get the AccessLog.

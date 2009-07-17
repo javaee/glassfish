@@ -38,6 +38,7 @@ package org.glassfish.admin.amx.intf.config;
 import java.util.Map;
 
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 /**
     All MBeans that have Property should extend this interface.
@@ -48,6 +49,7 @@ public interface PropertiesAccess extends AMXProxy
     Return all Property MBeans, keyed by property name.
     @since Glassfish V3
      */
+    @ChildGetter
     public Map<String, Property> getProperty();
 }
 

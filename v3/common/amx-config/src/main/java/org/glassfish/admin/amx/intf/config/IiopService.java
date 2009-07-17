@@ -40,6 +40,7 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 /**
 Configuration for the &lt;iiop-service&gt; element.
@@ -57,12 +58,8 @@ public interface IiopService
 
     public void setClientAuthenticationRequired(final String value);
 
-    /**
-    Calls Container.getContaineeMap( XTypes.IIOP_LISTENER_CONFIG ).
-    @return Map of IiopListener MBean proxies, keyed by name.
-
-     */
-    //public Map<String, IiopListener> getIIOPListener();
+    @ChildGetter
+    public Map<String, IiopListener> getIIOPListener();
 
     /**
     Get a proxy to an ORB
