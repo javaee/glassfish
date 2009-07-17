@@ -37,6 +37,8 @@ package amxtest;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.glassfish.admin.amx.core.*;
 import org.glassfish.admin.amx.base.*;
@@ -213,6 +215,10 @@ class Interfaces {
         mInterfaces.put( type, clazz );
     }
     
+    public List<Class<? extends AMXProxy>> all()
+    {
+        return new ArrayList( mInterfaces.values() );
+    }
     
     public Class<? extends AMXProxy> get(final String type)
     {

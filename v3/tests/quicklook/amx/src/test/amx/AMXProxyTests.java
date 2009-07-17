@@ -300,6 +300,26 @@ public final class AMXProxyTests extends AMXTestBase
     
     /** test all MBeans generically */
     @Test
+    public void testForBogusAnnotations()
+    {
+        final List<Class<? extends AMXProxy>> interfaces = getInterfaces().all();
+        
+        for( final Class<? extends AMXProxy>  intf : interfaces )
+        {
+            final Method[] methods = intf.getMethods();
+            for( final Method m : methods )
+            {
+                final ChildGetter c = m.getAnnotation(ChildGetter.class);
+                if ( c != null )
+                {
+                    assert m.getParameterTypes().length == 0 : "@ChildGetter cannot be applied to method with arguments: " + intf;
+                }
+            }
+        }
+    }
+    
+    /** test all MBeans generically */
+    @Test
     public void testAllGenerically()
     {
         final Interfaces interfaces = getInterfaces();
