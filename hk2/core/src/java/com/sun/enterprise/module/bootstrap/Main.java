@@ -338,8 +338,8 @@ public class Main {
                 else
                     throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
             }
-            mainModule = modules.iterator().next();
-            String targetClassName = findModuleStartup(mainModule, HABITAT_NAME);
+            mainModule = modules.iterator().next();           
+            String targetClassName = findModuleStartup(mainModule,context.getPlatformMainServiceName(), HABITAT_NAME);
             if (targetClassName==null) {
                 throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
             }
@@ -362,19 +362,34 @@ public class Main {
             if(startups.isEmpty())
                 throw new BootException("No module has a ModuleStartup implementation");
             if(startups.size()>1) {
+                // maybe the user specified a main
+                String mainServiceName = context.getPlatformMainServiceName();
                 for (ModuleStartup startup :startups) {
                     String serviceName = startup.getClass().getAnnotation(Service.class).name();
-                    if (serviceName==null || serviceName.isEmpty()) {
+                    if (serviceName.isEmpty()) {
+                        serviceName = null;
+                    }
+                    // if requested main is null, use default service (no name), otherwise find
+                    // a matching service name
+                    if ((serviceName==null && mainServiceName==null)) {
                         startupCode = startup;
+                    } else {
+                        if (serviceName.equals(mainServiceName)) {
+                            startupCode = startup;
+                        }
                     }
                 }
                 if (startupCode==null) {
-                    Iterator<ModuleStartup> itr = startups.iterator();
-                    ModuleStartup a = itr.next();
-                    ModuleStartup b = itr.next();
-                    Module am = registry.find(a.getClass());
-                    Module bm = registry.find(b.getClass());
-                    throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
+                    if (mainServiceName==null) {
+                        Iterator<ModuleStartup> itr = startups.iterator();
+                        ModuleStartup a = itr.next();
+                        ModuleStartup b = itr.next();
+                        Module am = registry.find(a.getClass());
+                        Module bm = registry.find(b.getClass());
+                        throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
+                    } else {
+                        throw new BootException(String.format("Cannot find %s ModuleStartup", mainServiceName));
+                    }
                 }
             } else {
                 startupCode = startups.iterator().next();
@@ -451,12 +466,13 @@ public class Main {
      * <p>
      * This implementation does so by looking it up from services.
      */
-    protected String findModuleStartup(Module mainModule, String habitatName) throws BootException {
+    protected String findModuleStartup(Module mainModule, String serviceName, String habitatName) throws BootException {
+        String index = (serviceName==null || serviceName.isEmpty()?ModuleStartup.class.getName():ModuleStartup.class.getName()+":"+serviceName);
         for(InhabitantsDescriptor d : mainModule.getMetadata().getHabitats(habitatName)) {
             try {
                 for (KeyValuePairParser kvpp : d.createScanner()) {
                     for (String v : kvpp.findAll(INDEX_KEY)) {
-                        if(v.equals(ModuleStartup.class.getName())) {
+                        if(v.equals(index)) {
                             kvpp.rewind();
                             return kvpp.find(CLASS_KEY);
                         }
