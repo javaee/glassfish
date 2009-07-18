@@ -71,6 +71,7 @@ public class UnitTest {
                 System.out.println(ejb.saySomething());
             }
         } catch (Exception e) {
+            System.out.println("ERROR calling EJB:");
             e.printStackTrace();
         }
         System.out.println("Done calling EJB");
@@ -79,7 +80,7 @@ public class UnitTest {
             System.out.println("Creating another container without closing...");
             EJBContainer c0 = EJBContainer.createEJBContainer();
             if (c0 != null)
-                throw new RuntimeException("Create another container");
+                throw new RuntimeException("Created another container without closing the current...");
         } catch (EJBException e) { 
             System.out.println("Caught expected: " + e.getMessage());
         }
@@ -88,5 +89,7 @@ public class UnitTest {
         System.out.println("Creating container after closing the previous...");
         c = EJBContainer.createEJBContainer(p);
         c.close();
+
+        System.out.println("..........FINISHED UnitTest");
     }
 }

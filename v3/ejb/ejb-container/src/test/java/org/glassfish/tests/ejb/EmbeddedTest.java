@@ -53,5 +53,6 @@ public class EmbeddedTest {
         } catch (LifecycleException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        System.out.println("..........FINISHED EmbeddedTest");
     }
 }
