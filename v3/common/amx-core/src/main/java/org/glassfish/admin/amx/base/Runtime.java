@@ -42,10 +42,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 import java.util.Map;
 import java.util.List;
 import javax.management.MBeanOperationInfo;
-import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.admin.amx.annotation.Stability;
-import org.glassfish.admin.amx.annotation.Param;
-import org.glassfish.admin.amx.annotation.Taxonomy;
+import org.glassfish.admin.amx.annotation.*;
 import org.glassfish.api.amx.AMXMBeanMetadata;
 
 /**
@@ -108,7 +105,7 @@ public interface Runtime extends AMXProxy, Utility, Singleton
     Example only, the host and port are typically different.  A trailing "/" is
     included; simply append the command string and call {@link #executeREST}.
      */
-    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @ManagedAttribute
     public String getRESTBaseURL();
 
     @ManagedAttribute
