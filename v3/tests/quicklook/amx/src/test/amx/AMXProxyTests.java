@@ -57,7 +57,7 @@ import org.glassfish.admin.amx.monitoring.*;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.logging.Logging;
-import org.glassfish.admin.amx.annotation.ChildGetter;
+import org.glassfish.admin.amx.annotation.*;
 
 
 /** 
@@ -309,13 +309,53 @@ public final class AMXProxyTests extends AMXTestBase
             final Method[] methods = intf.getMethods();
             for( final Method m : methods )
             {
-                final ChildGetter c = m.getAnnotation(ChildGetter.class);
-                if ( c != null )
+                final ChildGetter cg = m.getAnnotation(ChildGetter.class);
+                final ManagedAttribute ma = m.getAnnotation(ManagedAttribute.class);
+                final ManagedOperation mo = m.getAnnotation(ManagedOperation.class);
+                final String desc = intf.getName() + "." + m.getName() + "()";
+                final int numArgs = m.getParameterTypes().length;
+                
+                assert ma == null || mo == null :
+                    "Can't have both @ManagedAttribute and @ManagedOperation: " + desc;
+
+                if ( cg != null )
                 {
-                    assert m.getParameterTypes().length == 0 : "@ChildGetter cannot be applied to method with arguments: " + intf;
+                    assert numArgs == 0 :
+                        "@ChildGetter cannot be applied to method with arguments: " + desc;
+                        
+                    assert ma == null && mo == null :
+                        "@ManagedAttribute/@ManagedOperation not applicable with @ChildGetter: " + desc;
+                }
+                
+                if ( mo != null )
+                {
+                    // operations that start
+                    if ( numArgs == 0 && m.getName().startsWith("get") )
+                    {
+                        System.out.println( "Warning: @ManagedOperation looks like getter: " + desc );
+                    }
                 }
             }
         }
+        
+        // AMXConfigProxy sub-interfaces should not use @ManagedAttribute or @ManagedOperation;
+        // all such info is derived only from the ConfigBean.
+        for( final Class<? extends AMXProxy>  intf : interfaces )
+        {
+            if ( ! AMXConfigProxy.class.isAssignableFrom(intf) ) continue;
+            
+            final Method[] methods = intf.getDeclaredMethods(); // declared methods only
+            for( final Method m : methods )
+            {
+                final ManagedAttribute ma = m.getAnnotation(ManagedAttribute.class);
+                final ManagedOperation mo = m.getAnnotation(ManagedOperation.class);
+                final String desc = intf.getName() + "." + m.getName() + "()";
+                
+                assert ma == null :  "Config MBeans do not support @ManagedAttribute: " + desc;
+                assert mo == null :  "Config MBeans do not support @ManagedOperation: " + desc;
+            }
+        }
+
     }
     
     /** test all MBeans generically */
