@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,23 +33,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.admin;
+package org.glassfish.kernel.embedded;
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
+import org.glassfish.api.embedded.admin.CommandExecution;
+import org.glassfish.api.embedded.admin.CommandParameters;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.BindException;
+import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.admin.CommandRunner;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * User: Jerome Dochez
- * Date: May 16, 2008
- * Time: 11:47:02 AM
+ * Implementation of the embedded command execution
+ *
+ * @author Jerome Dochez
  */
-public class ParameterNames {
-    
-    public static final String NAME = "name";
-    public static final String COMPONENT = "component";
-    public static final String VIRTUAL_SERVERS = "virtualservers";
-    public static final String CONTEXT_ROOT = "contextroot";
-    public static final String LIBRARIES = "libraries";
-    public static final String DIRECTORY_DEPLOYED = "directorydeployed";
-    public static final String LOCATION = "location";
-    public static final String ENABLED = "enabled";
-    public static final String PRECOMPILE_JSP = "precompilejsp";    
-    public static final String DEPLOYMENT_PLAN = "deploymentplan";    
+@Service
+public class EmbeddedAdminCtrImpl implements EmbeddedAdminContainer {
+
+    @Inject
+    CommandRunner runnner;
+
+    private final static List<Sniffer> empty = new ArrayList<Sniffer>();
+
+    public List<Sniffer> getSniffers() {
+        return empty;
+    }
+
+    public void start() throws LifecycleException {
+
+    }
+
+    public void stop() throws LifecycleException {
+
+    }
+
+    public CommandExecution execute(String commandName, CommandParameters params) {
+        return null;
+    }
+
+    public void bind(Port port) {
+
+    }
+
+    public void bindJmxTo(Port port) throws BindException {
+
+    }
 }

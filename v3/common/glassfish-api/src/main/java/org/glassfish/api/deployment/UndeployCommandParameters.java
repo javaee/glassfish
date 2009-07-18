@@ -33,7 +33,6 @@
 package org.glassfish.api.deployment;
 
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.ParameterNames;
 
 import java.util.Properties;
 
@@ -44,7 +43,7 @@ import java.util.Properties;
  */
 public class UndeployCommandParameters extends OpsParams {
 
-    @Param(primary = true, name= ParameterNames.NAME)
+    @Param(primary = true)
     public String name=null;
 
     @Param(optional=true)

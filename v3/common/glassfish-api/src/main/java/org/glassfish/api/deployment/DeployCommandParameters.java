@@ -37,7 +37,6 @@ package org.glassfish.api.deployment;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
-import org.glassfish.api.admin.ParameterNames;
 
 import java.io.File;
 import java.util.Properties;
@@ -47,7 +46,7 @@ import java.util.Properties;
  */
 public class DeployCommandParameters extends OpsParams {
     
-    @Param(name = ParameterNames.NAME, optional=true)
+    @Param(optional=true)
     public String name = null;
 
     @Param(name = ParameterNames.CONTEXT_ROOT, optional=true)
@@ -146,4 +145,18 @@ public class DeployCommandParameters extends OpsParams {
             name=path.getName();            
         }
     }
+
+    private static class ParameterNames {
+
+        public static final String COMPONENT = "component";
+        public static final String VIRTUAL_SERVERS = "virtualservers";
+        public static final String CONTEXT_ROOT = "contextroot";
+        public static final String LIBRARIES = "libraries";
+        public static final String DIRECTORY_DEPLOYED = "directorydeployed";
+        public static final String LOCATION = "location";
+        public static final String ENABLED = "enabled";
+        public static final String PRECOMPILE_JSP = "precompilejsp";
+        public static final String DEPLOYMENT_PLAN = "deploymentplan";
+    }
+    
 }

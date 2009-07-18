@@ -342,20 +342,17 @@ public class Server {
      * Stops the container
      */
     public void stop() throws LifecycleException {
-        System.out.println("Received Stop");
         for (Container c : containers) {
             try {
                 if (c.started) {
                     c.container.stop();
                 }
-            } catch (LifecycleException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } finally {
+                c.started=false;
             }
-            c.started=false;
         }
         ModuleStartup ms = habitat.getComponent(ModuleStartup.class);
         if (ms!=null) {
-            System.out.println("Sending stop event to ms");
             ms.stop();
         }
         synchronized(servers) {

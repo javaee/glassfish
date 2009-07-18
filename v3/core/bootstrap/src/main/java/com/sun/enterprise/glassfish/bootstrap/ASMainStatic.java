@@ -36,10 +36,7 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.bootstrap.PlatformMain;
+import com.sun.enterprise.module.bootstrap.*;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.single.SingleModulesRegistry;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
@@ -55,10 +52,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-import java.util.ServiceLoader;
+import java.util.*;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitants;
@@ -102,7 +96,14 @@ public class ASMainStatic extends AbstractMain {
 
         StartupContext sc = getContext(StartupContext.class);
         if (sc==null) {
-            sc = new StartupContext(findBootstrapFile().getParentFile().getParentFile(), args);
+            Properties p = ArgumentManager.argsToMap(args);
+            for (String arg : args) {
+                if (arg.equals("-upgrade")) {
+                    p.put(StartupContext.STARTUP_MODULESTARTUP_NAME, "upgrade" );
+                }
+            }
+            sc = new StartupContext(findBootstrapFile().getParentFile().getParentFile(), p);
+
         }
         super.setContext(sc);
         

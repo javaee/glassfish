@@ -6,17 +6,13 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.embedded.EmbeddedContainer;
 import org.glassfish.api.embedded.Port;
 import org.glassfish.api.embedded.ContainerBuilder;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.container.Sniffer;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Config;
 
 import java.beans.PropertyVetoException;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Jerome Dochez
@@ -36,7 +32,7 @@ public class EjbBuilder implements ContainerBuilder<EmbeddedEjbContainer> {
     volatile EmbeddedEjbContainer instance=null;
     
 
-    public void attach(Port.PortType type, Port port) {
+    public void attach(PortType type, Port port) {
 
     }
 

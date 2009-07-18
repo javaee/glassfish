@@ -107,6 +107,14 @@ public class ASMain {
         Properties p = ArgumentManager.argsToMap(args);
         p.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
         p.put(StartupContext.STARTUP_MODULE_NAME, GF_KERNEL);
+        // temporary hack until CLI does that for us.
+        for (int i=0;i<args.length;i++) {
+            if (args[i].equals("-upgrade")) {
+                if (i+1<args.length && !args[i+1].equals("false"))  {
+                    p.put(StartupContext.STARTUP_MODULESTARTUP_NAME, "upgrade" );
+                }
+            }
+        }
         addRawStartupInfo(args, p);
 
         try {

@@ -44,6 +44,7 @@ import org.glassfish.api.embedded.BindException;
  * Container for administrative tasks.
  */
 public interface EmbeddedAdminContainer extends EmbeddedContainer {
+    
 
     /**
      * Executes synchronously a command
@@ -65,7 +66,7 @@ public interface EmbeddedAdminContainer extends EmbeddedContainer {
     /**
      * Makes the server bind the MBeanServer to an initialized port
      *
-     * @param port the jmx port
+     * @param port the jmx port                             `
      * @throws BindException
      */
     public void bindJmxTo(Port port) throws BindException;

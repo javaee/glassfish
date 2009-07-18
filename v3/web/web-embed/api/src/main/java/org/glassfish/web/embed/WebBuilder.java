@@ -91,7 +91,7 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
         return this;        
     }
 
-    public void attach(Port.PortType type, Port port) {
+    public void attach(PortType type, Port port) {
 
     }
 

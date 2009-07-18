@@ -50,7 +50,11 @@ public interface ContainerBuilder<T extends EmbeddedContainer> {
 
     public enum Type { ejb, web, jruby }
 
-    void attach(Port.PortType type, Port port);
+    // we will need more port types.
+    public enum PortType { http, https, iiop };
+
+
+    void attach(PortType type, Port port);
 
     T create(Server server);
 }
