@@ -85,6 +85,7 @@ public class StartupContext {
     public static final String ARG_SEP         = ",,,";
     public static final String ROOT_PROP = "hk2.startup.context.root";
     public final static String STARTUP_MODULE_NAME = "hk2.startup.context.mainModule";
+    public final static String STARTUP_MODULESTARTUP_NAME = "hk2.startup.context.moduleStartup";
 
     public StartupContext() {
         this.root = new File(System.getProperty("user.dir"));
@@ -164,6 +165,11 @@ public class StartupContext {
     public String getStartupModuleName() {
         return String.class.cast(args.get(STARTUP_MODULE_NAME));
     }
+
+    public String getPlatformMainServiceName() {
+        return String.class.cast(args.get(STARTUP_MODULESTARTUP_NAME));
+    }
+    
     /**
      * Returns the time at which this StartupContext instance was created.
      * This is roughly the time at which the hk2 program started.
