@@ -170,9 +170,11 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
             //POST meta data
             String command = getPostCommand();
-            MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+            if (command != null) {
+                MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
                     command, RestService.habitat, RestService.logger);
-            optionsResult.putMethodMetaData("POST", postMethodMetaData);
+                optionsResult.putMethodMetaData("POST", postMethodMetaData);
+            }
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }

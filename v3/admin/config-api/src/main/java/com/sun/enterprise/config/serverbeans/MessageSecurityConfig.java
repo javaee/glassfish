@@ -50,6 +50,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
+
 /**
  * Defines the message layer specific provider configurations of the application
  * server. All of the providers within a message-security-config element must be
@@ -62,6 +65,10 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
+ @RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-message-security-provider"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-message-security-provider")
+})
 public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
 
     /**

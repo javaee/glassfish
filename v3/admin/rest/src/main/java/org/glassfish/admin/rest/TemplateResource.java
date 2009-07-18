@@ -209,9 +209,11 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             //DELETE meta data
             String command = __resourceUtil.getCommand(
                 RestRedirect.OpType.DELETE, getConfigBean());
-            MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
-                    command, RestService.habitat, RestService.logger);
-            optionsResult.putMethodMetaData("DELETE", postMethodMetaData);
+            if (command != null) {
+                MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+                        command, RestService.habitat, RestService.logger);
+                optionsResult.putMethodMetaData("DELETE", postMethodMetaData);
+            }
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }

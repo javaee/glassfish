@@ -50,6 +50,8 @@ import java.util.List;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.quality.ToDo;
 
@@ -67,6 +69,10 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-iiop-listener"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-iiop-listener")
+})
 public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**

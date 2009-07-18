@@ -48,6 +48,9 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
+
 /**
  * Syntax for supplying system properties as name value pairs        
  */
@@ -57,6 +60,10 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-system-properties"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-system-property")
+})
 public interface SystemProperty extends ConfigBeanProxy, Injectable  {
 
     /**

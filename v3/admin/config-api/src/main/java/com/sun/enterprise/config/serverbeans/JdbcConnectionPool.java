@@ -55,6 +55,8 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -76,6 +78,10 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-connection-pool"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jdbc-connection-pool")
+})
 public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
     PropertyBag {
 

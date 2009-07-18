@@ -51,6 +51,8 @@ import java.util.List;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 
 import org.glassfish.quality.ToDo;
 
@@ -62,6 +64,10 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-javamail-resource"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-javamail-resource")
+})
 /**
  * The mail-resource element describes a javax.mail.Session resource 
  */

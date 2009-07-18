@@ -45,6 +45,8 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -69,6 +71,10 @@ import javax.validation.constraints.NotNull;
  */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-virtual-server"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-virtual-server")
+})
 public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
@@ -370,7 +376,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
                 "If this property is not specified, request acceptance is governed solely by the 'allowRemoteHost' property"),
             
         @PropertyDesc(name="authRealm",
-            description="Specifies the name attribute of an “auth-realm” on page 23 element, which overrides " + 
+            description="Specifies the name attribute of an “auth-realm�? on page 23 element, which overrides " + 
                 "the server instance's default realm for stand-alone web applications deployed to this virtual server. " +
                 "A realm defined in a stand-alone web application's web.xml file overrides the virtual server's realm"),
             
@@ -418,7 +424,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
             the alternate docroot's physical location (directory). Spaces are allowed in the dir 
             component.
             <p>
-            You can set this property for a specific web application. For details, see “sun-web-app” 
+            You can set this property for a specific web application. For details, see “sun-web-app�? 
             in Sun GlassFish Enterprise Server v3 Prelude Application Deployment Guide.
          */
         @PropertyDesc(name="alternatedocroot_*",

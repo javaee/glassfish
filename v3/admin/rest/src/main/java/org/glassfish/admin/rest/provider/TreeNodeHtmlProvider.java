@@ -113,9 +113,10 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                result = result + node.getName() + " : " + htmlForNodeValue(/*node.getValue()*/node); //FIXME (1) - Temporary hack; UNCOMMENT once the bug is fixed by monitoring team.
-                                                                                                      //getValue() on leaf node will return one of the following -
-                                                                                                      //Statistic object, String object or the object for primitive type
+                //getValue() on leaf node will return one of the following -
+                //Statistic object, String object or the object for primitive type
+                result = result + node.getName() + " : " +
+                    htmlForNodeValue(node.getValue());
                 result = result + "<br>";
             }
         }
@@ -153,6 +154,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
 
     private String htmlForNodeValue(Object value) {
         String result ="";
+        if (value == null) return result;
 
         try {
             if (value instanceof Statistic) {
@@ -175,13 +177,10 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
             //log exception message as warning
         }
 
-        value =  ((TreeNode)value).getValue(); //FIXME (1) - Temporary hack; DELETE once the bug is fixed by monitoring team.
-                                               //getValue() on leaf node will return one of the following -
-                                               //Statistic object, String object or the object for primitive type
-
         //for html output, string value of the object should suffice,
         //irrespective of the type of object
         result =  value.toString();
+
         return result;
     }
 

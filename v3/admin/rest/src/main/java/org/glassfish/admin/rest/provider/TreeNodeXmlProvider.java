@@ -114,7 +114,6 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                if (node instanceof Statistic) continue; //FIXME (1) - DELETE this check once the monitoring issue is fixed.
                 result = result + " " + node.getName() + "=" + quote(xmlForPrimitiveValue(node.getValue()));
             }
         }
@@ -125,9 +124,9 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
-                result = result + xmlForStatisticValue(/*node.getValue()*/node);//FIXME (1) - Temporary hack; UNCOMMENT once the bug is fixed by monitoring team.
-                                                                                //getValue() on leaf node will return one of the following -
-                                                                                //Statistic object, String object or the object for primitive type
+                //getValue() on leaf node will return one of the following -
+                //Statistic object, String object or the object for primitive type
+                result = result + xmlForStatisticValue(node.getValue());
             }
         }
 
@@ -165,13 +164,18 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
 
     private String xmlForPrimitiveValue(Object value) {
         String result ="";
-        result =  value.toString();
+        if (value != null) {
+            if (!(value instanceof Statistic)) {
+                result =  value.toString();
+            }
+        }
         return result;
     }
 
 
     private String xmlForStatisticValue(Object value) {
         String result ="";
+        if (value == null) return result;
 
         try {
             if (value instanceof Statistic) {

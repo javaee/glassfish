@@ -47,6 +47,10 @@ import java.beans.PropertyVetoException;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
+
 /**
  *
  */
@@ -54,6 +58,10 @@ import javax.validation.constraints.Pattern;
 /* @XmlType(name = "") */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-resource-ref"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-resource-ref")
+})
 public interface ResourceRef extends ConfigBeanProxy, Injectable  {
 
     /**

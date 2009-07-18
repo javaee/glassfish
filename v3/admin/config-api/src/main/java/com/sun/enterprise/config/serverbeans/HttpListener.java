@@ -43,6 +43,8 @@ import org.glassfish.api.admin.config.PropertyBag;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.Port;
 import org.glassfish.config.support.datatypes.PositiveInteger;
@@ -61,6 +63,10 @@ import javax.validation.constraints.NotNull;
 
 @Configured
 @Deprecated
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-http-listener"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-http-listener")
+})
 public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
@@ -393,7 +399,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
         description="Comma-separated list of protocols that can use the same port. " + 
         "For example, if you set this property to http,https and set the port to 4567, " +
         "you can access the port with either http://host:4567/ or https://host:4567/. " +
-        " Specifying this property at the “http-service” on page 42 level overrides settings at the http-listener level. " +
+        " Specifying this property at the “http-service�? on page 42 level overrides settings at the http-listener level. " +
         "If this property is not set at either level, this feature is disabled"),
         
     @PropertyDesc(name="bufferSize", defaultValue="4096", dataType=NonNegativeInteger.class,

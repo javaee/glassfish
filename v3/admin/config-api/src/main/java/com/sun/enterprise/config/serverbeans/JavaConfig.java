@@ -53,6 +53,8 @@ import java.util.StringTokenizer;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 
 import org.glassfish.quality.ToDo;
 
@@ -66,6 +68,10 @@ import org.glassfish.quality.ToDo;
 }) */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-profiler"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-profiler")
+})
 public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**

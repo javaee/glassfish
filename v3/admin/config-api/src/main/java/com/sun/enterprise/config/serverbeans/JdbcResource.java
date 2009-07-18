@@ -50,6 +50,8 @@ import java.util.List;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.Param;
 import org.glassfish.config.support.Create;
 
@@ -68,6 +70,10 @@ import javax.validation.constraints.NotNull;
 
 @Configured
 @Create(value="new-create-jdbc-resource", parentType=Resources.class)
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-resource"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jdbc-resource")
+})
 public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
     
     /**              

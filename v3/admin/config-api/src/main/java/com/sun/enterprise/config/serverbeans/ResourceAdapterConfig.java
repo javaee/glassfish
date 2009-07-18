@@ -50,6 +50,8 @@ import java.util.List;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 
 import org.glassfish.quality.ToDo;
 
@@ -70,6 +72,10 @@ import javax.validation.constraints.Pattern;
  */
 
 @Configured
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-resource-adapter-config"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-resource-adapter-config")
+})
 public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
 
     /**

@@ -48,6 +48,8 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
@@ -61,7 +63,10 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-
+@RestRedirects({
+ @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-auth-realm"),
+ @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-auth-realm")
+})
 /**
  * The auth-realm element defines and configures one authentication realm. 
  * There must be at least one realm available for a server instance; 
