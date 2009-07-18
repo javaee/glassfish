@@ -76,7 +76,6 @@
 	<groupId>com.sun.mojarra</groupId>
 	<artifactId>mojarra-scales</artifactId>
 	<version>${scales.version}</version>
-	<scope>compile</scope>
     <exclusions>
         <exclusion>
             <groupId>com.sun.jsftemplating</groupId>

@@ -45,7 +45,7 @@
     <artifactId>console-common-full-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Plugin for common-full package</name>
-    <description>JavaMail and JNDI  plugin bundle for Glassfish V3 Admin Console</description>
+    <description>Plugin bundle for Glassfish v3 Admin Console common-full package</description>
 
     <developers>
         <developer>
