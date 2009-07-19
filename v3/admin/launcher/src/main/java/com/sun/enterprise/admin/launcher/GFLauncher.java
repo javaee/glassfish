@@ -236,7 +236,6 @@ public abstract class GFLauncher {
             else {
                 ProcessStreamDrainer.drain(getInfo().getDomainName(), process);
             }
-            System.out.println("Writing security tokens ...");
             writeSecurityTokens(process.getOutputStream());
         }
         catch (Exception e) {
@@ -259,7 +258,6 @@ public abstract class GFLauncher {
                 bw.write(token);
                 bw.newLine();
                 bw.flush();      //flusing once is ok too
-                System.out.println("Wrote: " + token);
             }
         } finally {
             if (bw != null)
