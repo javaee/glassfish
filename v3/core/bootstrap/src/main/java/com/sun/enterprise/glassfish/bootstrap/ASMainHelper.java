@@ -263,8 +263,8 @@ public class ASMainHelper {
             throw new RuntimeException("no domain directories found under " + domainsDir);
 
         if(domains.length > 1)
-            throw new RuntimeException("More than one domain found under "
-                    + domainsDir + " -- you must specify one domain.");
+            throw new RuntimeException("Multiple domains[" + domains.length + "] found under "
+                    + domainsDir + " -- you must specify a domain name as operand");
 
         return domains[0];
     }

@@ -36,23 +36,32 @@
 
 package com.sun.enterprise.admin.cli.commands;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import com.sun.enterprise.cli.framework.ValidOption;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-
-import com.sun.enterprise.admin.cli.*;
+import com.sun.enterprise.admin.cli.CLIConstants;
+import static com.sun.enterprise.admin.cli.CLIConstants.*;
+import com.sun.enterprise.admin.cli.Environment;
+import com.sun.enterprise.admin.cli.LocalDomainCommand;
+import com.sun.enterprise.admin.cli.ProgramOptions;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
+import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.cli.framework.CommandValidationException;
+import com.sun.enterprise.cli.framework.ValidOption;
+import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 
-import static com.sun.enterprise.admin.cli.CLIConstants.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The start-domain command.
@@ -60,14 +69,14 @@ import static com.sun.enterprise.admin.cli.CLIConstants.*;
  * @author bnevins
  * @author Bill Shannon
  */
-public class StartDomainCommand extends CLICommand {
+public class StartDomainCommand extends LocalDomainCommand {
 
     private GFLauncherInfo info;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
 
-    /**
+    /** Creates the instance of this command in accordance with what @link {CLICommand} does for it.
      */
     public StartDomainCommand(String name, ProgramOptions po, Environment env) {
         super(name, po, env);
@@ -83,11 +92,11 @@ public class StartDomainCommand extends CLICommand {
         processProgramOptions();
 
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "domaindir", '\0', "STRING", false, null);
-        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
         addOption(opts, "debug", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "upgrade", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "domaindir", '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
+        addOption(opts, "upgrade", '\0', "BOOLEAN", false, "false");
+        addOption(opts, "verbose", '\0', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandName = "domain_name";
         operandType = "STRING";
@@ -113,7 +122,7 @@ public class StartDomainCommand extends CLICommand {
             info = launcher.getInfo();
 
             if (!operands.isEmpty()) {
-                info.setDomainName((String)operands.get(0));
+                info.setDomainName(operands.get(0));
             }
 
             String parent = options.get("domaindir");
@@ -128,14 +137,16 @@ public class StartDomainCommand extends CLICommand {
             info.setRespawnInfo(programOpts.getClassName(),
                             programOpts.getClassPath(),
                             programOpts.getProgramArguments());
- 
+
+            setMasterPassword(info);
             launcher.setup();
             // CLI calls this method only to ensure that domain.xml is parsed
             // once. This is a performance optimization.
             // km@dev.java.net (Aug 2008)
             if (isServerAlive(info.getAdminPorts())) {
-                String msg = strings.get("ServerRunning", 
-                                        info.getAdminPorts().iterator().next());
+                int definitePort = info.getAdminPorts().iterator().next();
+                String msg = strings.get("ServerRunning",
+                        definitePort+"");
                 logger.printWarning(msg);
                 return;
             }
@@ -169,9 +180,82 @@ public class StartDomainCommand extends CLICommand {
         }
     }
 
+    private void setMasterPassword(GFLauncherInfo info) throws CommandException {
+        //sets the password into the launcher info. Yes, setting master password into a string is not right ...
+        String mpn  = "AS_ADMIN_MASTERPASSWORD";
+        String mpv  = passwords.get(mpn);
+        if (mpv == null)
+            mpv = checkMasterPasswordFile();
+        if (mpv == null)
+            mpv = "changeit"; //the default
+        boolean ok = verifyMasterPassword(mpv);
+        if (!ok) {
+            mpv = retry(3);
+        }
+        info.addSecurityToken(mpn, mpv);
+    }
+
+    private String retry(int times) throws CommandException {
+        String mpv;
+        logger.printMessage("No valid master password found");
+        //prompt times times
+        for (int i = 0 ; i < times; i++) {
+            String prompt = "Enter master password (" + (times-i) + " attempt(s) remain)> ";
+            mpv = super.readPassword(prompt);
+            if (mpv == null)
+                throw new CommandException("No console, no prompting possible"); //ignore retries :)
+            if(verifyMasterPassword(mpv))
+                return mpv;
+            else {
+                logger.printMessage("Sorry, incorrect master password, retry");
+                //Thread.currentThread().sleep((i+1)*10000); //make the pay for typos?
+                continue; //next attempt
+            }
+        }
+        throw new CommandException("Number of attempts (" + times + ") exhausted, giving up");
+    }
+
+    private boolean verifyMasterPassword(String mpv) {
+        //only tries to open the keystore
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(super.getJKS());
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            ks.load(fis, mpv.toCharArray());
+            return true;
+        } catch (Exception e) {
+            logger.printDebugMessage(e.getMessage());
+            return false;
+        } finally {
+            try {
+                if (fis != null)
+                    fis.close();
+            } catch(IOException ioe) {
+                //ignore, I know ...
+            }
+        }
+    }
+
+    /** Checks if the create-domain was created using --savemasterpassword flag which obtains security
+     *  by obfuscation! Returns null in case of failure of any kind.
+     * @return String representing the password from the JCEKS store named master-password in domain folder
+     */
+    private String checkMasterPasswordFile() {
+        File mpf = super.getMasterPasswordFile();
+        if (mpf == null)
+            return null;   //no master password  saved
+        try {
+            PasswordAdapter pw = new PasswordAdapter(mpf.getAbsolutePath(), "master-password".toCharArray()); //fixed key
+            return pw.getPasswordForAlias("master-password");
+        } catch (Exception e) {
+            logger.printDebugMessage("master password file reading error: " + e.getMessage());
+            return null;
+        }
+    }
+
     private void runCommandEmbedded() throws CommandException {
         try {
-            GFLauncher launcher = null;
+            GFLauncher launcher;
 
             // bnevins nov 23 2008
             // Embedded is a new type of server
@@ -183,7 +267,7 @@ public class StartDomainCommand extends CLICommand {
             info = launcher.getInfo();
 
             if (!operands.isEmpty()) {
-                info.setDomainName((String)operands.get(0));
+                info.setDomainName(operands.get(0));
             } else {
                 info.setDomainName("domain1");
             }

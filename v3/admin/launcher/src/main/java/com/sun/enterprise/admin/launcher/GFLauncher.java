@@ -236,6 +236,8 @@ public abstract class GFLauncher {
             else {
                 ProcessStreamDrainer.drain(getInfo().getDomainName(), process);
             }
+            System.out.println("Writing security tokens ...");
+            writeSecurityTokens(process.getOutputStream());
         }
         catch (Exception e) {
             throw new GFLauncherException("jvmfailure", e, e);
@@ -247,6 +249,22 @@ public abstract class GFLauncher {
         //if verbose, hang round until the domain stops
         if (getInfo().isVerbose())
             wait(process);
+    }
+
+    private void writeSecurityTokens(OutputStream os) throws Exception {
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new OutputStreamWriter(os));
+            for(String token : info.securityTokens) {
+                bw.write(token);
+                bw.newLine();
+                bw.flush();      //flusing once is ok too
+                System.out.println("Wrote: " + token);
+            }
+        } finally {
+            if (bw != null)
+                bw.close();
+        }
     }
 
     void setCommandLine() throws GFLauncherException {

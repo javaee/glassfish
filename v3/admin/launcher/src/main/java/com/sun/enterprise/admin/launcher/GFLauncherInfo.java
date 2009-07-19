@@ -219,6 +219,7 @@ public class GFLauncherInfo {
         map.put("-domainname", domainName);
         map.put("-instancename", instanceName);
         map.put("-upgrade", Boolean.toString(upgrade));
+        map.put("-read-stdin", "true"); //always make the server read the stdin for master password, at least.
 
         if(respawnInfo != null) {
             respawnInfo.put(map);
@@ -228,6 +229,22 @@ public class GFLauncherInfo {
 
     public void setRespawnInfo(String classname, String classpath, String[] args) {
         respawnInfo = new RespawnInfo(classname, classpath, args);
+    }
+
+    /** Adds the given name value pair as a security token. This is what will be put on the
+     *  launched process's stdin to securely pass it on. The value is accepted as a String and it may be insecure.
+     *  A string formed by concatenating name, '=' and value is written to the stdin as a single
+     *  line delimited by newline character. To get
+     *  the value of the token, the server should parse the line knowing this. None of the parameters may be null.
+     *
+     * @param name  String representing name of the token
+     * @param value String representing the value (should we call it a password?)
+     * @throws NullPointerException if any of the parameters are null
+     */
+    public void addSecurityToken(String name, String value) {
+        if (name == null || value == null)
+            throw new NullPointerException();
+        securityTokens.add(name + "=" + value);
     }
     
     GFLauncherInfo(GFLauncherFactory.ServerType type) {
@@ -455,5 +472,7 @@ public class GFLauncherInfo {
     private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";
     private final static String CONFIG_DIR = "config";
     private final static String CONFIG_FILENAME = "domain.xml";
+    //password tokens -- could be multiple -- launcher should *just* write them onto stdin of server
+    final List<String> securityTokens = new ArrayList<String>(); // note: it's package private
 }
 

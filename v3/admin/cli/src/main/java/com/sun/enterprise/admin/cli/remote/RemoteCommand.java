@@ -306,7 +306,7 @@ public class RemoteCommand extends CLICommand {
     public String executeAndReturnOutput(String... args)
             throws CommandException, CommandValidationException {
         /*
-         * Tellthe low level output processing to just save the output
+         * Tell the low level output processing to just save the output
          * string instead of writing it out.  Yes, this is pretty gross.
          */
         returnOutput = true;
@@ -330,7 +330,7 @@ public class RemoteCommand extends CLICommand {
             HttpConnectorAddress url = new HttpConnectorAddress(
                             programOpts.getHost(), programOpts.getPort(),
                             programOpts.isSecure());
-            logger.printDebugMessage("URI: " + uriString.toString());
+            logger.printDebugMessage("URI: " + uriString);
             logger.printDebugMessage("URL: " + url.toString());
             logger.printDebugMessage("URL: " +
                     url.toURL(uriString.toString()).toString());

@@ -259,5 +259,13 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         File agp = new File(new File(new File(install, "lib"), "install"), "applications");
         return (agp);
     }
+    
+    public File getMasterPasswordFile() {
+        return new File (getDomainRoot(), "master-password");
+    }
+
+    public File getJKS() {
+        return new File (getDomainRoot(), "config/keystore.jks");
+    }
 }
 

@@ -813,7 +813,7 @@ public abstract class CLICommand {
         // it is a supported command; do nothing
     }
 
-    private static boolean ok(String s) {
+    static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
 
