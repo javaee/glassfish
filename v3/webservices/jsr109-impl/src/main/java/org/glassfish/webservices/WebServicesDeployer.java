@@ -56,6 +56,7 @@ import org.xml.sax.SAXParseException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.servlet.SingleThreadModel;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -508,7 +509,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         Collection webBundles = new HashSet();
         Collection webServices = new HashSet();
 
-
         // First collect all web applications and web service descriptors.
         webBundles.addAll( app.getWebBundleDescriptors() );
         webServices.addAll( app.getWebServiceDescriptors() );
@@ -555,8 +555,11 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 continue;
             }
 
-          /* TODO BM delete this later
-           URL clientPublishLocation = next.getClientPublishUrl();
+            // For JAXWS services, we rely on JAXWS RI to do WSL gen and publishing
+            // For JAXRPC we do it here in 109
+            if(!("1.1".equals(next.getWebServicesDescriptor().getSpecVersion()))) {
+                continue;
+            }
 
             // Even if deployer specified a wsdl file
             // publish location, server can't assume it can access that
@@ -570,16 +573,15 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
             // Create the generated WSDL in the generated directory; for that create the directories first
             File genXmlDir =  dc.getScratchDir("xml");
-
-            //TODO BM Check this
-           *//* if(request.isApplication()) {
+            if(!app.isVirtual()) {
                 // Add module name to the generated xml dir for apps
                 String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
                 genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
-            }*//*
-            //No generation of wsdl done since wsgen takes care of it.
-*/
-
+            }
+            String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
+            (new File(genXmlDir, wsdlFileDir)).mkdirs();
+            File genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
+            wsUtil.generateFinalWsdl(url, next, wsUtil.getWebServerInfoForDAS(), genWsdlFile);
         }
     }
 
@@ -589,31 +591,43 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
          * in v2
          */
         Collection endpoints = web.getWebServices().getEndpoints();
+        ClassLoader cl = web.getClassLoader();
 
         for(Iterator endpointIter = endpoints.iterator();endpointIter.hasNext();) {
 
             WebServiceEndpoint nextEndpoint = (WebServiceEndpoint)endpointIter.next();
             WebComponentDescriptor webComp = nextEndpoint.getWebComponentImpl();
-
             if( !nextEndpoint.hasServletImplClass() ) {
                 throw new DeploymentException( format(rb.getString(
                         "enterprise.deployment.backend.cannot_find_servlet"),
                         nextEndpoint.getEndpointName()));
-
             }
-
-
-            /*if( !nextEndpoint.getWebService().hasFilePublishing() ) {
-            // @@@ add security attributes as well????
+            String servletImplClass = nextEndpoint.getServletImplClass();
+            if( !nextEndpoint.getWebService().hasFilePublishing() ) {
                 String publishingUri = nextEndpoint.getPublishingUri();
-                String publishingUrlPattern =publishingUri.charAt(0) == '/') ?publishingUri : "/" + publishingUri + "*//*";
+                String publishingUrlPattern =
+                        (publishingUri.charAt(0) == '/') ?publishingUri : "/" + publishingUri + "*//*";
                 webComp.addUrlPattern(publishingUrlPattern);
 
-             }*/
-
-            String containerServlet = "org.glassfish.webservices.JAXWSServlet";
-            webComp.setWebComponentImplementation(containerServlet);
-
+            }
+            try {
+                Class servletImplClazz  = cl.loadClass(servletImplClass);
+                String containerServlet;
+                // For versions above 1.1, use JAXWSServlet
+                if("1.1".compareTo(web.getWebServices().getSpecVersion())<0) {
+                    containerServlet = "org.glassfish.webservices.JAXWSServlet";
+                } else {
+                    containerServlet =
+                    SingleThreadModel.class.isAssignableFrom(servletImplClazz) ?
+                    "org.glassfish.webservices.SingleThreadJAXRPCServlet" :
+                        "org.glassfish.webservices.JAXRPCServlet";
+                }
+                webComp.setWebComponentImplementation(containerServlet);
+            } catch(ClassNotFoundException cex) {
+                throw new DeploymentException( format(rb.getString(
+                        "enterprise.deployment.backend.cannot_find_servlet"),
+                        nextEndpoint.getEndpointName()));
+            }
 
             /**
              * Now trying to figure the address from <code>com.sun.enterprise.webservice.WsUtil.java</code>
@@ -627,14 +641,11 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // If yes, https will be used.  Otherwise, http will be used.
             WebServerInfo wsi = new WsUtil(config, habitat).getWebServerInfoForDAS();
             URL rootURL = wsi.getWebServerRootURL(nextEndpoint.isSecure());
-
             URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL);
             //Ommitting the part of generating the wsdl for now
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
             logger.info(format(rb.getString("enterprise.deployment.endpoint.registration"),
-
             nextEndpoint.getEndpointName(), actualAddress.toString() ));
-
             new Deployment109ProbeProvider().deploy(nextEndpoint.getEndpointName(),
                     actualAddress.toString(),
                     nextEndpoint.getServiceName().getLocalPart(),
@@ -643,7 +654,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                     nextEndpoint.getServletImplClass(),
                     actualAddress.toString()+"?wsdl");
         }
-
     }
 
     private String format(String key, String ... values){
