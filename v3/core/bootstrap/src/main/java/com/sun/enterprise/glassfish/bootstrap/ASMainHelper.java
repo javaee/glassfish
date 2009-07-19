@@ -264,7 +264,7 @@ public class ASMainHelper {
 
         if(domains.length > 1)
             throw new RuntimeException("Multiple domains[" + domains.length + "] found under "
-                    + domainsDir + " -- you must specify a domain name as operand");
+                    + domainsDir + " -- you must specify a domain name as -domain <name>");
 
         return domains[0];
     }
