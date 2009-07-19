@@ -76,7 +76,7 @@ public class StartDomainCommand extends LocalDomainCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
 
-    /** Creates the instance of this command in accordance with what @link {CLICommand} does for it.
+    /** Creates the instance of this command in accordance with what {@link CLICommand} does for it.
      */
     public StartDomainCommand(String name, ProgramOptions po, Environment env) {
         super(name, po, env);

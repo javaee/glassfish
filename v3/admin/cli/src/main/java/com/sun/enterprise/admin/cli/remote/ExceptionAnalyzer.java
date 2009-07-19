@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** An immutable class to analyze the exception stack trace of a given
- * instance of @link {java.lang.Exception}. Can be extended to handle
+ * instance of {@link java.lang.Exception}. Can be extended to handle
  * throwables, but it is not done in this version on purpose. Takes the
  * snapshot of given exception at the time of instantiation.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
