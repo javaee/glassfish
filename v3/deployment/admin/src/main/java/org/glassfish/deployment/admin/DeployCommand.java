@@ -483,6 +483,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         verifierFrameworkContext.setApplication(context.getModuleMetaData(com.sun.enterprise.deployment.Application.class));
         verifierFrameworkContext.setJarFileName(context.getSourceDir().getAbsolutePath());
         verifierFrameworkContext.setJspOutDir(context.getScratchDir("jsp"));
+        //verifierFrameworkContext.setIsBackend(true);
+        verifierFrameworkContext.setOutputDirName(env.getDomainRoot().getAbsolutePath()+"/logs/verifier-results");
         com.sun.enterprise.tools.verifier.ResultManager rm = verifierFrameworkContext.getResultManager();
 
         try { 
@@ -503,6 +505,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         }
         int failedCount = rm.getFailedCount() + rm.getErrorCount();
         if (failedCount != 0) {
+            ((ExtendedDeploymentContext)context).clean();
             throw new DeploymentException(localStrings.getLocalString("deploy.failverifier","Some verifier tests failed. Aborting deployment"));
         }
     }
