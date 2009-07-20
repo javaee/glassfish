@@ -47,7 +47,7 @@
         setPageSessionAttribute(key="childType" value="iiop-listener")
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerNew.jsf");
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n_corba.iiopListeners.NewPageTitle}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n_corba.iiopListeners.newPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n_corba.iiopListeners.NewPageHelp}");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         //set the following for including buttons.inc
