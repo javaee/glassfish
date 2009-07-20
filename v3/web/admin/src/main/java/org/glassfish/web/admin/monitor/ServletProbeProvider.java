@@ -38,9 +38,9 @@ package org.glassfish.web.admin.monitor;
 
 import java.security.Principal;
 import javax.servlet.Servlet;
-import org.glassfish.probe.provider.annotations.Probe;
-import org.glassfish.probe.provider.annotations.ProbeParam;
-import org.glassfish.probe.provider.annotations.ProbeProvider;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 
 /**
  * Provider interface for servlet related probes.

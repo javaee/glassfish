@@ -152,11 +152,17 @@
            <version>3.0-Prelude</version>
 	   <type>distribution-fragment</type>
        </dependency> 
+       <!-- Remove gfprobe-provider-client when all external modules are using management-api instead -->
        <dependency>
             <groupId>org.glassfish.provider</groupId>
             <artifactId>gfprobe-provider-client</artifactId>
+            <version>3.0.0-b008</version>
        </dependency>
-            <dependency>
+       <dependency>
+	    <groupId>org.glassfish.external</groupId>
+	    <artifactId>management-api</artifactId>
+	 </dependency>
+       <dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>

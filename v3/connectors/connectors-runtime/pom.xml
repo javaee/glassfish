@@ -157,9 +157,12 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish.provider</groupId>
-            <artifactId>gfprobe-provider-client</artifactId>
-            <version>${gfprobe-provider-client.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>management-api</artifactId>
+        </dependency>
+        <dependency>
+	    <groupId>org.glassfish.gmbal</groupId>
+	    <artifactId>gmbal</artifactId>
         </dependency>
 
     </dependencies>

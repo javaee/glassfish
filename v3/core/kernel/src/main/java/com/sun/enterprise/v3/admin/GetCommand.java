@@ -58,8 +58,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.glassfish.api.statistics.Statistic;
-import org.glassfish.api.statistics.impl.StatisticImpl;
+//import org.glassfish.external.statistics.Statistic;
+//import org.glassfish.external.statistics.impl.StatisticImpl;
 
 /**
  * User: Jerome Dochez
@@ -198,14 +198,27 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     private void insertNameValuePairs(TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1){
         String name = tn1.getCompletePathName();
         Object value = tn1.getValue();
-        if (value instanceof Statistic) {
+        if (value instanceof org.glassfish.external.statistics.Statistic) {
             Map<String,Object> statsMap;
             // Most likely we will get the proxy of the StatisticImpl,
             // reconvert that so you can access getStatisticAsMap method
             if (Proxy.isProxyClass(value.getClass())) {
-                    statsMap = ((StatisticImpl)Proxy.getInvocationHandler(value)).getStaticAsMap();
+                    statsMap = ((org.glassfish.external.statistics.impl.StatisticImpl)Proxy.getInvocationHandler(value)).getStaticAsMap();
             } else {
-                statsMap = ((StatisticImpl)value).getStaticAsMap();
+                statsMap = ((org.glassfish.external.statistics.impl.StatisticImpl)value).getStaticAsMap();
+            }
+            for (String attrName : statsMap.keySet()) {
+                Object attrValue = statsMap.get(attrName);
+                map.put(name + "-" + attrName, attrValue);
+            }
+        } else if (value instanceof org.glassfish.api.statistics.Statistic) { //Remove when external modules have moved to management-api
+            Map<String,Object> statsMap;
+            // Most likely we will get the proxy of the StatisticImpl,
+            // reconvert that so you can access getStatisticAsMap method
+            if (Proxy.isProxyClass(value.getClass())) {
+                    statsMap = ((org.glassfish.api.statistics.impl.StatisticImpl)Proxy.getInvocationHandler(value)).getStaticAsMap();
+            } else {
+                statsMap = ((org.glassfish.api.statistics.impl.StatisticImpl)value).getStaticAsMap();
             }
             for (String attrName : statsMap.keySet()) {
                 Object attrValue = statsMap.get(attrName);

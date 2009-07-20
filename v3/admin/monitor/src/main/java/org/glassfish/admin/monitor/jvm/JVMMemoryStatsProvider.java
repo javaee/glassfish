@@ -39,11 +39,13 @@ package org.glassfish.admin.monitor.jvm;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.memory */
+//@AMXMetadata(type="memory-mon", group="monitoring", isSingleton=true)
 @ManagedObject
 @Description( "JVM Memory Statistics" )
 public class JVMMemoryStatsProvider {

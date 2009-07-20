@@ -1,7 +1,7 @@
 package org.glassfish.flashlight.client;
 
-import org.glassfish.probe.provider.annotations.Probe;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 import java.lang.reflect.Method;
 

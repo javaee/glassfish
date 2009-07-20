@@ -92,7 +92,7 @@
     
     <dependencies>
 		
-         <dependency>
+	<dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
@@ -141,8 +141,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.provider</groupId>
-            <artifactId>gfprobe-provider-client</artifactId>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>management-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>

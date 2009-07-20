@@ -153,11 +153,10 @@
             <version>1.1</version>
             <optional>true</optional>
         </dependency>        
-        <!--dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>monitoring-core</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
+        <dependency>
+	    <groupId>org.glassfish.external</groupId>
+	    <artifactId>management-api</artifactId>
+	</dependency>
     </dependencies>
     <profiles>
         <profile>

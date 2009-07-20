@@ -37,9 +37,9 @@ package org.glassfish.web.admin.monitor;
 
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
-import org.glassfish.api.statistics.CountStatistic;
-import org.glassfish.api.statistics.impl.CountStatisticImpl;
-import org.glassfish.probe.provider.annotations.*;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;

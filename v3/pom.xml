@@ -159,8 +159,8 @@
         <jersey.version>1.1.1-ea</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
-        <gfprobe-provider-client.version>3.0.0-b008</gfprobe-provider-client.version>
-        <gmbal.version>3.0.0-b008</gmbal.version>
+        <gmbal.version>3.0.0-b009</gmbal.version>
+        <management-api.version>3.0.0-b003</management-api.version>
     </properties>
 
 
@@ -878,14 +878,14 @@
                 <version>${wsdl4j.version}</version>
           </dependency>
           <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>management-api</artifactId>
+            <version>${management-api.version}</version>
+          </dependency>
+          <dependency>
             <groupId>org.glassfish.gmbal</groupId>
             <artifactId>gmbal</artifactId>
             <version>${gmbal.version}</version>
-          </dependency>
-          <dependency>
-                <groupId>org.glassfish.provider</groupId>
-                <artifactId>gfprobe-provider-client</artifactId>
-                <version>${gfprobe-provider-client.version}</version>
           </dependency>
           <dependency>
                 <groupId>org.jboss.webbeans</groupId>

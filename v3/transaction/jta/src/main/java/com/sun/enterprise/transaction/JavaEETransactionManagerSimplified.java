@@ -75,8 +75,8 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
 import org.glassfish.api.invocation.ResourceHandler;
 
-import org.glassfish.probe.provider.PluginPoint;
-import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.ServerTags;

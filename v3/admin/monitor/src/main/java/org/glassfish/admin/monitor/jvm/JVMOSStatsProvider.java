@@ -38,11 +38,13 @@ package org.glassfish.admin.monitor.jvm;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.operating-system */
+//@AMXMetadata(type="operating-system-mon", group="monitoring", isSingleton=true)
 @ManagedObject
 @Description( "JVM Operating System Statistics" )
 public class JVMOSStatsProvider {
@@ -71,5 +73,5 @@ public class JVMOSStatsProvider {
     @Description( "operating system version" )
     public String getOSVersion() {
         return osBean.getVersion();
-    }   
+    }
 }

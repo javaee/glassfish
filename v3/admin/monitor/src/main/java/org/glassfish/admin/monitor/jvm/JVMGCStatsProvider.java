@@ -40,14 +40,16 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.List;
 import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.garbage-collectors */
+//@AMXMetadata(type="garbage-collector-mon", group="monitoring")
 @ManagedObject
 @Description( "JVM Garbage Collectors Statistics" )
 public class JVMGCStatsProvider {
-    
+
     private List<GarbageCollectorMXBean> gcBeanList = ManagementFactory.getGarbageCollectorMXBeans();
     private String gcName = null;
 
@@ -79,4 +81,5 @@ public class JVMGCStatsProvider {
             }
         return times;
     }
+
 }

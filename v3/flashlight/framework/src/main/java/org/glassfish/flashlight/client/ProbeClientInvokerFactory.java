@@ -38,7 +38,7 @@ package org.glassfish.flashlight.client;
 
 import org.glassfish.flashlight.impl.client.ReflectiveClientInvoker;
 import org.glassfish.flashlight.provider.FlashlightProbe;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.Annotation;

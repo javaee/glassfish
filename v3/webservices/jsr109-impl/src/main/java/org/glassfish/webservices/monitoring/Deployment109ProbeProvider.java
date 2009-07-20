@@ -1,8 +1,8 @@
 package org.glassfish.webservices.monitoring;
 
-import org.glassfish.probe.provider.annotations.ProbeProvider;
-import org.glassfish.probe.provider.annotations.Probe;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 /**
  * 109 deployment probe. A registered listener get to listen the emited

@@ -35,8 +35,8 @@
  */
 package org.glassfish.flashlight.client;
 
-import org.glassfish.probe.provider.annotations.ProbeListener;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 /**
  * @author Mahesh Kannan

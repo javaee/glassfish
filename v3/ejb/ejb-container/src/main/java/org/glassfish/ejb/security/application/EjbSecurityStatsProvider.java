@@ -5,15 +5,15 @@
 
 package org.glassfish.ejb.security.application;
 
-import org.glassfish.api.statistics.CountStatistic;
-import org.glassfish.api.statistics.TimeStatistic;
-import org.glassfish.api.statistics.impl.CountStatisticImpl;
-import org.glassfish.api.statistics.impl.TimeStatisticImpl;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.TimeStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.TimeStatisticImpl;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
-import org.glassfish.probe.provider.annotations.ProbeListener;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 /**
  *

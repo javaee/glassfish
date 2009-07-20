@@ -9,7 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.api.Startup;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;

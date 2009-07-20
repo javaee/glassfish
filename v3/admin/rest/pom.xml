@@ -80,7 +80,7 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
+	    </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
@@ -95,6 +95,10 @@
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>management-api</artifactId>
         </dependency>
     </dependencies>
     <build>

@@ -64,8 +64,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-import org.glassfish.probe.provider.PluginPoint;
-import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 
 /**
  * Bootstrap operations of telemetry objects are done by this class.

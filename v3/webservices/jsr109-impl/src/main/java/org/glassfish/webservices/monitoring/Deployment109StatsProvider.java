@@ -3,8 +3,8 @@ package org.glassfish.webservices.monitoring;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.Description;
-import org.glassfish.probe.provider.annotations.ProbeListener;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 import java.util.Collection;
 import java.util.Collections;

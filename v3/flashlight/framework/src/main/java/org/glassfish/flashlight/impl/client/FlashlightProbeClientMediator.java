@@ -43,7 +43,7 @@ import org.glassfish.gfprobe.common.HandlerRegistry;
 import org.glassfish.flashlight.client.*;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
-import org.glassfish.probe.provider.annotations.ProbeListener;
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 

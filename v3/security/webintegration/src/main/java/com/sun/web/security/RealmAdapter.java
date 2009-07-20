@@ -84,7 +84,7 @@ import org.apache.catalina.util.StringManager;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 //import com.sun.enterprise.Switch;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
@@ -113,7 +113,7 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
-import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.PluginPoint;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;

@@ -84,9 +84,9 @@ import org.glassfish.api.invocation.InvocationException;
 import com.sun.enterprise.security.factory.SecurityManagerFactory;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 import org.glassfish.internal.api.Globals;
-import org.glassfish.probe.provider.PluginPoint;
-import org.glassfish.probe.provider.StatsProviderManager;
-import org.glassfish.probe.provider.annotations.ProbeProvider;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 
 /**
  * This class is used by the EJB server to manage security. All

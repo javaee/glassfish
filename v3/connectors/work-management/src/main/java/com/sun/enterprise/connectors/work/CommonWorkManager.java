@@ -54,8 +54,8 @@ import javax.resource.spi.work.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.probe.provider.StatsProviderManager;
-import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.PluginPoint;
 
 
 /**

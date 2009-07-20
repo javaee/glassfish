@@ -35,9 +35,10 @@
  */
 package com.sun.enterprise.transaction.monitoring;
 
-import org.glassfish.api.statistics.CountStatistic;
-import org.glassfish.api.statistics.impl.CountStatisticImpl;
-import org.glassfish.probe.provider.annotations.*;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.probe.provider.annotations.*;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
@@ -47,6 +48,7 @@ import org.glassfish.gmbal.ManagedObject;
  *
  * @author Marina Vatkina
  */
+//@AMXMetadata(type="transaction-service-mon", group="monitoring", isSingleton=true)
 @ManagedObject
 @Description("Transaction Service Statistics")
 public class TransactionServiceStatsProvider {

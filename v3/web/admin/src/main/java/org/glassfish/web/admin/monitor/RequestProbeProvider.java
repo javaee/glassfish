@@ -39,7 +39,7 @@ package org.glassfish.web.admin.monitor;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.glassfish.probe.provider.annotations.*;
+import org.glassfish.external.probe.provider.annotations.*;
 
 /**
  * Provider interface for HTTP request/response related probes.

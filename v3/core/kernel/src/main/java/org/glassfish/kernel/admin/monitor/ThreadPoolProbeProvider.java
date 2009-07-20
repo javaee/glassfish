@@ -36,7 +36,7 @@
 
 package org.glassfish.kernel.admin.monitor;
 
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 /**
  * Probe provider interface for thread pool related events.

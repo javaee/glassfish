@@ -16,8 +16,8 @@ import org.jvnet.hk2.annotations.Service;
 //import org.glassfish.api.event.EventListener.Event;
 //import org.glassfish.api.event.EventTypes;
 //import org.glassfish.api.event.RestrictTo;
-import org.glassfish.probe.provider.PluginPoint;
-import org.glassfish.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.Startup;
 

@@ -37,9 +37,9 @@ package org.glassfish.web.admin.monitor;
 
 import java.util.logging.Logger;
 import javax.servlet.Servlet;
-import org.glassfish.api.statistics.CountStatistic;
-import org.glassfish.api.statistics.impl.CountStatisticImpl;
-import org.glassfish.probe.provider.annotations.*;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
@@ -89,9 +89,10 @@ public class JspStatsProvider{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {
 	// handle the servlet loaded probe events
-        logger.finest("JSP Loaded event received - jspName = " + 
-                             jsp.getServletConfig().getServletName() + 
-                             ": appName = " + appName + ": hostName = " + hostName);
+        //FIX jsp is null
+        //logger.finest("JSP Loaded event received - jspName = " +
+        //                     jsp.getServletConfig().getServletName() +
+        //                     ": appName = " + appName + ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
             return;
         }

@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.connectors.work.monitor;
 
-import org.glassfish.probe.provider.annotations.ProbeProvider;
-import org.glassfish.probe.provider.annotations.Probe;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 
 /**

@@ -26,8 +26,8 @@ package org.glassfish.webservices;
 
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
-import org.glassfish.probe.provider.StatsProviderManager;
-import org.glassfish.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.webservices.monitoring.Deployment109StatsProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;

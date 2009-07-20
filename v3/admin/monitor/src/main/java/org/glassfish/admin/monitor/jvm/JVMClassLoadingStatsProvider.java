@@ -38,11 +38,13 @@ package org.glassfish.admin.monitor.jvm;
 
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.class-loading-system */
+//@AMXMetadata(type="class-loading-system-mon", group="monitoring", isSingleton=true)
 @ManagedObject
 @Description( "JVM Class Loading Statistics" )
 public class JVMClassLoadingStatsProvider {

@@ -39,10 +39,12 @@ package org.glassfish.admin.monitor.jvm;
 import java.lang.management.CompilationMXBean;
 import java.lang.management.ManagementFactory;
 import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* jvm.compilation-system */
+//@AMXMetadata(type="compilation-system-mon", group="monitoring", isSingleton=true)
 @ManagedObject
 @Description( "JVM Compilation Statistics" )
 public class JVMCompilationStatsProvider {

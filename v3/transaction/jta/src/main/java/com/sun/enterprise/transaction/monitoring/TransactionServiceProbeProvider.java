@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.transaction.monitoring;
 
-import org.glassfish.probe.provider.annotations.*;
+import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
 
 /**

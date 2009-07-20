@@ -12,22 +12,25 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.management.ObjectName;
+import javax.management.MBeanServer;
 import org.glassfish.api.amx.MBeanListener;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.probe.provider.PluginPoint;
-import org.glassfish.probe.provider.StatsProviderManagerDelegate;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManagerDelegate;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.config.serverbeans.*;
+import java.lang.management.ManagementFactory;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
 import org.glassfish.api.amx.AMXValues;
+import org.glassfish.api.amx.AMXUtil;
 
 /**
  *
@@ -43,6 +46,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private final TreeNode serverNode;
     private static final ObjectName MONITORING_ROOT = AMXValues.monitoringRoot();
     static final ObjectName MONITORING_SERVER = AMXValues.serverMon( AMXValues.dasName() );
+    private static final String DOMAIN = MONITORING_SERVER.getDomain();
+    private static final String PP = MONITORING_SERVER.getKeyProperty(AMXValues.PARENT_PATH_KEY);
+    private static final String TYPE = MONITORING_SERVER.getKeyProperty(AMXValues.TYPE_KEY);
+    private static final String NAME = MONITORING_SERVER.getKeyProperty(AMXValues.NAME_KEY);
+    private static final String PARENT_PATH = PP + "/" + TYPE + "[" + NAME + "]" ;
+    private static final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
     private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
 
@@ -113,7 +122,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             if (AMXReady) {
                 ManagedObjectManager mom = registerGmbal(statsProvider, subTreePath);
                 //Make an entry to my own registry so I can manage the unregister, enable and disable
-                statsProviderRegistry.registerStatsProvider(configElement, 
+                statsProviderRegistry.registerStatsProvider(configElement,
                         parentNode.getCompletePathName(), childNodeNames,
                         handles, statsProvider, subTreePath, mom);
             } else {
@@ -135,15 +144,21 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         }
     }
 
-    public void unRegister(Object statsProvider) {
+    public void unregister(Object statsProvider) {
         try {
             //Unregister from the MonitoringDataTreeRegistry and gmbal
             statsProviderRegistry.unregisterStatsProvider(statsProvider);
         } catch (Exception ex) {
             Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
+
+    public boolean hasListeners(String probeStr) {
+		boolean hasListeners = false;
+		//TODO implmentation
+		return hasListeners;
+	}
 
     //Called when AMX DomainRoot is loaded (when jconsole or gui is started)
     //Register statsProviders with gmbal whose configElement is enabled
@@ -173,11 +188,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             // 1 mom per statsProvider
             mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
             if (mom != null) {
-                mom.stripPackagePrefix();
-                if (mbeanName != null && !mbeanName.isEmpty()) {
-                    mom.createRoot(statsProvider, mbeanName);
-                } else {
-                    mom.createRoot(statsProvider);
+                if (!isMBeanRegistered(statsProvider, mbeanName)) {
+                    mom.stripPackagePrefix();
+                    if (mbeanName != null && !mbeanName.isEmpty()) {
+                        mom.createRoot(statsProvider, mbeanName);
+                    } else {
+                        mom.createRoot(statsProvider);
+                    }
                 }
             }
             //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
@@ -304,6 +321,39 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             }
         }
         return enabled;
+    }
+
+    public boolean isStatsProviderRegistered(Object statsProvider, String subTreePath) {
+        boolean isStatsProviderRegistered = false;
+        Collection<StatsProviderRegistry.StatsProviderRegistryElement> spreList = statsProviderRegistry.getSpreList();
+        for (StatsProviderRegistry.StatsProviderRegistryElement spre : spreList) {
+            if (spre.getStatsProvider().equals(statsProvider) && spre.getMBeanName().equals(statsProvider)) {
+                isStatsProviderRegistered = true;
+            }
+        }
+        return isStatsProviderRegistered;
+    }
+
+    public boolean isMBeanRegistered(Object statsProvider, String subTreePath) {
+        return isMBeanRegistered(getObjectName(statsProvider, subTreePath));
+    }
+
+    public boolean isMBeanRegistered(ObjectName objectName) {
+        return mbeanServer.isRegistered(objectName);
+    }
+
+    public ObjectName getObjectName(Object statsProvider, String subTreePath) {
+        String typeValue = getTypeValue(statsProvider);
+        String nameValue = getNameValue(subTreePath);
+        return AMXUtil.newObjectName(PARENT_PATH, typeValue, nameValue);
+    }
+
+    public String getTypeValue(Object statsProvider) {
+        return statsProvider.getClass().getSimpleName();
+    }
+
+    public String getNameValue(String subTreePath) {
+        return subTreePath;
     }
 
 }

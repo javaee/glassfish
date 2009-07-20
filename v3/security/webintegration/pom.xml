@@ -96,11 +96,11 @@
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>   
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-        </dependency>   
+        </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
@@ -152,10 +152,12 @@
             <artifactId>grizzly-utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.provider</groupId>
-            <artifactId>gfprobe-provider-client</artifactId>
-            <!--version>${gfprobe-provider-client.version}</version-->
-            <version>3.0.0-b008</version>
+	    <groupId>org.glassfish.external</groupId>
+	    <artifactId>management-api</artifactId>
+	</dependency>
+	<dependency>
+	    <groupId>org.glassfish.gmbal</groupId>
+	    <artifactId>gmbal</artifactId>
         </dependency>
     </dependencies>
 </project>

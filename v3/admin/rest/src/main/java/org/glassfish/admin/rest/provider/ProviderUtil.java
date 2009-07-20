@@ -45,7 +45,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import  org.glassfish.api.statistics.Statistic;
+import  org.glassfish.external.statistics.Statistic;
 
 import javax.ws.rs.core.UriInfo;
 

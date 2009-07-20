@@ -38,13 +38,13 @@ package com.sun.enterprise.connectors.work.monitor;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.api.statistics.impl.CountStatisticImpl;
-import org.glassfish.api.statistics.impl.StatisticImpl;
-import org.glassfish.api.statistics.impl.RangeStatisticImpl;
-import org.glassfish.api.statistics.CountStatistic;
-import org.glassfish.api.statistics.RangeStatistic;
-import org.glassfish.probe.provider.annotations.ProbeListener;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.glassfish.external.statistics.impl.RangeStatisticImpl;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.RangeStatistic;
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 /**
  * Provides the monitoring data for Connector Work Manager

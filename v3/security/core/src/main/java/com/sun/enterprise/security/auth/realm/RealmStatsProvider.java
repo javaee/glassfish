@@ -1,9 +1,9 @@
 package com.sun.enterprise.security.auth.realm;
 
-import org.glassfish.api.statistics.CountStatistic;
-import org.glassfish.api.statistics.impl.CountStatisticImpl;
-import org.glassfish.probe.provider.annotations.ProbeListener;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 
 import org.glassfish.gmbal.*;
