@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.webservices;
+package org.glassfish.webservices.monitoring;
 
 import org.glassfish.webservices.monitoring.MessageTraceImpl;
 

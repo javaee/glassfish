@@ -104,6 +104,13 @@ public final class WebServiceEngineImpl implements WebServiceEngine {
         return newEndpoint;
     }
     
+    public EndpointImpl createHandler(com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate parent,
+        WebServiceEndpoint endpointDesc)  {
+
+        EndpointImpl newEndpoint = createHandler(endpointDesc);
+        ((JAXRPCEndpointImpl)newEndpoint).setParent(parent);
+        return newEndpoint;
+    }
 
     public Endpoint getEndpoint(String uri) {    
         return endpoints.get(uri);
@@ -205,7 +212,34 @@ public final class WebServiceEngineImpl implements WebServiceEngine {
         return globalMessageListener.preProcessRequest(endpoint);
     }
     
+    /**
+     * Callback when a web service request is received on
+     * the endpoint.
+     * @param messageID returned by preProcessRequest call
+     * @param context the jaxrpc message trace, transport dependent.
+     */
+    public void processRequest(String messageID, com.sun.xml.rpc.spi.runtime.SOAPMessageContext context,
+            TransportInfo info) {
 
+        if (globalMessageListener==null)
+            return;
+
+        globalMessageListener.processRequest(messageID, context, info);
+    }
+
+    /**
+     * Callback when a web service response is received on the
+     * endpoint.
+     * @param messageID returned by the preProcessRequest call
+     * @param context jaxrpc message context
+     */
+    public void processResponse(String messageID, com.sun.xml.rpc.spi.runtime.SOAPMessageContext context) {
+
+        if (globalMessageListener==null)
+            return;
+
+        globalMessageListener.processResponse(messageID, context);
+    }
     
     /** 
      * Callback when a 2.0 web service request is received on 

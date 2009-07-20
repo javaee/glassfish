@@ -23,13 +23,27 @@ public interface GlobalMessageListener {
      */
     public String preProcessRequest(Endpoint endpoint);
 
+    /**
+     * Callback when a 1.X web service request is about the be delivered to the
+     * Web Service Implementation Bean.
+     * @param mid message ID returned by preProcessRequest call
+     * @param ctx the jaxrpc message trace, transport dependent
+     */
+    public void processRequest(String mid, com.sun.xml.rpc.spi.runtime.SOAPMessageContext ctx, TransportInfo info);
 
+    /**
+     * Callback when a 1.X web service response was returned by the Web Service
+     * Implementation Bean
+     * @param mid message ID returned by the preProcessRequest call
+     * @param ctx jaxrpc message trace, transport dependent.
+     */
+    public void processResponse(String mid, com.sun.xml.rpc.spi.runtime.SOAPMessageContext ctx);
    
     /**
      * Callback when a 2.X web service request is about the be delivered to the
      * Web Service Implementation Bean.
      * @param mid message ID returned by preProcessRequest call
-     * @param trace the jaxrpc message trace, transport dependent
+     * @param ctx the jaxrpc message trace, transport dependent
      */
     public void processRequest(String mid, SOAPMessageContext ctx, TransportInfo info);
 
@@ -37,7 +51,7 @@ public interface GlobalMessageListener {
      * Callback when a 2.X web service response was returned by the Web Service
      * Implementation Bean
      * @param mid message ID returned by the preProcessRequest call
-     * @param trace jaxrpc message trace, transport dependent.
+     * @param ctx jaxrpc message trace, transport dependent.
      */
     public void processResponse(String mid, SOAPMessageContext ctx);
 

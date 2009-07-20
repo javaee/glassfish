@@ -43,6 +43,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.VirtualServerInfo;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
@@ -52,6 +53,7 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.xml.rpc.spi.model.*;
+import javax.servlet.http.*;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.handler.MessageContext;
 import javax.xml.rpc.Stub;
@@ -75,9 +77,9 @@ import com.sun.xml.rpc.spi.tools.WSDLUtil;
 
 
 import java.util.*;
+import java.net.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.net.URL;
 import javax.xml.parsers.*;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.Handler;
@@ -182,7 +184,7 @@ public class WsUtil {
     *//**
      * Serve up the FINAL wsdl associated with this web service.
      * @return true for success, false for failure
-     *//*
+     */
     public boolean handleGet(HttpServletRequest request, 
                              HttpServletResponse response, 
                              WebServiceEndpoint endpoint) throws IOException {
@@ -268,7 +270,7 @@ public class WsUtil {
                     // get the application module ID
                     try {
                         String moduleID = endpoint.getBundleDescriptor().getApplication().getRegistrationName();
-                        WebServerInfo wsi = getWebServerInfo(moduleID, request);
+                        WebServerInfo wsi = getWebServerInfoForDAS();
                         URL url = webService.getWsdlFileUrl();
                         File originalWsdlFile = new File(url.getPath()+"__orig");
                         if(!originalWsdlFile.exists()) {
@@ -281,7 +283,7 @@ public class WsUtil {
                         URLConnection urlCon = wsdlUrl.openConnection();
                         urlCon.setUseCaches(false);
                         is = urlCon.getInputStream();                    
-                        ArchivistUtils.copy(is, response.getOutputStream());                        
+                        copyIsToOs(is, response.getOutputStream());
                     }
                 } else {
                     // Copy bytes into output. Disable caches to avoid jar URL
@@ -289,7 +291,7 @@ public class WsUtil {
                     URLConnection urlCon = wsdlUrl.openConnection();
                     urlCon.setUseCaches(false);
                     is = urlCon.getInputStream();                    
-                    ArchivistUtils.copy(is, response.getOutputStream());
+                    copyIsToOs(is, response.getOutputStream());
                 }
                 success = true;
                 if( logger.isLoggable(Level.FINE) ) {
@@ -323,23 +325,42 @@ public class WsUtil {
         return success;
     }
 
-    *//**
+    private void copyIsToOs(InputStream is, OutputStream os) throws IOException {
+        byte[] buf = new byte[4096];
+        int len = 0;
+        while (len != -1) {
+            try {
+                len = is.read(buf, 0, buf.length);
+            } catch (EOFException eof){
+                break;
+            }
+
+            if(len != -1) {
+                os.write(buf, 0, len);
+            }
+        }
+        os.flush();
+        is.close();
+        os.close();
+    }
+
+    /**
      * All wsdl files and wsdl imported files live under a well-known
      * wsdl directory. 
      * @param uri module uri
-     *//*
+     */
     public boolean isWsdlContent(String uri, BundleDescriptor bundle) {
         String wsdlDir = getWsdlDir(bundle);
         return (uri != null) && uri.startsWith(wsdlDir);
     }
 
-    *//**
+    /**
      * @return module-specific dedicated wsdl directory 
-     *//*
+     */
     public String getWsdlDir(BundleDescriptor bundle) {
         boolean isWar = (bundle instanceof WebBundleDescriptor);
         return isWar ? "WEB-INF/wsdl" : "META-INF/wsdl";
-    }*/
+    }
 
     /**
      * Set up a stub for request/response SOAP message logging.
@@ -492,48 +513,6 @@ public class WsUtil {
      */
     public void generateFinalWsdl(URL wsdlFileUrl, WebService webService, WebServerInfo wsi,
                                   File finalWsdlFile) throws Exception {
-
-
-   /**     // Before generating final WSDL, ensure that the @WebService svcName/portName
-        // attributes (if any) match with those in wsdl - lets do this only for jaxws ervices
-        if(webService.getMappingFileUri() == null) {
-            for(WebServiceEndpoint endpoint : webService.getEndpoints()) {
-                DocumentBuilderFactory dFactory = DocumentBuilderFactory.newInstance();
-                InputSource inputSource = 
-                        new InputSource(new BufferedInputStream(new FileInputStream(wsdlFileUrl.getPath())));
-                Document wsdlDoc = 
-                        dFactory.newDocumentBuilder().parse(new BufferedInputStream(new FileInputStream(wsdlFileUrl.getPath())));
-
-
-                XPathFactory xPathFactory = XPathFactory.newInstance();
-                XPath xPath = xPathFactory.newXPath();
-                NamespaceContext context = 
-                        new com.sun.enterprise.webservice.monitoring.NamespaceContextImpl(wsdlDoc);
-                xPath.setNamespaceContext(context);
-
-                String xpathExpression = "/:definitions/:service/@name";
-                String expStr = xPath.evaluate(xpathExpression, inputSource);
-                if (!endpoint.getWsdlService().getLocalPart().equals(expStr)) {
-                    throw new Exception(localStrings.getLocalString(
-                            "enterprise.webservice.serviceNameMismatch",
-                            "There is a mismatch in the serviceName specified with @WebService annotation in the endpoint implementation and the serviceName found in the WSDL; ServiceName in WSDL={0}; ServiceName in endpoint={1}",
-                            new Object[] {expStr,endpoint.getWsdlService().getLocalPart()}));
-                }                
-                
-                inputSource = 
-                        new InputSource(new BufferedInputStream(new FileInputStream(wsdlFileUrl.getPath())));
-                xpathExpression = "/:definitions/:service/:port/@name";
-                expStr = xPath.evaluate(xpathExpression, inputSource);
-                if (!endpoint.getWsdlPort().getLocalPart().equals(expStr)) {
-                    throw new Exception(localStrings.getLocalString(
-                            "enterprise.webservice.portNameMismatch",
-                            "There is a mismatch in the portName specified with @WebService annotation in the endpoint implementation and the portName found in the WSDL; PortName in WSDL={0}; PortName in endpoint={1}",
-                            new Object[] {expStr,endpoint.getWsdlPort().getLocalPart()}));
-                }
-            }
-        }
-*/
-        
        OutputStream outputStream =
             new BufferedOutputStream(new FileOutputStream(finalWsdlFile));
         generateFinalWsdl(wsdlFileUrl, webService, wsi, outputStream);
@@ -1387,7 +1366,7 @@ public class WsUtil {
         response.getWriter().close();
     }
     
-    /*boolean hasSomeTextXmlContent(MimeHeaders headers) {
+    boolean hasSomeTextXmlContent(MimeHeaders headers) {
         return ( hasTextXmlContentType(headers) &&
                  (getContentLength(headers) > 0) );
     }
@@ -1441,7 +1420,7 @@ public class WsUtil {
         }
 
         return headers;
-    }   */
+    } 
     
     public WebServerInfo getWebServerInfoForDAS() {
         WebServerInfo wsi = new WebServerInfo();

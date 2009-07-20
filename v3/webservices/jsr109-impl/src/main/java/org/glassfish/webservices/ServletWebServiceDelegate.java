@@ -37,17 +37,19 @@
 
 package org.glassfish.webservices;
 
-/*
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 
-import com.sun.enterprise.webservice.monitoring.WebServiceEngineImpl;
-import com.sun.enterprise.webservice.monitoring.JAXRPCEndpointImpl;
+import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
+import org.glassfish.webservices.monitoring.JAXRPCEndpointImpl;
 
-import com.sun.enterprise.security.jauth.ServerAuthConfig;
+//TBD
+//import com.sun.enterprise.security.jmac.provider.ServerAuthConfig;
 
 
 // JAX-RPC SPI
@@ -60,21 +62,29 @@ import com.sun.xml.rpc.spi.runtime.ServletDelegate;
 import com.sun.xml.rpc.spi.runtime.ServletSecondDelegate;
 import com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate;
 
-
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.xml.ws.WebServiceException;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+import java.io.EOFException;
+
 import com.sun.logging.LogDomains;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
- */
+
 /**
  * This class is delegated to by the container-provided servlet-class 
  * that is written into the web.xml at deployment time.  It overrides
  * the JAXRPC servlet delegate to register endpoint information and
  * intercept certain events.
  */
-public class ServletWebServiceDelegate{ //extends ServletSecondDelegate {
+public class ServletWebServiceDelegate extends ServletSecondDelegate {
 
-   /* private Logger logger = LogDomains.getLogger(ServletWebServiceDelegate.class,LogDomains.WEBSERVICES_LOGGER);
+    private Logger logger = LogDomains.getLogger(ServletWebServiceDelegate.class,LogDomains.WEBSERVICES_LOGGER);
     private WebServiceEndpoint endpoint_;
 
     private ServletConfig servletConfig_;
@@ -92,25 +102,25 @@ public class ServletWebServiceDelegate{ //extends ServletSecondDelegate {
         wsEngine_ = WebServiceEngineImpl.getInstance();
     }
 
-
     public void postInit(ServletConfig servletConfig) throws ServletException {
 
         servletConfig_ = servletConfig;
         String servletName = "unknown";
 
         try {
-            InvocationManager invManager =
-                    Switch.getSwitch().getInvocationManager();
-            ComponentInvocation inv = invManager.getCurrentInvocation();
-            Object containerContext = inv.getContainerContext();
-
-            WebBundleDescriptor webBundle = (WebBundleDescriptor)
-                    Switch.getSwitch().getDescriptorFor(containerContext);
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            ComponentEnvManager compEnvManager = wscImpl.getComponentEnvManager();
+            JndiNameEnvironment jndiNameEnv = compEnvManager.getCurrentJndiNameEnvironment();
+            WebBundleDescriptor webBundle = null;
+            if (jndiNameEnv != null && jndiNameEnv instanceof WebBundleDescriptor){
+                webBundle = ((WebBundleDescriptor)jndiNameEnv);
+            } else {
+               throw new WebServiceException("Cannot intialize the JAXRPCServlet for " + jndiNameEnv);
+            }
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             servletName = servletConfig.getServletName();
             WebComponentDescriptor webComponent =
                     webBundle.getWebComponentByCanonicalName(servletName);
-
             if( webComponent != null ) {
                 WebServicesDescriptor webServices = webBundle.getWebServices();
                 Collection endpoints =
@@ -124,6 +134,7 @@ public class ServletWebServiceDelegate{ //extends ServletSecondDelegate {
                 // for the endpoint create and install system handler for web services
                 // security
                 SystemHandlerDelegate securityHandlerDelegate = null;
+                /*TBD VIJAY/BM
                 if (!endpoint_.hasAuthMethod()) {
                     try {
                         ServerAuthConfig config = ServerAuthConfig.getConfig
@@ -140,6 +151,7 @@ public class ServletWebServiceDelegate{ //extends ServletSecondDelegate {
                                 "Servlet Webservice security configuration Failure", e);
                     }
                 }
+                */
                 // need to invoke the endpoint lifecylcle 
                 endpointImpl_ = (JAXRPCEndpointImpl)wsEngine_.createHandler(securityHandlerDelegate, endpoint_);
                 rpcDelegate_.setSystemHandlerDelegate(endpointImpl_);
@@ -240,5 +252,4 @@ public class ServletWebServiceDelegate{ //extends ServletSecondDelegate {
 
         rpcDelegate_.registerEndpointUrlPattern(endpointInfo);
     }
-*/
 }
