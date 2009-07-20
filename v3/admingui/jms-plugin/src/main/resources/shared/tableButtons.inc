@@ -4,10 +4,23 @@
             <!command redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
-        <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
-            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
-            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-            else {return false;} "
+        <sun:button id="deleteConnButton" text="$resource{i18n.button.Delete} Connection" disabled="#{false}" primary="#{false}" rendered="#{isConnPage}"
+            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') ) { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} "
+        >
+            <!command
+                getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
+                getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+                deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
+                deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType2}", selectedRows="${selectedRows}");
+                setAttribute(key="selectedRows" value="${selectedRows}");
+
+
+                redirect(page="#{pageSession.listLink}");
+            />
+        </sun:button>
+
+        <sun:button id="deleteDestButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}" rendered="#{!isConnPage}"
+            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') ) { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} "
         >
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});

@@ -127,20 +127,19 @@ public class ProxyHandlers {
             @HandlerInput(name="objectNameStr", type=String.class, required=true),
             @HandlerInput(name="type", type=String.class, required=true),
             @HandlerInput(name="selectedRows", type=List.class, required=true)}
-     )
-    public static void deleteChildren(HandlerContext handlerCtx){
-         String type = (String) handlerCtx.getInputValue("type");
-         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-         AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
+    )
+    public static void deleteChildren(HandlerContext handlerCtx) {
+        String type = (String) handlerCtx.getInputValue("type");
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
 
-         List obj = (List) handlerCtx.getInputValue("selectedRows");
-         List<Map> selectedRows = (List) obj;
-        try{
-            for(Map oneRow : selectedRows){
-                String Name = (String)oneRow.get("Name");
+        List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+        try {
+            for (Map oneRow : selectedRows) {
+                String Name = (String) oneRow.get("Name");
                 amx.removeChild(type, Name);
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
