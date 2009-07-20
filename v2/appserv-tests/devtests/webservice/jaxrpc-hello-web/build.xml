@@ -1,19 +1,25 @@
 <!DOCTYPE project [
   <!ENTITY jaxrpctargets SYSTEM "../common/targets.xml">
+  <!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+  <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+  <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="jaxrpc-hello-web" default="build" basedir=".">
+<project name="jaxrpc-hello-web" default="all" basedir=".">
 
   <property name="appname" value="MyHelloService"/>
-  <property file="../common/build.properties"/>
+
   <property environment="env" />
 
   <property file="${env.APS_HOME}/config.properties"/>
-  <property file="build.properties"/>
+  <property file="samplebuild.properties"/>
 
   &jaxrpctargets;
+  &commonSetup;
+  &commonBuild;
+  &testproperties;
 
-<path id="class.path">
+  <path id="class.path">
         <fileset dir="${env.AS_HOME}/modules">
             <include name="**/*.jar"/>
         </fileset>
@@ -26,6 +32,8 @@
 
     </path>
 
+  <target name="all" description="Executes the test" depends="clean,deploy,run,undeploy">
+  </target>
 
   <target name="create-war" description="Packages the WAR file">
      <echo message="Creating the WAR...."/>
@@ -64,11 +72,66 @@
     </target>
 
 
-  <target name="undeploy">
-    <antcall target="admin_command_common">
-      <param name="admin.command"
-        value="undeploy ${context.path}" />
+
+   <target name="undeploy" depends="init-common">
+      <echo message="Undeploying ${war.file} from ${basedir}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="undeploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--passwordfile ${admin.password.file}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${warname}"/>
+      </exec>
+    </target>
+ 
+
+  <target name="build-client" depends="build-static"
+     description="Executes the targets needed to build a static stub client.">
+  </target>
+
+  <target name="run" depends="run-client"
+     description="Runs the client.">
+  </target>
+
+  <target name="run-client"
+     description="Runs a stand-alone (non-J2EE) client">
+      <java classname="${client.class}" fork="yes" >
+        <arg line="${endpoint.address}" />
+        <classpath refid="run.classpath" />
+    </java>
+  </target>
+
+
+  <target name="generate-stubs"
+      description="Runs wscompile to generate the client stub classes">
+    <antcall target="run-wscompile">
+      <param name="param1" value="-gen:client -d ${build.classes.dir} -classpath ${build.classes.dir} ${config.wsdl.file}"/>
     </antcall>
   </target>
+
+    <target name="assemble-client" depends="init-common,generate-stubs">
+    <antcall target="compile-common">
+        <param name="src" value="client"/>
+    </antcall>
+    <mkdir dir="${build.classes.dir}/META-INF/wsdl"/>
+    <copy file="${assemble.war}/WEB-INF/wsdl/MyHelloService.wsdl" todir="${build.classes.dir}/META-INF/wsdl"/>    
+    <unjar src="${env.APS_HOME}/lib/reporter.jar"
+        dest="${build.classes.dir}"/>
+    <antcall target="appclient-jar-common">
+      <param name="appclientjar.classes"
+             value="build/mapping.xml,META-INF/wsdl/**,helloservice/**,com/**" />
+    </antcall>
+  </target>
+
+     <target name="run" depends="init-common">
+        <antcall target="runclient-common">
+          <param name="appclient.application.args" value="http://${http.host}:${http.port}/hello-jaxrpc/hello"/>
+        </antcall>
+    </target>
+
+
+
+
 
 </project>
