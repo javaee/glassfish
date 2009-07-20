@@ -143,6 +143,7 @@ public class BtraceClientGenerator {
         cw.visitEnd();
 
         byte[] classData = cw.toByteArray();
+        /*
         //System.out.println("**** Generated BTRACE Client " + generatedClassName);
         try {
         	int index = generatedClassName.lastIndexOf('/');
@@ -160,6 +161,7 @@ public class BtraceClientGenerator {
         } catch (Exception ex) {
            ex.printStackTrace();
         }
+        */
         return classData;
     }
 
