@@ -103,5 +103,11 @@
             <version>4.3.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-embed-impl</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
    </dependencies>
 </project>
