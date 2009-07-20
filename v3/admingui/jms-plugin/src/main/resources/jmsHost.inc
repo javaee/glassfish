@@ -36,13 +36,11 @@
 
 <!-- Page Title -->
 <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
-    //<sun:button id="def" rendered="#{edit}" primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >
-    //    <!command
-    //        //getDefaultJmsHostValues(ConfigName="#{configName}", JmsHostName="#{jmsHostName}",  Port=>$attribute{port},
-    //        //    AdminUser=>$attribute{adminUser}, AdminPwd=>$attribute{adminPwd});
-    //        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-    //    />
-    //</sun:button>
+    <sun:button id="def" rendered="#{edit}" primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >
+        <!command
+            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        />
+    </sun:button>
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
