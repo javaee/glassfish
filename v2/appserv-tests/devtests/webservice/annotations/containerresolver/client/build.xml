@@ -14,6 +14,18 @@
     &testproperties;
     &jaxwsTools;
 
+   <path id="classpath">
+        <fileset dir="${env.AS_HOME}/modules">
+                      <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+                      <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.APS_HOME}/lib">
+                      <include name="*.jar"/>
+        </fileset>
+    </path>
+
     <target name="all" depends="clean, setup, runtest, undeploy-client"/>
 
     <target name="cleanup" depends="clean, undeploy-client"/>
@@ -36,8 +48,10 @@
           value="-keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://${http.host}:${http.port}/containerresolver-app2/Hello2Service?WSDL"/>
       </antcall>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
-            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
-            includes="webclient/**"/>
+             
+            includes="webclient/**">
+       <classpath refid="classpath"/>
+      </javac>
       <copy file="client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
       <mkdir dir="${assemble.dir}"/>
       <jar destfile="${assemble.dir}/wsclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
