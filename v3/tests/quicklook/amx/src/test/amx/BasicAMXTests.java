@@ -173,6 +173,15 @@ public final class BasicAMXTests extends AMXTestBase
             assert result != null;
         }
     }
+    
+    @Test
+    public void testAMXComplianceMonitorFailureCount()
+    {
+        final int failureCount = getDomainRootProxy().getNumComplianceFailures();
+        
+        assert failureCount == 0 :
+            "Server indicates that there are non-compliant AMX MBean validator failures, failure count = " + failureCount + ", examine the server log for failures";
+     }
 
 }
 
