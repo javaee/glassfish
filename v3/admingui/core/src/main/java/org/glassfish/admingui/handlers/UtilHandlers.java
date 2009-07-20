@@ -184,7 +184,7 @@ public class UtilHandlers {
     	input={
             @HandlerInput(name="list", type=List.class, required=true),
             @HandlerInput(name="value", type=Object.class, required=true),
-            @HandlerInput(name="index", type=Integer.class, required=true)
+            @HandlerInput(name="index", type=Integer.class)
         }
     )
     public static void listAdd(HandlerContext handlerCtx) {
