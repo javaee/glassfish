@@ -534,7 +534,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         // Generate final wsdls for all web services and store them in
         // the application repository directory.
         for(Iterator<WebService> iter = webServices.iterator(); iter.hasNext(); ) {
-            WsUtil wsUtil = new WsUtil(config, habitat);
+            WsUtil wsUtil = new WsUtil();
             WebService next = iter.next();
 
             // Endpoint with HTTP bindings need not have WSDLs; In which case
@@ -639,7 +639,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // The protocol and port will be based on whether the endpoint
             // has a transport guarantee of INTEGRAL or CONFIDENTIAL.
             // If yes, https will be used.  Otherwise, http will be used.
-            WebServerInfo wsi = new WsUtil(config, habitat).getWebServerInfoForDAS();
+            WebServerInfo wsi = new WsUtil().getWebServerInfoForDAS();
             URL rootURL = wsi.getWebServerRootURL(nextEndpoint.isSecure());
             URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL);
             //Ommitting the part of generating the wsdl for now

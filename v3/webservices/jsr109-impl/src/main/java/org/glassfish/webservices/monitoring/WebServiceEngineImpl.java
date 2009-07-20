@@ -187,7 +187,11 @@ public final class WebServiceEngineImpl implements WebServiceEngine {
             EndpointImpl newEndpoint;
             // At this point, we can depend on presence of mapping file to distinguish between JAXRPC and JAXWS
             // service
-            newEndpoint = new JAXWSEndpointImpl(endpointURL, endpointType); 
+            if(endpoint.getWebService().hasMappingFile()) {
+                newEndpoint = new JAXRPCEndpointImpl(endpointURL, endpointType);
+            } else {
+                newEndpoint = new JAXWSEndpointImpl(endpointURL, endpointType);
+            }
 
             newEndpoint.setDescriptor(endpoint);
             return newEndpoint;

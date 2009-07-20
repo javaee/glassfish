@@ -9,6 +9,7 @@ import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.invocation.InvocationManager;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.config.serverbeans.Config;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +38,8 @@ public class WebServiceContractImpl implements WebServicesContract{
     @Inject
     private InvocationManager invManager;
 
-
+    @Inject(name="server-config")
+    private Config config;
 
     private  static WebServiceContractImpl wscImpl;
 
@@ -47,16 +49,17 @@ public class WebServiceContractImpl implements WebServicesContract{
         return compEnvManager;  
     }
 
+    public Config getConfig() {
+        return config;
+    }
+    
     public Habitat getHabitat() {
         return habitat;
     }
 
-
     public InvocationManager getInvocationManager() {
             return invManager;
-        }
-
-
+    }
 
     public ServerEnvironmentImpl getServerEnvironmentImpl (){
         return env;
@@ -64,13 +67,12 @@ public class WebServiceContractImpl implements WebServicesContract{
 
     public ModulesRegistry getModulesRegistry (){
             return modulesRegistry;
-        }
+    }
 
     public static WebServiceContractImpl getInstance() {
         // Create the instance first to access the logger.
         wscImpl = Globals.getDefaultHabitat().getComponent(
                 WebServiceContractImpl.class);
-
         return wscImpl;
     }
 

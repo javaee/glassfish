@@ -145,14 +145,11 @@ public class WsUtil {
     private List<NetworkListener> networkListeners = null;
 
     public WsUtil() {
+        config = WebServiceContractImpl.getInstance().getConfig();
+        habitat = WebServiceContractImpl.getInstance().getHabitat();
     }
 
-    public WsUtil(Config config, Habitat habitat) {
-        this.config = config;
-        this.habitat = habitat;
-    }
-
-    // @@@ These are jaxrpc-implementation specific MessageContextProperties 
+    // @@@ These are jaxrpc-implementation specific MessageContextProperties
     // that should be added to jaxrpc spi
    /* private static final String ONE_WAY_OPERATION =
         "com.sun.xml.rpc.server.OneWayOperation";
