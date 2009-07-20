@@ -57,10 +57,8 @@ public class CommonInfoModel{
 
     private TargetAppSrvObj tAppSrvObj = new TargetAppSrvObj();
     private SourceAppSrvObj sAppSrvObj = new SourceAppSrvObj();
-    private boolean isInPlace = false; //- inplace or side-by-side upgrade process
     private boolean nopromptMode = false; //- user required noprompt CLI mode
-    private String osName; // machine OS type
-
+    private boolean alreadyCloned = false;
     private CommonInfoModel() {}
 
     public static CommonInfoModel getInstance() {
@@ -77,43 +75,18 @@ public class CommonInfoModel{
 	
     public void setupTasks() throws Exception {
         String domainName = sAppSrvObj.getDomainName();
-        String srcDomainDir = sAppSrvObj.getDomainDir();
 
         //- identify target domain to upgrade
         tAppSrvObj.setDomainName(domainName);
-        setIsInPlace(srcDomainDir.equals(tAppSrvObj.getDomainDir()));
 
-        if (isInPlace()) {
-            //- Not all target appServer versions allow in-place upgrades
-            if (tAppSrvObj.isInPlaceUpgradeAllowed()) {
-                String backupDomainPath = UpgradeUtils.getUpgradeUtils(this).backupDomain(
-                    domainName, sAppSrvObj.getInstallDir(), tAppSrvObj.getInstallDir());
-                sAppSrvObj.setBackupDomainDir(backupDomainPath);
-            } else {
-                throw new Exception(stringManager.getString("upgrade.common.inplace_upgrade_not_supported"));
-            }
-        } else {
+        if (!alreadyCloned) {
             UpgradeUtils.getUpgradeUtils(this).cloneDomain(
                 sAppSrvObj.getInstallDir(), tAppSrvObj.getDomainDir());
+        } else {
+            alreadyCloned = false; // reset for next upgrade
         }
     }
 	
-    public String getOSName() {
-        return osName;
-    }
-    
-    public void setOSName(String osName){
-        this.osName = osName;
-    }
-
-    public boolean isInPlace() {
-        return isInPlace;
-    }
-    
-    private void setIsInPlace(boolean b) {
-        this.isInPlace = b;
-    }
-
     //- Must know when in noprompt mode
     public boolean isNoprompt() {
         return nopromptMode;
@@ -121,6 +94,14 @@ public class CommonInfoModel{
 
     public void setNoprompt(boolean flag) {
         nopromptMode = flag;
+    }
+
+    /*
+     * Called when UpgradeUtils has already made a backup
+     * before re-upgrading a domain.
+     */
+    public void setAlreadyCloned(boolean alreadyCloned) {
+        this.alreadyCloned = alreadyCloned;
     }
 	
     public boolean isUpgradeSupported() {
@@ -137,14 +118,4 @@ public class CommonInfoModel{
         return retVal;
     }
 	
-    public String findLatestDomainDirBackup(String domainRoot) {
-        return UpgradeUtils.getUpgradeUtils(this).findLatestDomainBackup(
-            domainRoot, sAppSrvObj.getDomainName());
-    }
-  
-    public void recover() {
-        if (isInPlace()) {
-            UpgradeUtils.getUpgradeUtils(this).recover();
-        }
-    }
 }

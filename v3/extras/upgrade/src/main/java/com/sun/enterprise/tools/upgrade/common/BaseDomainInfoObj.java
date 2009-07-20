@@ -62,12 +62,6 @@ public abstract class BaseDomainInfoObj implements DomainInfoObj {
 	String edition = null; //- domain profile
 	String versionEdition = null; //- old way of providing data as one
 	
-	
-	
-	/** Creates a new instance of BaseAppSrcObj */
-	public BaseDomainInfoObj() {
-	}
-
 	/**
 	 * Each Source and target domains may have
 	 * different validation rules.
@@ -88,7 +82,8 @@ public abstract class BaseDomainInfoObj implements DomainInfoObj {
 	public String getInstallDir(){
 		return installDir; 
 	}
-	
+
+        // todo: this returns the same data as getInstallDir. should be removed
 	public String getDomainDir(){
 		return installDir;
 	}
@@ -148,7 +143,7 @@ public abstract class BaseDomainInfoObj implements DomainInfoObj {
 			default:
 				//- path ex: /space/gf/b09a/  /space/as91ee
 				droot = s.substring(0, i);
-		};
+		}
 		//-System.out.println("i: " + i  + "\ts: " + droot);
 		return droot;
 	}

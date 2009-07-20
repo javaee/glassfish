@@ -51,54 +51,39 @@ import java.io.File;
  *
  * @author rebeccas
  */
-public class SourceAppSrvObj  extends BaseDomainInfoObj{
+public class SourceAppSrvObj  extends BaseDomainInfoObj {
+
 	//- appsever login credential of the source domain.
 	Credentials credentials = new DomainCredentials();
-	private String backupDomainDir = null;
 	
-	/** Creates a new instance of SourceAppSrvObj */
-	public SourceAppSrvObj() {
-		super();
-	}
+    public boolean isValidPath(String s) {
+        boolean retVal = false;
+        if (s != null) {
+            // server config file must be available
+            File domainXML = new File(s + "/" + CONFIG_DOMAIN_XML_FILE);
+            if (domainXML.exists() && domainXML.isFile()) {
+                retVal = true;
+            }
+        }
+        return retVal;
+    }
 	
-	public boolean isValidPath(String s){
-		boolean flag = false;
-		if (s != null){
-			// server config file must be available
-			File domainXML = new File(s + "/" + super.CONFIG_DOMAIN_XML_FILE);
-			if(domainXML.exists() && domainXML.isFile()){
-				flag = true;
-			}
-		}
-		return flag;
-	}
+    public String getVersionEdition() {
+        if (versionEdition == null) {
+            VersionExtracter vExtracter = new VersionExtracter(installDir,
+                CommonInfoModel.getInstance());
+            versionEdition =
+                vExtracter.extractVersionFromConfigFile(srvConfigFile);
+            if (versionEdition != null) {
+                extractVersionAndEdition(UpgradeConstants.DELIMITER);
+            }
+        }
+        return versionEdition;
+    }
 	
-	public String getVersionEdition(){
-		if (versionEdition == null){
-			VersionExtracter v = new VersionExtracter(installDir,
-				CommonInfoModel.getInstance());
-			versionEdition = v.extractVersionFromConfigFile(srvConfigFile);
-			if (versionEdition != null){
-				extractVersionAndEdition(UpgradeConstants.DELIMITER);
-			}
-		}
-		return versionEdition;
-	}
+    //------------------------------------
+    public Credentials getDomainCredentials() {
+        return credentials;
+    }
 	
-	//------------------------------------
-	public Credentials getDomainCredentials(){
-		return credentials;
-	}
-	
-	/**
-	 * For an inplace upgrade (only) the location of
-	 * the domain in the backup area.
-	 */
-	public void setBackupDomainDir(String s){
-		backupDomainDir = s;
-	}
-	
-	public String getBackupConfigXMLFile(){
-		return backupDomainDir + "/" + super.CONFIG_DOMAIN_XML_FILE;
-	}
 }

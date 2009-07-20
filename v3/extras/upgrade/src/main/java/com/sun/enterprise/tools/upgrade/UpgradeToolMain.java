@@ -141,24 +141,26 @@ public class UpgradeToolMain {
 	}
 
 	private void printArgs(ArrayList<ArgumentHandler> aList){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(ArgumentHandler tmpAh : aList){
 			if (tmpAh instanceof ARG_w || tmpAh instanceof ARG_adminpassword ||
 				tmpAh instanceof ARG_m || tmpAh instanceof ARG_masterpassword){
 				//- don't reveal passwords
-				buff.append("-" + tmpAh.getCmd() + " " +
+				sb.append("-" + tmpAh.getCmd() + " " +
 					tmpAh.getRawParameter().replaceAll(".","*"));
 			} else if(tmpAh instanceof ARG_c || tmpAh instanceof ARG_console ||
 					tmpAh instanceof ARG_h || tmpAh instanceof ARG_help ||
 					tmpAh instanceof ARG_V || tmpAh instanceof ARG_version ||
                     tmpAh instanceof ARG_noprompt){
-				buff.append("-" + tmpAh.getCmd());
+				sb.append("-" + tmpAh.getCmd());
 			}else {
-				buff.append("-" + tmpAh.getCmd() + " " + tmpAh.getRawParameter());
+				sb.append("-" + tmpAh.getCmd() + " " + tmpAh.getRawParameter());
 			}
-			buff.append(" ");
+			sb.append(" ");
 		}
-		logger.fine(UpgradeConstants.ASUPGRADE + " " + buff.toString());
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine(UpgradeConstants.ASUPGRADE + " " + sb.toString());
+                }
 	}
 	
 //    private void processUIEvent(DialogEvent evt) {
@@ -199,7 +201,6 @@ public class UpgradeToolMain {
                 }
 
                 int exitValue = dProcessor.startDomain(_target.getDomainName());
-                UpdateProgressManager.getProgressManager().processUpgradeUpdateEvent(100);
                 if (exitValue == 0){
                     dProcessor.stopDomain(_target.getDomainName());
                 }
@@ -239,8 +240,6 @@ public class UpgradeToolMain {
             } catch (HarnessException he) {
                 logger.log(Level.INFO, sm.getString(
                         "enterprise.tools.upgrade.generalException", he.getMessage()));
-                UpdateProgressManager.getProgressManager().processUpgradeUpdateEvent(-1);
-                commonInfo.recover();
             }
 
             //Delete temporary files (if any) created during the process

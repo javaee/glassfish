@@ -64,13 +64,13 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
 
     private static final Logger logger = LogService.getLogger();
     
-	private Map<String, ArgumentHandler> inputMap;
-	private StringManager sm = StringManager.getManager(InteractiveInputImpl.class);
-	
-	/** Creates a new instance of InteractiveInputImpl */
-	public InteractiveInputImpl() {
-	}
+    private Map<String, ArgumentHandler> inputMap;
+    private static final StringManager sm =
+        StringManager.getManager(InteractiveInputImpl.class);
+    private static final CommonInfoModel commonInfoModel =
+        CommonInfoModel.getInstance();
 
+	
     ///-public void processArguments(Map<String, ArgumentHandler> inputMap){
 	public void processArguments(ArrayList<ArgumentHandler> aList){
         int cnt = aList.size();
@@ -261,7 +261,7 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
                 sm.getString("enterprise.tools.upgrade.cli.yes_option");
             boolean move = yesOption.equalsIgnoreCase(response);
             if (move) {
-                UpgradeUtils.rename(dir);
+                UpgradeUtils.getUpgradeUtils(commonInfoModel).rename(dir);
             }
             return move;
         } catch (IOException ioe) {

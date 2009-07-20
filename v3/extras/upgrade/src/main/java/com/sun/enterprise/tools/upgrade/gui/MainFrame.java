@@ -342,7 +342,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
         if (JOptionPane.OK_OPTION != retVal) {
             return false;
         }
-        UpgradeUtils.rename(dir);
+        UpgradeUtils.getUpgradeUtils(commonInfoModel).rename(dir);
         return true;
     }
 
@@ -384,9 +384,6 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
 
     // called by cancel or finish button
     private void performExit() {
-        logger.fine("Before Recover Call");
-        commonInfoModel.recover();
-
         // original code called listener in UpgradeToolMain that did sys exit
         System.exit(0);
     }

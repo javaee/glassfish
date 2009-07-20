@@ -126,7 +126,6 @@ public class ArgsParser {
 		} catch (Exception ex) {
 			_logger.log(Level.INFO,
 				sm.getString("enterprise.tools.upgrade.cli.invalid_option",cmd), ex);
-			commonInfo.recover();
 			System.exit(1);
 		}
 		return aHandler;

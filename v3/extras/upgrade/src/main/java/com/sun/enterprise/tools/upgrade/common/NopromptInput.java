@@ -70,13 +70,11 @@ public class NopromptInput implements InteractiveInput {
 					_log.severe(sm.getString("enterprise.tools.upgrade.cli._invalid_option_or_value",
 						v.getCmd(), v.getRawParameter()));
 				}
-				commonInfo.recover();
 				System.exit(1);
 			}
 		}
 
 		if (!commonInfo.isUpgradeSupported()){
-			commonInfo.recover();
 			System.exit(1);
 		}
 	}

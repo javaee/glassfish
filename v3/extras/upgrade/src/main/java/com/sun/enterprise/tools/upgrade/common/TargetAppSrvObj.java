@@ -53,12 +53,7 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
     private static final StringManager sm =
         StringManager.getManager(TargetAppSrvObj.class);;
 
-    //- Value indicates if an in-place upgrade of domains is supported by
-    //- the traget appserver.  This value is specific to each product release
-    //- and should be set accordingly V3 does not support in-place upgrade.
-    private boolean isInPlaceUpgradeAllowed = false;
-
-	// used only in interactive cases where the user can resolve a name conflict
+    // used only in interactive cases where the user can resolve a name conflict
     private DirectoryMover directoryMover = null;
     
     public boolean isValidPath(String s) {
@@ -72,32 +67,18 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
             return false;
         }
         
-        if (isInPlaceUpgradeAllowed()) {
-            // check if this is an existing domain
-            File domainXML = new File(s + "/" +
-                super.CONFIG_DOMAIN_XML_FILE);
-            if (!domainXML.isFile() || !domainXML.exists()) {
-                return true;
-            } else {
-                logger.log(Level.INFO, sm.getString(
-                    "enterprise.tools.upgrade.target.dir_domain_exist",
-                    targetPathDir.getAbsolutePath()));
-            }
-        } else {
-            File tmpPath = new File(targetPathDir,
-                CommonInfoModel.getInstance().getSource().getDomainName());
-            if (!tmpPath.exists()) {
-                return true;
-            }
-            if (directoryMover != null &&
-                directoryMover.moveDirectory(tmpPath)) {
-                
-                return true;
-            }
-            logger.log(Level.INFO, sm.getString(
-                "enterprise.tools.upgrade.target.dir_domain_exist",
-                tmpPath.getAbsolutePath()));
+        File tmpPath = new File(targetPathDir,
+            CommonInfoModel.getInstance().getSource().getDomainName());
+        if (!tmpPath.exists()) {
+            return true;
         }
+        if (directoryMover != null &&
+                directoryMover.moveDirectory(tmpPath)) {
+            return true;
+        }
+        logger.log(Level.INFO, sm.getString(
+            "enterprise.tools.upgrade.target.dir_domain_exist",
+            tmpPath.getAbsolutePath()));
         return false;
     }
 
@@ -119,23 +100,18 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
 		return getDomainDir() + "/" + super.CONFIG_DOMAIN_XML_FILE;
 	}
 	
-	public String getVersionEdition(){
-		if (super.versionEdition == null){
-			VersionExtracter v = new VersionExtracter(super.domainRoot,
-				CommonInfoModel.getInstance());
-            super.version = UpgradeConstants.VERSION_3_0;
-            super.edition = UpgradeConstants.ALL_PROFILE;
-            super.versionEdition = v.formatVersionEditionStrings(
-				super.version, super.edition);
-		}
-		return super.versionEdition;
-	}
-		
-	//- target specific ---------------------
-    public boolean isInPlaceUpgradeAllowed(){
-        return isInPlaceUpgradeAllowed;
+    public String getVersionEdition() {
+        if (versionEdition == null) {
+            VersionExtracter vExtracter = new VersionExtracter(
+                domainRoot, CommonInfoModel.getInstance());
+            version = UpgradeConstants.VERSION_3_0;
+            edition = UpgradeConstants.ALL_PROFILE;
+            versionEdition = vExtracter.formatVersionEditionStrings(
+                version, edition);
+        }
+        return super.versionEdition;
     }
-
+		
     /*
      * Set this if you want the user to have a chance to resolve
      * directory name conflicts.
