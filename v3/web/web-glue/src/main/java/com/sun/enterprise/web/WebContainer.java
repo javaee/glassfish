@@ -522,18 +522,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             securityService = aConfig.getSecurityService();
 
             // Configure HTTP listeners
-            List<NetworkListener> httpListeners = networkConfig.getNetworkListeners().getNetworkListener();
-            String jkEnabled = null;
-            for (NetworkListener listener : httpListeners) {
-/*
-            TODO:  renable perhaps with an explicit attribute on the listener
-                jkEnabled = listener.getPropertyValue("jkEnabled");
-                if (jkEnabled!=null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
+            List<NetworkListener> listeners = networkConfig.getNetworkListeners().getNetworkListener();
+            for (NetworkListener listener : listeners) {
+                if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
                     createJKConnector(listener, httpService);
                 } else {
-*/
                     createHttpListener(listener, httpService);
-//                }
+                }
             }
             createJKConnector(null, httpService);
 
