@@ -86,21 +86,25 @@ public class WebSecurityDeployerStatsProvider {
     @ProbeListener("glassfish:core:web:securityManagerCreationEvent")
     public void securityManagerCreationEvent(
             @ProbeParam("appName") String appName) {
+        secMgrCount.increment();
     }
 
     @ProbeListener("glassfish:core:web:securityManagerDestructionEvent")
     public void securityManagerDestructionEvent(
             @ProbeParam("appName") String appName) {
+        secMgrCount.decrement();
     }
 
     @ProbeListener("glassfish:core:web:policyConfigurationCreationEvent")
     public void policyConfirationCreationEvent(
             @ProbeParam("contextId") String contextId) {
+        policyConfCount.increment();
     }
 
     @ProbeListener("glassfish:core:web:policyConfigurationDestructionEvent")
     public void policyConfigurationDestructionEvent(
             @ProbeParam("contextId") String contextId) {
+        policyConfCount.decrement();
     }
     
     

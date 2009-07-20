@@ -525,8 +525,10 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 LoginContextDriver.login(username, password, realm_name);
             }
             success = true;
+            probeProvider.loginSuccessfulEvent(username);
         } catch (Exception le) {
             success = false;
+            probeProvider.loginFailedEvent(username);
             if (_logger.isLoggable(Level.WARNING)) {
                 _logger.warning("Web login failed: " + le.getMessage());
             }
