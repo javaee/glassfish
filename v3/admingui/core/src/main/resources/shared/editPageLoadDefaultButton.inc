@@ -37,9 +37,19 @@
 
     <!-- To use this general include files for page buttons,  the following page Session attributes should be set:
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+
+        We only show this button if #{pageSession.edit} is set to true.  refer to issue#8660
     -->
 
-    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDefaultButton}"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDef}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+        <!beforeCreate
+            if (!#{pageSession.edit}){
+                setPageSessionAttribute(key="showDef" value="#{false}");
+            }
+            if (#{pageSession.edit}){
+                setPageSessionAttribute(key="showDef" value="#{pageSession.showDefaultButton}");
+            }
+        />
         <!command
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  orig="#{pageSession.valueMap}" valueMap="#{pageSession.valueMap}")
             if(#{pageSession.has2Objects}){
