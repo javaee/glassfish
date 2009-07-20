@@ -104,9 +104,19 @@
                         navigate(page="#{request.contextPath}/monitor/monitoringStatsPage.jsf");
                     />              
                     </sun:button>
+                    "<br /><br />
+                    
             </sun:property>
        </sun:propertySheetSection>
-                </sun:propertySheet>                  
+                </sun:propertySheet>   
+           "Last Updated:     
+<sun:button id="refreshInlineButton" 
+                                text="Refresh" mini="#{true}">
+                    <!command
+                        
+                        navigate(page="#{request.contextPath}/monitor/monitoringStatsPage.jsf");
+                    />              
+                    </sun:button>                
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring}"  >
          <!afterCreate
