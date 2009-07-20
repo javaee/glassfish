@@ -150,6 +150,10 @@ public class DomainRootImpl extends AMXImplBase
             mCompliance.start();
         }
     }
+    
+    public int getNumComplianceFailures() {
+        return mCompliance.getNumComplianceFailures();
+    }
 
     public String getAppserverDomainName()
     {

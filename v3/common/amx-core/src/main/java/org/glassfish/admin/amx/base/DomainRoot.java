@@ -244,7 +244,11 @@ public interface DomainRoot extends AMXProxy
     @ManagedAttribute
     @Description("Return the time the domain admin server has been running.  uptime[0] contains the time in milliseconds.  uptime[1] contains a human-readable string describing the duration.")
     public Object[] getUptimeMillis();
-
+    
+    /** How many registrations of AMX MBeans are non-compliant? (should be zero).
+    AMX attempts to unregister non-compliant MBeans, but cannot guarantee it */
+    @ManagedAttribute
+    public int getNumComplianceFailures();
 }
 
 

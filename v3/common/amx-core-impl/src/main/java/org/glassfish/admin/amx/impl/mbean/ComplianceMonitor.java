@@ -38,6 +38,7 @@ package org.glassfish.admin.amx.impl.mbean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Set;
 
 
@@ -66,7 +67,7 @@ public final class ComplianceMonitor implements NotificationListener
 
     /** offloads the validation so as not to block during Notifications */
     private final ValidatorThread mValidatorThread;
-
+    
     private ComplianceMonitor(final DomainRoot domainRoot)
     {
         mDomainRoot = domainRoot;
@@ -74,6 +75,10 @@ public final class ComplianceMonitor implements NotificationListener
         mServer = (MBeanServer) domainRoot.extra().mbeanServerConnection();
 
         mValidatorThread = new ValidatorThread(mServer);
+    }
+    
+    public int getNumComplianceFailures() {
+        return mValidatorThread.getNumComplianceFailures();
     }
 
     private void listen()
@@ -140,6 +145,9 @@ public final class ComplianceMonitor implements NotificationListener
 
         private final LinkedBlockingQueue<ObjectName> mMBeans = new LinkedBlockingQueue<ObjectName>();
 
+        /** total number of failures */
+        private final AtomicInteger   mComplianceFailures = new AtomicInteger();
+
         ValidatorThread(final MBeanServer server)
         {
             super("ComplianceMonitor.ValidatorThread");
@@ -148,6 +156,10 @@ public final class ComplianceMonitor implements NotificationListener
 
         private static final ObjectName QUIT = JMXUtil.newObjectName("quit:type=quit");
 
+        public int getNumComplianceFailures() {
+            return mComplianceFailures.get();
+        }
+        
         void quit()
         {
             add(QUIT);
@@ -195,6 +207,7 @@ public final class ComplianceMonitor implements NotificationListener
                     final AMXValidator.ValidationResult result = validator.validate(objectNames);
                     if (result.numFailures() != 0)
                     {
+                        mComplianceFailures.addAndGet( result.numFailures() );
                         ImplUtil.getLogger().info(result.toString());
                     }
                 }
