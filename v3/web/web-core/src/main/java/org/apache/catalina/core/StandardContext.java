@@ -729,7 +729,7 @@ public class StandardContext
      * Security manager responsible for enforcing permission check on
      * ServletContext#getClassLoader
      */
-    private MySecurityManager mySecurityManager;
+    private transient MySecurityManager mySecurityManager;
 
     private Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> servletContainerInitializerInterestList = null;
 
