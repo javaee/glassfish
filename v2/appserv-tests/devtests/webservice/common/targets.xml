@@ -12,6 +12,57 @@
 
     </path>
 
+   <path id="run.classpath">
+        <fileset dir="${dist}">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules">
+         <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.AS_HOME}/modules/endorsed">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.APS_HOME}/lib">
+          <include name="**/*.jar"/>
+        </fileset>
+   </path>
+
+
+
+  <target name="build-static" depends="clean,generate-stubs,compile-client,package-client"
+     description="Executes the targets needed to build a static stub client.">
+  </target>
+
+  <target name="prepare-dist"
+     description="Creates the dist directory" >
+     <echo message="Creating the required directories...." />
+     <mkdir dir="${dist}" />
+  </target>
+
+
+ <target name="compile-client" depends="prepare"
+      description="Compiles the client-side source code"  >
+      <echo message="Compiling the client source code...."/>
+    <javac srcdir="${client.src}" destdir="${build}">
+        <include name="**/*.java" />
+     <classpath refid="jaxrpc.classpath"/>
+     <classpath path="${build}" />
+    </javac>
+  </target>
+
+  <target name="package-client" depends="prepare-dist"
+      description="Builds the JAR file that contains the client">
+      <echo message="Building the client JAR  file...."/>
+      <delete file="${dist}/${client.jar}" />
+      <jar jarfile="${dist}/${client.jar}" >
+        <fileset dir="${build}" />
+      </jar>
+  </target>
+
+
+ 
+
+
   
   <target name="clean" >
       <delete dir="${build}" />
