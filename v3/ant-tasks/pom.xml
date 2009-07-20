@@ -48,6 +48,17 @@
     <packaging>hk2-jar</packaging>
     <name>Ant tasks</name>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
     <dependencies>
        <dependency>
            <groupId>org.apache.ant</groupId>
@@ -66,7 +77,6 @@
           <artifactId>internal-api</artifactId>
           <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
 </project>
