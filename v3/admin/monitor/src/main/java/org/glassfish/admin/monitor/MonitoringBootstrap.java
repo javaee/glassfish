@@ -42,6 +42,7 @@ import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.flashlight.provider.ProbeRegistry;
 /**
  *
  * @author abbagani
@@ -64,7 +65,6 @@ public class MonitoringBootstrap implements EventListener, Startup, PostConstruc
     Events events;
     @Inject(optional=true)
     ModuleMonitoringLevels config = null;
-
     @Inject
     private org.glassfish.flashlight.provider.ProbeRegistry probeRegistry;
 
@@ -100,7 +100,7 @@ public class MonitoringBootstrap implements EventListener, Startup, PostConstruc
 
     public void setStatsProviderManagerDelegate() {
         //Set the StatsProviderManagerDelegate
-        spmd = new StatsProviderManagerDelegateImpl(pcm, mrdr, domain, config);
+        spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, config);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
         mprint(" StatsProviderManagerDelegate is assigned ********************");
 

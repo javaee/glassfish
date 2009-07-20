@@ -31,6 +31,8 @@ import org.jvnet.hk2.component.Singleton;
 
 import org.glassfish.api.amx.AMXValues;
 import org.glassfish.api.amx.AMXUtil;
+import org.glassfish.flashlight.provider.FlashlightProbe;
+import org.glassfish.flashlight.provider.ProbeRegistry;
 
 /**
  *
@@ -41,6 +43,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     protected ProbeClientMediator pcm;
     ModuleMonitoringLevels config = null;
     private final MonitoringRuntimeDataRegistry mrdr;
+    private final ProbeRegistry probeRegistry;
     private final Domain domain;
 
     private final TreeNode serverNode;
@@ -55,12 +58,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
 
-    StatsProviderManagerDelegateImpl(ProbeClientMediator pcm,
+    StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, ProbeRegistry probeRegistry,
                         MonitoringRuntimeDataRegistry mrdr, Domain domain, ModuleMonitoringLevels config) {
         this.pcm = pcm;
         this.mrdr = mrdr;
         this.domain = domain;
         this.config = config;
+        this.probeRegistry = probeRegistry;
         //serverNode is special, construct that first if doesn't exist
         serverNode = constructServerPP();
         statsProviderRegistry = new StatsProviderRegistry(mrdr);
@@ -156,8 +160,10 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     public boolean hasListeners(String probeStr) {
 		boolean hasListeners = false;
-		//TODO implmentation
-		return hasListeners;
+        FlashlightProbe probe = probeRegistry.getProbe(probeStr);
+        if (probe != null)
+            return probe.isEnabled();
+        return hasListeners;
 	}
 
     //Called when AMX DomainRoot is loaded (when jconsole or gui is started)
