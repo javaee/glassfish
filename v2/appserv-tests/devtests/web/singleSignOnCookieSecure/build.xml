@@ -35,7 +35,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.ssoCookieSecure=true"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.sso-cookie-secure=true"/>
         </antcall>
         <antcall target="create-user-common">
             <param name="user" value="${testuser}"/>
@@ -91,7 +91,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.ssoCookieSecure="/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-cookie-secure="/>
         </antcall>
         <antcall target="delete-user-common">
             <param name="user" value="${testuser}"/>
