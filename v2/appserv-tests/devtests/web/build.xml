@@ -334,9 +334,6 @@
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
-<!-- XXX temporarily commented out, see IT 7447
-        <ant dir="classloaderMemoryLeak" target="all"/>
--->
         <ant dir="reconfigDefaultWebModule" target="all"/>
         <ant dir="extraClassPathRelative" target="all"/>
         <ant dir="extraClassPathJarUrl" target="all"/>
