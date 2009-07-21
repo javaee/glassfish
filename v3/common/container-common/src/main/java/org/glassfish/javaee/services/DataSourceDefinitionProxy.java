@@ -67,7 +67,7 @@ import java.util.Collection;
  */
 @Service
 @Scoped(PerLookup.class)
-public class DataSourceDefinitionProxy implements NamingObjectProxy, Serializable {
+public class DataSourceDefinitionProxy implements NamingObjectProxy.InitializationNamingObjectProxy, Serializable {
     @Inject
     private transient Habitat habitat;
     private DataSourceDefinitionDescriptor desc;
