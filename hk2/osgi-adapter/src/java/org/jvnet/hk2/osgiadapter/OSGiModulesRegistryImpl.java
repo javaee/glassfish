@@ -74,7 +74,9 @@ public class OSGiModulesRegistryImpl
             new HashMap<ModuleChangeListener, BundleListener>();
     private Map<ModuleLifecycleListener, BundleListener> moduleLifecycleListeners =
             new HashMap<ModuleLifecycleListener, BundleListener>();
-    protected final String INHABITITANTS_CACHE_DIR = "com.sun.hk2.cacheDir";
+
+    private static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
+    private static final String INHABITANTS_CACHE = "inhabitants";
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
@@ -183,11 +185,11 @@ public class OSGiModulesRegistryImpl
      * @throws Exception if the file cannot be read correctly
      */
     private void loadCachedData() throws Exception {
-        String cacheLocation = System.getProperty(INHABITITANTS_CACHE_DIR);
+        String cacheLocation = System.getProperty(HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
-        File io = new File(cacheLocation, "inhabitants");
+        File io = new File(cacheLocation, INHABITANTS_CACHE);
         if (!io.exists()) return;
         ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io)));
         cachedData = (Map<URI, ModuleDefinition>) stream.readObject();
@@ -199,11 +201,11 @@ public class OSGiModulesRegistryImpl
      * @throws IOException if the file cannot be saved successfully
      */
     private void saveCache() throws IOException {
-        String cacheLocation = System.getProperty(INHABITITANTS_CACHE_DIR);
+        String cacheLocation = System.getProperty(HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
-        File io = new File(cacheLocation, "inhabitants");
+        File io = new File(cacheLocation, INHABITANTS_CACHE);
         if (io.exists()) io.delete();
         io.createNewFile();
         Map<URI, ModuleDefinition> data = new HashMap<URI, ModuleDefinition>();
@@ -216,11 +218,11 @@ public class OSGiModulesRegistryImpl
     }
 
     private void deleteCache() {
-        String cacheLocation = System.getProperty(INHABITITANTS_CACHE_DIR);
+        String cacheLocation = System.getProperty(HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
-        File io = new File(cacheLocation, "inhabitants");
+        File io = new File(cacheLocation, INHABITANTS_CACHE);
         if (io.exists()) {
             if (io.delete()) {
                 logger.logp(Level.FINE, "OSGiModulesRegistryImpl",

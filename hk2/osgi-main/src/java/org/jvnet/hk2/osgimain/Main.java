@@ -78,8 +78,13 @@ import java.net.URI;
  */
 public class Main implements BundleActivator
 {
-    private static final String DIR_NAME_PROP =
-            Main.class.getPackage().getName()+".bundlesDir";
+    public static final String BUNDLES_DIR =
+            "org.jvnet.hk2.osgimain.bundlesDir";
+    public final static String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
+    public final static String INHABITANTS_CACHE = "inhabitants";
+    public static final String AUTO_START_BUNDLES_PROP =
+            "org.jvnet.hk2.osgimain.autostartBundles";
+
     private static final Logger logger =
             Logger.getLogger(Main.class.getPackage().getName());
 
@@ -87,18 +92,13 @@ public class Main implements BundleActivator
 
     private File bundlesDir;
 
-    private static final String AUTO_START_BUNDLES_PROP =
-            Main.class.getPackage().getName()+".autostartBundles";
-
-    private Map<String, Long> autoStartBundleIds = new HashMap<String, Long>();
     private List<URI> autoStartBundleLocations = new ArrayList<URI>();
     private Map<URI, Jar> currentManagedBundles = new HashMap<URI, Jar>();
     private static final String THIS_JAR_NAME = "osgi-main.jar";
-
     public void start(BundleContext context) throws Exception
     {
         this.context = context;
-        bundlesDir = new File(context.getProperty(DIR_NAME_PROP));
+        bundlesDir = new File(context.getProperty(BUNDLES_DIR));
         StringTokenizer st = new StringTokenizer(context.getProperty(AUTO_START_BUNDLES_PROP), ",");
         while (st.hasMoreTokens()) {
             String bundleRelPath = st.nextToken().trim();
@@ -235,9 +235,9 @@ public class Main implements BundleActivator
         // We do the operations in the following order:
         // uninstall, update, install, refresh & start.
         uninstall(deletedBundles);
-        update(existingBundles);
+        int updated = update(existingBundles);
         install(newBundles);
-        if ((newBundles.size() + deletedBundles.size() + existingBundles.size()) > 0) {
+        if ((newBundles.size() + deletedBundles.size() + updated) > 0) {
             refresh();
         }
     }
@@ -262,7 +262,8 @@ public class Main implements BundleActivator
         }
     }
 
-    private void update(Collection<Jar> jars) {
+    private int update(Collection<Jar> jars) {
+        int updated = 0;
         for (Jar jar : jars) {
             final Jar existingJar= currentManagedBundles.get(jar.getURI());
             if (jar.isNewer(existingJar)) {
@@ -273,6 +274,7 @@ public class Main implements BundleActivator
                 }
                 try {
                     bundle.update();
+                    updated++;
                     logger.logp(Level.INFO, "Main", "update",
                             "Updated bundle {0} from {1} ",
                             new Object[]{bundle.getBundleId(), jar.getPath()});
@@ -283,6 +285,7 @@ public class Main implements BundleActivator
                 }
             }
         }
+        return updated;
     }
 
     private void install(Collection<Jar> jars) {
@@ -318,5 +321,14 @@ public class Main implements BundleActivator
                 context.getService(reference));
         pa.refreshPackages(new Bundle[0]);
         context.ungetService(reference);
+
+        // This is a HACK - thanks to some weired optimization trick
+        // done for GlassFish. HK2 maintains a cache of inhabitants and
+        // that needs  to be recreated when there is a change in modules dir.
+        final String cacheDir = System.getProperty(HK2_CACHE_DIR);
+        if (cacheDir != null) {
+            File inhabitantsCache = new File(cacheDir, INHABITANTS_CACHE);
+            if (inhabitantsCache.exists()) inhabitantsCache.delete();
+        }
     }
 }
