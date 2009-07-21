@@ -40,10 +40,13 @@ package org.jvnet.hk2.osgimain;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.StringTokenizer;
@@ -52,6 +55,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collection;
+import java.net.URISyntaxException;
 import java.net.URI;
 
 /**
@@ -60,6 +67,12 @@ import java.net.URI;
  * to be started automatically. The bundle path is treated relative to the
  * directory from where it installs all the bundles. It does not stop those bundle
  * when this bundle is stopped. It stops them in reverse order.
+ *
+ * This bundle is also responsible for updating or uninstalling bundle during
+ * subsequent restart if jars have been updated or deleted.
+ *
+ * It does not manage itself. So, we use reference: scheme to install this bundle
+ * which allows us to see changes to this jar file automatically.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -74,13 +87,13 @@ public class Main implements BundleActivator
 
     private File bundlesDir;
 
-    private Bundle primordialBundle;
-
     private static final String AUTO_START_BUNDLES_PROP =
             Main.class.getPackage().getName()+".autostartBundles";
 
     private Map<String, Long> autoStartBundleIds = new HashMap<String, Long>();
-    private List<String> autoStartBundleLocations = new ArrayList<String>();
+    private List<URI> autoStartBundleLocations = new ArrayList<URI>();
+    private Map<URI, Jar> currentManagedBundles = new HashMap<URI, Jar>();
+    private static final String THIS_JAR_NAME = "osgi-main.jar";
 
     public void start(BundleContext context) throws Exception
     {
@@ -89,13 +102,13 @@ public class Main implements BundleActivator
         StringTokenizer st = new StringTokenizer(context.getProperty(AUTO_START_BUNDLES_PROP), ",");
         while (st.hasMoreTokens()) {
             String bundleRelPath = st.nextToken().trim();
-            String bundleURI = new File(bundlesDir, bundleRelPath).toURI().normalize().toString();
+            URI bundleURI = new File(bundlesDir, bundleRelPath).toURI().normalize();
             autoStartBundleLocations.add(bundleURI);
         }
-        installBundles();
-        for (String location : autoStartBundleLocations) {
-            Long id = autoStartBundleIds.get(location);
-            if (id == null) {
+        traverse();
+        for (URI location : autoStartBundleLocations) {
+            long id = currentManagedBundles.get(location).getBundleId();
+            if (id < 0) {
                 logger.logp(Level.WARNING, "Main", "start", "Not able to locate autostart bundle for location = {0}", new Object[]{location});
                 continue;
             }
@@ -112,12 +125,14 @@ public class Main implements BundleActivator
      */
     public void stop(BundleContext context) throws Exception
     {
-        List<String> bundlesToStop = new ArrayList<String>(autoStartBundleLocations);
+        List<URI> bundlesToStop = new ArrayList<URI>(autoStartBundleLocations);
         Collections.reverse(bundlesToStop);
-        for (String location : bundlesToStop) {
-            Long id = autoStartBundleIds.get(location);
-            if (id == null) {
-                logger.logp(Level.WARNING, "Main", "stop", "Not able to locate autostart bundle for location = {0}", new Object[]{location});
+        for (URI location : bundlesToStop) {
+            long id = currentManagedBundles.get(location).getBundleId();
+            if (id < 0) {
+                logger.logp(Level.WARNING, "Main", "stop",
+                        "Not able to locate autostart bundle for location = {0}",
+                        new Object[]{location});
                 continue;
             }
             final Bundle bundle = context.getBundle(id);
@@ -126,8 +141,8 @@ public class Main implements BundleActivator
         }
     }
 
-    private void installBundles()
-    {
+    private Set<Jar> discoverJars() {
+        final Set<Jar> jars = new HashSet<Jar>();
         bundlesDir.listFiles(new FileFilter(){
             final String JAR_EXT = ".jar";
             public boolean accept(File pathname)
@@ -135,32 +150,173 @@ public class Main implements BundleActivator
                 if (pathname.isDirectory()) {
                     pathname.listFiles(this);
                 } else if (pathname.isFile()
-                        && pathname.getName().endsWith(JAR_EXT)) {
-                    installBundle(pathname);
+                        && pathname.getName().endsWith(JAR_EXT)
+                        && !pathname.getName().equals(THIS_JAR_NAME)) {
+                    jars.add(new Jar(pathname));
                     return true;
                 }
                 return false;
             }
         });
+        return jars;
     }
 
-    private void installBundle(File jar) {
-        try
+    /**
+     * This method goes through all the currently installed bundles
+     * and returns information about those bundles whose location
+     * refers to a file in our {@link #bundlesDir}.
+     */
+    private void initCurrentManagedBundles()
+    {
+        Bundle[] bundles = this.context.getBundles();
+        String watchedDirPath = bundlesDir.toURI().normalize().getPath();
+        final long thisBundleId = context.getBundle().getBundleId();
+        for (Bundle bundle : bundles)
         {
-            // We use URI as the location, because Felix uses it
-            // in autostart properties.
-            final String location = jar.toURI().normalize().toString();
-            Bundle b = context.installBundle(location, new FileInputStream(jar));
-            if (autoStartBundleLocations.contains(location)) {
-                autoStartBundleIds.put(location, b.getBundleId());
+            try
+            {
+                final long id = bundle.getBundleId();
+                if (id == 0 || id == thisBundleId) {
+                    // We can't manage system bundle or this bundle
+                    continue;
+                }
+                Jar jar = new Jar(bundle);
+                String path = jar.getPath();
+                if (path == null)
+                {
+                    // jar.getPath is null means we could not parse the location
+                    // as a meaningful URI or file path. e.g., location
+                    // represented an Opaque URI.
+                    // We can't do any meaningful processing for this bundle.
+                    continue;
+                }
+                if (path.regionMatches(0, watchedDirPath, 0, watchedDirPath.length()))
+                {
+                    currentManagedBundles.put(jar.getURI(), jar);
+                }
+            }
+            catch (URISyntaxException e)
+            {
+                // Ignore and continue.
+                // This can never happen for bundles that have been installed
+                // by FileInstall, as we always use proper filepath as location.
             }
         }
-        catch (Exception e)
-        {
-            logger.logp(Level.WARNING, "Installer", "install",
-                    "Failed to install {0} because of {1}",
-                    new Object[]{jar, e});
+    }
+
+    /**
+     * This method goes collects list of bundles that have been installed
+     * from the watched directory in previous run of the program,
+     * compares them with the current set of jar files,
+     * uninstalls old bundles, updates modified bundles, installs new bundles
+     * and refreshes the framework for the changes to take effect.
+     */
+    private void traverse() {
+        initCurrentManagedBundles();
+        final Collection<Jar> current = currentManagedBundles.values();
+        Set<Jar> discovered = discoverJars();
+
+        // Find out all the new, deleted and common bundles.
+        // new = discovered - current
+        Set<Jar> newBundles = new HashSet<Jar>(discovered);
+        newBundles.removeAll(current);
+
+        // deleted = current - discovered
+        Set<Jar> deletedBundles = new HashSet<Jar>(current);
+        deletedBundles.removeAll(discovered);
+
+        // existing = intersection of current & discovered
+        Set<Jar> existingBundles = new HashSet<Jar>(discovered);
+        // We remove discovered ones from current, so that we are left
+        // with a collection of Jars made from files so that we can compare
+        // them with bundles.
+        existingBundles.retainAll(current);
+
+        // We do the operations in the following order:
+        // uninstall, update, install, refresh & start.
+        uninstall(deletedBundles);
+        update(existingBundles);
+        install(newBundles);
+        if ((newBundles.size() + deletedBundles.size() + existingBundles.size()) > 0) {
+            refresh();
         }
     }
 
+    private void uninstall(Collection<Jar> bundles) {
+        for (Jar jar : bundles) {
+            Bundle bundle = context.getBundle(jar.getBundleId());
+            if (bundle == null) {
+                // this is highly unlikely, but can't be ruled out.
+                continue;
+            }
+            try {
+                bundle.uninstall();
+                logger.logp(Level.INFO, "Main", "uninstall",
+                        "Uninstalled bundle {0} installed from {1} ",
+                        new Object[]{bundle.getBundleId(), jar.getPath()});
+            } catch (Exception e) {
+                logger.logp(Level.WARNING, "Main", "uninstall",
+                        "Failed to uninstall bundle " + jar.getPath(),
+                        e);
+            }
+        }
+    }
+
+    private void update(Collection<Jar> jars) {
+        for (Jar jar : jars) {
+            final Jar existingJar= currentManagedBundles.get(jar.getURI());
+            if (jar.isNewer(existingJar)) {
+                Bundle bundle = context.getBundle(existingJar.getBundleId());
+                if (bundle == null) {
+                    // this is highly unlikely, but can't be ruled out.
+                    continue;
+                }
+                try {
+                    bundle.update();
+                    logger.logp(Level.INFO, "Main", "update",
+                            "Updated bundle {0} from {1} ",
+                            new Object[]{bundle.getBundleId(), jar.getPath()});
+                } catch (Exception e) {
+                    logger.logp(Level.WARNING, "Main", "update",
+                            "Failed to update " + jar.getPath(),
+                            e);
+                }
+            }
+        }
+    }
+
+    private void install(Collection<Jar> jars) {
+        for (Jar jar : jars) {
+            try {
+                final String path = jar.getPath();
+                File file = new File(path);
+                final FileInputStream is = new FileInputStream(file);
+                try {
+                    Bundle b = context.installBundle(jar.getURI().toString(), is);
+                    currentManagedBundles.put(jar.getURI(), new Jar(b));
+                    logger.logp(Level.FINE, "Main", "install",
+                            "Installed bundle {0} from {1} ",
+                            new Object[]{b.getBundleId(), jar.getURI()});
+                } finally {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                    }
+                }
+            } catch (Exception e) {
+                logger.logp(Level.WARNING, "Main", "install",
+                        "Failed to install " + jar.getURI(),
+                        e);
+            }
+        }
+    }
+
+    private void refresh() {
+        final ServiceReference reference =
+                context.getServiceReference(PackageAdmin.class.getName());
+        PackageAdmin pa = PackageAdmin.class.cast(
+                context.getService(reference));
+        pa.refreshPackages(new Bundle[0]);
+        context.ungetService(reference);
+    }
 }
