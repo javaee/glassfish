@@ -71,24 +71,24 @@
 <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">			 
     <sun:propertySheetSection id="propertSectionTextField">
-        <sun:property id="JmsHostStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmsHost.jmsHostNameLabel}" >
+        <sun:property id="JmsHostStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.jmsHostNameLabel}" >
             <sun:staticText id="JmsHostStatic" text="#{pageSession.valueMap['Name']}"/>
         </sun:property>
 
-        <sun:property id="JmsHostTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmsHost.jmsHostNameLabel}">
+        <sun:property id="JmsHostTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.jmsHostNameLabel}">
             <sun:textField id="JmsHostText" text="#{pageSession.valueMap['Name']}" columns="$int{55}" styleClass="required" required="#{true}" />
         </sun:property>
 
-        <sun:property id="HostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmsHost.hostLabel}" helpText="$resource{i18n.edJmsHost.hostHelp}" >
+        <sun:property id="HostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.hostLabel}" helpText="$resource{i18njms.edJmsHost.hostHelp}" >
             <sun:textField id="Host" columns="$int{55}"  text="#{pageSession.valueMap['Host']}" />
         </sun:property>
-        <sun:property id="PortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmsHost.portLabel}" helpText="$resource{i18n.edJmsHost.portHelp}" >
+        <sun:property id="PortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.portLabel}" helpText="$resource{i18njms.edJmsHost.portHelp}" >
             <sun:textField id="Port" columns="$int{20}" styleClass="port"text="#{pageSession.valueMap['Port']}" />
         </sun:property>
-        <sun:property id="AdminUserProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmsHost.adminUserLabel}" helpText="$resource{i18n.edJmsHost.adminUserHelp}" >
+        <sun:property id="AdminUserProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminUserLabel}" helpText="$resource{i18njms.edJmsHost.adminUserHelp}" >
             <sun:textField id="AdminUser" columns="$int{20}" text="#{pageSession.valueMap['AdminUserName']}" />
         </sun:property>
-        <sun:property id="AdminPwdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmsHost.adminPwdLabel}" helpText="$resource{i18n.edJmsHost.adminPwdHelp}" >
+        <sun:property id="AdminPwdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminPwdLabel}" helpText="$resource{i18njms.edJmsHost.adminPwdHelp}" >
             <sun:textField id="AdminPwd" columns="$int{20}" text="#{pageSession.valueMap['AdminPassword']}" />
         </sun:property>
         "<br /><br />

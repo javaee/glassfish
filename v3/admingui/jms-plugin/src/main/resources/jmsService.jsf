@@ -38,7 +38,7 @@
     //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.connectionFactories.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.pageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -73,7 +73,7 @@
  #include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.jms.Title}" helpText="$resource{i18n.jms.PageHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18njms.jms.Title}" helpText="$resource{i18njms.jms.PageHelp}">
 #include "/shared/editPageButtons.inc"
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
@@ -85,43 +85,43 @@
                               />   
                             </event>
                             // TODO: Figure what this needs to make it work. :(
-                            <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Type}" helpText="$resource{i18n.jms.TypeHelp}">                           
+                            <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Type}" helpText="$resource{i18njms.jms.TypeHelp}">
                                <sun:dropDown id="Type"  selected="#{pageSession.valueMap['Type']}" labels={"LOCAL" "REMOTE" "EMBEDDED"} values={"LOCAL" "REMOTE" "EMBEDDED"}>
                                </sun:dropDown>
                              </sun:property>                       
-                            <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Timeout}" helpText="$resource{i18n.jms.TimeoutHelp}">                           
+                            <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Timeout}" helpText="$resource{i18njms.jms.TimeoutHelp}">
                                 <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['InitTimeoutInSeconds']}" />
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>     
-                            <sun:property id="argumentsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Arguments}" helpText="$resource{i18n.jms.ArgumentsHelp}">
+                            <sun:property id="argumentsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Arguments}" helpText="$resource{i18njms.jms.ArgumentsHelp}">
                                 <sun:textField id="Arguments" columns="$int{35}" text="#{pageSession.valueMap['StartArgs']}"/>
                             </sun:property>    
-                            <sun:property id="reconnectProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Reconnect}" helpText="$resource{i18n.jms.ReconnectHelp}">                           
+                            <sun:property id="reconnectProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Reconnect}" helpText="$resource{i18njms.jms.ReconnectHelp}">
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ReconnectEnabled']}" selectedValue="true">
                                </sun:checkbox>
                             </sun:property>                         
-                            <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Interval}" helpText="$resource{i18n.jms.IntervalHelp}">
+                            <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Interval}" helpText="$resource{i18njms.jms.IntervalHelp}">
                                 <sun:textField id="Interval" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['ReconnectIntervalInSeconds']}" />
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>
-                            <sun:property id="attemptsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Attempts}" helpText="$resource{i18n.jms.AttemptsHelp}">
+                            <sun:property id="attemptsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Attempts}" helpText="$resource{i18njms.jms.AttemptsHelp}">
                                 <sun:textField id="Attempts" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['ReconnectAttempts']}" />
                             </sun:property>                              
-                          <sun:property id="hostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Host}" helpText="$resource{i18n.jms.HostHelp}">
+                          <sun:property id="hostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Host}" helpText="$resource{i18njms.jms.HostHelp}">
                                 <sun:dropDown id="Host" labels="$pageSession{jmsHostList}" selected="#{pageSession.valueMap['DefaultJmsHost']}" >
                                 </sun:dropDown>
                            </sun:property>    
-                            <sun:property id="behaviorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Behavior}" helpText="$resource{i18n.jms.BehaviorHelp}">
+                            <sun:property id="behaviorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Behavior}" helpText="$resource{i18njms.jms.BehaviorHelp}">
                                 <sun:dropDown id="Behavior" selected="#{pageSession.valueMap['AddresslistBehavior']}" labels={"random" "priority"} >
                                 </sun:dropDown>
                             </sun:property>      
-                            <sun:property id="iterationsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Iterations}" helpText="$resource{i18n.jms.IterationsHelp}">
+                            <sun:property id="iterationsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Iterations}" helpText="$resource{i18njms.jms.IterationsHelp}">
                                 <sun:textField id="Iterations" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['AddresslistIterations']}" />
                             </sun:property>                              
-                           <sun:property id="schemeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Scheme}" helpText="$resource{i18n.jms.SchemeHelp}">
+                           <sun:property id="schemeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Scheme}" helpText="$resource{i18njms.jms.SchemeHelp}">
                                 <sun:textField id="Scheme" columns="$int{25}" text="#{pageSession.valueMap['MqScheme']}"/>
                             </sun:property>    
-                            <sun:property id="serviceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jms.Service}" helpText="$resource{i18n.jms.ServiceHelp}">
+                            <sun:property id="serviceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Service}" helpText="$resource{i18njms.jms.ServiceHelp}">
                                 <sun:textField id="Service" columns="$int{25}" text="#{pageSession.valueMap['MqService']}"/>
                             </sun:property>                                                           
                             "<br /><br />

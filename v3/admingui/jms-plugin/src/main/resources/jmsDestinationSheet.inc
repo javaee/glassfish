@@ -13,7 +13,7 @@
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" helpText="$resource{i18n.common.jndiNameHelp}" >
             <sun:textField id="Jndi" columns="$int{55}" text="#{pageSession.valueMap['Name']}" styleClass="required" required="#{true}" />
         </sun:property>
-        <sun:property id="nameProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18n.jmsDestination.destName}" helpText="$resource{i18n.jmsDestination.destNameHelp}">
+        <sun:property id="nameProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18njms.jmsDestination.destName}" helpText="$resource{i18njms.jmsDestination.destNameHelp}">
             <sun:textField id="name" columns="55" text="#{pageSession.name}" styleClass="required" required="true" />
         </sun:property>
         <sun:property id="resTypeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >

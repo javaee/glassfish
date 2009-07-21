@@ -40,7 +40,7 @@
 //    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.destinationResources.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsDestination.editPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -48,8 +48,8 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsDestinationEdit.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsDestinations.jsf");
 
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jmsDestination.editPageTitle}")
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jmsDestination.editPageTitleHelp}")
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsDestination.editPageTitle}")
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsDestination.editPageTitleHelp}")
 
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources" );
         setPageSessionAttribute(key="childType" value="admin-object-resource");

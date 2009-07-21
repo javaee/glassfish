@@ -39,7 +39,7 @@
 //    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.destinationResources.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.destinationResources.pageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -65,14 +65,14 @@
     </event>
 
 #include "/shared/restart.inc"
-    <sun:head id="propertyhead" title="$resource{i18n.destinationResources.pageTitle}"  >
+    <sun:head id="propertyhead" title="$resource{i18njms.destinationResources.pageTitle}"  >
         <sun:script url="/resource/js/adminjsf.js" />
     </sun:head>
 
     <sun:form id="propertyForm">
  #include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
-        <sun:title id="propertyContentPage" title="$resource{i18n.destinationResources.pageTitle}" helpText="$resource{i18n.destinationResources.pageTitleHelp}"/>
+        <sun:title id="propertyContentPage" title="$resource{i18njms.destinationResources.pageTitle}" helpText="$resource{i18njms.destinationResources.pageTitleHelp}"/>
         "<br /><br />
 #include "/jms/shared/resourcesTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jmsDestinations}" />

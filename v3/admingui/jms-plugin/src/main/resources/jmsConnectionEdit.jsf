@@ -40,7 +40,7 @@
     //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.connectionFactories.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.editPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -75,7 +75,7 @@
     <sun:form id="propertyForm" >
 #include "/shared/alertMsg.inc"
     <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18n.connectionFactory.newPageTitle}" helpText="$resource{i18n.connectionFactory.newPageTitleHelp}">
+        <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactory.newPageTitle}" helpText="$resource{i18njms.connectionFactory.newPageTitleHelp}">
             <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
                 <!command
                     getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")

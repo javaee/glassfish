@@ -39,12 +39,12 @@
     setAttribute(key="edit" value="#{false}" )
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.connectionFactories.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.pageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
-            setPageSessionAttribute(key="pageTitle" value="$resource{i18n.newJmsHost.NewJmsHost}");
-            setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.newJmsHost.NewPageHelp}");
+            setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.newJmsHost.NewJmsHost}");
+            setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.newJmsHost.NewPageHelp}");
             getRequestValue(key="configName" value=>$page{configName});
 
             setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");

@@ -68,24 +68,16 @@
                 <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="col1">
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="colName">
             <sun:hyperlink id="link" text="#{td.value.Name}" url="#{editLink}?name=#{td.value.Name}&configName=#{configName}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.Host}"  rendered="#{hasHost}"  rowHeader="$boolean{true}" id="col3">
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.Host}" rowHeader="$boolean{true}" id="colHost">
             <staticText id="hostCol" rendered="#{hasHost}" value="#{td.value.Host}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18n.edJmsHost.colPort}"   rendered="#{hasPort}" rowHeader="$boolean{true}" id="col4">
+        <sun:tableColumn headerText="$resource{i18njms.edJmsHost.colPort}" rowHeader="$boolean{true}" id="colPort">
             <staticText id="portCol" rendered="#{hasPort}" value="#{td.value.Port}" />
-        </sun:tableColumn>
-
-        <sun:tableColumn headerText="$resource{i18n.realm.colClassname}"   rendered="#{hasClassname}" rowHeader="$boolean{true}" id="col5">
-            <staticText id="classnameCol" rendered="#{hasClassname}" value="#{td.value.classname}" />
-        </sun:tableColumn>
-
-        <sun:tableColumn headerText="$resource{i18n.jacc.colPolicyProvider}"   rendered="#{hasPolicy}" rowHeader="$boolean{true}" id="col6">
-            <staticText id="classnameCol" rendered="#{hasPolicy}" value="#{td.value.policy}" />
         </sun:tableColumn>
     </sun:tableRowGroup>
 </sun:table>

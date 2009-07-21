@@ -40,12 +40,12 @@
 //    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.destinationResources.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.destinationResources.pageTitle}" >
 <!define name="content">
     <event>
         <!beforeEncode
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jmsDestination.newPageTitle}")
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jmsDestination.newPageTitleHelp}")
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsDestination.newPageTitle}")
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsDestination.newPageTitleHelp}")
 
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsDestinationNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsDestinations.jsf");

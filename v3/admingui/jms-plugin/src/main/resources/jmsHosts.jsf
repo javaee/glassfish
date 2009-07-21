@@ -36,25 +36,20 @@
 
 <!initPage
     setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
-    //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.connectionFactories.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.pageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        //setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings");
-        //setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
         getRequestValue(key="configName" value=>$page{configName});
-
-        //getConfigList(ConfigName="$pageSession{configName}", type="jmsHost" result=>$attribute{listOfRows} );
 
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
         setPageSessionAttribute(key="childType" value="jms-host");
 
         getChildrenTable(objectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
 
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18n.jmsHosts.TableTitle}");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.jmsHosts.TableTitle}");
         setPageSessionAttribute(key="listPageLink" value="jmsHosts.jsf");
         setPageSessionAttribute(key="createLink" value="jmsHostNew.jsf");
         setPageSessionAttribute(key="editLink" value="/jms/jmsHostEdit.jsf");
@@ -78,7 +73,7 @@
     <sun:form id="propertyForm">
  #include treeBreadcrumbs.inc
 #include "/shared/alertMsg.inc"
-        <sun:title id="propertyContentPage" title="$resource{i18n.jmsHosts.ListPageTitle}" helpText="$resource{i18n.jmsHosts.ListPageHelp}"/>
+        <sun:title id="propertyContentPage" title="$resource{i18njms.jmsHosts.ListPageTitle}" helpText="$resource{i18njms.jmsHosts.ListPageHelp}"/>
          "<br /> <br />
 #include "/jms/jmsHostsTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jmsHosts}" />
