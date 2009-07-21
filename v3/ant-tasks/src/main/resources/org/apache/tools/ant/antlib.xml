@@ -39,11 +39,23 @@
 <antlib>
     <taskdef name="glassfish-embedded-deploy" classname="org.glassfish.ant.embedded.tasks.DeployTask"/>
     <taskdef name="glassfish-embedded-stop"   classname="org.glassfish.ant.embedded.tasks.StopServerTask"/>
+    <taskdef name="glassfish-embedded-web-start"   classname="org.glassfish.ant.embedded.tasks.StartWebTask"/>
     <taskdef name="glassfish-embedded-start"  classname="org.glassfish.ant.embedded.tasks.StartServerTask"/>
     <taskdef name="glassfish-embedded-admin"  classname="org.glassfish.ant.embedded.tasks.AdminTask"/>
+
     <taskdef name="glassfish-admin"    classname="org.glassfish.ant.tasks.AdminTask"/>
     <taskdef name="glassfish-start"    classname="org.glassfish.ant.tasks.StartServerTask"/>
     <taskdef name="glassfish-stop"     classname="org.glassfish.ant.tasks.StopServerTask"/>
     <taskdef name="glassfish-deploy"   classname="org.glassfish.ant.tasks.DeployTask"/>
     <taskdef name="glassfish-undeploy"  classname="org.glassfish.ant.tasks.UndeployTask"/>
+    <taskdef name="glassfish-redeploy"  classname="org.glassfish.ant.tasks.RedeployTask"/>
+
+    <taskdef name="sun-appserv-admin"    classname="org.glassfish.ant.tasks.AdminTask"/>
+    <taskdef name="sun-appserv-start"    classname="org.glassfish.ant.tasks.StartServerTask"/>
+    <taskdef name="sun-appserv-stop"     classname="org.glassfish.ant.tasks.StopServerTask"/>
+    <taskdef name="sun-appserv-deploy"   classname="org.glassfish.ant.tasks.DeployTask"/>
+    <taskdef name="sun-appserv-undeploy"  classname="org.glassfish.ant.tasks.UndeployTask"/>
+    <taskdef name="sun-appserv-redeploy"  classname="org.glassfish.ant.tasks.RedeployTask"/>
+    <taskdef name="sun-appserv-update"  classname="org.glassfish.ant.tasks.RedeployTask"/>
+
 </antlib>
