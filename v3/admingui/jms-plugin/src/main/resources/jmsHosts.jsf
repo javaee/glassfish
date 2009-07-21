@@ -38,7 +38,7 @@
     setResourceBundle(key="i18njms" bundle="org.glassfish.admingui.plugin.jms.Strings");
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsHosts.ListPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

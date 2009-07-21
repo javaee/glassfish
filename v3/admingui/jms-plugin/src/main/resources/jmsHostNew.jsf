@@ -39,7 +39,7 @@
     setAttribute(key="edit" value="#{false}" )
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.newJmsHost.NewJmsHost}" >
 <!define name="content">
     <event>
         <!beforeCreate

@@ -40,11 +40,11 @@
     setAttribute(key="edit" value="#{true}" )
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.edJmsHost.EditJmsHost}" >
 <!define name="content">
     <event>
         <!beforeCreate
-            setPageSessionAttribute(key="pageTitle" value="$resource{i18n.headings.EditJmsHost}");
+            setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.edJmsHost.EditJmsHost}");
             setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.edJmsHost.edJmsHostInfo}");
             getRequestValue(key="configName" value=>$page{configName});
 

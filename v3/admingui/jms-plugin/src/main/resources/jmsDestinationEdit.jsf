@@ -70,6 +70,14 @@
     />
     </event>
     <sun:form id="propertyForm">
+    <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
+        <!-- Buttons  -->
+        <!facet pageButtonsTop>
+            <sun:panelGroup id="topButtons">
+#include "/jms/jmsDestinationButtons.inc"
+            </sun:panelGroup>
+        </facet>
+    </sun:title>
  #include treeBreadcrumbs.inc
  #include "resourceNode/resourcesTabs.inc"
 #include "/jms/jmsDestinationSheet.inc"

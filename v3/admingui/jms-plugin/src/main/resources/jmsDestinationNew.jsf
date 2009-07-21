@@ -40,7 +40,7 @@
 //    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.destinationResources.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsDestination.newPageTitle}" >
 <!define name="content">
     <event>
         <!beforeEncode
