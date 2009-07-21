@@ -42,8 +42,8 @@ pkg = {
     "name"          : "glassfish-generic-ra",
     "version"       : "2.0-0.0",
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Generic RA",
-                        "pkg.description" : "GlassFish Generic RA description placeholder. ",
+                        "pkg.summary" : "Generic Resource Adapter for JMS",
+                        "pkg.description" : "Generic  JMS RA is a Java EE Connector Architecture 5 compliant resource adapter that allows users to integrate with various JMS service providers. More details are available on Generic RA website - https://genericjmsra.dev.java.net",
                         "info.classification" : "Application Servers",
                       },
     "depends"       : { 
