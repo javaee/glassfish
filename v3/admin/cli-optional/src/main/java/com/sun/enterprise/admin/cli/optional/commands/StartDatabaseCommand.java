@@ -83,8 +83,6 @@ public final class StartDatabaseCommand extends DatabaseCommand {
     @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
-        processProgramOptions();
-
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
         addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
@@ -114,7 +112,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
         if (options.containsKey("echo"))
             programOpts.setEcho(getBooleanOption("echo"));
         if (options.containsKey("terse"))
-            programOpts.setEcho(getBooleanOption("terse"));
+            programOpts.setTerse(getBooleanOption("terse"));
     }
 
     /**

@@ -64,7 +64,7 @@ public class CommandTable extends HashMap<String, Class> {
         put("export",                   ExportCommand.class);
         put("unset",                    UnsetCommand.class);
         put("login",                    null);
-        put("create-domain",            Object.class); // XXX - not yet impl
+        put("create-domain",            null);
         put("create-service",           Object.class); // XXX - not yet impl
         put("delete-domain",            null);
         put("list-domains",             null);
