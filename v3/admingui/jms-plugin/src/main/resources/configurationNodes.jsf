@@ -1,15 +1,15 @@
 <gf:navNode id="jmsConfiguration"
 	    label="$resource{i18n.tree.javaMessageService}"
-            url="/jms/jmsService.jsf?configName=server-config"
+            url="#{request.contextPath}/jms/jmsService.jsf?configName=server-config"
 	    icon="#{request.contextPath}/resource/images/jms.gif">
     <gf:navNode id="jmsHosts"
                 label="$resource{i18n.tree.jmsHosts}"
                 icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="/jms/jmsHosts.jsf?configName=#{configName}">
+                url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}">
     </gf:navNode>
     <gf:navNode id="jmsPhysDest"
                 label="$resource{i18n.tree.physicalDestinations}"
                 icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="/jms/jmsPhysicalDestinations.jsf">
+                url="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf">
     </gf:navNode>
 </gf:navNode>

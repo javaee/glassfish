@@ -1,14 +1,15 @@
 <gf:navNode id="jmsResources"
 	    label="$resource{i18n.tree.jmsResources}"
-	    icon="#{request.contextPath}/resource/images/jms.gif">
+	    icon="#{request.contextPath}/resource/images/jms.gif"
+            url="#{request.contextPath}/jms/jmsResources.jsf">
     <gf:navNode id="jmsConnFact"
                 label="$resource{i18n.tree.connectionFactories}"
                 icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="/jms/jmsConnections.jsf">
+                url="#{request.contextPath}/jms/jmsConnections.jsf">
     </gf:navNode>
     <gf:navNode id="jmsDestRes"
                 label="$resource{i18n.tree.destinationResources}"
                 icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="/jms/jmsDestinations.jsf">
+                url="#{request.contextPath}/jms/jmsDestinations.jsf">
     </gf:navNode>
 </gf:navNode>
