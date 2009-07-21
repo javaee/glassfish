@@ -3,10 +3,12 @@
 	    icon="#{request.contextPath}/resource/images/jms.gif">
     <gf:navNode id="jmsConnFact"
                 label="$resource{i18n.connectionFactories.pageTitle}"
+                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
                 url="/jms/jmsConnections.jsf">
     </gf:navNode>
     <gf:navNode id="jmsDestRes"
                 label="$resource{i18n.destinationResources.pageTitle}"
+                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
                 url="/jms/jmsDestinations.jsf">
     </gf:navNode>
 </gf:navNode>

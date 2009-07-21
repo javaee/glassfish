@@ -4,10 +4,12 @@
 	    icon="#{request.contextPath}/resource/images/jms.gif">
     <gf:navNode id="jmsHosts"
                 label="$resource{i18n.tree.jmsHosts}"
+                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
                 url="/jms/jmsHosts.jsf?configName=#{configName}">
     </gf:navNode>
     <gf:navNode id="jmsPhysDest"
                 label="$resource{i18n.tree.physicalDestinations}"
+                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
                 url="/jms/jmsPhysicalDestinations.jsf">
     </gf:navNode>
 </gf:navNode>
