@@ -39,6 +39,7 @@ package com.sun.enterprise.module.single;
 import com.sun.enterprise.module.*;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.io.PrintStream;
 
 /**
@@ -109,7 +110,7 @@ public class ProxyModule implements Module {
     }
 
     public List<Module> getImports() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new ArrayList<Module>();
     }
 
     public void addImport(Module module) {
@@ -117,19 +118,20 @@ public class ProxyModule implements Module {
     }
 
     public Module addImport(ModuleDependency dependency) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("Inports cannot be added dynamically to static modules");
     }
 
     public boolean isShared() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     public boolean isSticky() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     public void setSticky(boolean sticky) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        if (!sticky)
+            throw new UnsupportedOperationException("Stickyness cannot be changed for static modules");
     }
 
     public <T> Iterable<Class<? extends T>> getProvidersClass(Class<T> serviceClass) {
