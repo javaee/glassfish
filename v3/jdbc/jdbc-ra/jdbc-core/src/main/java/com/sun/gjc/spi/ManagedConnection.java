@@ -127,7 +127,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         _logger = LogDomains.getLogger(ManagedConnection.class, LogDomains.RSR_LOGGER);
     }
 
-    protected StringManager localStrings =
+    protected static final StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
 
     /**

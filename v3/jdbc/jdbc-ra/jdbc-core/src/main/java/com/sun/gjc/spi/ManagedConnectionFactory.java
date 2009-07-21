@@ -92,7 +92,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     private int statementCacheSize = 0;
     private String statementCacheType = null;
 
-    protected StringManager localStrings =
+    protected static final StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
 
     /**
