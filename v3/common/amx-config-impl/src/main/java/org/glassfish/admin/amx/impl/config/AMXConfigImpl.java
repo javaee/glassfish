@@ -626,34 +626,27 @@ public class AMXConfigImpl extends AMXImplBase
 
     }
 
-    public void removeChild(final String type)
+    public ObjectName removeChild(final String type)
     {
         final ObjectName child = child(type);
-        if (child == null)
-        {
-            throw new RuntimeException(new InstanceNotFoundException("No MBean of type " + type + " found."));
-        }
+        if (child == null) return null;
 
-        remove(child);
+        return remove(child);
     }
 
-    public void removeChild(final String type, final String name)
+    public ObjectName removeChild(final String type, final String name)
     {
         final ObjectName child = child(type, name);
-        if (child == null)
-        {
-            throw new RuntimeException(new InstanceNotFoundException("No MBean named " + name + " of type " + type + " found."));
-        }
+        if (child == null) return null;
 
-        remove(child);
+        return remove(child);
     }
 
-    private final void remove(final ObjectName childObjectName)
+    private final ObjectName remove(final ObjectName childObjectName)
     {
         try
         {
             final ConfigBean childConfigBean = ConfigBeanRegistry.getInstance().getConfigBean(childObjectName);
-
 
             try
             {
@@ -681,6 +674,7 @@ public class AMXConfigImpl extends AMXImplBase
         {
             throw new RuntimeException("Problem deleting " + childObjectName, e);
         }
+        return childObjectName;
     }
 
     private Object invokeDuckMethod(

@@ -244,13 +244,18 @@ public final class MBeanInfoSupport
         return info;
     }
 
-    public static Class<?> returnType(final Class<?> clazz)
+    public static Class<?> translatedType(final Class<?> clazz)
     {
         Class<?> type = clazz;
         if (AMXProxy.class.isAssignableFrom(clazz))
         {
             type = ObjectName.class;
         }
+        else if ( clazz.isArray() && AMXProxy.class.isAssignableFrom( clazz.getComponentType() ) )
+        {
+            type = ObjectName[].class;
+        }
+        
         return type;
     }
 
@@ -279,7 +284,7 @@ public final class MBeanInfoSupport
 
             final MBeanAttributeInfo info = new MBeanAttributeInfo(
                     attrName,
-                    returnType(m.getReturnType()).getName(),
+                    translatedType(m.getReturnType()).getName(),
                     description,
                     read,
                     write,
@@ -335,7 +340,7 @@ public final class MBeanInfoSupport
 
         for (int i = 0; i < sig.length; ++i)
         {
-            final Class<?> paramClass = sig[i];
+            final Class<?> paramClass = translatedType( sig[i] );
             final Annotation[] annotations = paramAnnotations[i];
 
             final Param p = getAnnotation(annotations, Param.class);
@@ -376,7 +381,7 @@ public final class MBeanInfoSupport
                     methodName,
                     description,
                     parameterInfos,
-                    returnType(m.getReturnType()).getName(),
+                    translatedType(m.getReturnType()).getName(),
                     impact,
                     descriptor);
 

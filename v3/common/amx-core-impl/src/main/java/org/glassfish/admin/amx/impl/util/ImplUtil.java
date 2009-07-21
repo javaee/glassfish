@@ -88,7 +88,7 @@ public final class ImplUtil
             }
         }
 
-        unregisterOneMBean(mbeanServer, Util.getObjectName(top));
+        unregisterOneMBean(mbeanServer, top.objectName() );
     }
 
     /** see javadoc for unregisterAMXMBeans(AMX) */

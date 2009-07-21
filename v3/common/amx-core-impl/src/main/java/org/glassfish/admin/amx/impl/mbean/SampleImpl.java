@@ -195,7 +195,7 @@ public final class SampleImpl extends AMXImplBase
 
     public ObjectName[] getAllAMX()
     {
-        final List<ObjectName> all = Util.toObjectNames(getDomainRootProxy().getQueryMgr().queryAll());
+        final List<ObjectName> all = Util.toObjectNameList(getDomainRootProxy().getQueryMgr().queryAll());
 
         return CollectionUtil.toArray(all, ObjectName.class);
     }

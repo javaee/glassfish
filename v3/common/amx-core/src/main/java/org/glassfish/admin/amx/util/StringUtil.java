@@ -552,6 +552,18 @@ public final class StringUtil
 
         return (strings);
     }
+    
+
+    public static String toLines(final List<String> items)
+    {
+        final StringBuilder buf = new StringBuilder();
+        for (final String item : items)
+        {
+            buf.append( toString(item) );
+            buf.append(StringUtil.LS);
+        }
+        return buf.toString();
+    }
 
 }
 

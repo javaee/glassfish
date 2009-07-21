@@ -40,10 +40,11 @@
   <parameter name="amx.rmiport" value="8686"/>
   <parameter name="resources.xml.relative.path" value="resources/resources.xml"/>
   
-  <test name="asadmin_tests">
+  <test name="amx_tests">
     <classes>
-      <class name="amxtest.BasicAMXTests"/>
+      <class name="amxtest.AMXCoreTests"/>
       <class name="amxtest.AMXProxyTests"/>
+      <class name="amxtest.AMXConfigProxyTests"/>
     </classes>
   </test>
  

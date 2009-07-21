@@ -50,9 +50,10 @@
 <!-- AMX -->
   <test name="amx_tests">
     <classes>
-      <class name="amxtest.BasicAMXTests"/>
+      <class name="amxtest.AMXCoreTests"/>
       <class name="amxtest.AMXProxyTests"/>
-    </classes>
+      <class name="amxtest.AMXConfigProxyTests"/>
+      </classes>
   </test>
   
   <test name="adminconsole_tests">

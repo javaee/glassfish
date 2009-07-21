@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -37,6 +38,7 @@ package org.glassfish.admin.amx.impl.mbean;
 
 import org.glassfish.admin.amx.core.Util;
 
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.ObjectNameQueryImpl;
@@ -198,6 +200,17 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         }
         return null;
     }
+    
+        public ObjectName[]
+    queryDescendants( final ObjectName parentObjectName)
+    {
+        final AMXProxy parent = getProxyFactory().getProxy(parentObjectName);
+        
+        final List<AMXProxy>  items = ParentChildren.hierarchy(parent).asList();    
+        
+        return Util.toObjectNamesArray(items);
+    }
+
 }
 
 

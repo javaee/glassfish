@@ -41,12 +41,10 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.List;
 import java.util.HashSet;
-import java.util.Map;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
 import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.base.Tools;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMXValidator;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.SetUtil;
@@ -234,111 +232,18 @@ public class ToolsImpl extends AMXImplBase // implements Tools
 
     public String validate()
     {
-        final List<ObjectName> all = Util.toObjectNames(getDomainRootProxy().getQueryMgr().queryAll());
+        final List<ObjectName> all = Util.toObjectNameList(getDomainRootProxy().getQueryMgr().queryAll());
 
         return validate(CollectionUtil.toArray(all, ObjectName.class));
     }
-
-    private static String descriptionFor(final AMXProxy proxy)
-    {
-        String desc = proxy.type();
-        final String name = proxy.nameProp();
-        if ( name != null)
-        {
-            desc = desc + "=" + name;
-        }
-        
-        return desc;
-    }
-
-    private static List<String> indentAll(final List<String> lines)
-    {
-        final List<String> linesIndented = new ArrayList<String>();
-        final String INDENT = "   ";
-        for (final String line : lines)
-        {
-            linesIndented.add(INDENT + line);
-        }
-        return linesIndented;
-    }
-
-    private static String toString(final List<String> lines)
-    {
-        final StringBuilder buf = new StringBuilder();
-        for (final String line : lines)
-        {
-            buf.append(line);
-            buf.append(StringUtil.LS);
-        }
-        return buf.toString();
-    }
-
-    private static final class ParentChildren
-    {
-        final AMXProxy mParent;
-
-        final List<ParentChildren> mChildren;
-
-        public ParentChildren(final AMXProxy parent, final List<ParentChildren> children)
-        {
-            mParent = parent;
-            mChildren = children;
-        }
-
-        public AMXProxy parent()
-        {
-            return mParent;
-        }
-
-        public List<ParentChildren> children()
-        {
-            return mChildren;
-        }
-
-        public List<String> toLines(final boolean details)
-        {
-            final List<String> lines = new ArrayList<String>();
-
-            lines.add(descriptionFor(mParent));
-
-            for (final ParentChildren child : mChildren)
-            {
-                final List<String> moreLines = indentAll( child.toLines(details) );
-                lines.addAll(moreLines);
-            }
-            return lines;
-        }
-    }
-
-    private ParentChildren hierarchy(final AMXProxy top)
-    {
-        // make a list of all children, grouping by type
-        final List<AMXProxy> children = new ArrayList<AMXProxy>();
-        final Map<String, Map<String, AMXProxy>> childrenMaps = top.childrenMaps();
-        for (final Map<String, AMXProxy> childrenOfType : childrenMaps.values())
-        {
-            for (final AMXProxy amx : childrenOfType.values())
-            {
-                children.add(amx);
-            }
-        }
-
-        final List<ParentChildren> pcList = new ArrayList<ParentChildren>();
-        for (final AMXProxy child : children)
-        {
-            final ParentChildren pc = hierarchy(child);
-            pcList.add(pc);
-        }
-
-        return new ParentChildren(top, pcList);
-    }
-
+    
+    
     public String getHierarchy()
     {
-        final ParentChildren pc = hierarchy(getDomainRootProxy());
-        final List<String> lines = pc.toLines(true);
+        final ParentChildren pc = ParentChildren.hierarchy(getDomainRootProxy());
+        final List<String> lines = pc.toLines(false);
         
-        return toString(lines);
+        return StringUtil.toLines( lines );
     }
 
 }

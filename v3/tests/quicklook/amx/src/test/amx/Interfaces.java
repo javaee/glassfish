@@ -227,7 +227,7 @@ class Interfaces {
         if ( intf == null )
         {
             // a type is not required to have an interface
-            System.out.println( "No AMXProxy interface for type: " + type + " (OK)" );
+            System.out.println( "No AMXProxy interface for type: " + type + " (undesirable, but OK)" );
             intf = AMXProxy.class;
         }
         

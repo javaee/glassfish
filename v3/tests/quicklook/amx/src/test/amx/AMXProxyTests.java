@@ -65,12 +65,12 @@ import org.glassfish.admin.amx.annotation.*;
  */
 //@Test(groups={"amx"}, description="AMXProxy tests", sequential=false, threadPoolSize=5)
 @Test(
-    sequential=false, threadPoolSize=5,
+    sequential=false, threadPoolSize=10,
     groups =
     {
         "amx"
     },
-    description = "AMXProxyHandler tests"
+    description = "test the functionality of AMX dymamic proxy eg AMXProxy"
 )
 public final class AMXProxyTests extends AMXTestBase
 {
@@ -263,12 +263,6 @@ public final class AMXProxyTests extends AMXTestBase
     {
         testProxyInterface( getDomainConfig().getServers(), Servers.class );
     }
-
-    /** subclass can override to add more */
-    protected Interfaces getInterfaces()
-    {
-        return haveJSR77() ? new InterfacesGlassfish() : new Interfaces();
-    }
         
     /** test all MBeans that contain Property */
     @Test
@@ -337,25 +331,6 @@ public final class AMXProxyTests extends AMXTestBase
                 }
             }
         }
-        
-        // AMXConfigProxy sub-interfaces should not use @ManagedAttribute or @ManagedOperation;
-        // all such info is derived only from the ConfigBean.
-        for( final Class<? extends AMXProxy>  intf : interfaces )
-        {
-            if ( ! AMXConfigProxy.class.isAssignableFrom(intf) ) continue;
-            
-            final Method[] methods = intf.getDeclaredMethods(); // declared methods only
-            for( final Method m : methods )
-            {
-                final ManagedAttribute ma = m.getAnnotation(ManagedAttribute.class);
-                final ManagedOperation mo = m.getAnnotation(ManagedOperation.class);
-                final String desc = intf.getName() + "." + m.getName() + "()";
-                
-                assert ma == null :  "Config MBeans do not support @ManagedAttribute: " + desc;
-                assert mo == null :  "Config MBeans do not support @ManagedOperation: " + desc;
-            }
-        }
-
     }
     
     /** test all MBeans generically */
@@ -444,22 +419,7 @@ public final class AMXProxyTests extends AMXTestBase
         assert asArray.length == numProps : " no properties found for " + amx.objectName();
         for( final Property prop : asList ) { prop.getValue(); }
     }
-    
-    private Set<AMXProxy> findAllContainingType( final String type )
-    {
-        final Set<AMXProxy> all = getQueryMgr().queryAll();
-        final Set<AMXProxy> parentsWith = new HashSet<AMXProxy>();
-        for( final AMXProxy amx : all )
-        {
-            if ( amx.type().equals(type) )
-            {
-                final AMXProxy parent = amx.parent();
-                parentsWith.add(parent);
-            }
-        }
-        return parentsWith;
-    }
-    
+        
     @Test
     public void testChildGetterVariants()
     {
@@ -469,30 +429,6 @@ public final class AMXProxyTests extends AMXTestBase
         {
             _testChildGetter( amx );
         }
-    }
-
-    
-    /** must be checked dynamically because it's not in the web distribution */
-    private static final Class<? extends AMXProxy> getJ2EEDomainClass()
-        throws ClassNotFoundException
-    {
-        return Class.forName( "org.glassfish.admin.amx.j2ee.J2EEDomain" ).asSubclass(AMXProxy.class);
-    }
-    
-    /** return true if we have the JSR 77 classes */
-    private boolean haveJSR77()
-    {
-        try
-        {
-            getJ2EEDomainClass();
-            //System.out.println( "FOUND J2EEDomain" );
-            return true;
-        }
-        catch( final Exception e )
-        {
-            //System.out.println( "NOT FOUND J2EEDomain" );
-        }
-        return false;
     }
     
     @Test

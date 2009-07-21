@@ -369,7 +369,7 @@ public final class AMXValidator
         try
         {
             final String path = proxy.path();
-            final ObjectName actualObjectName = Util.getObjectName(proxy);
+            final ObjectName actualObjectName = proxy.objectName();
 
             final ObjectName o = paths.resolvePath(path);
             if (o == null)
@@ -1031,7 +1031,7 @@ public final class AMXValidator
 
     public ValidationResult validate()
     {
-        final List<ObjectName> all = Util.toObjectNames( mDomainRoot.getQueryMgr().queryAll() );
+        final List<ObjectName> all = Util.toObjectNameList( mDomainRoot.getQueryMgr().queryAll() );
 
         return validate(CollectionUtil.toArray(all, ObjectName.class));
     }

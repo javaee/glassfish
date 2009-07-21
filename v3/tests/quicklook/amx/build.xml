@@ -40,7 +40,7 @@
     <property file="build.properties"/>
     <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>
     
-    <description>Builds, tests, and runs the project Hello JSP Application</description>
+    <description>amx </description>
     <import file="${ws.root}/gfproject/build-impl.xml"/>   
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
@@ -55,7 +55,7 @@
     <target  name="runtest"> 
         <antcall target="runtest-impl">
           <param name="testng.test.name" value="${testng.test.name}"/>
-          <param name="testng.testclient" value="BasicAMXTests"/>
+          <param name="testng.testclient" value="AMXCoreTests"/>
         </antcall>
     </target>
 

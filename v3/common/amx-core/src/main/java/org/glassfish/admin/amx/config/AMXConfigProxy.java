@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.config;
 
 import org.glassfish.admin.amx.config.AttributeResolver;
 import org.glassfish.admin.amx.core.AMXProxy;
+import javax.management.ObjectName;
 
 import java.util.Map;
 import javax.management.MBeanOperationInfo;
@@ -117,18 +118,20 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver
     Generically remove a config by type and name.
     @param childType the AMX j2eeType as defined
     @param name the name of the child
+    @return the ObjectName of the removed child, or null if not found
      */
     @ManagedOperation
-    public void removeChild(
+    public ObjectName removeChild(
             @Param(name = "childType") String childType,
             @Param(name = "name") String name);
 
     /**
     Generically remove a config by type (child must be a singleton)
     @param childType the AMX j2eeType as defined
+    @return the ObjectName of the removed child, or null if not found
      */
     @ManagedOperation
-    public void removeChild(
+    public ObjectName removeChild(
             @Param(name = "childType") String childType);
 
 }

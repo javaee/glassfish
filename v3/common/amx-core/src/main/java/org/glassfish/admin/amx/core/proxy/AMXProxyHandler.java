@@ -669,13 +669,25 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     protected Object _invoke(
             final Object myProxy,
             final Method method,
-            final Object[] args)
+            final Object[] argsIn)
             throws java.lang.Throwable
     {
+        final int numArgs = argsIn == null ? 0 : argsIn.length;
+        
+        // auto-convert any AMXProxy to ObjectName (Lists, Maps, etc thereof are caller's design headache)
+        final Object[] args = argsIn == null ?  new Object[0] : new Object[ argsIn.length ];
+        for( int i = 0; i < numArgs; ++i )
+        {
+            args[i] = argsIn[i];    // leave alone by default
+            if ( args[i] instanceof AMXProxy )
+            {
+                args[i] = ((AMXProxy)argsIn[i]).objectName();
+            }
+        }
+        
         debugMethod(method.getName(), args);
         Object result = null;
         final String methodName = method.getName();
-        final int numArgs = args == null ? 0 : args.length;
         //System.out.println( "_invoke: " + methodName + " on " + objectName() );
 
         if (SPECIAL_METHOD_NAMES.contains(methodName))

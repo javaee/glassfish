@@ -262,7 +262,7 @@ public final class PathnamesImpl  extends AMXImplBase
     public ObjectName[]  listObjectNames( final String path, final boolean recursive)
     {
         final List<AMXProxy> list  = listChildren(path,  recursive);
-        final List<ObjectName> objectNames = Util.toObjectNames(list);
+        final List<ObjectName> objectNames = Util.toObjectNameList(list);
         return CollectionUtil.toArray( objectNames, ObjectName.class);
     }
     

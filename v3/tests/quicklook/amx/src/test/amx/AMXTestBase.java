@@ -38,6 +38,7 @@ package amxtest;
 import java.util.Properties;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 
 import java.net.MalformedURLException;
 import java.io.IOException;
@@ -61,8 +62,10 @@ import javax.management.remote.JMXServiceURL;
 import org.glassfish.admin.amx.base.*;
 import org.glassfish.admin.amx.core.*;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.intf.config.*;
 import org.glassfish.admin.amx.util.TimingDelta;
+import org.glassfish.admin.amx.util.ListUtil;
 
 import org.glassfish.api.amx.AMXBooter;
 
@@ -244,8 +247,76 @@ public class AMXTestBase
         final String result = buf.toString();
         return result;
     }
+    
+    
 
+    /** subclass can override to add more */
+    protected Interfaces getInterfaces()
+    {
+        return haveJSR77() ? new InterfacesGlassfish() : new Interfaces();
+    }
+
+    
+    /** must be checked dynamically because it's not in the web distribution */
+    protected static final Class<? extends AMXProxy> getJ2EEDomainClass()
+        throws ClassNotFoundException
+    {
+        return Class.forName( "org.glassfish.admin.amx.j2ee.J2EEDomain" ).asSubclass(AMXProxy.class);
+    }
+    
+    /** return true if we have the JSR 77 classes */
+    protected boolean haveJSR77()
+    {
+        try
+        {
+            getJ2EEDomainClass();
+            //System.out.println( "FOUND J2EEDomain" );
+            return true;
+        }
+        catch( final Exception e )
+        {
+            //System.out.println( "NOT FOUND J2EEDomain" );
+        }
+        return false;
+    }
+    
+    
+    protected Set<AMXProxy> findAllContainingType( final String type )
+    {
+        final Set<AMXProxy> all = getQueryMgr().queryAll();
+        final Set<AMXProxy> parentsWith = new HashSet<AMXProxy>();
+        for( final AMXProxy amx : all )
+        {
+            if ( amx.type().equals(type) )
+            {
+                final AMXProxy parent = amx.parent();
+                parentsWith.add(parent);
+            }
+        }
+        return parentsWith;
+    }
+    
+    protected <T extends AMXProxy> List<T> getAllDescendents( final AMXProxy top, final Class<T> clazz)
+    {
+        final AMXProxy[]  a = getQueryMgr().queryDescendants( top.objectName() );
+        final List<AMXProxy>  list = ListUtil.newListFromArray(a);
+        
+        return Util.asProxyList( list, clazz );
+    }
+    
+    List<AMXConfigProxy> getAllConfig()
+    {
+        return getAllDescendents( getDomainConfig(), AMXConfigProxy.class);
+    }
+    
+    List<AMXProxy> getAllMonitoring()
+    {
+        return getAllDescendents( getDomainRootProxy().getMonitoringRoot(), AMXProxy.class);
+    }
 }
+
+
+
 
 
 

@@ -129,12 +129,17 @@ public interface Query extends AMXProxy, Utility, Singleton
 
     @Description("Return  all MBeans that are global singletons")
     @ManagedAttribute()
-    public ObjectName[] getGlobalSingletons();
+    public AMXProxy[] getGlobalSingletons();
     
     @Description("Return the global singleton of the specified type, or null if not found")
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
     public AMXProxy getGlobalSingleton( @Param(name="type") String type);
+    
+    @Description("List the parent followed by all descendants, depth-first traversal")
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public AMXProxy[] queryDescendants( @Param(name="parentObjectName") ObjectName parentObjectName);
 }
+
 
 
 

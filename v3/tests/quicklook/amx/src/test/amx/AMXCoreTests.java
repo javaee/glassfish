@@ -67,10 +67,10 @@ traverse the AMXProxy hierarchy and fetch all attributes.
 @Test(groups =
 {
     "amx"
-}, description = "Basic AMX tests")
-public final class BasicAMXTests extends AMXTestBase
+}, description = "Core AMX tests")
+public final class AMXCoreTests extends AMXTestBase
 {
-    public BasicAMXTests()
+    public AMXCoreTests()
     {
     }
 
@@ -99,61 +99,6 @@ public final class BasicAMXTests extends AMXTestBase
             final Set<AMXProxy> children = amx.childrenSet();
             if ( children.size() != 0 )
             {
-            }
-        }
-    }
-
-    private void _checkDefaultValues(final AMXConfigProxy amxConfig)
-    {
-        final String objectName = amxConfig.objectName().toString();
-
-        // test the Map keyed by XML attribute name
-        final Map<String, String> defaultValuesXML = amxConfig.getDefaultValues(false);
-        for (final String attrName : defaultValuesXML.keySet())
-        {
-            // no default value should ever be null
-
-            assert defaultValuesXML.get(attrName) != null :
-            "null value for attribute " + attrName + " in " + objectName;
-        }
-
-        // test the Map keyed by AMXProxy attribute name
-        final Map<String, String> defaultValuesAMX = amxConfig.getDefaultValues(true);
-
-        assert defaultValuesXML.size() == defaultValuesAMX.size();
-        for (final String attrName : defaultValuesAMX.keySet())
-        {
-            // no default value should ever be null
-
-            assert defaultValuesAMX.get(attrName) != null :
-            "null value for attribute " + attrName + " in " + objectName;
-        }
-    }
-
-    private void _checkAttributeResolver(final AMXConfigProxy amxConfig)
-    {
-        final Set<String> attrNames = amxConfig.attributeNames();
-        for (final String attrName : attrNames)
-        {
-            final String resolvedValue = amxConfig.resolveAttribute(attrName);
-            if (resolvedValue != null)
-            {
-                // crude check
-                assert resolvedValue.indexOf("${") < 0 :
-                "Attribute " + attrName + " did not resolve: " + resolvedValue;
-            }
-        }
-
-        final AttributeList attrsList = amxConfig.resolveAttributes( SetUtil.toStringArray(attrNames) );
-        for (final Object o : attrsList)
-        {
-            final Attribute a = (Attribute) o;
-            final String resolvedValue = "" + a.getValue();
-            if (resolvedValue != null)
-            {
-                // crude check
-                assert resolvedValue.indexOf("${") < 0 :
-                "Attribute " + a.getName() + " did not resolve: " + resolvedValue;
             }
         }
     }

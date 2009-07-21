@@ -214,94 +214,6 @@ public final class Util
 		return props;
 	}
 	
-	
-	/**
-		Get properties corresponding to the FullType of this ObjectName.
-		Its type/name are included as <i>type</i>=<i>name</i>, <b>not</b>
-		as type=<i>type</i>,name=<i>name</i>.
-		
-		@param objectName
-		@param fullType
-		@return String of relevant ObjectName properties
-		public static String
-	getFullTypeProps(
-		final ObjectName	objectName,
-		final String		fullType )
-	{
-		final String selfProp	= Util.getSelfProp( objectName );
-			
-		// now add properties for ancestors; skip the last type; it's
-		// present in the type/name properties (selfProp)
-		String	ancestorProps	= "";
-		final String[]	types	= Util.getTypeArray( fullType );
-		for( int i = 0; i < types.length - 1; ++i )
-		{
-			final String	key		= types[ i ];
-			final String	value	= objectName.getKeyProperty( key );
-			final String	prop	= Util.makeProp( key, value );
-			
-			ancestorProps	= Util.concatenateProps( ancestorProps, prop );
-		}
-		
-		final String	props	= Util.concatenateProps( selfProp, ancestorProps );
-		
-		return( props );
-	}
-	 */
-	
-    
-    /*
-		public static String
-	getJ2EEType( final Class<? extends AMXProxy> amxInterface )
-	{
-        final String fieldName = "J2EE_TYPE";
-        
-        try {
-            final java.lang.reflect.Field field = amxInterface.getField( fieldName );
-            return String.class.cast( field.get(null) );
-        }
-        catch( NoSuchFieldException e )
-        {
-            throw new RuntimeException( "Missing J2EE_TYPE field in interface " + amxInterface.getNameProp(), e);
-        }
-        catch( IllegalAccessException e )
-        {
-            throw new RuntimeException( "Can't access J2EE_TYPE field in " + amxInterface.getNameProp(), e);
-        }
-	}
-    */
-		
-	/**
-		Minimal ObjectName properties required for an ObjectName pattern
-		to uniquely identify an MBean.  See {@link #getObjectNamePattern}.
-	 */
-	private static final Set<String> PATTERN_PROPS	=
-	    SetUtil.newUnmodifiableStringSet(
-		TYPE_KEY,
-		NAME_KEY );
-
-
-	/**
-		Get all keys required for an ObjectName pattern which uniquely
-		identifies the MBean.
-		public static Set<String>
-	getPatternKeys(
-		final String		fullType )
-	{
-		final Set<String> requiredKeys	= SetUtil.copySet( PATTERN_PROPS );
-		
-		// omit the last one, it is the simple type of this MBean, which we've
-		// already included
-		final String[]	types	= Util.getTypeArray( fullType );
-		for( int i = 0; i < types.length - 1; ++i )
-		{
-			requiredKeys.add( types[ i ] );
-		}
-
-		return TypeCast.checkedStringSet( requiredKeys  );
-	}
-	 */
-	
 		public static String
 	concatenateProps(
 		final String props1,
@@ -320,15 +232,15 @@ public final class Util
 	}
 	
 	/**
-		@return a Set of ObjectNames from a Set of AMX.
+		@return a List of ObjectNames from a Set of AMX.
 	 */
 		public static List<ObjectName>
-	toObjectNames( final Collection<? extends AMXProxy> amxs )
+	toObjectNameList( final Collection<? extends AMXProxy> amxs )
 	{
 		final List<ObjectName>	objectNames	= new ArrayList<ObjectName>();
 		for( final AMXProxy next : amxs )
 		{
-			objectNames.add( getObjectName( next ) );
+			objectNames.add( next.objectName() );
 		}
 		return( Collections.checkedList(objectNames, ObjectName.class) );
 	}
@@ -337,14 +249,14 @@ public final class Util
 		@return a Map of ObjectNames from a Map whose values are AMX.
 	 */
 		public static Map<String,ObjectName>
-	toObjectNames( final Map<String,? extends AMXProxy> amxMap )
+	toObjectNameMap( final Map<String,? extends AMXProxy> amxMap )
 	{
 		final Map<String,ObjectName>	m	= new HashMap<String,ObjectName>();
 		
 		for( final String key : amxMap.keySet() )
 		{
 			final AMXProxy	value	= amxMap.get( key );
-			m.put( key, getObjectName(value) );
+			m.put( key, value.objectName() );
 		}
 		return( Collections.checkedMap( m, String.class, ObjectName.class) );
 	}
@@ -353,56 +265,51 @@ public final class Util
 		@return an ObjectName[] from an AMX[]
 	 */
 		public static ObjectName[]
-	toObjectNames( final AMXProxy[] amx )
+	toObjectNamesArray( final AMXProxy[] amx )
 	{
 		final ObjectName[]	objectNames	= new ObjectName[ amx.length ];
 		for( int i = 0; i < objectNames.length; ++i )
 		{
-			objectNames[ i ]	= amx[ i ] == null ? null : getObjectName( amx[ i ] );
+			objectNames[ i ]	= amx[ i ] == null ? null : amx[ i ].objectName();
+		}
+		
+		return( objectNames );
+	}
+    
+		public static ObjectName[]
+	toObjectNamesArray( final Collection<? extends AMXProxy> amxs )
+	{
+		final ObjectName[]	objectNames	= new ObjectName[ amxs.size() ];
+        int i = 0;
+		for( final AMXProxy amx : amxs )
+		{
+			objectNames[ i ]	= amx.objectName();
+            ++i;
 		}
 		
 		return( objectNames );
 	}
 	
 	/**
-		Extract the names from all ObjectNames.  The name is the value of the
-		property NAME_KEY (See {@link AMXProxy}).  Note that if two or more ObjectNames
-		share the same name, the resulting Set will be of smaller size() than
-		the original.
+		Create a Map keyed by the value of the NAME_KEY with
+		value the AMX item.
 		
-		@return Set
-		public static Set<String>
-	getNames( final Set<? extends AMXProxy>	amxs )
-	{
-		return getNamesSet( Util.toObjectNames( amxs ) );
-	}
+		@param amxs Set of AMX
 	 */
-	
-	/**
-		Extract the names from all ObjectNames.  The name is the value of the
-		property NAME_KEY (See {@link AMXProxy}).  Note that if two or more ObjectNames
-		share the same name, the resulting Set will be of smaller size() than
-		the original.
+		public static <T extends AMXProxy> Map<String,T>
+	createNameMap( final Set<T> amxs )
+	{
+		final Map<String,T>	m	= new HashMap<String,T>();
 		
-		@return Set
-		public static Set<String>
-	getNamesSet( final Set<ObjectName>	objectNames )
-	{
-		return TypeCast.checkedStringSet(
-		        JMXUtil.getKeyPropertySet( NAME_KEY, objectNames ) );
-	}
-	 */
-	
-	/**
-		Extract the names from all ObjectNames.
+		for( final T amx : amxs )
+		{
+			final String	name	= amx.getName();
+			m.put( name, amx );
+		}
 		
-		@return String[] of names from the ObjectNames
-		public static String[]
-	getNamesArray( final Set<ObjectName>	objectNames )
-	{
-		return( JMXUtil.getKeyProperty( NAME_KEY, objectNames ) );
+		return( m );
 	}
-	 */
+    
 	
 	/**
 		Create a Map keyed by the value of the NAME_KEY with
@@ -431,37 +338,18 @@ public final class Util
 		return( Collections.checkedMap(m, String.class, ObjectName.class) );
 	}
 	
-	
-	/**
-		Create a Map keyed by the value of the NAME_KEY with
-		value the AMX item.
-		
-		@param amxs Set of AMX
-	 */
-		public static <T extends AMXProxy> Map<String,T>
-	createNameMap( final Set<T> amxs )
-	{
-		final Map<String,T>	m	= new HashMap<String,T>();
-		
-		for( final T amx : amxs )
-		{
-			final String	name	= amx.getName();
-			m.put( name, amx );
-		}
-		
-		return( m );
-	}
-    
-	
-	/**
-		Get the ObjectName targeted by this {@link AMXProxy}.
-	 */
-		public static <T extends AMXProxy> ObjectName
-	getObjectName( final T amx )
-	{
-		return  amx.extra().objectName();
-	}
-	
+        public static <T extends AMXProxy> List<T>
+    asProxyList( final Collection<? extends AMXProxy>  c, final Class<T> intf )
+    {
+        final List<T>  list = new ArrayList<T>();
+        
+        for( final AMXProxy amx : c )
+        {
+            list.add( amx.as(intf) );
+        }
+        
+        return list;
+    }
 	
 	/**
 		All Notifications emitted by AMX MBeans which are not
