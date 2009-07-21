@@ -747,7 +747,7 @@ public class ConnectorsUtil {
 
     public static String getReservePrefixedJNDINameForDataSourceDefinitionPool(String compId, String poolName) {
         String prefix = null;
-        if(compId == null){
+        if(compId == null || compId.equals("")){
             prefix = ConnectorConstants.POOLS_JNDINAME_PREFIX +
                 ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX ;
         }else{
@@ -763,7 +763,7 @@ public class ConnectorsUtil {
 
     public static String getReservePrefixedJNDINameForDataSourceDefinitionResource(String compId, String resourceName) {
         String prefix = null;
-        if(compId == null){
+        if(compId == null || compId.equals("")){
             prefix = ConnectorConstants.RESOURCE_JNDINAME_PREFIX +
                 ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX ;
         }else{
