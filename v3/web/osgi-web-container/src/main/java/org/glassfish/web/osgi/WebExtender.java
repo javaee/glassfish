@@ -42,8 +42,14 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
+import static org.osgi.framework.Constants.ACTIVATION_LAZY;
+import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.internal.api.Globals;
 
 import java.util.Properties;
 import java.util.logging.Level;
@@ -61,12 +67,17 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
     private static final Logger logger =
             Logger.getLogger(WebExtender.class.getPackage().getName());
     private BundleContext context;
+    private Events events = Globals.get(Events.class);
+    private EventListener listener;
 
     public void start(BundleContext context) throws Exception
     {
         this.context = context;
+        // TODO(Sahoo): Wait for GlassFish kernel to start before instantiating
+        // OSGiWebContainer.
         wc = new OSGiWebContainer();
         context.addBundleListener(this);
+        registerGlassFishEventListener();
 
         // Web Container bundle can come into existence after
         // web application bundles, so we must go through existing bundles
@@ -84,6 +95,7 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
 
     public void stop(BundleContext context) throws Exception
     {
+        unregisterGlassFishEventListener();
         context.removeBundleListener(this);
         wc.undeployAll();
     }
@@ -94,6 +106,12 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
         switch (event.getType())
         {
             case BundleEvent.STARTING:
+                if (!isLazy(bundle) && isWebBundle(bundle))
+                {
+                    deploy(bundle);
+                }
+                break;
+            case BundleEvent.LAZY_ACTIVATION:
                 if (isWebBundle(bundle))
                 {
                     deploy(bundle);
@@ -113,6 +131,12 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
                 }
                 break;
         }
+    }
+
+    private boolean isLazy(Bundle bundle)
+    {
+        return ACTIVATION_LAZY.equals(
+                bundle.getHeaders().get(BUNDLE_ACTIVATIONPOLICY));
     }
 
     /**
@@ -171,4 +195,21 @@ public class WebExtender implements BundleActivator, SynchronousBundleListener
                 p);
     }
 
+    private void registerGlassFishEventListener() {
+        listener = new EventListener() {
+            public void event(Event event)
+            {
+                if (EventTypes.PREPARE_SHUTDOWN.equals(event.type())) {
+                    wc.undeployAll();
+                }
+            }
+        };
+        events.register(listener);
+    }
+
+    private void unregisterGlassFishEventListener() {
+        if (listener != null) {
+            events.unregister(listener);
+        }
+    }
 }

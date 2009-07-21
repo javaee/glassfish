@@ -49,6 +49,7 @@ import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
 import javax.servlet.ServletContext;
@@ -93,19 +94,21 @@ public class OSGiWebContainer
      */
     public synchronized void deploy(final Bundle b) throws Exception
     {
+        OSGiApplicationInfo osgiAppInfo = applications.get(b);
+        if (osgiAppInfo != null) {
+            logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
+                    "Bundle {0} is already deployed at {1} ", new Object[]{b,
+                    osgiAppInfo.appInfo.getSource()});
+            return;
+        }
         // deploy the java ee artifacts
-
-
         ActionReport report = getReport();
-        OSGiApplicationInfo osgiAppInfo = deployJavaEEArtifacts(b, report);
+        osgiAppInfo = deployJavaEEArtifacts(b, report);
         if (osgiAppInfo != null)
         {
             try {
                 ServletContext sc = setServletContextAttr(osgiAppInfo);
-                // TODO(Sahoo): Register Service only after we upgrade to
-                // next version of Felix that addresses bundle.getBundleContext
-                // bug in STARTING state.
-//                registerService(b, sc);
+                registerService(b, sc);
             } catch (Exception e) {
                 logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
                         "Rolling back deployment as exception occured", e);
@@ -250,9 +253,20 @@ public class OSGiWebContainer
         {
             props.setProperty(Constants.OSGI_WEB_VERSION, version);
         }
-        b.getBundleContext().registerService(
-                ServletContext.class.getName(),
-                sc, props);
+        BundleContext bctx = b.getBundleContext();
+        if (bctx != null) {
+            // This null check is required until we upgrade to Felix 1.8.1.
+            // Felix 1.8.0 returns null when bundle is in starting state.
+            bctx.registerService(
+                    ServletContext.class.getName(),
+                    sc, props);
+            logger.logp(Level.INFO, "OSGiWebContainer", "registerService",
+                    "Registered ServletContext as a service with properties: {0} ",
+                    new Object[]{props});
+        } else {
+            logger.logp(Level.WARNING, "OSGiWebContainer", "registerService",
+                    "Not able to register ServletContext as a service as bctx is null");
+        }
     }
 
 }
