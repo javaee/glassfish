@@ -360,13 +360,19 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      *
      * @return an umodifiable list of loaded modules
      */
-    public synchronized Collection<Module> getModules() {
+    public Collection<Module> getModules() {
+
+        // make a copy to avoid synchronizing since this API can be called while
+        // modules are added or removed by other threads.
+        Map<Integer,Repository> repos = new TreeMap<Integer,Repository>();
+        repos.putAll(repositories);
+
         // force repository extraction
-        Set<Integer> keys = repositories.keySet();
+        Set<Integer> keys = repos.keySet();
         TreeSet<Integer> sortedKeys = new TreeSet<Integer>();
         sortedKeys.addAll(keys);
         for (Integer key : sortedKeys) {
-            Repository repo = repositories.get(key);
+            Repository repo = repos.get(key);
             for (ModuleDefinition moduleDef : repo.findAll()) {
                 if (modules.get(AbstractFactory.getInstance().createModuleId(moduleDef))==null) {
                     Module newModule = newModule(moduleDef);

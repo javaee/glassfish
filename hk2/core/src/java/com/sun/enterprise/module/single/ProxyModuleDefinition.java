@@ -45,6 +45,7 @@ import java.util.jar.Manifest;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,13 +62,19 @@ import java.net.URI;
 public class ProxyModuleDefinition implements ModuleDefinition {
 
         private final ModuleMetadata metadata = new ModuleMetadata();
-        private final Manifest manifest = new Manifest();
+        private final Manifest manifest;
 
         public ProxyModuleDefinition(ClassLoader classLoader) throws IOException {
-            this(classLoader, Collections.singleton("default"));
+            this(classLoader, null, Collections.singleton("default"));
         }
 
-        public ProxyModuleDefinition(ClassLoader classLoader, Collection<String> habitatNames) throws IOException {
+        public ProxyModuleDefinition(ClassLoader classLoader, List<ManifestProxy.SeparatorMappings> mappings) throws IOException {
+            this(classLoader, null, Collections.singleton("default"));
+        }
+
+        public ProxyModuleDefinition(ClassLoader classLoader, List<ManifestProxy.SeparatorMappings> mappings,
+                                     Collection<String> habitatNames) throws IOException {
+            manifest = new ManifestProxy(classLoader, mappings);
             for (String habitatName : habitatNames) {
                 Enumeration<URL> inhabitants = classLoader.getResources(InhabitantsFile.PATH+'/'+habitatName);
                 while (inhabitants.hasMoreElements()) {
@@ -108,11 +115,11 @@ public class ProxyModuleDefinition implements ModuleDefinition {
         }
 
         public String getName() {
-            return toString();
+            return "Static Module";
         }
 
         public String[] getPublicInterfaces() {
-            return null;
+            return new String[0];
         }
 
         public ModuleDependency[] getDependencies() {

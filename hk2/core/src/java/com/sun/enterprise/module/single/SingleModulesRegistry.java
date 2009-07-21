@@ -11,6 +11,7 @@ import com.sun.hk2.component.Holder;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Normal modules registry with configuration handling backed up
@@ -26,13 +27,19 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     final Module[] proxyMod = new Module[1];
 
     public SingleModulesRegistry(ClassLoader singleCL) {
+        this(singleCL, null);
+    }
+
+
+    public SingleModulesRegistry(ClassLoader singleCL, List<ManifestProxy.SeparatorMappings> mappings) {
+
         super(null);
         this.singleClassLoader = singleCL;
         setParentClassLoader(singleClassLoader);
 
         ModuleDefinition moduleDef = null;
         try {
-            moduleDef = new ProxyModuleDefinition(singleClassLoader);
+            moduleDef = new ProxyModuleDefinition(singleClassLoader, mappings);
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
