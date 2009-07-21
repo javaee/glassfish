@@ -1406,8 +1406,7 @@ public class VirtualServer extends StandardHost {
     /**
      * Configures the SSO valve of this VirtualServer.
      */
-    void configureSingleSignOn(boolean globalSSOEnabled, WebContainerFeatureFactory webContainerFeatureFactory,
-        com.sun.enterprise.config.serverbeans.VirtualServer virtualServer) {
+    void configureSingleSignOn(boolean globalSSOEnabled, WebContainerFeatureFactory webContainerFeatureFactory) {
         if (vsBean == null) {
             return;
         }
@@ -1469,7 +1468,7 @@ public class VirtualServer extends StandardHost {
 
                 addValve((GlassFishValve) sso);
 
-                configureSingleSignOnCookieSecure(virtualServer);
+                configureSingleSignOnCookieSecure();
 
             } catch (Exception e) {
                 _logger.log(Level.WARNING, "webcontainer.ssobadconfig", e);
@@ -1823,13 +1822,12 @@ public class VirtualServer extends StandardHost {
     /**
      * Evaluates the ssoCookieSecure property of this virtual server, if
      * present.
-     * @param virtualServer
      */
-    private void configureSingleSignOnCookieSecure(com.sun.enterprise.config.serverbeans.VirtualServer virtualServer) {
-        if (vsBean == null) {
+    private void configureSingleSignOnCookieSecure() {
+        if (this.vsBean == null) {
             return;
         }
-        String cookieSecure = virtualServer.getSsoCookieSecure();
+        String cookieSecure = vsBean.getSsoCookieSecure();
         if (!"true".equalsIgnoreCase(cookieSecure) &&
             !"false".equalsIgnoreCase(cookieSecure) &&
             !cookieSecure.equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
