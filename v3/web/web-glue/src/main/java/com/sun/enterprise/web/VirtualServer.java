@@ -74,7 +74,6 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.logger.FileLogger;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
@@ -96,7 +95,7 @@ public class VirtualServer extends StandardHost {
     private static final String STATE = "state";
     private static final String SSO_MAX_IDLE ="sso-max-inactive-seconds";
     private static final String SSO_REAP_INTERVAL ="sso-reap-interval-seconds";
-    private static final String SSO_COOKIE_SECURE ="ssoCookieSecure";
+    private static final String SSO_COOKIE_SECURE ="sso-cookie-secure";
     private static final String DISABLED = "disabled";
     private static final String OFF = "off";
     private static final String ON = "on";
@@ -1407,10 +1406,8 @@ public class VirtualServer extends StandardHost {
     /**
      * Configures the SSO valve of this VirtualServer.
      */
-    void configureSingleSignOn(
-            boolean globalSSOEnabled,
-            WebContainerFeatureFactory webContainerFeatureFactory) {
-
+    void configureSingleSignOn(boolean globalSSOEnabled, WebContainerFeatureFactory webContainerFeatureFactory,
+        com.sun.enterprise.config.serverbeans.VirtualServer virtualServer) {
         if (vsBean == null) {
             return;
         }
@@ -1472,7 +1469,7 @@ public class VirtualServer extends StandardHost {
 
                 addValve((GlassFishValve) sso);
 
-                configureSingleSignOnCookieSecure();
+                configureSingleSignOnCookieSecure(virtualServer);
 
             } catch (Exception e) {
                 _logger.log(Level.WARNING, "webcontainer.ssobadconfig", e);
@@ -1826,25 +1823,19 @@ public class VirtualServer extends StandardHost {
     /**
      * Evaluates the ssoCookieSecure property of this virtual server, if
      * present.
+     * @param virtualServer
      */
-    private void configureSingleSignOnCookieSecure() {
-
+    private void configureSingleSignOnCookieSecure(com.sun.enterprise.config.serverbeans.VirtualServer virtualServer) {
         if (vsBean == null) {
             return;
         }
-        Property prop = vsBean.getProperty(SSO_COOKIE_SECURE);
-        if (prop != null) {
-            String propValue = prop.getValue();
-            if (propValue == null ||
-                !"true".equalsIgnoreCase(propValue) &&
-                !"false".equalsIgnoreCase(propValue) &&
-                !propValue.equalsIgnoreCase(
-                        SessionCookieConfig.DYNAMIC_SECURE)) {
-                _logger.warning("Illegal value for " + SSO_COOKIE_SECURE +
-                                " property: " + propValue);
-            } else {
-                ssoCookieSecure = propValue;
-            }
+        String cookieSecure = virtualServer.getSsoCookieSecure();
+        if (!"true".equalsIgnoreCase(cookieSecure) &&
+            !"false".equalsIgnoreCase(cookieSecure) &&
+            !cookieSecure.equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
+            _logger.warning("Illegal value for " + SSO_COOKIE_SECURE + ": " + cookieSecure);
+        } else {
+            ssoCookieSecure = cookieSecure;
         }
     }
 

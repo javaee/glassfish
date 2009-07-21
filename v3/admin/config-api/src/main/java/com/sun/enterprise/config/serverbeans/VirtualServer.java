@@ -313,9 +313,19 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *              {@link HttpAccessLog }
      */
     void setHttpAccessLog(HttpAccessLog value) throws PropertyVetoException;
-    
-    
-   /**
+
+    /**
+     * Gets the Secure attribute of any JSESSIONIDSSO cookies associated with the web applications deployed to this
+     * virtual server. Applicable only if the sso-enabled property is set to true. To set the Secure attribute of a
+     * JSESSIONID cookie, use the cookieSecure cookie-properties property in the sun-web.xml file.
+     * dValid values: "true", "false", "dynamic"
+     */
+    @Attribute(defaultValue = "dynamic")
+    String getSsoCookieSecure();
+
+    void getSsoCookieSecure(String value);
+
+    /**
         Properties.
      */
 @PropertiesDesc(
@@ -328,11 +338,6 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
             
         @PropertyDesc(name="sso-reap-interval-seconds", defaultValue="60", dataType=PositiveInteger.class,
             description="Interval between purges of expired single sign-on records"),
-            
-        @PropertyDesc(name="ssoCookieSecure", defaultValue="dynamic", values={"true","false","dynamic"},
-            description="Sets the Secure attribute of any JSESSIONIDSSO cookies associated with the web " +
-                "applications deployed to this virtual server. Applicable only if the sso-enabled property is set to true. " +
-                "To set the Secure attribute of a JSESSIONID cookie, use the cookieSecure cookie-properties property in the sun-web.xml file"),
             
         @PropertyDesc(name="setCacheControl",
             description="Comma-separated list of Cache-Control response directives. For a list of valid directives, " +
