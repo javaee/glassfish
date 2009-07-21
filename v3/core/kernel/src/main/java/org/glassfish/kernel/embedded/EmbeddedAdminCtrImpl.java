@@ -45,9 +45,13 @@ import org.glassfish.api.embedded.BindException;
 import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.ActionReport;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Properties;
+
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
 
 /**
  * Implementation of the embedded command execution
@@ -58,7 +62,7 @@ import java.util.ArrayList;
 public class EmbeddedAdminCtrImpl implements EmbeddedAdminContainer {
 
     @Inject
-    CommandRunner runnner;
+    CommandRunner runner;
 
     private final static List<Sniffer> empty = new ArrayList<Sniffer>();
 
@@ -75,7 +79,27 @@ public class EmbeddedAdminCtrImpl implements EmbeddedAdminContainer {
     }
 
     public CommandExecution execute(String commandName, CommandParameters params) {
-        return null;
+        Properties props = new Properties(params.getOptions());
+        if (params.getOperand()!=null) {
+            props.put("DEFAULT", params.getOperand());
+        }
+        final ActionReport report = new PlainTextActionReporter();
+        CommandExecution ce = new CommandExecution() {
+
+            public ActionReport getActionReport() {
+                return report;
+            }
+
+            public ActionReport.ExitCode getExitCode() {
+                return report.getActionExitCode();
+            }
+
+            public String getMessage() {
+                return report.getMessage();
+            }
+        };
+        runner.doCommand(commandName, props, report);
+        return ce;
     }
 
     public void bind(Port port) {

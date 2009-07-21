@@ -65,7 +65,8 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
     @Inject
     Logger logger;
     
-    
+    final XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
+
     public synchronized void save(DomDocument doc) throws IOException {
 
 
@@ -80,7 +81,6 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
             throw new IOException("Cannot create temporary file when saving domain.xml");
         }
         // write to the temporary file
-        XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = null;
         OutputStream fos = getOutputStream(f);
         try {

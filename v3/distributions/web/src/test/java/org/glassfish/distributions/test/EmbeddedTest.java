@@ -48,6 +48,11 @@ import org.glassfish.api.embedded.Port;
 import org.glassfish.api.embedded.ScatteredArchive;
 import org.glassfish.api.embedded.ScatteredArchive.Builder;
 import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.admin.AdminInfo;
+import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
+import org.glassfish.api.embedded.admin.CommandExecution;
+import org.glassfish.api.embedded.admin.CommandParameters;
+import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.distributions.test.ejb.SampleEjb;
 
 import javax.naming.InitialContext;
@@ -150,6 +155,22 @@ public class EmbeddedTest {
             deployer.undeploy(appName);
 
     }
+
+    @Test
+    public void commandTest() {
+        EmbeddedAdminContainer ctr = server.addContainer(server.createConfig(AdminInfo.class));
+        CommandExecution ce = ctr.execute("list-modules", new CommandParameters());
+        try {
+            ce.getActionReport().writeReport(System.out);
+            System.out.println("");
+            for (MessagePart mp : ce.getActionReport().getTopMessagePart().getChildren()) {
+                 System.out.println(mp.getMessage());
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 
     @AfterClass
     public static void  close() throws LifecycleException {

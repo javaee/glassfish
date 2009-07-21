@@ -14,7 +14,6 @@ import org.glassfish.api.Startup;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
-import org.glassfish.internal.api.Init;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -49,7 +48,7 @@ import org.glassfish.flashlight.provider.ProbeRegistry;
  */
 @Service
 @Scoped(Singleton.class)
-public class MonitoringBootstrap implements EventListener, Startup, PostConstruct, Init, ModuleLifecycleListener, ConfigListener {
+public class MonitoringBootstrap implements EventListener, Startup, PostConstruct, ModuleLifecycleListener, ConfigListener {
 
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;

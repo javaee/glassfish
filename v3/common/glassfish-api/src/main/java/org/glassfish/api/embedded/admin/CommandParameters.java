@@ -35,6 +35,8 @@
  */
 package org.glassfish.api.embedded.admin;
 
+import java.util.Properties;
+
 /**
  * Command Paramters, needs to be refined...
  *
@@ -42,12 +44,19 @@ package org.glassfish.api.embedded.admin;
  */
 public class CommandParameters {
 
+    private Properties params = new Properties();
+    private String operand;
+
     /**
      * Sets the command primary (operand) parameter.
      * @param operand the command operand
      */
-    void setOperand(String operand) {
+    public void setOperand(String operand) {
+        this.operand = operand;
+    }
 
+    public String getOperand() {
+        return operand;
     }
 
     /**
@@ -57,7 +66,13 @@ public class CommandParameters {
      * @param optionName option name (without leading -- chars)
      * @param optionValue option value
      */
-    void setOption(String optionName, String optionValue) {
-        
+    public void setOption(String optionName, String optionValue) {
+        params.put(optionName, optionName);
+    }
+
+    public Properties getOptions() {
+        return new Properties(params);
     }
 }
+
+

@@ -38,11 +38,13 @@ package org.glassfish.api.embedded.admin;
 import org.glassfish.api.embedded.EmbeddedContainer;
 import org.glassfish.api.embedded.Port;
 import org.glassfish.api.embedded.BindException;
+import org.jvnet.hk2.annotations.Contract;
 
 
 /**
  * Container for administrative tasks.
  */
+@Contract
 public interface EmbeddedAdminContainer extends EmbeddedContainer {
     
 

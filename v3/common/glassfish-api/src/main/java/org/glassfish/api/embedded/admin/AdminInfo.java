@@ -36,6 +36,10 @@
 package org.glassfish.api.embedded.admin;
 
 import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.Server;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * So far, the admin container does not require much configuration but we
@@ -44,6 +48,17 @@ import org.glassfish.api.embedded.ContainerBuilder;
  *
  * @author Jerome Dochez
  */
-public abstract class AdminInfo implements ContainerBuilder<EmbeddedAdminContainer> {
+@Service
+public class AdminInfo implements ContainerBuilder<EmbeddedAdminContainer> {
+    
+    @Inject
+    EmbeddedAdminContainer ctr;
 
+    public void attach(PortType type, Port port) {
+
+    }
+
+    public EmbeddedAdminContainer create(Server server) {
+        return ctr;
+    }
 }
