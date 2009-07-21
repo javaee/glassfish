@@ -103,6 +103,9 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
             cloader.setResources(r);
             cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
+            if (context.getScratchDir("ejb") != null) {
+                cloader.addRepository(context.getScratchDir("ejb").toURI().toURL());
+            }
             if (context.getScratchDir("jsp") != null) {
                 cloader.setWorkDir(context.getScratchDir("jsp"));
             }
@@ -118,6 +121,9 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             configureLoaderAttributes(cloader, sunWebXmlParser, base);
             configureLoaderProperties(cloader, sunWebXmlParser, base);
             
+        } catch(MalformedURLException malex) {
+            logger.log(Level.SEVERE, malex.getMessage());
+            logger.log(Level.FINE, malex.getMessage(), malex);            
         } catch(XMLStreamException xse) {
             logger.log(Level.SEVERE, xse.getMessage());
             logger.log(Level.FINE, xse.getMessage(), xse);
