@@ -55,6 +55,9 @@ public class StartServerTask extends AdminTask {
         addCommandParameter("domaindir", domaindir);
     }
 
+    public void setDebug(Boolean debug) {
+        addCommandParameter("debug", debug.toString());
+    }
 
     public void execute() throws BuildException {
         if (domain != null)

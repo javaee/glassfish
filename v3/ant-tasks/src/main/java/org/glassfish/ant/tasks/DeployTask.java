@@ -39,10 +39,13 @@ package org.glassfish.ant.tasks;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
 
+import java.util.*;
 
 public class DeployTask extends AdminTask {
 
     private String file;
+    private Component component;
+    private List<Component> components = new ArrayList<Component>();
 
     public DeployTask() {
         setCommand("deploy");
@@ -90,7 +93,6 @@ public class DeployTask extends AdminTask {
         addCommandParameter("availabilityenabled", Boolean.toString(availabilityenabled));
     }
 
-
     public void setVirtualservers(String virtualservers) {
         addCommandParameter("virtualservers", virtualservers);
     }
@@ -113,6 +115,18 @@ public class DeployTask extends AdminTask {
 
     public void setForce(boolean force) {
         addCommandParameter("force", Boolean.toString(force));
+    }
+
+    public void setUpload(boolean force) {
+        addCommandParameter("upload", Boolean.toString(force));
+    }
+
+    public void setProperties(String properties) {
+        addCommandParameter("properties", properties);
+    }
+
+    public void setType(String type) {
+        addCommandParameter("type", type);
     }
 
     public void execute() throws BuildException {

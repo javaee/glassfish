@@ -36,24 +36,14 @@
 
 package org.glassfish.ant.tasks;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.BuildException;
-
-import java.util.*;
-
 public class RedeployTask extends DeployTask {
-
-    private String file;
-    private Component component;
-    private List<Component> components = new ArrayList<Component>();
 
     public RedeployTask() {
         setCommand("redeploy");
     }
 
-
     public void setForce(boolean force) {
-        addCommandParameter("force", Boolean.toString(force));
+        optionIgnored("force");
     }
 
 }

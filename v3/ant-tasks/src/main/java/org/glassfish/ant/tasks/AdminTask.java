@@ -51,6 +51,10 @@ public class AdminTask extends Task {
         setCommand("");
     }
 
+    public void setTarget(String target) {
+        optionIgnored("target");
+    }
+
     public void setInstallDir(String installDir) {
         this.installDir = installDir;
     }
@@ -108,24 +112,31 @@ public class AdminTask extends Task {
             return;
         }
         try {
-            //File f = new File
             Process pr = Runtime.getRuntime().exec(installDirectory + File.separator + "glassfish" +
                     File.separator + "bin" + File.separator + "asadmin " + command);
 
+            BufferedReader error = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+            String errorLine=null;
+            while((errorLine=error.readLine()) != null) {
+                log(errorLine);
+            }
+
             BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            String inputLine=null;
+            while((inputLine=input.readLine()) != null) {
+                log(inputLine);
+            }
 
-                String line=null;
-
-                while((line=input.readLine()) != null) {
-                    log(line);
-                }
-
-                int exitVal = pr.waitFor();
-                if (exitVal != 0)
-                    log("asadmin command exited with error code "+exitVal);
+            int exitVal = pr.waitFor();
+            if (exitVal != 0)
+                log("asadmin command exited with error code "+exitVal);
 
         } catch (Exception ex) {
             log(ex.getMessage());
         }
+    }
+
+    void optionIgnored(String option) {
+        log("Option Ignored : " + option);
     }
 }
