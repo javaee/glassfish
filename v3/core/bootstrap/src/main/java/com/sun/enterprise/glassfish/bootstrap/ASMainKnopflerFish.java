@@ -52,7 +52,7 @@ import com.sun.enterprise.module.bootstrap.PlatformMain;
 @MetaInfServices(PlatformMain.class)
 public class ASMainKnopflerFish extends ASMainOSGi {
     protected String getPreferedCacheDir() {
-        return "knopfler-cache/gf";
+        return "osgi-cache/knopflerfish/";
     }
 
     public String getName() {
@@ -79,7 +79,6 @@ public class ASMainKnopflerFish extends ASMainOSGi {
         // options and properties used here
         File cacheProfileDir = new File(domainDir, "kf-cache/gf/");
         setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
-        System.setProperty("org.osgi.framework.dir", cacheProfileDir.getCanonicalPath());
         String jars = new File(fwDir, "jars/").toURI().toString();
         System.setProperty("org.knopflerfish.gosg.jars", jars);
         String pkgFilePath = new File(fwDir, "gfpackages.txt").getAbsolutePath();
@@ -107,4 +106,8 @@ public class ASMainKnopflerFish extends ASMainOSGi {
         return "org.knopflerfish.framework.Main";
     }
 
+    protected void setUpCache(File sourceDir, File cacheDir) throws IOException
+    {
+        System.setProperty("org.osgi.framework.dir", cacheDir.getCanonicalPath());
+    }
 }

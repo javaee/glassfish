@@ -60,16 +60,12 @@ import com.sun.enterprise.module.single.SingleModulesRegistry;
  * Main for embedded
  */
 @MetaInfServices(PlatformMain.class)
-public class ASEmbedded extends AbstractMain {
+public class ASEmbedded extends ASMainNonOSGi {
 
     Habitat habitat = null;
     
     Logger getLogger() {
         return logger;
-    }
-
-    long getSettingsLastModification() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     protected String getPreferedCacheDir() {

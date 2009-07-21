@@ -174,18 +174,7 @@ public abstract class ASMainOSGi extends AbstractMain {
     }
 
     @Override
-    long getSettingsLastModification() {
-        return getLastModified(fwDir, 0);
-    }
-
-    @Override
     Logger getLogger() {
         return logger;
     }
-
-    @Override
-    boolean createCache(File cacheDir) throws IOException {
-        return cacheDir.mkdirs();
-    }
-
 }

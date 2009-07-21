@@ -61,7 +61,7 @@ public class ASMainEquinox extends ASMainOSGi {
     private static File pluginsDir=null;
 
     protected String getPreferedCacheDir() {
-        return "equinox-cache/gf/";
+        return "osgi-cache/equinox/";
     }
 
     public String getName() {
@@ -100,38 +100,26 @@ public class ASMainEquinox extends ASMainOSGi {
         }
     }
 
-    @Override
-    long getSettingsLastModification() {
-        File settings = getSettingsFile();
-        if (settings.exists()) {
-            return settings.lastModified();
-        }
-        return 0L;
-    }
-
     private File getSettingsFile() {
         File settings = new File(fwDir, "configuration");
         return new File(settings, "config.ini");
     }
 
     @Override
-    public void flushAndCreate(File cacheDir, long lastModified) throws IOException {
-        super.flushAndCreate(cacheDir, lastModified);
-        // I need to copy the configuration our eclipse directory into the cache so
-        // eclipse use that as its caching directory.
-        File settings = getSettingsFile();
-        copyFile(settings, new File(cacheDir, "config.ini"));
-    }
-
-    @Override
     protected void setUpCache(File sourceDir, File cacheDir) throws IOException {
-        super.setUpCache(sourceDir, cacheDir);
         /*
         * Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html
         * for details about the configuration options used here.
         */
-       System.setProperty("osgi.configuration.area", cacheDir.getCanonicalPath());
-        
+        System.setProperty("osgi.configuration.area", cacheDir.getCanonicalPath());
+
+        // I need to copy the configuration from our eclipse directory into
+        // the cache so eclipse use that as its caching directory.
+        File settings = getSettingsFile();
+        if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+            throw new RuntimeException("Not able to create " + cacheDir.getAbsolutePath());
+        }
+        ASMainHelper.copyFile(settings, new File(cacheDir, "config.ini"));
     }
 
     protected void launchOSGiFW() throws Exception {

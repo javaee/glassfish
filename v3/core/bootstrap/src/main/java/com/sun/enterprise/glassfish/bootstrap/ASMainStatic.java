@@ -40,10 +40,9 @@ import com.sun.enterprise.module.bootstrap.*;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.single.SingleModulesRegistry;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import com.sun.enterprise.module.impl.HK2Factory;
+import static com.sun.enterprise.glassfish.bootstrap.ASMainHelper.getLastModified;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
-import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParserDecorator;
 
 import java.io.File;
@@ -63,7 +62,7 @@ import org.kohsuke.MetaInfServices;
  * by a single class loader.
  */
 @MetaInfServices(PlatformMain.class)
-public class ASMainStatic extends AbstractMain {
+public class ASMainStatic extends ASMainNonOSGi {
 
     private File out;
     private Habitat habitat;
@@ -223,11 +222,6 @@ public class ASMainStatic extends AbstractMain {
     @Override
     Logger getLogger() {
         return logger;
-    }
-
-    @Override
-    long getSettingsLastModification() {
-        return 0;
     }
 
     @Override

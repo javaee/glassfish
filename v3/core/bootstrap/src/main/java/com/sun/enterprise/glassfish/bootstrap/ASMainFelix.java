@@ -54,7 +54,7 @@ public class ASMainFelix extends ASMainOSGi {
     protected final static String CACHE_DIR = "org.osgi.framework.storage";
 
     protected String getPreferedCacheDir() {
-        return "felix-cache/gf/";
+        return "osgi-cache/felix/";
     }
 
     public String getName() {
@@ -79,7 +79,6 @@ public class ASMainFelix extends ASMainOSGi {
         // Starting with Felix 1.4.0, the cache dir is identified by
         // property called org.osgi.framework.storage.
         System.setProperty(CACHE_DIR, cacheDir.getCanonicalPath());
-        super.setUpCache(sourceDir, cacheDir);
     }
 
     protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
