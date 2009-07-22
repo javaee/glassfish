@@ -81,13 +81,13 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * @return name of the configured object
      FIXME: should set 'key=true'.  See bugs 6039, 6040
-     */
-    @Attribute
+    @Attribute(key=true, required=true)
     @NotNull
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getName();
 
     void setName(String value) throws PropertyVetoException;
+     */
 
     /**
      * Gets the value of the configRef property.
