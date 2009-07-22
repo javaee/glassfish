@@ -323,7 +323,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     @Attribute(defaultValue = "dynamic")
     String getSsoCookieSecure();
 
-    void getSsoCookieSecure(String value);
+    void setSsoCookieSecure(String value);
 
     /**
         Properties.
