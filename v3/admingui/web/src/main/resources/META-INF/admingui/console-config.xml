@@ -9,6 +9,27 @@
                 content="webPluginTreeNode.jsf"
         />
 
+        <!-- add the property sheet for deployment page, specific for web app -->
+        <integration-point
+                id="web_deploy"
+                type="org.glassfish.admingui:uploadPropertySheet"
+                priority="100"
+                parentId="form"
+                content="apps/deploymentWar.jsf"
+        />
+
+        <!-- add the dropdown option for selecting the type of app to deploy
+             in the form of  label:value
+         -->
+        <integration-point
+                id="web_deploy_type"
+                type="org.glassfish.admingui:appTypeDropdown"
+                priority="100"
+                parentId="form"
+                content="Web Application ;war"
+        />
+
+
        
         <integration-point 
                 id="monitor" 
