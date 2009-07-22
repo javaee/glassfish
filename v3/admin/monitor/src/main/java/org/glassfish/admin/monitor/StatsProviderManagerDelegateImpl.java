@@ -14,6 +14,7 @@ import java.util.Collection;
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
 import org.glassfish.api.amx.MBeanListener;
+import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.gmbal.ManagedObjectManager;
@@ -42,6 +43,7 @@ import org.glassfish.flashlight.provider.ProbeRegistry;
 public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl implements StatsProviderManagerDelegate {
     protected ProbeClientMediator pcm;
     ModuleMonitoringLevels config = null;
+    MonitoringService monitoringService = null;
     private final MonitoringRuntimeDataRegistry mrdr;
     private final ProbeRegistry probeRegistry;
     private final Domain domain;
@@ -59,11 +61,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private StatsProviderRegistry statsProviderRegistry;
 
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, ProbeRegistry probeRegistry,
-                        MonitoringRuntimeDataRegistry mrdr, Domain domain, ModuleMonitoringLevels config) {
+                        MonitoringRuntimeDataRegistry mrdr, Domain domain, MonitoringService monitoringService) {
         this.pcm = pcm;
         this.mrdr = mrdr;
         this.domain = domain;
-        this.config = config;
+        if (monitoringService != null) {
+            this.config = monitoringService.getModuleMonitoringLevels();
+        }
+        this.monitoringService = monitoringService;
         this.probeRegistry = probeRegistry;
         //serverNode is special, construct that first if doesn't exist
         serverNode = constructServerPP();
@@ -115,6 +120,10 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
         /* config - TODO */
         //add configElement to monitoring level element if not already there - find out from Nandini
+        //List<MonitoringItem> monItemList = monitoringService.getMonitoringItems();
+        //for (MonitoringItem mi : monItemList) {
+        //
+        //}
 
 
         //If module monitoring level = OFF, disableStatsProvider for that configElement
@@ -122,8 +131,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         if (getEnabledValue(configElement)) {
             /* gmbal registration */
             //Create mom root using the statsProvider
-            //if (config.getMbeanEnabled) {
-            if (AMXReady) {
+            if (AMXReady && this.getMbeanEnabledValue()) {
                 ManagedObjectManager mom = registerGmbal(statsProvider, subTreePath);
                 //Make an entry to my own registry so I can manage the unregister, enable and disable
                 statsProviderRegistry.registerStatsProvider(configElement,
@@ -136,7 +144,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             }
             // Keep track of enabled flag for configElement.  Used later for register gmbal when AMXReady.
             statsProviderRegistry.setConfigEnabled(configElement, true);
-            //}
         } else {
             //Make an entry to my own registry so I can manage the unregister, enable and disable
             statsProviderRegistry.registerStatsProvider(configElement,
@@ -146,6 +153,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             statsProviderRegistry.setConfigEnabled(configElement, false);
             statsProviderRegistry.disableStatsProvider(configElement);
         }
+
+        statsProviderRegistry.setMBeanEnabled(this.getMbeanEnabledValue());
     }
 
     public void unregister(Object statsProvider) {
@@ -175,10 +184,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         super.mbeanRegistered(objectName, listener);
         AMXReady = true;
         statsProviderRegistry.setAMXReady(true);
-        for (StatsProviderRegistry.StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
-            if (statsProviderRegistry.getConfigEnabled(spre.getConfigStr())) {
-                ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
-                spre.setManagedObjectManager(mom);
+        if (this.getMbeanEnabledValue()) {
+            for (StatsProviderRegistry.StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
+                if (statsProviderRegistry.getConfigEnabled(spre.getConfigStr())) {
+                    ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
+                    spre.setManagedObjectManager(mom);
+                }
             }
         }
     }
@@ -323,6 +334,18 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                     enabled = true;
                 }
             } else { // external modules turn always on for now
+                enabled = true;
+            }
+        }
+        return enabled;
+    }
+
+    private boolean getMbeanEnabledValue() {
+        boolean enabled = true;
+        if (this.monitoringService != null) {
+            if (this.monitoringService.getMbeanEnabled().equals("false")) {
+                enabled = false;
+            } else {
                 enabled = true;
             }
         }

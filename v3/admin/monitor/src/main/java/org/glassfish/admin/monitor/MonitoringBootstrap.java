@@ -64,6 +64,8 @@ public class MonitoringBootstrap implements EventListener, Startup, PostConstruc
     Events events;
     @Inject(optional=true)
     ModuleMonitoringLevels config = null;
+    @Inject(optional=true)
+    MonitoringService monitoringService = null;
     @Inject
     private org.glassfish.flashlight.provider.ProbeRegistry probeRegistry;
 
@@ -99,7 +101,7 @@ public class MonitoringBootstrap implements EventListener, Startup, PostConstruc
 
     public void setStatsProviderManagerDelegate() {
         //Set the StatsProviderManagerDelegate
-        spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, config);
+        spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
         mprint(" StatsProviderManagerDelegate is assigned ********************");
 
@@ -251,17 +253,17 @@ public class MonitoringBootstrap implements EventListener, Startup, PostConstruc
                 }
            }
            //For change in mbean-enabled attribute register/unregister gmbal for enabled config elements
-           //if (event.getSource() instanceof MbeanEnabled) {
-           //for (String configElement : config.getElements()) {
-                //if (!configElement.getValue().equals("OFF")) {
-                    //if (mbeanEnabled) {
-                        //spmd.getStatsProviderRegistry().registerGmbal(configElement);
-                    //} else {
-                        //spmd.getStatsProviderRegistry().unregisterGmbal(configElement);
-                    //}
-                //}
-           //}
-           //}
+           if (event.getSource() instanceof MonitoringService) {
+                String propName = event.getPropertyName();
+                if (propName.equals("mbean-enabled")) {
+                    StatsProviderRegistry spr = spmd.getStatsProviderRegistry();
+                    if (event.getNewValue().toString().equals("true")) {
+                        spr.registerAllGmbal();
+                    } else {
+                        spr.unregisterAllGmbal();
+                    }
+                }
+           }
        }
        return null;
     }

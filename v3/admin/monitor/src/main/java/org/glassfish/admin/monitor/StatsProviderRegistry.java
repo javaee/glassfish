@@ -23,6 +23,7 @@ public class StatsProviderRegistry {
     private Map<String, Boolean> configEnabledMap = new HashMap();
     private MonitoringRuntimeDataRegistry mrdr;
     private boolean isAMXReady = false;
+    private boolean isMBeanEnabled = true;
 
     public StatsProviderRegistry(MonitoringRuntimeDataRegistry mrdr) {
         this.mrdr = mrdr;
@@ -85,9 +86,7 @@ public class StatsProviderRegistry {
         }
 
         //unregister the statsProvider from Gmbal
-        //if (mbeanEnabled) {
-            unregisterGmbal(spre);
-        //}
+        unregisterGmbal(spre);
 
         // Remove the entry of statsProviderRegistryElement from configToRegistryElementMap
         List<StatsProviderRegistryElement> spreList =
@@ -138,11 +137,9 @@ public class StatsProviderRegistry {
             }
 
             //Reregister the statsProvider in Gmbal
-            //if (mbeanEnabled) {
-            if (isAMXReady()) {
-                    registerGmbal(spre);
+            if (isAMXReady() && isMBeanEnabled()) {
+                registerGmbal(spre);
             }
-            //}
         }
     }
 
@@ -177,9 +174,8 @@ public class StatsProviderRegistry {
             }
 
             //unregister the statsProvider from Gmbal
-            //if (mbeanEnabled) {
-                unregisterGmbal(spre);
-            //}
+            unregisterGmbal(spre);
+            
         }
     }
 
@@ -228,20 +224,21 @@ public class StatsProviderRegistry {
             try {
                 mom.close();
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, null, ioe);
             }
             spre.setManagedObjectManager(null);
         }
     }
 
+    void registerAllGmbal() {
+        for (StatsProviderRegistryElement spre :  statsProviderToRegistryElementMap.values()) {
+            this.registerGmbal(spre);
+        }
+    }
+
     void unregisterAllGmbal() {
         for (StatsProviderRegistryElement spre :  statsProviderToRegistryElementMap.values()) {
-            try {
-                spre.getManagedObjectManager().close();
-                spre.setManagedObjectManager(null);
-            } catch (IOException ex) {
-                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            this.unregisterGmbal(spre);
         }
     }
 
@@ -263,6 +260,14 @@ public class StatsProviderRegistry {
 
     boolean isAMXReady() {
         return this.isAMXReady;
+    }
+
+    void setMBeanEnabled(boolean enabled) {
+        this.isMBeanEnabled = enabled;
+    }
+
+    boolean isMBeanEnabled() {
+        return this.isMBeanEnabled;
     }
 
     class StatsProviderRegistryElement {
