@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,31 +32,21 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
+<!-- applications/appGeneralTabs.inc -->
 
-
-<console-config id="common">
-
-    <!-- add the property sheet for deployment page, specific for web app -->
-        <integration-point
-                id="common_deploy"
-                type="org.glassfish.admingui:uploadPropertySheet"
-                priority="600"
-                parentId="form"
-                content="applications/deploymentOther.jsf"
+<sun:tabSet id="appGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.appGeneralTabs}">
+    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+        <!command
+            setSessionAttribute(key="appGeneralTabs" value="general");
+            redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.appName}");
+        />       
+    </sun:tab>
+    
+    <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
+        <!command
+            setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
+            redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.appName}");
         />
-
-        <!-- add the dropdown option for selecting the type of app to deploy
-             in the form of  label:value
-         -->
-        <integration-point
-                id="common_deploy_type"
-                type="org.glassfish.admingui:appTypeDropdown"
-                priority="1000"
-                parentId="form"
-                content="Other; other"
-        />
-
-</console-config>
+    </sun:tab>
+</sun:tabSet>

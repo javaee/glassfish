@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,31 +32,38 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
+<!-- applications/applicationEdit.jsf -->
+<!initPage
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+//<sun:page id="page1">
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+        setSessionAttribute(key="appGeneralTabs" value="general");
+        getRequestValue(key="appName" value="#{pageSession.appName}");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        
+        setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
+        getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
 
-
-<console-config id="common">
-
-    <!-- add the property sheet for deployment page, specific for web app -->
-        <integration-point
-                id="common_deploy"
-                type="org.glassfish.admingui:uploadPropertySheet"
-                priority="600"
-                parentId="form"
-                content="applications/deploymentOther.jsf"
-        />
-
-        <!-- add the dropdown option for selecting the type of app to deploy
-             in the form of  label:value
-         -->
-        <integration-point
-                id="common_deploy_type"
-                type="org.glassfish.admingui:appTypeDropdown"
-                priority="1000"
-                parentId="form"
-                content="Other; other"
-        />
-
-</console-config>
+        getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap['Enabled']}")
+        showContextRoot(objectNameStr="#{pageSession.objectNameStr}" value="#{pageSession.showContextRoot}")
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
+    />
+    </event>
+#include "/shared/restart.inc"    
+        <sun:form id="propertyForm">
+        
+#include "/common/applications/appGeneralTabs.inc"
+#include "/shared/alertMsg.inc"
+#include "/common/applications/edit.inc"
+#include "/common/applications/subComponentTable.inc"
+	<sun:hidden id="helpKey" value="$resource{help.applicationEdit}" />
+        </sun:form>
+</define>
+</composition>

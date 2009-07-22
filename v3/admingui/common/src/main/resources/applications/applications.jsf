@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,31 +32,36 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
+<!-- applications/applications.jsf -->
 
 
-<console-config id="common">
-
-    <!-- add the property sheet for deployment page, specific for web app -->
-        <integration-point
-                id="common_deploy"
-                type="org.glassfish.admingui:uploadPropertySheet"
-                priority="600"
-                parentId="form"
-                content="applications/deploymentOther.jsf"
+<!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+/>
+//<sun:page id="page1">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.enterpriseApplications.title}">
+<!define name="content">
+    <event>
+        <!beforeCreate
+            getRequestValue(key="filterValue" value=>$page{filterValue});
+            getDeployedAppsInfo(serverName='#{request.serverName}',  filterValue="#{pageSession.filterValue}", filters=>$attribute{filters} result=>$attribute{listOfRows} );
+            setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.applications}");
+            setPageSessionAttribute(key="editLink" value="/common/applications/applicationEdit.jsf");
+            setPageSessionAttribute(key="listPageLink" value="/common/applications/applications.jsf");
+            setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
         />
-
-        <!-- add the dropdown option for selecting the type of app to deploy
-             in the form of  label:value
-         -->
-        <integration-point
-                id="common_deploy_type"
-                type="org.glassfish.admingui:appTypeDropdown"
-                priority="1000"
-                parentId="form"
-                content="Other; other"
-        />
-
-</console-config>
+    </event>
+#include "/shared/restart.inc"
+            <sun:form id="propertyForm">
+#include "/shared/alertMsg.inc"
+                <!-- Page Title -->
+                 <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.title}" helpText="$resource{i18n.enterpriseApplications.titleHelp}"/>
+                 "<br />
+#include "/common/applications/deployTable.inc"
+	<sun:hidden id="helpKey" value="$resource{help.applications}" />
+            </sun:form>
+#include "/shared/changeButtonsJS.inc"
+</define>
+</composition>

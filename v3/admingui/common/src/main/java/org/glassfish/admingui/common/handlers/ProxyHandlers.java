@@ -743,7 +743,7 @@ public class ProxyHandlers {
 
     private static final String SNIFFER_EAR = "ear";
     //mbean Attribute Name
-    private static final String PROPERTY_NAME = "Name";
-    private static final String PROPERTY_VALUE = "Value";
-    private static final String PROPERTY_DESC = "Description";
+    public static final String PROPERTY_NAME = "Name";
+    public static final String PROPERTY_VALUE = "Value";
+    public static final String PROPERTY_DESC = "Description";
 }

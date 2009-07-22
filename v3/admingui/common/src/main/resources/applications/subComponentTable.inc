@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,31 +32,34 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
 
+<!-- applications/subComponentTable.inc -->
 
-<console-config id="common">
+  "<br /><br />
+<sun:table id="components"  title="$resource{i18n.common.SubModules}" style="padding: 8pt; width:95%" >
+    <!beforeCreate
+        getSubComponents(appName="#{appName}"  result=>$attribute{listOfRows});
+    />
+<sun:tableRowGroup id="rowGroup1" data={"$attribute{listOfRows}"} sourceVar="td">
 
-    <!-- add the property sheet for deployment page, specific for web app -->
-        <integration-point
-                id="common_deploy"
-                type="org.glassfish.admingui:uploadPropertySheet"
-                priority="600"
-                parentId="form"
-                content="applications/deploymentOther.jsf"
-        />
+    <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" rowHeader="$boolean{true}" id="col1">
+        <staticText id="nameCol" value="#{td.value.componentName}" />
+    </sun:tableColumn>
 
-        <!-- add the dropdown option for selecting the type of app to deploy
-             in the form of  label:value
-         -->
-        <integration-point
-                id="common_deploy_type"
-                type="org.glassfish.admingui:appTypeDropdown"
-                priority="1000"
-                parentId="form"
-                content="Other; other"
-        />
+    <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}" rowHeader="$boolean{true}" id="col2">
+        <staticText id="typeCol" value="#{td.value.engines}" />
+    </sun:tableColumn>
 
-</console-config>
+    <!-- TODO
+    <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" rendered="#{hasActionColumn}" embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
+        <sun:hyperlink id="link" text="#{td.value.downloadText}"
+            url="/download/#{td.value.componentName}?contentSourceId=clientStubs&appName=#{name}&appClientName=#{td.value.componentName}" />
+        <sun:hyperlink id="link2" rendered="#{td.value.javaWebStart}" text="$resource{i18n.deployTable.launch}"
+            url="appclientLaunch.jsf?appID=#{name}&appName=#{name}&appClientName=#{td.value.componentName}&nextPage=enterpriseApplicationsEdit.jsf&appType=#{appType}" />
+    </sun:tableColumn>
+    -->
+
+</sun:tableRowGroup>
+</sun:table>
+

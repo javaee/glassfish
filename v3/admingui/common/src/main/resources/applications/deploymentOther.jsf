@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,31 +32,22 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
 
+<!-- uploadOtherPropSheet.jsf -->
+<!-- This is the default property sheet that has ALL the possible arguments that can be passed to DF.deploy -->
 
-<console-config id="common">
-
-    <!-- add the property sheet for deployment page, specific for web app -->
-        <integration-point
-                id="common_deploy"
-                type="org.glassfish.admingui:uploadPropertySheet"
-                priority="600"
-                parentId="form"
-                content="applications/deploymentOther.jsf"
-        />
-
-        <!-- add the dropdown option for selecting the type of app to deploy
-             in the form of  label:value
-         -->
-        <integration-point
-                id="common_deploy_type"
-                type="org.glassfish.admingui:appTypeDropdown"
-                priority="1000"
-                parentId="form"
-                content="Other; other"
-        />
-
-</console-config>
+<sun:propertySheet id="other" visible="#{false}" >
+    <!beforeCreate
+        setAttribute(key="fieldMap" value="other");
+        createMap(result="#{pageSession.other}")
+        mapPut(map="#{pageSession.deployMap}", key="other", value="#{pageSession.other}");
+        mapPut(map="#{pageSession.other}", key="convertToFalseList", value={"enabled", "precompilejsp" ,  "PROPERTY-verify", } );
+     />
+    <!afterCreate
+        getClientId(component="$this{component}" clientId=>$page{otherId});
+    />
+    <sun:propertySheetSection id="psection" >
+#include "/common/applications/deploymentOtherFields.jsf"
+    </sun:propertySheetSection>
+</sun:propertySheet>    
