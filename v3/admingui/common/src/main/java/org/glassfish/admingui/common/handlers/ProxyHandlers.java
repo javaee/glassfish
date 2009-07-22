@@ -371,6 +371,9 @@ public class ProxyHandlers {
         try {
             final String childType = (String) handlerCtx.getInputValue("childType");
             Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
+            if (attrs == null){
+                attrs = new HashMap();
+            }
             String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
 
