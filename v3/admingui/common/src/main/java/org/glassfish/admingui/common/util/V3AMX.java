@@ -472,6 +472,8 @@ public class V3AMX {
 
     /* A utility method to remove Element before calling create or set attribute of a proxy */
     static public void removeElement(Map<String, Object> attrs){
+        if (attrs==null || attrs.size() <=0 )
+            return;
         Set<Map.Entry <String, Object>> attrSet = attrs.entrySet();
         Iterator<Map.Entry<String, Object>> iter = attrSet.iterator();
         while (iter.hasNext()){
