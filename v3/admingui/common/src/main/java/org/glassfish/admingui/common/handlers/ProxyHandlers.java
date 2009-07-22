@@ -33,9 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.common.handlers;
-
 
 import java.util.Map;
 import java.util.ArrayList;
@@ -44,10 +42,10 @@ import java.util.HashMap;
 import javax.management.Attribute;
 import java.util.Iterator;
 
-import com.sun.jsftemplating.annotation.Handler;  
-import com.sun.jsftemplating.annotation.HandlerInput; 
+import com.sun.jsftemplating.annotation.Handler;
+import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
-import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -68,14 +66,14 @@ import org.glassfish.admingui.common.util.GuiUtil;
  */
 //TODO: Document these handlers
 public class ProxyHandlers {
-    @Handler(id="getChildrenTable",
-        input={
-            @HandlerInput(name="objectNameStr", type=String.class, required=true),
-            @HandlerInput(name="childType", type=String.class, required=true)},
-        output={
-            @HandlerOutput(name="result", type=java.util.List.class)}
-     )
-    public static void getChildrenTable(HandlerContext handlerCtx){
+
+    @Handler(id = "getChildrenTable",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "childType", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+    public static void getChildrenTable(HandlerContext handlerCtx) {
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
         String childType = (String) handlerCtx.getInputValue("childType");
         AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
@@ -83,25 +81,24 @@ public class ProxyHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
-    @Handler(id="filterTable",
-        input={
-            @HandlerInput(name="table", type=java.util.List.class, required=true),
-            @HandlerInput(name="attr", type=java.lang.String.class, required=true),
-            @HandlerInput(name="value", type=java.lang.String.class, required=true)
+    @Handler(id = "filterTable",
+        input = {
+            @HandlerInput(name = "table", type = java.util.List.class, required = true),
+            @HandlerInput(name = "attr", type = java.lang.String.class, required = true),
+            @HandlerInput(name = "value", type = java.lang.String.class, required = true)
         },
-        output={
-            @HandlerOutput(name="table", type=java.util.List.class)
-        }
-    )
+        output = {
+            @HandlerOutput(name = "table", type = java.util.List.class)
+    })
     public static void filterTable(HandlerContext handlerCtx) {
-        List<Map> table = (List)handlerCtx.getInputValue("table");
-        String attr = (String)handlerCtx.getInputValue("attr");
-        String value = (String)handlerCtx.getInputValue("value");
+        List<Map> table = (List) handlerCtx.getInputValue("table");
+        String attr = (String) handlerCtx.getInputValue("attr");
+        String value = (String) handlerCtx.getInputValue("value");
         List<Map> results = new ArrayList<Map>();
-        if ((attr == null) || ("".equals(attr))){
+        if ((attr == null) || ("".equals(attr))) {
             GuiUtil.getLogger().info("'attr' must be non-null, and non-blank");
         }
-        if ((value == null) || ("".equals(value))){
+        if ((value == null) || ("".equals(value))) {
             GuiUtil.getLogger().info("'value' must be non-null, and non-blank");
         }
         // Concurrent acces problems?
@@ -115,19 +112,16 @@ public class ProxyHandlers {
         handlerCtx.setOutputValue("table", results);
     }
 
-
-    private static String getA(Map<String, Object> attrs,  String key){
+    private static String getA(Map<String, Object> attrs, String key) {
         Object val = attrs.get(key);
         return (val == null) ? "" : val.toString();
     }
 
-
-     @Handler(id="deleteChildren",
-        input={
-            @HandlerInput(name="objectNameStr", type=String.class, required=true),
-            @HandlerInput(name="type", type=String.class, required=true),
-            @HandlerInput(name="selectedRows", type=List.class, required=true)}
-    )
+    @Handler(id = "deleteChildren",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "type", type = String.class, required = true),
+            @HandlerInput(name = "selectedRows", type = List.class, required = true)})
     public static void deleteChildren(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
@@ -151,22 +145,21 @@ public class ProxyHandlers {
      *  this mbean has to be AMXConfigProxy, not runtiime.
      *  For runtime mbeans, you need to use getRuntimeProxyAttrs.
      */
-    @Handler(id="getProxyAttrs",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="valueMap",        type=Map.class)})
-
-        public static void getProxyAttrs(HandlerContext handlerCtx) {
+    @Handler(id = "getProxyAttrs",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "valueMap", type = Map.class)})
+    public static void getProxyAttrs(HandlerContext handlerCtx) {
         AMXProxy amx = null;
-        try{
+        try {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
             amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
             AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) amx);
-            final Map<String,Object> attrs = helper.simpleAttributesMap();
+            final Map<String, Object> attrs = helper.simpleAttributesMap();
             handlerCtx.setOutputValue("valueMap", attrs);
-        }catch (Exception ex){
-            if ( !(amx instanceof AMXConfigProxy) ){
+        } catch (Exception ex) {
+            if (!(amx instanceof AMXConfigProxy)) {
                 getRuntimeProxyAttrs(handlerCtx);
                 return;
             }
@@ -175,20 +168,18 @@ public class ProxyHandlers {
         }
     }
 
-
-    @Handler(id="getRuntimeProxyAttrs",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="valueMap",        type=Map.class)})
-
-        public static void getRuntimeProxyAttrs(HandlerContext handlerCtx) {
-        try{
+    @Handler(id = "getRuntimeProxyAttrs",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "valueMap", type = Map.class)})
+    public static void getRuntimeProxyAttrs(HandlerContext handlerCtx) {
+        try {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
-            final Map<String,Object> attrs = amx.attributesMap();
+            AMXProxy amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+            final Map<String, Object> attrs = amx.attributesMap();
             handlerCtx.setOutputValue("valueMap", attrs);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             handlerCtx.setOutputValue("valueMap", new HashMap());
         }
@@ -199,33 +190,32 @@ public class ProxyHandlers {
      * Get the value of an attribute.  
      * If the attribute is an array, specifying an index will return an element in the array, otherwise, the entire array will be returned.
      */
-    @Handler(id="getProxyAttribute",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="attrName",   type=String.class, required=true),
-        @HandlerInput(name="index",   type=String.class)},
-    output={
-        @HandlerOutput(name="value",        type=Object.class)})
-
+    @Handler(id = "getProxyAttribute",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "attrName", type = String.class, required = true),
+            @HandlerInput(name = "index", type = String.class)},
+        output = {
+            @HandlerOutput(name = "value", type = Object.class)})
     public static void getProxyAttribute(HandlerContext handlerCtx) {
         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
         String attrName = (String) handlerCtx.getInputValue("attrName");
         Object result = "";
-        try{
-            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
+        try {
+            AMXProxy amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
             Object val = amx.attributesMap().get(attrName);
-            if (val instanceof Object[]){
+            if (val instanceof Object[]) {
                 String index = (String) handlerCtx.getInputValue("index");
-                if (index == null){
+                if (index == null) {
                     result = val;
-                }else{
-                    Object value = ((Object[])val)[Integer.parseInt(index)];
+                } else {
+                    Object value = ((Object[]) val)[Integer.parseInt(index)];
                     result = (value == null) ? "" : value.toString();
                 }
-            }else{
+            } else {
                 result = (val == null) ? "" : val.toString();
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         handlerCtx.setOutputValue("value", result);
@@ -238,53 +228,50 @@ public class ProxyHandlers {
      * have default value.
      * If no orig Map is specified, then the default values that AMX retuns will be the output.
      */
-    @Handler(id="getDefaultProxyAttrs",
-    input={
-        @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="childType",   type=String.class, required=true),
-        @HandlerInput(name="orig",   type=Map.class)},
-    output={
-        @HandlerOutput(name="valueMap",        type=Map.class)})
-
+    @Handler(id = "getDefaultProxyAttrs",
+        input = {
+            @HandlerInput(name = "parentObjectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "childType", type = String.class, required = true),
+            @HandlerInput(name = "orig", type = Map.class)},
+        output = {
+            @HandlerOutput(name = "valueMap", type = Map.class)})
     public static void getDefaultProxyAttrs(HandlerContext handlerCtx) {
-        try{
+        try {
             String parentName = (String) handlerCtx.getInputValue("parentObjectNameStr");
             String childType = (String) handlerCtx.getInputValue("childType");
             Map<String, String> orig = (Map) handlerCtx.getInputValue("orig");
-            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
             Map<String, String> defaultMap = amx.getDefaultValues(childType, true);
-            
-            if (orig == null){
+
+            if (orig == null) {
                 handlerCtx.setOutputValue("valueMap", defaultMap);
                 return;
             }
             //we only want to fill in any default value that is available. Preserve all other fields user has entered.
-            for(String origKey: orig.keySet()){
+            for (String origKey : orig.keySet()) {
                 String defaultV = defaultMap.get(origKey);
-                if(defaultV != null){
+                if (defaultV != null) {
                     orig.put(origKey, defaultV);
                 }
             }
             handlerCtx.setOutputValue("valueMap", orig);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             handlerCtx.setOutputValue("valueMap", new HashMap());
         }
 
     }
-    
 
-    @Handler(id="proxyExist",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="exist",        type=Boolean.class)})
-
+    @Handler(id = "proxyExist",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "exist", type = Boolean.class)})
     public static void proxyExist(HandlerContext handlerCtx) {
-        try{
+        try {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            handlerCtx.setOutputValue("exist", isProxyExist(objectNameStr));
-        }catch(Exception ex){
+            handlerCtx.setOutputValue("exist", doesProxyExist(objectNameStr));
+        } catch (Exception ex) {
             ex.printStackTrace();
             handlerCtx.setOutputValue("exist", Boolean.FALSE);
         }
@@ -294,110 +281,104 @@ public class ProxyHandlers {
      * Save the attributes of the proxy.   If the proxy doesn't exist, And forceCreate is true, a new
      * proxy will be created.
      */
-
-    @Handler(id="saveBeanAttributes",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="attrs",   type=Map.class),
-        @HandlerInput(name="skipAttrs",   type=List.class),
-        @HandlerInput(name="convertToFalse",   type=List.class),
-        @HandlerInput(name="parentObjectNameStr",   type=String.class),
-        @HandlerInput(name="forceCreate",   type=Boolean.class),
-        @HandlerInput(name="childType",   type=String.class)} )
-        public static void saveBeanAttributes(HandlerContext handlerCtx) {
-        try{
+    @Handler(id = "saveBeanAttributes",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "attrs", type = Map.class),
+            @HandlerInput(name = "skipAttrs", type = List.class),
+            @HandlerInput(name = "convertToFalse", type = List.class),
+            @HandlerInput(name = "parentObjectNameStr", type = String.class),
+            @HandlerInput(name = "forceCreate", type = Boolean.class),
+            @HandlerInput(name = "childType", type = String.class)})
+    public static void saveBeanAttributes(HandlerContext handlerCtx) {
+        try {
 
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
 
-            if (! isProxyExist(objectNameStr)){
+            if (!doesProxyExist(objectNameStr)) {
                 Boolean forceCreate = (Boolean) handlerCtx.getInputValue("forceCreate");
-                if (forceCreate!=null && forceCreate.booleanValue()){
+                if (forceCreate != null && forceCreate.booleanValue()) {
                     createProxy(handlerCtx);
                     return;
-                }else{
+                } else {
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("error.noSuchProxy"));
                     return;
                 }
             }
 
             Map attrs = (Map) handlerCtx.getInputValue("attrs");
-            
+
             List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
-            if (skipAttrs != null){
-                for(String sk : skipAttrs){
-                    if (attrs.keySet().contains(sk)){
+            if (skipAttrs != null) {
+                for (String sk : skipAttrs) {
+                    if (attrs.keySet().contains(sk)) {
                         attrs.remove(sk);
                     }
                 }
             }
 
             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
-            if (convertToFalse != null){
-                for(String sk : convertToFalse){
+            if (convertToFalse != null) {
+                for (String sk : convertToFalse) {
                     if (attrs.keySet().contains(sk)) {
-                        if (attrs.get(sk) == null){
+                        if (attrs.get(sk) == null) {
                             attrs.remove(sk);
                             attrs.put(sk, "false");
                         }
                     }
                 }
             }
-            V3AMX.setAttributes( objectNameStr, attrs);
-        }catch (Exception ex){
+            V3AMX.setAttributes(objectNameStr, attrs);
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-    
-         @Handler(id="updateStatus",
-        input={
-            @HandlerInput(name="objectNameStr", type=String.class, required=true),
-            @HandlerInput(name="enabled",   type=String.class),
-            @HandlerInput(name="selectedRows", type=List.class, required=true)}
-     )
-    public static void updateStatus(HandlerContext handlerCtx){
-         String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-         AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
-         String status = (String) handlerCtx.getInputValue("enabled");
-         List obj = (List) handlerCtx.getInputValue("selectedRows");
-         List<Map> selectedRows = (List) obj;
-         Attribute attr = null;
-         
-        try{
-            for(Map oneRow : selectedRows){
-                String Name = (String)oneRow.get("Name");
-                V3AMX.setAttribute(objectNameStr+Name, new Attribute("Enabled", status));
+
+    @Handler(id = "updateStatus",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "enabled", type = String.class),
+            @HandlerInput(name = "selectedRows", type = List.class, required = true)})
+    public static void updateStatus(HandlerContext handlerCtx) {
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
+        String status = (String) handlerCtx.getInputValue("enabled");
+        List obj = (List) handlerCtx.getInputValue("selectedRows");
+        List<Map> selectedRows = (List) obj;
+        Attribute attr = null;
+
+        try {
+            for (Map oneRow : selectedRows) {
+                String Name = (String) oneRow.get("Name");
+                V3AMX.setAttribute(objectNameStr + Name, new Attribute("Enabled", status));
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
-    
-
-
-    @Handler(id="createProxy",
-    input={
-        @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="childType",   type=String.class, required=true),
-        @HandlerInput(name="attrs",   type=Map.class),
-        @HandlerInput(name="skipAttrs",   type=List.class),
-        @HandlerInput(name="onlyUseAttrs",   type=List.class),
-        @HandlerInput(name="convertToFalse",   type=List.class)},
-    output={
-        @HandlerOutput(name="result",        type=String.class)})
-
-        public static void createProxy(HandlerContext handlerCtx) {
-        try{
+    @Handler(id = "createProxy",
+        input = {
+            @HandlerInput(name = "parentObjectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "childType", type = String.class, required = true),
+            @HandlerInput(name = "attrs", type = Map.class),
+            @HandlerInput(name = "skipAttrs", type = List.class),
+            @HandlerInput(name = "onlyUseAttrs", type = List.class),
+            @HandlerInput(name = "convertToFalse", type = List.class)},
+        output = {
+            @HandlerOutput(name = "result", type = String.class)})
+    public static void createProxy(HandlerContext handlerCtx) {
+        try {
             final String childType = (String) handlerCtx.getInputValue("childType");
             Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
             String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
-            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
 
             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
-            if (convertToFalse != null){
-                for(String sk : convertToFalse){
-                    if (attrs.keySet().contains(sk)){
-                        if (attrs.get(sk) == null){
+            if (convertToFalse != null) {
+                for (String sk : convertToFalse) {
+                    if (attrs.keySet().contains(sk)) {
+                        if (attrs.get(sk) == null) {
                             attrs.put(sk, "false");
                         }
                     }
@@ -409,11 +390,11 @@ public class ProxyHandlers {
             V3AMX.removeSpecifiedAttr(attrs, skipAttrs);
 
             List<String> onlyUseAttrs = (List) handlerCtx.getInputValue("onlyUseAttrs");
-            if (onlyUseAttrs != null){
+            if (onlyUseAttrs != null) {
                 Map newAttrs = new HashMap();
-                for(String key : onlyUseAttrs){
-                    if (attrs.keySet().contains(key)){
-                        newAttrs.put(key, attrs.get(key) );
+                for (String key : onlyUseAttrs) {
+                    if (attrs.keySet().contains(key)) {
+                        newAttrs.put(key, attrs.get(key));
                     }
                 }
                 attrs = newAttrs;
@@ -425,53 +406,49 @@ public class ProxyHandlers {
 //            System.out.println(attrs);
 
             V3AMX.removeElement(attrs);
-            AMXConfigProxy child = amx.createChild( childType,attrs);
+            AMXConfigProxy child = amx.createChild(childType, attrs);
             handlerCtx.setOutputValue("result", child.objectName().toString());
-        }catch (Exception ex){
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-
-
 
     /*
      * This handler returns a list of children by its name.
      * Useful for creating dropdowns or listBox
      */
-    @Handler(id="getChildrenByType",
-    input={
-        @HandlerInput(name="parentObjectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="type",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="result",        type=List.class)})
-
-        public static void getChildrenByType(HandlerContext handlerCtx) {
-        try{
+    @Handler(id = "getChildrenByType",
+        input = {
+            @HandlerInput(name = "parentObjectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "type", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)})
+    public static void getChildrenByType(HandlerContext handlerCtx) {
+        try {
             String type = (String) handlerCtx.getInputValue("type");
             String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
             List result = new ArrayList();
-            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
             Map<String, AMXProxy> childrenMap = amx.childrenMap(type);
             result.addAll(childrenMap.keySet());
-            handlerCtx.setOutputValue("result",result);
-        }catch (Exception ex){
+            handlerCtx.setOutputValue("result", result);
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-    
+
     /*
      * This handler returns a list of names by type of mbean.
      * Useful for creating dropdowns or listBox
      */
-    @Handler(id="getProxyNamesByType",
-    input={
-        @HandlerInput(name="type",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="result",        type=List.class),
-        @HandlerOutput(name="firstItem",   type=String.class)})
-
-        public static void getProxyNamesByType(HandlerContext handlerCtx) {
-        try{
+    @Handler(id = "getProxyNamesByType",
+        input = {
+            @HandlerInput(name = "type", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class),
+            @HandlerOutput(name = "firstItem", type = String.class)})
+    public static void getProxyNamesByType(HandlerContext handlerCtx) {
+        try {
             String type = (String) handlerCtx.getInputValue("type");
             List result = new ArrayList();
             Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
@@ -480,27 +457,24 @@ public class ProxyHandlers {
             String firstItem = "";
             while (iter.hasNext()) {
                 Map attr = ((AMXProxy) iter.next()).attributesMap();
-                String name = (String)attr.get("Name");
-                if(GuiUtil.isEmpty(firstItem)) {
+                String name = (String) attr.get("Name");
+                if (GuiUtil.isEmpty(firstItem)) {
                     firstItem = name;
                 }
                 result.add(name);
             }
             handlerCtx.setOutputValue("result", result);
             handlerCtx.setOutputValue("firstItem", firstItem);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-    }    
-    
- 
-  
-    @Handler(id="getApplicationByType",
-    input={
-        @HandlerInput(name="type",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="result",        type=List.class)})
+    }
 
+    @Handler(id = "getApplicationByType",
+        input = {
+            @HandlerInput(name = "type", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)})
     public static void getApplicationByType(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
         AMXProxy amx = V3AMX.getInstance().getApplications();
@@ -545,9 +519,6 @@ public class ProxyHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
-
-
-
     /**
      *	<p> This handler goes through all the deployed application to search for all the application that has at least one module
      *  <p> with the specified sniffer.
@@ -558,34 +529,35 @@ public class ProxyHandlers {
      *  <p> Input value: "result"  -- Type: <code> java.util.List</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="getApplicationBySnifferType",
-    input={
-        @HandlerInput(name="type",   type=String.class, required=true),
-        @HandlerInput(name="fullName",   type=Boolean.class)},
-    output={
-        @HandlerOutput(name="result",        type=List.class)})
-
+    @Handler(id = "getApplicationBySnifferType",
+        input = {
+            @HandlerInput(name = "type", type = String.class, required = true),
+            @HandlerInput(name = "fullName", type = Boolean.class)},
+        output = {
+            @HandlerOutput(name = "result", type = List.class)})
     public static void getApplicationBySnifferType(HandlerContext handlerCtx) {
         String type = (String) handlerCtx.getInputValue("type");
         Boolean fullName = (Boolean) handlerCtx.getInputValue("fullName");
-        if (fullName==null)
+        if (fullName == null) {
             fullName = false;
+        }
 
         AMXProxy amx = V3AMX.getInstance().getApplications();
         Map<String, AMXProxy> applications = amx.childrenMap("application");
         List result = new ArrayList();
-        eachApp:  for (AMXProxy oneApp : applications.values()) {
+        eachApp:
+        for (AMXProxy oneApp : applications.values()) {
             Map<String, AMXProxy> modules = oneApp.childrenMap("module");
-            for(AMXProxy oneModule: modules.values()){
+            for (AMXProxy oneModule : modules.values()) {
                 Map<String, AMXProxy> engines = oneModule.childrenMap("engine");
-                for(AMXProxy oneEngine: engines.values()){
-                    if (oneEngine.getName().equals(type)){
+                for (AMXProxy oneEngine : engines.values()) {
+                    if (oneEngine.getName().equals(type)) {
                         String appName = oneApp.getName();
-                        if (fullName){
+                        if (fullName) {
                             AMXProxy earSniffer = oneApp.childrenMap("engine").get(SNIFFER_EAR);
-                            result.add( (earSniffer == null)? appName :appName + "#" + oneModule.getName());
+                            result.add((earSniffer == null) ? appName : appName + "#" + oneModule.getName());
                             continue;
-                        }else{
+                        } else {
                             result.add(appName);
                             continue eachApp;
                         }
@@ -596,71 +568,71 @@ public class ProxyHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
-    @Handler(id="setProxyProperties",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="systemProp",   type=Boolean.class),
-        @HandlerInput(name="propertyList", type=List.class, required=true)})
-        public static void setProxyProperties(HandlerContext handlerCtx) {
-        try{
+    @Handler(id = "setProxyProperties",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "systemProp", type = Boolean.class),
+            @HandlerInput(name = "propertyList", type = List.class, required = true)})
+    public static void setProxyProperties(HandlerContext handlerCtx) {
+        try {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
             Boolean systemProp = (Boolean) handlerCtx.getInputValue("systemProp");
             ObjectName objectName = new ObjectName(objectNameStr);
-            List<Map<String,String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
+            List<Map<String, String>> propertyList = (List) handlerCtx.getInputValue("propertyList");
             List newList = new ArrayList();
             Set propertyNames = new HashSet();
             final ConfigTools configTools = V3AMX.getInstance().getDomainRoot().getExt().child(ConfigTools.class);
-            if (propertyList.size()==0){
-                if ((systemProp != null) && (systemProp.booleanValue())){
+            if (propertyList.size() == 0) {
+                if ((systemProp != null) && (systemProp.booleanValue())) {
                     configTools.clearSystemProperties(objectName);
-                }else{
+                } else {
                     configTools.clearProperties(objectName);
                 }
-            }else{
-                for(Map<String, String> oneRow : propertyList){
+            } else {
+                for (Map<String, String> oneRow : propertyList) {
                     Map newRow = new HashMap();
-                    final String  name = oneRow.get(PROPERTY_NAME);
-                    if (GuiUtil.isEmpty(name)){
+                    final String name = oneRow.get(PROPERTY_NAME);
+                    if (GuiUtil.isEmpty(name)) {
                         continue;
                     }
-                    if (propertyNames.contains(name)){
+                    if (propertyNames.contains(name)) {
                         GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
                         return;
-                    }else{
+                    } else {
                         propertyNames.add(name);
                     }
-                    
+
                     String value = oneRow.get(PROPERTY_VALUE);
-                    if (GuiUtil.isEmpty(value)){
+                    if (GuiUtil.isEmpty(value)) {
                         value = "";
                     }
-                    newRow.put(PROPERTY_NAME,name);
-                    newRow.put(PROPERTY_VALUE,value);
+                    newRow.put(PROPERTY_NAME, name);
+                    newRow.put(PROPERTY_VALUE, value);
                     String desc = (String) oneRow.get(PROPERTY_DESC);
-                    if (! GuiUtil.isEmpty(desc)){
-                        newRow.put( PROPERTY_DESC,  desc);
+                    if (!GuiUtil.isEmpty(desc)) {
+                        newRow.put(PROPERTY_DESC, desc);
                     }
                     newList.add(newRow);
                 }
-                if ((systemProp != null) && (systemProp.booleanValue())){
+                if ((systemProp != null) && (systemProp.booleanValue())) {
                     configTools.setSystemProperties(objectName, newList, true);
-                }else{
+                } else {
                     configTools.setProperties(objectName, newList, true);
                 }
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
-    @Handler(id="updateProxyProperties",
-    input={
-        @HandlerInput(name="propertyList", type=java.util.List.class, required=true)},
-    output={
-        @HandlerOutput(name="TableList", type=List.class)})
+    @Handler(id = "updateProxyProperties",
+        input = {
+            @HandlerInput(name = "propertyList", type = java.util.List.class, required = true)},
+        output = {
+            @HandlerOutput(name = "TableList", type = List.class)})
     public static void updateProxyProperties(HandlerContext handlerCtx) {
         try {
-            List<Map<String, String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
+            List<Map<String, String>> propertyList = (List) handlerCtx.getInputValue("propertyList");
             List newList = new ArrayList();
             if (propertyList != null && propertyList.size() != 0) {
                 for (Map<String, String> oneRow : propertyList) {
@@ -691,40 +663,51 @@ public class ProxyHandlers {
         }
     }
 
+    @Handler(id = "setResourceRefEnabled",
+        input = {
+            @HandlerInput(name = "resourceName", type = String.class, required = true),
+            @HandlerInput(name = "state", type = String.class, required = true)
+        })
+    public static void setResourceRefEnabled(HandlerContext handlerCtx) {
+        String resourceName = (String) handlerCtx.getInputValue("resourceName");
+        Boolean state = Boolean.parseBoolean((String) handlerCtx.getInputValue("state"));
+        String objectNameStr = "amx:pp=/domain/servers/server[server],config-ref=server-config";
+
+        AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
+    }
 
     public static Map getDefaultProxyAttrsMap(String parentObjectNameStr, String childType) {
-        try{
+        try {
             String parentName = parentObjectNameStr;
             String child = childType;
-            AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentName));
             Map valueMap = amx.getDefaultValues(child, true);
             return valueMap;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return new HashMap();
         }
     }
 
-/*
+    /*
     public static boolean isProxyExist(String objectNameStr){
-        try{
-            ObjectName objName = new ObjectName(objectNameStr);
-            Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
-//            Set<ObjectName> result = query.queryTypeObjectNameSet(objName.getKeyProperty("type"));
-            Set<ObjectName> result = query.queryAllObjectNameSet();
-            return (result.contains(objName));
-        }catch(Exception ex){
-            ex.printStackTrace();
-            return false;
-        }
+    try{
+    ObjectName objName = new ObjectName(objectNameStr);
+    Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
+    //            Set<ObjectName> result = query.queryTypeObjectNameSet(objName.getKeyProperty("type"));
+    Set<ObjectName> result = query.queryAllObjectNameSet();
+    return (result.contains(objName));
+    }catch(Exception ex){
+    ex.printStackTrace();
+    return false;
     }
-*/
-
-    public static boolean isProxyExist(String objectNameStr){
-        try{
+    }
+     */
+    public static boolean doesProxyExist(String objectNameStr) {
+        try {
             final ObjectName objName = new ObjectName(objectNameStr);
             return V3AMX.getInstance().getMbeanServerConnection().isRegistered(objName);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }
@@ -734,13 +717,12 @@ public class ProxyHandlers {
      *
      */
     @Handler(id = "getAmxRoot",
-    output = {
-        @HandlerOutput(name = "amxRoot", type = V3AMX.class)
+        output = {
+            @HandlerOutput(name = "amxRoot", type = V3AMX.class)
     })
     public static void getAmxRootInstance(HandlerContext handlerCtx) {
         handlerCtx.setOutputValue("amxRoot", V3AMX.getInstance());
     }
-
     private static final String SNIFFER_EAR = "ear";
     //mbean Attribute Name
     public static final String PROPERTY_NAME = "Name";
