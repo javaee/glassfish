@@ -30,7 +30,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=true"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.sso-enabled=true"/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
@@ -86,12 +86,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=false"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.sso-enabled=false"/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-cookie-secure="/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.sso-cookie-secure="/>
         </antcall>
         <antcall target="delete-user-common">
             <param name="user" value="${testuser}"/>
