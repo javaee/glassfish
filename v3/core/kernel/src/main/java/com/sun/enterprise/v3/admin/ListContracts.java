@@ -44,7 +44,9 @@ import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -70,10 +72,19 @@ public class ListContracts implements AdminCommand {
     @Inject
     Habitat habitat;
 
+    @Param(primary = true, optional = true)
+    String contract=null;
+
+    @Param(optional=true)
+    String started = "false";
     
     public void execute(AdminCommandContext context) {
         StringBuilder sb = new StringBuilder();
-        dumpContracts(sb);
+        if (contract==null) {
+            dumpContracts(sb);
+        } else {
+            dumpContract(contract, sb);
+        }
         String msg = sb.toString();
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
@@ -106,5 +117,17 @@ public class ListContracts implements AdminCommand {
         for(int i = 1 ; it.hasNext(); i++) {
             sb.append("Contract-" + i + ": " + it.next() + "\n");
         }
+    }
+
+    private void dumpContract(String name, StringBuilder sb) {
+        sb.append("\n*********** List of all services for contract " + contract + " **************\n");
+         for (Inhabitant i : habitat.getInhabitantsByContract(name)) {
+             sb.append("Service-"+i.typeName());
+             boolean isStarted = Boolean.parseBoolean(started);
+             if (isStarted) {
+                 sb.append((i.isInstantiated()?" started": " not started"));
+             }
+             sb.append("\n");
+         }
     }
 }

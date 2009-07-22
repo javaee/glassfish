@@ -67,7 +67,7 @@ public class CommandParameters {
      * @param optionValue option value
      */
     public void setOption(String optionName, String optionValue) {
-        params.put(optionName, optionName);
+        params.put(optionName, optionValue);
     }
 
     public Properties getOptions() {

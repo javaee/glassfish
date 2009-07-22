@@ -52,6 +52,9 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.enterprise.universal.i18n.LocalStrings;
+import com.sun.enterprise.util.LocalStringManager;
+import com.sun.enterprise.util.i18n.StringManager;
 
 /**
  * GlassFish implementation of the EJBContainerProvider.
@@ -65,6 +68,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     // Use Bundle from another package
     private static final Logger _logger = 
             LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
+    private static final StringManager localStrings = StringManager.getManager(EJBContainerProviderImpl.class);
 
     private static final Object lock = new Object();
 
@@ -78,7 +82,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
             init();
             if (container.isOpen()) {
-                throw new EJBException(_logger.getResourceBundle().getString(
+                throw new EJBException(localStrings.getString(
                         "ejb.embedded.exception_exists_container"));
             }
 

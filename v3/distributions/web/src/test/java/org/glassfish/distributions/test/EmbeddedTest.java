@@ -169,6 +169,31 @@ public class EmbeddedTest {
         } catch(Exception e) {
             e.printStackTrace();
         }
+        CommandParameters cm = new CommandParameters();
+        cm.setOperand("org.glassfish.api.container.Sniffer");
+        ce = ctr.execute("list-contracts", cm);
+        try {
+            ce.getActionReport().writeReport(System.out);
+            System.out.println("");
+            for (MessagePart mp : ce.getActionReport().getTopMessagePart().getChildren()) {
+                 System.out.println(mp.getMessage());
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        cm.setOperand("org.glassfish.api.container.Container");
+        cm.setOption("started", "true");
+        ce = ctr.execute("list-contracts", cm);
+        try {
+            ce.getActionReport().writeReport(System.out);
+            System.out.println("");
+            for (MessagePart mp : ce.getActionReport().getTopMessagePart().getChildren()) {
+                 System.out.println(mp.getMessage());
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
     
 
