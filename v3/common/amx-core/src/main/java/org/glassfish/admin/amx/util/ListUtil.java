@@ -62,6 +62,11 @@ public final class ListUtil
         }
     }
 
+    public static <T> List<T> newList()
+    {
+        return new ArrayList<T>();
+    }
+    
     public static List<String> asStringList(final Object value)
     {
         List<String> values = null;

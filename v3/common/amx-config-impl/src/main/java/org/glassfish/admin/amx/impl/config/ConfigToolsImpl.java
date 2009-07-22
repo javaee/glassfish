@@ -338,42 +338,26 @@ public class ConfigToolsImpl extends AMXImplBase
         }
     }
     
-    /** works only for @Configured types */
-    private String[] getTypesImplementing( final Class<?> clazz)
+    private String[] toString( final Class[] classes )
     {
-        final DomDocument domDoc = new DomDocument(InjectedValues.getInstance().getHabitat());
-
-        try
+        if ( classes == null ) return null;
+        
+        final String[] names = new String[ classes.length ];
+        for( int i = 0; i < classes.length; ++i )
         {
-            final List<ConfigModel> models = domDoc.getAllModelsImplementing(clazz);
-            final String[] names = new String[ models == null ? 0 : models.size()];
-            if ( models != null )
-            {
-                int i = 0;
-                for (final ConfigModel model : models)
-                {
-                    names[i] = model.getTagName();
-                    ++i;
-                }
-            }
-
-            return names;
+            names[i] = Util.typeFromName( classes[i].getName() );
         }
-        catch (final Exception e)
-        {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        return names;
     }
     
     public String[] getConfigNamedTypes()
     {
-        return getTypesImplementing(Named.class);
+        return toString( ConfigBeanJMXSupport.getTypesImplementing(Named.class) );
     }
 
     public String[] getConfigResourceTypes()
     {
-        return getTypesImplementing(Resource.class);
+        return toString( ConfigBeanJMXSupport.getTypesImplementing(Resource.class) );
     }
     
 
