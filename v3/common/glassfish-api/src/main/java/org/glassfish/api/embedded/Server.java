@@ -225,7 +225,7 @@ public class Server {
         }
 
         habitat = embedded.getStartedService(Habitat.class);
-        habitat.add(fileSystem);
+        habitat.addIndex(fileSystem, EmbeddedFileSystem.class.getName(), null);
 
 
         for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
@@ -321,6 +321,15 @@ public class Server {
      */
     public String getName(){
         return serverName;
+    }
+
+    /**
+     * Returns the embedded file system used to run this embedded instance.
+     *
+     * @return embedded file system used by this instance
+     */
+    public EmbeddedFileSystem getFileSystem() {
+        return fileSystem.get();
     }
 
     /**

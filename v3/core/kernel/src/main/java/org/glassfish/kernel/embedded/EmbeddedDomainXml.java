@@ -20,15 +20,12 @@ public class EmbeddedDomainXml extends GFDomainXml {
     @Inject(optional=true)
     Server server=null;
 
-    @Inject(optional=true)
-    EmbeddedFileSystem fileSystem=null;
-
     @Override
     protected URL getDomainXml(ServerEnvironmentImpl env) throws IOException {
-        if (fileSystem!=null) {
-            return fileSystem.configFile.toURI().toURL();
-        }
         if (server!=null) {
+            if (server.getFileSystem()!=null && server.getFileSystem().configFile!=null) {
+                return server.getFileSystem().configFile.toURI().toURL();
+            }
             return getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
         } else {
             return super.getDomainXml(env);

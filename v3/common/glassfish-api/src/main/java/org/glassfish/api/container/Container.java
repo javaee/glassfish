@@ -49,7 +49,7 @@ import org.glassfish.api.deployment.Deployer;
  * @author Jerome Dochez
  */
 @Contract
-public interface Container {
+public interface ContainerContainer {
 
     /**
      * Returns the Deployer implementation capable of deploying applications to this
