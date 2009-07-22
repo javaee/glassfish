@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <console-config id="jca">
-        <integration-point 
-                id="jcaNodes" 
-                type="org.glassfish.admingui:navNode" 
-                priority="200" 
-                parentId="resources" 
-                content="jcaTreeNode.jsf" 
-        />               
+    <integration-point
+            id="jcaNodes"
+            type="org.glassfish.admingui:navNode"
+            priority="200"
+            parentId="resources"
+            content="jcaTreeNode.jsf"
+    />
+
+        <!-- add the property sheet for deployment page, specific for app client app -->
+    <integration-point
+        id="jca_deploy"
+        type="org.glassfish.admingui:uploadPropertySheet"
+        priority="100"
+        parentId="form"
+        content="apps/deploymentRar.jsf"
+    />
+
+    <!-- add the dropdown option for selecting the type of app to deploy
+         in the form of  label:value
+     -->
+    <integration-point
+        id="jca_deploy_type"
+        type="org.glassfish.admingui:appTypeDropdown"
+        priority="300"
+        parentId="form"
+        content="Connector Module ;rar"
+    />
+
 </console-config>
