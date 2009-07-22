@@ -51,9 +51,16 @@ public class EventsImpl implements Events {
             try {
                 // check if the listener is interested with his event.
                 m = listener.getClass().getMethod("event", Event.class);
-            } catch (NoSuchMethodException ex) {
-                Logger.getLogger(EventsImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
+            } catch (Throwable ex) {
+                // We need to catch Throwable, otherwise we can server not to
+                // shutdown when the following happens:
+                // Assume a bundle which has registered a event listener
+                // has been uninstalled without unregistering the listener.
+                // listener.getClass() refers to a class of such an uninstalled
+                // bundle. If framework has been refreshed, then the
+                // classloader can't be used further to load any classes.
+                // As a result, an exception like NoClassDefFoundError is thrown
+                // from getMethod.
                 Logger.getLogger(EventsImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (m!=null) {
@@ -71,7 +78,7 @@ public class EventsImpl implements Events {
                     public void run() {
                         try {
                             listener.event(event);
-                        } catch(Exception e) {
+                        } catch(Throwable e) {
                             logger.log(Level.WARNING, "Exception while dispatching an event", e);
                         }
                     }
@@ -83,7 +90,7 @@ public class EventsImpl implements Events {
                     // when synchronous listener throws DeploymentException
                     // we re-throw the exception to abort the deployment
                     throw de;
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     logger.log(Level.WARNING, "Exception while dispatching an event", e);
                 }
             }
