@@ -39,6 +39,9 @@
 
 package org.glassfish.appclient.server.core.jws;
 
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
+
 /**
  *
  * @author tjquinn
@@ -88,6 +91,42 @@ public class NamingConventions {
 
     public static String systemJNLPURI() {
         return DYN_PREFIX + "/___system.jnlp";
+    }
+
+    public static String uriToNestedClient(final ApplicationClientDescriptor descriptor) {
+        String uriToClientWithinEar = descriptor.getModuleDescriptor().
+                    getArchiveUri();
+        uriToClientWithinEar = uriToClientWithinEar.substring(0,
+                    uriToClientWithinEar.length() - ".jar".length());
+        return uriToClientWithinEar;
+    }
+    
+    public static String defaultUserFriendlyContextRoot(ApplicationClientDescriptor descriptor) {
+        String ufContextRoot;
+        /*
+         * Default for stand-alone clients: appName
+         * Default for nested clients: earAppName/uri-to-client-within-EAR-without-.jar
+         */
+        if (descriptor.getApplication().isVirtual()) {
+            /*
+             * Stand-alone client.
+             */
+            ufContextRoot = descriptor.getApplication().getAppName();
+        } else {
+            
+            ufContextRoot = descriptor.getApplication().getAppName() +
+                    "/" + uriToNestedClient(descriptor);
+        }
+        /*
+         * The developer might have set the value in the sun-application-client.xml
+         * descriptor.
+         */
+        final JavaWebStartAccessDescriptor jws =
+            descriptor.getJavaWebStartAccessDescriptor();
+        if (jws != null && jws.getContextRoot() != null) {
+            ufContextRoot = jws.getContextRoot();
+        }
+        return ufContextRoot;
     }
 
 }

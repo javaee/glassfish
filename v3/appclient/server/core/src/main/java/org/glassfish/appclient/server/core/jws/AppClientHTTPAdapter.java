@@ -91,13 +91,14 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     public AppClientHTTPAdapter(
             final String contextRoot,
+            final String userFriendlyContextRoot,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent,
             final Properties tokens,
             final File domainDir,
             final File installDir,
             final IiopService iiopService) throws IOException {
-        super(contextRoot, staticContent);
+        super(contextRoot, userFriendlyContextRoot, staticContent);
         this.dynamicContent = dynamicContent;
         this.tokens = tokens;
         this.iiopService = iiopService;

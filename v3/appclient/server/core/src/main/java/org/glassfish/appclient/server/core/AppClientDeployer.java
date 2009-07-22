@@ -51,6 +51,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
+import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
@@ -188,6 +189,8 @@ public class AppClientDeployer
 
     private static final String JWS_SIGNED_SYSTEM_JARS_ROOT = "java-web-start/___system";
 
+    private static final String JAVA_WEB_START_CONTEXT_ROOT_PROPERTY_NAME =
+            "java-web-start-context-root";
     /**
      * maps "(aliasName)/(systemJarRelativePath)" to AutoSignedContent for
      * the system JAR as signed by the cert linked to the alias
@@ -234,6 +237,10 @@ public class AppClientDeployer
 
     private final ConcurrentHashMap<String,AppClientHTTPAdapter> httpAdapters = new
             ConcurrentHashMap<String, AppClientHTTPAdapter>();
+
+    /** records the two context roots with which each client's adapter is registered */
+    private final ConcurrentHashMap<String,List<String>> registeredContextRoots =
+            new ConcurrentHashMap<String,List<String>>();
 
     private static final String DEFAULT_ALIAS = "s1as";
 
@@ -309,37 +316,112 @@ public class AppClientDeployer
     }
 
     synchronized void addContentToHTTPAdapter(
-            final String appName, final AppClientServerApplication contributor, final Properties tokens,
+            final String appName,
+            final AppClientServerApplication contributor, final Properties tokens,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent) throws EndpointRegistrationException, IOException {
         AppClientHTTPAdapter adapter = httpAdapters.get(appName);
         if (adapter == null) {
-            final String contextRoot = NamingConventions.contextRootForAppAdapter(appName);
-            addAdapter(appName, contextRoot, staticContent, dynamicContent, tokens);
+            String contextRoot = NamingConventions.contextRootForAppAdapter(appName);
+            addAdapter(appName, contextRoot, staticContent, dynamicContent, 
+                    tokens, contributor);
             addContributor(appName, contributor);
         } else {
             adapter.addContentIfAbsent(staticContent, dynamicContent);
         }
     }
 
+    private String chooseContextRoot(final ApplicationClientDescriptor acd,
+            final String appName) {
+        String contextRoot = NamingConventions.contextRootForAppAdapter(appName);
+
+        JavaWebStartAccessDescriptor jws = acd.getJavaWebStartAccessDescriptor();
+        if (jws != null && jws.getContextRoot() != null) {
+            contextRoot = jws.getContextRoot();
+        }
+        return contextRoot;
+    }
+    
     synchronized void addAdapter( 
             final String appName, final String contextRoot,
             final Map<String,StaticContent> staticContent, 
             final Map<String,DynamicContent> dynamicContent,
-            final Properties tokens) throws IOException, EndpointRegistrationException {
+            final Properties tokens,
+            final AppClientServerApplication contributor) throws IOException, EndpointRegistrationException {
 
         if (systemAdapter == null) {
             systemAdapter = startSystemContentAdapter();
         }
+        final String userFriendlyContextRoot = userFriendlyContextRoot(contributor);
         final AppClientHTTPAdapter adapter = new AppClientHTTPAdapter(
-                contextRoot, staticContent, dynamicContent, tokens,
+                contextRoot, userFriendlyContextRoot, staticContent,
+                dynamicContent, tokens,
                 serverEnv.getDomainRoot(), new File(installRootURI),
                 iiopService);
         httpAdapters.put(appName, adapter);
+
+        /*
+         * Register the adapter at two endpoints.  One is at the normal
+         * long context root.  The other is at either the developer-specified
+         * context root (if any) in the sun-application-client.xml descriptor
+         * or the default "user-friendly" context root
+         * derived from the application and/or client name or the value from
+         * the property assigned at deployment-time.
+         */
         requestDispatcher.registerEndpoint(
                 contextRoot,
                 adapter,
                 null);
+        requestDispatcher.registerEndpoint(
+                userFriendlyContextRoot,
+                adapter,
+                null);
+
+        registeredContextRoots.put(appName,
+                Arrays.asList(contextRoot, userFriendlyContextRoot));
+        logger.fine("Registered at context roots " + contextRoot + "," +
+                userFriendlyContextRoot);
+    }
+
+    private String userFriendlyContextRoot(final AppClientServerApplication contributor) {
+        String ufContextRoot = NamingConventions.defaultUserFriendlyContextRoot(
+                contributor.getDescriptor());
+
+        /*
+         * The administrator might have set the context root in
+         * deployment-time properties.
+         */
+        Properties p = contributor.dc().getAppProps();
+        /*
+         * See if the context root setting has one for this client.  The
+         * format of the property setting is:
+         *
+         * Stand-alone client deployment: java-web-start-context-root=contextRoot
+         * Nested in EAR: java-web-start-context-root.uri-to-client-without-.jar=contextRoot
+         *
+         * There can be multiple such j-w-s-c-r.xxx properties, one for
+         * each nested app client in the EAR.
+         * if (jwsContextRoots != null) {
+         */
+        String overridingContextRoot = null;
+        if (contributor.getDescriptor().getApplication().isVirtual()) {
+            /*
+             * Stand-alone case.
+             */
+            overridingContextRoot = p.getProperty(JAVA_WEB_START_CONTEXT_ROOT_PROPERTY_NAME);
+        } else {
+            /*
+             * Nested app clients case.
+             */
+            final String uriToNestedClient = NamingConventions.uriToNestedClient(
+                    contributor.getDescriptor());
+            overridingContextRoot = p.getProperty(
+                    JAVA_WEB_START_CONTEXT_ROOT_PROPERTY_NAME + "." + uriToNestedClient);
+        }
+        if (overridingContextRoot != null) {
+            ufContextRoot = overridingContextRoot;
+        }
+        return ufContextRoot;
     }
 
     public synchronized AutoSignedContent appLevelSignedSystemContent(
@@ -401,13 +483,17 @@ public class AppClientDeployer
         contributors.remove(contributor);
         if (contributors.isEmpty()) {
             contributingAppClients.remove(appName);
-            removeAdapter(appName);
+            removeAdapter(appName, contributor);
         }
     }
 
-    synchronized void removeAdapter(final String appName) throws EndpointRegistrationException {
+    synchronized void removeAdapter(final String appName,
+            final AppClientServerApplication contributor) throws EndpointRegistrationException {
         httpAdapters.remove(appName);
-        requestDispatcher.unregisterEndpoint(NamingConventions.contextRootForAppAdapter(appName));
+        requestDispatcher.unregisterEndpoint(
+                NamingConventions.contextRootForAppAdapter(appName));
+        requestDispatcher.unregisterEndpoint(
+                userFriendlyContextRoot(contributor));
     }
 
     @Override
@@ -472,6 +558,7 @@ public class AppClientDeployer
 
             AppClientHTTPAdapter sysAdapter = new AppClientHTTPAdapter(
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
+                    NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX, // essentially a no-op
                     staticSystemContent, 
                     dynamicSystemContent,
                     new Properties(),

@@ -76,13 +76,16 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
     private volatile State state = State.RESUMED;
 
     private final String contextRoot;
+    private final String userFriendlyContextRoot;
 
     private final ConcurrentHashMap<String,StaticContent> content =
             new ConcurrentHashMap<String,StaticContent>();
 
     public RestrictedContentAdapter(
-            final String contextRoot, final Map<String,StaticContent> content) throws IOException {
-        this(contextRoot);
+            final String contextRoot,
+            final String userFriendlyContextRoot,
+            final Map<String,StaticContent> content) throws IOException {
+        this(contextRoot, userFriendlyContextRoot);
         this.content.putAll(content);
         /*
          * Preload the adapter's cache with the static content.  This helps
@@ -101,13 +104,15 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
                 dumpContent());
     }
 
-    public RestrictedContentAdapter(final String contextRoot) {
+    public RestrictedContentAdapter(final String contextRoot,
+            final String userFriendlyContextRoot) {
         /*
          * Turn off the default static resource handling.  We do our own from
          * our service method, rather than letting the StaticResourcesAdapter
          * (superclass) logic have a try at each request first.
          */
         this.contextRoot = contextRoot;
+        this.userFriendlyContextRoot = userFriendlyContextRoot;
         setHandleStaticResources(false);
 
         setUseSendFile(false);
@@ -124,7 +129,11 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
     public String contextRoot() {
         return contextRoot;
     }
-    
+
+    public String userFriendlyContextRoot() {
+        return userFriendlyContextRoot;
+    }
+
     public synchronized void addContentIfAbsent(final String relativeURIString,
             final StaticContent newContent) throws IOException {
         final StaticContent existingContent = content.get(relativeURIString);
@@ -150,12 +159,32 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 
 
     protected String relativizeURIString(final String uriString) {
-        if ( ! uriString.startsWith(contextRoot + "/")) {
-            logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.uriOutsideContextRoot",
-                    new Object[] {uriString, contextRoot});
+        String result;
+        if ( (result = relativizeURIString(contextRoot, uriString)) == null) {
+            if ( ( result = relativizeURIString(userFriendlyContextRoot, uriString)) == null) {
+                logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.uriOutsideContextRoot",
+                    new Object[] {uriString, contextRoot, userFriendlyContextRoot});
+                return null;
+            }
+        }
+        return result;
+    }
+
+    protected String relativizeURIString(final String candidateContextRoot,
+            final String uriString) {
+        if ( ! uriString.startsWith(candidateContextRoot)) {
             return null;
         }
-        return uriString.substring(contextRoot.length() + 1);
+        /*
+         * If the user has requested the main JNLP using the user-friendly
+         * context root then there candidate context root is exactly the
+         * same as the context root.  There will be no substring after
+         * that.
+         */
+        if (candidateContextRoot.equals(uriString)) {
+            return "";
+        }
+        return uriString.substring(candidateContextRoot.length() + 1);
     }
 
     protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) {
@@ -197,9 +226,11 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
             return true;
         } else {
             finishErrorResponse(gResp, contentStateToResponseStatus(sc));
+            final String scString = (sc == null ? "null" : sc.toString());
+            final String scStateString = (sc == null ? "null" : sc.state().toString());
             logger.fine(logPrefix() + "Found static content for " + gReq.getMethod() +
-                    ": " + relativeURIString + " -> " + sc.toString() +
-                    " but could not serve it; its state is " + sc.state());
+                    ": " + relativeURIString + " -> " + scString +
+                    " but could not serve it; its state is " + scStateString);
             return true;
         }
     }

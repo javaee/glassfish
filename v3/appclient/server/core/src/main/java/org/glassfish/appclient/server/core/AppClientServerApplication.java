@@ -302,6 +302,10 @@ public class AppClientServerApplication implements
         return new URLClassLoader(new URL[0]);
     }
 
+    DeploymentContext dc() {
+        return dc;
+    }
+        
     private void startJWSServices() throws EndpointRegistrationException, IOException {
         if (myContent == null) {
             addClientContentToHTTPAdapter();
@@ -515,6 +519,12 @@ public class AppClientServerApplication implements
         tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "");
 
         createAndAddDynamicContent(result, tHelper.mainJNLP(), MAIN_DOCUMENT_TEMPLATE);
+        
+        /*
+         * Add the main JNLP again but with an empty URI string so the user
+         * can launch the app client by specifying only the context root.
+         */
+        createAndAddDynamicContent(result, "", MAIN_DOCUMENT_TEMPLATE);
         createAndAddDynamicContent(result, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
 
 
