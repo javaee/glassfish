@@ -214,7 +214,7 @@ public class AppTest
                     null, null, null);
             im.preInvoke(inv);
 
-            nm.bindToComponentNamespace("app1", "mod1", "comp1", new ArrayList<Binding>());
+            nm.bindToComponentNamespace("app1", "mod1", "comp1", false, new ArrayList<Binding>());
 
             Context ctx = (Context) ic.lookup("java:comp/env");
             System.out.println("**lookup(java:comp/env) ==> " + ctx);
@@ -255,7 +255,7 @@ public class AppTest
             bindings.add(new Binding("conf/area", intFactory));
             bindings.add(new Binding("conf/location", "Santa Clara"));
 
-            nm.bindToComponentNamespace("app1", "mod1", "comp1", bindings);
+            nm.bindToComponentNamespace("app1", "mod1", "comp1", false, bindings);
 
             inv = new ComponentInvocation("comp1",
                     ComponentInvocation.ComponentInvocationType.EJB_INVOCATION,
@@ -285,7 +285,7 @@ public class AppTest
             bindings2.add(new Binding("conf/area", floatFactory));
             bindings2.add(new Binding("conf/location", "Santa Clara[14]"));
 
-            nm.bindToComponentNamespace("app1", "mod1", "comp2", bindings2);
+            nm.bindToComponentNamespace("app1", "mod1", "comp2", false, bindings2);
 
             inv = new ComponentInvocation("comp2",
                     ComponentInvocation.ComponentInvocationType.EJB_INVOCATION,

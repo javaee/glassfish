@@ -83,6 +83,10 @@ public final class InterceptorInvocationHandler
         return clientProxy;
     }
 
+    public Object getTargetInstance() {
+        return targetInstance;
+    }
+
     public Object[] getInterceptorInstances() {
         return interceptorInstances;
     }
@@ -130,8 +134,6 @@ public final class InterceptorInvocationHandler
             Method beanClassMethod = targetInstance.getClass().getMethod
                 (method.getName(), method.getParameterTypes());
 
-            // TODO need to support method-level interceptors.  Right now method
-            // info is ignored during the processing of this call
             InterceptorManager.InterceptorChain chain =
                     interceptorManager.getAroundInvokeChain(null, beanClassMethod);
 

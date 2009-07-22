@@ -152,7 +152,14 @@ public class ManagedBeanDescriptor extends JndiEnvironmentRefsGroupDescriptor {
         return beanInterceptorInfo.get(o);
     }
 
-    public void clearBeanInstanceInfo() {
+    public void clearBeanInstanceInfo(Object beanInstance) {
+
+        beanInstances.remove(beanInstance);
+        beanInterceptorInfo.remove(beanInstance);     
+
+    }
+
+    public void clearAllBeanInstanceInfo() {
         beanInstances.clear();
         beanInterceptorInfo.clear();
         interceptorBuilder = null;

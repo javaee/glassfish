@@ -140,9 +140,13 @@ public class ComponentEnvManagerImpl
         if( env instanceof Application) {
             namingManager.bindToAppNamespace(getApplicationName(env), bindings);
         } else {
+            
+            boolean treatComponentAsModule = getTreatComponentAsModule(env);
+
+
             // Bind dependencies to the namespace for this component
             namingManager.bindToComponentNamespace(getApplicationName(env), getModuleName(env),
-                    compEnvId, bindings);
+                    compEnvId, treatComponentAsModule, bindings);
             compEnvId = getComponentEnvId(env);
 
         }
@@ -508,6 +512,28 @@ public class ComponentEnvManagerImpl
 
         return appliesToScope;
 
+    }
+
+    private boolean getTreatComponentAsModule(JndiNameEnvironment env) {
+
+        boolean treatComponentAsModule = false;
+
+        if( env instanceof WebBundleDescriptor ) {
+            treatComponentAsModule = true;
+        } else {
+
+            if (env instanceof EjbDescriptor ) {
+
+                EjbDescriptor ejbDesc = (EjbDescriptor) env;
+                EjbBundleDescriptor ejbBundle = ejbDesc.getEjbBundleDescriptor();
+                if( ejbBundle.getModuleDescriptor().getDescriptor() instanceof WebBundleDescriptor ) {
+                    treatComponentAsModule = true;
+                }
+            }
+
+        }
+                
+        return treatComponentAsModule;
     }
 
     /**

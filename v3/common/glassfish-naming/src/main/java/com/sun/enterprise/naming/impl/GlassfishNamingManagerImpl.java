@@ -79,6 +79,9 @@ public final class  GlassfishNamingManagerImpl
     public static final String IIOPOBJECT_FACTORY =
             "com.sun.enterprise.naming.util.IIOPObjectFactory";
 
+    private static final int JAVA_COMP_LENGTH = "java:comp".length();
+    private static final int JAVA_MODULE_LENGTH = "java:module".length();
+
     @Inject
     InvocationManager invMgr;
 
@@ -441,9 +444,9 @@ public final class  GlassfishNamingManagerImpl
     }
 
     /**
-     * This method binds them in the component's java:comp
-     * namespace.
+     * This method binds them in a java:namespace.
      */
+
     private void bindToNamespace(Map namespace, String logicalJndiName, Object value)
             throws NamingException {
 
@@ -464,7 +467,11 @@ public final class  GlassfishNamingManagerImpl
         bindIntermediateContexts(namespace, logicalJndiName);
     }
 
+    private boolean existsInNamespace(Map namespace, String logicalJndiName) {
 
+        return namespace.containsKey(logicalJndiName);
+
+    }
 
     /**
      * This method enumerates the env properties, ejb and resource references
@@ -472,7 +479,8 @@ public final class  GlassfishNamingManagerImpl
      * namespace.
      */
     public void bindToComponentNamespace(String appName, String moduleName,
-                                         String componentId, Collection<? extends JNDIBinding> bindings)
+                                         String componentId,  boolean treatComponentAsModule,
+                                         Collection<? extends JNDIBinding> bindings)
             throws NamingException {
 
         // These are null in rare cases, e.g. default web app.
@@ -482,6 +490,7 @@ public final class  GlassfishNamingManagerImpl
             info.appName = appName;
             info.moduleName = moduleName;
             info.componentId = componentId;
+            info.treatComponentAsModule = treatComponentAsModule;
 
             componentIdInfo.put(componentId, info);
         }
@@ -489,11 +498,17 @@ public final class  GlassfishNamingManagerImpl
         for (JNDIBinding binding : bindings) {
 
             String logicalJndiName = binding.getName();
+
             Map namespace = null;
+
+            if( treatComponentAsModule && logicalJndiName.startsWith("java:comp")) {
+                logicalJndiName = logicalCompJndiNameToModule(logicalJndiName);
+            }
             
             if ( logicalJndiName.startsWith("java:comp")) {
 
                 namespace = getComponentNamespace(componentId);
+
 
             } else if ( logicalJndiName.startsWith("java:module")) {
 
@@ -505,28 +520,19 @@ public final class  GlassfishNamingManagerImpl
             }
 
             if( namespace != null ) {
-                bindToNamespace(namespace, binding.getName(), binding.getValue());
+                if( !existsInNamespace(namespace, logicalJndiName)) {
+                    bindToNamespace(namespace, logicalJndiName, binding.getValue());
+                }
             }
         }
     }
 
-    public void bindToModuleNamespace(String appName, String moduleName,
-                                      Collection<? extends JNDIBinding> bindings)
-            throws NamingException {
-
-        for (JNDIBinding binding : bindings) {
-            String logicalJndiName = binding.getName();
-
-            if ( logicalJndiName.startsWith("java:module")) {
-                Map namespace = getModuleNamespace(new AppModuleKey(appName, moduleName));
-                bindToNamespace(namespace, binding.getName(), binding.getValue());
-            } else if ( logicalJndiName.startsWith("java:app")) {
-                Map namespace = getAppNamespace(appName);
-                bindToNamespace(namespace, binding.getName(), binding.getValue());
-            }
-        }
-
+    private String logicalCompJndiNameToModule(String logicalCompName) {
+        String tail = logicalCompName.substring(JAVA_COMP_LENGTH);
+        String logicalModuleJndiName = "java:module" + tail;
+        return logicalModuleJndiName;
     }
+
 
     public void bindToAppNamespace(String appName, Collection<? extends JNDIBinding> bindings)
             throws NamingException {
@@ -652,9 +658,14 @@ public final class  GlassfishNamingManagerImpl
 
     private Object lookup(String componentId, String name, Context ctx) throws NamingException {
 
-        Map namespace = getNamespace(componentId, name);
+        ComponentIdInfo info = componentIdInfo.get(componentId);
+        String logicalJndiName = name;
+        if( (info != null) && (info.treatComponentAsModule) && name.startsWith("java:comp")) {
+            logicalJndiName = logicalCompJndiNameToModule(name);
+        }
+        Map namespace = getNamespace(componentId, logicalJndiName);
 
-        Object obj = namespace.get(name);
+        Object obj = namespace.get(logicalJndiName);
 
         if (obj == null)
             throw new NameNotFoundException("No object bound to name " + name);
@@ -682,9 +693,16 @@ public final class  GlassfishNamingManagerImpl
     private ArrayList listNames(String name) throws NamingException {
         // Get the component id and namespace to lookup
         String componentId = getComponentId();
-        Map namespace = getNamespace(componentId, name);
 
-        Object obj = namespace.get(name);
+        ComponentIdInfo info = componentIdInfo.get(componentId);
+        String logicalJndiName = name;
+        if( (info != null) && (info.treatComponentAsModule) && name.startsWith("java:comp")) {
+            logicalJndiName = logicalCompJndiNameToModule(name);
+        }
+
+        Map namespace = getNamespace(componentId, logicalJndiName);
+
+        Object obj = namespace.get(logicalJndiName);
 
         if (obj == null)
             throw new NameNotFoundException("No object bound to name " + name);
@@ -697,13 +715,13 @@ public final class  GlassfishNamingManagerImpl
         // a list of bindings in each javaURLContext instance.
         ArrayList list = new ArrayList();
         Iterator itr = namespace.keySet().iterator();
-        if (!name.endsWith("/"))
-            name = name + "/";
+        if (!logicalJndiName.endsWith("/"))
+            logicalJndiName = logicalJndiName + "/";
         while (itr.hasNext()) {
             String key = (String) itr.next();
             // Check if key begins with name and has only 1 component extra
             // (i.e. no more slashes)
-            if (key.startsWith(name) && key.indexOf('/', name.length()) == -1)
+            if (key.startsWith(logicalJndiName) && key.indexOf('/', logicalJndiName.length()) == -1)
                 list.add(key);
         }
         return list;
@@ -781,11 +799,13 @@ public final class  GlassfishNamingManagerImpl
 
         String appName;
         String moduleName;
-        String componentId;    
+        String componentId;
+        boolean treatComponentAsModule;
 
          public String toString()
             { return "appName = " + appName + " , module = " + moduleName +
-                    " , componentId = " + componentId; }
+                    " , componentId = " + componentId
+                    + ", treatComponentAsModule = " + treatComponentAsModule; }
     }
 
 }

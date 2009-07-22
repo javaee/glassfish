@@ -267,56 +267,7 @@ public abstract class AbstractSingletonContainer
             }
         }
 
-        if( isWebServiceEndpoint ) {
-            /*TODO
-            EjbBundleDescriptor bundle = 
-                ejbDescriptor.getEjbBundleDescriptor();
-            WebServicesDescriptor webServices = bundle.getWebServices();
-            Collection myEndpoints = 
-                webServices.getEndpointsImplementedBy(ejbDescriptor);
-            //FindBugs [Deadstore] Long ejbId = new Long(ejbDescriptor.getUniqueId());
-            
-            // An ejb can only be exposed through 1 web service endpoint
-            Iterator iter = myEndpoints.iterator();
-            com.sun.enterprise.deployment.WebServiceEndpoint next = 
- 					(com.sun.enterprise.deployment.WebServiceEndpoint) iter.next();
-
-            Class serviceEndpointIntfClass = 
-                    loader.loadClass(next.getServiceEndpointInterface());            
-
-            if (!serviceEndpointIntfClass.isInterface()) {
-                ServiceInterfaceGenerator generator = new ServiceInterfaceGenerator(loader, ejbClass);
-                serviceEndpointIntfClass = WsUtil.generateAndLoad(generator, loader);
-                if (serviceEndpointIntfClass==null) {
-                    throw new RuntimeException("Error generating the SEI");
-                }
-            }
-            
-            Class tieClass=null;
-            
-            WebServiceInvocationHandler invocationHandler =
-                    new WebServiceInvocationHandler(ejbClass, next,
-                                                    serviceEndpointIntfClass,
-                    webServiceInvocationInfoMap);
-            
-            
-            invocationHandler.setContainer(this);
-            Object servant = (Object) Proxy.newProxyInstance
-                    (loader, new Class[] { serviceEndpointIntfClass },
-                    invocationHandler);
-            
-            // starting in 2.0, there is no more generated Ties
-            if (next.getTieClassName()!=null) {                
-                tieClass = loader.loadClass(next.getTieClassName());                
-            }
-                    
-            webServiceEndpoint = WebServiceEjbEndpointRegistry.getRegistry().createEjbEndpointInfo(next, this, servant, tieClass);
-                                           
-            WebServiceEjbEndpointRegistry.getRegistry().
-                registerEjbWebServiceEndpoint(webServiceEndpoint);
-            */
-        }
-
+       
         createBeanPool();
 
         //TODO registerMonitorableComponents();
@@ -441,7 +392,7 @@ public abstract class AbstractSingletonContainer
 
     protected void checkInit() {
         if( singletonInitializationFailed ) {
-            throw new EJBException("Singleton " + ejbDescriptor.getName() + " is unavailable " +
+            throw new NoSuchEJBException("Singleton " + ejbDescriptor.getName() + " is unavailable " +
                                    "because its original initialization failed.");
         }
 

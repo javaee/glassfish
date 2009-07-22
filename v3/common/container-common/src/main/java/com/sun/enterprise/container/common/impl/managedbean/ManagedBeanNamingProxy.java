@@ -37,7 +37,7 @@ package com.sun.enterprise.container.common.impl.managedbean;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import org.glassfish.api.managedbean.ManagedBeanManager;
 
 
 /**
@@ -59,9 +59,14 @@ public class ManagedBeanNamingProxy implements org.glassfish.api.naming.NamingOb
         Object managedBean = null;
         try {
 
-            ManagedBeanCreatorImpl creator = new ManagedBeanCreatorImpl(habitat);
+            ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
 
-            managedBean = creator.createManagedBean(managedBeanDesc);
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+            // Create managed bean instance
+            Class managedBeanClass = loader.loadClass(managedBeanDesc.getBeanClassName());
+
+            managedBean = managedBeanMgr.createManagedBean(managedBeanDesc, managedBeanClass);
             
         } catch(Exception e) {
             javax.naming.NamingException ne = new javax.naming.NamingException(e.getMessage());

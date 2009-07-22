@@ -110,15 +110,16 @@ public interface GlassfishNamingManager {
      * This method enumerates the env properties, ejb and resource references
      * etc for a J2EE component and binds them in the applicable java:
      * namespace.
+     *
+     * @param treatComponentAsModule true if java:comp and java:module refer to the same
+     *         namespace
+     *
      */
     public void bindToComponentNamespace(String appName, String moduleName,
-                                         String componentId, Collection<? extends JNDIBinding> bindings)
+                                         String componentId, boolean treatComponentAsModule, 
+                                         Collection<? extends JNDIBinding> bindings)
             throws NamingException;
 
-
-    public void bindToModuleNamespace(String appName, String moduleName,
-                                      Collection<? extends JNDIBinding> bindings)
-            throws NamingException;
 
     public void bindToAppNamespace(String appName, Collection<? extends JNDIBinding> bindings)
             throws NamingException;

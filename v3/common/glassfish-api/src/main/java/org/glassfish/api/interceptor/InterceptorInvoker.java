@@ -45,6 +45,8 @@ public interface InterceptorInvoker {
 
     public Object getProxy();
 
+    public Object getTargetInstance();
+
     public Object[] getInterceptorInstances();
 
     public void invokePostConstruct() throws Exception;

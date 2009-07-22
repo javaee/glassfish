@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Member;
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 import java.lang.annotation.Annotation;
 
 
@@ -57,6 +58,7 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Service;
@@ -92,6 +94,9 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
 
     @Inject
     private InvocationManager invocationMgr;
+
+    @Inject
+    private InjectionManager injectionMgr;
 
     @Inject
     private GlassfishNamingManager namingManager;
@@ -180,12 +185,17 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                 continue;
             }
 
+            // Only need to validate if this is an ejb-jar
+            boolean validationRequired  = bundle instanceof EjbBundleDescriptor;
+
             for(ManagedBeanDescriptor next : bundle.getManagedBeans()) {
 
                 try {
 
-                    // TODO Should move this to regular DOL processing stage
-                    next.validate();
+                    // TODO Should move this to regular DOL processing stage                                      
+                    if( validationRequired ) {
+                        next.validate();
+                    }
 
                     Set<String> interceptorClasses = next.getAllInterceptorClasses();
 
@@ -304,7 +314,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                            next.getBeanClassName() + " with jndi name " + jndiName, ne);
                 }
 
-                next.clearBeanInstanceInfo();
+                next.clearAllBeanInstanceInfo();
 
             }
         }
@@ -326,6 +336,138 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
 
         return eligible;
     }
+
+    public Object createManagedBean(Class managedBeanClass) throws Exception {
+
+        BundleDescriptor bundle = getBundle();
+
+        ManagedBeanDescriptor managedBeanDesc = getManagedBeanDescriptor(bundle, managedBeanClass);
+
+        return createManagedBean(managedBeanDesc, managedBeanClass);
+    }
+
+    public Object createManagedBean(Object managedBeanDesc, Class managedBeanClass) throws Exception {
+
+        ManagedBeanDescriptor desc = (ManagedBeanDescriptor) managedBeanDesc;
+
+        JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
+            desc.getInterceptorBuilder();
+
+        // This is the managed bean class instance
+        Object managedBean = managedBeanClass.newInstance();
+
+        InterceptorInvoker interceptorInvoker =
+                interceptorBuilder.createInvoker(managedBean);
+
+        // This is the object passed back to the caller.
+        Object callerObject = interceptorInvoker.getProxy();
+
+        Object[] interceptorInstances = interceptorInvoker.getInterceptorInstances();
+
+        inject(managedBean, desc);
+
+        // Inject interceptor instances
+        for(int i = 0; i < interceptorInstances.length; i++) {
+            inject(interceptorInstances[i], desc);
+        }
+
+        interceptorInvoker.invokePostConstruct();
+
+        desc.addBeanInstanceInfo(managedBean, interceptorInvoker);
+
+        return callerObject;
+
+    }
+
+    private void inject(Object instance, ManagedBeanDescriptor managedBeanDesc)
+        throws Exception {
+        BundleDescriptor bundle = managedBeanDesc.getBundle();
+        if( bundle instanceof EjbBundleDescriptor ) {
+            injectionMgr.injectInstance(instance, managedBeanDesc.getGlobalJndiName(), false);
+        } else {
+            //  Inject instances, but use injection invoker for PostConstruct
+            injectionMgr.injectInstance(instance, (JndiNameEnvironment) bundle, false);
+        }
+    }
+
+    public void destroyManagedBean(Object managedBean)  {
+
+        Object managedBeanInstance = null;
+
+        try {
+
+            Field proxyField = managedBean.getClass().getDeclaredField("__ejb31_delegate");
+
+            final Field finalF = proxyField;
+                java.security.AccessController.doPrivileged(
+                new java.security.PrivilegedExceptionAction() {
+                    public java.lang.Object run() throws Exception {
+                        if( !finalF.isAccessible() ) {
+                            finalF.setAccessible(true);
+                        }
+                        return null;
+                    }
+                });
+
+            Proxy proxy = (Proxy) proxyField.get(managedBean);
+
+            InterceptorInvoker invoker = (InterceptorInvoker) Proxy.getInvocationHandler(proxy);
+
+            managedBeanInstance = invoker.getTargetInstance();
+
+        } catch(Exception e) {
+
+            throw new IllegalArgumentException("invalid managed bean " + managedBean, e);
+        }
+
+
+        BundleDescriptor bundle = getBundle();
+
+        ManagedBeanDescriptor desc = getManagedBeanDescriptor(bundle, managedBeanInstance.getClass());
+
+        desc.clearBeanInstanceInfo(managedBeanInstance);
+
+    }
+
+    private BundleDescriptor getBundle() {
+        ComponentEnvManager compEnvManager = habitat.getByContract(ComponentEnvManager.class);
+
+        JndiNameEnvironment env = compEnvManager.getCurrentJndiNameEnvironment();
+
+        BundleDescriptor bundle = null;
+
+        if( env instanceof BundleDescriptor) {
+
+           bundle = (BundleDescriptor) env;
+
+        } else if( env instanceof EjbDescriptor ) {
+
+           bundle = (BundleDescriptor)
+                   ((EjbDescriptor)env).getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
+        }
+
+        if( bundle == null ) {
+           throw new IllegalStateException("Invalid context for managed bean creation");
+        }
+
+        return bundle;
+
+    }
+
+    private ManagedBeanDescriptor getManagedBeanDescriptor(BundleDescriptor bundle, Class managedBeanClass) {
+
+
+        ManagedBeanDescriptor managedBeanDesc =
+                bundle.getManagedBeanByBeanClass(managedBeanClass.getName());
+
+        if( managedBeanDesc == null ) {
+            throw new IllegalArgumentException("No managed bean with name " + managedBeanClass +
+                    " found in bundle " + bundle.getModuleName());
+        }
+
+        return managedBeanDesc;
+    }
+
 
     public Object resolveInjectionPoint(java.lang.reflect.Member member, Application app)
         throws javax.naming.NamingException {
