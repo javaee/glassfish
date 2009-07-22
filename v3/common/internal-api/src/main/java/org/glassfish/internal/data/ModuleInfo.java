@@ -83,7 +83,8 @@ public class ModuleInfo {
     protected final Events events;
     private Properties moduleProps;
     private boolean started=false;
-
+    private ClassLoader moduleClassLoader;
+  
     public ModuleInfo(final Events events, String name, Collection<EngineRef> refs, 
         Properties moduleProps) {
         this.name = name;
@@ -126,6 +127,7 @@ public class ModuleInfo {
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker) throws Exception {
         ActionReport report = context.getActionReport();
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
+        moduleClassLoader = context.getClassLoader();
 
         if (!context.getTransformers().isEmpty()) {
             // add the class file transformers to the new class loader
@@ -235,11 +237,15 @@ public class ModuleInfo {
             return;
         
         for (EngineRef module : _getEngineRefs()) {
+            ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
             try {
+                Thread.currentThread().setContextClassLoader(moduleClassLoader);
                 module.stop(context);
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "Cannot stop module " +
                         module.getContainerInfo().getSniffer().getModuleType(),e );
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
         }
         started=false;
@@ -254,11 +260,15 @@ public class ModuleInfo {
         for (EngineRef engine : _getEngineRefs()) {
             if (engine.getApplicationContainer()!=null && engine.getApplicationContainer().getClassLoader()!=null) {
                 classLoaders.add(engine.getApplicationContainer().getClassLoader());
+                ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
                 try {
+                    Thread.currentThread().setContextClassLoader(moduleClassLoader);
                     engine.unload(context);
                 } catch(Throwable e) {
                     logger.log(Level.SEVERE, "Failed to unload from container type : " +
                             engine.getContainerInfo().getSniffer().getModuleType(), e);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(currentClassLoader);
                 }
             }
         }
