@@ -41,7 +41,7 @@ public class ExistingConfigurationTest {
             // find the domain root.
             f = new File(f,"domains");
             f = new File(f, "domain1");
-            f = new File(f, "config")M;
+            f = new File(f, "config");
             f = new File(f, "domain.xml");
             Assert.assertTrue(f.exists());
             efsb.setConfigurationFile(f);
