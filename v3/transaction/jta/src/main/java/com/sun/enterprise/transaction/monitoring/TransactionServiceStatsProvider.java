@@ -35,13 +35,21 @@
  */
 package com.sun.enterprise.transaction.monitoring;
 
+import java.util.List;
+
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.StringStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
+import org.glassfish.external.statistics.impl.StringStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
+
+import org.jvnet.hk2.annotations.Inject;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.TransactionAdminBean;
 
 /**
  * Collects the Transaction Service monitoring data and provides it to the callers.
@@ -53,6 +61,8 @@ import org.glassfish.gmbal.ManagedObject;
 @Description("Transaction Service Statistics")
 public class TransactionServiceStatsProvider {
 
+    private static final int COLUMN_LENGTH = 25;
+
     private CountStatisticImpl activeCount = new CountStatisticImpl("ActiveCount", "count", 
             "Provides the number of transactions that are currently active.");
 
@@ -63,6 +73,8 @@ public class TransactionServiceStatsProvider {
             "Provides the number of transactions that have been rolled back.");
 
     private boolean isFrozen = false;
+
+    @Inject private JavaEETransactionManager txMgr;
 
     @ManagedAttribute(id="activecount")
     @Description( "Provides the number of transactions that are currently active." )
@@ -84,8 +96,85 @@ public class TransactionServiceStatsProvider {
     
     @ManagedAttribute(id="state")
     @Description( "Indicates if the transaction service has been frozen." )
-    public String getState() {
-        return (isFrozen)? "True": "False";
+    public StringStatistic getState() {
+        StringStatisticImpl impl = new StringStatisticImpl("State", "String", 
+                "Transaction system state: frozen?");
+        impl.setCurrent((isFrozen)? "True": "False");
+        return impl.getStatistic();
+    }
+    
+    @ManagedAttribute(id="activeids")
+    @Description( "List of inflight transactions." )
+    public StringStatistic getActiveIds() {
+        StringBuffer strBuf = new StringBuffer(1024);
+
+        List aList = txMgr.getActiveTransactions();
+        if (aList.isEmpty()) {
+            strBuf.append("");
+
+        } else {
+            //Set the headings for the tabular output
+            if (aList.size() > 0) {
+                String colName = "Transaction Id";
+                strBuf.append("\n\n");
+                strBuf.append(colName);
+                for (int i=colName.length(); i<COLUMN_LENGTH+15; i++){
+                    strBuf.append(" ");
+                }
+                colName = "Status";
+                strBuf.append(colName);
+                for (int i=colName.length(); i<COLUMN_LENGTH; i++){
+                    strBuf.append(" ");
+                }
+                colName = "ElapsedTime(ms)";
+                strBuf.append(colName);
+                for (int i=colName.length(); i<COLUMN_LENGTH; i++){
+                    strBuf.append(" ");
+                }
+                colName = "ComponentName";
+                strBuf.append(colName);
+                for (int i=colName.length(); i<COLUMN_LENGTH; i++){
+                    strBuf.append(" ");
+                }
+                strBuf.append("ResourceNames\n");
+            }
+
+            for (int i=0; i < aList.size(); i++) {
+                TransactionAdminBean txnBean = (TransactionAdminBean)aList.get(i);
+                String txnId = txnBean.getId();
+
+                strBuf.append("\n");
+                strBuf.append(txnId);
+                for (int j=txnId.length(); j<COLUMN_LENGTH+15; j++){
+                    strBuf.append(" ");
+                }
+                strBuf.append(txnBean.getStatus());
+                for (int j=txnBean.getStatus().length(); j<COLUMN_LENGTH; j++){
+                    strBuf.append(" ");
+                }
+                strBuf.append(String.valueOf(txnBean.getElapsedTime()));
+                for (int j=(String.valueOf(txnBean.getElapsedTime()).length()); j<COLUMN_LENGTH; j++){
+                    strBuf.append(" ");
+                }
+
+                strBuf.append(txnBean.getComponentName());
+                for (int j=txnBean.getComponentName().length(); j<COLUMN_LENGTH; j++){
+                    strBuf.append(" ");
+                }
+                List<String> resourceList = txnBean.getResourceNames();
+                if (resourceList != null) {
+                    for (int k = 0; k < resourceList.size(); k++) {
+                        strBuf.append(resourceList.get(k));
+                        strBuf.append(",");
+                    }
+                }
+            }
+        }
+
+        StringStatisticImpl impl = new StringStatisticImpl("ActiveIds", "List", 
+                "List of inflight transactions." );
+        impl.setCurrent(strBuf.toString());
+        return impl.getStatistic();
     }
     
     @ProbeListener("glassfish:transaction:transaction-service:activated")

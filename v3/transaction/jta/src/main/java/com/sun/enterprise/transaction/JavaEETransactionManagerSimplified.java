@@ -133,6 +133,7 @@ public class JavaEETransactionManagerSimplified
     private int m_transRolledback = 0;
     private int m_transInFlight = 0;
     private TransactionServiceProbeProvider monitor;
+    private Hashtable txnTable = null;
 
     private Cache resourceTable;
 
@@ -1087,6 +1088,7 @@ public class JavaEETransactionManagerSimplified
     */
     public ArrayList getActiveTransactions() {
         ArrayList tranBeans = new ArrayList();
+        txnTable = new Hashtable();
         Vector active = (Vector)activeTransactions.clone(); // get the clone of the active transactions
         for(int i=0;i<active.size();i++){
             try{
@@ -1096,6 +1098,8 @@ public class JavaEETransactionManagerSimplified
                     // Shouldn't happen
                     tBean = new TransactionAdminBean(tran, "unknown", null,
                             System.currentTimeMillis(), "unknown", null);
+                } else {
+                    txnTable.put(tBean.getIdentifier(), tran);
                 }
                 tranBeans.add(tBean);
             }catch(Exception ex){
