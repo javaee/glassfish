@@ -2,14 +2,39 @@
 	    label="$resource{i18n.tree.jmsResources}"
 	    icon="#{request.contextPath}/resource/images/jms.gif"
             url="#{request.contextPath}/jms/jmsResources.jsf">
-    <gf:navNode id="jmsConnFact"
-                label="$resource{i18n.tree.connectionFactories}"
-                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="#{request.contextPath}/jms/jmsConnections.jsf">
-    </gf:navNode>
-    <gf:navNode id="jmsDestRes"
-                label="$resource{i18n.tree.destinationResources}"
-                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="#{request.contextPath}/jms/jmsDestinations.jsf">
-    </gf:navNode>
+    <dynamicTreeNode id="jmsConnectionFactories"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="connector-connection-pool"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jms/images/canister.gif"
+        childExpanded="$boolean{false}"
+        childURL="/jms/jmsConnectionEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.connectionFactories}"
+        url="#{request.contextPath}/jms/jmsConnections.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsConnections.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>
+
+    <dynamicTreeNode id="jmsDestinationResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        useV3AMX="true"
+        amxChildType="admin-object-resource"
+        methodName=""
+        attributeName="name"
+        childImageURL="/resource/jms/images/canister.gif"
+        childExpanded="$boolean{false}"
+        childURL="/jms/jmsDestinationEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.destinationResources}"
+        url="#{request.contextPath}/jms/jmsDestinations.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsDestinations.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>
 </gf:navNode>
