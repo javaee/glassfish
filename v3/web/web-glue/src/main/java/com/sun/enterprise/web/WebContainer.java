@@ -765,7 +765,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Starts the AJP connector that will listen to call from Apache using
      * mod_jk, mod_jk2 or mod_ajp.
      */
-    private void createJKConnector(NetworkListener networkListener, HttpService httpService) {
+    protected WebConnector createJKConnector(NetworkListener networkListener, 
+            HttpService httpService) {
 
         int port = 8009;
 
@@ -774,7 +775,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     System.getProperty("com.sun.enterprise.web.connector.enableJK");
             if (portString == null) {
                 // do not create JK Connector if property is not set
-                return;
+                return null;
             } else {
                 try {
                     port = Integer.parseInt(portString);
@@ -786,8 +787,30 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } else {
             port = Integer.parseInt(networkListener.getPort());
         }
+                
+        /*
+         * Create Connector. Connector is SSL-enabled if
+         * 'security-enabled' attribute in <http-listener>
+         * element is set to TRUE.
+         */
+        boolean isSecure = Boolean.valueOf(
+                networkListener.findProtocol().getSecurityEnabled());
+        if (isSecure && defaultRedirectPort == -1) {
+            defaultRedirectPort = port;
+        }
+        String address = networkListener.getAddress();
+        if ("any".equals(address) || "ANY".equals(address)
+                || "INADDR_ANY".equals(address)) {
+            address = null;
+            /*
+             * Setting 'address' to NULL will cause Tomcat to pass a
+             * NULL InetAddress argument to the java.net.ServerSocket
+             * constructor, meaning that the server socket will accept
+             * connections on any/all local addresses.
+             */
+        }
 
-        jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0",
+        jkConnector = (WebConnector) _embedded.createConnector(address,
                                                                 port, "ajp");
         jkConnector.configureJKProperties();
 
@@ -800,6 +823,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         jkConnector.setDefaultHost(defaultHost);
         jkConnector.setName(jkConnectorName);
         jkConnector.setDomain(_serverContext.getDefaultDomainName());
+        jkConnector.setInstanceName(instanceName);
+        jkConnector.configure(networkListener, isSecure, httpService);
+        
         _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
                                 + defaultHost + " listening on port: "
                                 + port);
@@ -811,6 +837,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         _embedded.addConnector(jkConnector);
+        
+        return jkConnector;
 
     }
 
@@ -1250,7 +1278,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     loadStandaloneWebModule(vs, wmInfo);
                 }
                 _logger.info("Virtual server " + vs.getName() +
-                                " loaded system default web module");
+                                " loaded system default web module"); 
             }
         }
         
@@ -2966,9 +2994,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     mapper = m;
                     break;
                 }
-            }
-
-            WebConnector connector = createHttpListener(httpListener,
+            }           
+           
+            WebConnector connector = createHttpListener(httpListener, 
                     httpService, mapper);
 
             if (connector.getRedirectPort() == -1) {
