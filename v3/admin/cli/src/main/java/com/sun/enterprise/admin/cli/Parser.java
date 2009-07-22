@@ -268,7 +268,7 @@ public class Parser {
      * Does this option require an operand?
      */
     private static boolean optionRequiresOperand(ValidOption opt) {
-        return !opt.getType().equals("BOOLEAN");
+        return opt != null && !opt.getType().equals("BOOLEAN");
     }
 
     /**
