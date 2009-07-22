@@ -76,12 +76,14 @@ public class ModuleContentLinker extends DefaultDOLVisitor {
 
     private File getModuleLocation(ModuleDescriptor module) throws IOException {
         File moduleLocation = new File(rootLocation_.getURI());
+        /*
         if( !module.isStandalone() ) {
             // If this is an ear, get module jar by adding the module path
             // to the root directory.
             String archiveUri = module.getArchiveUri();
             moduleLocation = new File(rootLocation_.getSubArchive(archiveUri).getURI());
         }
+        */
         return moduleLocation;
     }
 

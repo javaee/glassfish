@@ -151,13 +151,13 @@ public class WsUtil {
 
     // @@@ These are jaxrpc-implementation specific MessageContextProperties
     // that should be added to jaxrpc spi
-   /* private static final String ONE_WAY_OPERATION =
+    private static final String ONE_WAY_OPERATION =
         "com.sun.xml.rpc.server.OneWayOperation";
     private static final String CLIENT_BAD_REQUEST =
         "com.sun.xml.rpc.server.http.ClientBadRequest";
     
     private static final String SECURITY_POLICY_NAMESPACE_URI = 
-            "http://schemas.xmlsoap.org/ws/2005/07/securitypolicy";*/
+            "http://schemas.xmlsoap.org/ws/2005/07/securitypolicy";
 
     private static Logger logger = LogDomains.getLogger(WsUtil.class,LogDomains.WEBSERVICES_LOGGER);
 
@@ -1197,7 +1197,7 @@ public class WsUtil {
         if( sfe != null ) {
             throw sfe;
         }
-    }
+    }*/
 
 
     void writeReply(HttpServletResponse response, 
@@ -1253,7 +1253,6 @@ public class WsUtil {
             response.setHeader(header.getName(), header.getValue());
         }
     }
-    */
     public static void raiseException(HttpServletResponse resp, String binding, String faultString) {
         
         resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

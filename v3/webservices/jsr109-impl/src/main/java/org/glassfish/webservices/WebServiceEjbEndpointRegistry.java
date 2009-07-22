@@ -116,22 +116,17 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
         
         // notify monitoring layers that a new endpoint is being created.
         WebServiceEngineImpl engine = WebServiceEngineImpl.getInstance();
-        //TODO figure out JAXRPC part later
-        /*if (endpoint.getEndpoint().getWebService().getMappingFileUri()!=null) {
+        if (endpoint.getEndpoint().getWebService().getMappingFileUri()!=null) {
             engine.createHandler((com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate)null, endpoint.getEndpoint());
         } else {
-        */
-
-        engine.createHandler(endpoint.getEndpoint());
-        // Safe to assume that it's a JAXWS endpoint
-        try {
-            endpoint.initRuntimeInfo((ServletAdapterList)adapterListMap.get(ctxtRoot));
-        } catch (Exception e) {
-            logger.log(Level.WARNING,
+            engine.createHandler(endpoint.getEndpoint());
+            try {
+                endpoint.initRuntimeInfo((ServletAdapterList)adapterListMap.get(ctxtRoot));
+            } catch (Exception e) {
+                logger.log(Level.WARNING,
                        "Unexpected error in EJB WebService endpoint post processing", e);
+            }
         }
-
-        //}
     }
 
     public void unregisterEndpoint(String endpointAddressUri) {
@@ -172,8 +167,7 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
                                   EjbEndpointFacade ejbContainer,
                                   Object servant, Class tieClass) {
         EjbRuntimeEndpointInfo info = null;
-        //TODO FIXME FOR EJBRRuntimeEndpointInfo
-        if ("1.1".compareTo(webServiceEndpoint.getWebService().getWebServicesDescriptor().getSpecVersion())>=0) {
+        if (webServiceEndpoint.getWebService().hasMappingFile()) {
             info = new Ejb2RuntimeEndpointInfo(webServiceEndpoint, ejbContainer, servant, tieClass);
         } else {
             info = new EjbRuntimeEndpointInfo(webServiceEndpoint, ejbContainer, servant);

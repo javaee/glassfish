@@ -30,7 +30,7 @@ import org.jvnet.hk2.component.Habitat;
  * to register endpoints to the grizzly ServletAdapter
  * Thus when a request is received it is directed to our EjbWebServiceServlet
  * so that it can process the request
- * 
+ *
  * @author Bhakti Mehta
  */
 

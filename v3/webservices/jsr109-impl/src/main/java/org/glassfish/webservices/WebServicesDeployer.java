@@ -537,27 +537,12 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             WsUtil wsUtil = new WsUtil();
             WebService next = iter.next();
 
-            // Endpoint with HTTP bindings need not have WSDLs; In which case
-            // there is no need for WSDL publishing
-            if( (next.getWsdlFileUrl() == null) &&
-                    (next.getMappingFileUri() == null) ) {
-                for(WebServiceEndpoint wsep : next.getEndpoints()) {
-                    /*if(!(HTTPBinding.HTTP_BINDING.equals(wsep.getProtocolBinding()))) {
-                        throw new Exception(
-                            localStrings.getStringWithDefault(
-                            "enterprise.webservice.noWsdlError",
-                            "Service {0} has an endpoint with non-HTTP binding but there is no WSDL; Deployment cannot proceed",
-                            new Object[] {next.getName()}));
-                    }*/
-                    //TODO check equivalent of wsUtil.getWebServerInfo(request)
-                    wsep.composeFinalWsdlUrl(wsUtil.getWebServerInfoForDAS().getWebServerRootURL(wsep.isSecure()));
-                }
-                continue;
-            }
-
             // For JAXWS services, we rely on JAXWS RI to do WSL gen and publishing
             // For JAXRPC we do it here in 109
-            if(!("1.1".equals(next.getWebServicesDescriptor().getSpecVersion()))) {
+            if(isJAXWSbasedService(dc, next)) {
+                for(WebServiceEndpoint wsep : next.getEndpoints()) {
+                    wsep.composeFinalWsdlUrl(wsUtil.getWebServerInfoForDAS().getWebServerRootURL(wsep.isSecure()));
+                }
                 continue;
             }
 

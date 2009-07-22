@@ -35,10 +35,16 @@
  */
 package org.glassfish.webservices;
 
+import java.rmi.Remote;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.api.invocation.ComponentInvocation;
+import javax.xml.rpc.handler.MessageContext;
+import com.sun.xml.rpc.spi.runtime.Handler;
+import com.sun.xml.rpc.spi.runtime.Tie;
+
 
 
 /**
@@ -56,9 +62,9 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
 
     // Lazily instantiated and cached due to overhead
     // of initialization.
-    /*private Tie tieInstance;
+    private Tie tieInstance;
 
-    private ServerAuthConfig serverAuthConfig;*/
+    /*private ServerAuthConfig serverAuthConfig;*/
 
 
     public Ejb2RuntimeEndpointInfo(WebServiceEndpoint webServiceEndpoint,
@@ -67,75 +73,44 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
                                   
         super(webServiceEndpoint, ejbContainer, servant);
         tieClass = tie;
+        /*
         if (Globals.getDefaultHabitat() != null) {
             SecurityService secServ = Globals.get(SecurityService.class);
             if (secServ != null) {
                 secServ.mergeSOAPMessageSecurityPolicies(webServiceEndpoint.getMessageSecurityBinding());
             }
         }
+        */
     }
-    /*
-    public Handler getHandlerImplementor(MessageContext msgContext)
+
+    public AdapterInvocationInfo getHandlerImplementor()
         throws Exception {
 
-        // We need to split the preInvoke tasks into stages since handlers
-        // need access to java:comp/env and method authorization must take
-        // place before handlers are run.  Note that the application 
-        // classloader was set much earlier when the invocation first arrived
-        // so we don't need to set it here.
-        Invocation inv = new Invocation();
-
-        // Do the portions of preInvoke that don't need a Method object.
-        inv.isWebService = true;
-        inv.container = container;
-        inv.messageContext = msgContext;
-        inv.transactionAttribute = Container.TX_NOT_INITIALIZED;
-
-        // If the endpoint has at least one handler, method
-        // authorization will be performed by a container-provided handler
-        // before any application handler handleRequest methods are called.
-        // Otherwise, the ejb container will do the authorization.
-	inv.securityPermissions =  Container.SEC_NOT_INITIALIZED;
-
-        invManager.preInvoke(inv);
-
-        // In all cases, the WebServiceInvocationHandler will do the
-        // remaining preInvoke tasks : getContext, preInvokeTx, etc.
-
-        // Create the tie and servant to pass to jaxrpc runtime system.
-        // The servant is a dynamic proxy implementing the Service Endpoint
-        // Interface.  Use endpoint address uri to disambiguate case where
-        // an ejb implements more than one endpoint.
-        //
-        // NOTE : Tie instance MUST be created after InvManager.preInvoke,
-        // since tie initialization could result in handler instance creation.
-        // This also means ejb container handler cannot expect to access 
-        // Invocation object from Handler.init()
-
-        // Both tie and ejb container servant support concurrent access,
-        // so lazily create tie and use the same instance for all invocations
-        // through this ejb endpoint.  Tie instance is a heavyweight resource 
-        // so it would be prohibitive to create one per thread.
+        ComponentInvocation inv =  container.startInvocation();
+        AdapterInvocationInfo aInfo = new AdapterInvocationInfo();
+        aInfo.setInv(inv);
         synchronized(this) {
+            if(tieClass == null) {
+                tieClass = Thread.currentThread().getContextClassLoader().loadClass(getEndpoint().getTieClassName());
+            }
             if( tieInstance == null ) {
                 tieInstance = (Tie) tieClass.newInstance();
                 tieInstance.setTarget((Remote) webServiceEndpointServant);
             }
         }
-
-        inv.setWebServiceTie(tieInstance);
-
-        return (Handler) tieInstance;
+        //inv.setWebServiceTie(tieInstance);
+        aInfo.setHandler((Handler)tieInstance);
+        return aInfo;
     }
 
-    *//**
+    /**
      * Called after attempt to handle message.  This is coded defensively
      * so we attempt to clean up no matter how much progress we made in
      * getImplementor.  One important thing is to complete the invocation
      * manager preInvoke().
-     *//*
-    public void releaseImplementor(Handler handler) {
-        super.releaseImplementor();
+     */
+    public void releaseImplementor(ComponentInvocation inv) {
+        container.endInvocation(inv);
     }
 
     public EjbMessageDispatcher getMessageDispatcher() {
@@ -145,6 +120,6 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
             messageDispatcher = new EjbWebServiceDispatcher();
         }
         return messageDispatcher;
-    }*/
+    }
 
 }

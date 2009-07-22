@@ -2,6 +2,7 @@ package org.glassfish.webservices;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
+import com.sun.xml.rpc.spi.runtime.Handler;
 
 /**
  * This class stores information for EjbRuntimeInfo
@@ -23,6 +24,12 @@ public class AdapterInvocationInfo {
      */
     private  ServletAdapter adapter;
 
+    /**
+     * This has the JAXRPC handler stored for alter use
+     * @param handler
+     */
+    private Handler handler;
+
     public void setAdapter(ServletAdapter adapter) {
         this.adapter = adapter;
     }
@@ -31,7 +38,9 @@ public class AdapterInvocationInfo {
         this.inv = inv;
     }
 
-
+    public void setHandler(Handler h) {
+        this.handler = h;
+    }
 
     public ServletAdapter getAdapter() {
         return adapter;
@@ -41,7 +50,7 @@ public class AdapterInvocationInfo {
         return inv;
     }
 
-
-
-
+    public Handler getHandler() {
+        return handler;
+    }
 }
