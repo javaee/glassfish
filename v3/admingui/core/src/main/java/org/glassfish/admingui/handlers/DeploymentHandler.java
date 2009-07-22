@@ -62,8 +62,11 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.webui.jsf.model.UploadedFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admingui.common.handlers.ProxyHandlers;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -152,6 +155,108 @@ public class DeploymentHandler {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+
+    @Handler(id = "deploy2",
+    input = {
+        @HandlerInput(name = "filePath", type = String.class),
+        @HandlerInput(name = "origPath", type = String.class),
+        @HandlerInput(name = "allMaps", type = Map.class),
+        @HandlerInput(name = "appType", type = String.class),
+        @HandlerInput(name="propertyList", type=List.class) })
+    public static void deploy2(HandlerContext handlerCtx) {
+
+        String appType = (String) handlerCtx.getInputValue("appType");
+        String origPath = (String) handlerCtx.getInputValue("origPath");
+        String filePath = (String) handlerCtx.getInputValue("filePath");
+        Map allMaps = (Map) handlerCtx.getInputValue("allMaps");
+        Map attrMap = new HashMap((Map) allMaps.get(appType));
+
+        if (GuiUtil.isEmpty(origPath)) {
+            String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
+            GuiUtil.handleError(handlerCtx, mesg);
+            return;
+        }
+
+        DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
+
+        /* Take care some special properties, such as VS  */
+
+        //do not send VS if user didn't specify, refer to bug#6542276
+        String[] vs = (String[])attrMap.get(DFDeploymentProperties.VIRTUAL_SERVERS);
+        if (vs != null && vs.length > 0) {
+            if (!GuiUtil.isEmpty(vs[0])) {
+                String vsTargets = GuiUtil.arrayToString(vs, ",");
+                deploymentProps.setProperty(DFDeploymentProperties.VIRTUAL_SERVERS, vsTargets);
+            }
+        }
+        attrMap.remove(DFDeploymentProperties.VIRTUAL_SERVERS);
+
+        //Take care of checkBox
+        List<String> convertToFalseList = (List) attrMap.get("convertToFalseList");
+        if (convertToFalseList != null){
+            for(String one : convertToFalseList ){
+                if (attrMap.get(one) == null){
+                    attrMap.put(one, "false");
+                }
+            }
+            attrMap.remove("convertToFalseList");
+        }
+
+        Properties props = new Properties();
+        for(Object attr : attrMap.keySet()){
+            String key = (String)attr;
+            String prefix = "PROPERTY-";
+            String value = (String) attrMap.get(key);
+            if (value == null)
+                continue;
+            if (key.startsWith(prefix) ){
+                props.setProperty( key.substring( prefix.length()), value);
+                
+            }else{
+                deploymentProps.setProperty(key, value);
+            }
+        }
+        
+
+
+        // include any  additional property that user enters
+        List<Map<String,String>> propertyList = (List)handlerCtx.getInputValue("propertyList");
+        if (propertyList != null){
+            Set propertyNames = new HashSet();
+            for(Map<String, String> oneRow : propertyList){
+                final String  name = oneRow.get(ProxyHandlers.PROPERTY_NAME);
+                if (GuiUtil.isEmpty(name)){
+                    continue;
+                }
+                if (propertyNames.contains(name)){
+                    GuiUtil.getLogger().warning("Ignored Duplicate Property Name : " + name);
+                    continue;
+                }else{
+                    propertyNames.add(name);
+                }
+                String value = oneRow.get(ProxyHandlers.PROPERTY_VALUE);
+                if (GuiUtil.isEmpty(value)){
+                    continue;
+                }
+                props.setProperty( name, value);
+                
+            }
+        }
+        
+        if (props.size() > 0){
+            deploymentProps.setProperties(props);
+        }
+
+        try {
+            DeployUtil.deploy(null, deploymentProps, filePath, handlerCtx);
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+        
+    }
+
+
+
 
     /**
      *	<p> This method uploads a file temp directory</p>

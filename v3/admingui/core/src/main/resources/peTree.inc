@@ -122,15 +122,15 @@
         useV3AMX="true"
         methodName=""
         text="$resource{i18n.tree.applications}"
-        url="/applications/applications.jsf"
+        url="/common/applications/applications.jsf"
         expanded="$boolean{false}"
         attributeName="name"
         childImageURL="/resource/images/webModule.gif"
         childExpanded="$boolean{false}"
-        childURL="/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
+        childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
     >
     <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
     </facet>
     </dynamicTreeNode>
 
