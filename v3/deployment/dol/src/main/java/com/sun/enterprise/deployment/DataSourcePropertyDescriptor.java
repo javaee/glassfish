@@ -76,4 +76,10 @@ public class DataSourcePropertyDescriptor extends Descriptor implements Serializ
         }
         return false;
     }
+
+    public int hashCode() {
+        int result = 17;
+        result = 37*result + getName().hashCode();
+        return result;
+    }
 }

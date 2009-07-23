@@ -289,6 +289,12 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
         return false;
     }
 
+    public int hashCode() {
+        int result = 17;
+        result = 37*result + getName().hashCode();
+        return result;
+    }
+
     public static String getJavaName(String thisName) {
         if(!thisName.contains(JAVA_URL)){
                 thisName = JAVA_COMP_URL + thisName;
