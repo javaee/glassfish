@@ -106,6 +106,14 @@ public class OSGiServletContext implements ServletContext {
         return delegate.getMinorVersion();
     }
 
+    public int getActualMajorVersion() {
+        return delegate.getActualMajorVersion();
+    }
+
+    public int getActualMinorVersion() {
+        return delegate.getActualMinorVersion();
+    }
+
     public String getMimeType(String file) {
         String mimeType = httpContext.getMimeType(file);
         return mimeType != null ? mimeType : delegate.getMimeType(file);
