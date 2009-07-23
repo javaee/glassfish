@@ -493,7 +493,7 @@ public final class ApplicationContextFacade
      * Gets a Map of the ServletRegistration objects corresponding to all
      * currently registered servlets.
      */
-    public Map<String, ServletRegistration> getServletRegistrations() {
+    public Map<String, ? extends ServletRegistration> getServletRegistrations() {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (Map<String, ServletRegistration>) doPrivileged(
                 "getServletRegistrations", null);
@@ -582,7 +582,7 @@ public final class ApplicationContextFacade
      * Gets a Map of the FilterRegistration objects corresponding to all
      * currently registered filters.
      */
-    public Map<String, FilterRegistration> getFilterRegistrations() {
+    public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (Map<String, FilterRegistration>) doPrivileged(
                 "getFilterRegistrations", null);

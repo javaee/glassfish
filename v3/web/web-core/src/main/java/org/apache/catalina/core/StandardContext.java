@@ -683,11 +683,11 @@ public class StandardContext
 
     private boolean sessionCookieConfigInitialized = false;
 
-    private ConcurrentHashMap<String, ServletRegistration> servletRegisMap =
-        new ConcurrentHashMap<String, ServletRegistration>();
+    private ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
+        new ConcurrentHashMap<String, ServletRegistrationImpl>();
 
-    private ConcurrentHashMap<String, FilterRegistration> filterRegisMap =
-        new ConcurrentHashMap<String, FilterRegistration>();
+    private ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
+        new ConcurrentHashMap<String, FilterRegistrationImpl>();
 
     private Map<String, String> jarName2WebFragNameMap;
 
@@ -2120,7 +2120,7 @@ public class StandardContext
             }
         }
 
-        ServletRegistration regis = null;
+        ServletRegistrationImpl regis = null;
         if (isProgrammatic) {
             regis = new DynamicServletRegistrationImpl(
                 (StandardWrapper) wrapper, this);
@@ -2259,7 +2259,7 @@ public class StandardContext
     }
 
     public void addFilterDef(FilterDef filterDef, boolean isProgrammatic) {
-        FilterRegistration regis = null;
+        FilterRegistrationImpl regis = null;
         if (isProgrammatic) {
             regis = new DynamicFilterRegistrationImpl(filterDef, this);
         } else {
@@ -2543,7 +2543,7 @@ public class StandardContext
      * Gets a Map of the FilterRegistration objects corresponding to all
      * currently registered filters.
      */
-    public Map<String, FilterRegistration> getFilterRegistrations() {
+    public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         return Collections.unmodifiableMap(filterRegisMap);
     }
 
@@ -3320,7 +3320,7 @@ public class StandardContext
      * Gets a Map of the ServletRegistration objects corresponding to all
      * currently registered servlets.
      */
-    public Map<String, ServletRegistration> getServletRegistrations() {
+    public Map<String, ? extends ServletRegistration> getServletRegistrations() {
         return Collections.unmodifiableMap(servletRegisMap);
     }
 
