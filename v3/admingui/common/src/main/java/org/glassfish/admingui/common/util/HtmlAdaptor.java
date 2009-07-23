@@ -1,7 +1,8 @@
 /*
+ * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,13 +34,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admingui.common.handlers;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.glassfish.admingui.common.util;
 
 /**
  *
- * @author jasonlee
+ * @author anilam
  */
-public class PluginHandlers {
+import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
+import javax.management.MBeanServerConnection;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
+public class HtmlAdaptor {
 
+    private static boolean _bHtmlAdaptorServerRegistered = false;
+
+    public static void registerHTMLAdaptor(MBeanServerConnection mbsc) {
+        if(_bHtmlAdaptorServerRegistered)
+            return;
+        try {
+            int port = Integer.parseInt(System.getProperty("html.adaptor.port", "4444"));
+            Class cl =  Class.forName("com.sun.jdmk.comm.HtmlAdaptorServer");
+            Constructor contr = cl.getConstructor(new Class[]{Integer.TYPE});
+            Object adaptor = contr.newInstance(new Object[]{Integer.valueOf(port)});
+            Method method = cl.getMethod("start");
+            ObjectName htmlAdaptorObjectName = new ObjectName(
+                    "Adaptor:name=html,port="+port);
+            MBeanServer mbs = (MBeanServer) mbsc;
+            mbs.registerMBean(adaptor, htmlAdaptorObjectName);
+            method.invoke(adaptor);
+            _bHtmlAdaptorServerRegistered = true;
+        } catch (Exception e) {
+            //System.out.println("Warning !! cannot create HTML Adapter. Ensure that you have jmxtools.jar in <glassfish>/lib directory");
+            //System.out.println(e.getMessage());
+            //e.printStackTrace();
+        }
+    }
 }
