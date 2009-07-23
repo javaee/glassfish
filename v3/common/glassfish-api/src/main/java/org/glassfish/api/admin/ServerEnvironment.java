@@ -51,6 +51,9 @@ import java.io.File;
 @Contract
 public interface ServerEnvironment {
 
+
+    public enum Status { starting, started, stopping, stopped };
+
     /** folder where the compiled JSP pages reside */
     public static final String kCompileJspDirName = "jsp";
     String DEFAULT_INSTANCE_NAME = "default-instance-name";
@@ -113,5 +116,10 @@ public interface ServerEnvironment {
     /** A Java KeyStore which is locked by administrator's master password.
      * @return File representing the JKS which is server's keystore in developer-product case
      */
-    File getJKS(); 
+    File getJKS();
+
+    /**
+     * Gets the server status
+     */
+    Status getStatus();
 }

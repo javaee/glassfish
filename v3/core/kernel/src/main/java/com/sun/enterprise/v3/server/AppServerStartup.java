@@ -57,6 +57,7 @@ import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.branding.Branding;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.EventTypes;
@@ -245,6 +246,7 @@ public class AppServerStartup implements ModuleStartup {
             }
         }
 
+        env.setStatus(ServerEnvironment.Status.starting);        
         events.send(new Event(EventTypes.SERVER_STARTUP), false);
 
         // finally let's calculate our starting times
@@ -290,6 +292,7 @@ public class AppServerStartup implements ModuleStartup {
             }
         }
 
+        env.setStatus(ServerEnvironment.Status.started);
         events.send(new Event(EventTypes.SERVER_READY), false);
 
     }
@@ -310,6 +313,7 @@ public class AppServerStartup implements ModuleStartup {
 
     public void stop() {
 
+        env.setStatus(ServerEnvironment.Status.stopping);
         events.send(new Event(EventTypes.PREPARE_SHUTDOWN), false);
 
         try {
@@ -334,8 +338,8 @@ public class AppServerStartup implements ModuleStartup {
             }
 
             // first send the shutdown event synchronously
+            env.setStatus(ServerEnvironment.Status.stopped);
             events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
-
         } catch(ComponentException e) {
             // do nothing.
         }

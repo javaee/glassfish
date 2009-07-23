@@ -267,5 +267,13 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public File getJKS() {
         return new File (getDomainRoot(), "config/keystore.jks");
     }
+
+    private Status status=Status.starting;
+    public Status getStatus() {
+        return status;
+    }
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }
 

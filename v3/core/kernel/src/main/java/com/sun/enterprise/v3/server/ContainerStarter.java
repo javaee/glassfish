@@ -99,7 +99,7 @@ public class ContainerStarter {
         try {
 
             modules = sniffer.setup(containerHome, logger);
-            if (modules!=null) {
+            if (modules!=null && modules.length>0) {
                 containerClassLoader = setContainerClassLoader(modules);
             } else {
                 containerClassLoader = snifferModule.getClassLoader();
