@@ -27,7 +27,7 @@
     <echo message="wsimporting http://${http.host}:${http.port}/${test-wsdl-uri}"/>
     <antcall target="wsimport">
         <param name="wsimport.args"
-               value="-keep -d -Xendorsed ${build.classes.dir}/client http://${http.host}:${http.port}/${test-wsdl-uri}"/>
+               value="-keep  -Xendorsed  -d ${build.classes.dir}/client http://${http.host}:${http.port}/${test-wsdl-uri}"/>
     </antcall>
     <javac srcdir="." destdir="${build.classes.dir}/client" 
             classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/webservices-osgi.jar:${env.S1AS_HOME}/modules/endorsed/webservices-api-osgi.jar:${env.S1AS_HOME}/modules/jaxb-osgi.jar:${env.S1AS_HOME}/modules/endorsed/jaxb-api-osgi.jar" 
