@@ -100,6 +100,31 @@
     </target>
 
     <!-- Target for testing glassfish distribution (containing EJB)  -->
+    <target name="all_gd_security" depends="clean">
+        <record name="allrun.output" action="start"/>
+        <antcall target="add-quicklook-policy-grants" />
+        <antcall target="start-derby"/>
+        <antcall target="start-server-felix"/>
+        <antcall target="enable-security-manager"/>
+        <antcall target="stop-server"/>
+        <antcall target="start-server-felix"/>
+        <antcall target="build-deploy"/>
+        <antcall target="build-deploy-gd"/>
+        <antcall target="runtest">
+        <param name="testng.xml" value="testng_gd.xml"/> </antcall>
+        <antcall target="undeploy"/>
+        <antcall target="undeploy-gd"/>
+        <antcall target="quicklook-summary"/>
+        <!-- antcall target="disable-security-manager"/ -->
+        <antcall target="stop-server"/>
+        <antcall target="stop-derby"/>
+        <!-- antcall target="remove-quicklook-policy-grants"/ -->
+        <copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
+        <antcall target="testng-summary"/>
+        <record name="allrun.output" action="stop"/>
+    </target>
+
+    <!-- Target for testing glassfish distribution (containing EJB)  -->
     <target name="dev_debug" depends="clean">
         <record name="allrun.output" action="start"/>
         <antcall target="start-derby"/>
