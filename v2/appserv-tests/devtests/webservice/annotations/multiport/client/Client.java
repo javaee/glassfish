@@ -20,7 +20,7 @@ public class Client {
 
        public void doTest(String[] args) {
             try {
-                Hello port = service.getHelloPort();
+                Hello port = new HttpTestService().getHelloPort();
 		HelloRequest req = new HelloRequest();
 		req.setString("From Vijay ");
 		HelloResponse resp = port.hello(req);
