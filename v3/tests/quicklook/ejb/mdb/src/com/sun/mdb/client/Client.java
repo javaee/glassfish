@@ -25,9 +25,9 @@ public class Client {
         Client client = new Client(args);
 
 //        stat.addDescription("ejb-ejb30-hello-mdb");
-        System.out.println("====================== TEST FROM CLIENT ======================");
-//        client.doTest();
-        System.out.println("====================== After TEST FROM CLIENT ======================");
+//        System.out.println("====================== TEST FROM CLIENT ======================");
+        client.doTest();
+//        System.out.println("====================== After TEST FROM CLIENT ======================");
 //        stat.printSummary("ejb-ejb30-hello-mdbID");
         System.exit(0);
     }
