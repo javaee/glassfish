@@ -125,6 +125,15 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
                     if (is != null) {
                         result = new InputSource(is);
                     }
+                    
+                    /*
+                     * As a last resort, try opening the DTD without going
+                     * through the mapping table.
+                     */
+                    is = openStream(BUNDLED_DTD_ROOT, systemID);
+                    if (is != null) {
+                        result = new InputSource(is);
+                    }
                 }
             }
         } catch (Exception exc) {
@@ -140,9 +149,7 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
      *@return an InputStream to the selected schema; null if the schema is not available
      */
     private InputStream openSchemaStream(String systemID) {
-        String targetID = BUNDLED_SCHEMA_ROOT + "/" + systemID.substring(systemID.lastIndexOf("/") + 1 );
-        InputStream result = this.getClass().getResourceAsStream(targetID);
-        return result;
+        return openStream(BUNDLED_SCHEMA_ROOT, systemID);
     }
     
     /**
@@ -151,7 +158,11 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
      *@return an InputStream to the selected DTD; null if the DTD is not available
      */
     private InputStream openDTDStream(String publicID) {
-        String targetID = BUNDLED_DTD_ROOT + "/" + getMapping().get(publicID);
+        return openStream(BUNDLED_DTD_ROOT, getMapping().get(publicID));
+    }
+    
+    private InputStream openStream(final String localRoot, final String systemID) {
+        String targetID = localRoot + "/" + systemID.substring(systemID.lastIndexOf("/") + 1 );
         InputStream result = this.getClass().getResourceAsStream(targetID);
         return result;
     }
