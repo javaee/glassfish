@@ -250,21 +250,6 @@ public interface JavaEETransactionManager extends TransactionManager {
     public void forceRollback(Transaction tran) throws IllegalStateException, SystemException;
 
     /*
-     * Called by Admin Framework. Returnes number of transactions commited till now.
-     */
-    public int getNumberOfTransactionsCommitted();
-
-    /*
-     * Called by Admin Framework. Returnes number of transactions rolledback till now.
-     */
-    public int getNumberOfTransactionsRolledBack();
-
-    /*
-     * Called by Admin Framework. Returnes number of Active transactions.
-     */
-    public int getNumberOfActiveTransactions();
-
-    /*
      * Called by Admin Framework.
      */
     public void setMonitoringEnabled(boolean enabled);

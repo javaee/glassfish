@@ -129,9 +129,6 @@ public class JavaEETransactionManagerSimplified
     private Vector activeTransactions = new Vector();
     private boolean monitoringEnabled = false;
 
-    private int m_transCommitted = 0;
-    private int m_transRolledback = 0;
-    private int m_transInFlight = 0;
     private TransactionServiceProbeProvider monitor;
     private Hashtable txnTable = null;
 
@@ -380,7 +377,6 @@ public class JavaEETransactionManagerSimplified
         // The local Transaction was promoted to global Transaction
         if (tx!=null && monitoringEnabled){
             if(activeTransactions.remove(tx)){
-                m_transInFlight--;
                 monitor.transactionDeactivatedEvent();
             }
         }
@@ -405,7 +401,6 @@ public class JavaEETransactionManagerSimplified
             // The local Transaction was promoted to global Transaction
             if (tx!=null && monitoringEnabled){
                 if(activeTransactions.remove(tx)){
-                    m_transInFlight--;
                     monitor.transactionDeactivatedEvent();
                 }
             }
@@ -1073,13 +1068,6 @@ public class JavaEETransactionManagerSimplified
         transactionTimeout = seconds;
     }
 
-    /* Returned Number of transactions Active
-     *  Called by Admin Framework when transaction monitoring is enabled
-     */
-    public int getNumberOfActiveTransactions(){
-        return m_transInFlight;
-    }
-
    /*
     *  This method returns the details of the Currently Active Transactions
     *  Called by Admin Framework when transaction monitoring is enabled
@@ -1109,22 +1097,6 @@ public class JavaEETransactionManagerSimplified
         return tranBeans;
     }
 
-    /* Returned Number of transactions Rolledback since the time monitoring
-     * was enabeld
-     * Called by Admin Framework when transaction monitoring is enabled
-     */
-    public int getNumberOfTransactionsRolledBack(){
-        return m_transRolledback;
-    }
-
-    /* Returned Number of transactions commited since the time monitoring
-     * was enabeld
-     * Called by Admin Framework when transaction monitoring is enabled
-     */
-    public int getNumberOfTransactionsCommitted(){
-        return m_transCommitted;
-    }
-
     /*
      *  Called by Admin Framework when transaction monitoring is enabled
      */
@@ -1137,9 +1109,6 @@ public class JavaEETransactionManagerSimplified
     public void setMonitoringEnabled(boolean enabled){
         monitoringEnabled = enabled;
         //reset the variables
-        m_transCommitted = 0;
-        m_transRolledback = 0;
-        m_transInFlight = 0;
         activeTransactions.removeAllElements();
     }
 
@@ -1150,12 +1119,9 @@ public class JavaEETransactionManagerSimplified
         }
         if(committed){
             monitor.transactionCommittedEvent();
-            m_transCommitted++;
         }else{
             monitor.transactionRolledbackEvent();
-            m_transRolledback++;
         }
-        m_transInFlight--;
     }
 
     // Mods: Adding method for statistic dumps using TimerTask
@@ -1516,7 +1482,6 @@ public class JavaEETransactionManagerSimplified
         if (monitoringEnabled) {
             activeTransactions.addElement(tx);
             monitor.transactionActivatedEvent();
-            m_transInFlight++;
         }
     }
 

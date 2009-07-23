@@ -72,6 +72,14 @@ public class TransactionServiceStatsProvider {
     private CountStatisticImpl rolledbackCount = new CountStatisticImpl("RolledbackCount", "count", 
             "Provides the number of transactions that have been rolled back.");
 
+    private StringStatisticImpl inflightTransactions = new StringStatisticImpl("ActiveIds", "List", 
+                "Provides the IDs of the transactions that are currently active a.k.a. in-flight " 
+                + "transactions. Every such transaction can be rolled back after freezing the transaction " 
+                + "service." );
+
+    private StringStatisticImpl state = new StringStatisticImpl("State", "String", 
+                "Indicates if the transaction service has been frozen");
+
     private boolean isFrozen = false;
 
     @Inject private JavaEETransactionManager txMgr;
@@ -97,10 +105,8 @@ public class TransactionServiceStatsProvider {
     @ManagedAttribute(id="state")
     @Description( "Indicates if the transaction service has been frozen." )
     public StringStatistic getState() {
-        StringStatisticImpl impl = new StringStatisticImpl("State", "String", 
-                "Transaction system state: frozen?");
-        impl.setCurrent((isFrozen)? "True": "False");
-        return impl.getStatistic();
+        state.setCurrent((isFrozen)? "True": "False");
+        return state.getStatistic();
     }
     
     @ManagedAttribute(id="activeids")
@@ -108,11 +114,14 @@ public class TransactionServiceStatsProvider {
     public StringStatistic getActiveIds() {
         StringBuffer strBuf = new StringBuffer(1024);
 
-        List aList = txMgr.getActiveTransactions();
-        if (aList.isEmpty()) {
-            strBuf.append("");
+        if (txMgr == null) {
+            System.out.println("ERROR: Cannot construct the probe. Transaction Manager is NULL!");
+            inflightTransactions.setCurrent("");
+            return inflightTransactions.getStatistic();
+        }
 
-        } else {
+        List aList = txMgr.getActiveTransactions();
+        if (!aList.isEmpty()) {
             //Set the headings for the tabular output
             if (aList.size() > 0) {
                 String colName = "Transaction Id";
@@ -171,10 +180,8 @@ public class TransactionServiceStatsProvider {
             }
         }
 
-        StringStatisticImpl impl = new StringStatisticImpl("ActiveIds", "List", 
-                "List of inflight transactions." );
-        impl.setCurrent(strBuf.toString());
-        return impl.getStatistic();
+        inflightTransactions.setCurrent((strBuf == null)? "" : strBuf.toString());
+        return inflightTransactions.getStatistic();
     }
     
     @ProbeListener("glassfish:transaction:transaction-service:activated")
