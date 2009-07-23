@@ -6,6 +6,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import javax.validation.constraints.NotNull;
 import java.beans.PropertyVetoException;
+import org.jvnet.hk2.config.Configured;
 
 /**
  * Marker Interface for modules that intend to provide some monitoring 
@@ -13,6 +14,7 @@ import java.beans.PropertyVetoException;
  *
  * @author Nandini Ektare
  */
+@Configured
 public interface MonitoringItem extends ConfigBeanProxy {
 
     /**
