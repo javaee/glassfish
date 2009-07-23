@@ -1,34 +1,20 @@
 package com.sun.mdb.client;
 
-/*
- * Copyright 2002 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-import java.io.*;
-import java.util.*;
-import javax.ejb.EJBHome;
 import javax.jms.*;
 import javax.annotation.Resource;
 import javax.naming.InitialContext;
-
-//import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class Client {
 
     // in milli-seconds
     private static long TIMEOUT = 90000;
 
-//    private static SimpleReporterAdapter stat =
-//        new SimpleReporterAdapter("appserv-tests");
-
     public static void main (String[] args) {
         Client client = new Client(args);
 
-//        stat.addDescription("ejb-ejb30-hello-mdb");
 //        System.out.println("====================== TEST FROM CLIENT ======================");
         client.doTest();
 //        System.out.println("====================== After TEST FROM CLIENT ======================");
-//        stat.printSummary("ejb-ejb30-hello-mdbID");
         System.exit(0);
     }
 
@@ -71,9 +57,7 @@ public class Client {
 
             setup();
             doTest(numMessages);
-//            stat.addStatus("cmt main", stat.PASS);
         } catch(Throwable t) {
-//            stat.addStatus("cmt main", stat.FAIL);
             t.printStackTrace();
         } finally {
             cleanup();
@@ -87,7 +71,6 @@ public class Client {
         queueSession = queueCon.createQueueSession
             (false, Session.AUTO_ACKNOWLEDGE); 
 
-        // Producer will be specified when actual msg is sent.
         queueSender = queueSession.createSender(null);        
 
         queueReceiver = queueSession.createReceiver(clientQueue);

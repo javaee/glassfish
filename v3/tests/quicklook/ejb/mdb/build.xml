@@ -13,6 +13,7 @@
 <target name="all" depends="build,runtest"/>
 
 <target name="build">
+   <antcall target="compile-util"/>
    <antcall target="compile-tests"/>
    <antcall target="build-impl"/>
 </target>

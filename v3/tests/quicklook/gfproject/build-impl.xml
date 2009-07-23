@@ -102,7 +102,7 @@
     
     
     <target name="compile-tests"
-	    description="compile the test ng example" depends="">
+	    description="compile the test ng example">
 	    <echo message="compiling test client to ${test.class.output}"/>
 
         <mkdir dir="${test.class.output}"/>
@@ -116,8 +116,18 @@
         </javac>
     </target>
     
-    
-    
+    <target name="compile-util"
+	    description="compile the test ng util">
+        <mkdir dir="${test.class.output}"/>
+        <javac   debug="true"
+                 fork="true"
+                 source="1.5"
+		 target="1.5"
+		 classpathref="class.path"
+                 srcdir="${ws.root}/admincli/src/test/admincli/util"
+                 destdir="${test.class.output}">
+        </javac>
+    </target>    
     
     <!-- Generate the TestNG report -->
     <target name="report">
