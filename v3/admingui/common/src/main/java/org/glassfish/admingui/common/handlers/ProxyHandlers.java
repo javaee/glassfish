@@ -336,35 +336,26 @@ public class ProxyHandlers {
 
     @Handler(id = "updateStatus",
         input = {
-            @HandlerInput(name = "resType", type = String.class, required = true),
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
             @HandlerInput(name = "enabled", type = String.class),
             @HandlerInput(name = "selectedRows", type = List.class, required = true)})
     public static void updateStatus(HandlerContext handlerCtx) {
-        String resType = (String) handlerCtx.getInputValue("resType");
+        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+        AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
         String status = (String) handlerCtx.getInputValue("enabled");
-        List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
-        Attribute attr = new Attribute("Enabled", status);
+        List obj = (List) handlerCtx.getInputValue("selectedRows");
+        List<Map> selectedRows = (List) obj;
+        Attribute attr = null;
+
         try {
             for (Map oneRow : selectedRows) {
-                String name = (String) oneRow.get("Name");
-                Set<AMXProxy> resRefSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryTypeName("resource-ref", name);
-                for(AMXProxy ref : resRefSet){
-                    V3AMX.setAttribute(ref.objectName(), attr);
-                }
-
-                //Ensure the resource itself is enabled.
-                if (status.equals("true")){
-                    String resObjectName = V3AMX.getInstance().getResources().childrenMap(resType).get(name).objectName().toString();
-                    if (! V3AMX.getAttribute(resObjectName, "Enabled").equals("true")){
-                        V3AMX.setAttribute(resObjectName, attr);
-                    }
-                }
+                String Name = (String) oneRow.get("Name");
+                V3AMX.setAttribute(objectNameStr + Name, new Attribute("Enabled", status));
             }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
-
 
     @Handler(id = "createProxy",
         input = {
