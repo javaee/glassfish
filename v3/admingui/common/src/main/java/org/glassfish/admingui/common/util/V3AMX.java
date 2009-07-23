@@ -41,6 +41,7 @@ import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 import org.glassfish.admin.amx.intf.config.Property;
 
+import org.glassfish.admin.amx.intf.config.Resources;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -145,6 +146,10 @@ public class V3AMX {
 
     public Config getConfig(String configName){
         return domain.getConfigs().getConfig().get(configName);
+    }
+
+    public Resources getResources(){
+        return domain.getResources();
     }
 
     public AMXProxy getAdminListener(){
