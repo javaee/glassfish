@@ -54,11 +54,13 @@
 <target name="asenv-unix" if="isUnix">
     <property name="asenv_conf" value="${glassfish.home}/config/asenv.conf"/>
     <property name="ASADMIN" value="${glassfish.home}/bin/asadmin"/>
+    <property name="APPCLIENT" value="${glassfish.home}/bin/appclient"/>
 </target>
 
 <target name="asenv-windows" if="isWindows">
     <property name="asenv_conf" value="${glassfish.home}/config/asenv.bat"/>
     <property name="ASADMIN" value="${glassfish.home}\bin\asadmin.bat"/>
+    <property name="APPCLIENT" value="${glassfish.home}\bin\appclient.bat"/>
 </target>
 
 <target name="create-jdbc-connection-pool" depends="setOSConditions,asenv-unix,asenv-windows">

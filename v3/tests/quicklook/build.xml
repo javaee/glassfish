@@ -137,6 +137,7 @@
         <ant dir="ejb/remoteview" target="build-deploy"/>
         <ant dir="ejb/singleton" target="build-deploy"/>
         <ant dir="ejb/cmp" target="build-deploy"/>
+        <ant dir="ejb/mdb" target="build"/>
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
     </target>
     
@@ -209,6 +210,7 @@
             <jvmarg value="-Dhttp.port=${glassfish.http.port}"/>
 	    <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
 	    <jvmarg value="-DASADMIN=${ASADMIN}" />
+	    <jvmarg value="-DAPPCLIENT=${APPCLIENT}"/>
             <sysproperty key="basedir" value="${basedir}"/>
             <!--<classfileset dir="classes/test" includes="**/SeleniumTest.class"/>-->         
             <xmlfileset dir="." includes="${testng.xml}"/>
@@ -347,11 +349,13 @@
 <target name="asenv-unix" if="isUnix">
     <property name="asenv_conf" value="${glassfish.home}/config/asenv.conf"/>
     <property name="ASADMIN" value="${glassfish.home}/bin/asadmin"/>
+    <property name="APPCLIENT" value="${glassfish.home}/bin/appclient"/>
 </target>
 
 <target name="asenv-windows" if="isWindows">
     <property name="asenv_conf" value="${glassfish.home}/config/asenv.bat"/>
     <property name="ASADMIN" value="${glassfish.home}\bin\asadmin.bat"/>
+    <property name="APPCLIENT" value="${glassfish.home}\bin\appclient.bat"/>
 </target>
 
 <target name="start-server-hk2" depends="setOSConditions" if="v3">

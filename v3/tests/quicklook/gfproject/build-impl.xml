@@ -140,6 +140,9 @@
         <condition property="archive.ear">
             <equals arg1="ear" arg2="${archive.type}"/>
         </condition>
+        <condition property="archive.appclient_ear">
+            <equals arg1="appclient_ear" arg2="${archive.type}"/>
+        </condition>
         <condition property="archive.jar">
             <equals arg1="jar" arg2="${archive.type}"/>            
         </condition>
@@ -148,6 +151,7 @@
     <target name="build-impl">
         <antcall target="build-war"/>
         <antcall target="build-ear"/>
+	<antcall target="build-appclient-ear"/>
         <antcall target="build-jar"/>
     </target>
     
@@ -273,6 +277,37 @@
     <echo message="Packaged Archive at ${dist.dir}/${app.file.ext}"/>
 </target>
 
+<target name="build-appclient-ear" depends="archive-type" if="archive.appclient_ear">
+    <delete dir="${class.output}"/>
+    <delete dir="${dist.dir}"/>
+    <delete file="${app.file.ext}"/>
+    <mkdir dir="${class.output}"/>
+    <mkdir dir="${dist.dir}"/>
+    <javac   debug="true"
+    fork="true"
+    source="1.5"
+    target="1.5"
+    classpathref="class.path"
+    srcdir="src/com"
+    failonerror="false"
+    destdir="${class.output}"/>
+    <mkdir dir="${class.output}/META-INF"/>
+    <copy file="metadata/sun-application-client.xml" tofile="${class.output}/META-INF/sun-application-client.xml" failonerror="false"/>
+    <jar destfile="${dist.dir}/${app.file}-client.jar"
+        basedir="${class.output}" includes="**/Client.class" manifest="./metadata/MANIFEST.MF">
+      <metainf dir="${class.output}/META-INF">
+        <include name="sun-application-client.xml"/>
+      </metainf>
+    </jar>
+    <delete dir="${class.output}/META-INF"/>
+    <jar destfile="${dist.dir}/${app.file}-ejb.jar"
+        basedir="${class.output}"
+        excludes="**/client/Client.*"/>
+    <ear destfile="${dist.dir}/${app.file}App.ear" appxml="metadata/application.xml">
+        <fileset dir="${dist.dir}" includes="*.jar,*.war"/>
+    </ear>
+    <echo message="Packaged Archive at ${dist.dir}/${app.file}App.ear"/>
+</target>
 
 <target name="checkTestNGXML">
 <available file="testng.xml" property="testng.xml.present"/>
@@ -300,7 +335,7 @@
     </testng>
 </target>
 
-<target name="runtest-impl-xml" depends="checkTestNGXML" if="testng.xml.present">
+<target name="runtest-impl-xml" depends="setOSConditions,asenv-unix,asenv-windows,checkTestNGXML" if="testng.xml.present">
     <echo message="=============Starting TestNG test at ${test.class.output} from testng.xml  ============"/>    
     <mkdir dir="${result.output}"/>
     <testng outputdir="${result.output}"
@@ -311,7 +346,8 @@
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
 	<jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
-
+	<jvmarg value="-DASADMIN=${ASADMIN}" />
+	<jvmarg value="-DAPPCLIENT=${APPCLIENT}" />
     </testng>
 </target>
 
