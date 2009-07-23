@@ -29,8 +29,10 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.api.JAXRPCCodeGenFacade;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import org.glassfish.deployment.common.DeploymentException;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -193,6 +195,16 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 */
 
             generateArtifacts(dc);
+             //In jaxrpc it was required to run
+             //Wscompile to generate the artifacts for clients too.
+             //service-ref element can be in client in web.xml,  application-client.xml, sun-ejb-jar.xml
+            BundleDescriptor bundleDesc = dc.getModuleMetaData(BundleDescriptor.class);
+            if (bundleDesc.hasWebServiceClients())     {
+                JAXRPCCodeGenFacade jaxrpcCodeGenFacade = habitat.getByContract(JAXRPCCodeGenFacade.class);
+                if (jaxrpcCodeGenFacade != null) {
+                    jaxrpcCodeGenFacade.run(habitat,dc,getModuleClassPath(dc)) ;
+                }
+            }
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions

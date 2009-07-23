@@ -43,6 +43,7 @@ import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.webservices.codegen.*;
 import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
+import org.glassfish.internal.api.JAXRPCCodeGenFacade;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -145,7 +146,12 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 if (isJAXWSbasedService(dc, ws)){
                     setupJaxWSServiceForDeployment(dc, ws);
                 }
-                JaxRpcCodegenFactory.newInstance().getAdapter().run(habitat, dc, moduleCP);
+                JAXRPCCodeGenFacade facade= habitat.getByContract(JAXRPCCodeGenFacade.class);
+                if (facade != null) {
+                    facade.run(habitat, dc, moduleCP);
+                }  else {
+                    throw new DeploymentException(rb.getString("jaxrpc.codegen.fail")) ;
+                }
                 doWebServicesDeployment(app,dc);
             }
             Thread.currentThread().setContextClassLoader(oldCl);

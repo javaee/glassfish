@@ -104,7 +104,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             cloader.setResources(r);
             cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
             if (context.getScratchDir("ejb") != null) {
-                cloader.addRepository(context.getScratchDir("ejb").toURI().toURL());
+                cloader.addRepository(context.getScratchDir("ejb").toURI().toURL().toString().concat("/"));
             }
             if (context.getScratchDir("jsp") != null) {
                 cloader.setWorkDir(context.getScratchDir("jsp"));

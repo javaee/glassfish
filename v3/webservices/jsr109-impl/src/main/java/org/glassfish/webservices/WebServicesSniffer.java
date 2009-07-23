@@ -66,30 +66,30 @@ public class WebServicesSniffer extends GenericSniffer {
     }
 
     /**
-      * .ear (the resource can be present in lib dir of the ear)
+     * .ear (the resource can be present in lib dir of the ear)
      * Returns true if the archive contains webservices.xml either in WEB-INF or META-INF directories
      */
-     public boolean handles(ReadableArchive location, ClassLoader loader) {
-             boolean isWebService = false;
-             //Scan for the war case
-             if(isEntryPresent(location, "WEB-INF")) {
-                 isWebService = isEntryPresent(location, "WEB-INF/webservices.xml");
-             } else if(isEntryPresent(location, "META-INF")){
-                 //Check for ejb jar case
-                 isWebService = isEntryPresent(location, "META-INF/webservices.xml");
-             }
-             return isWebService;
-         }
+    public boolean handles(ReadableArchive location, ClassLoader loader) {
+        boolean isWebService = false;
+        //Scan for the war case
+        if(isEntryPresent(location, "WEB-INF")) {
+            isWebService = isEntryPresent(location, "WEB-INF/webservices.xml");
+        } else if(isEntryPresent(location, "META-INF")){
+            //Check for ejb jar case
+            isWebService = isEntryPresent(location, "META-INF/webservices.xml");
+        }
+        return isWebService;
+    }
 
-     private boolean isEntryPresent(ReadableArchive location, String entry) {
-             boolean entryPresent = false;
-             try {
-                 entryPresent = location.exists(entry);
-             } catch (IOException e) {
-                 // ignore
-             }
-             return entryPresent;
-         }
+    private boolean isEntryPresent(ReadableArchive location, String entry) {
+        boolean entryPresent = false;
+        try {
+            entryPresent = location.exists(entry);
+        } catch (IOException e) {
+            // ignore
+        }
+        return entryPresent;
+    }
 
     /**
      * Returns the list of Containers that this Sniffer enables.
@@ -103,13 +103,13 @@ public class WebServicesSniffer extends GenericSniffer {
         return containers;
     }
 
-     public java.lang.Class<? extends java.lang.annotation.Annotation>[] getAnnotationTypes() {
-         return handledAnnotations;
+    public java.lang.Class<? extends java.lang.annotation.Annotation>[] getAnnotationTypes() {
+        return handledAnnotations;
 
-         
-     }
 
-     public boolean isUserVisible() {
+    }
+
+    public boolean isUserVisible() {
         return true;
     }
 
