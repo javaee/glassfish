@@ -539,7 +539,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         loadSystemDefaultWebModules();
-
+                       
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
         // start the embedded container
@@ -816,7 +816,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String jkConnectorName = "jk-connector";
         if (listener !=null) {
             defaultHost = listener.findProtocol().getHttp().getDefaultVirtualServer();
-            jkConnectorName = listener.getName();
+            jkConnectorName = listener.getName();     
+            portMap.put(listener.getName(), Integer.valueOf(listener.getPort()));
+            connectorMap.put(listener.getName(), jkConnector);
         }
         jkConnector.setDefaultHost(defaultHost);
         jkConnector.setName(jkConnectorName);
@@ -836,8 +838,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         _embedded.addConnector(jkConnector);
        
-        portMap.put(listener.getName(), Integer.valueOf(listener.getPort()));
-        connectorMap.put(listener.getName(), jkConnector);
         
         return jkConnector;
 
