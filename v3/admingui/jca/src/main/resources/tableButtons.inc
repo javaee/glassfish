@@ -23,7 +23,7 @@
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            updateStatus(objectNameStr="#{pageSession.updateObjectNameStr}", selectedRows="${selectedRows}", enabled="true");
+            updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="true");
             setAttribute(key="selectedRows" value="${selectedRows}");
             redirect(page="#{pageSession.listLink}");
         />
@@ -34,7 +34,7 @@
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            updateStatus(objectNameStr="#{pageSession.updateObjectNameStr}", selectedRows="${selectedRows}", enabled="false");
+            updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="false");
             setAttribute(key="selectedRows" value="${selectedRows}");
             redirect(page="#{pageSession.listLink}");
         />
