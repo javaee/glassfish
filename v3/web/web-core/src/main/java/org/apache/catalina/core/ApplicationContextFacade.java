@@ -183,6 +183,24 @@ public final class ApplicationContextFacade
     }
 
 
+    /**
+     * Gets the major version of the Servlet specification that the
+     * application represented by this ServletContext is based on.
+     */
+    public int getActualMajorVersion() {
+        return context.getActualMajorVersion();
+    }
+    
+    
+    /**
+     * Gets the minor version of the Servlet specification that the
+     * application represented by this ServletContext is based on.
+     */
+    public int getActualMinorVersion() {
+        return context.getActualMinorVersion();
+    }
+
+
     public String getMimeType(String file) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (String)doPrivileged("getMimeType", new Object[]{file});

@@ -733,6 +733,12 @@ public class StandardContext
 
     private Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> servletContainerInitializerInterestList = null;
 
+    // The major Servlet spec version of the web.xml
+    private int actualMajorVersion = 0;
+
+    // The minor Servlet spec version of the web.xml
+    private int actualMinorVersion = 0;
+
     // ----------------------------------------------------- Context Properties
 
     public String getEncodedPath() {
@@ -2777,6 +2783,22 @@ public class StandardContext
         }
         mySecurityManager.checkGetClassLoaderPermission(webappLoader);
         return webappLoader;
+    }
+
+    public void setActualMajorVersion(int actualMajorVersion) {
+        this.actualMajorVersion = actualMajorVersion;
+    }
+
+    public int getActualMajorVersion() {
+        return actualMajorVersion;
+    }
+
+    public void setActualMinorVersion(int actualMinorVersion) {
+        this.actualMinorVersion = actualMinorVersion;
+    }
+    
+    public int getActualMinorVersion() {
+        return actualMinorVersion;
     }
 
     /**

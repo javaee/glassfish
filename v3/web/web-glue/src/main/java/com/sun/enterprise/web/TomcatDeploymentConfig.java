@@ -604,6 +604,13 @@ public class TomcatDeploymentConfig {
         }
 
         webModule.setOrderedLibs(wmd.getOrderedLibs());
+
+        String[] majorMinorVersions = wmd.getSpecVersion().split("\\.");
+        if (majorMinorVersions.length != 2) {
+            throw new IllegalArgumentException("Illegal Servlet spec version");
+        }
+        webModule.setActualMajorVersion(Integer.parseInt(majorMinorVersions[0]));
+        webModule.setActualMinorVersion(Integer.parseInt(majorMinorVersions[1]));
     }
 
     

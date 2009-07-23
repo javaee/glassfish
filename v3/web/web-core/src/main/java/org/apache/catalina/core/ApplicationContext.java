@@ -382,9 +382,25 @@ public class ApplicationContext
      * Return the minor version of the Java Servlet API that we implement.
      */
     public int getMinorVersion() {
-
         return (Constants.MINOR_VERSION);
+    }
 
+
+    /**
+     * Gets the major version of the Servlet specification that the
+     * application represented by this ServletContext is based on.
+     */
+    public int getActualMajorVersion() {
+        return context.getActualMajorVersion();
+    }
+    
+    
+    /**
+     * Gets the minor version of the Servlet specification that the
+     * application represented by this ServletContext is based on.
+     */
+    public int getActualMinorVersion() {
+        return context.getActualMinorVersion();
     }
 
 
