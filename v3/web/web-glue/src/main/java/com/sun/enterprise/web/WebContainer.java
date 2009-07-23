@@ -733,7 +733,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         _logger.info("Created HTTP listener " + listener.getName() +
                      " on port " + listener.getPort());
-
+        
         connector.setName(listener.getName());
         connector.setInstanceName(instanceName);
         connector.configure(listener, isSecure, httpService);
@@ -765,12 +765,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Starts the AJP connector that will listen to call from Apache using
      * mod_jk, mod_jk2 or mod_ajp.
      */
-    protected WebConnector createJKConnector(NetworkListener networkListener, 
+    protected WebConnector createJKConnector(NetworkListener listener, 
             HttpService httpService) {
 
         int port = 8009;
+        boolean isSecure = false;
+        String address = null;
 
-        if (networkListener == null) {
+        if (listener == null) {
             String portString =
                     System.getProperty("com.sun.enterprise.web.connector.enableJK");
             if (portString == null) {
@@ -783,22 +785,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     // use default port 8009
                     port = 8009;
                 }
-            }
+            }   
         } else {
-            port = Integer.parseInt(networkListener.getPort());
+            port = Integer.parseInt(listener.getPort());                
+            isSecure = Boolean.valueOf(
+                            listener.findProtocol().getSecurityEnabled());
+            address = listener.getAddress();
         }
-                
-        /*
-         * Create Connector. Connector is SSL-enabled if
-         * 'security-enabled' attribute in <http-listener>
-         * element is set to TRUE.
-         */
-        boolean isSecure = Boolean.valueOf(
-                networkListener.findProtocol().getSecurityEnabled());
+            
         if (isSecure && defaultRedirectPort == -1) {
             defaultRedirectPort = port;
         }
-        String address = networkListener.getAddress();
+        
         if ("any".equals(address) || "ANY".equals(address)
                 || "INADDR_ANY".equals(address)) {
             address = null;
@@ -816,15 +814,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         String defaultHost = "server";
         String jkConnectorName = "jk-connector";
-        if (networkListener !=null) {
-            defaultHost = networkListener.findProtocol().getHttp().getDefaultVirtualServer();
-            jkConnectorName = networkListener.getName();
+        if (listener !=null) {
+            defaultHost = listener.findProtocol().getHttp().getDefaultVirtualServer();
+            jkConnectorName = listener.getName();
         }
         jkConnector.setDefaultHost(defaultHost);
         jkConnector.setName(jkConnectorName);
         jkConnector.setDomain(_serverContext.getDefaultDomainName());
         jkConnector.setInstanceName(instanceName);
-        jkConnector.configure(networkListener, isSecure, httpService);
+        jkConnector.configure(listener, isSecure, httpService);
         
         _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
                                 + defaultHost + " listening on port: "
@@ -837,6 +835,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         _embedded.addConnector(jkConnector);
+       
+        portMap.put(listener.getName(), Integer.valueOf(listener.getPort()));
+        connectorMap.put(listener.getName(), jkConnector);
         
         return jkConnector;
 
@@ -1099,7 +1100,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (listeners == null) {
             return;
         }
-
+        
         HashSet<NetworkListener> httpListeners = new HashSet<NetworkListener>();
         for (String listener : listeners) {
             boolean found = false;
@@ -2995,10 +2996,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     break;
                 }
             }           
+                    
+            WebConnector connector = 
+                    createHttpListener(httpListener, httpService, mapper);
            
-            WebConnector connector = createHttpListener(httpListener, 
-                    httpService, mapper);
-
             if (connector.getRedirectPort() == -1) {
                 connector.setRedirectPort(defaultRedirectPort);
             }
