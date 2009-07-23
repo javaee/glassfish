@@ -189,7 +189,8 @@ public final class WorkCoordinator {
                     new WorkEvent(this, WorkEvent.WORK_STARTED, work, null));
         }
 
-
+        //set the unauthenticated securityContext before executing the work            
+        com.sun.enterprise.security.SecurityContext.setUnauthenticatedContext();
 
     }
 
