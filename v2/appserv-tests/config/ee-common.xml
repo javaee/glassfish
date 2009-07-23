@@ -300,7 +300,7 @@
     <arg line="${as.props}"/>
     <arg line="--restype ${custom.resource.type}"/>
     <arg line="--factoryclass ${custom.resource.class}"/>
-    <arg line="--enabled ${custom.resource.enable}"/>
+    <arg line="--enabled=${custom.resource.enable}"/>
     <arg line="--target ${target.name}"/>
     <arg line=" ${extra.params}"/>
     <arg line="${custom.resource.name}"/>

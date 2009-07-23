@@ -469,7 +469,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}" failonerror="${failonerror}">
     <arg line="create-connector-connection-pool"/>
     <arg line="${as.props}"/>
-    <arg line="--port ${admin.port}"/>
     <arg line="--raname ${ra.name}"/>
     <arg line="--connectiondefinition ${connection.defname}"/>
     <arg line="--target ${appserver.instance.name}"/>
@@ -482,7 +481,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="delete-connector-connection-pool"/>
     <arg line="${as.props}"/>
-    <arg line="--port ${admin.port}"/>
     <arg line="--cascade=true"/>
     <arg line="${connector.conpool.name}"/>
   </exec>
@@ -495,7 +493,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}" failonerror="${failonerror}">
     <arg line="create-connector-resource"/>
     <arg line="${as.props}"/>
-    <arg line="--port ${admin.port}"/>
     <arg line="--poolname ${connector.conpool.name}"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="${connector.jndi.name}"/>
@@ -507,7 +504,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="delete-connector-resource"/>
     <arg line="${as.props}"/>
-    <arg line="--port ${admin.port}"/>
     <arg line="${connector.jndi.name}"/>
   </exec>
 </target>
@@ -515,13 +511,12 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <!--  deploy/undeploy RAR files                     -->
 <target name="deploy-rar-common" depends="init-common">
   <echo message="Deploying ${rarfile}" level="verbose"/>
-  <echo message="asadmin deploy ${as.props} --target ${appserver.instance.name} ${rarfile}"/>
+  <echo message="asadmin deploy ${as.props} --target ${appserver.instance.name} --force=${force} ${rarfile}"/>
     <property name="force" value="false"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="deploy"/>
     <arg line="${as.props}"/>
-    <arg line="--port ${admin.port}"/>
-    <arg line="--force ${force}"/>
+    <arg line="--force=${force}"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="${rarfile}"/>
   </exec>
@@ -530,13 +525,12 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="undeploy-rar-common" depends="init-common">
   <echo message="Undeploying ${undeployrar}" level="verbose"/>
-  <echo message="asadmin undeploy ${as.props} --target ${appserver.instance.name} ${undeployrar}"/>
+  <echo message="asadmin undeploy ${as.props} --target ${appserver.instance.name} --cascade=${cascade} ${undeployrar}"/>
     <property name="cascade" value="false"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="undeploy"/>
     <arg line="${as.props}"/>
-    <arg line="--cascade ${cascade}"/>
-    <arg line="--port ${admin.port}"/>
+    <arg line="--cascade=${cascade}"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="${undeployrar}"/>
   </exec>
@@ -628,7 +622,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <exec executable="${ASADMIN}" failonerror="false">
         <arg line="delete-jdbc-connection-pool"/>
         <arg line="${as.props}"/>
-        <arg line="--port ${admin.port}"/>
         <arg line="--cascade=true"/>
         <arg line="--target ${appserver.instance.name}"/>
         <arg line="${jdbc.conpool.name}"/>
@@ -646,7 +639,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}" failonerror="false">
         <arg line="create-jdbc-resource"/>
         <arg line="${as.props}"/>
-        <arg line="--port ${admin.port}"/>
         <arg line="--connectionpoolid ${jdbc.conpool.name}"/>
         <arg line="--target ${appserver.instance.name}"/>
         <arg line="${jdbc.resource.name}"/>
@@ -662,7 +654,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}" failonerror="false">
         <arg line="delete-jdbc-resource"/>
         <arg line="${as.props}"/>
-        <arg line="--port ${admin.port}"/>
         <arg line="--target ${appserver.instance.name}"/>
         <arg line="${jdbc.resource.name}"/>
     </exec>
@@ -840,7 +831,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
       level="verbose"/>
   <exec executable="${ASADMIN}">
     <arg line="create-jms-resource "/>
-    <arg line="--port ${admin.port}"/>
     <arg line="--restype ${jms.factory.type}"/>    
     <arg line="${as.props}"/>
     <arg line="--target ${appserver.instance.name}"/>
@@ -856,7 +846,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
       level="verbose"/>
   <exec executable="${ASADMIN}">
     <arg line="delete-jms-resource "/>    
-    <arg line="--port ${admin.port}"/>
     <arg line="${as.props}"/>
     <arg line="--target ${appserver.instance.name}"/>    
     <arg line="${jms.factory.name}"/>
@@ -871,13 +860,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}">
     <arg line="create-jmsdest --desttype ${dest.type} "/>    
     <arg line="${as.props}"/>
-    <arg line="--port ${admin.port}"/>
     <arg line="${dest.name}"/>
   </exec>
 
   <exec executable="${ASADMIN}">
     <arg line="create-jms-resource "/>
-    <arg line="--port ${admin.port}"/>
     <arg line="--restype ${jms.resource.type}"/>
     <arg line="--property imqDestinationName=${dest.name}"/>
     <arg line="--target ${appserver.instance.name}"/>    
@@ -892,14 +879,12 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
   <exec executable="${ASADMIN}">
     <arg line="delete-jms-resource "/>
-    <arg line="--port ${admin.port}"/>
     <arg line="--target ${appserver.instance.name}"/>    
     <arg line="${as.props} ${jms.resource.name}"/>
   </exec>
 
   <exec executable="${ASADMIN}">
     <arg line="delete-jmsdest --desttype ${dest.type} "/>    
-    <arg line="--port ${admin.port}"/>
     <arg line="${as.props} ${dest.name}"/>
   </exec>
 </target>
