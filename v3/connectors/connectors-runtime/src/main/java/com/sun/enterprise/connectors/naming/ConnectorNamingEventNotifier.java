@@ -36,6 +36,9 @@
 
 package com.sun.enterprise.connectors.naming;
 
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
+
 /**
  * To notify events related to Connector objects published using JNDI
  * @author Jagadish Ramu

@@ -35,6 +35,9 @@
  */
 package com.sun.enterprise.connectors.naming;
 
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
+
 import java.util.ArrayList;
 
 /**

@@ -40,9 +40,8 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
-import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
-import com.sun.enterprise.resource.naming.ConnectorObjectFactory;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 

@@ -58,6 +58,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.WorkContextHandler;
 import com.sun.appserv.connectors.internal.api.WorkManagerFactory;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.enterprise.config.serverbeans.*;
@@ -859,6 +860,23 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ConnectorNamingEventNotifier getResourceRebindEventNotifier() {
         return connectorResourceAdmService.getResourceRebindEventNotifier();
     }
+
+    /**
+     * register the connector naming event listener
+     * @param listener connector-naming-event-listener
+     */
+    public void registerConnectorNamingEventListener(ConnectorNamingEventListener listener){
+        connectorResourceAdmService.getResourceRebindEventNotifier().addListener(listener);
+    }
+
+    /**
+     * unregister the connector naming event listner
+     * @param listener connector-naming-event-listener
+     */
+    public void unregisterConnectorNamingEventListener(ConnectorNamingEventListener listener){
+        connectorResourceAdmService.getResourceRebindEventNotifier().removeListener(listener);
+    }
+
 
     public ResourcePool getConnectionPoolConfig(String poolName) {
         return ConnectorsUtil.getConnectionPoolConfig(poolName, allResources.getComponent(Resources.class));

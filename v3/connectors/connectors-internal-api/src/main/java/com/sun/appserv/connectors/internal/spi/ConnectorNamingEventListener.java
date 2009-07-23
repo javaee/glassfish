@@ -33,7 +33,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.connectors.naming;
+package com.sun.appserv.connectors.internal.spi;
+
 
 /**
  * Listener to get naming events about Connector Objects like <i>Connector Resource, <br>

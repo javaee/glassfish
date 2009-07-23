@@ -50,6 +50,7 @@ import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
+import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
 
 
 /**
@@ -173,6 +174,19 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @throws javax.naming.NamingException when not able to get the datasource.
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException;
+
+    /**
+     * register the connector naming event listener
+     * @param listener connector-naming-event-listener
+     */
+    public void registerConnectorNamingEventListener(ConnectorNamingEventListener listener);
+
+    /**
+     * unregister the connector naming event listner
+     * @param listener connector-naming-event-listener
+     */
+    public void unregisterConnectorNamingEventListener(ConnectorNamingEventListener listener);
+
 
     /**
      * Provide the configuration of the pool
