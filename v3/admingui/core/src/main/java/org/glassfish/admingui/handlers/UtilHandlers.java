@@ -55,7 +55,6 @@ import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
 
-import com.sun.webui.jsf.component.Hyperlink;
 
 
 import java.io.File;
@@ -65,8 +64,7 @@ import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -286,54 +284,6 @@ public class UtilHandlers {
         }
      }
 
-    @Handler(id="createHyperlinkArray",
-	    input={},
-	    output={
-		@HandlerOutput(name="links", type=Hyperlink[].class)
-	    })
-    public static void createHyperlinkArray(HandlerContext handlerCtx) {
-	FacesContext ctx = handlerCtx.getFacesContext();
-	ExternalContext extCtx = ctx.getExternalContext();
-	Map<String, String[]> reqParams = extCtx.getRequestParameterValuesMap();
-	String linkText[] = reqParams.get("text");
-	String linkUrl[] = reqParams.get("urls");
-	if (linkText == null) {
-	    // No data!  Should we add something here anyway?
-	    return;
-	}
-
-	int len = linkText.length;
-	Hyperlink arr[] = new Hyperlink[len];
-	String url = null;
-	String ctxPath = extCtx.getRequestContextPath();
-	int ctxPathSize = ctxPath.length();
-	for (int idx=0; idx < len; idx++) {
-	    // FIXME: Set parent
-	    arr[idx] = new Hyperlink();
-	    arr[idx].setId("bcLnk" + idx);
-	    // Set rendererType to avoid using widget renderer!!
-	    arr[idx].setRendererType("com.sun.webui.jsf.Hyperlink");
-	    arr[idx].setText(linkText[idx]);
-	    url = linkUrl[idx];
-	    if (url.startsWith(ctxPath)) {
-		url = url.substring(ctxPathSize);
-	    }
-	    arr[idx].setUrl(url);
-	}
-	handlerCtx.setOutputValue("links", arr);
-    }
-    
-    @Handler(id="dummyHyperlinkArray",
-	    input={},
-	    output={
-		@HandlerOutput(name="links", type=Hyperlink[].class)
-	    })
-    public static void dummyHyperlinkArray(HandlerContext handlerCtx) {
-            Hyperlink arr[] = new Hyperlink[1];
-            arr[0]=new Hyperlink();
-            arr[0].setText(">");
-        handlerCtx.setOutputValue("links", arr);
-    }
     
     @Handler(id="roundTo2DecimalPoint",
     input={

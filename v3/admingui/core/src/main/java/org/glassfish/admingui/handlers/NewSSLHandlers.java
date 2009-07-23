@@ -50,8 +50,6 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-import com.sun.webui.jsf.model.Option;
-
 /**
  *
  * @author anilam

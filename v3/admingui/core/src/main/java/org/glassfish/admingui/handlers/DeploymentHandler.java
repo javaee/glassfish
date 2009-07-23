@@ -41,7 +41,6 @@
 
 package org.glassfish.admingui.handlers;
 
-import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -58,12 +57,9 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-
-import com.sun.webui.jsf.model.UploadedFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.handlers.ProxyHandlers;
@@ -82,7 +78,7 @@ public class DeploymentHandler {
         /**
      *	<p> This method deploys the uploaded file </p>
      *      to a give directory</p>
-     *	<p> Input value: "file" -- Type: <code>com.sun.webui.jsf.model.UploadedFile</code></p>
+     *	<p> Input value: "file" -- Type: <code>String</code></p>
      *	<p> Input value: "appName" -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "appType" -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "ctxtRoot" -- Type: <code>java.lang.String</code></p>
@@ -257,62 +253,6 @@ public class DeploymentHandler {
 
 
 
-
-    /**
-     *	<p> This method uploads a file temp directory</p>
-     *	<p> Input value: "file" -- Type: <code>com.sun.webui.jsf.model.UploadedFile</code></p>
-     *	<p> Output value: "uploadDir" -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id = "uploadFileToTempDir", 
-    input = {
-        @HandlerInput(name = "file", type = UploadedFile.class)},
-    output = {
-        @HandlerOutput(name = "origPath", type = String.class),
-        @HandlerOutput(name = "uploadedTempFile", type = String.class)
-    })
-    public static void uploadFileToTempDir(HandlerContext handlerCtx) {
-        UploadedFile uploadedFile = (UploadedFile) handlerCtx.getInputValue("file");
-        File tmpFile = null;
-        String uploadTmpFile = "";
-        if (uploadedFile != null) {
-            String name = uploadedFile.getOriginalName();
-            //see bug# 6498910, for IE, getOriginalName() returns the full path, including the drive.
-            //for any other browser, it just returns the file name.
-            int lastIndex = name.lastIndexOf("\\");
-            if (lastIndex != -1) {
-                name = name.substring(lastIndex + 1, name.length());
-            }
-            int index = name.indexOf(".");
-            if (index <= 0) {
-                String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
-                GuiUtil.handleError(handlerCtx, mesg);
-                return;
-            }
-            String suffix = name.substring(index);
-            String prefix = name.substring(0, index);
-            handlerCtx.setOutputValue("origPath", prefix);
-            try {
-                //createTempFile requires min. of 3 char for prefix.
-                if (prefix.length() <= 2) {
-                    prefix = prefix + new Random().nextInt(100000);
-                }
-                tmpFile = File.createTempFile(prefix, suffix);
-                uploadedFile.write(tmpFile);
-                uploadTmpFile = tmpFile.getCanonicalPath();
-            } catch (IOException ioex) {
-                try {
-                    uploadTmpFile = tmpFile.getAbsolutePath();
-                } catch (Exception ex) {
-                //Handle AbsolutePathException here
-                }
-            } catch (Exception ex) {
-                GuiUtil.handleException(handlerCtx, ex);
-            }
-        }
-        handlerCtx.setOutputValue("uploadedTempFile", uploadTmpFile);
-    }
-    
     /**
      *  <p> This handler redeploy any application
      */

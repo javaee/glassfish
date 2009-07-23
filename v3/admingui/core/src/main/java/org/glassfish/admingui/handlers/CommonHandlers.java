@@ -60,7 +60,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 
-import com.sun.webui.jsf.component.Calendar;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -266,30 +265,6 @@ public class CommonHandlers {
         }
     }
 
-    /**
-     *  <p> Returns the date pattern for this calendar component.
-     *      
-     */
-    @Handler(id="getDatePattern",
-    input={
-           @HandlerInput(name="calendarComponent", type=com.sun.webui.jsf.component.Calendar.class, required=true)},
-    output={
-        @HandlerOutput(name="pattern", type=String.class)}
-    )
-    public static void getDatePattern(HandlerContext handlerCtx) {
-        Calendar calendar = (Calendar) handlerCtx.getInputValue("calendarComponent");
-		String pattern = calendar.getDateFormatPattern();
-
-		if(pattern == null || pattern.length() == 0) {
-			pattern = calendar.getDatePicker().getDateFormatPattern();
-
-			if(pattern == null || pattern.length() == 0) {
-				pattern="MM/dd/yyyy"; //default pattern
-			}
-		}
-        handlerCtx.setOutputValue("pattern", pattern);
-    }
-    
     /**
      *	<p> This handler returns the requestParameter value based on the key.
      *	    If it doesn't exists, then it will look at the request

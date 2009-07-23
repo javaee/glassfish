@@ -64,9 +64,6 @@ import java.util.List;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
-import com.sun.webui.jsf.component.Field;
-
-
 
 public class JdbcTempHandler {
     /** Creates a new instance of JdbcHandler */
@@ -212,23 +209,7 @@ public class JdbcTempHandler {
         attrs.put("DatasourceClassname", classname);
         attrs.put("ResType", resType);
     }   
-    
-    /**
-     *	<p> This handler enable or disable the table text field according to the method value.
-     */
-    @Handler(id="setDisableConnectionPoolTableField",
-        input={
-            @HandlerInput(name="tableField", type=com.sun.webui.jsf.component.Field.class),
-            @HandlerInput(name="methodValue", type=String.class)}
-        )
-    public static void setDisableConnectionPoolTableField(HandlerContext handlerCtx) {
-        String methodValue = (String)handlerCtx.getInputValue("methodValue");
-        Field tableField = (Field)handlerCtx.getInputValue("tableField");
-        if("table".equals(methodValue)){
-            tableField.setDisabled(false);
-        }else
-            tableField.setDisabled(true);
-    }
+
     
         public static final  String REASON_FAILED_KEY = "ReasonFailedKey";    
         public static final  String BOOLEAN_KEY = "BooleanKey";
