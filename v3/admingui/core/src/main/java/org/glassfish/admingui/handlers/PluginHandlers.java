@@ -61,11 +61,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.factories.NavigationNodeFactory;
+
 
 
 /**
@@ -427,6 +432,55 @@ public class PluginHandlers {
 
 	// Not found
 	return null;
+    }
+
+        /**
+     *	<p> This handler is used for the navigation nodes that request content
+     *	    from an external URL.  This handler pulls the "real url" from from
+     *	    the component specified by the <code>compId</code> parameter (this
+     *	    necessarily depends on the presence of the navigation container in
+     *	    the view for the component look up to work).  Once the component
+     *	    has been found, the url is retrieved from the attribute map, and
+     *	    its contents retrieved.  If <code>processPage</code> is true, the
+     *	    URL contents are interpretted and the resulting component(s) are
+     *	    added to the component tree (This feature is not currently
+     *	    supported)..  Otherwise, the contents are returned in the output
+     *	    parameter <code>pluginPage</code> to be output as-is on the
+     *	    page.</p>
+     *
+     * @param handlerCtx    The <code>HandlerContext</code>.
+     */
+    @Handler(id = "retrievePluginPageContents",
+	     input = {@HandlerInput(name = "compId", type = String.class, required = true)},
+	     output = {@HandlerOutput(name = "pluginPage", type = String.class)})
+    public static void retrievePluginPageContents(HandlerContext handlerCtx) {
+	String id = (String) handlerCtx.getInputValue("compId");
+	UIComponent comp = handlerCtx.getFacesContext().getViewRoot().findComponent(id);
+	String urlContents = "";
+	if (comp != null) {
+	    String url = url = (String) comp.getAttributes().get(NavigationNodeFactory.REAL_URL);
+	    try {
+		// Read from the URL...
+		URL contentUrl = FileUtil.searchForFile(url, null);
+		if (contentUrl == null) {
+		    throw new IOException("Unable to locate file: " + url);
+		}
+		urlContents = new String(FileUtil.readFromURL(contentUrl));
+
+		// FIXME: Implement processPage support
+		/*
+		if (processPage) {
+		    // probably do something like what includeIntegrations does
+		    ...
+		}
+		*/
+	    } catch (IOException ex) {
+		Logger.getLogger(PluginHandlers.class.getName()).log(Level.SEVERE, "Unable to read url: " + url, ex);
+	    }
+	}
+
+	// Set the content to output...
+	handlerCtx.setOutputValue("pluginPage", urlContents);
     }
 
 }

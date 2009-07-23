@@ -59,12 +59,15 @@ import com.sun.webui.jsf.component.Hyperlink;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
+
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.util.SunOptionUtil;
 
 
 
@@ -197,7 +200,44 @@ public class WoodstockHandler {
         handlerCtx.setOutputValue("links", arr);
     }
 
-        /**
+
+
+
+     @Handler(id = "StringArrayToSelectItemArray",
+    input = {
+        @HandlerInput(name = "stringArray", type = String[].class, required = true)},
+    output = {
+        @HandlerOutput(name = "item", type = SelectItem[].class)})
+    public static void StringArrayToSelectItemArray(HandlerContext handlerCtx) {
+
+        String[] stringArray = (String[]) handlerCtx.getInputValue("stringArray");
+        handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringArray));
+
+     }
+
+     @Handler(id = "selectItemArrayToStrArray",
+    input = {
+        @HandlerInput(name = "item", type = SelectItem[].class, required = true)},
+    output = {
+        @HandlerOutput(name = "strAry", type = String[].class)})
+    public static void selectItemArrayToStrArray(HandlerContext handlerCtx) {
+
+        SelectItem[] item = (SelectItem[]) handlerCtx.getInputValue("item");
+        if (item == null || item.length == 0){
+            handlerCtx.setOutputValue("strAry", new String[0]);
+            return;
+        }
+        String[] strAry = new String[item.length];
+        for(int i=0; i<item.length; i++){
+            strAry[i] = (String)item[i].getValue();
+        }
+        handlerCtx.setOutputValue("strAry", strAry);
+     }
+
+
+
+
+    /**
      *  <p> Returns the date pattern for this calendar component.
      *
      */
