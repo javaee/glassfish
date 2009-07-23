@@ -80,7 +80,8 @@
 	<module>web-nb</module>
 	<module>web</module>
 	<module>glassfish</module>
-	<module>appclient</module>
+<!-- disable appclient distribution build since we're not using it yet -->
+<!-- 	<module>appclient</module> -->
     </modules>
 
      <build>
