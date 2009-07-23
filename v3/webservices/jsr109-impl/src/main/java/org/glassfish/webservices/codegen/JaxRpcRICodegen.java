@@ -52,23 +52,15 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 // DOL imports
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.loader.util.ASClassLoaderUtil;
-import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deploy.shared.FileArchive;
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.JaxrpcMappingDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.JaxrpcMappingDescriptor;
 import com.sun.enterprise.deployment.JaxrpcMappingDescriptor.Mapping;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.DefaultDOLVisitor;
 import com.sun.enterprise.deployment.util.ModuleContentLinker;
 import com.sun.enterprise.deployment.util.WebServerInfo;
-import com.sun.enterprise.deployment.WebService;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
+import com.sun.enterprise.deployment.*;
 import org.glassfish.deployment.common.OptionalPkgDependency;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.loader.EJBClassLoader;
@@ -133,7 +125,12 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     
     public void run(Habitat habitat, DeploymentContext context, String cp) throws Exception {
         rootLocation_ = new FileArchive();
-        rootLocation_.open(context.getSourceDir().toURI());
+        BundleDescriptor bundle = context.getModuleMetaData(BundleDescriptor.class);
+        if(bundle.isStandalone()) {
+            rootLocation_.open(context.getSourceDir().toURI());
+        } else {
+            rootLocation_.open(context.getSource().getParentArchive().getURI());            
+        }
         this.context = context;
         this.habitat = habitat;
         this.moduleClassPath = cp;
@@ -257,7 +254,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     public void accept(WebService webService) {
         super.accept(webService);
         try {
-             if("1.1".compareTo(webService.getWebServicesDescriptor().getSpecVersion())<0) {
+             if((new WsUtil()).isJAXWSbasedService(webService)) {
                 WsUtil wsUtil = new WsUtil();
                 Collection<WebServiceEndpoint> endpoints = webService.getEndpoints();
                 for(WebServiceEndpoint ep : endpoints) {

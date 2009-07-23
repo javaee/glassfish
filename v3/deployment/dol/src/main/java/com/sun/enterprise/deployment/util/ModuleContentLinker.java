@@ -74,22 +74,21 @@ public class ModuleContentLinker extends DefaultDOLVisitor {
     protected ModuleContentLinker() {
     }
 
-    private File getModuleLocation(ModuleDescriptor module) throws IOException {
-        File moduleLocation = new File(rootLocation_.getURI());
-        /*
+    private String getModuleLocation(ModuleDescriptor module) throws IOException {
+        String moduleLocation = (new File(rootLocation_.getURI())).getAbsolutePath();
         if( !module.isStandalone() ) {
             // If this is an ear, get module jar by adding the module path
             // to the root directory.
             String archiveUri = module.getArchiveUri();
-            moduleLocation = new File(rootLocation_.getSubArchive(archiveUri).getURI());
+            archiveUri = archiveUri.replace('.', '_');
+            moduleLocation = moduleLocation + File.separator + archiveUri;
         }
-        */
         return moduleLocation;
     }
 
     private URL internalGetUrl(ModuleDescriptor module, String uri) 
         throws Exception {
-        File moduleLocation = getModuleLocation(module);
+        File moduleLocation = new File(getModuleLocation(module));
         URL url = getEntryAsUrl(moduleLocation, uri);
         return url;
     }

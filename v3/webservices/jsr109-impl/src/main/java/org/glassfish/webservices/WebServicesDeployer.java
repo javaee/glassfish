@@ -143,7 +143,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             Thread.currentThread().setContextClassLoader(newCl);
             WebServicesDescriptor wsDesc = bundle.getWebServices();
             for (WebService ws : wsDesc.getWebServices()) {
-                if (isJAXWSbasedService(dc, ws)){
+                if ((new WsUtil()).isJAXWSbasedService(ws)){
                     setupJaxWSServiceForDeployment(dc, ws);
                 }
                 JAXRPCCodeGenFacade facade= habitat.getByContract(JAXRPCCodeGenFacade.class);
@@ -528,14 +528,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
             }
         }
-        // Swap the application written servlet implementation class for
-        // one provided by the container.  The original class is stored
-        // as runtime information since it will be used as the servant at
-        // dispatch time.
-
-        for(Iterator<WebBundleDescriptor> iter = webBundles.iterator(); iter.hasNext(); ) {
-            doWebServiceDeployment(iter.next());
-        }
 
         // Generate final wsdls for all web services and store them in
         // the application repository directory.
@@ -545,34 +537,42 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
             // For JAXWS services, we rely on JAXWS RI to do WSL gen and publishing
             // For JAXRPC we do it here in 109
-            if(isJAXWSbasedService(dc, next)) {
+            if(wsUtil.isJAXWSbasedService(next)) {
                 for(WebServiceEndpoint wsep : next.getEndpoints()) {
                     wsep.composeFinalWsdlUrl(wsUtil.getWebServerInfoForDAS().getWebServerRootURL(wsep.isSecure()));
                 }
-                continue;
-            }
+            } else {
 
-            // Even if deployer specified a wsdl file
-            // publish location, server can't assume it can access that
-            // file system.  Plus, it's cleaner to depend on a file stored
-            // within the application repository rather than one directly
-            // exposed to the deployer. Name of final wsdl is derived based
-            // on the location of its associated module.  This prevents us
-            // from having write the module to disk in order to store the
-            // modified runtime info.
-            URL url = next.getWsdlFileUrl();
+                // Even if deployer specified a wsdl file
+                // publish location, server can't assume it can access that
+                // file system.  Plus, it's cleaner to depend on a file stored
+                // within the application repository rather than one directly
+                // exposed to the deployer. Name of final wsdl is derived based
+                // on the location of its associated module.  This prevents us
+                // from having write the module to disk in order to store the
+                // modified runtime info.
+                URL url = next.getWsdlFileUrl();
 
-            // Create the generated WSDL in the generated directory; for that create the directories first
-            File genXmlDir =  dc.getScratchDir("xml");
-            if(!app.isVirtual()) {
-                // Add module name to the generated xml dir for apps
-                String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
-                genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
+                // Create the generated WSDL in the generated directory; for that create the directories first
+                File genXmlDir =  dc.getScratchDir("xml");
+                if(!app.isVirtual()) {
+                    // Add module name to the generated xml dir for apps
+                    String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
+                    genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
+                }
+                String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
+                (new File(genXmlDir, wsdlFileDir)).mkdirs();
+                File genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
+                wsUtil.generateFinalWsdl(url, next, wsUtil.getWebServerInfoForDAS(), genWsdlFile);
             }
-            String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
-            (new File(genXmlDir, wsdlFileDir)).mkdirs();
-            File genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
-            wsUtil.generateFinalWsdl(url, next, wsUtil.getWebServerInfoForDAS(), genWsdlFile);
+        }
+        // Swap the application written servlet implementation class for
+        // one provided by the container.  The original class is stored
+        // as runtime information since it will be used as the servant at
+        // dispatch time.
+
+        for(Iterator<WebBundleDescriptor> iter = webBundles.iterator(); iter.hasNext(); ) {
+            doWebServiceDeployment(iter.next());
         }
     }
 
@@ -583,6 +583,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
          */
         Collection endpoints = web.getWebServices().getEndpoints();
         ClassLoader cl = web.getClassLoader();
+        WsUtil wsutil = new WsUtil();
 
         for(Iterator endpointIter = endpoints.iterator();endpointIter.hasNext();) {
 
@@ -604,8 +605,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             try {
                 Class servletImplClazz  = cl.loadClass(servletImplClass);
                 String containerServlet;
-                // For versions above 1.1, use JAXWSServlet
-                if("1.1".compareTo(web.getWebServices().getSpecVersion())<0) {
+                if(wsutil.isJAXWSbasedService(nextEndpoint.getWebService())) {
                     containerServlet = "org.glassfish.webservices.JAXWSServlet";
                 } else {
                     containerServlet =
@@ -664,65 +664,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
         return new WebServicesApplication(context, env, dispatcher, config, habitat);
-    }
-
-    private boolean isJAXWSbasedService(DeploymentContext dc, WebService ws){
-        boolean jaxwsEndPtFound = false;
-        boolean jaxrpcEndPtFound = false;
-        for (WebServiceEndpoint endpoint : ws.getEndpoints()) {
-            BundleDescriptor bundle = dc.getModuleMetaData(BundleDescriptor.class);
-            String implClassName;
-            if (endpoint.implementedByEjbComponent()) {
-                implClassName = endpoint.getEjbComponentImpl().getEjbClassName();
-            } else {
-                implClassName = endpoint.getWebComponentImpl().getWebComponentImplementation();
-            }
-            Class implClass;
-            try {
-                implClass = dc.getClassLoader().loadClass(implClassName);
-            } catch(Exception e) {
-                throw new DeploymentException(format(rb.getString("impl.notfound"),
-                        ws.getName(), implClassName ,bundle.getModuleDescriptor().getArchiveUri()));
-            }
-            if (implClass!=null) {
-                if(implClass.getAnnotation(javax.xml.ws.WebServiceProvider.class) != null) {
-                    // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
-                    // in the same service
-                    if(jaxrpcEndPtFound) {
-                        throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
-                                ws.getName()  ));
-                    }
-                    //This is a JAXWS endpoint with @WebServiceProvider
-                    //Do not run wsgen for this endpoint
-                    jaxwsEndPtFound = true;
-                    continue;
-                }
-                if(implClass.getAnnotation(javax.jws.WebService.class) != null) {
-                    // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
-                    // in the same service
-                    if(jaxrpcEndPtFound) {
-                        throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
-                                ws.getName()  ));
-                    }
-                    // This is a JAXWS endpoint with @WebService;
-                    jaxwsEndPtFound = true;
-                } else {
-                    // this is a jaxrpc endpoint
-                    // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint
-                    // in the same service
-                    if(jaxwsEndPtFound) {
-                        throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
-                                ws.getName()  ));
-                    }
-                    // Set spec version to 1.1 to indicate later the wscompile should be run
-                    // We do this here so that jaxrpc endpoint having J2EE1.4 or JavaEE5
-                    // descriptors will work properly
-                    jaxrpcEndPtFound = true;
-                    ws.getWebServicesDescriptor().setSpecVersion("1.1");
-                }
-            }
-        }
-        return jaxwsEndPtFound;
     }
 }
 

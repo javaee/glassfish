@@ -108,6 +108,7 @@ import java.lang.reflect.Method;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.deployment.common.DeploymentException;
 
 
 /**
@@ -160,7 +161,7 @@ public class WsUtil {
             "http://schemas.xmlsoap.org/ws/2005/07/securitypolicy";
 
     private static Logger logger = LogDomains.getLogger(WsUtil.class,LogDomains.WEBSERVICES_LOGGER);
-
+    private ResourceBundle rb = logger.getResourceBundle();
 
     private JaxRpcObjectFactory rpcFactory;
 
@@ -754,7 +755,63 @@ public class WsUtil {
         return wsdlFileURL;
     }
 
-
+    public boolean isJAXWSbasedService(WebService ws) {
+        boolean jaxwsEndPtFound = false;
+        boolean jaxrpcEndPtFound = false;
+        for (WebServiceEndpoint endpoint : ws.getEndpoints()) {
+            String implClassName;
+            if (endpoint.implementedByEjbComponent()) {
+                implClassName = endpoint.getEjbComponentImpl().getEjbClassName();
+            } else {
+                implClassName = endpoint.getWebComponentImpl().getWebComponentImplementation();
+            }
+            Class implClass;
+            try {
+                implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
+            } catch(Exception e) {
+                logger.log(Level.SEVERE, "Unable to load impl class ", e);
+                continue;
+            }
+            if (implClass!=null) {
+                if(implClass.getAnnotation(javax.xml.ws.WebServiceProvider.class) != null) {
+                    // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
+                    // in the same service
+                    if(jaxrpcEndPtFound) {
+                        logger.log(Level.SEVERE, rb.getString("jaxws-jaxrpc.error"));
+                        continue;
+                    }
+                    //This is a JAXWS endpoint with @WebServiceProvider
+                    //Do not run wsgen for this endpoint
+                    jaxwsEndPtFound = true;
+                    continue;
+                }
+                if(implClass.getAnnotation(javax.jws.WebService.class) != null) {
+                    // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
+                    // in the same service
+                    if(jaxrpcEndPtFound) {
+                        logger.log(Level.SEVERE, rb.getString("jaxws-jaxrpc.error"));
+                        continue;
+                    }
+                    // This is a JAXWS endpoint with @WebService;
+                    jaxwsEndPtFound = true;
+                } else {
+                    // this is a jaxrpc endpoint
+                    // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint
+                    // in the same service
+                    if(jaxwsEndPtFound) {
+                        logger.log(Level.SEVERE, rb.getString("jaxws-jaxrpc.error"));
+                        continue;
+                    }
+                    // Set spec version to 1.1 to indicate later the wscompile should be run
+                    // We do this here so that jaxrpc endpoint having J2EE1.4 or JavaEE5
+                    // descriptors will work properly
+                    jaxrpcEndPtFound = true;
+                    ws.getWebServicesDescriptor().setSpecVersion("1.1");
+                }
+            }
+        }
+        return jaxwsEndPtFound;
+    }
 
     public javax.xml.rpc.Service createConfiguredService
         (ServiceReferenceDescriptor desc) throws Exception {
