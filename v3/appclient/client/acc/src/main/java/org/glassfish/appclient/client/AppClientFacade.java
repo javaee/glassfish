@@ -210,7 +210,11 @@ public class AppClientFacade {
 
         isJWS = Boolean.getBoolean("appclient.is.jws");
 
-        initInstallRootProperty();
+        /*
+         * The installRoot property will be set by the ServerEnvironment
+         * initialization using the ACC start-up context.  That happens during
+         * the ACCModulesManager warm-up.
+         */
 
         if (launchInfo.getClientLaunchType() == ClientLaunchType.UNKNOWN) {
             throw new IllegalArgumentException();
@@ -258,18 +262,6 @@ public class AppClientFacade {
         newACC.prepare(inst);
 
         acc = newACC;
-    }
-
-    private static void initInstallRootProperty() throws URISyntaxException {
-        URI jarURI = ACCClassLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-        if (jarURI.getScheme().startsWith("http")) {
-            return;
-        }
-        File jarFile = new File(jarURI);
-        File dirFile = jarFile.getParentFile().getParentFile();
-        installRootURI = dirFile.toURI();
-
-        System.setProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, dirFile.getAbsolutePath());
     }
 
     private static AppClientContainer prepareACC() {

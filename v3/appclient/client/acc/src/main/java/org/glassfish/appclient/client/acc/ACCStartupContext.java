@@ -40,8 +40,13 @@
 package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
@@ -65,8 +70,26 @@ public class ACCStartupContext extends StartupContext {
 
     @Override
     public File getRootDirectory() {
-//        throw new UnsupportedOperationException();
-        return new File(System.getProperty("user.home"));
+        /*
+         * During launches not using Java Web Start the root directory
+         * is important; it is used in setting some system properties.
+         */
+        URI jarURI = null;
+        try {
+            jarURI = ACCClassLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException(ex);
+        }
+        if (jarURI.getScheme().startsWith("http")) {
+            /*
+             * We do not really rely on the root directory during Java
+             * Web Start launches but we must return something.
+             */
+            return new File(System.getProperty("user.home"));
+        }
+        File jarFile = new File(jarURI);
+        File dirFile = jarFile.getParentFile();
+        return dirFile;
     }
 
     @Override
