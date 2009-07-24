@@ -38,12 +38,12 @@
     //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.EditPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.editPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.EditPageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.EditPageHelp}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.editPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.editPageHelp}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
         setPageSessionAttribute(key="edit" value="#{true}");
         getRequestValue(key="name" value=>$page{destName});

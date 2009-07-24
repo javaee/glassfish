@@ -39,12 +39,12 @@
     setAttribute(key="edit" value="#{false}" )
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.NewPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.newPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.NewPageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.NewPageHelp}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.newPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.newPageHelp}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
         getDefaultPhysicalDestinationValues(map="#{pageSession.valueMap}");
         

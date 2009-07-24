@@ -61,6 +61,7 @@
     <!command
         createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                 attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
+        createResourceRef(resourceName="#{pageSession.valueMap['Name']}");
 
         // TODO: We might need to add something here to create the resource-ref, but I'm not seeing any examples of how
         if (#{pageSession.hasPropertyTable}){

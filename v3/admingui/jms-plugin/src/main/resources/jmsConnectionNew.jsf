@@ -39,7 +39,7 @@
     //setResourceBundle(key="help" bundle="org.glassfish.admingui.plugin.jms.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactories.newPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.connectionFactory.newPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
