@@ -187,8 +187,8 @@ public final class ApplicationContextFacade
      * Gets the major version of the Servlet specification that the
      * application represented by this ServletContext is based on.
      */
-    public int getActualMajorVersion() {
-        return context.getActualMajorVersion();
+    public int getEffectiveMajorVersion() {
+        return context.getEffectiveMajorVersion();
     }
     
     
@@ -196,8 +196,8 @@ public final class ApplicationContextFacade
      * Gets the minor version of the Servlet specification that the
      * application represented by this ServletContext is based on.
      */
-    public int getActualMinorVersion() {
-        return context.getActualMinorVersion();
+    public int getEffectiveMinorVersion() {
+        return context.getEffectiveMinorVersion();
     }
 
 

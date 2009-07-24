@@ -734,10 +734,10 @@ public class StandardContext
     private Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> servletContainerInitializerInterestList = null;
 
     // The major Servlet spec version of the web.xml
-    private int actualMajorVersion = 0;
+    private int effectiveMajorVersion = 0;
 
     // The minor Servlet spec version of the web.xml
-    private int actualMinorVersion = 0;
+    private int effectiveMinorVersion = 0;
 
     // ----------------------------------------------------- Context Properties
 
@@ -2785,20 +2785,20 @@ public class StandardContext
         return webappLoader;
     }
 
-    public void setActualMajorVersion(int actualMajorVersion) {
-        this.actualMajorVersion = actualMajorVersion;
+    public void setEffectiveMajorVersion(int effectiveMajorVersion) {
+        this.effectiveMajorVersion = effectiveMajorVersion;
     }
 
-    public int getActualMajorVersion() {
-        return actualMajorVersion;
+    public int getEffectiveMajorVersion() {
+        return effectiveMajorVersion;
     }
 
-    public void setActualMinorVersion(int actualMinorVersion) {
-        this.actualMinorVersion = actualMinorVersion;
+    public void setEffectiveMinorVersion(int effectiveMinorVersion) {
+        this.effectiveMinorVersion = effectiveMinorVersion;
     }
     
-    public int getActualMinorVersion() {
-        return actualMinorVersion;
+    public int getEffectiveMinorVersion() {
+        return effectiveMinorVersion;
     }
 
     /**

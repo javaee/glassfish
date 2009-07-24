@@ -609,8 +609,10 @@ public class TomcatDeploymentConfig {
         if (majorMinorVersions.length != 2) {
             throw new IllegalArgumentException("Illegal Servlet spec version");
         }
-        webModule.setActualMajorVersion(Integer.parseInt(majorMinorVersions[0]));
-        webModule.setActualMinorVersion(Integer.parseInt(majorMinorVersions[1]));
+        webModule.setEffectiveMajorVersion(
+            Integer.parseInt(majorMinorVersions[0]));
+        webModule.setEffectiveMinorVersion(
+            Integer.parseInt(majorMinorVersions[1]));
     }
 
     
