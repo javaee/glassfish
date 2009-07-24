@@ -37,8 +37,7 @@
 
 <sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" visible="#{true}">
     <sun:textField id="appName" columns="$int{40}" text="#{pageSession.ear['name']}" styleClass="required" required="#{true}"
-        onChange="javascript: alert('ch');
-                    setAppName('#{appNameId}', this.value, window)">
+        onChange="javascript: setAppName('#{appNameId}', this.value, window)">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{appNameId});
         />
