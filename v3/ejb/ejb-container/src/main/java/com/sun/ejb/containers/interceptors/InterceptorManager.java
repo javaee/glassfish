@@ -58,7 +58,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import org.glassfish.api.interceptor.InterceptorInfo;
+import com.sun.enterprise.container.common.spi.util.InterceptorInfo;
 import javax.interceptor.InvocationContext;
 
 import com.sun.ejb.EJBUtils;

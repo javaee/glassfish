@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.interceptor;
+package com.sun.enterprise.container.common.spi.util;
 
 
 import java.util.*;

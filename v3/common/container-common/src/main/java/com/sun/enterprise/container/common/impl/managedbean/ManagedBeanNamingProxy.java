@@ -37,7 +37,7 @@ package com.sun.enterprise.container.common.impl.managedbean;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
-import org.glassfish.api.managedbean.ManagedBeanManager;
+import com.sun.enterprise.container.common.spi.ManagedBeanManager;
 
 
 /**

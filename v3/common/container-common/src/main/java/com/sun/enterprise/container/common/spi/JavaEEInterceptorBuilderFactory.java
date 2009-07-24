@@ -33,24 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.interceptor;
+package com.sun.enterprise.container.common.spi;
 
+import org.jvnet.hk2.annotations.Contract;
 
-import java.lang.reflect.Method;
+import com.sun.enterprise.container.common.spi.util.InterceptorInfo;
+
 
 /**
+ * A factory for creating an interceptor builder. An interceptor builder abstracts out
+ * the resources needed to create a proxy for invoking a target object with interceptors.
+ * There is typically one instance of an interceptor builder per target class ,and one
+ * interceptor invoker per target class instance.  
  */
 
-public interface InterceptorInvoker {
+@Contract
+public interface JavaEEInterceptorBuilderFactory {
 
-    public Object getProxy();
-
-    public Object getTargetInstance();
-
-    public Object[] getInterceptorInstances();
-
-    public void invokePostConstruct() throws Exception;
-
-    public void invokePreDestroy() throws Exception;
+    public JavaEEInterceptorBuilder createBuilder(InterceptorInfo info) throws Exception;
 
 }

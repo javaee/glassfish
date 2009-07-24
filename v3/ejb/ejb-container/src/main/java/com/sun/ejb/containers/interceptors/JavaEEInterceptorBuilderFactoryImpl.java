@@ -36,10 +36,10 @@
  */
 package com.sun.ejb.containers.interceptors;
 
-import org.glassfish.api.interceptor.JavaEEInterceptorBuilder;
-import org.glassfish.api.interceptor.JavaEEInterceptorBuilderFactory;
-import org.glassfish.api.interceptor.InterceptorInvoker;
-import org.glassfish.api.interceptor.InterceptorInfo;
+import com.sun.enterprise.container.common.spi.JavaEEInterceptorBuilder;
+import com.sun.enterprise.container.common.spi.JavaEEInterceptorBuilderFactory;
+import com.sun.enterprise.container.common.spi.InterceptorInvoker;
+import com.sun.enterprise.container.common.spi.util.InterceptorInfo;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;

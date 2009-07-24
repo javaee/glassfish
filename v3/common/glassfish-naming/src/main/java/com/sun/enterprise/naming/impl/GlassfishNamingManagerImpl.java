@@ -533,6 +533,12 @@ public final class  GlassfishNamingManagerImpl
         return logicalModuleJndiName;
     }
 
+    private String logicalModuleJndiNameToComp(String logicalModuleName) {
+        String tail = logicalModuleName.substring(JAVA_MODULE_LENGTH);
+        String logicalCompJndiName = "java:comp" + tail;
+        return logicalCompJndiName;
+    }
+
 
     public void bindToAppNamespace(String appName, Collection<? extends JNDIBinding> bindings)
             throws NamingException {
@@ -660,9 +666,12 @@ public final class  GlassfishNamingManagerImpl
 
         ComponentIdInfo info = componentIdInfo.get(componentId);
         String logicalJndiName = name;
-        if( (info != null) && (info.treatComponentAsModule) && name.startsWith("java:comp")) {
+        boolean replaceName =  (info != null) && (info.treatComponentAsModule)
+                && name.startsWith("java:comp");
+        if( replaceName ) {
             logicalJndiName = logicalCompJndiNameToModule(name);
         }
+
         Map namespace = getNamespace(componentId, logicalJndiName);
 
         Object obj = namespace.get(logicalJndiName);
@@ -673,6 +682,13 @@ public final class  GlassfishNamingManagerImpl
         if (obj instanceof NamingObjectProxy) {
             NamingObjectProxy namingProxy = (NamingObjectProxy) obj;
             obj = namingProxy.create(ctx);
+        } else if( obj instanceof Context ) {
+            // Need to preserve the original prefix so that further operations on the
+            // context maintain the correct external view. In the case of a replaced java:comp,
+            // create a new equivalent javaURLContext and return that.
+            if( replaceName ) {
+                obj = new JavaURLContext(name, null);
+            }
         }
 
         return obj;
@@ -696,7 +712,10 @@ public final class  GlassfishNamingManagerImpl
 
         ComponentIdInfo info = componentIdInfo.get(componentId);
         String logicalJndiName = name;
-        if( (info != null) && (info.treatComponentAsModule) && name.startsWith("java:comp")) {
+
+        boolean replaceName =  (info != null) && (info.treatComponentAsModule)
+                && name.startsWith("java:comp");
+        if( replaceName ) {
             logicalJndiName = logicalCompJndiNameToModule(name);
         }
 
@@ -721,8 +740,12 @@ public final class  GlassfishNamingManagerImpl
             String key = (String) itr.next();
             // Check if key begins with name and has only 1 component extra
             // (i.e. no more slashes)
-            if (key.startsWith(logicalJndiName) && key.indexOf('/', logicalJndiName.length()) == -1)
-                list.add(key);
+            // Make sure keys reflect the original prefix in the case of comp->module
+            // replacement
+            if (key.startsWith(logicalJndiName) && key.indexOf('/', logicalJndiName.length()) == -1) {
+                String toAdd = replaceName ? logicalModuleJndiNameToComp(key) : key;
+                list.add(toAdd);
+            }
         }
         return list;
     }

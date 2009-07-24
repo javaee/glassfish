@@ -33,35 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.managedbean;
-
-import org.jvnet.hk2.annotations.Contract;
-
-import org.glassfish.api.deployment.DeploymentContext;
+package com.sun.enterprise.container.common.spi;
 
 
 /**
- * ManagedBeanManager provides an interface to various Java EE Managed Bean
- * component operations.
+ * Provides an abstraction for invoking javax.interceptor
+ * callbacks and around invoke methods on a target instance.
  */
 
-@Contract
-public interface ManagedBeanManager {
+public interface JavaEEInterceptorBuilder {
 
-    public Object createManagedBean(Class managedBean) throws Exception;
+    public InterceptorInvoker createInvoker(Object targetInstance) throws Exception;
 
-    public Object createManagedBean(Object managedBeanDesc, Class managedBeanClass) throws Exception;
-
-    public void destroyManagedBean(Object managedBean);
-
-    /**
-     * Register an interceptor instance for all managed beans in the given module
-     *
-     * @param interceptorInstance
-     * @param bundle BundleDescriptor (passed as object because we can't
-     *        add a dependency on the DOL
-     */
-    public void registerRuntimeInterceptor(Object interceptorInstance, Object bundle);  
-
+    public void addRuntimeInterceptor(Object interceptor);
 
 }

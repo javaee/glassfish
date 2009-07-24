@@ -48,7 +48,7 @@ import java.lang.reflect.Proxy;
 import java.lang.annotation.Annotation;
 
 
-import org.glassfish.api.managedbean.ManagedBeanManager;
+import com.sun.enterprise.container.common.spi.ManagedBeanManager;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -75,16 +75,17 @@ import org.glassfish.internal.data.ApplicationInfo;
 
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.api.Startup;
 
-import org.glassfish.api.interceptor.InterceptorInvoker;
-import org.glassfish.api.interceptor.InterceptorInfo;
-import org.glassfish.api.interceptor.JavaEEInterceptorBuilder;
-import org.glassfish.api.interceptor.JavaEEInterceptorBuilderFactory;
+import com.sun.enterprise.container.common.spi.InterceptorInvoker;
+import com.sun.enterprise.container.common.spi.util.InterceptorInfo;
+import com.sun.enterprise.container.common.spi.JavaEEInterceptorBuilder;
+import com.sun.enterprise.container.common.spi.JavaEEInterceptorBuilderFactory;
 
 /**
  */
 @Service
-public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct, EventListener {
+public class ManagedBeanManagerImpl implements ManagedBeanManager, Startup, PostConstruct, EventListener {
 
      private static Logger _logger = LogDomains.getLogger(ManagedBeanManagerImpl.class,
             LogDomains.CORE_LOGGER);
@@ -116,6 +117,8 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
         events.register(this);
         processType = processEnv.getProcessType();
     }
+
+    public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 
     public void event(Event event) {
         
@@ -250,10 +253,10 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
      * @param bundle bundle descripto
      *
      */
-    public void registerRuntimeInterceptor(Object interceptorInstance, Object bundle) {
+    public void registerRuntimeInterceptor(Object interceptorInstance, BundleDescriptor bundle) {
 
 
-        for(ManagedBeanDescriptor next : ((BundleDescriptor) bundle).getManagedBeans()) {
+        for(ManagedBeanDescriptor next :  bundle.getManagedBeans()) {
 
             JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
                        next.getInterceptorBuilder();
@@ -346,9 +349,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
         return createManagedBean(managedBeanDesc, managedBeanClass);
     }
 
-    public Object createManagedBean(Object managedBeanDesc, Class managedBeanClass) throws Exception {
-
-        ManagedBeanDescriptor desc = (ManagedBeanDescriptor) managedBeanDesc;
+    public Object createManagedBean(ManagedBeanDescriptor desc, Class managedBeanClass) throws Exception {
 
         JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
             desc.getInterceptorBuilder();

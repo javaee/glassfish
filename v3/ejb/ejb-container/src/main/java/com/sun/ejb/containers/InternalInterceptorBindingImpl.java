@@ -44,7 +44,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import java.util.Collection;
 
 import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.managedbean.ManagedBeanManager;
+import com.sun.enterprise.container.common.spi.ManagedBeanManager;
 
 
 import org.jvnet.hk2.component.Habitat;

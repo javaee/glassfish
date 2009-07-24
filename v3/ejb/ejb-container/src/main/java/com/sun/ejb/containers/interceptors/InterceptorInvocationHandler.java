@@ -49,7 +49,7 @@ import com.sun.ejb.containers.InvocationHandlerUtil;
 
 import java.util.Map;
 
-import org.glassfish.api.interceptor.InterceptorInvoker;
+import com.sun.enterprise.container.common.spi.InterceptorInvoker;
 
 /** 
  *
