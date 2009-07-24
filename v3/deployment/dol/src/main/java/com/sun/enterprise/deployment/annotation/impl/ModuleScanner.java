@@ -95,7 +95,22 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
             T bundleDesc, ClassLoader classLoader) throws IOException {
         File file = new File(archiveFile.getURI()); 
         process(file, bundleDesc, classLoader);
-        addLibraryJars(bundleDesc, archiveFile); 
+        completeProcess(bundleDesc, archiveFile);
+    }
+
+    /**
+     * Performs all additional work after the "process" method has finished.
+     * <p>
+     * This is a separate method from "process" so that the app client scanner can invoke
+     * it from its overriding process method.  All post-processing logic needs to be
+     * collected in this one place.
+     *
+     * @param bundleDescr
+     * @param archive
+     * @throws IOException
+     */
+    protected void completeProcess(T bundleDescr, ReadableArchive archive) throws IOException {
+        addLibraryJars(bundleDescr, archive);
     }
 
     /**

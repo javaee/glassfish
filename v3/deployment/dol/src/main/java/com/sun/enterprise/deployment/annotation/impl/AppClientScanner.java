@@ -37,6 +37,7 @@ package com.sun.enterprise.deployment.annotation.impl;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import org.glassfish.apf.impl.AnnotationUtils;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -47,13 +48,40 @@ import java.util.logging.Level;
 
 /**
  * Implementation of the Scanner interface for AppClient
+ * <p>
+ * This scanner overrides process(ReadableArchive...) so that when used in the
+ * ACC it will work correctly with InputJarArchive readable archives, not just the
+ * expanded directory archives during deployment on the server.
  *
  * @author Shing Wai Chan
+ * @author tjquinn
  */
 @Service(name="car")
 @Scoped(PerLookup.class)
 public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor> {
-    private ApplicationClientDescriptor descriptor;    
+    private ApplicationClientDescriptor descriptor;
+
+    @Override
+    public void process(ReadableArchive archive, ApplicationClientDescriptor bundleDesc, ClassLoader classLoader) throws IOException {
+        /*
+         * This essentially duplicates
+         */
+        doProcess(archive, bundleDesc, classLoader);
+        completeProcess(bundleDesc, archive);
+    }
+
+    public void process(File archiveFile, ApplicationClientDescriptor bundleDesc, ClassLoader classLoader) throws IOException {
+        /*
+         * This variant should not be invoked, but we need to have it here to
+         * satisfy the interface contract.  For this app client scanner, its
+         * own process(ReadableArchive...) method will be invoked rather than
+         * the one implemented at ModuleScanner.  This is to allow the app
+         * client one to support InputJarArchives as well as FileArchives.  This
+         * is important because the ACC deals with JARs directly rather than
+         * expanding them into directories.
+         */
+        throw new UnsupportedOperationException("Not supported.");
+    }
 
     /**
      * This scanner will scan the given main class for annotation processing.
@@ -62,10 +90,10 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
      * @param desc
      * @param classLoader
      */
-    public void process(File archiveFile, ApplicationClientDescriptor desc,
+    private void doProcess(ReadableArchive archive, ApplicationClientDescriptor desc,
             ClassLoader classLoader) throws IOException {
         if (AnnotationUtils.getLogger().isLoggable(Level.FINE)) {
-            AnnotationUtils.getLogger().fine("archiveFile is " + archiveFile);
+            AnnotationUtils.getLogger().fine("archiveFile is " + archive.getURI().toASCIIString());
             AnnotationUtils.getLogger().fine("classLoader is " + classLoader);
         }
         this.descriptor = desc;
@@ -81,6 +109,6 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
         }
 
         this.classLoader = classLoader;
-        this.archiveFile = archiveFile;
+        this.archiveFile = null; // = archive;
     }
 }

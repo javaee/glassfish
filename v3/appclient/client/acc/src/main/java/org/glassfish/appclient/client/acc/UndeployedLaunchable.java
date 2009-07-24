@@ -162,7 +162,7 @@ public class UndeployedLaunchable implements Launchable {
             final AppClientArchivist archivist,
             final String callerSuppliedMainClass) throws IOException, SAXParseException {
         this.clientRA = clientRA;
-        this.archivist = archivist;
+        this.archivist = completeInit(archivist);
         this.callerSuppliedMainClassName = callerSuppliedMainClass;
         this.habitat = habitat;
     }
@@ -198,11 +198,17 @@ public class UndeployedLaunchable implements Launchable {
         return acDesc;
     }
 
+    private AppClientArchivist completeInit(final AppClientArchivist arch) {
+            arch.setDescriptor(acDesc);
+            arch.setAnnotationProcessingRequested(true);
+            return arch;
+    }
+
     private AppClientArchivist getArchivist(final ClassLoader classLoader) throws IOException {
         if (archivist == null) {
             ArchivistFactory af = Util.getArchivistFactory();
-            archivist = (AppClientArchivist) af.getArchivist(clientRA, classLoader);
-            archivist.setDescriptor(acDesc);
+            archivist = completeInit((AppClientArchivist) af.getArchivist(
+                    clientRA, classLoader));
         }
         return archivist;
     }
