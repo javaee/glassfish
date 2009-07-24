@@ -41,6 +41,7 @@ import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.util.JDK;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.io.*;
@@ -53,6 +54,14 @@ import java.util.*;
  */
 public class AsadminMain {
     public static void main(String[] args) {
+        int minor = JDK.getMinor();
+
+        if(minor < 6) {
+            CLILogger.getInstance().printError(
+                strings.get("OldJdk", "" + minor));
+            System.exit(ERROR);
+        }
+
         if (CLIConstants.debugMode) {
             System.setProperty(CLIConstants.WALL_CLOCK_START_PROP,
                 "" + System.currentTimeMillis());
