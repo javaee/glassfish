@@ -1,17 +1,23 @@
 <!DOCTYPE project [
   <!ENTITY jaxrpctargets SYSTEM "../common/targets.xml">
+  <!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+  <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+  <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="jaxrpc-hello-ejb" default="build" basedir=".">
+<project name="jaxrpc-hello-ejb" default="all" basedir=".">
 
   <property name="appname" value="MyHelloEJBService"/>
-  <property file="../common/build.properties"/>
+
   <property environment="env" />
 
   <property file="${env.APS_HOME}/config.properties"/>
-  <property file="build.properties"/>
+  <property file="samplebuild.properties"/>
 
-  &jaxrpctargets;
+   &jaxrpctargets;
+  &commonSetup;
+  &commonBuild;
+  &testproperties;
 
   <path id="class.path">
         <fileset dir="${env.AS_HOME}/modules">
@@ -26,7 +32,7 @@
 
     </path>
 
-
+  <target name="all" depends="clean,deploy"/>
   <target name="create-ejb-jar" description="Packages the EJB JAR file">
      <echo message="Creating the EJB JAR...."/>
      <delete file="${assemble.ear}/${ejbjar.file}" />
@@ -68,16 +74,21 @@
         <arg line="--passwordfile ${admin.password.file}"/>
         <arg line="--host ${admin.host}"/>
         <arg line="--port ${admin.port}"/>
-        <arg line="${ear.file}"/>
+        <arg line="${assemble.ear}"/>
       </exec>
     </target>
 
 
-  <target name="undeploy">
-    <antcall target="admin_command_common">
-      <param name="admin.command"
-        value="undeploy ${context.path}" />
-    </antcall>
-  </target>
+ <target name="undeploy" depends="init-common">
+      <echo message="Undeploying ${ear.file} from ${basedir}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="undeploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--passwordfile ${admin.password.file}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${earname}"/>
+      </exec>
+    </target>
 
 </project>
