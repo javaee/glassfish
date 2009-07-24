@@ -40,7 +40,8 @@ import java.security.SecureRandom;
 import org.jvnet.hk2.annotations.Contract;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
-
+import org.omg.IOP.TaggedComponent;
+import org.omg.PortableInterceptor.IORInfo;
 /**
  * This class tries to avoid the need for orb-iiop to 
  * depend on some security modules for getting SSL related info
@@ -53,5 +54,7 @@ public interface IIOPSSLUtil {
     public KeyManager[] getKeyManagers(String certNickname);
     public TrustManager[] getTrustManagers();
     public SecureRandom getInitializedSecureRandom();
+    public Object getSSLPortsAsSocketInfo(Object ior);
+    public TaggedComponent createSSLTaggedComponent(IORInfo iorInfo, Object socketInfos);
     
 }

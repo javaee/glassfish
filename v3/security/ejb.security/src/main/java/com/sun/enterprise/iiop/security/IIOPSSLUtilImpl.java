@@ -36,23 +36,28 @@
 
 package com.sun.enterprise.iiop.security;
 
+import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.ssl.J2EEKeyManager;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.logging.LogDomains;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509KeyManager;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.enterprise.iiop.api.IIOPSSLUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
+import org.omg.IOP.TaggedComponent;
+import org.omg.PortableInterceptor.IORInfo;
 /**
  *
  * @author Kumar
@@ -64,6 +69,8 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
     private SSLUtils sslUtils;
     @Inject
     private Habitat habitat;
+    
+    private GlassFishORBHelper orbHelper;
     
     private static final Logger _logger ;
     static{
@@ -128,5 +135,37 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
     public SecureRandom getInitializedSecureRandom() {
         return SecurityServicesUtil.secureRandom;
     }
+    
+     public Object getSSLPortsAsSocketInfo(Object ior) {         
+          SecurityMechanismSelector selector = habitat.getComponent(SecurityMechanismSelector.class);
+          return selector.getSSLSocketInfo(ior);
+     }
+     
+     public TaggedComponent createSSLTaggedComponent(IORInfo iorInfo, Object sInfos) {
+         List<com.sun.corba.ee.spi.folb.SocketInfo> socketInfos = (List<com.sun.corba.ee.spi.folb.SocketInfo>)sInfos;
+         orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+         TaggedComponent result = null;
+          org.omg.CORBA.ORB orb = orbHelper.getORB();
+            int sslMutualAuthPort = -1;
+            try {
+                sslMutualAuthPort = 
+		    ((com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt)iorInfo).  
+			getServerPort("SSL_MUTUALAUTH");
+            } catch (com.sun.corba.ee.spi.legacy.interceptor.UnknownType ute) {
+                _logger.log(Level.FINE,".isnert: UnknownType exception", ute);
+            }
+
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, 
+                            ".insert: sslMutualAuthPort: " 
+                            + sslMutualAuthPort);
+            }
+
+            CSIV2TaggedComponentInfo ctc = new CSIV2TaggedComponentInfo( orb,
+	    sslMutualAuthPort, habitat );
+	    EjbDescriptor desc = ctc.getEjbDescriptor(iorInfo) ;
+            result = ctc.createSecurityTaggedComponent(socketInfos,desc);  
+            return result;
+     }
 
 }

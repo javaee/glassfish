@@ -406,12 +406,12 @@ public final class GlassFishORBManager {
                         + "com.sun.corba.ee.impl.folb.ClientGroupManager",
                 "dummy");
          
-
+         */
         // This configurator registers the CSIv2SSLTaggedComponentHandler
         orbInitProperties.setProperty(
                 ORBConstants.USER_CONFIGURATOR_PREFIX
-                        + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),
-        */
+                        + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),"dummy");
+       
 
         /** TODO enable this
         if (ASORBUtilities.isGMSAvailableAndClusterHeartbeatEnabled()) {

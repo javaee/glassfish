@@ -531,6 +531,13 @@ public final class SecurityMechanismSelector implements PostConstruct {
 	return ctx;
     }
 
+    Object getSSLSocketInfo(Object ior) {
+         ConnectionContext ctx = new ConnectionContext();
+         List<SocketInfo> socketInfo = getSSLPorts((com.sun.corba.ee.spi.ior.IOR)ior, ctx);
+         setClientConnectionContext(ctx);
+         return socketInfo;
+    }
+
     private boolean isMechanismSupported(SAS_ContextSec sas){
         byte[][] mechanisms = sas.supported_naming_mechanisms;
         byte[] mechSupported = GSSUtils.getMechanism();
