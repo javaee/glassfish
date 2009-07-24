@@ -117,6 +117,7 @@ public class WoodstockHandler {
                     prefix = prefix + new Random().nextInt(100000);
                 }
                 tmpFile = File.createTempFile(prefix, suffix);
+                tmpFile.deleteOnExit();
                 uploadedFile.write(tmpFile);
                 uploadTmpFile = tmpFile.getCanonicalPath();
             } catch (IOException ioex) {
