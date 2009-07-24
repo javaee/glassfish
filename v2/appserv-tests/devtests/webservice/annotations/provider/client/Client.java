@@ -12,8 +12,6 @@ public class Client {
         private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
-        @WebServiceRef(wsdlLocation="http://localhost:8080/HelloImpl/HelloImplService?WSDL")
-        static HelloImplService service;
 
         public static void main(String[] args) {
 	    stat.addDescription("servlet-provider-annotation");
@@ -24,7 +22,7 @@ public class Client {
 
        public void doTest(String[] args) {
             try {
-                HelloImpl port = service.getHelloImpl();
+                HelloImpl port = new HelloImplService().getHelloImpl();
                 for (int i=0;i<10;i++) {
                     String ret = port.sayHello("Appserver Tester !");
 		    if(ret.indexOf("WebSvcTest-Hello") == -1) {
