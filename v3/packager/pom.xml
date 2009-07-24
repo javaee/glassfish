@@ -101,6 +101,19 @@
     </modules>
 
     <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <!-- automatically invokes clean during initialize phase -->
+                <executions>
+                    <execution>
+                        <id>auto-clean</id>
+                        <phase>initialize</phase>
+                        <goals><goal>clean</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins> 
         <extensions>
             <extension>
                 <groupId>org.glassfish.build</groupId>
