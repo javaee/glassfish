@@ -75,28 +75,13 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(AppClientContainerBuilder.class);
     /** caller-specified target servers */
     private TargetServer[] targetServers;
-//    private String[] clientArgs = null;
 
     /** caller-optional logger  - initialized to logger name from the class; caller can override with logger method */
     private Logger logger = Logger.getLogger(getClass().getName());
 
     private AuthRealm authRealm = null;
 
-    private Habitat habitat = null;
-    
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-//    private String mainClassName = null;
-//
-//    private Class mainClass = null;
-
-    /**
-     * records whether the mainClass was set by the caller or inferred from an archive
-     */
-//    private boolean isMainClassFromCaller;
-//
-//    private URI clientURI = null;
-
 
     /**
      * The caller can pre-set the client credentials using the
@@ -134,17 +119,11 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
         this.targetServers = targetServers;
     }
 
-//    private Habitat getHabitat() throws BootException, URISyntaxException {
-//        if (habitat == null) {
-//            habitat = ACCModulesManager.getHabitat(classLoader, logger);
-//        }
-//        return habitat;
-//    }
-
     public AppClientContainer newContainer(final Class mainClass,
             final CallbackHandler callerSpecifiedCallbackHandler) throws Exception {
         prepareHabitatAndNaming();
-        Launchable client = Launchable.LaunchableUtil.newLaunchable(mainClass);
+        Launchable client = Launchable.LaunchableUtil.newLaunchable(
+                ACCModulesManager.getHabitat(), mainClass);
         AppClientContainer container = createContainer(client, 
                 callerSpecifiedCallbackHandler);
         return container;

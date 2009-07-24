@@ -109,7 +109,7 @@ interface Launchable {
                  * provided URI should refer to an undeployed EAR or an undeployed
                  * app client JAR.
                  */
-                result = UndeployedLaunchable.newUndeployedLaunchable(ra,
+                result = UndeployedLaunchable.newUndeployedLaunchable(habitat, ra,
                         callerSuppliedMainClassName, callerSuppliedAppName,
                         Thread.currentThread().getContextClassLoader());
             }
@@ -128,8 +128,8 @@ interface Launchable {
             throw new UserError(msg);
         }
 
-        static Launchable newLaunchable(final Class mainClass) {
-            return new MainClass(mainClass);
+        static Launchable newLaunchable(final Habitat habitat, final Class mainClass) {
+            return new MainClassLaunchable(habitat, mainClass);
         }
         
         static boolean matchesMainClassName(final ReadableArchive archive, final String callerSpecifiedMainClassName) throws IOException {
@@ -197,58 +197,5 @@ interface Launchable {
                     pathWithoutDotJar.length() - ".jar".length());
             return URI.create("file:" + pathWithoutDotJar);
         }
-    }
-
-    /**
-     * Represents a Launchable main class which the caller specifies by the
-     * main class itself, rather than a facade JAR or an original developer-provided
-     * JAR file.
-     */
-    static class MainClass implements Launchable {
-
-        private final Class mainClass;
-
-        private ApplicationClientDescriptor acDesc = null;
-
-        private ClassLoader classLoader = null;
-
-        private AppClientArchivist archivist = null;
-
-        MainClass(final Class mainClass) {
-            this.mainClass = mainClass;
-        }
-
-        public Class getMainClass() throws ClassNotFoundException {
-            return mainClass;
-        }
-
-        public ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException {
-            /*
-             * There is no developer-provided descriptor possible so just
-             * use a default one.
-             */
-            if (acDesc == null) {
-                archivist = new AppClientArchivist();
-                acDesc = (ApplicationClientDescriptor) archivist
-                        .getDefaultBundleDescriptor();
-                archivist.setDescriptor(acDesc);
-                this.classLoader = loader;
-            }
-            return acDesc;
-        }
-
-        public void validateDescriptor() {
-            archivist.validate(classLoader);
-        }
-
-        public URI getURI() {
-            return null;
-        }
-
-        public String getAnchorDir() {
-            return null;
-        }
-
-
     }
 }

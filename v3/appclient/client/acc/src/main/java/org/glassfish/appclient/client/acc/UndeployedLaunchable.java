@@ -52,6 +52,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.IOException;
 import java.net.URI;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -71,9 +72,11 @@ public class UndeployedLaunchable implements Launchable {
     private final ReadableArchive clientRA;
 
     private ClassLoader classLoader = null;
+    private final Habitat habitat;
 
 
     static UndeployedLaunchable newUndeployedLaunchable(
+            final Habitat habitat,
             final ReadableArchive ra,
             final String callerSuppliedMainClassName,
             final String callerSuppliedAppName,
@@ -84,7 +87,8 @@ public class UndeployedLaunchable implements Launchable {
         Archivist archivist = af.getArchivist(ra, classLoader);
 
         if (archivist.getModuleType().equals(XModuleType.CAR)) {
-            return new UndeployedLaunchable(ra, (AppClientArchivist) archivist, callerSuppliedMainClassName);
+            return new UndeployedLaunchable(habitat, ra,
+                    (AppClientArchivist) archivist, callerSuppliedMainClassName);
         } else if (archivist.getModuleType().equals(XModuleType.EAR)) {
             /*
              * Locate the app client submodule that matches the main class name
@@ -117,7 +121,8 @@ public class UndeployedLaunchable implements Launchable {
                      || (callerSuppliedAppName == null && callerSuppliedMainClassName == null));
 
                 if (useThisClient) {
-                    return new UndeployedLaunchable(clientRA, acd, callerSuppliedMainClassName);
+                    return new UndeployedLaunchable(habitat, clientRA, acd,
+                            callerSuppliedMainClassName);
                 }
                 clientRA.close();
             }
@@ -142,20 +147,24 @@ public class UndeployedLaunchable implements Launchable {
         return className.replace('.', '/') + ".class";
     }
 
-    private UndeployedLaunchable(final ReadableArchive clientRA,
+    private UndeployedLaunchable(final Habitat habitat,
+            final ReadableArchive clientRA,
             final ApplicationClientDescriptor acd,
             final String callerSuppliedMainClass) {
         this.callerSuppliedMainClassName = callerSuppliedMainClass;
         this.clientRA = clientRA;
         this.acDesc = acd;
+        this.habitat = habitat;
     }
 
-    private UndeployedLaunchable(final ReadableArchive clientRA,
+    private UndeployedLaunchable(final Habitat habitat,
+            final ReadableArchive clientRA,
             final AppClientArchivist archivist,
             final String callerSuppliedMainClass) throws IOException, SAXParseException {
         this.clientRA = clientRA;
         this.archivist = archivist;
         this.callerSuppliedMainClassName = callerSuppliedMainClass;
+        this.habitat = habitat;
     }
 
     public Class getMainClass() throws ClassNotFoundException {
@@ -182,7 +191,9 @@ public class UndeployedLaunchable implements Launchable {
     public ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException {
         this.classLoader = loader;
         if (acDesc == null) {
-            acDesc = getArchivist(loader).open(clientRA);
+            final AppClientArchivist archivist = getArchivist(loader);
+            acDesc = archivist.open(clientRA);
+            Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
         }
         return acDesc;
     }
