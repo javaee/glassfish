@@ -487,8 +487,31 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
-        registerEndpoint(contextRoot, hosts, endpointAdapter, container);
+        registerEndpoint(contextRoot, endpointAdapter, container, null);
     }
+
+    /*
+     * Registers a new endpoint (proxy implementation) for a particular
+     * context-root. All request coming with the context root will be dispatched
+     * to the proxy instance passed in.
+     * @param contextRoot for the proxy
+     * @param endpointAdapter servicing requests.
+     * @param application container
+     * @param virtualServers comma separated list of the virtual servers
+     */
+    public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
+        ApplicationContainer container, String virtualServers) throws EndpointRegistrationException {
+        List<String> virtualServerList = new ArrayList<String>();
+        if (virtualServers == null) {
+            virtualServerList = 
+                config.getHttpService().getNonAdminVirtualServerList();
+        } else{
+            virtualServerList = 
+                StringUtils.parseStringList(virtualServers, ",");
+        }
+        registerEndpoint(contextRoot, virtualServerList, endpointAdapter, container);
+    }
+
 
     /*
      * Registers a new endpoint (proxy implementation) for a particular
@@ -501,7 +524,11 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             Adapter endpointAdapter,
             ApplicationContainer container) throws EndpointRegistrationException {
             
-        registerEndpoint(contextRoot, ALL_PORTS, vsServers, endpointAdapter, container);
+        Collection<String> ports = getPortsFromVirtualServers(vsServers);
+        for (String portStr : ports) {
+            int port = Integer.parseInt(portStr);
+            registerEndpoint(contextRoot, port, vsServers, endpointAdapter, container);
+        }
     }
 
 
@@ -565,5 +592,35 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         List<String> vs = aca.getVirtualServers();
         String cr       = aca.getContextRoot();
         this.registerEndpoint(cr, port, vs, aca, null);
+    }
+
+    // get the ports from the http listeners that are associated with 
+    // the virtual servers
+    private List<String> getPortsFromVirtualServers(Collection<String> virtualServers) {
+        List<String> ports = new ArrayList<String>();
+        List<NetworkListener> networkListenerList = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
+
+        for (String vs : virtualServers) {
+            VirtualServer virtualServer = 
+                config.getHttpService().getVirtualServerByName(vs);
+            if (virtualServer == null) {
+                // non-existent virtual server
+                logger.warning("Skip registering endpoint with non existent virtual server: " + vs);
+                continue;
+            }
+            String vsNetworkListeners = virtualServer.getNetworkListeners();
+            List<String> vsNetworkListenerList =
+                StringUtils.parseStringList(vsNetworkListeners, ",");
+            for (String vsNetworkListener : vsNetworkListenerList) {
+                for (NetworkListener networkListener : networkListenerList) {
+                    if (networkListener.getName().equals(vsNetworkListener) && 
+                        Boolean.valueOf(networkListener.getEnabled())) {
+                        ports.add(networkListener.getPort());
+                        break;
+                    }
+                }
+            }
+        } 
+        return ports;
     }
 }

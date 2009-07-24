@@ -40,6 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -218,6 +219,9 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     @DuckTyped
     VirtualServer getVirtualServerByName(String name);
+
+    @DuckTyped
+    List<String> getNonAdminVirtualServerList();
     
     @DuckTyped
     @Deprecated
@@ -255,6 +259,17 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
                 }
             }
             return null;
+        }
+
+        public static List<String> getNonAdminVirtualServerList(
+            HttpService target) {
+            List<String> nonAdminVSList = new ArrayList<String>();
+            for (VirtualServer v : target.getVirtualServer()) {
+                if (!v.getId().equals("__asadmin")) {
+                    nonAdminVSList.add(v.getId());
+                }
+            }
+            return nonAdminVSList;
         }
 
         @Deprecated
