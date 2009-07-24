@@ -47,41 +47,52 @@
         getRequestValue(key="nextPage" value=>$page{nextPage});
         setAttribute(key="chooseType" value="$boolean{false}");
         setAttribute(key="keepSessions" value="$boolean{false}");
+        setPageSessionAttribute(key="forDeploy" value="false");
     />
     </event>
 #include "/shared/restart.inc"    
-	    	<sun:form id="form" method="POST" enctype="multipart/form-data">  
+<sun:form id="form" method="POST" enctype="multipart/form-data">  
     #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
-                <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
-                            onClick="javascript: if(checkRedeployRequired(document.forms[0], '$resource{i18n.msg.JS.redeploy.fileReqd}')) return checkExtension('#{appType}', '#{extensionId}', '$resource{i18n.msg.JS.redeploy.typeUnmatch}'); else return false;" >
-                            <!command
-                             compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
-                                if (${needUpload}){
-                                    uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile=>$attribute{filePath}, origPath=>$attribute{origPath});
-                                }
-                                if (! ${needUpload}){
-                                    setAttribute(key="origPath", value="#{dirPath}");
-                                    setAttribute(key="filePath", value="#{dirPath}");
-                                }
-                                
-                                redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" keepSessions="#{keepSessions}");
-                                redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                            />
-                    </sun:button>
-                    <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" immediate="#{true}" primary="#{false}">
-                        <!command
-                            redirect(page="$pageSession{nextPage}");
-                        />
-                    </sun:button>
-                </sun:panelGroup>
-                </facet>
+    <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
+        <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="uploadButton" text="$resource{i18n.button.OK}"
+                onClick="javascript:
+                    if(getTextElement('#{pageSession.radioChoosenId}').value=='client') {
+                        result = (checkFileInputRequired('#{fileuploadId}', '#{reqMsg}'));
+                    } else {
+                        result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
+                    }
+                    if(result == true) {
+                            if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
+                                return submitAndDisable(this, '$resource{i18n.button.Processing}');
+                    }
+                    return false;"
+                 >
+            <!command
+                compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
+                if (${needUpload}){
+                    uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile=>$attribute{filePath}, origPath=>$attribute{origPath});
+                }
+                if (! ${needUpload}){
+                    setAttribute(key="origPath", value="#{dirPath}");
+                    setAttribute(key="filePath", value="#{dirPath}");
+                }
+                redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" keepSessions="#{keepSessions}");
+                redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+        </sun:button>
+        <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" immediate="#{true}" primary="#{false}">
+            <!command
+                redirect(page="$pageSession{nextPage}");
+            />
+        </sun:button>
+    </sun:panelGroup>
+    </facet>
     </sun:title>
-    <sun:propertySheet id="sheet2" >
-        <sun:propertySheetSection id="section1" >
+    <sun:propertySheet id="redeploy" >
+        <sun:propertySheetSection id="nameSec" >
             <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                 <sun:staticText id="name" text="#{appName}"/>
             </sun:property>
@@ -91,10 +102,13 @@
            </sun:property>
             "<br /><br />
         </sun:propertySheetSection>
-    </sun:propertySheet>
-#include "uploadComponent.inc"
+
+#include "/common/applications/fileComponent.jsf"
+
+</sun:propertySheet>
+
 	<sun:hidden id="helpKey" value="$resource{help.redeploy}" />
-		</sun:form>           
+    </sun:form>
 #include "/common/applications/uploadJS.inc"
  </define>
 </composition>

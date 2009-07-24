@@ -121,7 +121,10 @@ function setFieldValue(appNameId, value, dropDownProp, typeId, contextRootId, ex
 function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, dropDownProp, contextRootId, extensionId){
     var fc = document.getElementById(fileChooserId).getSelectionValue();
     window.opener.getTextElement(dirPathId).value = fc;
-    setFieldValue(appNameId, fc, dropDownProp, typeId, contextRootId, extensionId, window.opener);
+    //for redeploy, there is no dropdown for app type, there is no need to fill in any field.
+    if (dropDownProp != ""){
+        setFieldValue(appNameId, fc, dropDownProp, typeId, contextRootId, extensionId, window.opener);
+    }
 }
 
 function checkFileInputRequired(componentId, reqMsg){
