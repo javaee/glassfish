@@ -288,23 +288,16 @@ public final class CreateDomainCommand extends CLICommand {
             } else {
                 /*
                  * If the admin password was supplied in the password
-                 * file, we use it as the default for the master password
-                 * as well.  Otherwise, we might have to prompt for the master
-                 * password.
-                 * XXX - this code is kind of clumsy
+                 * file, and no master password is suppied, we use the
+                 * default master password without prompting.
                  */
-                String adminPwdFromFile = passwords.get(ADMIN_PASSWORD);
+                boolean haveAdminPwd = passwords.get(ADMIN_PASSWORD) != null;
                 adminPassword = getAdminPassword();
                 validatePassword(adminPassword, ADMIN_PASSWORD);
-                if (adminPwdFromFile != null) {
-                    // turn off interactive so no prompting is done,
-                    // then restore it
-                    boolean interactive = programOpts.isInteractive();
-                    programOpts.setInteractive(false);
-                    masterPassword = getMasterPassword();
+                if (haveAdminPwd) {
+                    masterPassword = passwords.get(MASTER_PASSWORD);
                     if (masterPassword == null)
-                        masterPassword = adminPassword;
-                    programOpts.setInteractive(interactive);
+                        masterPassword = DEFAULT_MASTER_PASSWORD;
                 } else
                     masterPassword = getMasterPassword();
                 validatePassword(masterPassword, MASTER_PASSWORD);
