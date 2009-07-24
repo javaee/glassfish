@@ -41,6 +41,22 @@ public class HelloServlet extends HttpServlet {
 
 	simpleSingleton.hello();
 
+	try {
+	    InitialContext ic = new InitialContext();
+	    for (NamingEnumeration<Binding> e = ic.listBindings("java:comp/env"); e.hasMore(); ) {
+                 Binding b = e.next();// java:comp/env/xxx
+               final String name = b.getName().substring("java:comp/env/".length());
+                 final String cl = b.getClassName();
+                 final Object o = b.getObject();
+		 System.out.println("binding = " + b + " , name = " + name + " , cl = " + cl + " , object = " + o);
+		 if( !b.getName().startsWith("java:comp/env") ) {
+		     throw new RuntimeException("invalid returned env entry prefix");
+		 }
+	    }
+	} catch(Exception e) {
+	    throw new ServletException(e);
+	}
+
 	out.println("<HTML> <HEAD> <TITLE> JMS Servlet Output </TITLE> </HEAD> <BODY BGCOLOR=white>");
             out.println("<CENTER> <FONT size=+1 COLOR=blue>DatabaseServelt :: All information I can give </FONT> </CENTER> <p> " );
             out.println("<FONT size=+1 color=red> Context Path :  </FONT> " + req.getContextPath() + "<br>" ); 
